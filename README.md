@@ -9,12 +9,12 @@ A super app crafted for the Middle Eastern and North African community - empower
 ## Contributors
 
 <a href="https://github.com/TheChance101/MENA-mobile/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=TheChance101/MENA-mobile" />
+  <img src="https://contrib.rocks/image?repo=TheChance101/MENA-mobile" width="365" height="365"/>
 </a>
 
 ## License:
 
-    Copyright 2023 The Chance
+    Copyright 2025 The Chance
 
     Licensed under the Apache License, Version 2.0 (the "License");
     You may not use this file except in compliance with the License.
