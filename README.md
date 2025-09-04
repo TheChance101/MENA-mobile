@@ -3,13 +3,13 @@ The biggest KMP open-source project to be
 
 ## Branding
 
-<img width="1140" height="1140" alt="mena_logo" src="https://github.com/user-attachments/assets/72cb47fb-27a1-45ab-971b-bfef705abded" />
+<img width="365" height="365" alt="mena_logo" src="https://github.com/user-attachments/assets/72cb47fb-27a1-45ab-971b-bfef705abded" />
 A super app crafted for the Middle Eastern and North African community - empowering you to do everything you need, all while nurturing a genuine sense of belonging.
 
 ## Contributors
 
 <a href="https://github.com/TheChance101/MENA-mobile/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=TheChance101/MENA-mobile" width="365" height="365"/>
+  <img src="https://contrib.rocks/image?repo=TheChance101/MENA-mobile"/>
 </a>
 
 ## License:
