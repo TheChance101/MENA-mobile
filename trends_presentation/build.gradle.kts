@@ -14,8 +14,6 @@ kotlin {
         }
     }
 
-    jvm("desktop")
-
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -27,7 +25,6 @@ kotlin {
     }
 
     sourceSets {
-        val desktopMain by getting
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -43,9 +40,6 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
         }
         iosMain.dependencies {
-
-        }
-        desktopMain.dependencies {
 
         }
     }
