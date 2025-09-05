@@ -13,7 +13,7 @@ kotlin {
 
         }
         commonMain.dependencies {
-
+            implementation(projects.dukanDomain)
         }
         iosMain.dependencies {
 

@@ -13,7 +13,7 @@ kotlin {
 
         }
         commonMain.dependencies {
-
+            implementation(projects.faithDomain)
         }
         iosMain.dependencies {
 
