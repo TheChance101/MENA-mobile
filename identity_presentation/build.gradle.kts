@@ -33,6 +33,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(projects.identityDomain)
+            implementation(projects.designSystem)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

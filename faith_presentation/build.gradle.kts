@@ -34,6 +34,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(projects.faithDomain)
+            implementation(projects.designSystem)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
