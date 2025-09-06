@@ -30,7 +30,8 @@ fun MenaTheme(
         LocalColorScheme provides colorScheme,
         LocalTypography provides MenaTypography,
         LocalSpacing provides MenaSpacing,
-        LocalRadius provides MenaRadius
+        LocalRadius provides MenaRadius,
+        LocalTypography provides typography
     ) {
         content()
     }
