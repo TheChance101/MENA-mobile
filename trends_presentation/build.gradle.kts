@@ -53,3 +53,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
+
+dependencies {
+    debugImplementation(compose.uiTooling)
+}
