@@ -18,6 +18,10 @@ class CreateDukanViewModel :
         TODO("Not yet implemented")
     }
 
+    override fun onSaveClicked() {
+        TODO("Not yet implemented")
+    }
+
     override fun onZoomInClicked() {
         TODO("Not yet implemented")
     }
