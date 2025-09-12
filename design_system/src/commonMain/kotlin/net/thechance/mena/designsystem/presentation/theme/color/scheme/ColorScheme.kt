@@ -19,7 +19,7 @@ data class ColorScheme(
     val disabled: Color,
     val error: Color,
     val warning: Color,
-    val success: Color
+    val success: Color,
 ) {
     data class Brand(
         val brand: Color,
