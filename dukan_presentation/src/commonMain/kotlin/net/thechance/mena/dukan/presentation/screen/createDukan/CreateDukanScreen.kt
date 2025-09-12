@@ -1,10 +1,8 @@
 package net.thechance.mena.dukan.presentation.screen.createDukan
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContent
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -23,10 +21,8 @@ fun CreateDukanScreen() {
         }
     }
 
-    Column {
-        CreateDukanContent(
-            state = state,
-            listener = viewModel
-        )
-    }
+    CreateDukanContent(
+        state = state,
+        listener = viewModel
+    )
 }

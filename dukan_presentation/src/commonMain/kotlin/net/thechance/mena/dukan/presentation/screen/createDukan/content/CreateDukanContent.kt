@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.createDukan.content
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +13,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.arrow_left_01
 import mena.dukan_presentation.generated.resources.pencil_edit_01
@@ -62,22 +60,22 @@ fun CreateDukanContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(top = 12.dp),
+                .padding(top = Theme.spacing._12),
             state = pagerState,
             userScrollEnabled = false
         ) { pageIndex ->
             when (pageIndex) {
-                0 -> CreateDukanContentBasicInformation()
-                1 -> CreateDukanContentSelectImage()
-                2 -> CreateDukanContentSelectLocation()
-                3 -> CreateDukanContentSelectStyle()
+                CreateDukanViewModel.BASIC_INFORMATION_INDEX -> CreateDukanContentBasicInformation()
+                CreateDukanViewModel.SELECT_IMAGE_INDEX -> CreateDukanContentSelectImage()
+                CreateDukanViewModel.SELECT_LOCATION_INDEX -> CreateDukanContentSelectLocation()
+                CreateDukanViewModel.SELECT_STYLE_INDEX -> CreateDukanContentSelectStyle()
             }
         }
 
         PrimaryButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Theme.spacing._16),
             text = if (state.currentStep == 4)
                 "Create"
             else
@@ -95,7 +93,7 @@ private fun SyncPageWithScreenState(
     state: CreateDukanUiState,
     pagerState: PagerState
 ) {
-    val currentStepIndex = state.currentStep - 1
+    val currentStepIndex = state.currentStep
     LaunchedEffect(currentStepIndex) {
         if (currentStepIndex == pagerState.currentPage) return@LaunchedEffect
         try {
