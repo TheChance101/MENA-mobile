@@ -26,11 +26,13 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.compose.ui.backhandler)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
         }
     }
 }
@@ -42,4 +44,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+
+dependencies {
+    debugImplementation(compose.uiTooling)
 }
