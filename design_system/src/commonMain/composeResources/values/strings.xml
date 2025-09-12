@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MENA</string>
+    <string name="app_coin_icon">App Coin Icon</string>
+    <string name="cancel_dialog_icon">Cancel Dialog Icon</string>
+</resources>
