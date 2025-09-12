@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.home
+package net.thechance.mena.dukan.presentation.screen.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.dukan.presentation.home.components.TopAppBar
+import net.thechance.mena.dukan.presentation.screen.home.components.TopAppBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

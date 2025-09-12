@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.home
+package net.thechance.mena.dukan.presentation.screen.home
 
 import androidx.lifecycle.ViewModel
 

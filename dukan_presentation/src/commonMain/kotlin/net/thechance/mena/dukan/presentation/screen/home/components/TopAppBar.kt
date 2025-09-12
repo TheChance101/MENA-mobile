@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.home.components
+package net.thechance.mena.dukan.presentation.screen.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
