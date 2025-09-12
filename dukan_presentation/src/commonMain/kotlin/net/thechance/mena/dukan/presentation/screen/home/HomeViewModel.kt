@@ -1,15 +1,33 @@
 package net.thechance.mena.dukan.presentation.screen.home
 
-import androidx.lifecycle.ViewModel
+import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.presentation.base.BaseViewModel
 
 class HomeViewModel(
-    // Todo check dukan status use case
-): ViewModel(),HomeInteractionListener {
+    private val dukanRepository: DukanRepository
+) : BaseViewModel<HomeScreenUiState, HomeEffect>(HomeScreenUiState()), HomeInteractionListener {
+
+    init {
+        getDukanButtonState()
+    }
+
+    private fun getDukanButtonState() {
+        tryToExecute(
+            block = { dukanRepository.isUserHasDukan() },
+            onSuccess = { isDukanExist ->
+                updateState {
+                    copy(isPending = isDukanExist)
+                }
+            },
+            onError = {
+                updateState {
+                    copy(error = it.message)
+                }
+            },
+        )
+    }
+
     override fun onAddDukanButtonClicked() {
-        return
-        // if dukan isPending
-        TODO(reason = "Navigation to pending screen")
-        // if dukan is not found
-        TODO(reason = "Navigation to create dukan screen")
+        TODO(reason = "use effect to implement navigation")
     }
 }
