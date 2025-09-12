@@ -1,7 +1,5 @@
 package net.thechance.mena.dukan.presentation
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -9,12 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,15 +22,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import dev.jordond.compass.Coordinates
+import dev.jordond.compass.geocoder.MobileGeocoder
+import dev.jordond.compass.geocoder.placeOrNull
 import io.github.dellisd.spatialk.geojson.Position
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.pencil_edit_01
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.dukan.domain.entity.Dukan
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.rememberCameraState
 import org.maplibre.compose.map.GestureOptions
@@ -49,31 +48,42 @@ import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MapLibra() {
+fun MapLibra(
+    location: Dukan.Location,
+    modifier: Modifier = Modifier
+) {
+
     var markerOffset by remember { mutableStateOf<DpOffset?>(null) }
     var locked by rememberSaveable { mutableStateOf(false) }
+    var position by remember { mutableStateOf<Dukan.Location?>(null) }
 
-    val camera =
-        rememberCameraState(
-            firstPosition =
-                CameraPosition(
-                    target = Position(latitude = 45.521, longitude = -122.675),
-                    zoom = 13.0
-                )
-        )
+    val camera = rememberCameraState(firstPosition = CameraPosition())
+
     LaunchedEffect(Unit) {
         camera.animateTo(
             finalPosition =
-                camera.position.copy(target = Position(latitude = 47.607, longitude = -122.342)),
+                camera.position.copy(
+                    target = Position(latitude = location.latitude, longitude = location.longitude),
+                    zoom = 13.0
+                ),
             duration = 3.seconds,
         )
+        position?.let {
+            println(
+                "Location Name: ${
+                    MobileGeocoder().placeOrNull(
+                        Coordinates(
+                            it.latitude,
+                            it.longitude
+                        )
+                    )
+                }"
+            )
+        }
     }
+
     Box(
-        modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxSize()
-            .padding(16.dp)
-            .clip(RoundedCornerShape(12.dp))
+        modifier = modifier
     ) {
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
@@ -138,5 +148,19 @@ fun MapLibra() {
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun Map() {
+    MenaTheme {
+        MapLibra(
+            location = Dukan.Location(
+                latitude = 47.607,
+                longitude = -122.342,
+                address = ""
+            )
+        )
     }
 }

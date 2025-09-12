@@ -40,7 +40,11 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.navigation.compose)
+
+            // maps
             implementation(libs.maplibre.compose)
+
+            implementation(libs.bundles.geoCoder)
         }
         iosMain.dependencies {
 
@@ -55,4 +59,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+
+dependencies {
+    debugImplementation(compose.uiTooling)
 }

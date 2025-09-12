@@ -17,6 +17,12 @@ navigationCompose = "2.9.0-rc01"
 # Maps version
 map-libra = "0.11.1"
 
+# GeoCoder
+compass = "2.4.0"
+
+# Location
+playServicesLocation = "21.3.0"
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -34,7 +40,14 @@ compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", v
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 # Map
-maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version = "0.11.1" }
+maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "map-libra" }
+
+# GeoCoder
+compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
+compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
+
+# location
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -44,3 +57,6 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+[bundles]
+geoCoder = ["compass-geocoder", "compass-geocoder-mobile"]
