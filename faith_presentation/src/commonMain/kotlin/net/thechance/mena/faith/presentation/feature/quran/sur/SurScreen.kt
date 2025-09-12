@@ -46,13 +46,14 @@ import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SurScreen(
     onBackClick: () -> Unit,
     onBookmarkClick: () -> Unit,
     onSurahClick: (id: Int) -> Unit,
-    viewModel: SurViewModel = SurViewModel(),
+    viewModel: SurViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
