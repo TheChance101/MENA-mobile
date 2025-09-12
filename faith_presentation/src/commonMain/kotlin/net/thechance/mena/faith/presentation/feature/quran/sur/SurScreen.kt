@@ -28,6 +28,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ayat
 import mena.faith_presentation.generated.resources.back_icon
 import mena.faith_presentation.generated.resources.bookmark_icon
+import mena.faith_presentation.generated.resources.ic_al_fatihah
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_bookmark
 import mena.faith_presentation.generated.resources.ic_moshaf
@@ -46,6 +47,7 @@ import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -268,3 +270,43 @@ private fun SurahNumberContainer(
 }
 
 private fun Int.towDigitsMinimum(): String = this.toString().padStart(2, '0')
+
+@Preview
+@Composable
+private fun SurScreenPreview() {
+    Content(
+        uiState = SurUiState(
+            sur = listOf(
+                SurUiState.SurahUi(
+                    id = 1,
+                    surahOrder = 1,
+                    surahName = "Al Fatihah",
+                    arabicNameImg = Res.drawable.ic_al_fatihah,
+                    ayatNumber = 7,
+                    isMakki = true
+                ),
+                SurUiState.SurahUi(
+                    id = 1,
+                    surahOrder = 1,
+                    surahName = "Al Fatihah",
+                    arabicNameImg = Res.drawable.ic_al_fatihah,
+                    ayatNumber = 7,
+                    isMakki = true
+                ),
+                SurUiState.SurahUi(
+                    id = 1,
+                    surahOrder = 1,
+                    surahName = "Al Fatihah",
+                    arabicNameImg = Res.drawable.ic_al_fatihah,
+                    ayatNumber = 7,
+                    isMakki = true
+                )
+            )
+        ),
+        contract = object : SurContract {
+            override fun onSurahClicked(id: Int) {}
+            override fun onBackClicked() {}
+            override fun onBookmarkClicked() {}
+        }
+    )
+}
