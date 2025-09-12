@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.createDukan
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +26,11 @@ fun DukanColor(
     isSelected: Boolean,
     onClick: () -> Unit = {},
 ) {
+    val colorSize by animateDpAsState(
+        targetValue = if (isSelected) 42.dp else 48.dp,
+        label = "color size"
+    )
+
     Box(
         modifier = modifier.size(48.dp).clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.background.surface)
@@ -32,7 +39,7 @@ fun DukanColor(
         contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier = Modifier.size(if (isSelected) 42.dp else 48.dp).clip(RoundedCornerShape(Theme.radius.full))
+            modifier = Modifier.size(colorSize).clip(RoundedCornerShape(Theme.radius.full))
                 .background(backgroundColor)
         )
     }
