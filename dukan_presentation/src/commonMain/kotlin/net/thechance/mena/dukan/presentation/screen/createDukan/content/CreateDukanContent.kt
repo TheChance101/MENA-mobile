@@ -76,7 +76,7 @@ fun CreateDukanContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(Theme.spacing._16),
-            text = if (state.currentStep == 4)
+            text = if (state.currentStep == CreateDukanViewModel.SELECT_STYLE_INDEX)
                 "Create"
             else
                 "Next",
