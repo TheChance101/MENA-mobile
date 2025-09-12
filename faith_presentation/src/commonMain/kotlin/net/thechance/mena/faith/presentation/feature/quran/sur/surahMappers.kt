@@ -241,7 +241,7 @@ fun Surah.toUi() = SurUiState.SurahUi(
     surahOrder = order.order,
     arabicNameImg = getSurahNameDrawableResource(order),
     surahName = name,
-    ayatNumber = ayahCount,
+    ayatCount = ayahCount,
     isMakki = isMakkia
 )
 

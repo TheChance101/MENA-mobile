@@ -190,7 +190,7 @@ private fun SurahItem(
                 modifier = Modifier.padding(bottom = 2.dp)
             )
 
-            SurahDetailsRow(ayatNumber = surah.ayatNumber, isMakki = surah.isMakki)
+            SurahDetailsRow(ayatNumber = surah.ayatCount, isMakki = surah.isMakki)
         }
 
         MenaIcon(
@@ -282,7 +282,7 @@ private fun SurScreenPreview() {
                     surahOrder = 1,
                     surahName = "Al Fatihah",
                     arabicNameImg = Res.drawable.ic_al_fatihah,
-                    ayatNumber = 7,
+                    ayatCount = 7,
                     isMakki = true
                 ),
                 SurUiState.SurahUi(
@@ -290,7 +290,7 @@ private fun SurScreenPreview() {
                     surahOrder = 1,
                     surahName = "Al Fatihah",
                     arabicNameImg = Res.drawable.ic_al_fatihah,
-                    ayatNumber = 7,
+                    ayatCount = 7,
                     isMakki = true
                 ),
                 SurUiState.SurahUi(
@@ -298,7 +298,7 @@ private fun SurScreenPreview() {
                     surahOrder = 1,
                     surahName = "Al Fatihah",
                     arabicNameImg = Res.drawable.ic_al_fatihah,
-                    ayatNumber = 7,
+                    ayatCount = 7,
                     isMakki = true
                 )
             )

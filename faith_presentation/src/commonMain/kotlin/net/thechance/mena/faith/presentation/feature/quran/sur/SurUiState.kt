@@ -12,7 +12,7 @@ data class SurUiState(
         val surahOrder: Int,
         val arabicNameImg: DrawableResource,
         val surahName: String,
-        val ayatNumber: Int,
+        val ayatCount: Int,
         val isMakki: Boolean,
     )
 }
