@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.base
+package net.thechance.mena.dukan.presentation.viewModel.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +24,7 @@ abstract class BaseViewModel<S, E>(
 
     private val _state = MutableStateFlow<S>(initialState)
     val state: StateFlow<S> = _state.asStateFlow()
+
     private val _effect = MutableSharedFlow<E>()
     val effect: SharedFlow<E> = _effect.asSharedFlow()
 
