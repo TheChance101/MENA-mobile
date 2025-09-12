@@ -1,0 +1,12 @@
+<resources>
+    <string name="sur">Sur</string>
+    <string name="quran">Quran</string>
+    <string name="makki">Makki</string>
+    <string name="madani">Madani</string>
+    <string name="ayat">Ayat</string>
+    <string name="back_icon">back icon</string>
+    <string name="bookmark_icon">bookmark icon</string>
+    <string name="surah_arabic_name_icon">surah arabic name icon</string>
+    <string name="surah_number_container_icon">surah number container</string>">
+    <string name="moshaf_icon">moshaf icon</string>
+</resources>
