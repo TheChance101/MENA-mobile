@@ -1,40 +1,68 @@
 package net.thechance.mena.dukan.presentation.screen.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.home.components.TopAppBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HomeScreen() {
-    val viewModel = HomeViewModel()
+    val viewModel = HomeViewModel(dukanRepository = TODO(reason = "should using koin di"))
+    val state = viewModel.state.collectAsStateWithLifecycle()
     HomeContent(
-        homeInteractionListener = viewModel
+        homeInteractionListener = viewModel,
+        state = state.value
     )
 }
 
 @Composable
-fun HomeContent(
-    homeInteractionListener: HomeInteractionListener
+private fun HomeContent(
+    homeInteractionListener: HomeInteractionListener,
+    state: HomeScreenUiState
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .background(color = Color(0xFF2F4F7))
+            .background(color = Theme.colorScheme.background.surface)
+            .statusBarsPadding(),
+        verticalArrangement = Arrangement.Center
     ) {
         TopAppBar(
-            onAddDukanButtonClicked = homeInteractionListener::onAddDukanButtonClicked
+            modifier = Modifier,
+            onAddDukanButtonClicked = homeInteractionListener::onAddDukanButtonClicked,
+            isDukanPending = state.isPending
         )
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    MenaTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Theme.colorScheme.background.surface),
+            contentAlignment = Alignment.Center
+        ) {
+            HomeContent(
+                homeInteractionListener = object : HomeInteractionListener {
+                    override fun onAddDukanButtonClicked() {}
+                },
+                state = HomeScreenUiState()
+            )
+        }
+    }
 }
