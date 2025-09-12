@@ -45,6 +45,9 @@ kotlin {
             implementation(libs.maplibre.compose)
 
             implementation(libs.bundles.geoCoder)
+
+            implementation(libs.turbine)
+            implementation(libs.junit)
         }
         iosMain.dependencies {
 
