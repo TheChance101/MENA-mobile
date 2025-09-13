@@ -4,16 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(FlowPreview::class)
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     initialState: UI_STATE
 ) : ViewModel() {
@@ -22,10 +26,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     val uiState = _uiState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<UI_EFFECT>()
-    val uiEffect = _uiEffect.asSharedFlow()
-
-    protected val currentState: UI_STATE
-        get() = _uiState.value
+    val uiEffect = _uiEffect.asSharedFlow().debounce(1500L)
 
     protected fun updateState(updater: (UI_STATE) -> UI_STATE) {
         _uiState.update(updater)
@@ -44,12 +45,13 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        inScope: CoroutineScope = viewModelScope
     ): Job {
         val handler = CoroutineExceptionHandler { _, throwable ->
             onError(throwable)
         }
 
-        return viewModelScope.launch(dispatcher + handler) {
+        return inScope.launch(dispatcher + handler) {
             onStart()
             runCatching { execute() }
                 .onSuccess { result -> onSuccess?.invoke(result) }
