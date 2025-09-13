@@ -64,7 +64,7 @@ fun SurScreen(
     effect?.let { currentEffect ->
         when (currentEffect) {
             is SurEffect.BackNavigation -> onBackClick()
-            is SurEffect.BookMarkNavigation -> onBookmarkClick()
+            is SurEffect.BookmarkNavigation -> onBookmarkClick()
             is SurEffect.SurahDetailsNavigation -> onSurahClick(currentEffect.surahId)
         }
     }
@@ -90,8 +90,8 @@ private fun Content(
     ) {
         item {
             Topbar(
-                onBackClick = contract::onBackClicked,
-                onBookmarkClick = contract::onBookmarkClicked,
+                onBackClick = contract::onBackClick,
+                onBookmarkClick = contract::onBookmarkClick,
             )
         }
 
@@ -105,7 +105,7 @@ private fun Content(
         }
 
         items(uiState.sur) { surah ->
-            SurahItem(surah = surah, onClick = contract::onSurahClicked)
+            SurahItem(surah = surah, onClick = contract::onSurahClick)
         }
     }
 }
@@ -119,9 +119,7 @@ private fun Topbar(
     AppBar(
         title = stringResource(resource = Res.string.quran),
         modifier = modifier,
-        titleColor = Theme.colorScheme.shadePrimary,
         contentPadding = PaddingValues(vertical = 8.dp),
-        contentTitlePadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
         leadingContent = {
             MenaIcon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
@@ -131,12 +129,12 @@ private fun Topbar(
             )
         },
         onLeadingClick = onBackClick,
-        trailingContent = { AppBarBookMarkOption(onBookmarkClick) }
+        trailingContent = { AppBarBookmarkOption(onBookmarkClick) }
     )
 }
 
 @Composable
-private fun AppBarBookMarkOption(
+private fun AppBarBookmarkOption(
     onBookmarkClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -262,14 +260,14 @@ private fun SurahNumberContainer(
         )
 
         MenaText(
-            text = surahNumber.towDigitsMinimum(),
+            text = surahNumber.twoDigitsMinimum(),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.secondary.secondary
         )
     }
 }
 
-private fun Int.towDigitsMinimum(): String = this.toString().padStart(2, '0')
+private fun Int.twoDigitsMinimum(): String = this.toString().padStart(2, '0')
 
 @Preview
 @Composable
@@ -304,9 +302,9 @@ private fun SurScreenPreview() {
             )
         ),
         contract = object : SurContract {
-            override fun onSurahClicked(id: Int) {}
-            override fun onBackClicked() {}
-            override fun onBookmarkClicked() {}
+            override fun onSurahClick(id: Int) {}
+            override fun onBackClick() {}
+            override fun onBookmarkClick() {}
         }
     )
 }

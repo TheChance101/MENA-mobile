@@ -5,7 +5,7 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 
 class QuranRepositorySampleImpl : QuranRepository {
 
-    override suspend fun getAllSurah(): List<Surah> {
+    override suspend fun getAllSur(): List<Surah> {
         return listOf(
             Surah(
                 id = 1,

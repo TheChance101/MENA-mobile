@@ -24,11 +24,11 @@ class SurViewModel(
         initializeSur()
     }
 
-    override fun onSurahClicked(id: Int) = emitEffect(SurEffect.SurahDetailsNavigation(id))
+    override fun onSurahClick(id: Int) = emitEffect(SurEffect.SurahDetailsNavigation(id))
 
-    override fun onBackClicked() = emitEffect(SurEffect.BackNavigation)
+    override fun onBackClick() = emitEffect(SurEffect.BackNavigation)
 
-    override fun onBookmarkClicked() = emitEffect(SurEffect.BookMarkNavigation)
+    override fun onBookmarkClick() = emitEffect(SurEffect.BookmarkNavigation)
 
     private fun emitEffect(effect: SurEffect) {
         viewModelScope.launch {
@@ -40,7 +40,7 @@ class SurViewModel(
         viewModelScope.launch {
             runCatching {
                 setLoadingState()
-                repository.getAllSurah()
+                repository.getAllSur()
             }.onSuccess(::handleSuccessState).onFailure(::handleErrorState)
         }
     }
