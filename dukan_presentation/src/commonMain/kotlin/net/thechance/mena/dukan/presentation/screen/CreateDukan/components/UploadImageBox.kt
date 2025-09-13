@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_add_image
 import mena.dukan_presentation.generated.resources.ic_edit
+import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -65,7 +65,7 @@ fun UploadImageContainer(
                     painter = painterResource(Res.drawable.ic_add_image),
                     contentDescription = "Upload The image"
                 )
-                Text(
+                MenaText(
                     text = "Click to upload",
                     color = Theme.colorScheme.primary.primary,
                     style = Theme.typography.label.medium

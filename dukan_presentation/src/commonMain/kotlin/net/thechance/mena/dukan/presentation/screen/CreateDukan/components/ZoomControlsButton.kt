@@ -3,11 +3,11 @@ package net.thechance.mena.dukan.presentation.screen.CreateDukan.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_add
 import mena.dukan_presentation.generated.resources.ic_remove
+import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -56,15 +57,15 @@ fun ZoomControls(
             contentDescription = "Zoom In",
             onClick = onZoomInClicked
         )
+        VerticalDivider(
+            modifier = Modifier.height(20.dp).width(1.dp),
+            color = Theme.colorScheme.stroke
+        )
 
         TextButton(
+            text = "Reset",
             onClick = onResetClicked,
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = Theme.colorScheme.primary.primary
-            )
-        ) {
-            Text("Reset", style = Theme.typography.label.medium)
-        }
+        )
     }
 }
 

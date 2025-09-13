@@ -15,7 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_add
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun RoundIconButton(
@@ -23,8 +28,8 @@ fun RoundIconButton(
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    iconSize: Dp = Theme.spacing._16,
-    padding: Dp = 6.17.dp,
+    iconSize: Dp = 16.dp,
+    padding: Dp = Theme.spacing._4,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     iconTint: Color = Theme.colorScheme.primary.primary,
     isEnabled: Boolean = true,
@@ -46,6 +51,18 @@ fun RoundIconButton(
             contentDescription = contentDescription,
             tint = if (isEnabled) iconTint else disabledIconTint,
             modifier = Modifier.size(iconSize)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun RoundIconButtonPreview() {
+    MenaTheme {
+        RoundIconButton(
+            icon = painterResource(Res.drawable.ic_add),
+            contentDescription = "Zoom in",
+            onClick = {}
         )
     }
 }
