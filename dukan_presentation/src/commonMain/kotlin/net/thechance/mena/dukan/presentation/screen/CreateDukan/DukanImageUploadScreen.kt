@@ -6,17 +6,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.NextButton
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.UploadImageContainer
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -28,6 +33,7 @@ fun UploadDukanImageContent(
     state: CreateDukanUiState,
     interactionListener: CreateDukanInteractionListener
 ) {
+    val navController = LocalNavController.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,7 +41,18 @@ fun UploadDukanImageContent(
             .statusBarsPadding()
             .padding(horizontal = 16.dp),
     ) {
-        AppBar(title = "Create new Dukan")
+        AppBar(
+            title = "Create new Dukan",
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_arrow_left),
+                    contentDescription = "Back"
+                )
+            },
+            onLeadingClick = {
+                navController.popBackStack()
+            }
+        )
         Text(
             text = "Dukan image",
             style = Theme.typography.title.medium,
@@ -58,7 +75,10 @@ fun UploadDukanImageContent(
             onClick = interactionListener::onClickUploadImage
         )
         Spacer(modifier = Modifier.weight(1f))
-        NextButton(onClick = interactionListener::onSaveClicked)
+        NextButton(
+            onClick = interactionListener::onCLickNext,
+            isEnabled = state.isNextButtonEnabled
+        )
     }
 }
 
@@ -69,6 +89,10 @@ fun UploadDukanImageContentPreview() {
         UploadDukanImageContent(
             state = CreateDukanUiState(),
             interactionListener = object : CreateDukanInteractionListener {
+                override fun onButtonClicked() {}
+
+                override fun onBackClicked() {}
+
                 override fun onClickUploadImage() {}
 
                 override fun onClickEditImage() {}
