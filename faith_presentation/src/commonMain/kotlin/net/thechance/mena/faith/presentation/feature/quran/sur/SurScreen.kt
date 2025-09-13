@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextDirection.Companion.Content
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
@@ -44,6 +45,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -52,9 +54,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SurScreen(
-    onBackClick: () -> Unit,
-    onBookmarkClick: () -> Unit,
-    onSurahClick: (id: Int) -> Unit,
     viewModel: SurViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -63,9 +62,15 @@ fun SurScreen(
 
     effect?.let { currentEffect ->
         when (currentEffect) {
-            is SurEffect.BackNavigation -> onBackClick()
-            is SurEffect.BookmarkNavigation -> onBookmarkClick()
-            is SurEffect.SurahDetailsNavigation -> onSurahClick(currentEffect.surahId)
+            is SurEffect.BackNavigation -> {
+                //TODO() navigate back
+            }
+            is SurEffect.BookmarkNavigation -> {
+                //TODO() navigate to bookmark screen
+            }
+            is SurEffect.SurahDetailsNavigation -> {
+                //TODO() navigate to SurahDetails screen
+            }
         }
     }
 
@@ -272,39 +277,41 @@ private fun Int.twoDigitsMinimum(): String = this.toString().padStart(2, '0')
 @Preview
 @Composable
 private fun SurScreenPreview() {
-    Content(
-        uiState = SurUiState(
-            sur = listOf(
-                SurUiState.SurahUi(
-                    id = 1,
-                    surahOrder = 1,
-                    surahName = "Al Fatihah",
-                    arabicNameImg = Res.drawable.ic_al_fatihah,
-                    ayatCount = 7,
-                    isMakki = true
-                ),
-                SurUiState.SurahUi(
-                    id = 1,
-                    surahOrder = 1,
-                    surahName = "Al Fatihah",
-                    arabicNameImg = Res.drawable.ic_al_fatihah,
-                    ayatCount = 7,
-                    isMakki = true
-                ),
-                SurUiState.SurahUi(
-                    id = 1,
-                    surahOrder = 1,
-                    surahName = "Al Fatihah",
-                    arabicNameImg = Res.drawable.ic_al_fatihah,
-                    ayatCount = 7,
-                    isMakki = true
+    MenaTheme {
+        Content(
+            uiState = SurUiState(
+                sur = listOf(
+                    SurUiState.SurahUi(
+                        id = 1,
+                        surahOrder = 1,
+                        surahName = "Al Fatihah",
+                        arabicNameImg = Res.drawable.ic_al_fatihah,
+                        ayatCount = 7,
+                        isMakki = true
+                    ),
+                    SurUiState.SurahUi(
+                        id = 1,
+                        surahOrder = 1,
+                        surahName = "Al Fatihah",
+                        arabicNameImg = Res.drawable.ic_al_fatihah,
+                        ayatCount = 7,
+                        isMakki = true
+                    ),
+                    SurUiState.SurahUi(
+                        id = 1,
+                        surahOrder = 1,
+                        surahName = "Al Fatihah",
+                        arabicNameImg = Res.drawable.ic_al_fatihah,
+                        ayatCount = 7,
+                        isMakki = true
+                    )
                 )
-            )
-        ),
-        contract = object : SurContract {
-            override fun onSurahClick(id: Int) {}
-            override fun onBackClick() {}
-            override fun onBookmarkClick() {}
-        }
-    )
+            ),
+            contract = object : SurContract {
+                override fun onSurahClick(id: Int) {}
+                override fun onBackClick() {}
+                override fun onBookmarkClick() {}
+            }
+        )
+    }
 }
