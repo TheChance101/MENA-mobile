@@ -19,7 +19,6 @@ import mena.dukan_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.UploadDukanImageContent
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel

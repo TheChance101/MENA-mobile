@@ -11,10 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.ImageCroppingBox
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.SaveButton
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.UploadAnotherImageButton
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.ZoomControls
+import net.thechance.mena.dukan.presentation.screen.createDukan.components.ImageCroppingBox
+import net.thechance.mena.dukan.presentation.screen.createDukan.components.SaveButton
+import net.thechance.mena.dukan.presentation.screen.createDukan.components.UploadAnotherImageButton
+import net.thechance.mena.dukan.presentation.screen.createDukan.components.ZoomControls
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
