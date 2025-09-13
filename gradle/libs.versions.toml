@@ -14,6 +14,9 @@ junit = "4.13.2"
 kotlin = "2.2.10"
 navigationCompose = "2.9.0-rc01"
 
+# Testing
+turbine = "1.2.1"
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -27,8 +30,11 @@ androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecyc
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
 
-#Navigation
+# Navigation
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
+# Testing
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
