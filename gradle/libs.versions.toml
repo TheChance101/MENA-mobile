@@ -11,19 +11,15 @@ androidx-lifecycle = "2.9.3"
 androidx-testExt = "1.3.0"
 composeMultiplatform = "1.8.2"
 junit = "4.13.2"
-koin = "4.1.1"
 kotlin = "2.2.10"
 kotlinxDatetime = "0.7.1"
 navigationCompose = "2.9.0-rc02"
 ksp = "2.2.10-RC2-2.0.2"
-koin-core = "4.1.0"
+koin-core = "4.1.1"
 koin-annotations = "2.1.0"
 kotlinx-serialization = "1.6.3"
 
 [libraries]
-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
-koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }

@@ -57,9 +57,9 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SurScreen(
     viewModel: SurViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val effect by viewModel.effect.collectAsState(initial = null)
+    val effect by viewModel.uiEffect.collectAsState(initial = null)
 
     LaunchedEffect(effect) {
         effect?.let { currentEffect ->
