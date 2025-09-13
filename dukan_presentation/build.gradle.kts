@@ -55,8 +55,3 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
-compose.resources {
-    publicResClass = false
-    packageOfResClass = "dukan_presentation.src.commonMain.composeResources"
-    generateResClass = auto
-}
