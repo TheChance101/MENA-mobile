@@ -9,5 +9,6 @@ data class CreateDukanUiState(
     val isNextButtonEnabled: Boolean = false,
     val zoomFactor: Float = 1f,
     val isZoomOutEnabled: Boolean = false,
-    val isEditIconVisible: Boolean = false
-)
+    val isEditIconVisible: Boolean = false,
+    val isImageBeingCropped: Boolean = false,
+    )
