@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.arrow_left_01
-import mena.dukan_presentation.generated.resources.pencil_edit_01
+import mena.dukan_presentation.generated.resources.ic_arrow_left
+import mena.dukan_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -51,7 +51,7 @@ fun CreateDukanContent(
             onLeadingClick = listener::onBackClicked,
             leadingContent = {
                 Icon(
-                    painter = painterResource(Res.drawable.arrow_left_01),
+                    painter = painterResource(Res.drawable.ic_arrow_left),
                     contentDescription = "Back Arrow"
                 )
             }
@@ -81,7 +81,7 @@ fun CreateDukanContent(
             else
                 "Next",
             onClick = listener::onButtonClicked,
-            trailingIcon = painterResource(Res.drawable.pencil_edit_01),
+            trailingIcon = painterResource(Res.drawable.ic_edit),
             isEnabled = state.isButtonEnabled,
             isLoading = state.isButtonLoading
         )
