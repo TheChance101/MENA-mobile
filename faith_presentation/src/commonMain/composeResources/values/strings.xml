@@ -9,4 +9,5 @@
     <string name="surah_arabic_name_icon">surah arabic name icon</string>
     <string name="surah_number_container_icon">surah number container</string>">
     <string name="moshaf_icon">moshaf icon</string>
+    <string name="ayat_count_format">%1$d %2$s</string>
 </resources>

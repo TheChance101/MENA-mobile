@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ayat
+import mena.faith_presentation.generated.resources.ayat_count_format
 import mena.faith_presentation.generated.resources.back_icon
 import mena.faith_presentation.generated.resources.bookmark_icon
 import mena.faith_presentation.generated.resources.ic_al_fatihah
@@ -227,7 +228,11 @@ private fun SurahDetailsRow(
         )
 
         MenaText(
-            text = "$ayatNumber ${stringResource(resource = Res.string.ayat)}",
+            text = stringResource(
+                resource = Res.string.ayat_count_format,
+                ayatNumber,
+                stringResource(resource = Res.string.ayat)
+            ),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )
