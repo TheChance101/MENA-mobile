@@ -45,7 +45,7 @@ fun TopAppBar(
         title = stringResource(resource = Res.string.Dukan),
         modifier = modifier,
         titleColor = Theme.colorScheme.shadePrimary,
-        contentPadding = PaddingValues(horizontal = 16.dp),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         trailingContent = {
             DukanIconButton(
                 isDukanPending = isUserHasDukan,
