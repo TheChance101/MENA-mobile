@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.CreateDukan.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,15 +25,22 @@ fun UploadAnotherImageButton(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Theme.radius.md),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = 13.dp),
         isEnabled = isEnabled,
         containerColor = Theme.colorScheme.stroke,
         disabledContainerColor = Theme.colorScheme.disabled,
         contentColor = Theme.colorScheme.primary.primary,
         disabledContentColor = Theme.colorScheme.textDisabled,
-        borderStroke = null
+        borderStroke = BorderStroke(
+            width = 1.dp,
+            color = Theme.colorScheme.stroke.copy(alpha = 0.5f)///
+        )
     ) { color ->
-        Text("Upload another image", color = color, style = Theme.typography.label.medium)
+        Text(
+            "Upload another image",
+            color = color,
+            style = Theme.typography.label.medium
+        )
     }
 }
 

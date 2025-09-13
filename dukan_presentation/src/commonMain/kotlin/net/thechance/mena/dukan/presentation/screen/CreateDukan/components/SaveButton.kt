@@ -23,7 +23,7 @@ fun SaveButton(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Theme.radius.md),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = 13.dp),
         isEnabled = isEnabled,
         isLoading = isLoading,
         containerColor = Theme.colorScheme.primary.primary,
