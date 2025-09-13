@@ -130,8 +130,9 @@ class CreateDukanViewModel :
         updateState { this.copy(isButtonEnabled = isNextButtonEnabled) }
     }
 
-    private val MIN_ZOOM = 1f
-    private val MAX_ZOOM = 4f
-    private val ZOOM_STEP = 0.25f
-
+    private companion object {
+        private const val MIN_ZOOM = 1f
+        private const val MAX_ZOOM = 4f
+        private const val ZOOM_STEP = 0.25f
+    }
 }
