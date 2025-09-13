@@ -6,6 +6,11 @@ class CreateDukanViewModel(
 ) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
     CreateDukanInteractionListener {
 
+    private val MIN_ZOOM = 1f
+    private val MAX_ZOOM = 4f
+    private val ZOOM_STEP = 0.25f
+
+
     override fun onButtonClicked() {
         if (state.value.currentStep != SELECT_STYLE_INDEX) {
             onNextClicked()
@@ -48,11 +53,36 @@ class CreateDukanViewModel(
         onImageCroppedAndSaved(fakeUri)
     }
 
-    override fun onZoomInClicked() {}
+    override fun onZoomInClicked() {
+        val current = state.value.zoomFactor
+        val newZoom = (current + ZOOM_STEP).coerceAtMost(MAX_ZOOM)
+        updateState {
+            copy(
+                zoomFactor = newZoom,
+                isZoomOutEnabled = newZoom > MIN_ZOOM
+            )
+        }
+    }
 
-    override fun onZoomOutClicked() {}
+    override fun onZoomOutClicked() {
+        val current = state.value.zoomFactor
+        val newZoom = (current - ZOOM_STEP).coerceAtLeast(MIN_ZOOM)
+        updateState {
+            copy(
+                zoomFactor = newZoom,
+                isZoomOutEnabled = newZoom > MIN_ZOOM
+            )
+        }
+    }
 
-    override fun onResetClicked() {}
+    override fun onResetClicked() {
+        updateState {
+            copy(
+                zoomFactor = MIN_ZOOM,
+                isZoomOutEnabled = false
+            )
+        }
+    }
 
     override fun onUploadAnotherImageClicked() {}
 

@@ -26,23 +26,26 @@ fun RoundIconButton(
     iconSize: Dp = Theme.spacing._16,
     padding: Dp = 6.17.dp,
     backgroundColor: Color = Theme.colorScheme.background.surface,
-    iconTint: Color = Theme.colorScheme.primary.primary
+    iconTint: Color = Theme.colorScheme.primary.primary,
+    isEnabled: Boolean = true,
+    disabledIconTint: Color = Theme.colorScheme.disabled
 ) {
     Box(
         modifier = modifier
             .clip(CircleShape)
             .background(backgroundColor)
-            .clickable(onClick = onClick)
+            .clickable(
+                enabled = isEnabled,
+                onClick = onClick
+            )
             .padding(padding),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             painter = icon,
             contentDescription = contentDescription,
-            tint = iconTint,
+            tint = if (isEnabled) iconTint else disabledIconTint,
             modifier = Modifier.size(iconSize)
         )
     }
 }
-
-

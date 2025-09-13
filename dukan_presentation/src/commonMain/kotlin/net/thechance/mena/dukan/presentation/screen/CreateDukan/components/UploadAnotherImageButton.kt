@@ -33,7 +33,7 @@ fun UploadAnotherImageButton(
         disabledContentColor = Theme.colorScheme.textDisabled,
         borderStroke = BorderStroke(
             width = 1.dp,
-            color = Theme.colorScheme.stroke.copy(alpha = 0.5f)///
+            color = Theme.colorScheme.stroke
         )
     ) { color ->
         Text(

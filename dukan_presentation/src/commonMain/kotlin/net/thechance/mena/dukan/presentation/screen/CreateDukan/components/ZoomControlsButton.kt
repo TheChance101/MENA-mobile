@@ -28,40 +28,42 @@ fun ZoomControls(
     onZoomOutClicked: () -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Theme.colorScheme.background.surfaceLow
+    backgroundColor: Color = Theme.colorScheme.background.surfaceLow,
+    isZoomOutEnabled: Boolean = true
 ) {
+
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.full))
             .background(backgroundColor)
-            .padding(
-                horizontal = Theme.spacing._12,
-                vertical = 6.dp
-            ),
+            .padding(horizontal = Theme.spacing._12, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RoundIconButton(
             icon = painterResource(Res.drawable.ic_remove),
-            contentDescription = "Zoom In",
-            onClick = onZoomInClicked
+            contentDescription = "Zoom Out",
+            onClick = onZoomOutClicked,
+            isEnabled = isZoomOutEnabled,
+            iconTint = if (isZoomOutEnabled)
+                Theme.colorScheme.primary.primary
+            else
+                Theme.colorScheme.disabled
         )
 
         RoundIconButton(
             icon = painterResource(Res.drawable.ic_add),
-            contentDescription = "Zoom Out",
-            onClick = onZoomOutClicked
+            contentDescription = "Zoom In",
+            onClick = onZoomInClicked
         )
+
         TextButton(
             onClick = onResetClicked,
             colors = ButtonDefaults.textButtonColors(
                 contentColor = Theme.colorScheme.primary.primary
             )
         ) {
-            Text(
-                text = "Reset",
-                style = Theme.typography.label.medium,
-            )
+            Text("Reset", style = Theme.typography.label.medium)
         }
     }
 }
