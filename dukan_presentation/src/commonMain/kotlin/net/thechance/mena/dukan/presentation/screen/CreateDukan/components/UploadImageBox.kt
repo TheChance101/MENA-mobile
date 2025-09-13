@@ -6,8 +6,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -29,25 +31,27 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+
 @Composable
 fun UploadImageContainer(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     onBottomIconClick: () -> Unit,
-    showBottomIcon: Boolean = false
+    showBottomIcon: Boolean = true
 ) {
     val dashEffect = PathEffect.dashPathEffect(floatArrayOf(16f, 12f), 0f)
     val borderColor = Theme.colorScheme.brand.brand
     val radius = Theme.radius.xl
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(176.dp)
+            .padding(bottom = 20.dp)
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .height(156.dp)
+                .aspectRatio(16f / 9f)
                 .align(Alignment.TopCenter)
                 .clip(RoundedCornerShape(radius))
                 .drawBehind {
@@ -77,6 +81,7 @@ fun UploadImageContainer(
                 modifier = Modifier
                     .size(40.dp)
                     .align(Alignment.BottomCenter)
+                    .offset(y = 20.dp)
                     .clip(shape = RoundedCornerShape(Theme.radius.full))
                     .background(Theme.colorScheme.primary.primary)
                     .border(
