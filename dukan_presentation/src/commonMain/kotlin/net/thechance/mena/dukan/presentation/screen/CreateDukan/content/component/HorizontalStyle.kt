@@ -1,9 +1,13 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,21 +25,22 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun VerticalStyle(
+fun HorizontalStyle(
     modifier: Modifier = Modifier,
     addToCartColor: Color = Theme.colorScheme.primary.onPrimary
 ) {
-    Box(
+    Row(
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.xs))
             .background(Theme.colorScheme.background.surface)
-            .padding(top = 2.dp, bottom = 20.dp, start = 2.dp, end = 2.dp)
+            .padding(2.dp)
     ) {
         Box(
             modifier = Modifier
+                .fillMaxHeight()
                 .clip(RoundedCornerShape(Theme.radius.xxs))
                 .background(Theme.colorScheme.background.surfaceLow)
-                .padding(9.dp),
+                .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
             MenaIcon(
@@ -45,10 +50,10 @@ fun VerticalStyle(
                 modifier = Modifier.size(24.dp)
             )
         }
+        Spacer(Modifier.weight(1f))
         Box(
             modifier = Modifier
-                .padding(top = 34.dp)
-                .align(Alignment.Center)
+                .align(Alignment.Bottom)
                 .clip(RoundedCornerShape(Theme.radius.full))
                 .background(Theme.colorScheme.background.surfaceHigh)
                 .padding(3.dp),
@@ -66,8 +71,8 @@ fun VerticalStyle(
 
 @Preview
 @Composable
-private fun VerticalStylePreview() {
+private fun HorizontalStylePreview() {
     MenaTheme {
-        VerticalStyle()
+        HorizontalStyle()
     }
 }

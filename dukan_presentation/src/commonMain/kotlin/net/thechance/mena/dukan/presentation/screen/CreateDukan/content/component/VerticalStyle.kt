@@ -1,9 +1,7 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,21 +21,22 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HorizontalStyle(
+fun VerticalStyle(
     modifier: Modifier = Modifier,
     addToCartColor: Color = Theme.colorScheme.primary.onPrimary
 ) {
-    Row(
+    Box(
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.xs))
             .background(Theme.colorScheme.background.surface)
-            .padding(2.dp)
+            .padding( bottom = 20.dp),
+        contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(Theme.radius.xxs))
                 .background(Theme.colorScheme.background.surfaceLow)
-                .padding(4.dp),
+                .padding(9.dp),
             contentAlignment = Alignment.Center
         ) {
             MenaIcon(
@@ -47,10 +46,10 @@ fun HorizontalStyle(
                 modifier = Modifier.size(24.dp)
             )
         }
-        Spacer(Modifier.weight(1f))
         Box(
             modifier = Modifier
-                .align(Alignment.Bottom)
+                .padding(top = 34.dp)
+                .align(Alignment.Center)
                 .clip(RoundedCornerShape(Theme.radius.full))
                 .background(Theme.colorScheme.background.surfaceHigh)
                 .padding(3.dp),
@@ -68,8 +67,8 @@ fun HorizontalStyle(
 
 @Preview
 @Composable
-private fun HorizontalStylePreview() {
+private fun VerticalStylePreview() {
     MenaTheme {
-        HorizontalStyle()
+        VerticalStyle()
     }
 }
