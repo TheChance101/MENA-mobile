@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextDirection.Companion.Content
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
@@ -65,9 +64,11 @@ fun SurScreen(
             is SurEffect.BackNavigation -> {
                 //TODO() navigate back
             }
+
             is SurEffect.BookmarkNavigation -> {
                 //TODO() navigate to bookmark screen
             }
+
             is SurEffect.SurahDetailsNavigation -> {
                 //TODO() navigate to SurahDetails screen
             }
@@ -76,14 +77,14 @@ fun SurScreen(
 
     Content(
         uiState = state,
-        contract = viewModel
+        interactionListener = viewModel
     )
 }
 
 @Composable
 private fun Content(
-    uiState: SurUiState,
-    contract: SurContract,
+    uiState: SurScreenState,
+    interactionListener: SurInteractionListener,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -95,8 +96,8 @@ private fun Content(
     ) {
         item {
             Topbar(
-                onBackClick = contract::onBackClick,
-                onBookmarkClick = contract::onBookmarkClick,
+                onBackClick = interactionListener::onBackClick,
+                onBookmarkClick = interactionListener::onBookmarkClick,
             )
         }
 
@@ -110,7 +111,7 @@ private fun Content(
         }
 
         items(uiState.sur) { surah ->
-            SurahItem(surah = surah, onClick = contract::onSurahClick)
+            SurahItem(surah = surah, onClick = interactionListener::onSurahClick)
         }
     }
 }
@@ -159,7 +160,7 @@ private fun AppBarBookmarkOption(
 
 @Composable
 private fun SurahItem(
-    surah: SurUiState.SurahUi,
+    surah: SurScreenState.SurahUiState,
     onClick: (id: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -280,9 +281,9 @@ private fun Int.twoDigitsMinimum(): String = this.toString().padStart(2, '0')
 private fun SurScreenPreview() {
     MenaTheme {
         Content(
-            uiState = SurUiState(
+            uiState = SurScreenState(
                 sur = listOf(
-                    SurUiState.SurahUi(
+                    SurScreenState.SurahUiState(
                         id = 1,
                         surahOrder = 1,
                         surahName = "Al Fatihah",
@@ -290,7 +291,7 @@ private fun SurScreenPreview() {
                         ayatCount = 7,
                         isMakki = true
                     ),
-                    SurUiState.SurahUi(
+                    SurScreenState.SurahUiState(
                         id = 1,
                         surahOrder = 1,
                         surahName = "Al Fatihah",
@@ -298,7 +299,7 @@ private fun SurScreenPreview() {
                         ayatCount = 7,
                         isMakki = true
                     ),
-                    SurUiState.SurahUi(
+                    SurScreenState.SurahUiState(
                         id = 1,
                         surahOrder = 1,
                         surahName = "Al Fatihah",
@@ -308,7 +309,7 @@ private fun SurScreenPreview() {
                     )
                 )
             ),
-            contract = object : SurContract {
+            interactionListener = object : SurInteractionListener {
                 override fun onSurahClick(id: Int) {}
                 override fun onBackClick() {}
                 override fun onBookmarkClick() {}

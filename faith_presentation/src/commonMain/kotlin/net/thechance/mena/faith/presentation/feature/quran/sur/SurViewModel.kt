@@ -13,8 +13,8 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 
 class SurViewModel(
     val repository: QuranRepository
-) : ViewModel(), SurContract {
-    private val _state = MutableStateFlow(SurUiState())
+) : ViewModel(), SurInteractionListener {
+    private val _state = MutableStateFlow(SurScreenState())
     val state = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<SurEffect?>()

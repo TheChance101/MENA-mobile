@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.sur
 
-interface SurContract {
+interface SurInteractionListener {
     fun onSurahClick(id: Int)
     fun onBackClick()
     fun onBookmarkClick()
