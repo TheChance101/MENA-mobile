@@ -1,9 +1,10 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
 
-class CreateDukanViewModel(
-) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
+class CreateDukanViewModel :
+    BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
     CreateDukanInteractionListener {
 
     private val MIN_ZOOM = 1f
@@ -12,7 +13,7 @@ class CreateDukanViewModel(
 
 
     override fun onButtonClicked() {
-        if (state.value.currentStep != SELECT_STYLE_INDEX) {
+        if (state.value.currentStep != CreateDukanUiState.CreateDukanStep.SELECT_STYLE) {
             onNextClicked()
         } else {
             onCreateClicked()
@@ -20,11 +21,28 @@ class CreateDukanViewModel(
     }
 
     override fun onBackClicked() {
-        val s = state.value
-        if (s.currentStep > BASIC_INFORMATION_INDEX) {
-            updateState { copy(currentStep = currentStep - 1) }
+        val current = state.value.currentStep
+        if (current == CreateDukanUiState.CreateDukanStep.BASIC_INFORMATION) {
+            // maybe do nothing or exit flow
+        } else {
+            updateState {
+                copy(currentStep = previousStep(current))
+            }
         }
         updateNextButtonEnableState()
+    }
+
+    override fun onResetClicked() {
+        updateState {
+            copy(
+                zoomFactor = MIN_ZOOM,
+                isZoomOutEnabled = false
+            )
+        }
+    }
+
+    private fun onCreateClicked() {
+        TODO("Not yet implemented")
     }
 
     override fun onClickUploadImage() {
@@ -79,43 +97,39 @@ class CreateDukanViewModel(
         }
     }
 
-    override fun onResetClicked() {
+    private fun onNextClicked() {
+        val current = state.value.currentStep
         updateState {
-            copy(
-                zoomFactor = MIN_ZOOM,
-                isZoomOutEnabled = false
-            )
+            copy(currentStep = nextStep(current))
         }
     }
 
     override fun onUploadAnotherImageClicked() {}
 
-    private fun onCreateClicked() {}
+    private fun nextStep(step: CreateDukanStep): CreateDukanStep =
+        when (step) {
+            CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
+            CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.SELECT_LOCATION
+            CreateDukanStep.SELECT_LOCATION -> CreateDukanStep.SELECT_STYLE
+            CreateDukanStep.SELECT_STYLE -> step
+        }
 
-    private fun onNextClicked() {
-        updateState { copy(currentStep = currentStep + 1) }
-        updateNextButtonEnableState()
-        emitEffect(CreateDukanEffect.NavigateNext)
-    }
+    private fun previousStep(step: CreateDukanStep): CreateDukanStep =
+        when (step) {
+            CreateDukanStep.BASIC_INFORMATION -> step
+            CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.BASIC_INFORMATION
+            CreateDukanStep.SELECT_LOCATION -> CreateDukanStep.SELECT_IMAGE
+            CreateDukanStep.SELECT_STYLE -> CreateDukanStep.SELECT_LOCATION
+        }
 
     private fun updateNextButtonEnableState() {
         val state = state.value
         val isNextButtonEnabled = when (state.currentStep) {
-            BASIC_INFORMATION_INDEX -> true
-            SELECT_IMAGE_INDEX -> state.savedImageUri != null
-            SELECT_LOCATION_INDEX -> true
-            SELECT_STYLE_INDEX -> true
-            else -> true
+            CreateDukanStep.BASIC_INFORMATION -> true
+            CreateDukanStep.SELECT_IMAGE -> state.savedImageUri != null
+            CreateDukanStep.SELECT_LOCATION -> true
+            CreateDukanStep.SELECT_STYLE -> true
         }
         updateState { this.copy(isButtonEnabled = isNextButtonEnabled) }
-    }
-
-    companion object {
-        const val MAX_STEPS = 4
-        const val BASIC_INFORMATION_INDEX = 0
-        const val SELECT_IMAGE_INDEX = 1
-        const val CROP_IMAGE_INDEX = 2
-        const val SELECT_LOCATION_INDEX = 3
-        const val SELECT_STYLE_INDEX = 4
     }
 }
