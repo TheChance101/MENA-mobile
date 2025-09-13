@@ -2,9 +2,7 @@
 <resources>
     <string name="my_dukan">My Dukan</string>
 
-    <string name="dukan_request_pending">
-        Creating your dukan %1$s request is pending now
-    </string>
+    <string name="dukan_request_pending">Creating your dukan %s request is pending now</string>
 
     <string name="dukan_waiting_approval">
         Waiting until it be approved and add your shelves directly!

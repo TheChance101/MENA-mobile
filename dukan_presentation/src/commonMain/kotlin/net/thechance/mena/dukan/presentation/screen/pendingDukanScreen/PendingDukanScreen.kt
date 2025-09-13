@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -57,13 +58,11 @@ private fun pendingDukanScreen(
             Image(
                 painter = painterResource(Res.drawable.ellipse_1),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.align(Alignment.Center).blur(30.dp)
+                modifier = Modifier.align(Alignment.Center).blur(30.dp).offset(y = (-20).dp)
             )
             Column(
                 modifier = Modifier.align(Alignment.Center).padding(horizontal = Theme.spacing._24)
             ) {
-
                 Image(
                     painter = painterResource(Res.drawable.dukan_pending),
                     contentDescription = null,
