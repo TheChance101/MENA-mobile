@@ -33,7 +33,7 @@ fun ImageCroppingBox(
     ) {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(Theme.radius.lg))   // radius-lg
+                .clip(RoundedCornerShape(Theme.radius.lg))
                 .background(backgroundColor)
                 .wrapContentSize(),
             contentAlignment = Alignment.Center,
@@ -41,6 +41,7 @@ fun ImageCroppingBox(
         )
     }
 }
+//This is Initial Design for the Image Cropping Box
 
 @Preview
 @Composable

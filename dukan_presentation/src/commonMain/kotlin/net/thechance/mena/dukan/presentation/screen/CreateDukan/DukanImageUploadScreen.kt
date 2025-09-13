@@ -4,24 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.ic_arrow_left
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.NextButton
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.UploadImageContainer
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -38,51 +30,33 @@ fun UploadDukanImageContent(
         modifier = Modifier
             .fillMaxSize()
             .background(Theme.colorScheme.background.surfaceHigh)
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp),
-    ) {
-        AppBar(
-            title = "Create new Dukan",
-            modifier = Modifier.fillMaxWidth(),
-            leadingContent = {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_arrow_left),
-                    contentDescription = "Back"
-                )
-            },
-            onLeadingClick = {
-                //   navController.popBackStack()
-            },
+            .padding(horizontal = Theme.spacing._16)
 
-            )
-        Text(
+    ) {
+        MenaText(
             text = "Dukan image",
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(top = 20.dp)
         )
-        Text(
+        MenaText(
             text = "Upload dukan image, it should be rectangle 9:16 aspect ratio",
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
         )
-        Text(
+        MenaText(
             text = "Image (9:16)",
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier.padding(top = Theme.spacing._16)
         )
-        Spacer(modifier = Modifier.padding(4.dp))
+        Spacer(modifier = Modifier.padding(Theme.spacing._4))
         UploadImageContainer(
             onClick = interactionListener::onClickUploadImage,
             onBottomIconClick = interactionListener::onClickUploadImage,
             showBottomIcon = state.isEditIconVisible
         )
         Spacer(modifier = Modifier.weight(1f))
-        NextButton(
-            onClick = interactionListener::onCLickNext,
-            isEnabled = state.isNextButtonEnabled
-        )
     }
 }
 

@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.button.Button
+import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -36,7 +36,7 @@ fun UploadAnotherImageButton(
             color = Theme.colorScheme.stroke
         )
     ) { color ->
-        Text(
+        MenaText(
             "Upload another image",
             color = color,
             style = Theme.typography.label.medium
