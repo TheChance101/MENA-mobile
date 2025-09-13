@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -60,18 +61,20 @@ fun SurScreen(
 
     val effect by viewModel.effect.collectAsState(initial = null)
 
-    effect?.let { currentEffect ->
-        when (currentEffect) {
-            is SurEffect.BackNavigation -> {
-                //TODO() navigate back
-            }
+    LaunchedEffect(effect) {
+        effect?.let { currentEffect ->
+            when (currentEffect) {
+                is SurEffect.BackNavigation -> {
+                    //TODO() navigate back
+                }
 
-            is SurEffect.BookmarkNavigation -> {
-                //TODO() navigate to bookmark screen
-            }
+                is SurEffect.BookmarkNavigation -> {
+                    //TODO() navigate to bookmark screen
+                }
 
-            is SurEffect.SurahDetailsNavigation -> {
-                //TODO() navigate to SurahDetails screen
+                is SurEffect.SurahDetailsNavigation -> {
+                    //TODO() navigate to SurahDetails screen
+                }
             }
         }
     }
