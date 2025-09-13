@@ -38,7 +38,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     }
 
     protected fun <T> tryToExecute(
-        callee: suspend () -> T,
+        execute: suspend () -> T,
         onSuccess: ((T) -> Unit)? = null,
         onError: (Throwable) -> Unit = {},
         onStart: suspend () -> Unit = {},
@@ -51,7 +51,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
 
         return viewModelScope.launch(dispatcher + handler) {
             onStart()
-            runCatching { callee() }
+            runCatching { execute() }
                 .onSuccess { result -> onSuccess?.invoke(result) }
                 .onFailure { throwable -> onError(throwable) }
             onFinally()
