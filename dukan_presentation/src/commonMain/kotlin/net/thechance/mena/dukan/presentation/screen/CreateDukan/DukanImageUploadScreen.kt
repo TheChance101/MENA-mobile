@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Icon
@@ -16,7 +17,6 @@ import mena.dukan_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.NextButton
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.UploadImageContainer
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
@@ -33,7 +33,7 @@ fun UploadDukanImageContent(
     state: CreateDukanUiState,
     interactionListener: CreateDukanInteractionListener
 ) {
-    val navController = LocalNavController.current
+    //   val navController = LocalNavController.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,6 +43,7 @@ fun UploadDukanImageContent(
     ) {
         AppBar(
             title = "Create new Dukan",
+            modifier = Modifier.fillMaxWidth(),
             leadingContent = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_arrow_left),
@@ -50,9 +51,10 @@ fun UploadDukanImageContent(
                 )
             },
             onLeadingClick = {
-                navController.popBackStack()
-            }
-        )
+                //   navController.popBackStack()
+            },
+
+            )
         Text(
             text = "Dukan image",
             style = Theme.typography.title.medium,
@@ -72,7 +74,9 @@ fun UploadDukanImageContent(
         )
         Spacer(modifier = Modifier.padding(4.dp))
         UploadImageContainer(
-            onClick = interactionListener::onClickUploadImage
+            onClick = interactionListener::onClickUploadImage,
+            onBottomIconClick = interactionListener::onClickUploadImage,
+            showBottomIcon = state.isEditIconVisible
         )
         Spacer(modifier = Modifier.weight(1f))
         NextButton(

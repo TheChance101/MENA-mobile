@@ -49,8 +49,12 @@ class CreateDukanViewModel(
     }
 
     override fun onSaveClicked() {
-        val fakeUri = "file:///tmp/cropped_image.jpg"
-        onImageCroppedAndSaved(fakeUri)
+        updateState {
+            copy(
+                isNextButtonEnabled = true,
+                isEditIconVisible = true
+            )
+        }
     }
 
     override fun onZoomInClicked() {
