@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -24,13 +23,12 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_pending
 import mena.dukan_presentation.generated.resources.dukan_request_pending
 import mena.dukan_presentation.generated.resources.dukan_waiting_approval
-import mena.dukan_presentation.generated.resources.ellipse_1
+import mena.dukan_presentation.generated.resources.dukan_blur
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.my_dukan
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.createDukan.pendingDukanScreen.PendingDukan
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -56,7 +54,7 @@ private fun pendingDukanScreen(
                 modifier = Modifier.align(Alignment.TopStart)
             )
             Image(
-                painter = painterResource(Res.drawable.ellipse_1),
+                painter = painterResource(Res.drawable.dukan_blur),
                 contentDescription = null,
                 modifier = Modifier.align(Alignment.Center).blur(30.dp).offset(y = (-20).dp)
             )

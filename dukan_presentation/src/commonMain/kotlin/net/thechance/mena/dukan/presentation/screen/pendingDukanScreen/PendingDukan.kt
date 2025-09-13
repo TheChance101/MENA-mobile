@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.pendingDukanScreen
+package net.thechance.mena.dukan.presentation.screen.pendingDukanScreen
 
 enum class PendingDukan() {
     PREFIX_TITLE,
