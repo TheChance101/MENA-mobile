@@ -161,9 +161,10 @@ private fun AppBarBookmarkOption(
 private fun SurahItem(
     surah: SurUiState.SurahUi,
     onClick: (id: Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(Theme.radius.md))
             .background(
