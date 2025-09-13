@@ -1,13 +1,14 @@
 package net.thechance.mena.dukan.presentation.screen.CreateDukan
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -33,26 +34,28 @@ fun DukanImageCropContent(
             .fillMaxSize()
             .background(Theme.colorScheme.background.surfaceHigh)
             .statusBarsPadding()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = Theme.spacing._16),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AppBar(title = "Dukan image")
         ImageCroppingBox(
             content = {},
-            modifier = Modifier.padding(top = 24.dp)
-        )//The cropper will be here
+            modifier = Modifier.padding(top = Theme.spacing._24)
+        )
         ZoomControls(
             onZoomInClicked = interactionListener::onZoomInClicked,
             onZoomOutClicked = interactionListener::onZoomOutClicked,
             onResetClicked = interactionListener::onResetClicked,
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.padding(top = Theme.spacing._12)
         )
         SaveButton(
             onClick = interactionListener::onSaveClicked,
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.padding(top = Theme.spacing._12)
         )
         UploadAnotherImageButton(
             onClick = interactionListener::onUploadAnotherImageClicked,
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier.padding(top = Theme.spacing._12)
         )
     }
 }
@@ -64,6 +67,10 @@ fun DukanImageCropContentPreview() {
         DukanImageCropContent(
             state = CreateDukanUiState(),
             interactionListener = object : CreateDukanInteractionListener {
+                override fun onButtonClicked() {}
+
+                override fun onBackClicked() {}
+
                 override fun onClickUploadImage() {}
 
                 override fun onClickEditImage() {}
