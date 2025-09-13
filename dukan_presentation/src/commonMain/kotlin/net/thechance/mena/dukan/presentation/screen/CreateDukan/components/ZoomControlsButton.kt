@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.CreateDukan.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,10 @@ fun ZoomControls(
     backgroundColor: Color = Theme.colorScheme.background.surfaceLow,
     isZoomOutEnabled: Boolean = true
 ) {
+    val animatedIconTint = animateColorAsState(
+        targetValue = if (isZoomOutEnabled) Theme.colorScheme.primary.primary else Theme.colorScheme.disabled,
+        label = "ZoomOutIconTint"
+    ).value
 
     Row(
         modifier = modifier
@@ -46,10 +51,7 @@ fun ZoomControls(
             contentDescription = "Zoom Out",
             onClick = onZoomOutClicked,
             isEnabled = isZoomOutEnabled,
-            iconTint = if (isZoomOutEnabled)
-                Theme.colorScheme.primary.primary
-            else
-                Theme.colorScheme.disabled
+            iconTint = animatedIconTint
         )
 
         RoundIconButton(

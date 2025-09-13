@@ -50,7 +50,7 @@ fun RoundIconButton(
             painter = icon,
             contentDescription = contentDescription,
             tint = if (isEnabled) iconTint else disabledIconTint,
-            modifier = Modifier.size(iconSize)
+            modifier = modifier.size(iconSize)
         )
     }
 }
