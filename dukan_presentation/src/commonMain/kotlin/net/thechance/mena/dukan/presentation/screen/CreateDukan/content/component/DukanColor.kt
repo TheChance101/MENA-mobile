@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
