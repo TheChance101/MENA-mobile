@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.CreateDukan
+package net.thechance.mena.dukan.presentation.screen.createDukan.content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +18,6 @@ import net.thechance.mena.dukan.presentation.screen.CreateDukan.components.ZoomC
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-@Composable
-fun DukanImageCropScreen() {
-}
 
 @Composable
 fun DukanImageCropContent(

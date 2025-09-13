@@ -114,7 +114,8 @@ class CreateDukanViewModel(
         const val MAX_STEPS = 4
         const val BASIC_INFORMATION_INDEX = 0
         const val SELECT_IMAGE_INDEX = 1
-        const val SELECT_LOCATION_INDEX = 2
-        const val SELECT_STYLE_INDEX = 3
+        const val CROP_IMAGE_INDEX = 2
+        const val SELECT_LOCATION_INDEX = 3
+        const val SELECT_STYLE_INDEX = 4
     }
 }
