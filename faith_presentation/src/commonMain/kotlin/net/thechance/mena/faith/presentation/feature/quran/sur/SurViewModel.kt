@@ -12,7 +12,7 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 
 class SurViewModel(
-    val repository: QuranRepository
+    val quranRepository: QuranRepository
 ) : ViewModel(), SurInteractionListener {
     private val _state = MutableStateFlow(SurScreenState())
     val state = _state.asStateFlow()
@@ -40,7 +40,7 @@ class SurViewModel(
         viewModelScope.launch {
             runCatching {
                 setLoadingState()
-                repository.getAllSur()
+                quranRepository.getAllSur()
             }.onSuccess(::handleSuccessState).onFailure(::handleErrorState)
         }
     }
