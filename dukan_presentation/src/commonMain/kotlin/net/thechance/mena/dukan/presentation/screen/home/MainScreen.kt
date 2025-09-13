@@ -17,19 +17,19 @@ import net.thechance.mena.dukan.presentation.screen.home.components.TopAppBar
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HomeScreen() {
-    val viewModel = HomeViewModel(dukanRepository = TODO(reason = "should using koin di"))
+fun MainScreen() {
+    val viewModel = MainViewModel(dukanRepository = TODO(reason = "should using koin di"))
     val state = viewModel.state.collectAsStateWithLifecycle()
-    HomeContent(
-        homeInteractionListener = viewModel,
+    MainContent(
+        mainInteractionListener = viewModel,
         state = state.value
     )
 }
 
 @Composable
-private fun HomeContent(
-    homeInteractionListener: HomeInteractionListener,
-    state: HomeScreenUiState
+private fun MainContent(
+    mainInteractionListener: MainInteractionListener,
+    state: MainScreenUiState
 ) {
     Column(
         modifier = Modifier
@@ -38,9 +38,8 @@ private fun HomeContent(
         verticalArrangement = Arrangement.Center
     ) {
         TopAppBar(
-            modifier = Modifier,
-            onAddDukanButtonClicked = homeInteractionListener::onAddDukanButtonClicked,
-            isDukanPending = state.isPending
+            isUserHasDukan = state.isUserHasDukan,
+            onAddDukanIconClicked = mainInteractionListener::onAddDukanIconClicked,
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -49,7 +48,7 @@ private fun HomeContent(
 
 @Preview
 @Composable
-fun HomeScreenPreview() {
+private fun MainScreenPreview() {
     MenaTheme {
         Box(
             modifier = Modifier
@@ -57,11 +56,11 @@ fun HomeScreenPreview() {
                 .background(Theme.colorScheme.background.surface),
             contentAlignment = Alignment.Center
         ) {
-            HomeContent(
-                homeInteractionListener = object : HomeInteractionListener {
-                    override fun onAddDukanButtonClicked() {}
+            MainContent(
+                mainInteractionListener = object : MainInteractionListener {
+                    override fun onAddDukanIconClicked() {}
                 },
-                state = HomeScreenUiState()
+                state = MainScreenUiState()
             )
         }
     }
