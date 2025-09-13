@@ -5,9 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.designsystem.presentation.component.button.Button
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -19,7 +20,9 @@ fun SaveButton(
     isEnabled: Boolean = true,
     isLoading: Boolean = false
 ) {
-    Button(
+    PrimaryButton(
+        text = "Save",
+        trailingIcon = ColorPainter(Color.Transparent),
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Theme.radius.md),
@@ -30,10 +33,7 @@ fun SaveButton(
         disabledContainerColor = Theme.colorScheme.disabled,
         contentColor = Theme.colorScheme.primary.onPrimary,
         disabledContentColor = Theme.colorScheme.textDisabled,
-        borderStroke = null
-    ) { color ->
-        MenaText("Save", color = color, style = Theme.typography.label.medium)
-    }
+    )
 }
 
 @Preview

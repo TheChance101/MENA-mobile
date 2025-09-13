@@ -45,7 +45,7 @@ fun ImageCroppingBox(
 
 @Preview
 @Composable
-fun ImageCroppingBoxPreview() {
+private fun ImageCroppingBoxPreview() {
     MenaTheme {
         ImageCroppingBox {
             Box(modifier = Modifier.fillMaxSize().background(Color.Red))
