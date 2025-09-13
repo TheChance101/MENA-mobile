@@ -1,7 +1,8 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.pendingDukanScreen
+package net.thechance.mena.dukan.presentation.screen.pendingDukanScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,38 +20,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.dukan_pending
+import mena.dukan_presentation.generated.resources.dukan_request_pending
+import mena.dukan_presentation.generated.resources.dukan_waiting_approval
 import mena.dukan_presentation.generated.resources.ellipse_1
 import mena.dukan_presentation.generated.resources.ic_arrow_left
-import mena.dukan_presentation.generated.resources.test2svg
+import mena.dukan_presentation.generated.resources.my_dukan
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.pendingDukanScreen.PendingDukanViewModel
+import net.thechance.mena.dukan.presentation.screen.createDukan.pendingDukanScreen.PendingDukan
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PendingDukanScreen(
-    viewModel: PendingDukanViewModel
-) {
-    val state by viewModel.state.collectAsState()
-    Content(state)
-}
-
-@Composable
-private fun Content(
-    uiState: PendingDukanUiState,
+private fun pendingDukanScreen(
+    dukanName: String,
+    onBackClick: () -> Unit,
 ) {
     MenaTheme {
         Box(
             modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface),
         ) {
             AppBar(
-                title = uiState.appBarTitle,
+                title = stringResource(Res.string.my_dukan),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = null
+                        contentDescription = null,
+                        modifier = Modifier.clickable(onClick = onBackClick)
                     )
                 },
                 modifier = Modifier.align(Alignment.TopStart)
@@ -66,14 +65,14 @@ private fun Content(
             ) {
 
                 Image(
-                    painter = painterResource(Res.drawable.test2svg),
+                    painter = painterResource(Res.drawable.dukan_pending),
                     contentDescription = null,
-                    modifier = Modifier.align (Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
 
                 val titleText = buildPendingDukanTitle(
-                    brandName = uiState.brandName,
-                    titleTemplate = uiState.titleTemplate,
+                    brandName = dukanName,
+                    titleTemplate = stringResource(Res.string.dukan_request_pending),
                 )
 
                 Text(
@@ -83,7 +82,7 @@ private fun Content(
                 )
 
                 Text(
-                    uiState.subtitle,
+                    stringResource(Res.string.dukan_waiting_approval),
                     style = Theme.typography.body.small,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(Theme.spacing._2)
@@ -92,7 +91,6 @@ private fun Content(
         }
     }
 }
-
 
 @Composable
 private fun buildPendingDukanTitle(
@@ -113,15 +111,13 @@ private fun buildPendingDukanTitle(
     }
 }
 
-
 @Preview()
 @Composable
-private fun PendingDukanScreenPreview() {
+private fun Preview() {
     MenaTheme {
-        Content(
-            uiState = PendingDukanUiState(
-                brandName = "Calvin Klein"
-            )
+        pendingDukanScreen(
+            dukanName = "Calvin Klein",
+            onBackClick = {}
         )
     }
 }
