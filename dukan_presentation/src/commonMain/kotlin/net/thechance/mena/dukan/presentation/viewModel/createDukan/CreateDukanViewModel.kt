@@ -9,7 +9,7 @@ class CreateDukanViewModel :
 
     override fun onButtonClicked() {
         if (state.value.currentStep != CreateDukanUiState.CreateDukanStep.SELECT_STYLE) {
-            onNextClicked()
+            onCLickNext()
         } else {
             onCreateClicked()
         }
@@ -49,7 +49,10 @@ class CreateDukanViewModel :
     }
 
     override fun onCLickNext() {
-        onNextClicked()
+        val current = state.value.currentStep
+        updateState {
+            copy(currentStep = nextStep(current))
+        }
     }
 
     fun onImageCroppedAndSaved(croppedUri: String) {
@@ -89,13 +92,6 @@ class CreateDukanViewModel :
                 zoomFactor = newZoom,
                 isZoomOutEnabled = newZoom > MIN_ZOOM
             )
-        }
-    }
-
-    private fun onNextClicked() {
-        val current = state.value.currentStep
-        updateState {
-            copy(currentStep = nextStep(current))
         }
     }
 
