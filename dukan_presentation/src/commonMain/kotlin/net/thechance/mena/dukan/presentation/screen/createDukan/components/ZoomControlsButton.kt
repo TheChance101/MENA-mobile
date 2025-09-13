@@ -29,9 +29,9 @@ fun ZoomControls(
     onZoomInClicked: () -> Unit,
     onZoomOutClicked: () -> Unit,
     onResetClicked: () -> Unit,
-    modifier: Modifier = Modifier,
     backgroundColor: Color = Theme.colorScheme.background.surfaceLow,
-    isZoomOutEnabled: Boolean = true
+    isZoomOutEnabled: Boolean = true,
+    modifier: Modifier = Modifier,
 ) {
     val animatedIconTint = animateColorAsState(
         targetValue = if (isZoomOutEnabled) Theme.colorScheme.primary.primary else Theme.colorScheme.disabled,

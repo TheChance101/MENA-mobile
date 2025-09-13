@@ -16,9 +16,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun SaveButton(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
     PrimaryButton(
         text = "Save",

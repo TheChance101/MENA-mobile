@@ -27,13 +27,13 @@ fun RoundIconButton(
     icon: Painter,
     contentDescription: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     iconSize: Dp = 16.dp,
     padding: Dp = Theme.spacing._4,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     iconTint: Color = Theme.colorScheme.primary.primary,
     isEnabled: Boolean = true,
-    disabledIconTint: Color = Theme.colorScheme.disabled
+    disabledIconTint: Color = Theme.colorScheme.disabled,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier

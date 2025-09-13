@@ -34,10 +34,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun UploadImageContainer(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     onBottomIconClick: () -> Unit,
-    showBottomIcon: Boolean = true
+    showBottomIcon: Boolean = true,
+    modifier: Modifier = Modifier,
 ) {
     val dashEffect = PathEffect.dashPathEffect(floatArrayOf(16f, 12f), 0f)
     val borderColor = Theme.colorScheme.brand.brand

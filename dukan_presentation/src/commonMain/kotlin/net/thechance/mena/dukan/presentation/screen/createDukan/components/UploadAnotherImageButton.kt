@@ -18,8 +18,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun UploadAnotherImageButton(
     onClick: () -> Unit,
+    isEnabled: Boolean = true,
     modifier: Modifier = Modifier,
-    isEnabled: Boolean = true
 ) {
     OutlinedButton(
         text = "Upload another image",
