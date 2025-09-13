@@ -12,18 +12,21 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.arrow_left_01
+import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.pencil_edit_01
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
 import org.jetbrains.compose.resources.painterResource
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreateDukanContent(
     state: CreateDukanUiState,
@@ -32,13 +35,15 @@ fun CreateDukanContent(
 
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { CreateDukanViewModel.MAX_STEPS }
+        pageCount = { CreateDukanStep.steps.size }
     )
 
     SyncPageWithScreenState(
         state = state,
         pagerState = pagerState
     )
+
+    OnSystemBackPressed(listener::onBackClicked)
 
     Column(
         modifier = Modifier
@@ -51,7 +56,7 @@ fun CreateDukanContent(
             onLeadingClick = listener::onBackClicked,
             leadingContent = {
                 Icon(
-                    painter = painterResource(Res.drawable.arrow_left_01),
+                    painter = painterResource(Res.drawable.ic_arrow_left),
                     contentDescription = "Back Arrow"
                 )
             }
@@ -64,11 +69,11 @@ fun CreateDukanContent(
             state = pagerState,
             userScrollEnabled = false
         ) { pageIndex ->
-            when (pageIndex) {
-                CreateDukanViewModel.BASIC_INFORMATION_INDEX -> CreateDukanContentBasicInformation()
-                CreateDukanViewModel.SELECT_IMAGE_INDEX -> CreateDukanContentSelectImage()
-                CreateDukanViewModel.SELECT_LOCATION_INDEX -> CreateDukanContentSelectLocation()
-                CreateDukanViewModel.SELECT_STYLE_INDEX -> CreateDukanContentSelectStyle()
+            when (CreateDukanStep.steps[pageIndex]) {
+                CreateDukanStep.BASIC_INFORMATION -> CreateDukanContentBasicInformation()
+                CreateDukanStep.SELECT_IMAGE -> CreateDukanContentSelectImage()
+                CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation()
+                CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
             }
         }
 
@@ -76,7 +81,7 @@ fun CreateDukanContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(Theme.spacing._16),
-            text = if (state.currentStep == CreateDukanViewModel.SELECT_STYLE_INDEX)
+            text = if (state.currentStep == CreateDukanStep.SELECT_STYLE)
                 "Create"
             else
                 "Next",
@@ -93,7 +98,7 @@ private fun SyncPageWithScreenState(
     state: CreateDukanUiState,
     pagerState: PagerState
 ) {
-    val currentStepIndex = state.currentStep
+    val currentStepIndex = state.currentStep.ordinal
     LaunchedEffect(currentStepIndex) {
         if (currentStepIndex == pagerState.currentPage) return@LaunchedEffect
         try {
