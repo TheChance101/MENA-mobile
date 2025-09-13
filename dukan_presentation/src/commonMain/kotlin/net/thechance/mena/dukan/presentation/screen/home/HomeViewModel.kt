@@ -28,6 +28,6 @@ class HomeViewModel(
     }
 
     override fun onAddDukanButtonClicked() {
-        TODO(reason = "use effect to implement navigation")
+        // TODO(reason = "use effect to implement navigation")
     }
 }

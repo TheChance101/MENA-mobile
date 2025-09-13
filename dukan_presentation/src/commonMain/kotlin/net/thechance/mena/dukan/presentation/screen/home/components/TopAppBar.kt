@@ -1,6 +1,9 @@
 package net.thechance.mena.dukan.presentation.screen.home.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -35,19 +38,30 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun TopAppBar(
     modifier: Modifier = Modifier,
     onAddDukanButtonClicked: () -> Unit = {},
-    isDukanPending: Boolean = false
+    isDukanPending: Boolean
 ) {
     AppBar(
         title = stringResource(resource = Res.string.Dukan),
         titleColor = Theme.colorScheme.shadePrimary,
-        onLeadingClick = onAddDukanButtonClicked,
         modifier = modifier,
         trailingContent = {
             Row {
                 AnimatedContent(
                     targetState = isDukanPending,
                     transitionSpec = {
-                        fadeIn()togetherWith(fadeOut())
+                        fadeIn(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                delayMillis = 100,
+                                easing = EaseIn
+                            )
+                        ) togetherWith(fadeOut(
+                            animationSpec = tween(
+                                durationMillis = 500,
+                                delayMillis = 100,
+                                easing = EaseOut
+                            ))
+                        )
                     },
                     label = stringResource(resource = Res.string.dukan_button)
                 )
@@ -88,7 +102,7 @@ fun TopAppBarPreview() {
                 .background(Theme.colorScheme.background.surface),
             contentAlignment = Alignment.Center
         ) {
-            TopAppBar()
+            TopAppBar(isDukanPending = true)
         }
     }
 }
