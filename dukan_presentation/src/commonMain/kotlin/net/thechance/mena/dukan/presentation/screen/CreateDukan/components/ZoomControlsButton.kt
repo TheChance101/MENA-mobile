@@ -14,8 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_add
+import mena.dukan_presentation.generated.resources.ic_remove
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -31,24 +35,23 @@ fun ZoomControls(
             .clip(RoundedCornerShape(Theme.radius.full))
             .background(backgroundColor)
             .padding(
-                horizontal = 12.dp,
+                horizontal = Theme.spacing._12,
                 vertical = 6.dp
             ),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         verticalAlignment = Alignment.CenterVertically
     ) {
-//        RoundIconButton(
-//            icon = Res.drawable,//Add the Icon Here
-//            contentDescription = "Zoom In",
-//            onClick = onZoomInClicked,
-//            iconTint = Color.Black
-//        )
-//        RoundIconButton(
-//            icon = Res.drawable.,//Add the Icon Here
-//            contentDescription = "Zoom Out",
-//            onClick = onZoomOutClicked,
-//            iconTint = Color.Black
-//        )
+        RoundIconButton(
+            icon = painterResource(Res.drawable.ic_remove),
+            contentDescription = "Zoom In",
+            onClick = onZoomInClicked
+        )
+
+        RoundIconButton(
+            icon = painterResource(Res.drawable.ic_add),
+            contentDescription = "Zoom Out",
+            onClick = onZoomOutClicked
+        )
         TextButton(
             onClick = onResetClicked,
             colors = ButtonDefaults.textButtonColors(

@@ -17,8 +17,11 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_add_image
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -46,7 +49,11 @@ fun UploadImageContainer(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image()//add the image here
+            Image(
+                painter =
+                    painterResource(Res.drawable.ic_add_image),
+                contentDescription = "Upload The image"
+            )
             Text(
                 text = "Click to upload",
                 color = Theme.colorScheme.primary.primary,

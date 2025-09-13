@@ -12,18 +12,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
 fun RoundIconButton(
-    icon: ImageVector,
+    icon: Painter,
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    iconSize: Dp = 16.dp,
+    iconSize: Dp = Theme.spacing._16,
     padding: Dp = 6.17.dp,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     iconTint: Color = Theme.colorScheme.primary.primary
@@ -37,7 +37,7 @@ fun RoundIconButton(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = icon,
+            painter = icon,
             contentDescription = contentDescription,
             tint = iconTint,
             modifier = Modifier.size(iconSize)
