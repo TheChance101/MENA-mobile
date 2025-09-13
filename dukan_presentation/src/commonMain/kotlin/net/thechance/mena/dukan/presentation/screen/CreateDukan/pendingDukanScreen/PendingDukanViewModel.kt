@@ -1,7 +1,8 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.pendingDukanScreen
+package net.thechance.mena.dukan.presentation.screen.CreateDukan.pendingDukanScreen
 
 import net.thechance.mena.dukan.domain.repository.DukanRepository
-import net.thechance.mena.dukan.presentation.base.BaseViewModel
+import net.thechance.mena.dukan.presentation.screen.createDukan.pendingDukanScreen.PendingDukanEffect
+import net.thechance.mena.dukan.presentation.screen.createDukan.pendingDukanScreen.PendingDukanUiState
 
 class PendingDukanViewModel(
     private val dukanRepository: DukanRepository
