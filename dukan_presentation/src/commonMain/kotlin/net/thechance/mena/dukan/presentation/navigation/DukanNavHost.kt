@@ -20,6 +20,10 @@ fun DukanNavHost() {
                 // Main Screen
             }
 
+            composable <PendingDukanScreen> {
+                // pending dukan screen
+            }
+
             // Other Routs
         }
     }

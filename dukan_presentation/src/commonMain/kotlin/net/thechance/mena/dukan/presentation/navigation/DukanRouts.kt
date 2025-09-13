@@ -12,3 +12,6 @@ object CreateDukanRoute : DukanRoute
 
 @Serializable
 object MyDukanScreenRoute : DukanRoute
+
+@Serializable
+object PendingDukanScreen : DukanRoute
