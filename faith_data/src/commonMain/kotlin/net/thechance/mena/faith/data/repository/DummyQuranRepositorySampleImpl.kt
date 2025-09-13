@@ -3,7 +3,7 @@ package net.thechance.mena.faith.data.repository
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 
-class QuranRepositorySampleImpl : QuranRepository {
+class DummyQuranRepositorySampleImpl : QuranRepository {
 
     override suspend fun getAllSur(): List<Surah> {
         return listOf(
