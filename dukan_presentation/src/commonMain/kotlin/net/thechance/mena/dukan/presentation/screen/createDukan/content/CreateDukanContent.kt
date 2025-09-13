@@ -69,19 +69,19 @@ fun CreateDukanContent(
             userScrollEnabled = false
         ) { pageIndex ->
             when (CreateDukanStep.steps[pageIndex]) {
-                CreateDukanStep.BASIC_INFORMATION_INDEX -> CreateDukanContentBasicInformation()
-                CreateDukanStep.SELECT_IMAGE_INDEX -> DukanImageCropContent(
+                CreateDukanStep.BASIC_INFORMATION -> CreateDukanContentBasicInformation()
+                CreateDukanStep.SELECT_IMAGE -> DukanImageCropContent(
                     state = state,
                     interactionListener = listener
                 )
 
-                CreateDukanStep.CROP_IMAGE_INDEX -> UploadDukanImageContent(
+                CreateDukanStep.CROP_IMAGE -> UploadDukanImageContent(
                     state = state,
                     interactionListener = listener
                 )
 
-                CreateDukanStep.SELECT_LOCATION_INDEX -> CreateDukanContentSelectLocation()
-                CreateDukanStep.SELECT_STYLE_INDEX -> CreateDukanContentSelectStyle()
+                CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation()
+                CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
             }
         }
 
@@ -94,7 +94,7 @@ fun CreateDukanContent(
             else
                 "Next",
             onClick = listener::onButtonClicked,
-            trailingIcon = painterResource(Res.drawable.pencil_edit_01),
+            trailingIcon = painterResource(Res.drawable.ic_arrow_left),
             isEnabled = state.isButtonEnabled,
             isLoading = state.isButtonLoading
         )

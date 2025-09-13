@@ -7,11 +7,6 @@ class CreateDukanViewModel :
     BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
     CreateDukanInteractionListener {
 
-    private val MIN_ZOOM = 1f
-    private val MAX_ZOOM = 4f
-    private val ZOOM_STEP = 0.25f
-
-
     override fun onButtonClicked() {
         if (state.value.currentStep != CreateDukanUiState.CreateDukanStep.SELECT_STYLE) {
             onNextClicked()
@@ -105,13 +100,13 @@ class CreateDukanViewModel :
     }
 
     override fun onUploadAnotherImageClicked() {}
-
     private fun nextStep(step: CreateDukanStep): CreateDukanStep =
         when (step) {
             CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
             CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.SELECT_LOCATION
             CreateDukanStep.SELECT_LOCATION -> CreateDukanStep.SELECT_STYLE
             CreateDukanStep.SELECT_STYLE -> step
+            CreateDukanStep.CROP_IMAGE -> CreateDukanStep.CROP_IMAGE
         }
 
     private fun previousStep(step: CreateDukanStep): CreateDukanStep =
@@ -120,6 +115,7 @@ class CreateDukanViewModel :
             CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.BASIC_INFORMATION
             CreateDukanStep.SELECT_LOCATION -> CreateDukanStep.SELECT_IMAGE
             CreateDukanStep.SELECT_STYLE -> CreateDukanStep.SELECT_LOCATION
+            CreateDukanStep.CROP_IMAGE -> CreateDukanStep.CROP_IMAGE
         }
 
     private fun updateNextButtonEnableState() {
@@ -129,7 +125,13 @@ class CreateDukanViewModel :
             CreateDukanStep.SELECT_IMAGE -> state.savedImageUri != null
             CreateDukanStep.SELECT_LOCATION -> true
             CreateDukanStep.SELECT_STYLE -> true
+            CreateDukanStep.CROP_IMAGE -> true
         }
         updateState { this.copy(isButtonEnabled = isNextButtonEnabled) }
     }
+
+    private val MIN_ZOOM = 1f
+    private val MAX_ZOOM = 4f
+    private val ZOOM_STEP = 0.25f
+
 }

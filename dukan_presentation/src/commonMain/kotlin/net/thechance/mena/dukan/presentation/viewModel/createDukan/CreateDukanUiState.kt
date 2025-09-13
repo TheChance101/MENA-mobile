@@ -11,10 +11,11 @@ data class CreateDukanUiState(
     val isZoomOutEnabled: Boolean = false,
     val isEditIconVisible: Boolean = false,
     val isImageBeingCropped: Boolean = false,
-    ) {
+) {
     enum class CreateDukanStep {
         BASIC_INFORMATION,
         SELECT_IMAGE,
+        CROP_IMAGE,
         SELECT_LOCATION,
         SELECT_STYLE;
 
