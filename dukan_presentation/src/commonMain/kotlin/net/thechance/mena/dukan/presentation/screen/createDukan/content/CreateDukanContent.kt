@@ -19,6 +19,7 @@ import mena.dukan_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.UploadDukanImageContent
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
@@ -66,7 +67,16 @@ fun CreateDukanContent(
         ) { pageIndex ->
             when (pageIndex) {
                 CreateDukanViewModel.BASIC_INFORMATION_INDEX -> CreateDukanContentBasicInformation()
-                CreateDukanViewModel.SELECT_IMAGE_INDEX -> CreateDukanContentSelectImage()
+                CreateDukanViewModel.SELECT_IMAGE_INDEX -> DukanImageCropContent(
+                    state = state,
+                    interactionListener = listener
+                )
+
+                CreateDukanViewModel.CROP_IMAGE_INDEX -> UploadDukanImageContent(
+                    state = state,
+                    interactionListener = listener
+                )
+
                 CreateDukanViewModel.SELECT_LOCATION_INDEX -> CreateDukanContentSelectLocation()
                 CreateDukanViewModel.SELECT_STYLE_INDEX -> CreateDukanContentSelectStyle()
             }
