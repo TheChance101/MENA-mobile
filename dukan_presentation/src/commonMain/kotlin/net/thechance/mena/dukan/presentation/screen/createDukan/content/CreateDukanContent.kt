@@ -15,8 +15,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.create
 import mena.dukan_presentation.generated.resources.ic_arrow_left
-import mena.dukan_presentation.generated.resources.pencil_edit_01
+import mena.dukan_presentation.generated.resources.ic_edit
+import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -25,6 +27,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanIn
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -72,7 +75,7 @@ fun CreateDukanContent(
             when (CreateDukanStep.steps[pageIndex]) {
                 CreateDukanStep.BASIC_INFORMATION -> CreateDukanContentBasicInformation()
                 CreateDukanStep.SELECT_IMAGE -> CreateDukanContentSelectImage()
-                CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation()
+                CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation(state, listener)
                 CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
             }
         }
@@ -82,11 +85,11 @@ fun CreateDukanContent(
                 .fillMaxWidth()
                 .padding(Theme.spacing._16),
             text = if (state.currentStep == CreateDukanStep.SELECT_STYLE)
-                "Create"
+                stringResource(Res.string.create)
             else
-                "Next",
+                stringResource(Res.string.next),
             onClick = listener::onButtonClicked,
-            trailingIcon = painterResource(Res.drawable.pencil_edit_01),
+            trailingIcon = painterResource(Res.drawable.ic_edit),
             isEnabled = state.isButtonEnabled,
             isLoading = state.isButtonLoading
         )

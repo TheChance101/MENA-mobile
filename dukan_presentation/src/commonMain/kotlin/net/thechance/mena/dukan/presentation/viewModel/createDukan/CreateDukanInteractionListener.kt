@@ -4,4 +4,6 @@ interface CreateDukanInteractionListener {
 
     fun onButtonClicked()
     fun onBackClicked()
+    fun onMapClicked(coordinates: CreateDukanUiState.CoordinatesUi)
+    fun onEditClicked()
 }
