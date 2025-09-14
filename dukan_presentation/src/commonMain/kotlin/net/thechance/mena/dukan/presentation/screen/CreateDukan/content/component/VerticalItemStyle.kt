@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,28 +19,34 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun VerticalItemStyle(
     modifier: Modifier = Modifier,
-    addToCartBackgroundColor: Color = Theme.colorScheme.background.surfaceHigh
+    addToCartBackgroundColor: Color
 ) {
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.xs))
-            .background(Theme.colorScheme.background.surface)
-            .padding(
-                bottom = 20.dp,
-                top = Theme.spacing._2,
-                start = Theme.spacing._2,
-                end = Theme.spacing._2
-            ),
+        modifier=modifier
     ) {
-        DukanItemPlaceholder(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.TopCenter),
-            contentPadding = 9.dp
-        )
+                .clip(RoundedCornerShape(Theme.radius.xs))
+                .background(Theme.colorScheme.background.surface)
+                .padding(
+                    bottom = 20.dp,
+                    top = Theme.spacing._2,
+                    start = Theme.spacing._2,
+                    end = Theme.spacing._2
+                ),
+        ) {
+            DukanItemPlaceholder(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter),
+                contentPadding = 9.dp
+            )
+
+        }
         AddToCartIcon(
             addToCartBackgroundColor = addToCartBackgroundColor,
-            modifier = Modifier.align(Alignment.Center).padding(top = 34.dp)
+            modifier = Modifier.align(Alignment.Center).padding(top = 24.dp).size(16.dp)
         )
     }
 }
@@ -48,6 +55,8 @@ fun VerticalItemStyle(
 @Composable
 private fun VerticalItemStylePreview() {
     MenaTheme {
-        VerticalItemStyle()
+        VerticalItemStyle(
+            addToCartBackgroundColor = Theme.colorScheme.background.surfaceHigh,
+        )
     }
 }

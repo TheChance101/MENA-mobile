@@ -18,7 +18,9 @@ import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContentBasicInformation
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContentSelectImage
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContentSelectLocation
@@ -27,6 +29,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanIn
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CreateDukanContent(
@@ -68,7 +71,7 @@ fun CreateDukanContent(
             state = pagerState,
             userScrollEnabled = false
         ) { pageIndex ->
-            when (pageIndex) {
+            when (3) {
                 CreateDukanViewModel.BASIC_INFORMATION_INDEX -> CreateDukanContentBasicInformation()
                 CreateDukanViewModel.SELECT_IMAGE_INDEX -> CreateDukanContentSelectImage()
                 CreateDukanViewModel.SELECT_LOCATION_INDEX -> CreateDukanContentSelectLocation()
@@ -107,5 +110,25 @@ private fun SyncPageWithScreenState(
             pagerState.animateScrollToPage(currentStepIndex)
         } catch (_: Exception) {
         }
+    }
+}
+
+
+@Preview
+@Composable
+private fun CreateDukanContentPreview() {
+    MenaTheme {
+        CreateDukanContent(
+            state = CreateDukanUiState(
+                selectedStyle = null,
+                selectedColor = null
+            ),
+            listener = object : CreateDukanInteractionListener {
+                override fun onButtonClicked() {}
+                override fun onBackClicked() {}
+                override fun onColorClicked(color: Long) {}
+                override fun onStyleClicked(style: Dukan.Style) {}
+            }
+        )
     }
 }

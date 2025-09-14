@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component
+package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -6,14 +6,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +26,7 @@ import mena.dukan_presentation.generated.resources.ic_image
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -37,13 +37,14 @@ enum class DukanStyle {
 
 @Composable
 fun DukanStyle(
-    modifier: Modifier = Modifier,
+    state: CreateDukanUiState,
     orientation: DukanStyle = DukanStyle.HORIZONTAL,
     hasImage: Boolean = true,
     isSelected: Boolean = true,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
+    val defaultColor = Theme.colorScheme.background.surfaceHigh
 
     val baseModifier = modifier
         .height(198.dp)
@@ -58,76 +59,152 @@ fun DukanStyle(
             )
             else Modifier
         )
-        .padding(contentPadding)
 
-    Column(
+    Box(
         modifier = baseModifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         when (orientation) {
-            DukanStyle.HORIZONTAL -> HorizontalContent(hasImage, Modifier.weight(1f))
+            DukanStyle.HORIZONTAL -> HorizontalContent(
+                selectedColor = state.selectedColor?.let { Color(it) } ?: defaultColor,
+                hasImage = hasImage,
+            )
+
             DukanStyle.VERTICAL -> VerticalContent(
-                Modifier.weight(1f),
-                Modifier.align(Alignment.Start)
+                selectedColor = state.selectedColor?.let { Color(it) } ?: defaultColor,
             )
         }
     }
 }
 
 @Composable
-private fun HorizontalContent(hasImage: Boolean, modifier: Modifier = Modifier) {
-    if (hasImage) {
-        ImageBox()
-    } else {
-        TextPlaceholders()
-    }
+private fun HorizontalContent(
+    selectedColor: Color,
+    hasImage: Boolean,
+) {
 
-    PlaceholderRow()
-    repeat(if (hasImage) 3 else 4) {
-        if (it == 4) {
-            HorizontalStyle()
-        } else {
-            HorizontalStyle(modifier)
-        }
-    }
-}
+    Theme.colorScheme.background.surfaceHigh
 
-@Composable
-private fun VerticalContent(modifier: Modifier = Modifier, align: Modifier) {
-    SmallImageIcon(align)
-    PlaceholderRow()
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    Column(
+        Modifier.wrapContentHeight(unbounded = true)
     ) {
-        items(4) {
-            VerticalStyle(modifier)
+        if (hasImage) {
+            ImageBox(
+                modifier = Modifier.padding(Theme.spacing._4)
+            )
+        } else {
+            TextPlaceholders(selectedColor)
+        }
+        PlaceholderRow(selectedColor)
+
+        val count = if (hasImage) 3 else 4
+
+        repeat(count) {
+            HorizontalItemStyle(
+                addToCartBackgroundColor = selectedColor,
+                modifier = Modifier
+                    .padding(
+                        start = Theme.spacing._4,
+                        end = Theme.spacing._4,
+                        bottom = Theme.spacing._4
+                    )
+            )
+        }
+//        Spacer(modifier = Modifier.weight(0.2f))
+//        HorizontalItemStyle(
+//            addToCartBackgroundColor = selectedColor,
+//            modifier = modifier
+//                .padding(
+//                    start = Theme.spacing._4,
+//                    end = Theme.spacing._4,
+//                    bottom = if (hasImage) {
+//                        if (selectedColor == color) Theme.spacing._8 else Theme.spacing._4
+//                    } else {
+//                        0.dp
+//                    }
+//                )
+//        )
+    }
+}
+
+@Composable
+private fun VerticalContent(selectedColor: Color) {
+    val color = Theme.colorScheme.background.surfaceHigh
+
+    Column {
+        SmallImageIcon(
+            Modifier.padding(
+                start = Theme.spacing._4,
+                bottom = if (selectedColor == color) 6.dp else Theme.spacing._16,
+                top = Theme.spacing._4,
+            )
+        )
+        PlaceholderRow(selectedColor)
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = Theme.spacing._4),
+            verticalArrangement = Arrangement.spacedBy(if (selectedColor == color) 0.dp else Theme.spacing._4)
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+            ) {
+                VerticalItemStyle(
+                    addToCartBackgroundColor = selectedColor,
+                    modifier = Modifier.weight(1f)
+                )
+                VerticalItemStyle(
+                    addToCartBackgroundColor = selectedColor,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Row(
+                modifier = Modifier.weight(1f)
+                    .padding(bottom = if (selectedColor == color) 10.dp else 0.dp),
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+            ) {
+                VerticalItemStyle(
+                    addToCartBackgroundColor = selectedColor,
+                    modifier = Modifier.weight(1f)
+                )
+                VerticalItemStyle(
+                    addToCartBackgroundColor = selectedColor,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun PlaceholderRow() {
-    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+private fun PlaceholderRow(backgroundColor: Color) {
+    val color = Theme.colorScheme.background.surfaceHigh
+
+    Row(
+        modifier = Modifier.padding(bottom = if (backgroundColor == color) Theme.spacing._4 else Theme.spacing._8)
+    ) {
         repeat(3) {
             ShimmerRectangle(
-                Modifier.weight(1f),
+                modifier = Modifier.weight(1f)
+                    .padding(start = Theme.spacing._4, top = Theme.spacing._4),
                 height = 10.dp,
-                cornerRadius = Theme.radius.xxs,
-                backgroundColor = Theme.colorScheme.background.surfaceHigh
+                topEnd = if (it == 2) 0.dp else Theme.radius.xxs,
+                bottomEnd = if (it == 2) 0.dp else Theme.radius.xxs,
+                backgroundColor = backgroundColor
             )
         }
     }
 }
 
 @Composable
-private fun ImageBox() {
+private fun ImageBox(
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surface)
             .padding(vertical = 12.dp),
@@ -153,7 +230,6 @@ private fun ImageBox() {
 private fun SmallImageIcon(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .padding(bottom = 16.dp)
             .clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.background.surface)
             .padding(6.dp),
@@ -169,31 +245,53 @@ private fun SmallImageIcon(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TextPlaceholders() {
+private fun TextPlaceholders(
+    colorSelected: Color
+) {
+    val color = Theme.colorScheme.background.surfaceHigh
     ShimmerRectangle(
-        modifier = Modifier.fillMaxWidth().padding(end = 11.dp),
+        modifier = Modifier.fillMaxWidth()
+            .padding(
+                start = Theme.spacing._4,
+                top = if (colorSelected == color) 17.dp else 24.dp,
+                end = 11.dp
+            ),
         backgroundColor = Theme.colorScheme.background.surface,
         height = 7.dp,
-        cornerRadius = Theme.radius.xxs
     )
     ShimmerRectangle(
-        modifier = Modifier.fillMaxWidth().padding(end = 35.dp, bottom = 11.dp),
+        modifier = Modifier.fillMaxWidth()
+            .padding(
+                start = Theme.spacing._4,
+                end = 35.dp,
+                top = Theme.spacing._2,
+                bottom = if (colorSelected == color) Theme.spacing._8 else 11.dp
+            ),
         backgroundColor = Theme.colorScheme.background.surface,
         height = 5.dp,
-        cornerRadius = Theme.radius.xxs
     )
 }
 
 
 @Composable
 fun ShimmerRectangle(
-    modifier: Modifier = Modifier,
-    cornerRadius: Dp,
+    topStart: Dp = Theme.radius.xxs,
+    topEnd: Dp = Theme.radius.xxs,
+    bottomStart: Dp = Theme.radius.xxs,
+    bottomEnd: Dp = Theme.radius.xxs,
     height: Dp,
-    backgroundColor: Color
+    backgroundColor: Color,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.height(height).clip(RoundedCornerShape(cornerRadius))
+        modifier = modifier.height(height).clip(
+            RoundedCornerShape(
+                topEnd = topEnd,
+                topStart = topStart,
+                bottomEnd = bottomEnd,
+                bottomStart = bottomStart
+            )
+        )
             .background(backgroundColor)
     )
 }
@@ -202,6 +300,10 @@ fun ShimmerRectangle(
 @Composable
 private fun DukanStylePreview() {
     MenaTheme {
-        DukanStyle()
+        DukanStyle(
+            state = CreateDukanUiState(),
+            hasImage = false,
+            isSelected = true
+        )
     }
 }
