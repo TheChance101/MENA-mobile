@@ -1,0 +1,9 @@
+<resources>
+    <string name="create">إنشاء</string>
+    <string name="next">التالي</string>
+    <string name="create_new_dukan">إنشاء دكان جديد</string>
+    <string name="dukan_location">موقع الدكان</string>
+    <string name="enter_address_and_pick_dukan_location_on_map">قم بإدخال العنوان وقم بأختيار موقع الدكان من الخريطة</string>
+    <string name="address">العنوان</string>
+    <string name="location">الموقع</string>
+</resources>
