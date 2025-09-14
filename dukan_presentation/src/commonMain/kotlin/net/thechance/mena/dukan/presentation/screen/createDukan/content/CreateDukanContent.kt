@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content
+package net.thechance.mena.dukan.presentation.screen.CreateDukan.content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,10 @@ import mena.dukan_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContentBasicInformation
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContentSelectImage
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContentSelectLocation
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContentSelectStyle
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
@@ -68,7 +72,10 @@ fun CreateDukanContent(
                 CreateDukanViewModel.BASIC_INFORMATION_INDEX -> CreateDukanContentBasicInformation()
                 CreateDukanViewModel.SELECT_IMAGE_INDEX -> CreateDukanContentSelectImage()
                 CreateDukanViewModel.SELECT_LOCATION_INDEX -> CreateDukanContentSelectLocation()
-                CreateDukanViewModel.SELECT_STYLE_INDEX -> CreateDukanContentSelectStyle()
+                CreateDukanViewModel.SELECT_STYLE_INDEX -> CreateDukanContentSelectStyle(
+                    state = state,
+                    listener = listener
+                )
             }
         }
 

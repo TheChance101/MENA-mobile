@@ -20,19 +20,19 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AddToCartIcon(
-    addToCartColor: Color,
+    addToCartBackgroundColor: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.full))
-            .background(Theme.colorScheme.background.surfaceHigh)
+            .background(addToCartBackgroundColor)
             .padding(3.dp),
         contentAlignment = Alignment.Center
     ) {
         MenaIcon(
             painter = painterResource(Res.drawable.ic_add_shopping_basket),
-            tint = addToCartColor,
+            tint = Theme.colorScheme.primary.onPrimary,
             contentDescription = "add shopping basket",
             modifier = Modifier.size(10.dp)
         )
@@ -43,6 +43,6 @@ fun AddToCartIcon(
 @Composable
 private fun AddToCartPreview(){
     AddToCartIcon(
-        addToCartColor = Theme.colorScheme.primary.onPrimary
+        addToCartBackgroundColor = Theme.colorScheme.background.surfaceHigh
     )
 }

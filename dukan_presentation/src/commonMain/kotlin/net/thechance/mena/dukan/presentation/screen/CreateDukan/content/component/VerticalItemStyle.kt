@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -12,18 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.ic_image
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun VerticalStyle(
+fun VerticalItemStyle(
     modifier: Modifier = Modifier,
-    addToCartColor: Color = Theme.colorScheme.primary.onPrimary
+    addToCartBackgroundColor: Color = Theme.colorScheme.background.surfaceHigh
 ) {
     Box(
         modifier = modifier
@@ -43,7 +38,7 @@ fun VerticalStyle(
             contentPadding = 9.dp
         )
         AddToCartIcon(
-            addToCartColor,
+            addToCartBackgroundColor = addToCartBackgroundColor,
             modifier = Modifier.align(Alignment.Center).padding(top = 34.dp)
         )
     }
@@ -51,8 +46,8 @@ fun VerticalStyle(
 
 @Preview
 @Composable
-private fun VerticalStylePreview() {
+private fun VerticalItemStylePreview() {
     MenaTheme {
-        VerticalStyle()
+        VerticalItemStyle()
     }
 }

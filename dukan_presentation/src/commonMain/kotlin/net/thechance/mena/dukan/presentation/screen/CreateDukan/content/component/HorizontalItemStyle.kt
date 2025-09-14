@@ -1,31 +1,24 @@
 package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.ic_image
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HorizontalStyle(
+fun HorizontalItemStyle(
     modifier: Modifier = Modifier,
-    addToCartColor: Color = Theme.colorScheme.primary.onPrimary
+    addToCartBackgroundColor: Color = Theme.colorScheme.background.surfaceHigh
 ) {
     Row(
         modifier = modifier
@@ -34,19 +27,19 @@ fun HorizontalStyle(
             .padding(Theme.spacing._2)
     ) {
         DukanItemPlaceholder(
-           modifier= Modifier
+            modifier = Modifier
                 .fillMaxHeight(),
             contentPadding = Theme.spacing._4
         )
         Spacer(Modifier.weight(1f))
-        AddToCartIcon(addToCartColor, modifier = Modifier.align(Alignment.Bottom))
+        AddToCartIcon(addToCartBackgroundColor = addToCartBackgroundColor, modifier = Modifier.align(Alignment.Bottom))
     }
 }
 
 @Preview
 @Composable
-private fun HorizontalStylePreview() {
+private fun HorizontalItemStylePreview() {
     MenaTheme {
-        HorizontalStyle()
+        HorizontalItemStyle()
     }
 }
