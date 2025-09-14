@@ -39,7 +39,6 @@ private fun PendingDukanScreen(
     dukanName: String,
     onBackClick: () -> Unit,
 ) {
-    MenaTheme {
         Box(
             modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface),
         ) {
@@ -88,7 +87,6 @@ private fun PendingDukanScreen(
             }
         }
     }
-}
 
 @Composable
 private fun BuildPendingDukanTitle(
