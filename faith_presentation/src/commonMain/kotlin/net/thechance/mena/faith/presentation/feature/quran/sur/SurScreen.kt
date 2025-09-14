@@ -94,9 +94,9 @@ private fun Content(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Theme.colorScheme.background.surface)
-            .padding(horizontal = 16.dp).statusBarsPadding(),
-        contentPadding = PaddingValues(bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = Theme.spacing._16).statusBarsPadding(),
+        contentPadding = PaddingValues(bottom = Theme.spacing._16),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
     ) {
         item {
             Topbar(
@@ -110,7 +110,7 @@ private fun Content(
                 text = stringResource(resource = Res.string.sur),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier.padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = Theme.spacing._4)
             )
         }
 
@@ -129,7 +129,7 @@ private fun Topbar(
     AppBar(
         title = stringResource(resource = Res.string.quran),
         modifier = modifier,
-        contentPadding = PaddingValues(vertical = 8.dp),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8),
         leadingContent = {
             MenaIcon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
@@ -177,12 +177,12 @@ private fun SurahItem(
                 shape = RoundedCornerShape(Theme.radius.md)
             )
             .clickable { onClick(surah.id) }
-            .padding(vertical = 8.dp, horizontal = 12.dp),
+            .padding(vertical = Theme.spacing._8, horizontal = Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SurahNumberContainer(
             surahNumber = surah.surahOrder,
-            modifier = Modifier.padding(end = 12.dp)
+            modifier = Modifier.padding(end = Theme.spacing._12)
         )
 
         Column(
@@ -196,7 +196,7 @@ private fun SurahItem(
                 text = surah.surahName,
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier.padding(bottom = 2.dp)
+                modifier = Modifier.padding(bottom = Theme.spacing._2)
             )
 
             SurahDetailsRow(ayatNumber = surah.ayatCount, isMakki = surah.isMakki)
@@ -227,7 +227,7 @@ private fun SurahDetailsRow(
             contentDescription = stringResource(resource = Res.string.moshaf_icon),
             modifier = Modifier
                 .size(16.dp)
-                .padding(end = 4.dp)
+                .padding(end = Theme.spacing._4)
         )
 
         MenaText(
@@ -242,7 +242,7 @@ private fun SurahDetailsRow(
 
         Box(
             modifier = Modifier
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = Theme.spacing._8)
                 .size(3.dp)
                 .background(
                     color = Theme.colorScheme.shadeTertiary,
