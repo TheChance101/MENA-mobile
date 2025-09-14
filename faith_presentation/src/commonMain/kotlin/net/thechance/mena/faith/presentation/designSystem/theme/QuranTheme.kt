@@ -7,7 +7,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.faith.presentation.designSystem.typography.LocalQuranTypography
 import net.thechance.mena.faith.presentation.designSystem.typography.QuranTextStyle
 import net.thechance.mena.faith.presentation.designSystem.typography.createQuranTypography
-
+import net.thechance.mena.designsystem.presentation.theme.typography.Typography as MenaTypography
 
 @Composable
 fun QuranTheme(content: @Composable () -> Unit) {
@@ -19,15 +19,9 @@ fun QuranTheme(content: @Composable () -> Unit) {
             content()
         }
     }
-
 }
 
-object QuranTheme {
-    val typography: QuranTextStyle
-        @Composable @ReadOnlyComposable get() = LocalQuranTypography.current
-}
-
-
-
+val MenaTypography.quran: QuranTextStyle
+    @Composable @ReadOnlyComposable get() = LocalQuranTypography.current
 
 

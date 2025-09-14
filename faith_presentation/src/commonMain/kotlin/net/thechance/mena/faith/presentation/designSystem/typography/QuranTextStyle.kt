@@ -4,8 +4,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 
 data class QuranTextStyle(
-    val quran: TextStyle,
-    val quranBookMark: TextStyle,
+    val large: TextStyle,
+    val medium: TextStyle,
 )
 
 internal val LocalQuranTypography = staticCompositionLocalOf<QuranTextStyle> {

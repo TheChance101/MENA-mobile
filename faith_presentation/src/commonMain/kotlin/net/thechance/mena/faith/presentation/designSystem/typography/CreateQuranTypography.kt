@@ -9,14 +9,14 @@ import androidx.compose.ui.unit.sp
 fun createQuranTypography(): QuranTextStyle {
     val fontFamily = quranFontFamily()
     return QuranTextStyle(
-        quran = TextStyle(
+        large = TextStyle(
             fontFamily = fontFamily,
             fontSize = 20.sp,
             lineHeight = 46.sp,
             letterSpacing = 0.sp,
             textAlign = TextAlign.Justify,
         ),
-        quranBookMark = TextStyle(
+        medium = TextStyle(
             fontFamily = fontFamily,
             fontSize = 12.sp,
             lineHeight = 22.sp,
