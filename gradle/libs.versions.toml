@@ -54,8 +54,9 @@ maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.r
 compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
 compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
 
-# location
-play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+# GeoLocation
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -68,3 +69,4 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 
 [bundles]
 geoCoder = ["compass-geocoder", "compass-geocoder-mobile"]
+geoLocation = ["compass-geolocation", "compass-geolocation-mobile"]
