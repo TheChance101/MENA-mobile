@@ -12,11 +12,11 @@ class SurViewModel(
         initializeSur()
     }
 
-    override fun onSurahClick(id: Int) = sendEffect(SurEffect.SurahDetailsNavigation(id))
+    override fun onSurahClick(id: Int) = sendEffect(SurEffect.NavigateToSurahDetails(id))
 
-    override fun onBackClick() = sendEffect(SurEffect.BackNavigation)
+    override fun onBackClick() = sendEffect(SurEffect.NavigateToBack)
 
-    override fun onBookmarkClick() = sendEffect(SurEffect.BookmarkNavigation)
+    override fun onBookmarkClick() = sendEffect(SurEffect.NavigateToBookmark)
 
     private fun initializeSur() {
         tryToExecute(

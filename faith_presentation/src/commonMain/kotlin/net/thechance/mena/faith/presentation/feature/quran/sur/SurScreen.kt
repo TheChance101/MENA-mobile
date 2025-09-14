@@ -64,15 +64,15 @@ fun SurScreen(
     LaunchedEffect(effect) {
         effect?.let { currentEffect ->
             when (currentEffect) {
-                is SurEffect.BackNavigation -> {
+                is SurEffect.NavigateToBack -> {
                     //TODO() navigate back
                 }
 
-                is SurEffect.BookmarkNavigation -> {
+                is SurEffect.NavigateToBookmark -> {
                     //TODO() navigate to bookmark screen
                 }
 
-                is SurEffect.SurahDetailsNavigation -> {
+                is SurEffect.NavigateToSurahDetails -> {
                     //TODO() navigate to SurahDetails screen
                 }
             }
