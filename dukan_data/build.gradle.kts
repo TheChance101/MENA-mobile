@@ -17,14 +17,25 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.play.services.location)
         }
         commonMain.dependencies {
             implementation(projects.dukanDomain)
             implementation(libs.junit)
+            // GeoCoder + GeoLocation
+            implementation(libs.bundles.geoLocation)
+            implementation(libs.bundles.geoCoder)
         }
         iosMain.dependencies {
 
         }
+    }
+}
+
+android {
+    namespace = "net.thechance.mena.dukan.presentation"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
