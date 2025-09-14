@@ -16,12 +16,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.Reset
 import mena.dukan_presentation.generated.resources.ic_add
 import mena.dukan_presentation.generated.resources.ic_remove
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -65,7 +67,7 @@ fun ZoomControls(
         )
 
         TextButton(
-            text = "Reset",
+            text = stringResource(Res.string.Reset),
             onClick = onResetClicked,
         )
     }

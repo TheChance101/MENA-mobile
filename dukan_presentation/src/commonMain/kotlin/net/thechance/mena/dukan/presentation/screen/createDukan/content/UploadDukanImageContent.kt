@@ -7,6 +7,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.`Dukan image`
+import mena.dukan_presentation.generated.resources.ImageSize
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.`Upload dukan image`
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -14,6 +18,7 @@ import net.thechance.mena.dukan.presentation.screen.createDukan.components.Uploa
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
@@ -30,7 +35,7 @@ fun UploadDukanImageContent(
     ) {
         item {
             MenaText(
-                text = "Dukan image",
+                text = stringResource(Res.string.`Dukan image`),
                 style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier.padding(top = 20.dp)
@@ -38,14 +43,14 @@ fun UploadDukanImageContent(
         }
         item {
             MenaText(
-                text = "Upload dukan image, it should be rectangle 9:16 aspect ratio",
+                text = stringResource(Res.string.`Upload dukan image`),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary,
             )
         }
         item {
             MenaText(
-                text = "Image (9:16)",
+                text = stringResource(Res.string.ImageSize),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)

@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.createDukan.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,14 +20,17 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.`Click to upload`
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_add_image
 import mena.dukan_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
+import net.thechance.mena.designsystem.presentation.component.image.MenaImage
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
@@ -65,12 +67,12 @@ fun UploadImageContainer(
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
+                MenaImage(
                     painter = painterResource(Res.drawable.ic_add_image),
                     contentDescription = "Upload The image"
                 )
                 MenaText(
-                    text = "Click to upload",
+                    text = stringResource(Res.string.`Click to upload`),
                     color = Theme.colorScheme.primary.primary,
                     style = Theme.typography.label.medium
                 )

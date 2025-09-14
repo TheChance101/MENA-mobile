@@ -8,9 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.Save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -21,7 +24,7 @@ fun SaveButton(
     modifier: Modifier = Modifier,
 ) {
     PrimaryButton(
-        text = "Save",
+        text = stringResource(Res.string.Save),
         trailingIcon = ColorPainter(Color.Transparent),
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),

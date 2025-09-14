@@ -10,9 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.`Upload another image`
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -22,7 +25,7 @@ fun UploadAnotherImageButton(
     modifier: Modifier = Modifier,
 ) {
     OutlinedButton(
-        text = "Upload another image",
+        text = stringResource(Res.string.`Upload another image`),
         trailingIcon = ColorPainter(Color.Transparent),
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
