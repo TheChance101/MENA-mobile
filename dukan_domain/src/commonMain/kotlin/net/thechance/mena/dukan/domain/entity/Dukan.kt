@@ -5,20 +5,24 @@ data class Dukan(
     val name: String,
     val imageUrl: String,
     val categories: Set<Category>,
-    val location: Location,
-    val isPending: Boolean,
+    val coordinates:Coordinates,
+    val address: String,
+    val status: Status,
     val color: Long,
     val style: Style
 ) {
-    data class Location(
+    data class Coordinates(
         val latitude: Double,
         val longitude: Double,
-        val address: String
     )
 
     enum class Style {
         WIDE_IMAGE,
         SMALL_IMAGE,
         NO_IMAGE
+    }
+    enum class Status{
+        None,
+        Pending
     }
 }
