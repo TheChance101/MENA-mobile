@@ -48,6 +48,8 @@ kotlin {
 android {
     namespace = "net.thechance.mena.faith.presentation"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+    
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
