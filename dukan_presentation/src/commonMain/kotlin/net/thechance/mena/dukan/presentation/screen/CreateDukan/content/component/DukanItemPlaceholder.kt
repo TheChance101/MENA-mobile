@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.compone
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,49 +9,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_image
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun VerticalStyle(
+fun DukanItemPlaceholder(
     modifier: Modifier = Modifier,
-    addToCartColor: Color = Theme.colorScheme.primary.onPrimary
-) {
+    contentPadding: Dp
+){
+
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.xs))
-            .background(Theme.colorScheme.background.surface)
-            .padding(
-                bottom = 20.dp,
-                top = Theme.spacing._2,
-                start = Theme.spacing._2,
-                end = Theme.spacing._2
-            ),
+            .clip(RoundedCornerShape(Theme.radius.xxs))
+            .background(Theme.colorScheme.background.surfaceLow)
+            .padding(contentPadding),
+        contentAlignment = Alignment.Center
     ) {
-        DukanItemPlaceholder(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter),
-            contentPadding = 9.dp
-        )
-        AddToCartIcon(
-            addToCartColor,
-            modifier = Modifier.align(Alignment.Center).padding(top = 34.dp)
+        MenaIcon(
+            painter = painterResource(Res.drawable.ic_image),
+            tint = Theme.colorScheme.stroke,
+            contentDescription = "style has image",
+            modifier = Modifier.size(24.dp)
         )
     }
 }
 
 @Preview
 @Composable
-private fun VerticalStylePreview() {
-    MenaTheme {
-        VerticalStyle()
-    }
+private fun DukanItemImagePreview(){
+    DukanItemPlaceholder(
+        contentPadding = 9.dp
+    )
 }

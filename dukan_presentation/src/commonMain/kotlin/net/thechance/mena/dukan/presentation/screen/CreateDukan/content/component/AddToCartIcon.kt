@@ -2,9 +2,6 @@ package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.compone
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,38 +12,37 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.ic_image
+import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HorizontalStyle(
-    modifier: Modifier = Modifier,
-    addToCartColor: Color = Theme.colorScheme.primary.onPrimary
+fun AddToCartIcon(
+    addToCartColor: Color,
+    modifier: Modifier = Modifier
 ) {
-    Row(
+    Box(
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.xs))
-            .background(Theme.colorScheme.background.surface)
-            .padding(Theme.spacing._2)
+            .clip(RoundedCornerShape(Theme.radius.full))
+            .background(Theme.colorScheme.background.surfaceHigh)
+            .padding(3.dp),
+        contentAlignment = Alignment.Center
     ) {
-        DukanItemPlaceholder(
-           modifier= Modifier
-                .fillMaxHeight(),
-            contentPadding = Theme.spacing._4
+        MenaIcon(
+            painter = painterResource(Res.drawable.ic_add_shopping_basket),
+            tint = addToCartColor,
+            contentDescription = "add shopping basket",
+            modifier = Modifier.size(10.dp)
         )
-        Spacer(Modifier.weight(1f))
-        AddToCartIcon(addToCartColor, modifier = Modifier.align(Alignment.Bottom))
     }
 }
 
 @Preview
 @Composable
-private fun HorizontalStylePreview() {
-    MenaTheme {
-        HorizontalStyle()
-    }
+private fun AddToCartPreview(){
+    AddToCartIcon(
+        addToCartColor = Theme.colorScheme.primary.onPrimary
+    )
 }

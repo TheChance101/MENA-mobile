@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component
+package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -21,10 +21,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DukanColor(
-    modifier: Modifier = Modifier,
     backgroundColor: Color,
     isSelected: Boolean,
     onClick: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     val colorSize by animateDpAsState(
         targetValue = if (isSelected) 42.dp else 48.dp,
