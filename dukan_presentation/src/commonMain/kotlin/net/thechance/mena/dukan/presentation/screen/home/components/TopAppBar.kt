@@ -38,8 +38,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun TopAppBar(
     modifier: Modifier = Modifier,
+    onAddDukanIconClicked: () -> Unit,
     isUserHasDukan: Boolean,
-    onAddDukanIconClicked: () -> Unit = {},
 ) {
     AppBar(
         title = stringResource(resource = Res.string.Dukan),
@@ -58,7 +58,7 @@ fun TopAppBar(
 @Composable
 private fun DukanIconButton(
     isDukanPending: Boolean,
-    onAddDukanIconClicked: () -> Unit = {},
+    onAddDukanIconClicked: () -> Unit,
 ) {
     AnimatedContent(
         targetState = isDukanPending,
@@ -118,7 +118,7 @@ private fun TopAppBarPreview() {
                 .background(Theme.colorScheme.background.surface),
             contentAlignment = Alignment.Center
         ) {
-            TopAppBar(isUserHasDukan = true)
+            TopAppBar(isUserHasDukan = true, onAddDukanIconClicked = {})
         }
     }
 }

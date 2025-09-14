@@ -39,7 +39,7 @@ private fun MainContent(
     ) {
         TopAppBar(
             isUserHasDukan = state.isUserHasDukan,
-            onAddDukanIconClicked = mainInteractionListener::onAddDukanIconClicked,
+            onAddDukanIconClicked = mainInteractionListener::onDukanButtonClicked,
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -58,7 +58,7 @@ private fun MainScreenPreview() {
         ) {
             MainContent(
                 mainInteractionListener = object : MainInteractionListener {
-                    override fun onAddDukanIconClicked() {}
+                    override fun onDukanButtonClicked() {}
                 },
                 state = MainScreenUiState()
             )

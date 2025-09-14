@@ -24,7 +24,7 @@ class MainViewModel(
         }
     }
 
-    override fun onAddDukanIconClicked() {
+    override fun onDukanButtonClicked() {
         // TODO(reason = "use effect to implement navigation")
     }
 }
