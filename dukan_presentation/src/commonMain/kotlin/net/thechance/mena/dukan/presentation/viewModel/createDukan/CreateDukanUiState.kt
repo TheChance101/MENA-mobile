@@ -8,7 +8,14 @@ data class CreateDukanUiState(
 
     val currentLocation: CoordinatesUi = CoordinatesUi(),
     val isMapLocked: Boolean = false,
-    val address: String = ""
+    val address: String = "",
+    val isButtonLoading: Boolean = false,
+    val savedImageUri: String? = null,
+    val isNextButtonEnabled: Boolean = false,
+    val zoomFactor: Float = 1f,
+    val isZoomOutEnabled: Boolean = false,
+    val isEditIconVisible: Boolean = false,
+    val isImageBeingCropped: Boolean = false,
 ) {
 
     data class CoordinatesUi(
@@ -19,6 +26,7 @@ data class CreateDukanUiState(
     enum class CreateDukanStep {
         BASIC_INFORMATION,
         SELECT_IMAGE,
+        CROP_IMAGE,
         SELECT_LOCATION,
         SELECT_STYLE;
 

@@ -74,7 +74,16 @@ fun CreateDukanContent(
         ) { pageIndex ->
             when (CreateDukanStep.steps[pageIndex]) {
                 CreateDukanStep.BASIC_INFORMATION -> CreateDukanContentBasicInformation()
-                CreateDukanStep.SELECT_IMAGE -> CreateDukanContentSelectImage()
+                CreateDukanStep.SELECT_IMAGE -> DukanImageCropContent(
+                    state = state,
+                    interactionListener = listener
+                )
+
+                CreateDukanStep.CROP_IMAGE -> UploadDukanImageContent(
+                    state = state,
+                    interactionListener = listener
+                )
+
                 CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation(state, listener)
                 CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
             }
@@ -89,7 +98,7 @@ fun CreateDukanContent(
             else
                 stringResource(Res.string.next),
             onClick = listener::onButtonClicked,
-            trailingIcon = painterResource(Res.drawable.ic_edit),
+            trailingIcon = painterResource(Res.drawable.ic_arrow_left),
             isEnabled = state.isButtonEnabled,
             isLoading = state.isButtonLoading
         )

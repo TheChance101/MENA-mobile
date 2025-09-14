@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="create">إنشاء</string>
     <string name="next">التالي</string>
     <string name="create_new_dukan">إنشاء دكان جديد</string>
