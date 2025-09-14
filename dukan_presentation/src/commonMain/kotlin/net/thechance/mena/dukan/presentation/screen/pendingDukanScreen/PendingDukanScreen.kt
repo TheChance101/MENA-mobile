@@ -8,13 +8,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -70,42 +67,42 @@ fun PendingDukanScreen(
         )
         Spacer(modifier = Modifier.weight(1f))
         LazyColumn(
-            contentPadding = PaddingValues(  Theme.spacing._24)
+            contentPadding = PaddingValues(Theme.spacing._24)
         ) {
             item(key = "content") {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        MenaImage(
-                            painter = painterResource(Res.drawable.dukan_blur),
-                            contentDescription = "dukan_pending_blur",
-                            modifier = Modifier
-                                .blur(30.dp)
-                                .offset(y = 20.dp)
-                                .align(Alignment.BottomCenter)
-                        )
-
-                        MenaImage(
-                            painter = painterResource(Res.drawable.dukan_pending),
-                            contentDescription = "dukan_pending",
-                        )
-                    }
-
-                    AnnotatedText(
-                        text = titleText,
-                        style = TextStyle(textAlign = TextAlign.Center),
-                        modifier = Modifier.padding(top = Theme.spacing._12)
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    MenaImage(
+                        painter = painterResource(Res.drawable.dukan_blur),
+                        contentDescription = "dukan_pending_blur",
+                        modifier = Modifier
+                            .blur(30.dp)
+                            .offset(y = 20.dp)
+                            .align(Alignment.BottomCenter)
                     )
 
-                    MenaText(
-                        stringResource(Res.string.dukan_waiting_approval),
-                        style = Theme.typography.body.small,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(Theme.spacing._2)
+                    MenaImage(
+                        painter = painterResource(Res.drawable.dukan_pending),
+                        contentDescription = "dukan_pending",
                     )
                 }
+
+                AnnotatedText(
+                    text = titleText,
+                    style = TextStyle(textAlign = TextAlign.Center),
+                    modifier = Modifier.padding(top = Theme.spacing._12)
+                )
+
+                MenaText(
+                    stringResource(Res.string.dukan_waiting_approval),
+                    style = Theme.typography.body.small,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(Theme.spacing._2)
+                )
             }
+        }
         Spacer(modifier = Modifier.weight(1f))
     }
 }
