@@ -5,7 +5,10 @@ import kotlinx.serialization.Serializable
 interface ChatRoute
 
 @Serializable
-data object MainRoute : ChatRoute
+data object ChatsRoute : ChatRoute
 
 @Serializable
 data object ContactsRoute : ChatRoute
+
+@Serializable
+data object SyncContactsRoute : ChatRoute

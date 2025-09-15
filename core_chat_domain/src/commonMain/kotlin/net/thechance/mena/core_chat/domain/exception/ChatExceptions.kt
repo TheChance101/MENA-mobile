@@ -16,3 +16,6 @@ class UnAuthorizedException(logMessage: String? = null) :
 
 class UnknownException(logMessage: String? = null, cause: Throwable? = null) :
     ChatException(logMessage ?: "Unknown error", cause)
+
+class DataStoreException(logMessage: String, cause: Throwable? = null) :
+    ChatException(logMessage, cause)

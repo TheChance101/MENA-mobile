@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.screen.common
+package net.thechance.mena.core_chat.presentation.shared
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

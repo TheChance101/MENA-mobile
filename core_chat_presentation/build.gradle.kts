@@ -38,10 +38,11 @@ kotlin {
             // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.coil.compose)
+
 
             // Serialization
             implementation(libs.kotlin.serialization)
@@ -51,7 +52,7 @@ kotlin {
 
             // Paging 3
             implementation(libs.bundles.paging)
-            
+
             // Koin
             implementation(libs.bundles.koin.compose)
         }
@@ -68,4 +69,7 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+dependencies {
+    debugImplementation(compose.uiTooling)
 }

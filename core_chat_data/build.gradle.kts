@@ -39,6 +39,8 @@ kotlin {
             implementation(libs.contacts.provider)
             implementation(libs.koin.core)
             implementation(libs.bundles.ktor)
+            implementation(libs.androidx.datastore.preferences)
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

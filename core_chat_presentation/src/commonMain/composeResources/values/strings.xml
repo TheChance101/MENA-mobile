@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="contacts_title">Contacts</string>
+    <string name="sync_contacts">Sync Contacts</string>
+    <string name="sync_contacts_title">Sync your contacts</string>
+    <string name="sync_contacts_desc">Sync your contacts so you can easily start conversations and connect with your friends</string>
+    <string name="syncing_contacts_message">Your contact syncing now, please wait until syncing complete.</string>
+    <string name="no_contacts_message">You don't have any contact here!</string>
+    <string name="refresh_contacts_message">Click on refresh button to upload your new contact.</string>
+</resources>

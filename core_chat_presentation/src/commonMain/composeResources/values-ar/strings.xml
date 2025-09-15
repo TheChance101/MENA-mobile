@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="contacts_title">جهات الاتصال</string>
+    <string name="sync_contacts">مزامنة جهات الاتصال</string>
+    <string name="sync_contacts_title">مزامنة جهات اتصالك</string>
+    <string name="sync_contacts_desc">قم بمزامنة جهات اتصالك حتى تتمكن بسهولة من بدء المحادثات والتواصل مع أصدقائك</string>
+    <string name="syncing_contacts_message">جاري مزامنة جهات اتصالك، برجاء الانتظار حتى تكتمل المزامنة.</string>
+    <string name="no_contacts_message">!لا يوجد لديك أي جهة اتصال هنا</string>
+    <string name="refresh_contacts_message">انقر على زر التحديث لتحميل جهة الاتصال الجديدة الخاصة بك.</string>
+</resources>
