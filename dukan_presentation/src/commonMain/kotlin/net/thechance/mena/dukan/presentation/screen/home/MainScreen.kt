@@ -1,16 +1,17 @@
 package net.thechance.mena.dukan.presentation.screen.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.home.components.TopAppBar
@@ -20,29 +21,36 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun MainScreen() {
     val viewModel = MainViewModel(dukanRepository = TODO(reason = "should using koin di"))
     val state = viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit){
+        viewModel.effect.collectLatest{ effect ->
+            when(effect){
+                MainEffect.NavigateToAddDukanScreen -> { TODO("implement a navigation to add dukan screen") }
+                MainEffect.NavigateToPendingDukanScreen -> { TODO("implement a navigation to pending dukan screen") }
+            }
+        }
+    }
     MainContent(
-        mainInteractionListener = viewModel,
+        listener = viewModel,
         state = state.value
     )
 }
 
 @Composable
 private fun MainContent(
-    mainInteractionListener: MainInteractionListener,
+    listener: MainInteractionListener,
     state: MainScreenUiState
 ) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .background(color = Theme.colorScheme.background.surface)
             .statusBarsPadding(),
-        verticalArrangement = Arrangement.Center
     ) {
         TopAppBar(
-            isUserHasDukan = state.isUserHasDukan,
-            onAddDukanIconClicked = mainInteractionListener::onDukanButtonClicked,
+            dukanButtonStatus = state.dukanStatus,
+            onAddDukanIconClicked = listener::onDukanButtonClicked,
         )
 
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
@@ -57,7 +65,7 @@ private fun MainScreenPreview() {
             contentAlignment = Alignment.Center
         ) {
             MainContent(
-                mainInteractionListener = object : MainInteractionListener {
+                listener = object : MainInteractionListener {
                     override fun onDukanButtonClicked() {}
                 },
                 state = MainScreenUiState()

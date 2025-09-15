@@ -31,6 +31,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.screen.home.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -39,7 +40,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun TopAppBar(
     modifier: Modifier = Modifier,
     onAddDukanIconClicked: () -> Unit,
-    isUserHasDukan: Boolean,
+    dukanButtonStatus: MainScreenUiState.DukanStatusUi,
 ) {
     AppBar(
         title = stringResource(resource = Res.string.Dukan),
@@ -48,7 +49,7 @@ fun TopAppBar(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         trailingContent = {
             DukanIconButton(
-                isDukanPending = isUserHasDukan,
+                dukanButtonStatus = dukanButtonStatus,
                 onAddDukanIconClicked = onAddDukanIconClicked
             )
         }
@@ -57,15 +58,15 @@ fun TopAppBar(
 
 @Composable
 private fun DukanIconButton(
-    isDukanPending: Boolean,
+    dukanButtonStatus: MainScreenUiState.DukanStatusUi,
     onAddDukanIconClicked: () -> Unit,
 ) {
     AnimatedContent(
-        targetState = isDukanPending,
+        targetState = dukanButtonStatus,
         transitionSpec = { fadeTransitionSpec() },
         label = stringResource(resource = Res.string.dukan_button)
     )
-    { isPending ->
+    { dukanStatus ->
         Box(
             modifier = Modifier
                 .size(40.dp)
@@ -77,16 +78,20 @@ private fun DukanIconButton(
                 .clickable(onClick = onAddDukanIconClicked),
             contentAlignment = Alignment.Center
         ) {
-            if (isPending) {
-                MenaIcon(
-                    painter = painterResource(resource = Res.drawable.ic_dukan),
-                    contentDescription = stringResource(resource = Res.string.dukan_icon)
-                )
-            } else {
-                MenaIcon(
-                    painter = painterResource(resource = Res.drawable.ic_add_dukan),
-                    contentDescription = stringResource(resource = Res.string.add_dukan_icon)
-                )
+            when (dukanStatus) {
+                MainScreenUiState.DukanStatusUi.None -> {
+                    MenaIcon(
+                        painter = painterResource(resource = Res.drawable.ic_add_dukan),
+                        contentDescription = stringResource(resource = Res.string.add_dukan_icon)
+                    )
+                }
+
+                MainScreenUiState.DukanStatusUi.Pending -> {
+                    MenaIcon(
+                        painter = painterResource(resource = Res.drawable.ic_dukan),
+                        contentDescription = stringResource(resource = Res.string.dukan_icon)
+                    )
+                }
             }
         }
     }
@@ -118,7 +123,7 @@ private fun TopAppBarPreview() {
                 .background(Theme.colorScheme.background.surface),
             contentAlignment = Alignment.Center
         ) {
-            TopAppBar(isUserHasDukan = true, onAddDukanIconClicked = {})
+            TopAppBar(dukanButtonStatus = MainScreenUiState.DukanStatusUi.None, onAddDukanIconClicked = {})
         }
     }
 }

@@ -1,5 +1,11 @@
 package net.thechance.mena.dukan.presentation.screen.home
 
 data class MainScreenUiState(
-    val isUserHasDukan: Boolean = false
-)
+    val errorMessage:String? = null,
+    val dukanStatus: DukanStatusUi = DukanStatusUi.None
+){
+    enum class DukanStatusUi{
+        Pending,
+        None
+    }
+}
