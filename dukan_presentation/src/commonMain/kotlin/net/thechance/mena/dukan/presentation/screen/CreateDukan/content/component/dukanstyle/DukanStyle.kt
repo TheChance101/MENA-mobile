@@ -124,9 +124,8 @@ private fun VerticalContent(selectedColor: Color) {
         if (selectedColor == color) 0.dp else Theme.spacing._4
     )
     val lastRowPaddingBottom by animateDpAsState(
-        if (selectedColor == color) 10.dp else 0.dp
+        if (selectedColor == color) 5.dp else 0.dp
     )
-
     Column {
         SmallImageIcon(
             Modifier.padding(
@@ -136,7 +135,6 @@ private fun VerticalContent(selectedColor: Color) {
             )
         )
         PlaceholderRow(selectedColor)
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
