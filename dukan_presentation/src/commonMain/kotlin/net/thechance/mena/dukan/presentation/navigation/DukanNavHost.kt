@@ -5,6 +5,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import net.thechance.mena.dukan.presentation.screen.CategoriesScreen
+import net.thechance.mena.dukan.presentation.screen.CreateDukanScreen
+import net.thechance.mena.dukan.presentation.screen.MainScreen
+import net.thechance.mena.dukan.presentation.screen.MyDukanScreen
+import net.thechance.mena.dukan.presentation.screen.RequestPendingScreen
 
 @Composable
 fun DukanNavHost() {
@@ -14,13 +19,31 @@ fun DukanNavHost() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = MainScreenRoute,
+            startDestination = DukanRoute.MainScreenRoute,
         ) {
-            composable<MainScreenRoute> {
-                // Main Screen
+            composable<DukanRoute.MainScreenRoute> {
+                MainScreen(
+                    navigateToCategories = { navController.navigate(DukanRoute.CategoryScreenRoute) },
+                    navigateToCreateDukan = { navController.navigate(DukanRoute.CreateDukanRoute) }
+                )
             }
-
-            // Other Routs
+            composable<DukanRoute.CategoryScreenRoute> {
+                CategoriesScreen(
+                    navigateBack = navController::popBackStack
+                )
+            }
+            composable<DukanRoute.CreateDukanRoute> {
+                CreateDukanScreen(
+                    navigateBack = navController::popBackStack,
+                    navigateToRequestPending = { navController.navigate(DukanRoute.RequestPendingScreenRoute) }
+                )
+            }
+            composable<DukanRoute.MyDukanScreenRoute> {
+                MyDukanScreen()
+            }
+            composable<DukanRoute.RequestPendingScreenRoute> {
+                RequestPendingScreen()
+            }
         }
     }
 }
