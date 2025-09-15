@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -6,24 +8,41 @@ plugins {
 
 kotlin {
     androidTarget()
-    iosArm64()
-    iosSimulatorArm64()
+    val frameworkName = "CoreChatData"
+    val coreChatDataXCFramework = XCFramework(frameworkName)
+
+    val iosTargets = listOf(
+        iosArm64(),
+        iosSimulatorArm64()
+    )
+
+    iosTargets.forEach { target ->
+        target.binaries.framework(frameworkName) {
+            baseName = "CoreChatData"
+            isStatic = true
+            coreChatDataXCFramework.add(this)
+        }
+
+    }
 
     sourceSets {
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.koin.core)
+            implementation(libs.androidx.work.runtime.ktx)
+
         }
         commonMain.dependencies {
             implementation(projects.coreChatDomain)
             implementation(libs.kotlin.serialization)
             implementation(libs.contacts.provider)
             implementation(libs.koin.core)
-
             implementation(libs.bundles.ktor)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.koin.core)
         }
     }
 }
