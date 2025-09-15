@@ -109,20 +109,6 @@ private fun HorizontalContent(
                     )
             )
         }
-//        Spacer(modifier = Modifier.weight(0.2f))
-//        HorizontalItemStyle(
-//            addToCartBackgroundColor = selectedColor,
-//            modifier = modifier
-//                .padding(
-//                    start = Theme.spacing._4,
-//                    end = Theme.spacing._4,
-//                    bottom = if (hasImage) {
-//                        if (selectedColor == color) Theme.spacing._8 else Theme.spacing._4
-//                    } else {
-//                        0.dp
-//                    }
-//                )
-//        )
     }
 }
 

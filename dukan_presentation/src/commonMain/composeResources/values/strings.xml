@@ -1,0 +1,12 @@
+<resources>
+    <string name="add shopping basket">"add shopping basket"</string>
+    <string name="style has image">style has image</string>
+    <string name="Customize your dukan">Customize your dukan</string>
+    <string name="Pick color and style for dukan">Pick color and style for dukan</string>
+    <string name="Color">Color</string>
+    <string name="Style">Style</string>
+    <string name="Wide image with list products">Wide image with list products</string>
+    <string name="Small image with grid products">Small image with grid products</string>
+    <string name="No dukan image">No dukan image</string>
+
+</resources>

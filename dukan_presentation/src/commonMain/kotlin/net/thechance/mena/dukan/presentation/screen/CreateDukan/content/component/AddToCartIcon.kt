@@ -12,10 +12,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.`add shopping basket`
 import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -33,7 +35,7 @@ fun AddToCartIcon(
         MenaIcon(
             painter = painterResource(Res.drawable.ic_add_shopping_basket),
             tint = Theme.colorScheme.primary.onPrimary,
-            contentDescription = "add shopping basket",
+            contentDescription = stringResource(Res.string.`add shopping basket`),
             modifier = Modifier.size(10.dp)
         )
     }

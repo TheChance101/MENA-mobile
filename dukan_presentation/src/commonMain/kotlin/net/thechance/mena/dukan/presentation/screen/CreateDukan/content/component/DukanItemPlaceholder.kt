@@ -13,9 +13,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_image
+import mena.dukan_presentation.generated.resources.`style has image`
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -34,7 +36,7 @@ fun DukanItemPlaceholder(
         MenaIcon(
             painter = painterResource(Res.drawable.ic_image),
             tint = Theme.colorScheme.stroke,
-            contentDescription = "style has image",
+            contentDescription = stringResource(Res.string.`style has image`),
             modifier = Modifier.size(24.dp)
         )
     }
