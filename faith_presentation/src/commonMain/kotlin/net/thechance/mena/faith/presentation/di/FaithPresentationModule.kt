@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.base.di
+package net.thechance.mena.faith.presentation.di
 
 import org.koin.dsl.module
 
