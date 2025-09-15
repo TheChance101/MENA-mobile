@@ -18,8 +18,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HorizontalItemStyle(
-    modifier: Modifier = Modifier,
-    addToCartBackgroundColor: Color
+    addToCartBackgroundColor: Color,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
@@ -28,12 +28,12 @@ fun HorizontalItemStyle(
             .background(Theme.colorScheme.background.surface)
             .padding(Theme.spacing._2)
     ) {
-        DukanItemPlaceholder(
+        DukanImageItemPlaceholder(
             contentPadding = Theme.spacing._4
         )
         Spacer(Modifier.weight(1f))
-        AddToCartIcon(
-            addToCartBackgroundColor = addToCartBackgroundColor,
+        ShoppingCartPlaceholder(
+            background = addToCartBackgroundColor,
             modifier = Modifier.align(Alignment.Bottom)
         )
     }

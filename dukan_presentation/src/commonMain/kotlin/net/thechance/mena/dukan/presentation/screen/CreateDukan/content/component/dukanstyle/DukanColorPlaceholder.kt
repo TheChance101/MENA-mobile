@@ -16,14 +16,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.`color size`
+import mena.dukan_presentation.generated.resources.color_size
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DukanColor(
+fun ColorOptionsPlaceholder(
     backgroundColor: Color,
     isSelected: Boolean,
     onClick: () -> Unit = {},
@@ -31,17 +31,19 @@ fun DukanColor(
 ) {
     val colorSize by animateDpAsState(
         targetValue = if (isSelected) 42.dp else 48.dp,
-        label = stringResource(Res.string.`color size`)
+        label = stringResource(Res.string.color_size)
     )
     Box(
-        modifier = modifier.size(48.dp).clip(RoundedCornerShape(Theme.radius.full))
+        modifier = modifier.size(48.dp)
+            .clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.background.surface)
             .border(1.dp, backgroundColor, RoundedCornerShape(Theme.radius.full))
-            .clickable { onClick() },
+            .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier = Modifier.size(colorSize).clip(RoundedCornerShape(Theme.radius.full))
+            modifier = Modifier.size(colorSize)
+                .clip(RoundedCornerShape(Theme.radius.full))
                 .background(backgroundColor)
         )
     }
@@ -52,13 +54,13 @@ fun DukanColor(
 private fun DukanColorPreview() {
     MenaTheme {
         Column {
-            DukanColor(
+            ColorOptionsPlaceholder(
                 backgroundColor = Theme.colorScheme.error,
                 onClick = {},
                 isSelected = true
             )
 
-            DukanColor(
+            ColorOptionsPlaceholder(
                 backgroundColor = Theme.colorScheme.error,
                 onClick = {},
                 isSelected = false

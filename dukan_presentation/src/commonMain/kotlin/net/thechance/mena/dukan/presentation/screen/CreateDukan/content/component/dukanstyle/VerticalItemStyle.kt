@@ -18,8 +18,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun VerticalItemStyle(
-    modifier: Modifier = Modifier,
-    addToCartBackgroundColor: Color
+    cartBackgroundColor: Color,
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.fillMaxWidth().height(64.dp)
@@ -35,16 +35,16 @@ fun VerticalItemStyle(
                     end = Theme.spacing._2
                 ),
         ) {
-            DukanItemPlaceholder(
+            DukanImageItemPlaceholder(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter),
                 contentPadding = 9.dp
             )
         }
-        AddToCartIcon(
-            addToCartBackgroundColor = addToCartBackgroundColor,
-            modifier = Modifier.padding(top = 24.dp).align(Alignment.Center)
+        ShoppingCartPlaceholder(
+            background = cartBackgroundColor,
+            modifier = Modifier.padding(top = 36.dp).align(Alignment.TopCenter)
         )
     }
 }
@@ -54,7 +54,7 @@ fun VerticalItemStyle(
 private fun VerticalItemStylePreview() {
     MenaTheme {
         VerticalItemStyle(
-            addToCartBackgroundColor = Theme.colorScheme.background.surfaceHigh,
+            cartBackgroundColor = Theme.colorScheme.background.surfaceHigh,
         )
     }
 }

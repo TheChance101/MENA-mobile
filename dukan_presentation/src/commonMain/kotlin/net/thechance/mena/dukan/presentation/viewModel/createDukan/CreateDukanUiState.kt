@@ -1,8 +1,5 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
-import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanStyle
-
 data class CreateDukanUiState(
     val name: String = "",
     val currentStep: CreateDukanStep = CreateDukanStep.BASIC_INFORMATION,
@@ -14,8 +11,7 @@ data class CreateDukanUiState(
     val isZoomOutEnabled: Boolean = false,
     val isEditIconVisible: Boolean = false,
     val isImageBeingCropped: Boolean = false,
-    val dukanColors: List<Long> = listOf(
-        // TODO: Replace with colors fetched from backend
+    val dukanColors: List<Long> = listOf( // TODO: Replace with colors fetched from backend
         0xFFE91E63,
         0xFF1146F3,
         0xFF4CAF50,
@@ -26,12 +22,24 @@ data class CreateDukanUiState(
         0xFF7196F9,
     ),
     val dukanStyles: List<StyleUiState> = listOf(  // TODO: Replace with styles fetched from backend
-        Dukan.Style.WIDE_IMAGE,
-        Dukan.Style.SMALL_IMAGE,
-        Dukan.Style.NO_IMAGE
-    ).map { it.toUiState() },
+        StyleUiState(
+            orientation = DukanStyle.List,
+            hasImage = false,
+            label = "Wide image with list products"
+        ),
+        StyleUiState(
+            orientation = DukanStyle.Grid,
+            hasImage = true,
+            label = "Small image with grid products"
+        ),
+        StyleUiState(
+            orientation = DukanStyle.List,
+            hasImage = false,
+            label = "No dukan image"
+        )
+    ),
     val selectedColor: Long? = null,
-    val selectedStyle: Dukan.Style? = null,
+    val selectedStyle: StyleUiState? = null,
     val errorMessage: String? = null
 ) {
     enum class CreateDukanStep {
@@ -48,8 +56,12 @@ data class CreateDukanUiState(
 }
 
 data class StyleUiState(
-    val style: Dukan.Style,
     val orientation: DukanStyle,
     val hasImage: Boolean,
     val label: String
 )
+
+enum class DukanStyle {
+    Grid,
+    List
+}

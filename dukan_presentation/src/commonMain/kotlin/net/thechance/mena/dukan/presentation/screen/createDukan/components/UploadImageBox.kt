@@ -20,7 +20,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import mena.dukan_presentation.generated.resources.`Click to upload`
+import mena.dukan_presentation.generated.resources.click_to_upload
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_add_image
 import mena.dukan_presentation.generated.resources.ic_edit
@@ -72,7 +72,7 @@ fun UploadImageContainer(
                     contentDescription = "Upload The image"
                 )
                 MenaText(
-                    text = stringResource(Res.string.`Click to upload`),
+                    text = stringResource(Res.string.click_to_upload),
                     color = Theme.colorScheme.primary.primary,
                     style = Theme.typography.label.medium
                 )
