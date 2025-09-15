@@ -11,14 +11,14 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.hafs
 import org.jetbrains.compose.resources.Font
 
-data class QuranTypology(
+data class QuranTypography(
     val large: TextStyle,
     val medium: TextStyle,
 ) {
 
-    companion object {
-        fun create(fontFamily: FontFamily): QuranTypology {
-            return QuranTypology(
+    companion object Companion {
+        fun create(fontFamily: FontFamily) =
+            QuranTypography(
                 large = TextStyle(
                     fontFamily = fontFamily,
                     fontSize = 20.sp,
@@ -33,15 +33,15 @@ data class QuranTypology(
                     letterSpacing = 0.sp,
                 )
             )
-        }
 
         @Composable
-        fun getFontFamily(): FontFamily = FontFamily(
+        fun getFontFamily() = FontFamily(
             Font(Res.font.hafs, weight = FontWeight.Normal)
         )
     }
 }
 
-internal val LocalQuranTypography = staticCompositionLocalOf<QuranTypology> {
+
+internal val LocalQuranTypography = staticCompositionLocalOf<QuranTypography> {
     error("No QuranTypography provided")
 }
