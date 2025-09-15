@@ -18,20 +18,20 @@ internal data class QuranTypography(
 
     companion object {
         fun create(fontFamily: FontFamily) = QuranTypography(
-                large = TextStyle(
-                    fontFamily = fontFamily,
-                    fontSize = 20.sp,
-                    lineHeight = 46.sp,
-                    letterSpacing = 0.sp,
-                    textAlign = TextAlign.Justify,
-                ),
-                medium = TextStyle(
-                    fontFamily = fontFamily,
-                    fontSize = 12.sp,
-                    lineHeight = 22.sp,
-                    letterSpacing = 0.sp,
-                )
+            large = TextStyle(
+                fontFamily = fontFamily,
+                fontSize = 20.sp,
+                lineHeight = 46.sp,
+                letterSpacing = 0.sp,
+                textAlign = TextAlign.Justify,
+            ),
+            medium = TextStyle(
+                fontFamily = fontFamily,
+                fontSize = 12.sp,
+                lineHeight = 22.sp,
+                letterSpacing = 0.sp,
             )
+        )
 
         @Composable
         fun getFontFamily() = FontFamily(
