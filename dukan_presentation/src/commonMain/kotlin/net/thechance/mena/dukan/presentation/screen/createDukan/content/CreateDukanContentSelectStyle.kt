@@ -87,7 +87,7 @@ fun CreateDukanContentSelectStyle(
         }
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
-                styles.forEach { item ->
+                state.dukanStyles.forEach { item ->
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
