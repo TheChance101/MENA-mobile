@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
@@ -51,6 +52,7 @@ fun EmptyBookMarkState(
             text = title,
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
+            textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = Theme.spacing._24, bottom = Theme.spacing._8)
         )
 
@@ -58,6 +60,7 @@ fun EmptyBookMarkState(
             text = subTitle,
             color = Theme.colorScheme.shadeSecondary,
             style = Theme.typography.body.small,
+            textAlign = TextAlign.Center,
             modifier = Modifier.padding(
                 start = Theme.spacing._4, end = Theme.spacing._4, bottom = Theme.spacing._24
             )
