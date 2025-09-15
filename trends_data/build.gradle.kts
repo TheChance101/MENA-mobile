@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -19,16 +20,17 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-
+            implementation(libs.ktor.client.cio)
         }
         commonMain.dependencies {
             implementation(projects.trendsDomain)
             implementation(libs.koin.core)
             api(libs.koin.annotations)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.bundles.ktor)
         }
         iosMain.dependencies {
-
+            implementation(libs.ktor.client.darwin)
         }
     }
 
