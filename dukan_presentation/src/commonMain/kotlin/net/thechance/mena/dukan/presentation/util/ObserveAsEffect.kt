@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanStyle
 
 @Composable
 fun <T> ObserveAsEffect(
