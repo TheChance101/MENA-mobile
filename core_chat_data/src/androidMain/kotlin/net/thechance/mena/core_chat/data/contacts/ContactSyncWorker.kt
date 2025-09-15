@@ -17,6 +17,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import net.thechance.mena.core_chat.data.network.ApiConstants.SYNC_CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.shared.dto.BaseResponseDto
 import org.koin.core.component.KoinComponent
@@ -31,8 +34,10 @@ class ContactSyncWorker(
         val contacts = getDeviceContacts()
         if (contacts.isEmpty()) return Result.success()
         val chunkSize = 500
-        contacts.chunked(chunkSize).forEach { chunk ->
-            sendContactsToServer(chunk)
+        coroutineScope {
+            contacts.chunked(chunkSize).map { chunk ->
+                async { sendContactsToServer(chunk) }
+            }.awaitAll()
         }
 
         Result.success()

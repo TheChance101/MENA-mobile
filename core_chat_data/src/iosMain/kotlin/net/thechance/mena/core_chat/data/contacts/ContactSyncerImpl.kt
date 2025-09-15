@@ -13,6 +13,9 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import net.thechance.mena.core_chat.data.contacts.source.remote.ContactSyncer
 import net.thechance.mena.core_chat.data.network.ApiConstants.SYNC_CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.shared.dto.BaseResponseDto
@@ -25,7 +28,10 @@ import kotlin.collections.chunked
 
 const val backgroundTaskIdentifier = "net.thechance.mena.contactsync"
 
-class ContactSyncerImpl(private val client: HttpClient,private val contactsProvider: ContactsProvider) : ContactSyncer, KoinComponent {
+class ContactSyncerImpl(
+    private val client: HttpClient,
+    private val contactsProvider: ContactsProvider
+) : ContactSyncer, KoinComponent {
 
     override suspend fun sync() {
         val contacts = getDeviceContacts()
@@ -37,9 +43,10 @@ class ContactSyncerImpl(private val client: HttpClient,private val contactsProvi
         val chunkSize = 500
 
         val chunks = contacts.chunked(chunkSize)
-
-        for (chunk in chunks) {
-            sendContactsToServer(chunk)
+        coroutineScope {
+            chunks.map { chunk ->
+                async { sendContactsToServer(chunk) }
+            }.awaitAll()
         }
         cancelBackgroundTask()
     }
