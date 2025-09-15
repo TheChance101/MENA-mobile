@@ -22,9 +22,9 @@ import mena.dukan_presentation.generated.resources.Style
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanColor
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanStyle
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.stringResource
@@ -120,12 +120,7 @@ private fun CreateDukanContentSelectStylePreview() {
                 selectedStyle = null,
                 selectedColor = null
             ),
-            listener = object : CreateDukanInteractionListener {
-                override fun onButtonClicked() {}
-                override fun onBackClicked() {}
-                override fun onColorClicked(color: Long) {}
-                override fun onStyleClicked(style: Dukan.Style) {}
-            }
+            listener = PreviewCreateDukanInteractionListener
         )
     }
 }

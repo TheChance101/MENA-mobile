@@ -2,8 +2,6 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import net.thechance.mena.dukan.domain.entity.Dukan
 
-import net.thechance.mena.dukan.domain.entity.Dukan
-
 interface CreateDukanInteractionListener {
 
     fun onButtonClicked()

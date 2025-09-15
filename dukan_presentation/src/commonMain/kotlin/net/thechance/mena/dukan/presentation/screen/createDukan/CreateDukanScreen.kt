@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.CreateDukanContent
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.CreateDukanContent
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
 

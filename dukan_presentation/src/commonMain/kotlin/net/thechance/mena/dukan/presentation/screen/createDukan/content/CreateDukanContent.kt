@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -18,6 +17,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
@@ -54,7 +54,7 @@ fun CreateDukanContent(
             title = "Create New Dukan",
             onLeadingClick = listener::onBackClicked,
             leadingContent = {
-                Icon(
+                MenaIcon(
                     painter = painterResource(Res.drawable.ic_arrow_left),
                     contentDescription = "Back Arrow"
                 )
@@ -81,7 +81,10 @@ fun CreateDukanContent(
                 )
 
                 CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation()
-                CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
+                CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle(
+                    state = state,
+                    listener = listener
+                )
             }
         }
 

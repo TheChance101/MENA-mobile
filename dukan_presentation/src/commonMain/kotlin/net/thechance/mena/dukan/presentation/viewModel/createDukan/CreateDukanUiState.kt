@@ -14,14 +14,6 @@ data class CreateDukanUiState(
     val isZoomOutEnabled: Boolean = false,
     val isEditIconVisible: Boolean = false,
     val isImageBeingCropped: Boolean = false,
-) {
-    enum class CreateDukanStep {
-        BASIC_INFORMATION,
-        SELECT_IMAGE,
-        CROP_IMAGE,
-        SELECT_LOCATION,
-        SELECT_STYLE;
-    val isButtonLoading: Boolean = false,
     val dukanColors: List<Long> = listOf(
         // TODO: Replace with colors fetched from backend
         0xFFE91E63,
@@ -41,7 +33,19 @@ data class CreateDukanUiState(
     val selectedColor: Long? = null,
     val selectedStyle: Dukan.Style? = null,
     val errorMessage: String? = null
-)
+) {
+    enum class CreateDukanStep {
+        BASIC_INFORMATION,
+        SELECT_IMAGE,
+        CROP_IMAGE,
+        SELECT_LOCATION,
+        SELECT_STYLE;
+
+        companion object {
+            val steps = entries
+        }
+    }
+}
 
 data class StyleUiState(
     val style: Dukan.Style,
@@ -49,9 +53,3 @@ data class StyleUiState(
     val hasImage: Boolean,
     val label: String
 )
-
-        companion object {
-            val steps = entries
-        }
-    }
-}
