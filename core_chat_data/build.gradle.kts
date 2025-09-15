@@ -19,7 +19,7 @@ kotlin {
     iosTargets.forEach { target ->
         target.binaries.framework(frameworkName) {
             baseName = "CoreChatData"
-            isStatic = true
+            isStatic = false
             coreChatDataXCFramework.add(this)
         }
 
