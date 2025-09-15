@@ -36,6 +36,19 @@ class CreateDukanViewModel(
 
     override fun onStyleClicked(style: Dukan.Style) = updateState { copy(selectedStyle = style) }
 
+    fun isButtonEnable() {
+        val state = state.value
+        if (state.selectedStyle != null && state.selectedColor != null) {
+            updateState {
+                copy(isButtonEnabled = true)
+            }
+        } else {
+            updateState {
+                copy(isButtonEnabled = false)
+            }
+        }
+    }
+
     private fun getDukanColors() {
         tryToExecute(
             block = { dukanRepository.getDukanColors() },

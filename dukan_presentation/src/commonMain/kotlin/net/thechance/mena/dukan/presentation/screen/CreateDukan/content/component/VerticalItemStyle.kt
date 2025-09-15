@@ -3,8 +3,8 @@ package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.compone
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,11 +22,10 @@ fun VerticalItemStyle(
     addToCartBackgroundColor: Color
 ) {
     Box(
-        modifier=modifier
+        modifier = modifier.fillMaxWidth().height(64.dp)
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
                 .clip(RoundedCornerShape(Theme.radius.xs))
                 .background(Theme.colorScheme.background.surface)
                 .padding(
@@ -42,11 +41,10 @@ fun VerticalItemStyle(
                     .align(Alignment.TopCenter),
                 contentPadding = 9.dp
             )
-
         }
         AddToCartIcon(
             addToCartBackgroundColor = addToCartBackgroundColor,
-            modifier = Modifier.align(Alignment.Center).padding(top = 24.dp).size(16.dp)
+            modifier = Modifier.padding(top = 24.dp).align(Alignment.Center)
         )
     }
 }

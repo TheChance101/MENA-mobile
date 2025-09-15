@@ -26,6 +26,7 @@ import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanColor
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanStyle
 import net.thechance.mena.dukan.presentation.util.styles
+import net.thechance.mena.dukan.presentation.util.toDisplayName
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.stringResource
@@ -78,7 +79,7 @@ fun CreateDukanContentSelectStyle(
         }
         item {
             Text(
-                text =stringResource(Res.string.Style),
+                text = stringResource(Res.string.Style),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
@@ -100,7 +101,7 @@ fun CreateDukanContentSelectStyle(
                             isSelected = state.selectedStyle == item.style
                         )
                         MenaText(
-                            text = item.name,
+                            text = item.style.toDisplayName(),
                             style = Theme.typography.label.small,
                             color = Theme.colorScheme.shadeSecondary,
                             textAlign = TextAlign.Center
@@ -119,7 +120,7 @@ private fun CreateDukanContentSelectStylePreview() {
         CreateDukanContentSelectStyle(
             state = CreateDukanUiState(
                 selectedStyle = null,
-                selectedColor =null
+                selectedColor = null
             ),
             listener = object : CreateDukanInteractionListener {
                 override fun onButtonClicked() {}

@@ -15,8 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.`color size`
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -28,9 +31,8 @@ fun DukanColor(
 ) {
     val colorSize by animateDpAsState(
         targetValue = if (isSelected) 42.dp else 48.dp,
-        label = "color size"
+        label = stringResource(Res.string.`color size`)
     )
-
     Box(
         modifier = modifier.size(48.dp).clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.background.surface)

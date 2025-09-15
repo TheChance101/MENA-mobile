@@ -27,15 +27,23 @@ fun <T> ObserveAsEffect(
     }
 }
 
+fun Dukan.Style.toDisplayName(): String {
+    return when (this) {
+        Dukan.Style.WIDE_IMAGE -> "Wide image with list products"
+        Dukan.Style.SMALL_IMAGE -> "Small image with grid products"
+        Dukan.Style.NO_IMAGE -> "No dukan image"
+    }
+}
+
+
 data class StyleItem(
     val style: Dukan.Style,
-    val name: String,
     val orientation: DukanStyle,
     val hasImage: Boolean
 )
 
 val styles = listOf(
-    StyleItem(Dukan.Style.WIDE_IMAGE, "Wide Image", DukanStyle.HORIZONTAL, true),
-    StyleItem(Dukan.Style.SMALL_IMAGE, "Small Image", DukanStyle.VERTICAL, true),
-    StyleItem(Dukan.Style.NO_IMAGE, "No Image", DukanStyle.HORIZONTAL, false)
+    StyleItem(Dukan.Style.WIDE_IMAGE, DukanStyle.HORIZONTAL, true),
+    StyleItem(Dukan.Style.SMALL_IMAGE, DukanStyle.VERTICAL, true),
+    StyleItem(Dukan.Style.NO_IMAGE, DukanStyle.HORIZONTAL, false)
 )

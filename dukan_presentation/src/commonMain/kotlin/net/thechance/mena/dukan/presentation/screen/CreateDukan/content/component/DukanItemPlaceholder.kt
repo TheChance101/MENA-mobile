@@ -24,8 +24,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DukanItemPlaceholder(
     modifier: Modifier = Modifier,
     contentPadding: Dp
-){
-
+) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.xxs))
@@ -44,7 +43,7 @@ fun DukanItemPlaceholder(
 
 @Preview
 @Composable
-private fun DukanItemImagePreview(){
+private fun DukanItemImagePreview() {
     DukanItemPlaceholder(
         contentPadding = 9.dp
     )

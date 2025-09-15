@@ -43,7 +43,7 @@ fun AddToCartIcon(
 
 @Preview
 @Composable
-private fun AddToCartPreview(){
+private fun AddToCartPreview() {
     AddToCartIcon(
         addToCartBackgroundColor = Theme.colorScheme.background.surfaceHigh
     )
