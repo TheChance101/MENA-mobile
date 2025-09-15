@@ -30,8 +30,8 @@ kotlin {
             implementation(libs.ktor.client.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.core)
+            implementation(libs.koin.workmanager)
             implementation(libs.androidx.work.runtime.ktx)
-
         }
         commonMain.dependencies {
             implementation(projects.coreChatDomain)

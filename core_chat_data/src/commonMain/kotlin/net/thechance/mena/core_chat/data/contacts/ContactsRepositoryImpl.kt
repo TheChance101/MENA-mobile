@@ -11,13 +11,14 @@ import net.thechance.mena.core_chat.data.shared.BaseRepository
 import net.thechance.mena.core_chat.data.shared.dto.BaseResponseDto
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
 import net.thechance.mena.core_chat.domain.entity.Contact
+import net.thechance.mena.core_chat.domain.exception.ContactSyncFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 
 class ContactsRepositoryImpl(
     private val client: HttpClient,
-    private val contactSyncer : ContactSyncer
+    private val contactSyncer: ContactSyncer
 ) : ContactsRepository, BaseRepository {
 
 
@@ -32,7 +33,11 @@ class ContactsRepositoryImpl(
     }
 
     override suspend fun syncContacts() {
-        contactSyncer.sync()
+        try {
+            contactSyncer.sync()
+        } catch (e: Exception){
+            throw ContactSyncFailedException("Couldn't sync user contacts", e)
+        }
     }
 
 }

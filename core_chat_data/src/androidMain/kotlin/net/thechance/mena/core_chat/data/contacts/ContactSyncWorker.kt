@@ -1,4 +1,5 @@
 package net.thechance.mena.core_chat.data.contacts
+
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -15,16 +16,13 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.thechance.mena.core_chat.data.network.ApiConstants.SYNC_CONTACTS_ENDPOINT
-import net.thechance.mena.core_chat.data.shared.dto.BaseResponseDto
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 class ContactSyncWorker(
     appContext: Context,
-    params: WorkerParameters
+    params: WorkerParameters,
+    private val client: HttpClient,
+    private val contactsProvider: ContactsProvider
 ) : CoroutineWorker(appContext, params), KoinComponent {
-
-    private val client: HttpClient by inject()
-    private val contactsProvider: ContactsProvider by inject()
 
     override suspend fun doWork(): Result = runCatching {
         val contacts = getDeviceContacts()
@@ -45,7 +43,7 @@ class ContactSyncWorker(
         client.post(SYNC_CONTACTS_ENDPOINT) {
             contentType(ContentType.Application.Json)
             setBody(contacts.toListOfContactCreationRequestDto())
-        }.body<BaseResponseDto<Unit>>()
+        }.body<Any>()
     }
 
     private suspend fun getDeviceContacts(): List<Contact> {

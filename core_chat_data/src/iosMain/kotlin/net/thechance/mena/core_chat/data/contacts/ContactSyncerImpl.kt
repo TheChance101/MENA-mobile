@@ -17,19 +17,16 @@ import net.thechance.mena.core_chat.data.contacts.source.remote.ContactSyncer
 import net.thechance.mena.core_chat.data.network.ApiConstants.SYNC_CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.shared.dto.BaseResponseDto
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import platform.BackgroundTasks.BGProcessingTaskRequest
 import platform.BackgroundTasks.BGTaskScheduler
 import platform.Foundation.NSDate
 import platform.Foundation.dateByAddingTimeInterval
 import kotlin.collections.chunked
-import kotlin.getValue
 
 const val backgroundTaskIdentifier = "net.thechance.mena.contactsync"
 
-class ContactSyncerImpl : ContactSyncer, KoinComponent {
-    private val client: HttpClient by inject()
-    private val contactsProvider: ContactsProvider by inject()
+class ContactSyncerImpl(private val client: HttpClient,private val contactsProvider: ContactsProvider) : ContactSyncer, KoinComponent {
+
     override suspend fun sync() {
         val contacts = getDeviceContacts()
         scheduleBackgroundTask()
