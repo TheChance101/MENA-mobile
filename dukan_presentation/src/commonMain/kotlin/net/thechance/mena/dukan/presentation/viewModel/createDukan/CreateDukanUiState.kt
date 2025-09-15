@@ -19,18 +19,19 @@ data class CreateDukanUiState(
         0xFFE91E63,
         0xFF7196F9,
     ),
-    val dukanStyles: List<styleUiState> = listOf(  // TODO: Replace with styles fetched from backend
-        styleUiState(Dukan.Style.WIDE_IMAGE, DukanStyle.HORIZONTAL, true),
-        styleUiState(Dukan.Style.SMALL_IMAGE, DukanStyle.VERTICAL, true),
-        styleUiState(Dukan.Style.NO_IMAGE, DukanStyle.HORIZONTAL, false)
-    ),
+    val dukanStyles: List<StyleUiState> = listOf(  // TODO: Replace with styles fetched from backend
+        Dukan.Style.WIDE_IMAGE,
+        Dukan.Style.SMALL_IMAGE,
+        Dukan.Style.NO_IMAGE
+    ).map { it.toUiState() },
     val selectedColor: Long? = null,
     val selectedStyle: Dukan.Style? = null,
     val errorMessage: String? = null
 )
 
-data class styleUiState(
-    val style: Dukan.Style = Dukan.Style.WIDE_IMAGE,
-    val orientation: DukanStyle = DukanStyle.HORIZONTAL,
-    val hasImage: Boolean = true
+data class StyleUiState(
+    val style: Dukan.Style,
+    val orientation: DukanStyle,
+    val hasImage: Boolean,
+    val label: String
 )

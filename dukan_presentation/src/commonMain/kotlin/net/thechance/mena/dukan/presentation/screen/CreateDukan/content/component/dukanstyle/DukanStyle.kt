@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_image
 import mena.dukan_presentation.generated.resources.`style has image`
+import mena.dukan_presentation.generated.resources.`style has small image icon`
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -217,7 +218,7 @@ private fun SmallImageIcon(modifier: Modifier = Modifier) {
         MenaIcon(
             painter = painterResource(Res.drawable.ic_image),
             tint = Theme.colorScheme.primary.onPrimary,
-            contentDescription = stringResource(Res.string.style_has_small_image_icon),
+            contentDescription = stringResource(Res.string.`style has small image icon`),
             modifier = Modifier.size(20.dp)
         )
     }

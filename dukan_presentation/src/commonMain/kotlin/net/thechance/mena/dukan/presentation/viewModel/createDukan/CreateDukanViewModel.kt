@@ -59,7 +59,7 @@ class CreateDukanViewModel(
 
     private fun getDukanStyle() {
         tryToExecute(
-            block = { dukanRepository.getDukanStyles() },
+            block = { dukanRepository.getDukanStyles().map { it.toUiState() }},
             onSuccess = { updateState { copy(dukanStyles = it) } },
             onError = { updateState { copy(errorMessage = it.message) } },
         )

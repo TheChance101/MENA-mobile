@@ -8,7 +8,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import net.thechance.mena.dukan.domain.entity.Dukan
 
 @Composable
 fun <T> ObserveAsEffect(
@@ -26,10 +25,3 @@ fun <T> ObserveAsEffect(
     }
 }
 
-fun Dukan.Style.toDisplayName(): String {
-    return when (this) {
-        Dukan.Style.WIDE_IMAGE -> "Wide image with list products"
-        Dukan.Style.SMALL_IMAGE -> "Small image with grid products"
-        Dukan.Style.NO_IMAGE -> "No dukan image"
-    }
-}

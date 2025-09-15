@@ -25,7 +25,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanColor
 import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanStyle
-import net.thechance.mena.dukan.presentation.util.toDisplayName
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.stringResource
@@ -100,7 +99,7 @@ fun CreateDukanContentSelectStyle(
                             isSelected = state.selectedStyle == item.style
                         )
                         MenaText(
-                            text = item.style.toDisplayName(),
+                            text = item.label,
                             style = Theme.typography.label.small,
                             color = Theme.colorScheme.shadeSecondary,
                             textAlign = TextAlign.Center
