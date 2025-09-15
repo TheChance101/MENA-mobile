@@ -1,24 +1,21 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
-import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.DukanStyle
-fun Dukan.Style.toUiState(): StyleUiState {
+import net.thechance.mena.dukan.domain.entity.Dukan.Style
+
+fun Style.toUiState(): StyleUiState {
     return when (this) {
-        Dukan.Style.WIDE_IMAGE -> StyleUiState(
-            style = this,
-            orientation = DukanStyle.HORIZONTAL,
+       Style.WIDE_IMAGE -> StyleUiState(
+            orientation = DukanStyle.List,
             hasImage = true,
             label = "Wide image with list products"
         )
-        Dukan.Style.SMALL_IMAGE -> StyleUiState(
-            style = this,
-            orientation = DukanStyle.VERTICAL,
+        Style.SMALL_IMAGE -> StyleUiState(
+            orientation = DukanStyle.Grid,
             hasImage = true,
             label = "Small image with grid products"
         )
-        Dukan.Style.NO_IMAGE -> StyleUiState(
-            style = this,
-            orientation = DukanStyle.HORIZONTAL,
+        Style.NO_IMAGE -> StyleUiState(
+            orientation = DukanStyle.List,
             hasImage = false,
             label = "No dukan image"
         )

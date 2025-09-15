@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.Reset
+import mena.dukan_presentation.generated.resources.reset
 import mena.dukan_presentation.generated.resources.ic_add
 import mena.dukan_presentation.generated.resources.ic_remove
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
@@ -67,7 +67,7 @@ fun ZoomControls(
         )
 
         TextButton(
-            text = stringResource(Res.string.Reset),
+            text = stringResource(Res.string.reset),
             onClick = onResetClicked,
         )
     }

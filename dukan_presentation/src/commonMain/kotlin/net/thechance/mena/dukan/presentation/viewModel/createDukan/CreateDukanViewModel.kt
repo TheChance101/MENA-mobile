@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
-import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
@@ -47,9 +46,9 @@ class CreateDukanViewModel(
 
     override fun onColorClicked(color: Long) = updateState { copy(selectedColor = color) }
 
-    override fun onStyleClicked(style: Dukan.Style) = updateState { copy(selectedStyle = style) }
+    override fun onStyleClicked(style: StyleUiState) = updateState { copy(selectedStyle = style) }
 
-    fun isButtonEnable() {
+    fun updateCreateButtonState() {
         val state = state.value
         if (state.selectedStyle != null && state.selectedColor != null) {
             updateState {
@@ -65,16 +64,16 @@ class CreateDukanViewModel(
     private fun getDukanColors() {
         tryToExecute(
             block = { dukanRepository.getDukanColors() },
-            onSuccess = { updateState { copy(dukanColors = it) } },
-            onError = { updateState { copy(errorMessage = it.message) } },
+            onSuccess = {colors-> updateState { copy(dukanColors = colors) } },
+            onError = {throwable-> updateState { copy(errorMessage = throwable.message) } },
         )
     }
 
     private fun getDukanStyle() {
         tryToExecute(
-            block = { dukanRepository.getDukanStyles().map { it.toUiState() }},
-            onSuccess = { updateState { copy(dukanStyles = it) } },
-            onError = { updateState { copy(errorMessage = it.message) } },
+            block = { dukanRepository.getDukanStyles().map {style -> style.toUiState()}},
+            onSuccess = {styles-> updateState { copy(dukanStyles = styles) } },
+            onError = { throwable-> updateState { copy(errorMessage = throwable.message) } },
         )
     }
 
