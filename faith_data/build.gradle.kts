@@ -12,6 +12,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.faithDomain)
+            implementation(libs.koin.core)
         }
         iosMain.dependencies {
 
