@@ -40,10 +40,8 @@ class ContactsRepositoryImpl(
     }
 
     override suspend fun syncContacts() {
-        try {
+        tryCall({ ContactSyncFailedException("Couldn't sync user contacts", it) }) {
             contactSyncer.sync()
-        } catch (e: Exception){
-            throw ContactSyncFailedException("Couldn't sync user contacts", e)
         }
     }
 
