@@ -19,7 +19,7 @@ import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ContactSyncFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
-import net.thechance.mena.core_chat.domain.exception.DataStoreException
+import net.thechance.mena.core_chat.domain.exception.UserSyncedStateException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 
@@ -47,7 +47,7 @@ class ContactsRepositoryImpl(
 
     override suspend fun getUserSyncedState(): Boolean {
         return tryCall(
-            defaultException = { DataStoreException("error with data store", it) }) {
+            defaultException = { UserSyncedStateException("Couldn't get user synced state", it) }) {
             dataStore.data.map {
                 it[USER_SYNCED_STATE_KEY]
             }.firstOrNull() == true
@@ -56,7 +56,7 @@ class ContactsRepositoryImpl(
 
     override suspend fun setUserSyncedState(state: Boolean) {
         return tryCall(
-            defaultException = { DataStoreException("error with data store", it) }) {
+            defaultException = { UserSyncedStateException("Couldn't set user synced state", it) }) {
             dataStore.edit { preferences ->
                 preferences[USER_SYNCED_STATE_KEY] = state
             }
