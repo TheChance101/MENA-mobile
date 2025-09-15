@@ -5,6 +5,8 @@ import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
 import org.maplibre.compose.expressions.dsl.Feature.state
+import org.maplibre.compose.sources.SourceDefaults.MAX_ZOOM
+import org.maplibre.compose.sources.SourceDefaults.MIN_ZOOM
 
 class CreateDukanViewModel(
     private val locationRepository: LocationRepository
@@ -84,9 +86,7 @@ class CreateDukanViewModel(
 
     override fun onCLickNext() {
         val current = state.value.currentStep
-        updateState {
-            copy(currentStep = nextStep(current))
-        }
+        nextStep(current)
     }
 
     fun onImageCroppedAndSaved(croppedUri: String) {
@@ -116,7 +116,7 @@ class CreateDukanViewModel(
                 isZoomOutEnabled = newZoom > MIN_ZOOM
             )
         }
-        nextStep(current)
+        nextStep(state.value.currentStep)
         updateNextButtonEnableState()
     }
 
@@ -132,14 +132,13 @@ class CreateDukanViewModel(
     }
 
     override fun onUploadAnotherImageClicked() {}
-    private fun nextStep(step: CreateDukanStep): CreateDukanStep =
+
     private fun nextStep(step: CreateDukanStep) {
         when (step) {
-            CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
-            CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.SELECT_LOCATION
-            CreateDukanStep.SELECT_LOCATION -> CreateDukanStep.SELECT_STYLE
-            CreateDukanStep.SELECT_STYLE -> step
-            CreateDukanStep.CROP_IMAGE -> CreateDukanStep.CROP_IMAGE
+            CreateDukanStep.CROP_IMAGE -> {
+                updateState { copy(currentStep = CreateDukanStep.CROP_IMAGE) }
+            }
+
             CreateDukanStep.BASIC_INFORMATION -> {
                 updateState { copy(currentStep = CreateDukanStep.SELECT_IMAGE) }
             }

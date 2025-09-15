@@ -24,9 +24,6 @@ map-libra = "0.11.1"
 # GeoCoder
 compass = "2.4.0"
 
-# Location
-playServicesLocation = "21.3.0"
-
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -44,6 +41,7 @@ compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", v
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
 # Testing
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine"}
 
