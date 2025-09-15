@@ -16,9 +16,8 @@ internal data class QuranTypography(
     val medium: TextStyle,
 ) {
 
-    companion object Companion {
-        fun create(fontFamily: FontFamily) =
-            QuranTypography(
+    companion object {
+        fun create(fontFamily: FontFamily) = QuranTypography(
                 large = TextStyle(
                     fontFamily = fontFamily,
                     fontSize = 20.sp,
