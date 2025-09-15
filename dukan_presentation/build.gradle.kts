@@ -34,6 +34,7 @@ kotlin {
             implementation(projects.dukanDomain)
             implementation(projects.designSystem)
             implementation(compose.runtime)
+            implementation(libs.koin.core)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
