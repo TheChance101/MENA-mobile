@@ -11,7 +11,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.hafs
 import org.jetbrains.compose.resources.Font
 
-data class QuranTypography(
+internal data class QuranTypography(
     val large: TextStyle,
     val medium: TextStyle,
 ) {
