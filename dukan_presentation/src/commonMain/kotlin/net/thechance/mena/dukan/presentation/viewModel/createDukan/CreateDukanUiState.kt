@@ -24,7 +24,7 @@ data class CreateDukanUiState(
     val dukanStyles: List<StyleUiState> = listOf(  // TODO: Replace with styles fetched from backend
         StyleUiState(
             orientation = DukanStyle.List,
-            hasImage = false,
+            hasImage = true,
             label = "Wide image with list products"
         ),
         StyleUiState(
