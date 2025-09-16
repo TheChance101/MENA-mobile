@@ -1,0 +1,16 @@
+PODS:
+  - MapLibre (6.17.1)
+
+DEPENDENCIES:
+  - MapLibre (= 6.17.1)
+
+SPEC REPOS:
+  trunk:
+    - MapLibre
+
+SPEC CHECKSUMS:
+  MapLibre: 4602773419937bfa96189c53b90d1055b8ef4f29
+
+PODFILE CHECKSUM: 8b43f91ed3c68aef73407cc31f910d9a1013e059
+
+COCOAPODS: 1.16.2

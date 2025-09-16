@@ -11,9 +11,6 @@ pluginManagement {
             }
         }
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/maplibre/maplibre-compose")
-        }
         gradlePluginPortal()
     }
 }
@@ -28,9 +25,6 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/maplibre/maplibre-compose")
-        }
     }
 }
 

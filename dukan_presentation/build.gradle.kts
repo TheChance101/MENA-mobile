@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.cocoapods)
 }
 
 kotlin {
@@ -25,7 +26,20 @@ kotlin {
         }
     }
 
+    cocoapods {
+        summary = "Some description for the Shared Module"
+        homepage = "Link to the Shared Module homepage"
+        version = "1.0"
+        ios.deploymentTarget = "15.4"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "DukanPresentation"
+            isStatic = true
+        }
+    }
+
     sourceSets {
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)

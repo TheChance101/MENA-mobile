@@ -1,0 +1,8 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '15.4'
+
+target 'iosApp' do
+  use_frameworks!
+
+  pod 'MapLibre', '6.17.1'
+end
