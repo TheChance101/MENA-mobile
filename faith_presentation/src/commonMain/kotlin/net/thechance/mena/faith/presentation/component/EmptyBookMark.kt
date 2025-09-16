@@ -81,7 +81,6 @@ fun EmptyBookmarkState(
     }
 }
 
-
 @Preview()
 @Composable
 private fun EmptyBookMarkPreview() {

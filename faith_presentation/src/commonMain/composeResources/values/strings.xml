@@ -1,4 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">MENA</string>
+    <string name="back_icon">Back Icon</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="remove_bookmark_icon">Remove Bookmark Icon</string>
+    <string name="time_icon">Time Icon</string>
+    <string name="swipe_animation">SwipeAnimation</string>
+    <string name="aya">Aya %1$d</string>
     <string name="start_tilawah">Start Tilawah</string>
 </resources>

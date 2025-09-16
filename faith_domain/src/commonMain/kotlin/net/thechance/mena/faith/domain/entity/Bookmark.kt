@@ -8,5 +8,5 @@ data class Bookmark(
     val id: Int,
     val surah: Surah,
     val ayah: Ayah,
-    val createdAt: Instant
+    val createdAt: Instant,
 )
