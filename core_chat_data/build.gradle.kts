@@ -13,22 +13,19 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.koin.core)
-            implementation(libs.koin.workmanager)
-            implementation(libs.androidx.work.runtime.ktx)
         }
         commonMain.dependencies {
             implementation(projects.coreChatDomain)
             implementation(libs.kotlin.serialization)
             implementation(libs.contacts.provider)
             implementation(libs.koin.core)
+
             implementation(libs.bundles.ktor)
             implementation(libs.androidx.datastore.preferences)
 
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-            implementation(libs.koin.core)
         }
     }
 }
