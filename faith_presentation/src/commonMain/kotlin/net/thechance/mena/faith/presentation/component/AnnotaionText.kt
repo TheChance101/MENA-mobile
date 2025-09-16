@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presenation.component
+package net.thechance.mena.faith.presentation.component
 
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable

@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.data.di
+package di
 
 import org.koin.dsl.module
 
