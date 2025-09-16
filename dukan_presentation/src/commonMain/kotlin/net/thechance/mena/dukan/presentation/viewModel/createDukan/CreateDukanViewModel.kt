@@ -1,14 +1,11 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
-import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.repository.LocationRepository
 import androidx.compose.ui.graphics.ImageBitmap
 import com.attafitamim.krop.core.images.ImageSrc
+import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
-import org.maplibre.compose.expressions.dsl.Feature.state
-import org.maplibre.compose.sources.SourceDefaults.MAX_ZOOM
-import org.maplibre.compose.sources.SourceDefaults.MIN_ZOOM
 
 class CreateDukanViewModel(
     private val locationRepository: LocationRepository
