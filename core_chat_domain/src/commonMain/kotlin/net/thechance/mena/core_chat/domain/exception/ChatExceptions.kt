@@ -11,6 +11,7 @@ class ContactsFetchFailedException(logMessage: String, cause: Throwable? = null)
 
 class ContactsPermissionDeniedException(logMessage: String, cause: Throwable? = null) :
         ChatException(logMessage, cause)
+
 class UnAuthorizedException(logMessage: String? = null) :
     ChatException(logMessage ?: "User is not authorized")
 
@@ -19,3 +20,6 @@ class UnknownException(logMessage: String? = null, cause: Throwable? = null) :
 
 class UserSyncedStateException(logMessage: String, cause: Throwable? = null) :
     ChatException(logMessage, cause)
+
+class NetworkException(logMessage: String? = null) :
+    ChatException(logMessage ?: "Please check your internet connection")
