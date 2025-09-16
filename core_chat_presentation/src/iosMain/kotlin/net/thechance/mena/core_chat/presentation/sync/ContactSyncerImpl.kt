@@ -3,6 +3,8 @@ package net.thechance.mena.core_chat.presentation.sync
 import kotlinx.cinterop.ExperimentalForeignApi
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactSyncer
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import platform.BackgroundTasks.BGProcessingTaskRequest
 import platform.BackgroundTasks.BGTaskScheduler
 import platform.Foundation.NSDate
@@ -10,9 +12,9 @@ import platform.Foundation.dateByAddingTimeInterval
 
 const val backgroundTaskIdentifier = "net.thechance.mena.contactsync"
 
-class ContactSyncerImpl(
-    private val contactsRepository: ContactsRepository
-) : ContactSyncer {
+class ContactSyncerImpl() : ContactSyncer, KoinComponent {
+
+    private val contactsRepository: ContactsRepository by inject()
 
     override suspend fun sync() {
         scheduleBackgroundTask()
