@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.cocoapods)
 }
 
@@ -39,7 +39,6 @@ kotlin {
     }
 
     sourceSets {
-
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -48,6 +47,9 @@ kotlin {
             implementation(projects.dukanDomain)
             implementation(projects.designSystem)
             implementation(compose.runtime)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.compose)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
