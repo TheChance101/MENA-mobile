@@ -27,6 +27,8 @@ import io.github.dellisd.spatialk.geojson.Position
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.ic_edit
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.map.MapStyle
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.painterResource
 import org.maplibre.compose.camera.CameraPosition
@@ -43,11 +45,11 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Map(
-    location: CreateDukanUiState.CoordinatesUi,
+    location: CreateDukanUiState.CoordinatesUiState,
     isLocked: Boolean,
-    modifier: Modifier = Modifier,
-    onMapClick: (CreateDukanUiState.CoordinatesUi) -> Unit,
-    onEditClick: () -> Unit
+    onMapClick: (CreateDukanUiState.CoordinatesUiState) -> Unit,
+    onEditClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
     var markerOffset by remember { mutableStateOf<DpOffset?>(null) }
@@ -72,13 +74,18 @@ fun Map(
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
-            baseStyle = BaseStyle.Uri("https://tiles.openfreemap.org/styles/bright"),
+            baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
             onMapClick = { position, offset ->
                 if (isLocked) {
                     ClickResult.Consume
                 } else {
                     markerOffset = offset
-                    onMapClick(CreateDukanUiState.CoordinatesUi(position.latitude, position.longitude))
+                    onMapClick(
+                        CreateDukanUiState.CoordinatesUiState(
+                            position.latitude,
+                            position.longitude
+                        )
+                    )
                     ClickResult.Pass
                 }
             },
@@ -117,11 +124,13 @@ fun Map(
             if (it) {
                 Image(
                     modifier = Modifier
-                        .padding(4.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .padding(Theme.spacing._4)
+                        .clip(RoundedCornerShape(Theme.radius.md))
                         .background(Color.Black)
-                        .padding(horizontal = 16.dp, vertical = 14.dp)
-                        .size(20.dp)
+                        .padding(
+                            horizontal = Theme.spacing._16,
+                            vertical = Theme.spacing._12
+                        ).size(20.dp)
                         .clickable {
                             onEditClick()
                             markerOffset = null
