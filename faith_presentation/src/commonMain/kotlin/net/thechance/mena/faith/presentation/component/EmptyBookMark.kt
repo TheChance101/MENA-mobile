@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun EmptyBookMarkState(
+fun EmptyBookmarkState(
     title: String,
     icon: DrawableResource,
     contentDescription: String,
@@ -61,9 +61,7 @@ fun EmptyBookMarkState(
             color = Theme.colorScheme.shadeSecondary,
             style = Theme.typography.body.small,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(
-                start = Theme.spacing._4, end = Theme.spacing._4, bottom = Theme.spacing._24
-            )
+            modifier = Modifier.padding(bottom = Theme.spacing._24)
         )
 
         Button(
@@ -71,10 +69,8 @@ fun EmptyBookMarkState(
                 .background(
                     color = Theme.colorScheme.primary.primary,
                     shape = RoundedCornerShape(Theme.radius.md)
-                ).padding(horizontal = 28.dp),
-            onClick = {
-                onClickButton()
-            },
+                ),
+            onClick = onClickButton,
         ) {
             MenaText(
                 text = stringResource(Res.string.start_tilawah),
@@ -90,7 +86,7 @@ fun EmptyBookMarkState(
 @Composable
 private fun EmptyBookMarkPreview() {
     MenaTheme {
-        EmptyBookMarkState(
+        EmptyBookmarkState(
             icon = Res.drawable.ic_not_saved_book_mark,
             contentDescription = "Empty Bookmark",
             title = "No Bookmarks Yet",
