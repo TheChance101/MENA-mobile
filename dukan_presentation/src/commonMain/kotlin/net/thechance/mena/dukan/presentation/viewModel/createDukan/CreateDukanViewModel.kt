@@ -33,7 +33,7 @@ class CreateDukanViewModel(
     }
 
 
-    override fun onMapClicked(coordinates: CreateDukanUiState.CoordinatesUi) {
+    override fun onMapClicked(coordinates: CreateDukanUiState.CoordinatesUiState) {
         tryToExecute(
             block = { onMapClickedBlock(coordinates) },
             onSuccess = ::onMapClickedSuccess
@@ -41,7 +41,7 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    private suspend fun onMapClickedBlock(coordinates: CreateDukanUiState.CoordinatesUi): String {
+    private suspend fun onMapClickedBlock(coordinates: CreateDukanUiState.CoordinatesUiState): String {
         updateState { copy(currentLocation = coordinates) }
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
     }
@@ -57,7 +57,7 @@ class CreateDukanViewModel(
             copy(
                 isMapLocked = false,
                 address = "",
-                currentLocation = CreateDukanUiState.CoordinatesUi()
+                currentLocation = CreateDukanUiState.CoordinatesUiState()
             )
         }
         updateNextButtonEnableState()
@@ -136,7 +136,7 @@ class CreateDukanViewModel(
         )
     }
 
-    private fun onLoadCurrentLocationSuccessfully(location: Dukan.Coordinates) {
+    private fun onLoadCurrentLocationSuccessfully(location: Dukan.Coordinates?) {
         updateState { copy(currentLocation = location.toUiState()) }
     }
 

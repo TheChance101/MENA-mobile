@@ -12,6 +12,6 @@ interface CreateDukanInteractionListener {
     fun onCLickNext()
     fun onImageCrop(image: ImageBitmap)
     fun onCancelCrop()
-    fun onMapClicked(coordinates: CreateDukanUiState.CoordinatesUi)
+    fun onMapClicked(coordinates: CreateDukanUiState.CoordinatesUiState)
     fun onEditClicked()
 }
