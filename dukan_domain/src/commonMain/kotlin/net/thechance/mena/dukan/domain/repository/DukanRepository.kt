@@ -9,6 +9,6 @@ interface DukanRepository {
     suspend fun getCategories(): List<Category>
     suspend fun getDukanColors(): List<Long>
     suspend fun getMyDukan(): Dukan
-    suspend fun isDukanNameTaken(name: String)
+    suspend fun isDukanNameTaken(name: String): Boolean
     suspend fun isUserHasDukan(): Boolean
 }
