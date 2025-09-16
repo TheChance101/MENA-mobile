@@ -22,22 +22,24 @@ fun VerticalItemStyle(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxWidth()
-            .height(64.dp)
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier
+                .height(64.dp)
+                .fillMaxWidth()
                 .clip(RoundedCornerShape(Theme.radius.xs))
                 .background(Theme.colorScheme.background.surface)
-                .padding(
-                    bottom = 20.dp,
-                    top = Theme.spacing._2,
-                    start = Theme.spacing._2,
-                    end = Theme.spacing._2
-                ),
         ) {
             DukanImageItemPlaceholder(
                 modifier = Modifier
+                    .padding(
+                        bottom = 20.dp,
+                        top = Theme.spacing._2,
+                        start = Theme.spacing._2,
+                        end = Theme.spacing._2
+                    )
+                    .height(42.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(Theme.radius.xxs))
                     .background(Theme.colorScheme.background.surfaceLow)
@@ -46,8 +48,9 @@ fun VerticalItemStyle(
             )
         }
         ShoppingCartPlaceholder(
-            modifier = Modifier.padding(top = 36.dp)
-                .align(Alignment.TopCenter)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(top = 24.dp)
                 .clip(RoundedCornerShape(Theme.radius.full))
                 .background(cartBackgroundColor)
         )
