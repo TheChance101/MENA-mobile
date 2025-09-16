@@ -14,6 +14,8 @@ class CreateDukanViewModel(
 
     init {
         loadDukanCategories()
+        getDukanStyle()
+        getDukanColors()
     }
 
     override fun onButtonClicked() {
@@ -40,11 +42,8 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onClickUploadImage(image: ImageSrc) {
     override fun onColorClicked(color: Long) = updateState { copy(selectedColor = color) }
-
     override fun onStyleClicked(style: StyleUiState) = updateState { copy(selectedStyle = style) }
-    override fun onClickUploadImage() {}
 
     fun updateCreateButtonState() {
         val state = state.value
@@ -62,44 +61,41 @@ class CreateDukanViewModel(
     private fun getDukanColors() {
         tryToExecute(
             block = { dukanRepository.getDukanColors() },
-            onSuccess = {::updateScreenStateWithColors },
-            onError = {::handleError},
+            onSuccess = { ::updateScreenStateWithColors },
+            onError = { ::handleError },
         )
     }
 
     private fun getDukanStyle() {
         tryToExecute(
             block = { dukanRepository.getDukanStyles().map { style -> style.toUiState() } },
-            onSuccess = {::updateScreenStateWithStyles },
-            onError = {::handleError },
+            onSuccess = { ::updateScreenStateWithStyles },
+            onError = { ::handleError },
         )
     }
 
-    private fun updateScreenStateWithStyles(dukanStyles:List<StyleUiState>) {
+    private fun updateScreenStateWithStyles(dukanStyles: List<StyleUiState>) {
         updateState {
-            copy(dukanStyles =dukanStyles )
+            copy(dukanStyles = dukanStyles)
         }
     }
 
-    private fun updateScreenStateWithColors(dukanColors:List<Long>) {
+    private fun updateScreenStateWithColors(dukanColors: List<Long>) {
         updateState {
-            copy(dukanColors =dukanColors )
+            copy(dukanColors = dukanColors)
         }
     }
 
-    private fun handleError(errorMessage: String){
+    private fun handleError(errorMessage: String) {
         updateState {
-            copy(errorMessage=errorMessage)
+            copy(errorMessage = errorMessage)
         }
     }
 
-    private fun onCreateClicked() {
-        TODO("Not yet implemented")
-    }
 
-    override fun onClickUploadImage(
-        image: ImageSrc
-    ) {
+    override fun onClickUploadImage() {}
+
+    override fun onClickUploadImage(image: ImageSrc) {
         updateState {
             copy(
                 selectedImage = image,
