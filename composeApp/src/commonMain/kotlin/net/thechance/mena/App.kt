@@ -2,13 +2,10 @@ package net.thechance.mena
 
 import androidx.compose.runtime.Composable
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.dukan.api.DukanHome
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App() {
-    MenaTheme {
-        DukanHome()
-    }
+    MenaTheme {}
 }
