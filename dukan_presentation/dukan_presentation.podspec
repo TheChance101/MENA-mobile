@@ -1,11 +1,11 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'dukan_presentation'
     spec.version                  = '1.0'
-    spec.homepage                 = 'Link to the Shared Module homepage'
+    spec.homepage                 = 'https://github.com/TheChance101/MENA-mobile'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
     spec.license                  = ''
-    spec.summary                  = 'Some description for the Shared Module'
+    spec.summary                  = 'DukanPresentation — internal KMP maps module for Dukan. Contains iOS-compatible map composables and shared location logic used across mobile modules.'
     spec.vendored_frameworks      = 'build/cocoapods/framework/DukanPresentation.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target    = '15.4'
@@ -50,5 +50,5 @@ Pod::Spec.new do |spec|
             SCRIPT
         }
     ]
-    spec.resources = ['build/compose/cocoapods/compose-resources']
+    spec.resources = ['build\compose\cocoapods\compose-resources']
 end

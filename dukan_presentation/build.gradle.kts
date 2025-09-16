@@ -27,8 +27,8 @@ kotlin {
     }
 
     cocoapods {
-        summary = "Some description for the Shared Module"
-        homepage = "Link to the Shared Module homepage"
+        summary = "DukanPresentation — internal KMP maps module for Dukan. Contains iOS-compatible map composables and shared location logic used across mobile modules."
+        homepage = "https://github.com/TheChance101/MENA-mobile"
         version = "1.0"
         ios.deploymentTarget = "15.4"
         podfile = project.file("../iosApp/Podfile")
