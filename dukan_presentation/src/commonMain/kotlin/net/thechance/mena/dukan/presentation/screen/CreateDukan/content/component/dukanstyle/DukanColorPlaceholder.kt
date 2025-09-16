@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -26,7 +26,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ColorOptionsPlaceholder(
     backgroundColor: Color,
     isSelected: Boolean,
-    onClick: () -> Unit = {},
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val colorSize by animateDpAsState(

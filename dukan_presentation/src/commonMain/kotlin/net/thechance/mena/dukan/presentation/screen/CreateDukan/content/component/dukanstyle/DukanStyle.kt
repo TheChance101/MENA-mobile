@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_image
@@ -39,10 +38,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun DukanStyle(
     state: CreateDukanUiState,
-    orientation: DukanStyle = DukanStyle.List,
-    hasImage: Boolean = true,
-    isSelected: Boolean = true,
-    onClick: () -> Unit = {},
+    orientation: DukanStyle,
+    hasImage: Boolean,
+    isSelected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val defaultColor = Theme.colorScheme.background.surfaceHigh
@@ -87,14 +86,14 @@ private fun HorizontalContent(
                 modifier = Modifier.padding(Theme.spacing._4)
             )
         } else {
-            TextPlaceholders(selectedColor)
+            ShimmerTextPlaceholders(selectedColor)
         }
-        PlaceholderRow(selectedColor)
+        ShimmerRow(selectedColor)
 
         val count = if (hasImage) 3 else 4
         repeat(count) {
             HorizontalItemStyle(
-                addToCartBackgroundColor = selectedColor,
+                cartBackgroundColor = selectedColor,
                 modifier = Modifier
                     .padding(
                         start = Theme.spacing._4,
@@ -127,7 +126,7 @@ private fun VerticalContent(selectedColor: Color) {
                 top = Theme.spacing._4,
             )
         )
-        PlaceholderRow(selectedColor)
+        ShimmerRow(selectedColor)
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -149,29 +148,6 @@ private fun VerticalContent(selectedColor: Color) {
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun PlaceholderRow(selectedColor: Color) {
-    val color = Theme.colorScheme.background.surfaceHigh
-    val shimmerRowPadding by animateDpAsState(
-        if (selectedColor == color) Theme.spacing._4 else Theme.spacing._8
-    )
-
-    Row(
-        modifier = Modifier.padding(bottom = shimmerRowPadding)
-    ) {
-        repeat(3) { index ->
-            ShimmerRectangle(
-                modifier = Modifier.weight(1f)
-                    .padding(start = Theme.spacing._4, top = Theme.spacing._4),
-                height = 10.dp,
-                topEndRadius = if (index == 2) 0.dp else Theme.radius.xxs,
-                bottomEndRadius = if (index == 2) 0.dp else Theme.radius.xxs,
-                backgroundColor = selectedColor
-            )
         }
     }
 }
@@ -214,63 +190,6 @@ private fun SmallImageIcon(modifier: Modifier = Modifier) {
         )
     }
 }
-
-@Composable
-private fun TextPlaceholders(
-    selectedColor: Color
-) {
-    val color = Theme.colorScheme.background.surfaceHigh
-    val shimmerTopPadding by animateDpAsState(
-        if (selectedColor == color) 12.dp else 17.dp
-    )
-    val shimmerBottomPadding by animateDpAsState(
-        if (selectedColor == color) Theme.spacing._8 else 11.dp
-    )
-    ShimmerRectangle(
-        modifier = Modifier.fillMaxWidth()
-            .padding(
-                start = Theme.spacing._4,
-                top = shimmerTopPadding,
-                end = 11.dp
-            ),
-        backgroundColor = Theme.colorScheme.background.surface,
-        height = 7.dp,
-    )
-    ShimmerRectangle(
-        modifier = Modifier.fillMaxWidth()
-            .padding(
-                start = Theme.spacing._4,
-                end = 35.dp,
-                top = Theme.spacing._2,
-                bottom = shimmerBottomPadding
-            ),
-        backgroundColor = Theme.colorScheme.background.surface,
-        height = 5.dp,
-    )
-}
-
-@Composable
-private fun ShimmerRectangle(
-    topStartRadius: Dp = Theme.radius.xxs,
-    topEndRadius: Dp = Theme.radius.xxs,
-    bottomStartRadius: Dp = Theme.radius.xxs,
-    bottomEndRadius: Dp = Theme.radius.xxs,
-    height: Dp,
-    backgroundColor: Color,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.height(height).clip(
-            RoundedCornerShape(
-                topEnd = topEndRadius,
-                topStart = topStartRadius,
-                bottomEnd = bottomEndRadius,
-                bottomStart = bottomStartRadius
-            )
-        ).background(backgroundColor)
-    )
-}
-
 @Preview
 @Composable
 private fun DukanStylePreview() {
@@ -278,7 +197,9 @@ private fun DukanStylePreview() {
         DukanStyle(
             state = CreateDukanUiState(),
             hasImage = false,
-            isSelected = true
+            isSelected = true,
+            orientation = DukanStyle.List,
+            onClick = {},
         )
     }
 }

@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -18,7 +18,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HorizontalItemStyle(
-    addToCartBackgroundColor: Color,
+    cartBackgroundColor: Color,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -29,12 +29,15 @@ fun HorizontalItemStyle(
             .padding(Theme.spacing._2)
     ) {
         DukanImageItemPlaceholder(
-            contentPadding = Theme.spacing._4
+            modifier = Modifier.clip(RoundedCornerShape(Theme.radius.xxs))
+                .background(Theme.colorScheme.background.surfaceLow)
+                .padding(Theme.spacing._4)
         )
         Spacer(Modifier.weight(1f))
         ShoppingCartPlaceholder(
-            background = addToCartBackgroundColor,
             modifier = Modifier.align(Alignment.Bottom)
+                .clip(RoundedCornerShape(Theme.radius.full))
+                .background(cartBackgroundColor)
         )
     }
 }
@@ -44,7 +47,7 @@ fun HorizontalItemStyle(
 private fun HorizontalItemStylePreview() {
     MenaTheme {
         HorizontalItemStyle(
-            addToCartBackgroundColor = Theme.colorScheme.background.surfaceHigh,
+            cartBackgroundColor = Theme.colorScheme.background.surfaceHigh,
         )
     }
 }

@@ -1,17 +1,12 @@
-package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shopping_basket
@@ -27,13 +22,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun DukanImageItemPlaceholder(
     modifier: Modifier = Modifier,
-    contentPadding: Dp
 ) {
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.xxs))
-            .background(Theme.colorScheme.background.surfaceLow)
-            .padding(contentPadding),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
         MenaIcon(
@@ -47,13 +38,10 @@ fun DukanImageItemPlaceholder(
 
 @Composable
 fun ShoppingCartPlaceholder(
-    background: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.full))
-            .background(background)
             .padding(3.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -72,11 +60,7 @@ private fun DukanImageItemPlaceholder() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DukanImageItemPlaceholder(
-            contentPadding = 9.dp
-        )
-        ShoppingCartPlaceholder(
-            background = Theme.colorScheme.background.surfaceHigh
-        )
+        DukanImageItemPlaceholder()
+        ShoppingCartPlaceholder()
     }
 }

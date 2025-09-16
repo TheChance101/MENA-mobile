@@ -17,11 +17,13 @@ import mena.dukan_presentation.generated.resources.style
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.ColorOptionsPlaceholder
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.ColorOptionsPlaceholder
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.DukanStyleOptions
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanStyle
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.StyleUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -31,7 +33,8 @@ fun CreateDukanContentSelectStyle(
     state: CreateDukanUiState
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
+        modifier = Modifier.fillMaxSize()
+            .background(Theme.colorScheme.background.surface)
             .padding(start = Theme.spacing._16, end = Theme.spacing._16)
     ) {
         item {
@@ -97,8 +100,12 @@ private fun CreateDukanContentSelectStylePreview() {
     MenaTheme {
         CreateDukanContentSelectStyle(
             state = CreateDukanUiState(
-                selectedStyle = null,
-                selectedColor = null
+                selectedStyle = StyleUiState(
+                    orientation = DukanStyle.List,
+                    hasImage = false,
+                    label = "Wide image with list products"
+                ),
+                selectedColor = 0xFFE91E63
             ),
             listener = PreviewCreateDukanInteractionListener
         )

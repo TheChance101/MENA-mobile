@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,7 +22,8 @@ fun VerticalItemStyle(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxWidth().height(64.dp)
+        modifier = modifier.fillMaxWidth()
+            .height(64.dp)
     ) {
         Box(
             modifier = Modifier
@@ -38,13 +39,17 @@ fun VerticalItemStyle(
             DukanImageItemPlaceholder(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.TopCenter),
-                contentPadding = 9.dp
+                    .clip(RoundedCornerShape(Theme.radius.xxs))
+                    .background(Theme.colorScheme.background.surfaceLow)
+                    .align(Alignment.TopCenter)
+                    .padding(Theme.spacing._4)
             )
         }
         ShoppingCartPlaceholder(
-            background = cartBackgroundColor,
-            modifier = Modifier.padding(top = 36.dp).align(Alignment.TopCenter)
+            modifier = Modifier.padding(top = 36.dp)
+                .align(Alignment.TopCenter)
+                .clip(RoundedCornerShape(Theme.radius.full))
+                .background(cartBackgroundColor)
         )
     }
 }

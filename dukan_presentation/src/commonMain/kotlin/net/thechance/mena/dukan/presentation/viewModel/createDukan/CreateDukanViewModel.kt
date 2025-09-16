@@ -10,13 +10,8 @@ class CreateDukanViewModel(
     BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
     CreateDukanInteractionListener {
 
-    init {
-        getDukanColors()
-        getDukanStyle()
-    }
-
     override fun onButtonClicked() {
-        if (state.value.currentStep != CreateDukanUiState.CreateDukanStep.SELECT_STYLE) {
+        if (state.value.currentStep != CreateDukanStep.SELECT_STYLE) {
             onCLickNext()
         } else {
             onCreateClicked()
@@ -25,7 +20,7 @@ class CreateDukanViewModel(
 
     override fun onBackClicked() {
         val current = state.value.currentStep
-        if (current == CreateDukanUiState.CreateDukanStep.BASIC_INFORMATION) {
+        if (current == CreateDukanStep.BASIC_INFORMATION) {
             // maybe do nothing or exit flow
         } else {
             updateState {
@@ -64,17 +59,35 @@ class CreateDukanViewModel(
     private fun getDukanColors() {
         tryToExecute(
             block = { dukanRepository.getDukanColors() },
-            onSuccess = {colors-> updateState { copy(dukanColors = colors) } },
-            onError = {throwable-> updateState { copy(errorMessage = throwable.message) } },
+            onSuccess = {::updateScreenStateWithColors },
+            onError = {::handleError},
         )
     }
 
     private fun getDukanStyle() {
         tryToExecute(
-            block = { dukanRepository.getDukanStyles().map {style -> style.toUiState()}},
-            onSuccess = {styles-> updateState { copy(dukanStyles = styles) } },
-            onError = { throwable-> updateState { copy(errorMessage = throwable.message) } },
+            block = { dukanRepository.getDukanStyles().map { style -> style.toUiState() } },
+            onSuccess = {::updateScreenStateWithStyles },
+            onError = {::handleError },
         )
+    }
+
+    private fun updateScreenStateWithStyles(dukanStyles:List<StyleUiState>) {
+        updateState {
+            copy(dukanStyles =dukanStyles )
+        }
+    }
+
+    private fun updateScreenStateWithColors(dukanColors:List<Long>) {
+        updateState {
+            copy(dukanColors =dukanColors )
+        }
+    }
+
+    private fun handleError(errorMessage: String){
+        updateState {
+            copy(errorMessage=errorMessage)
+        }
     }
 
     private fun onCreateClicked() {
