@@ -7,11 +7,13 @@
     <string name="enter_address_and_pick_dukan_location_on_map">Enter address and pick dukan location on map</string>
     <string name="address">Address</string>
     <string name="location">Location</string>
-    <string name="Save">Save</string>
-    <string name="Upload another image">Upload another image</string>
-    <string name="Click to upload">Click to upload</string>
-    <string name="Dukan image">Dukan image</string>
-    <string name="Reset">Reset</string>
+    <string name="save">Save</string>
+    <string name="reset">Reset</string>
+    <string name="upload_another_image">Upload another image</string>
+    <string name="click_to_upload">Click to upload</string>
+    <string name="dukan_image">Dukan Image</string>"
     <string name="Upload dukan image">Upload dukan image, it should be rectangle 9:16 aspect ratio</string>
-    <string name="ImageSize">Image (9:16)</string>
+    <string name="image_size">Image (9:16)</string>
+    <string name="create_new_dukan">Create New Dukan</string>
+    <string name="image_size_description">Upload dukan image, it should be rectangle 9:16 aspect ratio</string>
 </resources>

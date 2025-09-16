@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.components
+package net.thechance.mena.dukan.presentation.screen.cropImage.componetns
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.Reset
+import mena.dukan_presentation.generated.resources.reset
 import mena.dukan_presentation.generated.resources.ic_add
 import mena.dukan_presentation.generated.resources.ic_remove
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
@@ -33,9 +33,15 @@ fun ZoomControls(
     onResetClicked: () -> Unit,
     backgroundColor: Color = Theme.colorScheme.background.surfaceLow,
     isZoomOutEnabled: Boolean = true,
+    isZoomInEnabled: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    val animatedIconTint = animateColorAsState(
+    val zoomInButtonIconTint = animateColorAsState(
+        targetValue = if (isZoomInEnabled) Theme.colorScheme.primary.primary else Theme.colorScheme.disabled,
+        label = "ZoomOutIconTint"
+    ).value
+
+    val zoomOutButtonIconTint = animateColorAsState(
         targetValue = if (isZoomOutEnabled) Theme.colorScheme.primary.primary else Theme.colorScheme.disabled,
         label = "ZoomOutIconTint"
     ).value
@@ -53,13 +59,15 @@ fun ZoomControls(
             contentDescription = "Zoom Out",
             onClick = onZoomOutClicked,
             isEnabled = isZoomOutEnabled,
-            iconTint = animatedIconTint
+            iconTint = zoomOutButtonIconTint
         )
 
         RoundIconButton(
             icon = painterResource(Res.drawable.ic_add),
             contentDescription = "Zoom In",
-            onClick = onZoomInClicked
+            onClick = onZoomInClicked,
+            isEnabled = isZoomInEnabled,
+            iconTint = zoomInButtonIconTint
         )
         VerticalDivider(
             modifier = Modifier.height(20.dp).width(1.dp),
@@ -67,7 +75,7 @@ fun ZoomControls(
         )
 
         TextButton(
-            text = stringResource(Res.string.Reset),
+            text = stringResource(Res.string.reset),
             onClick = onResetClicked,
         )
     }

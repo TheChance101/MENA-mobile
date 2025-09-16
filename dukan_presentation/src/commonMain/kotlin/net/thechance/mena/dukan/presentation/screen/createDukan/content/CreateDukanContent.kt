@@ -12,10 +12,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.create
+import mena.dukan_presentation.generated.resources.create_new_dukan
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_edit
 import mena.dukan_presentation.generated.resources.next
@@ -29,7 +29,6 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreateDukanContent(
     state: CreateDukanUiState,
@@ -55,7 +54,7 @@ fun CreateDukanContent(
             .systemBarsPadding()
     ) {
         AppBar(
-            title = "Create New Dukan",
+            title = stringResource(Res.string.create_new_dukan),
             onLeadingClick = listener::onBackClicked,
             leadingContent = {
                 Icon(
@@ -74,12 +73,8 @@ fun CreateDukanContent(
         ) { pageIndex ->
             when (CreateDukanStep.steps[pageIndex]) {
                 CreateDukanStep.BASIC_INFORMATION -> CreateDukanContentBasicInformation()
-                CreateDukanStep.SELECT_IMAGE -> DukanImageCropContent(
-                    state = state,
-                    interactionListener = listener
-                )
 
-                CreateDukanStep.CROP_IMAGE -> UploadDukanImageContent(
+                CreateDukanStep.SELECT_IMAGE -> UploadDukanImageContent(
                     state = state,
                     interactionListener = listener
                 )
@@ -88,20 +83,20 @@ fun CreateDukanContent(
                 CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
             }
         }
-
-        PrimaryButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Theme.spacing._16),
-            text = if (state.currentStep == CreateDukanStep.SELECT_STYLE)
-                stringResource(Res.string.create)
-            else
-                stringResource(Res.string.next),
-            onClick = listener::onButtonClicked,
-            trailingIcon = painterResource(Res.drawable.ic_arrow_left),
-            isEnabled = state.isButtonEnabled,
-            isLoading = state.isButtonLoading
-        )
+        if (state.isImageBeingCropped.not())
+            PrimaryButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Theme.spacing._16),
+                text = if (state.currentStep == CreateDukanStep.SELECT_STYLE)
+                    stringResource(Res.string.create)
+                else
+                    stringResource(Res.string.next),
+                onClick = listener::onButtonClicked,
+                trailingIcon = painterResource(Res.drawable.ic_arrow_left),
+                isEnabled = state.isButtonEnabled,
+                isLoading = state.isButtonLoading
+            )
     }
 }
 

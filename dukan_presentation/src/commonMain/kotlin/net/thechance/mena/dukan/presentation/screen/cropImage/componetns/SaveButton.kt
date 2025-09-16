@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.components
+package net.thechance.mena.dukan.presentation.screen.cropImage.componetns
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.Save
+import mena.dukan_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -24,7 +24,7 @@ fun SaveButton(
     modifier: Modifier = Modifier,
 ) {
     PrimaryButton(
-        text = stringResource(Res.string.Save),
+        text = stringResource(Res.string.save),
         trailingIcon = ColorPainter(Color.Transparent),
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),

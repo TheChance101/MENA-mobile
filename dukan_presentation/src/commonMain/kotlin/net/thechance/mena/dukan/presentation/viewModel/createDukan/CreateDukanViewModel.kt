@@ -2,6 +2,8 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import androidx.compose.ui.graphics.ImageBitmap
+import com.attafitamim.krop.core.images.ImageSrc
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
 import org.maplibre.compose.expressions.dsl.Feature.state
@@ -33,14 +35,6 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onResetClicked() {
-        updateState {
-            copy(
-                zoomFactor = MIN_ZOOM,
-                isZoomOutEnabled = false
-            )
-        }
-    }
 
     override fun onMapClicked(coordinates: CreateDukanUiState.CoordinatesUi) {
         tryToExecute(
@@ -76,8 +70,17 @@ class CreateDukanViewModel(
         TODO("Not yet implemented")
     }
 
-    override fun onClickUploadImage() {
-        emitEffect(CreateDukanEffect.NavigateToImageCropScreen)
+    override fun onClickUploadImage(
+        image: ImageSrc
+    ) {
+        updateState {
+            copy(
+                selectedImage = image,
+                isEditIconVisible = false,
+                isImageBeingCropped = true
+            )
+        }
+        updateNextButtonEnableState()
     }
 
     override fun onClickEditImage() {
@@ -89,69 +92,40 @@ class CreateDukanViewModel(
         nextStep(current)
     }
 
-    fun onImageCroppedAndSaved(croppedUri: String) {
+    override fun onImageCrop(image: ImageBitmap) {
         updateState {
             copy(
-                savedImageUri = croppedUri,
-                isNextButtonEnabled = true
+                croppedImage = image,
+                selectedImage = null,
+                isEditIconVisible = true,
+                isImageBeingCropped = false
             )
         }
-    }
-
-    override fun onSaveClicked() {
-        updateState {
-            copy(
-                isNextButtonEnabled = true,
-                isEditIconVisible = true
-            )
-        }
-    }
-
-    override fun onZoomInClicked() {
-        val current = state.value.zoomFactor
-        val newZoom = (current + ZOOM_STEP).coerceAtMost(MAX_ZOOM)
-        updateState {
-            copy(
-                zoomFactor = newZoom,
-                isZoomOutEnabled = newZoom > MIN_ZOOM
-            )
-        }
-        nextStep(state.value.currentStep)
         updateNextButtonEnableState()
     }
 
-    override fun onZoomOutClicked() {
-        val current = state.value.zoomFactor
-        val newZoom = (current - ZOOM_STEP).coerceAtLeast(MIN_ZOOM)
+    override fun onCancelCrop() {
         updateState {
             copy(
-                zoomFactor = newZoom,
-                isZoomOutEnabled = newZoom > MIN_ZOOM
+                selectedImage = null,
+                isImageBeingCropped = false
             )
         }
+        updateNextButtonEnableState()
     }
-
-    override fun onUploadAnotherImageClicked() {}
 
     private fun nextStep(step: CreateDukanStep) {
         when (step) {
-            CreateDukanStep.CROP_IMAGE -> {
-                updateState { copy(currentStep = CreateDukanStep.CROP_IMAGE) }
-            }
-
             CreateDukanStep.BASIC_INFORMATION -> {
                 updateState { copy(currentStep = CreateDukanStep.SELECT_IMAGE) }
             }
-
             CreateDukanStep.SELECT_IMAGE -> {
                 updateState { copy(currentStep = CreateDukanStep.SELECT_LOCATION) }
             }
-
             CreateDukanStep.SELECT_LOCATION -> {
                 updateState { copy(currentStep = CreateDukanStep.SELECT_STYLE) }
                 loadCurrentLocation()
             }
-
             CreateDukanStep.SELECT_STYLE -> {
                 step
             }
@@ -175,17 +149,15 @@ class CreateDukanViewModel(
             CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.BASIC_INFORMATION
             CreateDukanStep.SELECT_LOCATION -> CreateDukanStep.SELECT_IMAGE
             CreateDukanStep.SELECT_STYLE -> CreateDukanStep.SELECT_LOCATION
-            CreateDukanStep.CROP_IMAGE -> CreateDukanStep.CROP_IMAGE
         }
 
     private fun updateNextButtonEnableState() {
         val state = state.value
         val isNextButtonEnabled = when (state.currentStep) {
             CreateDukanStep.BASIC_INFORMATION -> true
-            CreateDukanStep.SELECT_IMAGE -> state.savedImageUri != null
+            CreateDukanStep.SELECT_IMAGE -> state.croppedImage != null
             CreateDukanStep.SELECT_LOCATION -> state.address.isNotEmpty()
             CreateDukanStep.SELECT_STYLE -> true
-            CreateDukanStep.CROP_IMAGE -> true
         }
         updateState { this.copy(isButtonEnabled = isNextButtonEnabled) }
     }

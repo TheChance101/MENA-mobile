@@ -53,6 +53,9 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.bundles.filekit)
+            implementation(libs.krop.extensions.filekit)
+            implementation(libs.krop.core)
             implementation(libs.navigation.compose)
 
             // maps
