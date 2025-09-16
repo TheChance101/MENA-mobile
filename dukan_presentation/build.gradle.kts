@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -34,11 +34,17 @@ kotlin {
             implementation(projects.dukanDomain)
             implementation(projects.designSystem)
             implementation(compose.runtime)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.compose)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.bundles.filekit)
+            implementation(libs.krop.extensions.filekit)
+            implementation(libs.krop.core)
             implementation(libs.navigation.compose)
             implementation(libs.turbine)
             implementation(libs.junit)

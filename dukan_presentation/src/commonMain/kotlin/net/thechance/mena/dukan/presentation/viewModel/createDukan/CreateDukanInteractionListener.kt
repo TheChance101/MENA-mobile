@@ -1,5 +1,8 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
+import androidx.compose.ui.graphics.ImageBitmap
+import com.attafitamim.krop.core.images.ImageSrc
+
 interface CreateDukanInteractionListener {
 
     fun onButtonClicked()
@@ -7,11 +10,9 @@ interface CreateDukanInteractionListener {
     fun onColorClicked(color: Long)
     fun onStyleClicked(style: StyleUiState)
     fun onClickUploadImage()
+    fun onClickUploadImage(image: ImageSrc)
     fun onClickEditImage()
     fun onCLickNext()
-    fun onSaveClicked()
-    fun onZoomInClicked()
-    fun onZoomOutClicked()
-    fun onResetClicked()
-    fun onUploadAnotherImageClicked()
+    fun onImageCrop(image: ImageBitmap)
+    fun onCancelCrop()
 }

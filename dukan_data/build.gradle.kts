@@ -11,6 +11,7 @@ kotlin {
 
         }
         commonMain.dependencies {
+            implementation(libs.koin.core)
             implementation(projects.dukanDomain)
             implementation(libs.junit)
         }

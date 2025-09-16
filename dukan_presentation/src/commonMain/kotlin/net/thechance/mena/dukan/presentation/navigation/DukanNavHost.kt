@@ -14,13 +14,21 @@ fun DukanNavHost() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = MainScreenRoute,
+            startDestination = DukanRoute.MainScreenRoute,
         ) {
-            composable<MainScreenRoute> {
-                // Main Screen
+            composable<DukanRoute.MainScreenRoute> {
+                //  MainScreen()
             }
 
-            // Other Routs
+            composable<DukanRoute.CreateDukanScreenRoute> {
+                // CreateDukanScreen()
+            }
+            composable<DukanRoute.MyDukanScreenRoute> {
+                // MyDukanScreen()
+            }
+            composable<DukanRoute.RequestPendingScreenRoute> {
+                //   RequestPendingScreen()
+            }
         }
     }
 }
