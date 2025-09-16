@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -15,13 +16,17 @@ kotlin {
         }
     }
 
+    val frameworkName = "CoreChatPresentation"
+    val coreChatPresentationXCFramework = XCFramework(frameworkName)
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "CoreChatPresentation"
-            isStatic = true
+            isStatic = false
+            coreChatPresentationXCFramework.add(this)
         }
     }
 

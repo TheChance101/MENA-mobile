@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlin.serialization)
@@ -8,22 +6,8 @@ plugins {
 
 kotlin {
     androidTarget()
-    val frameworkName = "CoreChatData"
-    val coreChatDataXCFramework = XCFramework(frameworkName)
-
-    val iosTargets = listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    )
-
-    iosTargets.forEach { target ->
-        target.binaries.framework(frameworkName) {
-            baseName = "CoreChatData"
-            isStatic = false
-            coreChatDataXCFramework.add(this)
-        }
-
-    }
+    iosArm64()
+    iosSimulatorArm64()
 
     sourceSets {
         androidMain.dependencies {

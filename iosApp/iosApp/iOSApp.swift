@@ -1,6 +1,6 @@
 import SwiftUI
 import ComposeApp
-import CoreChatData
+import CoreChatPresentation
 
 @main
 struct iOSApp: App {
