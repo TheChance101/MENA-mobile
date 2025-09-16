@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.data.di
+package net.thechance.mena.core_chat.presentation.di
 
 import org.koin.core.module.Module
 
