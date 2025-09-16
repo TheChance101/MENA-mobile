@@ -11,12 +11,12 @@ import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 
 class LocationRepositoryImpl : LocationRepository {
-    override suspend fun getCurrentLocation(): Dukan.Coordinates {
+    override suspend fun getCurrentLocation(): Dukan.Coordinates? {
         val geolocator: Geolocator = Geolocator.mobile()
         val currentLocation: Location? = geolocator.currentLocationOrNull()
         return currentLocation?.coordinates?.let { current ->
             Dukan.Coordinates(latitude = current.latitude, longitude = current.longitude)
-        } ?: Dukan.Coordinates(latitude = DEFAULT_LATITUDE, longitude = DEFAULT_LONGITUDE)
+        }
     }
 
     override suspend fun getCurrentLocationName(
@@ -28,10 +28,5 @@ class LocationRepositoryImpl : LocationRepository {
                 coordinates.longitude
             )
         )?.locality.toString()
-    }
-
-    companion object {
-        const val DEFAULT_LATITUDE = 28.0
-        const val DEFAULT_LONGITUDE = 29.5
     }
 }
