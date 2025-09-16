@@ -22,8 +22,6 @@ import net.thechance.mena.dukan.presentation.screen.createDukan.content.componen
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanStyle
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.StyleUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -100,12 +98,8 @@ private fun CreateDukanContentSelectStylePreview() {
     MenaTheme {
         CreateDukanContentSelectStyle(
             state = CreateDukanUiState(
-                selectedStyle = StyleUiState(
-                    orientation = DukanStyle.List,
-                    hasImage = false,
-                    label = "Wide image with list products"
-                ),
-                selectedColor = 0xFFE91E63
+                selectedStyle = null,
+                selectedColor = null
             ),
             listener = PreviewCreateDukanInteractionListener
         )
