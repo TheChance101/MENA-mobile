@@ -75,6 +75,12 @@ class SurahViewModel(
     }
 
     override fun onBookmarkClick(ayahNumber: Int) {
+        updateState {
+            it.copy(
+                isAyahActionButtonsVisible = false,
+                selectedAyahIndex = -1
+            )
+        }
     }
 
     override fun onCopyClick(ayahContent: String) {
@@ -98,7 +104,11 @@ class SurahViewModel(
 
     override fun onShareClick(ayahContent: String) {
         updateState {
-            it.copy(isAyahActionButtonsVisible = false)
+            it.copy(
+                isAyahActionButtonsVisible = false,
+                selectedAyah = ayahContent,
+                selectedAyahIndex = -1
+            )
         }
         sendEffect(SurahScreenEffect.ShareAyah(ayahContent))
     }
