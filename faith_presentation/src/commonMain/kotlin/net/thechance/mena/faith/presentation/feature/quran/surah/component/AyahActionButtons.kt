@@ -19,9 +19,11 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.bookmark
+import mena.faith_presentation.generated.resources.copy
 import mena.faith_presentation.generated.resources.ic_all_bookmark
 import mena.faith_presentation.generated.resources.ic_copy
 import mena.faith_presentation.generated.resources.ic_link_forward
+import mena.faith_presentation.generated.resources.link_forward
 import mena.faith_presentation.generated.resources.send_to
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
@@ -54,8 +56,8 @@ fun AyahActionButtons(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconTextButton(
-                icon = painterResource(Res.drawable.link_forward),
-                contentDescription = stringResource(Res.string.ic_link_forward),
+                icon = painterResource(Res.drawable.ic_link_forward),
+                contentDescription = stringResource(Res.string.link_forward),
                 text = stringResource(Res.string.send_to),
                 onClick = onShareClick
             )
@@ -70,9 +72,9 @@ fun AyahActionButtons(
             VerticalDivider()
 
             IconTextButton(
-                icon = painterResource(Res.drawable.copy),
-                contentDescription = stringResource(Res.string.ic_copy),
-                text = stringResource(Res.string.ic_copy),
+                icon = painterResource(Res.drawable.ic_copy),
+                contentDescription = stringResource(Res.string.copy),
+                text = stringResource(Res.string.copy),
                 onClick = onCopyClick
             )
         }
