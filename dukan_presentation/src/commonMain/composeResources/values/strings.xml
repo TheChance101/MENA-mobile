@@ -2,7 +2,6 @@
 <resources>
     <string name="create">Create</string>
     <string name="next">Next</string>
-    <string name="create_new_dukan">Create New Dukan</string>
     <string name="dukan_location">Dukan location</string>
     <string name="enter_address_and_pick_dukan_location_on_map">Enter address and pick dukan location on map</string>
     <string name="address">Address</string>
