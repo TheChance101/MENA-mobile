@@ -21,6 +21,8 @@ import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.arrow_left
+import mena.faith_presentation.generated.resources.bismillah
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_bismillah
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -43,8 +45,8 @@ fun SurahAppBar(
     AppBar(
         leadingContent = {
             MenaIcon(
-                painter = painterResource(Res.drawable.arrow_left),
-                contentDescription = stringResource(Res.string.ic_arrow_left)
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.arrow_left)
             )
         },
         onLeadingClick = onBackClick,
@@ -62,8 +64,8 @@ fun BismillahHeader(
     onDismissActionButtons: () -> Unit
 ) {
     MenaImage(
-        painter = painterResource(Res.drawable.bismillah),
-        contentDescription = stringResource(Res.string.ic_bismillah),
+        painter = painterResource(Res.drawable.ic_bismillah),
+        contentDescription = stringResource(Res.string.bismillah),
         modifier = Modifier
             .padding(horizontal = 74.dp)
             .aspectRatio(4f)
