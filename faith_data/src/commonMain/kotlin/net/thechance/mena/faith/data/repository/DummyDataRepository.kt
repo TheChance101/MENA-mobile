@@ -4,7 +4,7 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 
-class DummyQuranRepositorySampleImpl : QuranRepository {
+class QuranRepositoryImpl : QuranRepository {
     override suspend fun getAllSur(): List<Surah> {
         return listOf(
             Surah(
