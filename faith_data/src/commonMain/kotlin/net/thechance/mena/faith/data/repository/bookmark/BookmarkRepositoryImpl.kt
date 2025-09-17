@@ -14,6 +14,13 @@ class BookmarkRepositoryImpl: BookmarkRepository {
         return bookmarks.toList()
     }
 
+    override suspend fun addBookmark(
+        surahId: Int,
+        ayahNumber: Int
+    ): Bookmark {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun removeBookmark(id: Int) {
         bookmarks.removeAt(bookmarks.indexOfFirst { it.id == id })
     }
