@@ -17,9 +17,9 @@ class LocationRepositoryImpl : LocationRepository {
                 coordinates.longitude
             )
         )
-        println("This is just test for the location goeCoder $geocoder")
         return geocoder?.let {
-            "${it.subAdministrativeArea}, ${it.administrativeArea}, ${it.country}"
-        } ?: ""
+            listOfNotNull(it.subAdministrativeArea, it.administrativeArea, it.country)
+                .joinToString(", ")
+        }.orEmpty()
     }
 }

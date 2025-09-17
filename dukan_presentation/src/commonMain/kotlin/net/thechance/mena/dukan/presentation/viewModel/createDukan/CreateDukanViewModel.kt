@@ -140,9 +140,7 @@ class CreateDukanViewModel(
         return when (step) {
             CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
 
-            CreateDukanStep.SELECT_IMAGE -> {
-                CreateDukanStep.SELECT_LOCATION
-            }
+            CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.SELECT_LOCATION
 
             CreateDukanStep.SELECT_LOCATION -> {
                 updateState { copy(isMapLocked = true) }
@@ -247,10 +245,7 @@ class CreateDukanViewModel(
         val isNextButtonEnabled = when (currentState.currentStep) {
             CreateDukanStep.BASIC_INFORMATION -> isBasicInformationStepValid(currentState)
             CreateDukanStep.SELECT_IMAGE -> currentState.croppedImage != null
-            CreateDukanStep.SELECT_LOCATION -> {
-                println("Select Location state: ${currentState.address.isNotBlank()}")
-                currentState.address.isNotBlank()
-            }
+            CreateDukanStep.SELECT_LOCATION -> currentState.address.isNotBlank()
             CreateDukanStep.SELECT_STYLE -> true
         }
         updateState { this.copy(isButtonEnabled = isNextButtonEnabled) }
