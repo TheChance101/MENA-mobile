@@ -9,5 +9,3 @@ fun Ayah.toAyahUiState(): SurahScreenState.AyahUiState {
         content = content
     )
 }
-
-

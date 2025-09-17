@@ -21,7 +21,7 @@ class SurahViewModel(
     }
     private fun loadSurahData(surahId: Int) {
         tryToExecute(
-            execute = { quranRepository.getSurahDetails(surahId) },
+            execute = { quranRepository.getAyatOfSurah(surahId) },
             onStart = {
                 updateState { it.copy(isLoading = true) }
             },

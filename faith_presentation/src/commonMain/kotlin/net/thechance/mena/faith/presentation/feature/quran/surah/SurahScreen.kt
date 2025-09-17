@@ -69,10 +69,10 @@ fun SurahScreen(
 
 @Composable
 private fun Content(
-    modifier: Modifier = Modifier,
     state: SurahScreenState,
     listener: SurahInteractionListener,
-    surahName: String
+    surahName: String,
+    modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -185,6 +185,3 @@ fun HandleScrollDismissEffect(
         }
     }
 }
-
-
-

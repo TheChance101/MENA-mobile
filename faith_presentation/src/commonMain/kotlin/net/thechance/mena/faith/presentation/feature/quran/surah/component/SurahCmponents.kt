@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,7 +30,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.component.image.MenaImage
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.component.AnnotationClickableText
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenState
 import org.jetbrains.compose.resources.painterResource
@@ -116,7 +116,7 @@ fun ClickableAyahText(
     listener: SurahInteractionListener,
     onTextLayoutResult: (TextLayoutResult) -> Unit
 ) {
-    AnnotationClickableText(
+    BasicText(
         text = annotatedText,
         onTextLayout = onTextLayoutResult,
         style = getAyahTextStyle(),

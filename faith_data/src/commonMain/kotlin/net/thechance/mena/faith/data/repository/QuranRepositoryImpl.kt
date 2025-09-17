@@ -73,7 +73,7 @@ class QuranRepositoryImpl : QuranRepository {
         )
     }
 
-    override suspend fun getSurahDetails(id: Int): List<Ayah> {
+    override suspend fun getAyatOfSurah(id: Int): List<Ayah> {
         return listOf(
             Ayah(
                 number = 1,
