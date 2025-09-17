@@ -22,11 +22,8 @@ kotlin {
             implementation(libs.koin.core)
             implementation(projects.dukanDomain)
             implementation(libs.junit)
-            // GeoCoder + GeoLocation
-            implementation(libs.bundles.geoLocation)
+            // GeoCoder
             implementation(libs.bundles.geoCoder)
-
-            implementation(libs.compass.permissions.mobile)
         }
         iosMain.dependencies {
 
