@@ -30,7 +30,6 @@ import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.component.image.MenaImage
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.component.AnnotationClickableText
-import net.thechance.mena.faith.presentation.feature.quran.surah.AyahUiState
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenState
 import org.jetbrains.compose.resources.painterResource
@@ -113,7 +112,7 @@ private fun isValidAyahSelection(state: SurahScreenState): Boolean {
 fun ClickableAyahText(
     annotatedText: AnnotatedString,
     state: SurahScreenState,
-    ayat: List<AyahUiState>,
+    ayat: List<SurahScreenState.AyahUiState>,
     listener: SurahInteractionListener,
     onTextLayoutResult: (TextLayoutResult) -> Unit
 ) {
@@ -157,7 +156,7 @@ private fun getAyahTextStyle() =
      offset: Offset,
      textLayoutResult: TextLayoutResult?,
      annotatedText: AnnotatedString,
-     ayat: List<AyahUiState>,
+     ayat: List<SurahScreenState.AyahUiState>,
      listener: SurahInteractionListener
 ) {
     textLayoutResult?.let { layoutResult ->
