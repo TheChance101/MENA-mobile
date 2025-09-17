@@ -32,7 +32,7 @@ kotlin {
 }
 
 android {
-    namespace = "net.thechance.mena.dukan.presentation"
+    namespace = "net.thechance.mena.dukan.data"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
