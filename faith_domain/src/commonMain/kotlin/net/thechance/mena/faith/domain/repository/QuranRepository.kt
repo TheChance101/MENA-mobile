@@ -5,6 +5,6 @@ import net.thechance.mena.faith.domain.entity.Surah
 
 interface QuranRepository {
     suspend fun getAllSur(): List<Surah>
-    suspend fun getAyatOfSurah(id: Int): List<Ayah>
+    suspend fun getAyatOfSurah(ayahId: Int): List<Ayah>
 
 }

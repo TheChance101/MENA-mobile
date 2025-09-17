@@ -12,8 +12,9 @@ import net.thechance.mena.faith.presentation.base.BaseViewModel
 class SurahViewModel(
     private val quranRepository: QuranRepository,
     surahId: Int,
+    surahName: String
 ): BaseViewModel<SurahScreenState, SurahScreenEffect>(
-    initialState = SurahScreenState()
+    initialState = SurahScreenState(surahId = surahId, surahName = surahName)
 ), SurahInteractionListener {
 
     init {
@@ -22,20 +23,16 @@ class SurahViewModel(
     private fun loadSurahData(surahId: Int) {
         tryToExecute(
             execute = { quranRepository.getAyatOfSurah(surahId) },
-            onStart = {
-                updateState { it.copy(isLoading = true) }
-            },
+            onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { ayat ->
                 updateState {
                     it.copy(
-                        ayatOfSurah = ayat.map { ayah -> ayah.toAyahUiState() }
+                        ayatOfSurah = ayat.map { ayah -> ayah.toUiState() }
                     )
                 }
             },
-            onFinally = {
-                updateState { it.copy(isLoading = false) }
-            },
-            dispatcher = Dispatchers.IO
+            onFinally = { updateState { it.copy(isLoading = false) }
+            }
         )
     }
 
@@ -60,9 +57,7 @@ class SurahViewModel(
         }
     }
 
-    override fun onBackClick() {
-        sendEffect(SurahScreenEffect.NavigateBack)
-    }
+    override fun onBackClick() = sendEffect(SurahScreenEffect.NavigateBack)
 
     override fun onTextLayoutChanged(textLayoutResult: TextLayoutResult) {
         updateState {

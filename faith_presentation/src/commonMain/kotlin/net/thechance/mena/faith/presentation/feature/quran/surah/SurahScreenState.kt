@@ -15,7 +15,6 @@ data class SurahScreenState(
 ) {
     data class AyahUiState(
         val number: Int,
-        val surahId: Int,
         val content: String
     )
 }

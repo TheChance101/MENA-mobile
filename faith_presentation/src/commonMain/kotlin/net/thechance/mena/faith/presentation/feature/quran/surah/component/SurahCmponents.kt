@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
-fun SurahAppBar(
+internal fun SurahAppBar(
     surahName: String,
     onBackClick: () -> Unit
 ) {
@@ -58,7 +58,7 @@ fun SurahAppBar(
     )
 }
 @Composable
-fun BismillahHeader(
+internal fun BasmalaHeader(
     selectedAyahIndex: Int,
     onDismissActionButtons: () -> Unit
 ) {
@@ -71,9 +71,7 @@ fun BismillahHeader(
             .pointerInput(selectedAyahIndex) {
                 detectTapGestures(
                     onTap = {
-                        if (selectedAyahIndex >= 0) {
-                            onDismissActionButtons()
-                        }
+                        if (selectedAyahIndex >= 0) onDismissActionButtons()
                     }
                 )
             }
@@ -81,7 +79,7 @@ fun BismillahHeader(
 }
 
 @Composable
-fun AnimatedAyahActionButtons(
+internal fun AnimatedAyahActionButtons(
     state: SurahScreenState,
     listener: SurahInteractionListener,
     modifier: Modifier = Modifier
@@ -104,12 +102,12 @@ fun AnimatedAyahActionButtons(
     }
 }
 
-private fun isValidAyahSelection(state: SurahScreenState): Boolean {
-    return state.selectedAyahIndex >= 0 &&
+private fun isValidAyahSelection(state: SurahScreenState): Boolean =
+            state.selectedAyahIndex >= 0 &&
             state.selectedAyahIndex < state.ayatOfSurah.size
-}
+
 @Composable
-fun ClickableAyahText(
+internal fun ClickableAyahText(
     annotatedText: AnnotatedString,
     state: SurahScreenState,
     ayat: List<SurahScreenState.AyahUiState>,

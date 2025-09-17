@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah.component
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -13,7 +14,7 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenStat
 import org.jetbrains.compose.resources.Font
 
 @Composable
-fun createClickableAyahText(
+internal fun createClickableAyahText(
     ayatOfSurah: List<SurahScreenState.AyahUiState>,
     selectedAyahIndex: Int
 ): AnnotatedString {
@@ -30,22 +31,20 @@ fun createClickableAyahText(
                 )
             ) {
                 append(aya.content)
-                if (index < ayatOfSurah.size - 1) {
-                    append(" ")
-                }
+                if (index < ayatOfSurah.size - 1) append(" ")
             }
+
             pop()
         }
     }
 }
 
 @Composable
-private fun getAyahTextColor(selectedAyahIndex: Int, currentIndex: Int) =
-    if (selectedAyahIndex == -1) {
-        Theme.colorScheme.shadePrimary
-    } else {
-        if (selectedAyahIndex == currentIndex)
-            Theme.colorScheme.shadePrimary
-        else
-            Theme.colorScheme.shadeTertiary
+private fun getAyahTextColor(selectedAyahIndex: Int, currentIndex: Int): Color {
+    if (selectedAyahIndex == -1)
+         return Theme.colorScheme.shadePrimary
+    if (selectedAyahIndex == currentIndex)
+           return Theme.colorScheme.shadePrimary
+    return Theme.colorScheme.shadeTertiary
     }
+

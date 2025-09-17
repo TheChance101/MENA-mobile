@@ -29,10 +29,9 @@ import mena.faith_presentation.generated.resources.ic_check_circle
 import mena.faith_presentation.generated.resources.snack_bar_message
 import mena.faith_presentation.generated.resources.snack_bar_title
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
-import net.thechance.mena.faith.presentation.feature.quran.surah.component.BismillahHeader
+import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.ClickableAyahText
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.createClickableAyahText
@@ -76,57 +75,64 @@ private fun Content(
 ) {
     val lazyListState = rememberLazyListState()
 
-    MenaTheme {
-        Box(
-            modifier = modifier.fillMaxSize()
-                .background(Theme.colorScheme.background.surface)
-                .windowInsetsPadding(WindowInsets.statusBars)
-        ) {
-
-            Column {
-                SurahAppBar(
-                    surahName = surahName ,
-                    onBackClick = listener::onBackClick
-                )
-
-                AyatOfSurah(
-                    listener = listener,
-                    state = state,
-                    lazyListState = lazyListState
-                )
-            }
-
-
-            AnimatedAyahActionButtons(
-                state = state,
-                listener = listener,
-                modifier = Modifier.fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(Theme.spacing._16)
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Theme.colorScheme.background.surface)
+            .windowInsetsPadding(WindowInsets.statusBars)
+    ) {
+        Column {
+            SurahAppBar(
+                surahName = surahName,
+                onBackClick = listener::onBackClick
             )
-            AnimatedVisibility (
-                visible = state.isSnackBarVisible,
-                enter = fadeIn(animationSpec = tween(300)),
-                exit = fadeOut(animationSpec = tween(300))
-            ){
-                Box(
-                    modifier= Modifier.fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                ){
-                    SnackBar(
-                        title = stringResource(Res.string.snack_bar_title),
-                        message = stringResource(Res.string.snack_bar_message),
-                        leadingIcon = painterResource(Res.drawable.ic_check_circle),
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(
-                                top = Theme.spacing._12 ,
-                                start = Theme.spacing._16,
-                                end =  Theme.spacing._16
-                            )
-                    )
-                }
-            }
+
+            AyatOfSurah(
+                listener = listener,
+                state = state,
+                lazyListState = lazyListState
+            )
         }
+
+        AnimatedAyahActionButtons(
+            state = state,
+            listener = listener,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(Theme.spacing._16)
+        )
+
+        SurahSnackBar(
+            isVisible = state.isSnackBarVisible,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = Theme.spacing._12,
+                    start = Theme.spacing._16,
+                    end = Theme.spacing._16
+                )
+                .windowInsetsPadding(insets = WindowInsets.statusBars)
+        )
+    }
+}
+
+@Composable
+private fun SurahSnackBar(
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300))
+    ) {
+        SnackBar(
+            title = stringResource(Res.string.snack_bar_title),
+            message = stringResource(Res.string.snack_bar_message),
+            leadingIcon = painterResource(Res.drawable.ic_check_circle),
+            modifier = modifier
+        )
     }
 }
 
@@ -153,7 +159,7 @@ private fun AyatOfSurah(
         state = lazyListState
     ) {
         item {
-            BismillahHeader(
+            BasmalaHeader(
                 selectedAyahIndex = state.selectedAyahIndex,
                 onDismissActionButtons = listener::onDismissActionButtons
             )
@@ -170,7 +176,7 @@ private fun AyatOfSurah(
     }
 }
 @Composable
-fun HandleScrollDismissEffect(
+private fun HandleScrollDismissEffect(
     lazyListState: LazyListState,
     state: SurahScreenState,
     listener: SurahInteractionListener

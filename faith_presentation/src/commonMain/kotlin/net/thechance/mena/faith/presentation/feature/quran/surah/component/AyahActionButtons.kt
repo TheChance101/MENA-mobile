@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun AyahActionButtons(
+internal fun AyahActionButtons(
     onBookmarkClick: () -> Unit,
     onCopyClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -40,14 +40,11 @@ fun AyahActionButtons(
 
     ) {
 
-    Box(
-        modifier = modifier.fillMaxWidth()
-            .padding(Theme.spacing._16)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Theme.colorScheme.background.surfaceLow)
-    ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
+                .padding(Theme.spacing._16)
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .background(Theme.colorScheme.background.surfaceLow)
                 .padding(
                     vertical = Theme.spacing._12,
                     horizontal = Theme.spacing._8
@@ -78,7 +75,6 @@ fun AyahActionButtons(
                 onClick = onCopyClick
             )
         }
-    }
 }
 
 @Composable
