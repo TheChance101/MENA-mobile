@@ -48,10 +48,8 @@ fun SurahScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val uiEffect = viewModel.uiEffect
-
     LaunchedEffect(Unit) {
-        uiEffect.collectLatest { effect ->
+        viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
                 is SurahScreenEffect.NavigateBack -> {}
                 is SurahScreenEffect.ShareAyah -> {}

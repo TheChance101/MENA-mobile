@@ -17,6 +17,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.component.image.MenaImage
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.quran
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenState
 import org.jetbrains.compose.resources.painterResource
@@ -54,7 +56,6 @@ internal fun SurahAppBar(
             vertical = Theme.spacing._8,
             horizontal = Theme.spacing._16
         )
-
     )
 }
 @Composable
@@ -143,12 +144,13 @@ internal fun ClickableAyahText(
 }
 
 @Composable
-private fun getAyahTextStyle() =
-    LocalTextStyle.current.copy(
-    textDirection = TextDirection.Rtl,
-    textAlign = TextAlign.Justify,
-    fontSize = 20.sp
-)
+private fun getAyahTextStyle(): TextStyle {
+    return Theme.typography.quran.large.copy(
+        textDirection = TextDirection.Rtl,
+        textAlign = TextAlign.Justify
+    )
+}
+
 
  private fun handleAyahLongPress(
      offset: Offset,
