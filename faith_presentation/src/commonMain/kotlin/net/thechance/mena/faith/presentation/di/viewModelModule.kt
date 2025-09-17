@@ -14,4 +14,5 @@ internal val viewModelModule = module {
             quranRepository = get()
         )
     }
+
 }
