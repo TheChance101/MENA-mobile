@@ -65,7 +65,7 @@ fun ContactItem(
 
         MenaIcon(
             painter = painterResource(
-                if (contact.isMenaMember)
+                if (contact.isMenaUser)
                     Res.drawable.ic_circular_mena_enabled
                 else
                     Res.drawable.ic_circular_mena_disabled

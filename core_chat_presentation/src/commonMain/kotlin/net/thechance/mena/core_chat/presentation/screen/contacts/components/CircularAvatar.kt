@@ -2,12 +2,14 @@ package net.thechance.mena.core_chat.presentation.screen.contacts.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
@@ -31,7 +33,9 @@ fun CircularAvatar(
     ) {
         if (contactImageUri != null) {
             AsyncImage(
+                modifier = Modifier.fillMaxSize(),
                 model = contactImageUri,
+                contentScale = ContentScale.Crop,
                 contentDescription = "Contact photo",
             )
         } else {

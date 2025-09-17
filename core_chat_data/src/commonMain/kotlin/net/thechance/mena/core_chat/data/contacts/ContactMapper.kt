@@ -22,8 +22,13 @@ private fun List<ContactDto>.toListOfContact(): List<Contact> {
 }
 
 private fun ContactDto.toDomain(): Contact {
+    val names = name?.trim()?.split(" ", limit = 2) ?: listOf()
+    val firstName = names.getOrNull(0).orEmpty()
+    val lastName = names.getOrNull(1).orEmpty()
+
     return Contact(
-        name = name.orEmpty(),
+        firstName = firstName,
+        lastName = lastName,
         phone = phoneNumber.orEmpty(),
         isMenaUser = isMenaMember == true,
         imageUrl = imageUrl

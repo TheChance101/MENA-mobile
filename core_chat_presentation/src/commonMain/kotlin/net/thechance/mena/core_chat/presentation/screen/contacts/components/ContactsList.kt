@@ -14,12 +14,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import app.cash.paging.compose.LazyPagingItems
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.could_not_load_contacts
 import mena.core_chat_presentation.generated.resources.ic_warning
+import mena.core_chat_presentation.generated.resources.loading
 import mena.core_chat_presentation.generated.resources.no_contacts_message
 import mena.core_chat_presentation.generated.resources.refresh_contacts_message
+import mena.core_chat_presentation.generated.resources.something_went_wrong
+import net.thechance.mena.core_chat.presentation.components.ErrorView
+import net.thechance.mena.core_chat.presentation.screen.contacts.ContactListInteractionListener
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactUi
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.components.PhoneIcon
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
@@ -30,24 +39,46 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ContactsList(
-    contacts: List<ContactUi>
+    contacts: LazyPagingItems<ContactUi>,
+    listener: ContactListInteractionListener
 ) {
     AnimatedContent(
-        targetState = contacts.isEmpty(),
-        modifier = Modifier.fillMaxSize()
-    ) { isEmpty ->
-        if (isEmpty) EmptyContactsColumn()
-        else {
+        targetState = Pair((contacts.itemCount == 0), contacts.loadState.refresh),
+        modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16),
+    ) { (isEmpty, loadState) ->
+        if (isEmpty && loadState is LoadState.Error) {
+            ErrorView(
+                title = stringResource(Res.string.something_went_wrong),
+                message = stringResource(Res.string.could_not_load_contacts),
+                onRetry = listener::onRefreshContacts
+            )
+        } else if (isEmpty && loadState != LoadState.Loading) {
+            EmptyContactsColumn()
+        } else if (loadState is LoadState.Loading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                MenaText(text = stringResource(Res.string.loading), style = Theme.typography.title.small)
+            }
+        } else {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
                 contentPadding = PaddingValues(vertical = Theme.spacing._8)
             ) {
-                items(contacts.size) { contact ->
-                    ContactItem(
-                        contact = contacts[contact],
-                        onContactClick = { /* //TODO: navigate to chat screen */ },
-                    )
+                items(
+                    count = contacts.itemCount,
+                    key = { index -> "${contacts[index]?.phoneNumber}-$index" }
+                ) { index ->
+                    val contact = contacts[index]
+
+                    contact?.let {
+                        ContactItem(
+                            contact = it,
+                            onContactClick = { /*listener.onContactClick(contact.id)*/ },
+                        )
+                    }
                 }
             }
         }
@@ -66,14 +97,18 @@ private fun EmptyContactsColumn() {
             contentAlignment = Alignment.TopEnd,
             modifier = Modifier.padding(bottom = Theme.spacing._12)
         ) {
-            PhoneIcon(
-            )
+            PhoneIcon()
             MenaIcon(
                 painter = painterResource(Res.drawable.ic_warning),
                 contentDescription = null,
                 modifier = Modifier.size(28.6.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(y = 23.dp, x = (-3).dp)
+                    .then(
+                        if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
+                            Modifier.align (Alignment.TopStart).offset(y = 23.dp, x = 3.dp)
+                        } else {
+                            Modifier.align(Alignment.TopEnd).offset(y = 23.dp, x = (-3).dp)
+                        }
+                    )
             )
         }
         MenaText(

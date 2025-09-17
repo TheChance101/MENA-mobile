@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_phone_back
 import mena.core_chat_presentation.generated.resources.sync_contacts
@@ -47,7 +46,7 @@ fun NoContactsSyncView(
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(Res.string.sync_contacts),
-            contentPadding = PaddingValues(vertical = 13.dp, horizontal = 16.dp),
+            contentPadding = PaddingValues(vertical =  Theme.spacing._12, horizontal =  Theme.spacing._16),
             trailingIcon = painterResource(Res.drawable.ic_phone_back), // TODO: remove it, it's here because it's required and will be removed later
             onClick = { onSyncClick() },
         )

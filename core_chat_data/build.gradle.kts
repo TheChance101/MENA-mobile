@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.androidLibrary)
 }
 
@@ -16,7 +16,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.coreChatDomain)
-            implementation(libs.kotlin.serialization)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.contacts.provider)
             implementation(libs.koin.core)
 

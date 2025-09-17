@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -34,6 +34,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.android)
             implementation(libs.koin.workmanager)
             implementation(libs.androidx.work.runtime.ktx)
         }
@@ -48,23 +49,34 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            //coil
             implementation(libs.coil.compose)
 
+            //data time
+            implementation(libs.kotlinx.datetime)
+
+            //implementation(libs.coil.compose.core)
+            implementation(libs.coil.network.ktor)
 
             // Serialization
-            implementation(libs.kotlin.serialization)
+            implementation(libs.kotlinx.serialization.json)
 
             // Navigation
-            implementation(libs.navigation.compose)
+            implementation(libs.androidx.navigation.compose)
 
             // Paging 3
             implementation(libs.paging.compose.common)
             implementation(libs.paging.common)
-
             // Koin
             implementation(libs.bundles.koin.compose)
+
+            //permission
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.compose)
         }
         iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
             implementation(libs.koin.core)
         }
     }

@@ -7,4 +7,9 @@
     <string name="syncing_contacts_message">Your contact syncing now, please wait until syncing complete.</string>
     <string name="no_contacts_message">You don't have any contact here!</string>
     <string name="refresh_contacts_message">Click on refresh button to upload your new contact.</string>
+    <string name="go_to_settings">To sync your contacts, please enable the contacts permission in your device settings</string>
+    <string name="retry">Retry</string>
+    <string name="loading">Loading...</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="could_not_load_contacts">Could not load contacts, please try again</string>
 </resources>
