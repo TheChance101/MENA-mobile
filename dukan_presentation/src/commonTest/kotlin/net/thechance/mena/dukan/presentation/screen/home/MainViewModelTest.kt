@@ -24,7 +24,7 @@ class MainViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     @Test
-    fun `When a user doesn't have dukan then the DukanStatusUi should be None`() =
+    fun `When a user doesnt have dukan then the DukanStatusUi should be None`() =
         runTest(testDispatcher) {
             everySuspend { dukanRepository.isUserHasDukan() } returns false
 
@@ -79,7 +79,7 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `When the user doesn't have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
+    fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
         runTest(testDispatcher) {
             everySuspend { dukanRepository.isUserHasDukan() } returns false
 
