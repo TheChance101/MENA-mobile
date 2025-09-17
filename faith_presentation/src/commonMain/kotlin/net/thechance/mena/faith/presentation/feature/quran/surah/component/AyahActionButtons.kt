@@ -33,10 +33,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AyahActionButtons(
-    modifier: Modifier = Modifier,
     onBookmarkClick: () -> Unit,
     onCopyClick: () -> Unit,
     onShareClick: () -> Unit,
+    modifier: Modifier = Modifier
 
     ) {
 
@@ -83,11 +83,11 @@ fun AyahActionButtons(
 
 @Composable
 private fun IconTextButton(
-    modifier: Modifier = Modifier,
     icon: Painter,
     text: String,
     contentDescription: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 
 ) {
 

@@ -126,10 +126,10 @@ private fun Content(
 
 @Composable
 private fun AyatOfSurah(
-    modifier: Modifier = Modifier,
     listener: SurahInteractionListener,
     state: SurahScreenState,
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    modifier: Modifier = Modifier,
 ) {
     val annotatedText = createClickableAyahText(
         ayatOfSurah = state.ayatOfSurah,
