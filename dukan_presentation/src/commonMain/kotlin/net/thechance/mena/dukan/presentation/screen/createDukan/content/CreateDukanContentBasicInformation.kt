@@ -45,7 +45,7 @@ fun CreateDukanContentBasicInformation(
         modifier = Modifier
             .fillMaxSize()
             .background(Theme.colorScheme.background.surface),
-        contentPadding = PaddingValues(bottom = Theme.spacing._12)
+        contentPadding = PaddingValues(bottom = Theme.spacing._16)
     ) {
         item {
             HeaderSection()
@@ -86,7 +86,6 @@ private fun HeaderSection() {
         text = stringResource(Res.string.enter_your_dukan_information),
         style = Theme.typography.title.medium,
         color = Theme.colorScheme.shadePrimary,
-        maxLines = 1,
         modifier = Modifier.padding(horizontal = Theme.spacing._16),
         textAlign = TextAlign.Start
     )
@@ -95,7 +94,6 @@ private fun HeaderSection() {
         text = stringResource(Res.string.fill_name_and_select_category),
         style = Theme.typography.body.small,
         color = Theme.colorScheme.shadeSecondary,
-        maxLines = 1,
         modifier = Modifier.padding(
             start = Theme.spacing._16,
             end = Theme.spacing._16,
@@ -111,7 +109,6 @@ private fun CategoryHeaderSection() {
         text = stringResource(Res.string.category),
         style = Theme.typography.title.small,
         color = Theme.colorScheme.shadePrimary,
-        maxLines = 1,
         modifier = Modifier.padding(
             start = Theme.spacing._16,
             end = Theme.spacing._16,
@@ -141,7 +138,6 @@ private fun CategoryHeaderSection() {
             text = stringResource(Res.string.you_can_choose_up_to_3_categories),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary,
-            maxLines = 1,
             textAlign = TextAlign.Start
         )
     }

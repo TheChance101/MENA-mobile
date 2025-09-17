@@ -84,7 +84,8 @@ class CreateDukanViewModel(
 
 
     override fun onNameChanged(name: String) {
-        updateState { copy(name = name, showSnackBar = false) }
+        val limitedName = if (name.length > 40) name.take(40) else name
+        updateState { copy(name = limitedName, showSnackBar = false) }
         updateNextButtonEnableState()
     }
 
