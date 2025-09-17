@@ -22,6 +22,8 @@ koin-core = "4.1.0"
 koin-annotations = "2.1.0"
 kotlinx-serialization = "1.6.3"
 ktor = "3.2.3"
+mokkery = "2.9.0"
+mokkeryCore = "2.9.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -37,6 +39,7 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
 
 #Navigation
+mokkery-core = { module = "dev.mokkery:mokkery-core", version.ref = "mokkeryCore" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
@@ -73,6 +76,8 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+mockkery = {id="dev.mokkery",version.ref = "mokkery"}
+
 [bundles]
 ktor = [
     "ktor-client-core",

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.mockkery)
 }
 
 kotlin {
@@ -53,8 +54,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.turbine)
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.mockk)
-
+            implementation(libs.mokkery.core)
         }
     }
 }
