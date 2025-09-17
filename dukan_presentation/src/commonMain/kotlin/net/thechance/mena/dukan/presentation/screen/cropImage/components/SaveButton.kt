@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.cropImage.componetns
+package net.thechance.mena.dukan.presentation.screen.cropImage.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
