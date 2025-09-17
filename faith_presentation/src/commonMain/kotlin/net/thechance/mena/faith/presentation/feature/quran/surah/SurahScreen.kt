@@ -32,11 +32,9 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun SurahScreen(
-    surahId: String,
+    surahId: Int,
     surahName: String,
-    viewModel: SurahViewModel = koinViewModel(parameters = {
-        parametersOf(surahId, surahName)
-    })
+    viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId) })
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
