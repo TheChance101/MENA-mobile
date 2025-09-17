@@ -2,9 +2,9 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.attafitamim.krop.core.images.ImageSrc
-import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
 
@@ -167,21 +167,18 @@ class CreateDukanViewModel(
         checkNameUniqueness(state.value.name)
     }
 
-    private fun nextStep(step: CreateDukanStep) {
-        when (step) {
-            CreateDukanStep.BASIC_INFORMATION -> {
-                updateState { copy(currentStep = CreateDukanStep.SELECT_IMAGE) }
-            }
+    private fun nextStep(step: CreateDukanStep): CreateDukanStep {
+        return when (step) {
+            CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
+
             CreateDukanStep.SELECT_IMAGE -> {
-                updateState { copy(currentStep = CreateDukanStep.SELECT_LOCATION) }
-            }
-            CreateDukanStep.SELECT_LOCATION -> {
-                updateState { copy(currentStep = CreateDukanStep.SELECT_STYLE) }
                 loadCurrentLocation()
+                CreateDukanStep.SELECT_LOCATION
             }
-            CreateDukanStep.SELECT_STYLE -> {
-                step
-            }
+
+            CreateDukanStep.SELECT_LOCATION -> CreateDukanStep.SELECT_STYLE
+
+            CreateDukanStep.SELECT_STYLE -> step
         }
     }
 
