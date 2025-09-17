@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.attafitamim.krop.core.images.ImageSrc
-import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.cropImage.componetns.ImageCropBox
@@ -30,13 +29,14 @@ import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropUiStat
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropUiState.Companion.MIN_ZOOM
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ImageCropScreen(
     selectedImage: ImageSrc?,
     onImageCrop: (ImageBitmap) -> Unit,
-    viewModel: ImageCropViewModel = ImageCropViewModel()
-    ) {
+    viewModel: ImageCropViewModel = koinViewModel()
+) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEffect(viewModel.effect) { effect ->

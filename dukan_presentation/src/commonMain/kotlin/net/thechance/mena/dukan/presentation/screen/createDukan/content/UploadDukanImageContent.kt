@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import mena.dukan_presentation.generated.resources.image_size
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_image
+import mena.dukan_presentation.generated.resources.image_size
 import mena.dukan_presentation.generated.resources.image_size_description
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -22,7 +22,6 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanIn
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
 
 @Composable
 fun UploadDukanImageContent(
@@ -81,8 +80,6 @@ private fun UploadDukanImageSection(
         )
         UploadImageContainer(
             onClick = interactionListener::onClickUploadImage,
-            onBottomIconClick = interactionListener::onClickUploadImage,
-            showBottomIcon = state.isEditIconVisible,
             image = state.croppedImage,
         )
     }

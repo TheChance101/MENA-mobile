@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
+import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Dukan
 
 fun Dukan.Coordinates.toUiState() = CreateDukanUiState.CoordinatesUiState(
@@ -7,6 +8,15 @@ fun Dukan.Coordinates.toUiState() = CreateDukanUiState.CoordinatesUiState(
     longitude = longitude,
 )
 
+fun List<Category>.toUiState(): List<DukanCategoryUiState> {
+    return map { category ->
+        DukanCategoryUiState(
+            id = category.id,
+            name = category.name,
+            imageUrl = category.imageUrl
+        )
+    }
+}
 fun Dukan.Coordinates?.toUiState() : CreateDukanUiState.CoordinatesUiState {
     return this?.let {
         CreateDukanUiState.CoordinatesUiState(

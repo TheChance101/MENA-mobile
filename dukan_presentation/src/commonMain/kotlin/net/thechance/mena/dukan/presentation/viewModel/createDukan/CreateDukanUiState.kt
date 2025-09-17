@@ -6,12 +6,16 @@ import com.attafitamim.krop.core.images.ImageSrc
 data class CreateDukanUiState(
     val name: String = "",
     val currentStep: CreateDukanStep = CreateDukanStep.BASIC_INFORMATION,
-    val isButtonEnabled: Boolean = true, // TODO: Change this to be default be false
+    val isButtonEnabled: Boolean = false,
     val isButtonLoading: Boolean = false,
     val currentLocation: CoordinatesUiState = CoordinatesUiState(),
     val isMapLocked: Boolean = false,
     val address: String = "",
     val croppedImage: ImageBitmap? = null,
+    val dukanCategories: List<DukanCategoryUiState> = emptyList(),
+    val selectedCategories: Set<DukanCategoryUiState> = emptySet(),
+    val isNameUnique: Boolean = true,
+    val showSnackBar: Boolean = false,
     val isEditIconVisible: Boolean = false,
     val selectedImage: ImageSrc? = null,
     val isImageBeingCropped: Boolean = false,
@@ -33,3 +37,9 @@ data class CreateDukanUiState(
         }
     }
 }
+
+data class DukanCategoryUiState(
+    val id: String,
+    val name: String,
+    val imageUrl: String
+)

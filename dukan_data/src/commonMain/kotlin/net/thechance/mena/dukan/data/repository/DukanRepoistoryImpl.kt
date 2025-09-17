@@ -17,7 +17,14 @@ class DukanRepositoryImpl(
     }
 
     override suspend fun getCategories(): List<Category> {
-        TODO("Not yet implemented")
+        return listOf(
+            Category("1", "Category 1", ""),
+            Category("2", "Category 2",""),
+            Category("3", "Category 3",""),
+            Category("4", "Category 4",""),
+            Category("5", "Category 5",""),
+        )
+
     }
 
     override suspend fun getDukanColors(): List<Long> {
@@ -28,8 +35,9 @@ class DukanRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun isDukanNameTaken(name: String) {
-        TODO("Not yet implemented")
+    override suspend fun isDukanNameTaken(name: String): Boolean {
+        // TODO: Implement real API call when backend is available
+        return false
     }
 
     override suspend fun isUserHasDukan(): Boolean {
