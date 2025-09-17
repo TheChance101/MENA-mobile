@@ -1,16 +1,23 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
+import org.maplibre.compose.camera.CameraPosition
 
 data class CreateDukanUiState(
     val name: String = "",
     val currentStep: CreateDukanStep = CreateDukanStep.BASIC_INFORMATION,
     val isButtonEnabled: Boolean = false,
     val isButtonLoading: Boolean = false,
+
     val currentLocation: CoordinatesUiState = CoordinatesUiState(),
+    val pointerLocation: DpOffset? = null,
+    val cameraCoordinates: CoordinatesUiState = CoordinatesUiState(),
+    val cameraPosition: CameraPosition = CameraPosition(zoom = 11.0),
     val isMapLocked: Boolean = false,
     val address: String = "",
+
     val croppedImage: ImageBitmap? = null,
     val dukanCategories: List<DukanCategoryUiState> = emptyList(),
     val selectedCategories: Set<DukanCategoryUiState> = emptySet(),

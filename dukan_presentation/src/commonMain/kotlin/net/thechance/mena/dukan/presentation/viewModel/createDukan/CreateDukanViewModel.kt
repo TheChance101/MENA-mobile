@@ -1,18 +1,19 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
+import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
     private val dukanRepository: DukanRepository,
     private val locationRepository: LocationRepository
-) :
-    BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
+) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
     CreateDukanInteractionListener {
 
     init {
@@ -43,16 +44,41 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onMapClicked(coordinates: CreateDukanUiState.CoordinatesUiState) {
+    override fun onMapClicked(
+        coordinates: CreateDukanUiState.CoordinatesUiState,
+        pointerLocation: DpOffset
+    ) {
         tryToExecute(
-            block = { onMapClickedBlock(coordinates) },
+            block = { onMapClickedBlock(coordinates, pointerLocation) },
             onSuccess = ::onMapClickedSuccess
         )
         updateNextButtonEnableState()
     }
 
-    private suspend fun onMapClickedBlock(coordinates: CreateDukanUiState.CoordinatesUiState): String {
-        updateState { copy(currentLocation = coordinates) }
+    override fun onCameraMoved(
+        coordinates: CreateDukanUiState.CoordinatesUiState,
+        camera: CameraPosition
+    ) {
+        println("ASODHASOUDH $camera, $coordinates")
+        updateState {
+            copy(
+                cameraCoordinates = coordinates,
+                cameraPosition = camera
+            )
+        }
+    }
+
+    private suspend fun onMapClickedBlock(
+        coordinates: CreateDukanUiState.CoordinatesUiState,
+        pointerLocation: DpOffset
+    ): String {
+        updateState {
+            copy(
+                currentLocation = coordinates,
+                isMapLocked = true,
+                pointerLocation = pointerLocation,
+            )
+        }
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
     }
 
@@ -60,6 +86,7 @@ class CreateDukanViewModel(
         updateState {
             copy(address = address)
         }
+        updateNextButtonEnableState()
     }
 
     override fun onEditClicked() {
@@ -67,7 +94,8 @@ class CreateDukanViewModel(
             copy(
                 isMapLocked = false,
                 address = "",
-                currentLocation = CreateDukanUiState.CoordinatesUiState()
+                currentLocation = CreateDukanUiState.CoordinatesUiState(),
+                pointerLocation = null,
             )
         }
         updateNextButtonEnableState()

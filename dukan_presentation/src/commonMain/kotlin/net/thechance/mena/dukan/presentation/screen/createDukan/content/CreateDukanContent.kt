@@ -23,7 +23,6 @@ import mena.dukan_presentation.generated.resources.create_new_dukan
 import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.dukan_name_is_already_exist
 import mena.dukan_presentation.generated.resources.ic_arrow_left
-import mena.dukan_presentation.generated.resources.ic_edit
 import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -103,7 +102,10 @@ fun CreateDukanContent(
                         interactionListener = listener
                     )
 
-                    CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation()
+                    CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation(
+                        state = state,
+                        listener = listener
+                    )
                     CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
 
                 }

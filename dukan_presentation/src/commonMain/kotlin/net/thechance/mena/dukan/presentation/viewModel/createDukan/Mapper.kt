@@ -3,11 +3,6 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Dukan
 
-fun Dukan.Coordinates.toUiState() = CreateDukanUiState.CoordinatesUiState(
-    latitude = latitude,
-    longitude = longitude,
-)
-
 fun List<Category>.toUiState(): List<DukanCategoryUiState> {
     return map { category ->
         DukanCategoryUiState(

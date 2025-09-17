@@ -25,6 +25,8 @@ kotlin {
             // GeoCoder + GeoLocation
             implementation(libs.bundles.geoLocation)
             implementation(libs.bundles.geoCoder)
+
+            implementation(libs.compass.permissions.mobile)
         }
         iosMain.dependencies {
 
