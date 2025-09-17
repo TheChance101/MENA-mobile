@@ -6,10 +6,12 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
+import net.thechance.mena.core_chat.presentation.screen.contacts.ContactSyncer
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 
 class SyncContactsViewModel(
     private val contactsRepository: ContactsRepository,
+    private val contactSyncer: ContactSyncer,
     private val permissionsController: PermissionsController
 ) : BaseViewModel<SyncContactsState, SyncContactsScreenEffect>(SyncContactsState()),
     SyncContactsScreenInteractionListener {
@@ -70,7 +72,7 @@ class SyncContactsViewModel(
     private fun syncContacts() {
         tryToExecute(
             onStart = { updateState { it.copy(isLoading = true, showSyncView = true) } },
-            execute = { contactsRepository.syncContacts() },
+            execute = { contactSyncer.sync() },
             onSuccess = { onSyncContactsSuccess() },
             onError = ::onError
         )

@@ -7,12 +7,15 @@ import androidx.work.workDataOf
 import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException
 import net.thechance.mena.core_chat.domain.exception.NetworkException
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class ContactSyncWorker(
     appContext: Context,
     params: WorkerParameters,
-    private val contactsRepository: ContactsRepository
-) : CoroutineWorker(appContext, params) {
+) : CoroutineWorker(appContext, params), KoinComponent {
+
+    private val contactsRepository: ContactsRepository by inject()
 
     override suspend fun doWork(): Result = runCatching {
         contactsRepository.syncContacts()
