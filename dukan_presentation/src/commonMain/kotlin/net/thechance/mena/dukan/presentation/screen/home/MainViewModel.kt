@@ -1,12 +1,16 @@
 package net.thechance.mena.dukan.presentation.screen.home
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.presentation.base.BaseViewModel
 
 class MainViewModel(
-    private val dukanRepository: DukanRepository
-) : BaseViewModel<MainScreenUiState, MainEffect>(MainScreenUiState()), MainInteractionListener {
+    private val dukanRepository: DukanRepository,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<MainScreenUiState, MainEffect>(initialState = MainScreenUiState(), defaultDispatcher = dispatcher), MainInteractionListener {
 
     init {
         getDukanState()
