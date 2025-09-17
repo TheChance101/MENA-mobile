@@ -5,6 +5,7 @@ import androidx.compose.ui.text.TextLayoutResult
 data class SurahScreenState(
     val ayatOfSurah: List<AyahUiState> = emptyList(),
     val isAyahActionButtonsVisible: Boolean = false,
+    val isSnackBarVisible: Boolean = false,
     val surahId: Int = 0,
     val surahName: String = "",
     val selectedAyah: String = "",

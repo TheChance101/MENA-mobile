@@ -1,8 +1,11 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
@@ -79,10 +82,19 @@ class SurahViewModel(
     override fun onCopyClick(ayahContent: String) {
         updateState {
             it.copy(
+                isSnackBarVisible = true,
                 selectedAyah = ayahContent,
                 isAyahActionButtonsVisible = false,
                 selectedAyahIndex = -1,
             )
+        }
+        viewModelScope.launch {
+            delay(1500)
+            updateState {
+                it.copy(
+                    isSnackBarVisible = false
+                )
+            }
         }
     }
 

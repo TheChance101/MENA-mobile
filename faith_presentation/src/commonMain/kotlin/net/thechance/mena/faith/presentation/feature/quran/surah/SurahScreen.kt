@@ -1,5 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.ic_check_circle
+import mena.faith_presentation.generated.resources.snack_bar_message
+import mena.faith_presentation.generated.resources.snack_bar_title
+import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
@@ -27,6 +36,8 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.component.Bismi
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.ClickableAyahText
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.createClickableAyahText
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -93,10 +104,31 @@ private fun Content(
                     .align(Alignment.BottomCenter)
                     .padding(Theme.spacing._16)
             )
+            AnimatedVisibility (
+                visible = state.isSnackBarVisible,
+                enter = fadeIn(animationSpec = tween(300)),
+                exit = fadeOut(animationSpec = tween(300))
+            ){
+                Box(
+                    modifier= Modifier.fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                ){
+                    SnackBar(
+                        title = stringResource(Res.string.snack_bar_title),
+                        message = stringResource(Res.string.snack_bar_message),
+                        leadingIcon = painterResource(Res.drawable.ic_check_circle),
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(
+                                top = Theme.spacing._12 ,
+                                start = Theme.spacing._16,
+                                end =  Theme.spacing._16
+                            )
+                    )
+                }
+            }
         }
     }
 }
-
 
 @Composable
 private fun AyatOfSurah(
