@@ -62,6 +62,7 @@ koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", ver
 koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin-core" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
+koin-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koin-core" }
 
 # permissions
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
