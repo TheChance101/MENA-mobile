@@ -25,10 +25,7 @@ object PreviewCreateDukanInteractionListener : CreateDukanInteractionListener {
         pointerLocation: DpOffset
     ) {}
 
-    override fun onCameraMoved(
-        coordinates: CreateDukanUiState.CoordinatesUiState,
-        camera: CameraPosition
-    ) {}
+    override fun onCameraMoved(camera: CameraPosition) {}
 
-    override fun onEditClicked() {}
+    override fun onEditMapLocationClicked() {}
 }

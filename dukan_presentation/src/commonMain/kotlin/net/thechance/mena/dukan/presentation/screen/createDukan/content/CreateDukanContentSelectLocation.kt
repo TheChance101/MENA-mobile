@@ -81,13 +81,12 @@ fun CreateDukanContentSelectLocation(
                     .clip(RoundedCornerShape(Theme.radius.md))
                     .fillMaxWidth()
                     .height(244.dp),
-                location = state.currentLocation,
                 isLocked = state.isMapLocked,
                 anchorLocation = state.pointerLocation,
                 cameraPosition = state.cameraPosition,
                 onMapClick = listener::onMapClicked,
                 onCameraMoved = listener::onCameraMoved,
-                onEditClick = listener::onEditClicked
+                onEditClick = listener::onEditMapLocationClicked
             )
         }
     }

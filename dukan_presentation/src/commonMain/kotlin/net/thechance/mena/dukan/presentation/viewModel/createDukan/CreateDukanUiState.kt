@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
+import io.github.dellisd.spatialk.geojson.Position
 import org.maplibre.compose.camera.CameraPosition
 
 data class CreateDukanUiState(
@@ -13,8 +14,7 @@ data class CreateDukanUiState(
 
     val currentLocation: CoordinatesUiState = CoordinatesUiState(),
     val pointerLocation: DpOffset? = null,
-    val cameraCoordinates: CoordinatesUiState = CoordinatesUiState(),
-    val cameraPosition: CameraPosition = CameraPosition(zoom = 11.0),
+    val cameraPosition: CameraPosition = CameraPosition(target = Position(29.0, 28.0), zoom = 1.0),
     val isMapLocked: Boolean = false,
     val address: String = "",
 
@@ -29,8 +29,8 @@ data class CreateDukanUiState(
 ) {
 
     data class CoordinatesUiState(
-        val latitude: Double = 0.0,
-        val longitude: Double = 0.0,
+        val latitude: Double = 28.0,
+        val longitude: Double = 29.0,
     )
 
     enum class CreateDukanStep {

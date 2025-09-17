@@ -4,7 +4,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +23,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import io.github.dellisd.spatialk.geojson.Position
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.ic_edit
@@ -41,53 +44,48 @@ import org.maplibre.compose.util.ClickResult
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Map(
-    location: CreateDukanUiState.CoordinatesUiState,
     anchorLocation: DpOffset?,
     isLocked: Boolean,
     cameraPosition: CameraPosition,
     onMapClick: (CreateDukanUiState.CoordinatesUiState, DpOffset) -> Unit,
-    onCameraMoved: (CreateDukanUiState.CoordinatesUiState, CameraPosition) -> Unit,
+    onCameraMoved: (CameraPosition) -> Unit,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
+    var locked by rememberSaveable { mutableStateOf(isLocked) }
     val camera = rememberCameraState(firstPosition = cameraPosition)
-
+    var screenSize by rememberSaveable { mutableStateOf(Pair(0.dp, 0.dp)) }
     LaunchedEffect(Unit) {
         camera.animateTo(
-            finalPosition =
-                cameraPosition.copy(
-                    target = Position(latitude = location.latitude, longitude = location.longitude),
-                    zoom = cameraPosition.zoom
-                ),
+            finalPosition = cameraPosition,
         )
     }
-
     LaunchedEffect(camera) {
         snapshotFlow { camera.position }
             .collect { position ->
-                onCameraMoved(
-                    CreateDukanUiState.CoordinatesUiState(
-                        position.target.latitude,
-                        position.target.longitude
-                    ),
-                    CameraPosition(
-                        target = position.target,
-                        zoom = position.zoom
-                    )
-                )
+                onCameraMoved(position)
             }
     }
 
-    Box(
+    BoxWithConstraints(
         modifier = modifier
     ) {
+
+        LaunchedEffect(maxWidth, maxHeight) {
+            if (maxWidth != screenSize.first || maxHeight != screenSize.second) {
+                screenSize = Pair(maxWidth, maxHeight)
+                onEditClick()
+                locked = false
+            }
+        }
+
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
             baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
             onMapClick = { position, offset ->
-                if (isLocked) {
+                if (locked) {
                     ClickResult.Consume
                 } else {
                     onMapClick(
@@ -97,12 +95,13 @@ fun Map(
                         ),
                         offset,
                     )
+                    locked = true
                     ClickResult.Pass
                 }
             },
             options =
                 MapOptions(
-                    gestureOptions = if (isLocked) {
+                    gestureOptions = if (locked) {
                         GestureOptions.AllDisabled
                     } else {
                         GestureOptions.Standard
@@ -144,6 +143,7 @@ fun Map(
                         ).size(20.dp)
                         .clickable {
                             onEditClick()
+                            locked = false
                         },
                     painter = painterResource(Res.drawable.ic_edit),
                     contentDescription = null
