@@ -7,5 +7,5 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val repositoryModule = module {
-    singleOf(::DummyQuranRepositorySampleImpl) bind QuranRepository::class
+    singleOf(::DummyQuranRepositorySampleImpl).bind<QuranRepository>()
 }
