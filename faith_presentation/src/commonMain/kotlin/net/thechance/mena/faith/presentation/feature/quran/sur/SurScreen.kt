@@ -87,7 +87,6 @@ fun SurScreen(
     )
 }
 
-
 @Composable
 private fun Content(
     uiState: SurScreenState,
