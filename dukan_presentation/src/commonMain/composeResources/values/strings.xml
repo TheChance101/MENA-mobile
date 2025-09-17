@@ -11,12 +11,10 @@
     <string name="upload_another_image">Upload another image</string>
     <string name="click_to_upload">Click to upload</string>
     <string name="dukan_image">Dukan Image</string>"
-    <string name="Upload dukan image">Upload dukan image, it should be rectangle 9:16 aspect ratio</string>
+    <string name="upload_dukan_image">Upload dukan image, it should be rectangle 9:16 aspect ratio</string>
     <string name="image_size">Image (9:16)</string>
     <string name="create_new_dukan">Create New Dukan</string>
     <string name="image_size_description">Upload dukan image, it should be rectangle 9:16 aspect ratio</string>
-    <string name="create">Create</string>
-    <string name="next">Next</string>
     <string name="enter_your_dukan_information">Enter your dukan information</string>
     <string name="fill_name_and_select_category">Fill name and select the dukan category</string>
     <string name="dukan_name">Dukan name</string>
