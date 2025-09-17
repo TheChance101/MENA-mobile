@@ -12,10 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,32 +37,46 @@ import org.maplibre.compose.map.OrnamentOptions
 import org.maplibre.compose.map.RenderOptions
 import org.maplibre.compose.style.BaseStyle
 import org.maplibre.compose.util.ClickResult
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Map(
     location: CreateDukanUiState.CoordinatesUiState,
+    anchorLocation: DpOffset?,
     isLocked: Boolean,
-    onMapClick: (CreateDukanUiState.CoordinatesUiState) -> Unit,
+    cameraPosition: CameraPosition,
+    onMapClick: (CreateDukanUiState.CoordinatesUiState, DpOffset) -> Unit,
+    onCameraMoved: (CreateDukanUiState.CoordinatesUiState, CameraPosition) -> Unit,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    var markerOffset by remember { mutableStateOf<DpOffset?>(null) }
-
-    val camera = rememberCameraState(firstPosition = CameraPosition())
-
+    val camera = rememberCameraState(firstPosition = cameraPosition)
 
     LaunchedEffect(Unit) {
         camera.animateTo(
             finalPosition =
-                camera.position.copy(
+                cameraPosition.copy(
                     target = Position(latitude = location.latitude, longitude = location.longitude),
-                    zoom = 11.0
+                    zoom = cameraPosition.zoom
                 ),
-            duration = 5.seconds,
         )
+    }
+
+    LaunchedEffect(camera) {
+        snapshotFlow { camera.position }
+            .collect { position ->
+                onCameraMoved(
+                    CreateDukanUiState.CoordinatesUiState(
+                        position.target.latitude,
+                        position.target.longitude
+                    ),
+                    CameraPosition(
+                        target = position.target,
+                        zoom = position.zoom
+                    )
+                )
+            }
     }
 
     Box(
@@ -79,12 +90,12 @@ fun Map(
                 if (isLocked) {
                     ClickResult.Consume
                 } else {
-                    markerOffset = offset
                     onMapClick(
                         CreateDukanUiState.CoordinatesUiState(
                             position.latitude,
                             position.longitude
-                        )
+                        ),
+                        offset,
                     )
                     ClickResult.Pass
                 }
@@ -101,7 +112,7 @@ fun Map(
                 )
         )
         Crossfade(
-            targetState = markerOffset
+            targetState = anchorLocation
         ) {
             it?.let { offset ->
                 MenaImage(
@@ -119,7 +130,7 @@ fun Map(
         Crossfade(
             modifier = Modifier
                 .align(Alignment.BottomEnd),
-            targetState = markerOffset != null
+            targetState = anchorLocation != null
         ) {
             if (it) {
                 MenaImage(
@@ -133,7 +144,6 @@ fun Map(
                         ).size(20.dp)
                         .clickable {
                             onEditClick()
-                            markerOffset = null
                         },
                     painter = painterResource(Res.drawable.ic_edit),
                     contentDescription = null
