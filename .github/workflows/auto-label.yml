@@ -1,0 +1,39 @@
+name: Auto Label Jira Ticket
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  add-label:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Get branch name
+        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+
+      - name: Map prefix to label
+        id: map
+        run: |
+          case "${BRANCH_NAME}" in
+            */IDN-*) echo "LABEL=Infra" >> $GITHUB_ENV ;;
+            */DKN-*) echo "LABEL=Dukan" >> $GITHUB_ENV ;;
+            */CHT-*) echo "LABEL=Chat" >> $GITHUB_ENV ;;
+            */FTH-*) echo "LABEL=Faith" >> $GITHUB_ENV ;;
+            */TRN-*) echo "LABEL=Trends" >> $GITHUB_ENV ;;
+            */WLT-*) echo "LABEL=Wallet" >> $GITHUB_ENV ;;
+            *) echo "LABEL=" >> $GITHUB_ENV ;;
+          esac
+
+      - name: Add label to PR
+        if: env.LABEL != ''
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: ${{ env.LABEL }}

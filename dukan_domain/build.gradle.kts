@@ -8,6 +8,7 @@ kotlin {
     iosSimulatorArm64()
     sourceSets {
         commonMain.dependencies {
+            implementation(libs.koin.core)
         }
     }
 }
