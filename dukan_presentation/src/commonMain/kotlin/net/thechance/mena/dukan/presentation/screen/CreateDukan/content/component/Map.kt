@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.presentation.screen.createDukan.content.compone
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,6 +26,7 @@ import io.github.dellisd.spatialk.geojson.Position
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.ic_edit
+import net.thechance.mena.designsystem.presentation.component.image.MenaImage
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.map.MapStyle
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
@@ -104,7 +104,7 @@ fun Map(
             targetState = markerOffset
         ) {
             it?.let { offset ->
-                Image(
+                MenaImage(
                     painter = painterResource(Res.drawable.anchor),
                     contentDescription = null,
                     modifier = Modifier
@@ -122,7 +122,7 @@ fun Map(
             targetState = markerOffset != null
         ) {
             if (it) {
-                Image(
+                MenaImage(
                     modifier = Modifier
                         .padding(Theme.spacing._4)
                         .clip(RoundedCornerShape(Theme.radius.md))
