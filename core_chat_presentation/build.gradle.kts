@@ -16,17 +16,13 @@ kotlin {
         }
     }
 
-    val frameworkName = "CoreChatPresentation"
-    val coreChatPresentationXCFramework = XCFramework(frameworkName)
-
     listOf(
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "CoreChatPresentation"
-            isStatic = false
-            coreChatPresentationXCFramework.add(this)
+            isStatic = true
         }
     }
 
