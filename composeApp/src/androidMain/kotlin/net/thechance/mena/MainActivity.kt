@@ -16,11 +16,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        startKoin {
-            androidContext(this@MainActivity)
-            modules(faithPresentationModule, faithDataModule) }
         setContent {
-            SurahScreen()
         }
     }
 }
