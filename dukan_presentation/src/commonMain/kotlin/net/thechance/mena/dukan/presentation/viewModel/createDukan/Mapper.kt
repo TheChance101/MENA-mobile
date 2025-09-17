@@ -12,16 +12,6 @@ fun List<Category>.toUiState(): List<DukanCategoryUiState> {
         )
     }
 }
-fun Dukan.Coordinates?.toUiState() : CreateDukanUiState.CoordinatesUiState {
-    return this?.let {
-        CreateDukanUiState.CoordinatesUiState(
-            latitude = latitude,
-            longitude = longitude,
-        )
-    } ?: CreateDukanUiState.CoordinatesUiState(
-        28.0, 29.0
-    )
-}
 
 fun CreateDukanUiState.CoordinatesUiState.toEntity() = Dukan.Coordinates(
     latitude = latitude,
