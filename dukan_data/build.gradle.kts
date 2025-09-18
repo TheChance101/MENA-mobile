@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -24,6 +25,7 @@ kotlin {
             implementation(libs.junit)
             // GeoCoder
             implementation(libs.bundles.geoCoder)
+            implementation(libs.bundles.ktor)
         }
         iosMain.dependencies {
 

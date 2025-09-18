@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.components
+package net.thechance.mena.dukan.presentation.screen.createDukan.content.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

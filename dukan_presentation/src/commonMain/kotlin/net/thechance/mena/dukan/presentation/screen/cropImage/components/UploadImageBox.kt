@@ -36,9 +36,9 @@ import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.ic_add_image
 import mena.dukan_presentation.generated.resources.ic_edit
 import mena.dukan_presentation.generated.resources.upload_dukan_image
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.image.MenaImage
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.image.Image
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -99,11 +99,11 @@ fun UploadImageContainer(
                 )
             } else {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    MenaImage(
+                    Image(
                         painter = painterResource(Res.drawable.ic_add_image),
                         contentDescription = stringResource(Res.string.upload_dukan_image)
                     )
-                    MenaText(
+                    Text(
                         text = stringResource(Res.string.click_to_upload),
                         color = Theme.colorScheme.primary.primary,
                         style = Theme.typography.label.medium
@@ -127,7 +127,7 @@ fun UploadImageContainer(
                     .clickable { filePicker.launch() },
                 contentAlignment = Alignment.Center
             ) {
-                MenaIcon(
+                Icon(
                     painter = painterResource(Res.drawable.ic_edit),
                     contentDescription = "Bottom Action",
                     tint = Theme.colorScheme.primary.onPrimary,

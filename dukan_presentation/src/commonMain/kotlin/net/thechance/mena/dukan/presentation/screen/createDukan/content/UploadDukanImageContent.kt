@@ -11,7 +11,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.image_size
 import mena.dukan_presentation.generated.resources.image_size_description
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.cropImage.ImageCropScreen
@@ -59,17 +59,17 @@ private fun UploadDukanImageSection(
             .background(Theme.colorScheme.background.surface)
             .padding(horizontal = Theme.spacing._16)
     ) {
-        MenaText(
+        Text(
             text = stringResource(Res.string.dukan_image),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
         )
-        MenaText(
+        Text(
             text = stringResource(Res.string.image_size_description),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
         )
-        MenaText(
+        Text(
             text = stringResource(Res.string.image_size),
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
