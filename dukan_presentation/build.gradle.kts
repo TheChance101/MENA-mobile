@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.cocoapods)
+    alias(libs.plugins.mokkery.plugin)
 }
 
 kotlin {
@@ -62,12 +63,16 @@ kotlin {
 
             // maps
             implementation(libs.maplibre.compose)
-
-            implementation(libs.turbine)
-            implementation(libs.junit)
         }
         iosMain.dependencies {
 
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.junit)
+            implementation(libs.mokkery.core)
         }
 
         jvmTest.dependencies{
