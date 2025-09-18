@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.home
+package net.thechance.mena.dukan.presentation.screen.main
 
 import app.cash.turbine.test
 import dev.mokkery.MockMode
@@ -10,10 +10,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.domain.entity.Category
+import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.toUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -26,7 +35,7 @@ class MainViewModelTest {
     @Test
     fun `When a user doesnt have dukan then the DukanStatusUi should be None`() =
         runTest(testDispatcher) {
-            everySuspend { dukanRepository.isUserHasDukan() } returns false
+            everySuspend { dukanRepository.getMyDukanStatus() } returns null
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
@@ -35,16 +44,24 @@ class MainViewModelTest {
 
             mainViewModel.state.test {
                 val init = awaitItem()
-                assertEquals(MainScreenUiState.DukanStatusUi.None, init.dukanStatus)
+                assertEquals(
+                    expected = MainScreenUiState.DukanState(
+                        name = "",
+                        status = DukanStatusUi.None
+                    ),
+                    actual = init.dukanState
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
 
     @Test
-    fun `When a user has dukan then the DukanStatusUi should be the current dukan status`() =
+    fun `When a user has dukan then the DukanStatusUi should be the current dukan status with current dukan name`() =
         runTest(testDispatcher) {
-            everySuspend { dukanRepository.isUserHasDukan() } returns true
-            everySuspend { dukanRepository.getMyDukan() } returns dummyDukan
+            everySuspend { dukanRepository.getMyDukanStatus() } returns MyDukanStatus(
+                status = Dukan.Status.PENDING,
+                dukanName = "Dukan El Sa3ada"
+            )
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
@@ -54,16 +71,21 @@ class MainViewModelTest {
             mainViewModel.state.test {
                 awaitItem()
                 val secondEmit = awaitItem()
-                assertEquals(dummyDukan.status.toUiState(), secondEmit.dukanStatus)
+                assertEquals(
+                    expected = MainScreenUiState.DukanState(
+                        name = "Dukan El Sa3ada",
+                        status = DukanStatusUi.Pending
+                    ),
+                    actual = secondEmit.dukanState
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
 
     @Test
-    fun `When getMyDukan throws DukanNotFoundException then the MainViewModelUiState should update ErrorMessage`() =
+    fun `When getMyDukanStatus returns null then the MainViewModelUiState should update ErrorMessage`() =
         runTest(testDispatcher) {
-            everySuspend { dukanRepository.isUserHasDukan() } returns true
-            everySuspend { dukanRepository.getMyDukan() } throws DukanNotFoundException("Dukan not found")
+            everySuspend { dukanRepository.getMyDukanStatus() } returns null
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
@@ -81,7 +103,7 @@ class MainViewModelTest {
     @Test
     fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
         runTest(testDispatcher) {
-            everySuspend { dukanRepository.isUserHasDukan() } returns false
+            everySuspend { dukanRepository.getMyDukanStatus() } returns null
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
@@ -101,8 +123,10 @@ class MainViewModelTest {
     @Test
     fun `When the dukanStatusUi is pending and user clicks on the Dukan button, then it should emit NavigateToPendingDukanScreen`() =
         runTest(testDispatcher) {
-            everySuspend { dukanRepository.isUserHasDukan() } returns true
-            everySuspend { dukanRepository.getMyDukan() } returns dummyDukan
+            everySuspend { dukanRepository.getMyDukanStatus() } returns MyDukanStatus(
+                status = Dukan.Status.PENDING,
+                dukanName = "Dukan El Sa3ada"
+            )
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
@@ -120,29 +144,3 @@ class MainViewModelTest {
         }
 
 }
-
-private val dummyDukan = Dukan(
-    id = "1",
-    name = "Dukan El Sa3ada",
-    imageUrl = "https://picsum.photos/200/300",
-    categories = setOf(
-        Category(
-            id = "c1",
-            name = "Grocery",
-            imageUrl = "https://picsum.photos/100/100?1"
-        ),
-        Category(
-            id = "c2",
-            name = "Bakery",
-            imageUrl = "https://picsum.photos/100/100?2"
-        )
-    ),
-    coordinates = Dukan.Coordinates(
-        latitude = 30.0444,
-        longitude = 31.2357
-    ),
-    address = "123 Cairo Street, Egypt",
-    status = Dukan.Status.Pending,
-    color = 0xFF2196F3,
-    style = Dukan.Style.WIDE_IMAGE
-)
