@@ -136,15 +136,15 @@ fun Map(
                     modifier = Modifier
                         .padding(Theme.spacing._4)
                         .clip(RoundedCornerShape(Theme.radius.md))
+                        .clickable {
+                            onEditClick()
+                            locked = false
+                        }
                         .background(Color.Black)
                         .padding(
                             horizontal = Theme.spacing._16,
                             vertical = Theme.spacing._12
-                        ).size(20.dp)
-                        .clickable {
-                            onEditClick()
-                            locked = false
-                        },
+                        ).size(20.dp),
                     painter = painterResource(Res.drawable.ic_edit),
                     contentDescription = null
                 )
