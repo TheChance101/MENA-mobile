@@ -20,13 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatContent
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.createClickableAyahText
+import net.thechance.mena.faith.presentation.util.ClipboardManager
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -34,33 +35,34 @@ import org.koin.core.parameter.parametersOf
 fun SurahScreen(
     surahId: Int,
     surahName: String,
+    clipboardManager: ClipboardManager,
     viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    QuranTheme {
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+        LaunchedEffect(Unit) {
+            viewModel.uiEffect.collectLatest { effect ->
+                when (effect) {
+                    is SurahScreenEffect.NavigateBack -> {}
+                    is SurahScreenEffect.ShareAyah -> {}
 
-    LaunchedEffect(Unit) {
-        viewModel.uiEffect.collectLatest { effect ->
-            when (effect) {
-                is SurahScreenEffect.NavigateBack -> {}
-                is SurahScreenEffect.ShareAyah -> {}
-
+                }
             }
         }
+
+        Content(
+            state = uiState,
+            listener = viewModel,
+            clipboardManager = clipboardManager
+        )
     }
-
-    Content(
-        state = uiState,
-        surahName = surahName,
-        listener = viewModel
-    )
 }
-
 @Composable
 private fun Content(
     state: SurahScreenState,
     listener: SurahInteractionListener,
-    surahName: String,
+    clipboardManager: ClipboardManager,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -72,7 +74,7 @@ private fun Content(
         ) {
             Column {
                 SurahAppBar(
-                    surahName = surahName,
+                    surahName = state.surahName,
                     onBackClick = listener::onBackClick
                 )
 
@@ -86,6 +88,7 @@ private fun Content(
             AnimatedAyahActionButtons(
                 state = state,
                 listener = listener,
+                clipboardManager = clipboardManager,
                 modifier = Modifier.fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .padding(Theme.spacing._16)
