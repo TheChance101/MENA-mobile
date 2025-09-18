@@ -26,6 +26,7 @@ kotlinx-serialization = "1.6.3"
 ktor = "3.2.3"
 room = "2.8.0"
 sqlite = "2.6.0"
+mokkery = "2.10.0"
 
 # Maps version
 map-libra = "0.11.1"
@@ -70,6 +71,7 @@ ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine"}
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 mockk = { module = "io.mockk:mockk-common", version.ref = "mockk" }
+mokkery-core = { module = "dev.mokkery:mokkery-core", version.ref = "mokkery" }
 
 # Room
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
@@ -108,10 +110,9 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
-
+mockkery = {id="dev.mokkery",version.ref = "mokkery"}
 room = { id = "androidx.room", version.ref = "room" }
 
-kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 [bundles]
 ktor = [
     "ktor-client-core",

@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
-import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import org.maplibre.compose.camera.CameraPosition
 
@@ -12,7 +11,6 @@ interface CreateDukanInteractionListener {
     fun onBackClicked()
     fun onColorClicked(color: ColorUiState)
     fun onStyleClicked(style: Dukan.Style)
-    fun onClickUploadImage()
     fun onClickUploadImage(image: ImageSrc)
     fun onNameChanged(name: String)
     fun isCategorySelected(): (DukanCategoryUiState) -> Boolean

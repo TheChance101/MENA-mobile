@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.mockkery)
     alias(libs.plugins.cocoapods)
 }
 
@@ -70,11 +71,11 @@ kotlin {
 
         }
 
-        jvmTest.dependencies{
+        commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(kotlin("test-annotations-common"))
             implementation(libs.turbine)
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.mockk)
+            implementation(libs.mokkery.core)
         }
     }
 }
