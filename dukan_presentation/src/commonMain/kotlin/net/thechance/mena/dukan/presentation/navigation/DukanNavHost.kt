@@ -5,6 +5,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import net.thechance.mena.dukan.presentation.screen.pendingDukanScreen.PendingDukanScreen
 
 @Composable
 fun DukanNavHost() {
@@ -26,8 +28,13 @@ fun DukanNavHost() {
             composable<DukanRoute.MyDukanScreenRoute> {
                 // MyDukanScreen()
             }
-            composable<DukanRoute.RequestPendingScreenRoute> {
-                //   RequestPendingScreen()
+            composable<DukanRoute.PendingScreenRoute> {backStackEntry ->
+                    val route: DukanRoute.PendingScreenRoute =
+                backStackEntry.toRoute()
+                PendingDukanScreen(
+                    dukanName = route.dukanName,
+                    onBackClick = { navController.popBackStack() }
+                )
             }
         }
     }
