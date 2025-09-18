@@ -323,7 +323,7 @@ private fun SurScreenPreview() {
                 )
             ),
             interactionListener = object : SurInteractionListener {
-                override fun onSurahClick(id: Int,surahName: String) {}
+                override fun onSurahClick(surahId: Int, surahName: String) {}
                 override fun onBackClick() {}
                 override fun onBookmarkClick() {}
             }
