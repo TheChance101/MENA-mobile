@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.home
+package net.thechance.mena.dukan.presentation.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -7,28 +7,36 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.home.components.TopAppBar
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.LocalNavController
+import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
+import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun MainScreen() {
-    val viewModel = MainViewModel(dukanRepository = TODO(reason = "should using koin di"))
+fun MainScreen(
+    viewModel: MainViewModel = koinViewModel()
+) {
     val state = viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit){
-        viewModel.effect.collectLatest{ effect ->
-            when(effect){
-                MainEffect.NavigateToAddDukanScreen -> { TODO("implement a navigation to add dukan screen") }
-                MainEffect.NavigateToPendingDukanScreen -> { TODO("implement a navigation to pending dukan screen") }
-            }
+    val navController = LocalNavController.current
+    ObserveAsEffect(viewModel.effect){effect ->
+        when(effect){
+            MainEffect.NavigateToAddDukanScreen -> navController.navigate(DukanRoute.CreateDukanScreenRoute)
+            MainEffect.NavigateToPendingDukanScreen -> navController.navigate(DukanRoute.PendingScreenRoute)
         }
     }
+
+
     MainContent(
         listener = viewModel,
         state = state.value
@@ -47,7 +55,7 @@ private fun MainContent(
             .statusBarsPadding(),
     ) {
         TopAppBar(
-            dukanButtonStatus = state.dukanStatus,
+            dukanButtonStatus = state.dukanState.status,
             onAddDukanIconClicked = listener::onDukanButtonClicked,
         )
 
