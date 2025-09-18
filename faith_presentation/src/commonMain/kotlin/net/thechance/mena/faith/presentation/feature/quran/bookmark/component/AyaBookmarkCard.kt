@@ -38,21 +38,25 @@ fun AyaBookmarkCard(
     ayaText: String,
     modifier: Modifier = Modifier
 ) {
-        Column(
-            modifier = modifier.fillMaxWidth().background(
-                color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.md)
-            ).padding(Theme.spacing._12),
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-        ) {
-            BookmarkHeader(
-                surahName = surahName,
-                ayaNumber = ayaNumber,
-                createdAt = createdAt.toString()
-            )
+    Column(
+        modifier = modifier.fillMaxWidth().background(
+            color = Theme.colorScheme.background.surfaceLow,
+            shape = RoundedCornerShape(Theme.radius.md)
+        ).padding(Theme.spacing._12),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+    ) {
+        BookmarkHeader(
+            surahName = surahName,
+            ayaNumber = ayaNumber,
+            createdAt = createdAt.toString()
+        )
 
-            BookmarkAyaText(ayaText = ayaText)
-        }
+        MenaText(
+            text = ayaText,
+            color = Theme.colorScheme.shadeSecondary,
+            style = Theme.typography.quran.medium
+        )
+    }
 }
 
 @Composable
@@ -124,15 +128,6 @@ private fun TimeInfo(createdAt: String) {
             style = Theme.typography.label.small
         )
     }
-}
-
-@Composable
-private fun BookmarkAyaText(ayaText: String) {
-    MenaText(
-        text = ayaText,
-        color = Theme.colorScheme.shadeSecondary,
-        style = Theme.typography.quran.medium
-    )
 }
 
 @OptIn(ExperimentalTime::class)

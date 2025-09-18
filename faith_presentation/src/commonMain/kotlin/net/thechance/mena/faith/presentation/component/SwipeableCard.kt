@@ -38,16 +38,16 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
-private val currentSwipedCardId = mutableIntStateOf(-1)
 
 @Composable
 fun SwipeableCard(
     id: Int,
-    swipeThreshold: Float = 130f,
-    cardContent: @Composable (Modifier) -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    swipeThreshold: Float = 130f,
+    cardContent: @Composable (Modifier) -> Unit,
 ) {
+    val currentSwipedCardId = mutableIntStateOf(-1)
     var rawOffsetX by remember { mutableFloatStateOf(0f) }
     val isCurrentCardSwiped = currentSwipedCardId.intValue == id
 
@@ -99,11 +99,11 @@ fun SwipeableCard(
 
 @Composable
 private fun SwipeBackground(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     painter: Painter = painterResource(Res.drawable.bookmark),
     contentDescription: String = stringResource(Res.string.remove_bookmark_icon),
     tintColor: Color = Theme.colorScheme.error,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = Modifier
