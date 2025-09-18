@@ -13,7 +13,7 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class CreateDukanViewModelTest {
