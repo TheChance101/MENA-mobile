@@ -24,7 +24,7 @@ class CreateDukanViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init should load styles and colors`() = runTest {
+    fun `init should load categories, styles and colors`() = runTest {
 
         everySuspend { dukanRepository.getDukanStyles() } returns fakeDukanStyle()
         everySuspend { dukanRepository.getDukanColors() } returns fakeDukanColor()
@@ -40,7 +40,6 @@ class CreateDukanViewModelTest {
             assertEquals(fakeDukanColor().size, state.dukanColors.size)
 
         }
-
     }
 
     @Test
@@ -60,7 +59,6 @@ class CreateDukanViewModelTest {
                 assertEquals(color, state.selectedColor)
                 cancelAndIgnoreRemainingEvents()
             }
-
         }
 
     @Test
@@ -141,7 +139,6 @@ class CreateDukanViewModelTest {
                 assertEquals(false, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
-
         }
 
     @Test
