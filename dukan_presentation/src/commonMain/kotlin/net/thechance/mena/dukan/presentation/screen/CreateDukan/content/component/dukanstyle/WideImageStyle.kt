@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_image
 import mena.dukan_presentation.generated.resources.style_has_image
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
@@ -83,7 +83,7 @@ fun WideImageBox(
             .padding(vertical = Theme.spacing._12),
         contentAlignment = Alignment.Center
     ) {
-        MenaIcon(
+        Icon(
             painter = painterResource(Res.drawable.ic_image),
             tint = Theme.colorScheme.primary.onPrimary,
             contentDescription = stringResource(Res.string.style_has_image),

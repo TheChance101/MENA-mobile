@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
@@ -44,7 +44,7 @@ fun DukanStyleOptions(
                         onClick = { listener.onStyleClicked(item.style) }
                     )
                 }
-                MenaText(
+                Text(
                     text = item.name,
                     style = Theme.typography.label.small,
                     color = Theme.colorScheme.shadeSecondary,
