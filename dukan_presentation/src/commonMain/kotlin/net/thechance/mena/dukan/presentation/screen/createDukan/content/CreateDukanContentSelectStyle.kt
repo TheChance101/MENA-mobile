@@ -2,13 +2,17 @@ package net.thechance.mena.dukan.presentation.screen.createDukan.content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.color
 import mena.dukan_presentation.generated.resources.customize_your_dukan
@@ -17,11 +21,16 @@ import mena.dukan_presentation.generated.resources.style
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.ColorOptionsPlaceholder
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.DukanStyleOptions
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.NoImageStyle
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.SmallImageStyle
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.WideImageStyle
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanStyleUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -98,8 +107,8 @@ private fun CreateDukanContentSelectStylePreview() {
     MenaTheme {
         CreateDukanContentSelectStyle(
             state = CreateDukanUiState(
-                selectedStyle = null,
-                selectedColor = null
+                selectedColor = 0xFFE91E63,
+                selectedStyle = Dukan.Style.NO_IMAGE,
             ),
             listener = PreviewCreateDukanInteractionListener
         )

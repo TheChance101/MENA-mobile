@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.attafitamim.krop.core.images.ImageSrc
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
@@ -43,7 +44,7 @@ class CreateDukanViewModel(
     }
 
     override fun onColorClicked(color: Long) = updateState { copy(selectedColor = color) }
-    override fun onStyleClicked(style: StyleUiState) = updateState { copy(selectedStyle = style) }
+    override fun onStyleClicked(style: Dukan.Style) = updateState { copy(selectedStyle = style) }
 
     fun updateCreateButtonState() {
         val state = state.value
@@ -61,37 +62,34 @@ class CreateDukanViewModel(
     private fun getDukanColors() {
         tryToExecute(
             block = { dukanRepository.getDukanColors() },
-            onSuccess = { ::updateScreenStateWithColors },
-            onError = { ::handleError },
+            onSuccess = ::updateScreenStateWithColors,
+            onError = ::handleError,
         )
     }
 
     private fun getDukanStyle() {
         tryToExecute(
-            block = { dukanRepository.getDukanStyles().map { style -> style.toUiState() } },
-            onSuccess = { ::updateScreenStateWithStyles },
-            onError = { ::handleError },
+            block = { dukanRepository.getDukanStyles() },
+            onSuccess = ::updateScreenStateWithStyles,
+            onError = ::handleError,
         )
     }
 
-    private fun updateScreenStateWithStyles(dukanStyles: List<StyleUiState>) {
-        updateState {
-            copy(dukanStyles = dukanStyles)
+    private fun updateScreenStateWithStyles(dukanStyles: List<Dukan.Style>) {
+        val stylesUiState = dukanStyles.map { style ->
+            DukanStyleUiState(
+                style = style,
+                name = style.toUiStyleName()
+            )
         }
+        updateState { copy(dukanStyles = stylesUiState) }
     }
 
-    private fun updateScreenStateWithColors(dukanColors: List<Long>) {
-        updateState {
-            copy(dukanColors = dukanColors)
-        }
-    }
+    private fun updateScreenStateWithColors(dukanColors: List<Long>) =
+        updateState { copy(dukanColors = dukanColors) }
 
-    private fun handleError(errorMessage: String) {
-        updateState {
-            copy(errorMessage = errorMessage)
-        }
-    }
-
+    private fun handleError(throwable: Throwable) =
+        updateState { copy(errorMessage = throwable.message) }
 
     override fun onClickUploadImage() {}
 
@@ -104,7 +102,6 @@ class CreateDukanViewModel(
         }
         updateNextButtonEnableState()
     }
-
 
     override fun onCLickNext() {
         val current = state.value.currentStep
@@ -135,7 +132,6 @@ class CreateDukanViewModel(
         }
         updateNextButtonEnableState()
     }
-
 
     override fun onNameChanged(name: String) {
         updateState { copy(name = name, showSnackBar = false) }

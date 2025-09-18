@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.attafitamim.krop.core.images.ImageSrc
+import net.thechance.mena.dukan.domain.entity.Dukan
 
 data class CreateDukanUiState(
     val name: String = "",
@@ -17,7 +18,8 @@ data class CreateDukanUiState(
     val selectedImage: ImageSrc? = null,
     val isNextButtonEnabled: Boolean = false,
     val isImageBeingCropped: Boolean = false,
-    val dukanColors: List<Long> = listOf( // TODO: Replace with colors fetched from backend
+    val dukanColors: List<Long> = listOf(
+        // TODO: Replace with colors fetched from backend
         0xFFE91E63,
         0xFF1146F3,
         0xFF4CAF50,
@@ -27,25 +29,9 @@ data class CreateDukanUiState(
         0xFFE91E63,
         0xFF7196F9,
     ),
-    val dukanStyles: List<StyleUiState> = listOf(  // TODO: Replace with styles fetched from backend
-        StyleUiState(
-            orientation = DukanStyle.List,
-            hasImage = true,
-            label = "Wide image with list products"
-        ),
-        StyleUiState(
-            orientation = DukanStyle.Grid,
-            hasImage = true,
-            label = "Small image with grid products"
-        ),
-        StyleUiState(
-            orientation = DukanStyle.List,
-            hasImage = false,
-            label = "No dukan image"
-        )
-    ),
+    val dukanStyles: List<DukanStyleUiState> = defaultDukanStyles,
     val selectedColor: Long? = null,
-    val selectedStyle: StyleUiState? = null,
+    val selectedStyle: Dukan.Style? = null,
     val errorMessage: String? = null
 ) {
     enum class CreateDukanStep {
@@ -60,16 +46,10 @@ data class CreateDukanUiState(
     }
 }
 
-data class StyleUiState(
-    val orientation: DukanStyle,
-    val hasImage: Boolean,
-    val label: String
+data class DukanStyleUiState(
+    val style: Dukan.Style,
+    val name: String,
 )
-
-enum class DukanStyle {
-    Grid,
-    List
-}
 
 data class DukanCategoryUiState(
     val id: String,

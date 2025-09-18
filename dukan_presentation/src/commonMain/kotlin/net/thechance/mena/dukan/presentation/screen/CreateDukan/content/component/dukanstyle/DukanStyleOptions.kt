@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 
@@ -16,7 +17,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUi
 fun DukanStyleOptions(
     listener: CreateDukanInteractionListener,
     state: CreateDukanUiState
-){
+) {
     Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
         state.dukanStyles.forEach { item ->
             Column(
@@ -24,15 +25,27 @@ fun DukanStyleOptions(
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                 modifier = Modifier.weight(1f)
             ) {
-                DukanStyle(
-                    state = state,
-                    orientation = item.orientation,
-                    hasImage = item.hasImage,
-                    onClick = { listener.onStyleClicked(item) },
-                    isSelected = state.selectedStyle == item
-                )
+                when (item.style) {
+                    Dukan.Style.WIDE_IMAGE -> WideImageStyle(
+                        state = state,
+                        isSelected = state.selectedStyle == item.style,
+                        onClick = { listener.onStyleClicked(item.style) }
+                    )
+
+                    Dukan.Style.SMALL_IMAGE -> SmallImageStyle(
+                        state = state,
+                        isSelected = state.selectedStyle == item.style,
+                        onClick = { listener.onStyleClicked(item.style) }
+                    )
+
+                    Dukan.Style.NO_IMAGE -> NoImageStyle(
+                        state = state,
+                        isSelected = state.selectedStyle == item.style,
+                        onClick = { listener.onStyleClicked(item.style) }
+                    )
+                }
                 MenaText(
-                    text = item.label,
+                    text = item.name,
                     style = Theme.typography.label.small,
                     color = Theme.colorScheme.shadeSecondary,
                     textAlign = TextAlign.Center
