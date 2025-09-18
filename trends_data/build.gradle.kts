@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.mokkery)
 }
 
 kotlin {
@@ -28,6 +29,15 @@ kotlin {
             api(libs.koin.annotations)
             implementation(libs.kotlinx.datetime)
             implementation(libs.bundles.ktor)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.test.annotations.common)
+            implementation(libs.assertk)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.ktor.client.mock)
+
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
