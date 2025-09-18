@@ -29,7 +29,7 @@ data class CreateDukanUiState(
     val isImageBeingCropped: Boolean = false,
     val dukanColors: List<ColorUiState> = emptyList(),
     val dukanStyles: List<DukanStyleUiState> = defaultDukanStyles,
-    val selectedColor: String? = null,
+    val selectedColor: ColorUiState? = null,
     val selectedStyle: Dukan.Style? = null,
     val errorMessage: String? = null
 ) {

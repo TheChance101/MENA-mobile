@@ -47,7 +47,7 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onColorClicked(colorId: String) = updateState { copy(selectedColor = colorId) }
+    override fun onColorClicked(color: ColorUiState) = updateState { copy(selectedColor = color) }
     override fun onStyleClicked(style: Dukan.Style) = updateState { copy(selectedStyle = style) }
 
     fun updateCreateButtonState() {

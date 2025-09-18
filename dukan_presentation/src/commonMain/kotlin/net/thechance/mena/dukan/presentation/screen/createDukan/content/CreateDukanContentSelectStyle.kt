@@ -54,9 +54,9 @@ fun CreateDukanContentSelectStyle(
             ) {
                 state.dukanColors.forEach {
                     ColorOptionsPlaceholder(
-                        backgroundColor = Color(it),
+                        backgroundColor = Color(it.color),
                         onClick = { listener.onColorClicked(it) },
-                        isSelected = it == state.selectedColor
+                        isSelected = it.id == state.selectedColor?.id
                     )
                 }
             }

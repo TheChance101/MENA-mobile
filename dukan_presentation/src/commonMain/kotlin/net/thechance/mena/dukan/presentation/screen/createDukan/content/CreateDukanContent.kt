@@ -102,7 +102,10 @@ fun CreateDukanContent(
                         interactionListener = listener
                     )
 
-                    CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation()
+                    CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation(
+                        state = state,
+                        listener = listener
+                    )
                     CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle(
                         state = state,
                         listener = listener
