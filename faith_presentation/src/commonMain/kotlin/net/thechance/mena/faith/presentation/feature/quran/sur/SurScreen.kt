@@ -55,10 +55,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SurScreen(
-    viewModel: SurViewModel = koinViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToBookmarks: () -> Unit,
-    onNavigateToSurahDetails: (surahId: Int, surahName: String) -> Unit
+    onNavigateToSurahDetails: (surahId: Int, surahName: String) -> Unit,
+    viewModel: SurViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val effect by viewModel.uiEffect.collectAsState(initial = null)
