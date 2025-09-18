@@ -23,7 +23,6 @@ fun FaithNavigation() {
             composable<SurRoute> {
                 SurScreen(
                     onNavigateBack = {
-                        // Handle back navigation
                         navController.popBackStack()
                     },
                     onNavigateToBookmarks = {
