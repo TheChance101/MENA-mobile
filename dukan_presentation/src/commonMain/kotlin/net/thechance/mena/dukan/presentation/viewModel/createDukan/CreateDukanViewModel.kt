@@ -95,8 +95,6 @@ class CreateDukanViewModel(
     private fun handleError(throwable: Throwable) =
         updateState { copy(errorMessage = throwable.message) }
 
-    override fun onClickUploadImage() {}
-
     override fun onClickUploadImage(image: ImageSrc) {
         updateState {
             copy(
@@ -217,6 +215,12 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
+    private fun onMapClickedSuccess(address: String) {
+        updateState {
+            copy(address = address)
+        }
+        updateNextButtonEnableState()
+    }
     override fun onAddressChanged(address: String) {
         updateState { copy(address = address) }
         updateNextButtonEnableState()
@@ -239,14 +243,6 @@ class CreateDukanViewModel(
             )
         }
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
-    }
-
-    private fun onMapClickedSuccess(address: String) {
-        println("This is map test: $address")
-        updateState {
-            copy(address = address)
-        }
-        updateNextButtonEnableState()
     }
 
     override fun onEditMapLocationClicked() {
