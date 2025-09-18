@@ -29,7 +29,7 @@ fun NoImageStyle(
 ) {
 
     val defaultColor = Theme.colorScheme.background.surfaceHigh
-    val selectedColor = state.selectedColor?.let { Color(it) } ?: defaultColor
+    val selectedColor = state.selectedColor?.let { Color(it.color) } ?: defaultColor
 
     Box(
         modifier = modifier

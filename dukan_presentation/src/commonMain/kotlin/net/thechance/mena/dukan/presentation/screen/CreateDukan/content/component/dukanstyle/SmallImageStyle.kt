@@ -39,7 +39,7 @@ fun SmallImageStyle(
     modifier: Modifier = Modifier
 ) {
     val defaultColor = Theme.colorScheme.background.surfaceHigh
-    val selectedColor = state.selectedColor?.let { Color(it) } ?: defaultColor
+    val selectedColor = state.selectedColor?.let { Color(it.color) } ?: defaultColor
 
     val imageIconPadding by animateDpAsState(
         if (selectedColor == defaultColor) 6.dp else Theme.spacing._16
