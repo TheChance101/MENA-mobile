@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
+import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
@@ -46,7 +47,7 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onColorClicked(color: Long) = updateState { copy(selectedColor = color) }
+    override fun onColorClicked(colorId: String) = updateState { copy(selectedColor = colorId) }
     override fun onStyleClicked(style: Dukan.Style) = updateState { copy(selectedStyle = style) }
 
     fun updateCreateButtonState() {
@@ -88,8 +89,8 @@ class CreateDukanViewModel(
         updateState { copy(dukanStyles = stylesUiState) }
     }
 
-    private fun updateScreenStateWithColors(dukanColors: List<Long>) =
-        updateState { copy(dukanColors = dukanColors) }
+    private fun updateScreenStateWithColors(dukanColors: List<Color>) =
+        updateState { copy(dukanColors = dukanColors.map { it.toUiColor() }) }
 
     private fun handleError(throwable: Throwable) =
         updateState { copy(errorMessage = throwable.message) }

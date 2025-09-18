@@ -9,7 +9,7 @@ import org.maplibre.compose.camera.CameraPosition
 interface CreateDukanInteractionListener {
     fun onButtonClicked()
     fun onBackClicked()
-    fun onColorClicked(color: Long)
+    fun onColorClicked(color: String)
     fun onStyleClicked(style: Dukan.Style)
     fun onClickUploadImage()
     fun onClickUploadImage(image: ImageSrc)

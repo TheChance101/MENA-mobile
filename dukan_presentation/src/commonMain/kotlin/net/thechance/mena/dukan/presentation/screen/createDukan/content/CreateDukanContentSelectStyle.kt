@@ -99,7 +99,7 @@ private fun CreateDukanContentSelectStylePreview() {
     MenaTheme {
         CreateDukanContentSelectStyle(
             state = CreateDukanUiState(
-                selectedColor = 0xFFE91E63,
+                selectedColor = null,
                 selectedStyle = Dukan.Style.NO_IMAGE,
             ),
             listener = PreviewCreateDukanInteractionListener

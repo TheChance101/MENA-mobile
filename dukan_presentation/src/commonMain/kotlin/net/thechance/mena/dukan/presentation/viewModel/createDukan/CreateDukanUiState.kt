@@ -27,19 +27,9 @@ data class CreateDukanUiState(
     val isEditIconVisible: Boolean = false,
     val selectedImage: ImageSrc? = null,
     val isImageBeingCropped: Boolean = false,
-    val dukanColors: List<Long> = listOf(
-        // TODO: Replace with colors fetched from backend
-        0xFFE91E63,
-        0xFF1146F3,
-        0xFF4CAF50,
-        0xFFE91E63,
-        0xFF2196F3,
-        0xFF4CAF80,
-        0xFFE91E63,
-        0xFF7196F9,
-    ),
+    val dukanColors: List<ColorUiState> = emptyList(),
     val dukanStyles: List<DukanStyleUiState> = defaultDukanStyles,
-    val selectedColor: Long? = null,
+    val selectedColor: String? = null,
     val selectedStyle: Dukan.Style? = null,
     val errorMessage: String? = null
 ) {
@@ -64,6 +54,10 @@ data class CreateDukanUiState(
 data class DukanStyleUiState(
     val style: Dukan.Style,
     val name: String,
+)
+data class ColorUiState(
+    val id: String,
+    val color: Long
 )
 
 data class DukanCategoryUiState(

@@ -1,7 +1,8 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import net.thechance.mena.dukan.domain.entity.Category
-import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Color
+import net.thechance.mena.dukan.domain.entity.Dukan.Coordinates
 import net.thechance.mena.dukan.domain.entity.Dukan.Style
 
 val defaultDukanStyles = Style.entries.map { style ->
@@ -17,6 +18,13 @@ fun Style.toUiStyleName(): String = when (this) {
     Style.NO_IMAGE -> "No dukan image"
 }
 
+fun Color.toUiColor(): ColorUiState {
+    return ColorUiState(
+        id = id,
+        color = hexCode.removePrefix("#").toLong(16) or 0xFF000000
+    )
+}
+
 fun List<Category>.toUiState(): List<DukanCategoryUiState> {
     return map { category ->
         DukanCategoryUiState(
@@ -27,7 +35,7 @@ fun List<Category>.toUiState(): List<DukanCategoryUiState> {
     }
 }
 
-fun CreateDukanUiState.CoordinatesUiState.toEntity() = Dukan.Coordinates(
+fun CreateDukanUiState.CoordinatesUiState.toEntity() = Coordinates(
     latitude = latitude,
     longitude = longitude,
 )
