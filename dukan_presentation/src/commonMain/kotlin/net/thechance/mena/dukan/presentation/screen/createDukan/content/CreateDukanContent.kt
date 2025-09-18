@@ -106,6 +106,7 @@ fun CreateDukanContent(
                         state = state,
                         listener = listener
                     )
+
                     CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle()
 
                 }
@@ -121,9 +122,9 @@ fun CreateDukanContent(
                     else
                         stringResource(Res.string.next),
                     onClick = listener::onButtonClicked,
-                    trailingIcon = painterResource(Res.drawable.ic_arrow_left),
                     isEnabled = state.isButtonEnabled,
-                    isLoading = state.isButtonLoading
+                    isLoading = state.isButtonLoading,
+                    contentPadding = PaddingValues(vertical = Theme.spacing._12)
                 )
         }
 

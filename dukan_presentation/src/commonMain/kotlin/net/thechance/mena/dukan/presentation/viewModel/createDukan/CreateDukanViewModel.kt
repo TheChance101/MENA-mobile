@@ -163,6 +163,11 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
+    override fun onAddressChanged(address: String) {
+        updateState { copy(address = address) }
+        updateNextButtonEnableState()
+    }
+
     override fun onCameraMoved(
         camera: CameraPosition
     ) {
@@ -183,6 +188,7 @@ class CreateDukanViewModel(
     }
 
     private fun onMapClickedSuccess(address: String) {
+        println("This is map test: $address")
         updateState {
             copy(address = address)
         }
@@ -246,7 +252,7 @@ class CreateDukanViewModel(
         val isNextButtonEnabled = when (currentState.currentStep) {
             CreateDukanStep.BASIC_INFORMATION -> isBasicInformationStepValid(currentState)
             CreateDukanStep.SELECT_IMAGE -> currentState.croppedImage != null
-            CreateDukanStep.SELECT_LOCATION -> currentState.address.isNotBlank()
+            CreateDukanStep.SELECT_LOCATION -> isLocationValid(currentState)
             CreateDukanStep.SELECT_STYLE -> true
         }
         updateState { this.copy(isButtonEnabled = isNextButtonEnabled) }
@@ -256,6 +262,11 @@ class CreateDukanViewModel(
         return state.name.isNotBlank() &&
                 state.selectedCategories.size in MIN_CATEGORIES..MAX_CATEGORIES &&
                 !state.showSnackBar
+    }
+
+    private fun isLocationValid(currentState: CreateDukanUiState): Boolean {
+        return currentState.address.isNotBlank()
+                && currentState.currentLocation != CreateDukanUiState.CoordinatesUiState()
     }
 
     private fun loadDukanCategories() {

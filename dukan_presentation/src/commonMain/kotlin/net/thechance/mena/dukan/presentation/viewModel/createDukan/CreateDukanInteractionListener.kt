@@ -21,6 +21,7 @@ interface CreateDukanInteractionListener {
         coordinates: CreateDukanUiState.CoordinatesUiState,
         pointerLocation: DpOffset,
     )
+    fun onAddressChanged(address: String)
     fun onCameraMoved(camera: CameraPosition)
     fun onEditMapLocationClicked()
 }

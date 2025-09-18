@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.ic_edit
-import net.thechance.mena.designsystem.presentation.component.image.MenaImage
+import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.map.MapStyle
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
@@ -114,7 +114,7 @@ fun Map(
             targetState = anchorLocation
         ) {
             it?.let { offset ->
-                MenaImage(
+                Image(
                     painter = painterResource(Res.drawable.anchor),
                     contentDescription = null,
                     modifier = Modifier
@@ -132,7 +132,7 @@ fun Map(
             targetState = anchorLocation != null
         ) {
             if (it) {
-                MenaImage(
+                Image(
                     modifier = Modifier
                         .padding(Theme.spacing._4)
                         .clip(RoundedCornerShape(Theme.radius.md))
