@@ -17,7 +17,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun VerticalItemStyle(
+fun GridItemStyle(
     cartBackgroundColor: Color,
     modifier: Modifier = Modifier
 ) {
@@ -61,7 +61,7 @@ fun VerticalItemStyle(
 @Composable
 private fun VerticalItemStylePreview() {
     MenaTheme {
-        VerticalItemStyle(
+        GridItemStyle(
             cartBackgroundColor = Theme.colorScheme.background.surfaceHigh,
         )
     }
