@@ -5,5 +5,5 @@ import net.thechance.mena.faith.domain.entity.Bookmark
 interface BookmarkRepository {
     suspend fun getAllBookmarks(): List<Bookmark>
     suspend fun addBookmark(surahId: Int, ayahNumber: Int): Bookmark
-    suspend fun removeBookmark(id: Int)
+    suspend fun removeBookmark(bookmarkId: Int)
 }

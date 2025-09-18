@@ -44,9 +44,9 @@ private val currentSwipedCardId = mutableIntStateOf(-1)
 fun SwipeableCard(
     id: Int,
     swipeThreshold: Float = 130f,
-    onClick: () -> Unit,
     cardContent: @Composable (Modifier) -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var rawOffsetX by remember { mutableFloatStateOf(0f) }
     val isCurrentCardSwiped = currentSwipedCardId.intValue == id
@@ -57,15 +57,15 @@ fun SwipeableCard(
 
     val animatedOffsetX by animateFloatAsState(
         targetValue = rawOffsetX,
-        animationSpec = tween(durationMillis = 300),
+        animationSpec = tween(),
         label = stringResource(Res.string.swipe_animation)
     )
 
     Box(modifier.fillMaxWidth()) {
         AnimatedVisibility(
             visible = animatedOffsetX < 0f,
-            enter = fadeIn(tween(300)),
-            exit = fadeOut(tween(300)),
+            enter = fadeIn(tween()),
+            exit = fadeOut(tween()),
             modifier = Modifier.matchParentSize()
         ) {
             SwipeBackground(

@@ -11,7 +11,7 @@ import kotlin.time.ExperimentalTime
 class BookmarkRepositoryImpl: BookmarkRepository {
 
     override suspend fun getAllBookmarks(): List<Bookmark> {
-        return bookmarks.toList()
+        return bookmarks
     }
 
     override suspend fun addBookmark(
@@ -21,8 +21,8 @@ class BookmarkRepositoryImpl: BookmarkRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun removeBookmark(id: Int) {
-        bookmarks.removeAt(bookmarks.indexOfFirst { it.id == id })
+    override suspend fun removeBookmark(bookmarkId: Int) {
+        bookmarks.removeAt(bookmarks.indexOfFirst { it.id == bookmarkId })
     }
 
     private val bookmarks = List(15) { id ->

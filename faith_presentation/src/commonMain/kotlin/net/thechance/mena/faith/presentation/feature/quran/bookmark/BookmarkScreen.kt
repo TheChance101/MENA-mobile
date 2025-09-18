@@ -36,6 +36,7 @@ import net.thechance.mena.faith.presentation.component.EmptyScreenState
 import net.thechance.mena.faith.presentation.component.LoadingIndicator
 import net.thechance.mena.faith.presentation.component.SwipeableCard
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.AyaBookmarkCard
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -66,7 +67,7 @@ fun BookmarkScreen(
 
     Content(
         uiState = state,
-        interactionListener = viewModel
+        listener = viewModel
     )
 }
 
@@ -74,7 +75,7 @@ fun BookmarkScreen(
 @Composable
 private fun Content(
     uiState: BookmarksScreenState,
-    interactionListener: BookmarkInteractionListener
+    listener: BookmarkInteractionListener
 ) {
     Column(
         modifier = Modifier
@@ -90,7 +91,7 @@ private fun Content(
                 bottom = Theme.spacing._16
             ),
             leadingContent = { BackIcon() },
-            onLeadingClick = interactionListener::onBackClick
+            onLeadingClick = listener::onBackClick
         )
 
         AnimatedVisibility(
@@ -116,7 +117,7 @@ private fun Content(
         ) {
             BookmarkItems(
                 uiState = uiState,
-                onRemoveBookmarkClick = interactionListener::onRemoveBookmarkClick,
+                onRemoveBookmarkClick = listener::onRemoveBookmarkClick,
             )
         }
 
@@ -134,7 +135,7 @@ private fun EmptyBookmarkState() {
     ) {
         EmptyScreenState(
             title = stringResource(Res.string.empty_state_bookmark_title),
-            icon = Res.drawable.ic_not_saved_book_mark,
+            icon = painterResource(Res.drawable.ic_not_saved_book_mark),
             contentDescription = stringResource(Res.string.empty_state_bookmark_image),
             subTitle = stringResource(Res.string.empty_state_bookmark_description),
             modifier = Modifier.padding(bottom = 80.dp)
@@ -163,7 +164,7 @@ private fun BookmarkItems(
                     AyaBookmarkCard(
                         surahName = bookmark.surahName,
                         ayaNumber = bookmark.ayaNumber,
-                        timeAgo = bookmark.createdAt,
+                        createdAt = bookmark.createdAt,
                         ayaText = bookmark.ayaText,
                         modifier = contentModifier
                     )
@@ -185,49 +186,49 @@ private fun BookmarkScreenPreview() {
         Content(
             uiState = BookmarksScreenState(
                 bookmarks = listOf(
-                    BookmarksScreenState.BookmarkUiState(
+                    BookmarksScreenState.BookmarkCardUiState(
                         1,
                         "Al-Baqarah",
                         134,
                         "تِلْكَ أُمَّةٌ قَدْ خَلَتْ لَهَا مَا كَسَبَتْ وَلَكُمْ مَا كَسَبْتُمْ وَلَا تُسْأَلُونَ عَمَّا كَانُوا يَعْمَلُونَ",
                         Clock.System.now()
                     ),
-                    BookmarksScreenState.BookmarkUiState(
+                    BookmarksScreenState.BookmarkCardUiState(
                         2,
                         "Al-Nisa",
                         176,
                         "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًا وَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌَ",
                         Clock.System.now()
                     ),
-                    BookmarksScreenState.BookmarkUiState(
+                    BookmarksScreenState.BookmarkCardUiState(
                         3,
                         "Al-A'raf",
                         172,
                         "وَإِذْ أَخَذَ رَبُّكَ مِنْ بَنِي آدَمَ مِنْ ظُهُورِهِمْ ذُرِّيَّتَهُمْ وَأَشْهَدَهُمْ عَلَى أَنْفُسِهِمْ أَلَسْتُ بِرَبِّكُمْ قَالُوا بَلَى شَهِدْنَا أَنْ تَقُولُوا يَوْمَ الْقِيَامَةِ إِنَّا كُنَّا عَنْ هَذَا غَافِلِينَ",
                         Clock.System.now()
                     ),
-                    BookmarksScreenState.BookmarkUiState(
+                    BookmarksScreenState.BookmarkCardUiState(
                         4,
                         "Al-Baqarah",
                         152,
                         "فَاذْكُرُونِي أَذْكُرْكُمَْ",
                         Clock.System.now()
                     ),
-                    BookmarksScreenState.BookmarkUiState(
+                    BookmarksScreenState.BookmarkCardUiState(
                         5,
                         "Al-Maidah",
                         3,
                         "حُرِّمَتْ عَلَيْكُمُ الْمَيْتَةُ وَالدَّمُ وَلَحْمُ الْخِنْزِيرِ وَمَا أُهِلَّ بِهِ لِغَيْرِ اللَّهِ وَالْمُنْخَنِقَةُ وَالْمَوْقُوذَةُ وَالْمُتَرَدِّيَةُ وَالنَّطِيحَةُ وَمَا أَكَلَ السَّبُعُ إِلَّا مَا ذَكَّيْتُمْ وَمَا ذُبِحَ عَلَى النُّصُبِ وَأَن تَسْتَقْسِمُوا بِالْأَزْلَامِ ۚ ذَٰلِكُمْ فِسْقٌ ۗ الْيَوْمَ يَئِسَ الَّذِينَ كَفَرُوا مِن دِينِكُمْ فَلَا تَخْشَوْهُمْ وَاخْشَوْنِ ۚ الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا ۚ فَمَنِ اضْطُرَّ فِي مَخْمَصَةٍ غَيْرَ مُتَجَانِفٍ لِّإِثْمٍ فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌَ",
                         Clock.System.now()
                     ),
-                    BookmarksScreenState.BookmarkUiState(
+                    BookmarksScreenState.BookmarkCardUiState(
                         6,
                         "Al-Noor",
                         354,
                         "اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضٌَِ",
                         Clock.System.now()
                     ),
-                    BookmarksScreenState.BookmarkUiState(
+                    BookmarksScreenState.BookmarkCardUiState(
                         7,
                         "Al-Baqarah",
                         134,
@@ -236,9 +237,9 @@ private fun BookmarkScreenPreview() {
                     ),
                 ),
             ),
-            interactionListener = object : BookmarkInteractionListener {
+            listener = object : BookmarkInteractionListener {
                 override fun onBackClick() {}
-                override fun onRemoveBookmarkClick(id: Int) {}
+                override fun onRemoveBookmarkClick(bookmarkId: Int) {}
                 override fun onStartTilawahClick() {}
             }
         )
