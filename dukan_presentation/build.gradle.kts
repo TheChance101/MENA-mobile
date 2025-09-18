@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.cocoapods)
 }
 
 kotlin {
@@ -20,6 +21,18 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
+            baseName = "DukanPresentation"
+            isStatic = true
+        }
+    }
+
+    cocoapods {
+        summary = "DukanPresentation — internal KMP maps module for Dukan. Contains iOS-compatible map composables and shared location logic used across mobile modules."
+        homepage = "https://github.com/TheChance101/MENA-mobile"
+        version = "1.0"
+        ios.deploymentTarget = "15.4"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
             baseName = "DukanPresentation"
             isStatic = true
         }
@@ -46,11 +59,22 @@ kotlin {
             implementation(libs.krop.extensions.filekit)
             implementation(libs.krop.core)
             implementation(libs.navigation.compose)
+
+            // maps
+            implementation(libs.maplibre.compose)
+
             implementation(libs.turbine)
             implementation(libs.junit)
         }
         iosMain.dependencies {
 
+        }
+
+        commonTest.dependencies{
+            implementation(libs.kotlin.test)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.mockk)
         }
     }
 }
@@ -62,4 +86,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+
+dependencies {
+    debugImplementation(compose.uiTooling)
 }

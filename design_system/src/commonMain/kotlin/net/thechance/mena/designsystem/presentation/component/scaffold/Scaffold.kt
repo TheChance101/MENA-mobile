@@ -1,0 +1,61 @@
+package net.thechance.mena.designsystem.presentation.component.scaffold
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.unit.dp
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+
+@Composable
+fun Scaffold(
+    modifier: Modifier = Modifier,
+    topBar: @Composable () -> Unit = {},
+    bottomBar: @Composable () -> Unit = {},
+    overlays: ScaffoldScope .() -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    val scope = remember { ScaffoldScopeImpl() }.apply {
+        items.clear()
+        overlays()
+    }
+
+    val hasBlur = scope.items.any { it.isVisible }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Theme.colorScheme.background.surface)
+            .then(
+                if (hasBlur) Modifier.blur(4.dp) else Modifier
+            )
+            .navigationBarsPadding()
+            .systemBarsPadding(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column {
+            topBar()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                content()
+            }
+            bottomBar()
+        }
+    }
+
+    scope.items.forEach {
+        if (it.isVisible)
+            it.content(scope)
+    }
+}

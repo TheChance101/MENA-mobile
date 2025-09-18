@@ -8,8 +8,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
@@ -23,22 +23,22 @@ internal fun BaseButtonContent(
     overflow: TextOverflow = TextOverflow.Ellipsis,
 ) {
     text?.let {
-        MenaText(
+        Text(
             text = text,
+            style = Theme.typography.label.medium,
             color = contentColor,
             overflow = overflow,
-            style = Theme.typography.label.medium,
         )
     }
 
     trailingIcon?.let {
-        MenaIcon(
+        Icon(
             painter = trailingIcon,
-            tint = contentColor,
             contentDescription = contentDescription,
             modifier = Modifier
                 .padding(start = iconStartPadding)
-                .size(iconSize)
+                .size(iconSize),
+            tint = contentColor
         )
     }
 }

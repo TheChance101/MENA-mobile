@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +33,8 @@ import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.cancel_dialog_icon
 import mena.design_system.generated.resources.ic_cancel
 import net.thechance.mena.designsystem.presentation.component.appBar.HomeAppBar
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -42,8 +42,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun Dialog(
-    visible: Boolean,
+fun ScaffoldScope.Dialog(
     title: String,
     message: String,
     buttonText: String,
@@ -54,44 +53,49 @@ fun Dialog(
     onCancelClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     contentColor: Color = Theme.colorScheme.background.surfaceLow,
+    scrimColor: Color = Theme.colorScheme.primary.primary.copy(0.55f),
     dialogCornerShape: Shape = RoundedCornerShape(Theme.radius.xl),
     cancelBackgroundShape: Shape = RoundedCornerShape(Theme.radius.full),
     contentPadding: PaddingValues = PaddingValues(12.dp),
 ) {
-    if (!visible) return
-
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clickable(
-                enabled = dismissOnClickOutside,
-                onClick = onDismiss,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            )
-    )
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(scrimColor)
+                .clickable(
+                    enabled = dismissOnClickOutside,
+                    onClick = onDismiss,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+        )
 
-    DialogContent(
-        title = title,
-        message = message,
-        buttonText = buttonText,
-        cancelBackgroundShape = cancelBackgroundShape,
-        onActionClick = onActionClick,
-        onCancelClick = onCancelClick,
-        contentColor = contentColor,
-        dialogCornerShape = dialogCornerShape,
-        contentPadding = contentPadding,
-        modifier = modifier
-            .clickable(
-                enabled = false,
-                onClick = {},
-            )
-            .padding(horizontal = 16.dp)
-    )
+        DialogContent(
+            title = title,
+            message = message,
+            buttonText = buttonText,
+            cancelBackgroundShape = cancelBackgroundShape,
+            onActionClick = onActionClick,
+            onCancelClick = onCancelClick,
+            contentColor = contentColor,
+            dialogCornerShape = dialogCornerShape,
+            contentPadding = contentPadding,
+            modifier = modifier
+                .clickable(
+                    enabled = false,
+                    onClick = {},
+                )
+                .padding(horizontal = 16.dp)
+        )
 
-    if (dismissOnBackPress) {
-        BackHandler(true) {
-            onDismiss()
+        if (dismissOnBackPress) {
+            BackHandler(true) {
+                onDismiss()
+            }
         }
     }
 }
@@ -140,19 +144,19 @@ private fun DialogContent(
                     .align(Alignment.Center)
                     .padding(top = 12.dp)
             ) {
-                Text(
+                androidx.compose.material3.Text(
                     text = title,
                     style = Theme.typography.title.medium,
                     color = Theme.colorScheme.primary.primary,
                 )
-                Text(
+                androidx.compose.material3.Text(
                     text = message,
                     style = Theme.typography.body.small,
                     color = Theme.colorScheme.shadeSecondary,
                 )
             }
         }
-        Text(
+        androidx.compose.material3.Text(
             text = buttonText,
             color = Theme.colorScheme.error,
             style = Theme.typography.label.medium,
@@ -176,43 +180,45 @@ private fun DialoguePreview() {
     MenaTheme {
         var showDialog by remember { mutableStateOf(true) }
 
-        DialogScaffold(
-            parentContent = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable(onClick = {
-                            showDialog = true
-                        })
-                        .background(Theme.colorScheme.background.surface).fillMaxSize()
-                ) {
-                    HomeAppBar("202")
-                    MenaText(
-                        text = "HI",
-                        style = Theme.typography.title.large,
+        Scaffold(
+            topBar = {
+                HomeAppBar("202")
+            },
+            overlays = {
+                dialog(showDialog) {
+                    Dialog(
+                        onDismiss = {
+                            showDialog = false
+                        },
+                        title = "Preview Title",
+                        message = "This is a preview message.",
+                        buttonText = "Confirm",
+                        dismissOnClickOutside = true,
+                        dismissOnBackPress = true,
+                        onActionClick = {
+                            showDialog = false
+                        },
+                        onCancelClick = {
+                            showDialog = false
+                        },
                     )
                 }
-            },
-            dialogContent = {
-                Dialog(
-                    visible = showDialog,
-                    onDismiss = {
-                        showDialog = false
-                    },
-                    title = "Preview Title",
-                    message = "This is a preview message.",
-                    buttonText = "Confirm",
-                    dismissOnClickOutside = true,
-                    dismissOnBackPress = true,
-                    onActionClick = {
-                        showDialog = false
-                    },
-                    onCancelClick = {
-                        showDialog = false
-                    },
+            }) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(onClick = {
+                        showDialog = true
+                    })
+                    .background(Theme.colorScheme.background.surface)
+                    .fillMaxSize()
+            ) {
+                net.thechance.mena.designsystem.presentation.component.text.Text(
+                    text = "HI",
+                    style = Theme.typography.title.large,
                 )
             }
-        )
+        }
     }
 }

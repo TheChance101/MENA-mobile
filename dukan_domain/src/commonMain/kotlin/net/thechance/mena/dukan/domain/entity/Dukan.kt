@@ -8,7 +8,7 @@ data class Dukan(
     val coordinates:Coordinates,
     val address: String,
     val status: Status,
-    val color: Long,
+    val color: Color,
     val style: Style
 ) {
     data class Coordinates(
@@ -22,7 +22,8 @@ data class Dukan(
         NO_IMAGE
     }
     enum class Status{
-        None,
-        Pending
+        PENDING,
+        APPROVED,
+        REJECTED
     }
 }

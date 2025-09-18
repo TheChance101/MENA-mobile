@@ -16,9 +16,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 @Composable
 fun OutlinedButton(
     text: String,
-    trailingIcon: Painter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    trailingIcon: Painter? = null,
     iconSize: Dp = 20.dp,
     contentDescription: String? = null,
     iconStartPadding: Dp = Theme.spacing._8,

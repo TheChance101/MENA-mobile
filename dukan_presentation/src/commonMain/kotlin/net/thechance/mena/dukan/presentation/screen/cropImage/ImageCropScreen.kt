@@ -17,10 +17,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.attafitamim.krop.core.images.ImageSrc
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.cropImage.componetns.ImageCropBox
-import net.thechance.mena.dukan.presentation.screen.cropImage.componetns.SaveButton
-import net.thechance.mena.dukan.presentation.screen.cropImage.componetns.UploadAnotherImageButton
-import net.thechance.mena.dukan.presentation.screen.cropImage.componetns.ZoomControls
+import net.thechance.mena.dukan.presentation.screen.cropImage.components.ImageCropBox
+import net.thechance.mena.dukan.presentation.screen.cropImage.components.SaveButton
+import net.thechance.mena.dukan.presentation.screen.cropImage.components.UploadAnotherImageButton
+import net.thechance.mena.dukan.presentation.screen.cropImage.components.ZoomControls
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropEffects
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropInteractionListener

@@ -15,7 +15,7 @@ import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.cropImage.ImageCropScreen
-import net.thechance.mena.dukan.presentation.screen.cropImage.componetns.UploadImageContainer
+import net.thechance.mena.dukan.presentation.screen.cropImage.components.UploadImageContainer
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener

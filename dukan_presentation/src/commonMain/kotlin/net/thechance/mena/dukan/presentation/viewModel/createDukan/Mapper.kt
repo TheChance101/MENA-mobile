@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import net.thechance.mena.dukan.domain.entity.Category
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Dukan.Style
 
 val defaultDukanStyles = Style.entries.map { style ->
@@ -25,3 +26,8 @@ fun List<Category>.toUiState(): List<DukanCategoryUiState> {
         )
     }
 }
+
+fun CreateDukanUiState.CoordinatesUiState.toEntity() = Dukan.Coordinates(
+    latitude = latitude,
+    longitude = longitude,
+)

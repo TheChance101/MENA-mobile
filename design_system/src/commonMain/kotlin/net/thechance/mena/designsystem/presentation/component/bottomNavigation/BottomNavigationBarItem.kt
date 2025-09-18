@@ -15,20 +15,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
 fun BottomNavigationBarItem(
     isSelected: Boolean,
-    notSelectedIcon: Painter,
+    unselectedIcon: Painter,
     selectedIcon: Painter,
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val painter = if (isSelected) selectedIcon else notSelectedIcon
+    val painter = if (isSelected) selectedIcon else unselectedIcon
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(
@@ -54,13 +54,14 @@ fun BottomNavigationBarItem(
                     alignment = Alignment.TopCenter
                 )
         ) {
-            MenaIcon(
+            Icon(
                 painter = painter,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
+                contentDescription = title,
             )
 
             if (isSelected) {
-                MenaText(
+                Text(
                     text = title,
                     style = Theme.typography.label.medium,
                     modifier = Modifier.padding(top = 4.dp)
