@@ -9,11 +9,13 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
-import net.thechance.mena.dukan.data.repository.dto.DukanCategoryDto
-import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
+import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
+import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
+import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
+import net.thechance.mena.dukan.data.repository.mapper.toCategoryList
+import net.thechance.mena.dukan.data.repository.mapper.toColorsList
 import net.thechance.mena.dukan.data.repository.mapper.toCreateDukanRequest
-import net.thechance.mena.dukan.data.repository.mapper.toEntity
 import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
@@ -45,25 +47,25 @@ class DukanRepositoryImpl(
     }
 
     override suspend fun getCategories(): List<Category> {
-        return safeApiCall<List<DukanCategoryDto>> {
+        return safeApiCall<DukanCategoryResponse> {
             client.get("$BASE_URL/categories")
-        }.toEntity()
+        }.categories.toCategoryList()
     }
 
     override suspend fun getDukanColors(): List<Color> {
-        return safeApiCall<List<DukanColorDto>> {
+        return safeApiCall<DukanColorsResponse> {
             client.get(
                 urlString = "$BASE_URL/colors"
             )
-        }.toEntity()
+        }.colors.toColorsList()
     }
 
     override suspend fun getMyDukanStatus(): MyDukanStatus? {
         return safeApiCall<MyDukanStatusDto> {
             client.get(
-                urlString = "$BASE_URL/status"
+                urlString = "$BASE_URL/statues"
             )
-        }.toEntity()
+        }.toCategoryList()
     }
 
     override suspend fun uploadDukanImage(
@@ -79,7 +81,9 @@ class DukanRepositoryImpl(
     }
 
     override suspend fun isDukanNameTaken(name: String): Boolean {
-        return safeApiCall { client.get("$BASE_URL/available?name=$name").body() }
+        return safeApiCall<DukanNameResponse> {
+            client.get("$BASE_URL/available?name=$name").body()
+        }.available.not()
     }
 
     private fun buildMultiPartFormData(
@@ -91,8 +95,8 @@ class DukanRepositoryImpl(
                     key = "file",
                     value = fileBytes,
                     headers = Headers.build {
-                        append( HttpHeaders.ContentType, "multipart/form-data")
-                        append( HttpHeaders.ContentDisposition,"filename=\"$fileName\"")
+                        append(HttpHeaders.ContentType, "multipart/form-data")
+                        append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
                     }
                 )
             })

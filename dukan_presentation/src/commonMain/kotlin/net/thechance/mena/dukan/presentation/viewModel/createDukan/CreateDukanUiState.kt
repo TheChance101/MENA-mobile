@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
 import io.github.dellisd.spatialk.geojson.Position
 import org.maplibre.compose.camera.CameraPosition
+import net.thechance.mena.dukan.domain.entity.Dukan
 
 data class CreateDukanUiState(
     val name: String = "",
@@ -26,6 +27,11 @@ data class CreateDukanUiState(
     val isEditIconVisible: Boolean = false,
     val selectedImage: ImageSrc? = null,
     val isImageBeingCropped: Boolean = false,
+    val dukanColors: List<ColorUiState> = emptyList(),
+    val dukanStyles: List<DukanStyleUiState> = defaultDukanStyles,
+    val selectedColor: ColorUiState? = null,
+    val selectedStyle: Dukan.Style? = null,
+    val errorMessage: String? = null
 ) {
 
     data class CoordinatesUiState(
@@ -44,6 +50,15 @@ data class CreateDukanUiState(
         }
     }
 }
+
+data class DukanStyleUiState(
+    val style: Dukan.Style,
+    val name: String,
+)
+data class ColorUiState(
+    val id: String,
+    val color: Long
+)
 
 data class DukanCategoryUiState(
     val id: String,

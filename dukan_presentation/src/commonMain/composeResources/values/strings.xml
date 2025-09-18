@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="create">Create</string>
-    <string name="next">Next</string>
     <string name="dukan_location">Dukan location</string>
     <string name="enter_address_and_pick_dukan_location_on_map">Enter address and pick dukan location on map</string>
     <string name="address">Address</string>
     <string name="location">Location</string>
-    <string name="save">Save</string>
     <string name="reset">Reset</string>
     <string name="upload_another_image">Upload another image</string>
     <string name="click_to_upload">Click to upload</string>
-    <string name="dukan_image">Dukan Image</string>"
+    <string name="dukan_image">Dukan image</string>
     <string name="upload_dukan_image">Upload dukan image, it should be rectangle 9:16 aspect ratio</string>
     <string name="image_size">Image (9:16)</string>
     <string name="create_new_dukan">Create New Dukan</string>
     <string name="image_size_description">Upload dukan image, it should be rectangle 9:16 aspect ratio</string>
+    <string name="create">Create</string>
+    <string name="next">Next</string>
+    <string name="add_shopping_basket">add shopping basket</string>
+    <string name="style_has_image">Style has image</string>
+    <string name="customize_your_dukan">Customize your dukan</string>
+    <string name="pick_color_and_style_for_dukan">Pick color and style for dukan</string>
+    <string name="color">Color</string>
+    <string name="style">Style</string>
+    <string name="wide_image_with_list_products">Wide image with list products</string>
+    <string name="small_image_with_grid_products">Small image with grid products</string>
+    <string name="no_dukan_image">No dukan image</string>
+    <string name="color_size">Color size</string>
+    <string name="style_has_small_image_icon">Style has small image icon</string>
+    <string name="save">Save</string>
     <string name="enter_your_dukan_information">Enter your dukan information</string>
     <string name="fill_name_and_select_category">Fill name and select the dukan category</string>
     <string name="dukan_name">Dukan name</string>
@@ -26,6 +37,6 @@
     <string name="you_can_select_maximum_3_categories">You can select maximum 3 categories</string>
     <string name="error">Error</string>
     <string name="success">Success</string>
-    <string name="dukan_name_is_already_exist">Dukan name is already exist, try with another one.</string>
+    <string name="dukan_name_is_already_exist">Dukan name already exists, try with another one.</string>
     <string name="back_arrow">Back Arrow</string>
 </resources>

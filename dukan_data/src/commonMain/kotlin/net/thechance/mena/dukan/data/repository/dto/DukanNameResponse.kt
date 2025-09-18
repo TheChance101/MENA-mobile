@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DukanStyleDto(
-    @SerialName("styles")
-    val styles: List<String>
+data class DukanNameResponse (
+    @SerialName("available")
+    val available: Boolean,
 )

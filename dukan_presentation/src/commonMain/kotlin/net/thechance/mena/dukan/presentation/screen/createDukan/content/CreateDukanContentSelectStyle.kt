@@ -1,18 +1,108 @@
 package net.thechance.mena.dukan.presentation.screen.createDukan.content
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.color
+import mena.dukan_presentation.generated.resources.customize_your_dukan
+import mena.dukan_presentation.generated.resources.pick_color_and_style_for_dukan
+import mena.dukan_presentation.generated.resources.style
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.ColorOptionsPlaceholder
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.DukanStyleOptions
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CreateDukanContentSelectStyle() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+fun CreateDukanContentSelectStyle(
+    listener: CreateDukanInteractionListener,
+    state: CreateDukanUiState
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+            .background(Theme.colorScheme.background.surface)
+            .padding(start = Theme.spacing._16, end = Theme.spacing._16)
     ) {
-        Text("Style Selector")
+        item {
+            CustomizeDukanHeader()
+        }
+        item {
+            Text(
+                text = stringResource(Res.string.color),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
+            )
+        }
+        item {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+            ) {
+                state.dukanColors.forEach {
+                    ColorOptionsPlaceholder(
+                        backgroundColor = Color(it.color),
+                        onClick = { listener.onColorClicked(it) },
+                        isSelected = it.id == state.selectedColor?.id
+                    )
+                }
+            }
+        }
+        item {
+            Text(
+                text = stringResource(Res.string.style),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
+            )
+        }
+        item {
+            DukanStyleOptions(
+                listener = listener,
+                state = state
+            )
+        }
+    }
+}
+
+@Composable
+private fun CustomizeDukanHeader() {
+    Text(
+        text = stringResource(Res.string.customize_your_dukan),
+        style = Theme.typography.title.medium,
+        color = Theme.colorScheme.shadePrimary
+    )
+    Text(
+        text = stringResource(Res.string.pick_color_and_style_for_dukan),
+        style = Theme.typography.body.small,
+        color = Theme.colorScheme.shadeSecondary
+    )
+
+}
+
+@Preview
+@Composable
+private fun CreateDukanContentSelectStylePreview() {
+    MenaTheme {
+        CreateDukanContentSelectStyle(
+            state = CreateDukanUiState(
+                selectedColor = null,
+                selectedStyle = Dukan.Style.NO_IMAGE,
+            ),
+            listener = PreviewCreateDukanInteractionListener
+        )
     }
 }

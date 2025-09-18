@@ -5,7 +5,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import net.thechance.mena.dukan.presentation.screen.createDukan.CreateDukanScreen
 
 @Composable
 fun DukanNavHost() {
@@ -22,7 +21,7 @@ fun DukanNavHost() {
             }
 
             composable<DukanRoute.CreateDukanScreenRoute> {
-                 CreateDukanScreen()
+//                 CreateDukanScreen()
             }
             composable<DukanRoute.MyDukanScreenRoute> {
                 // MyDukanScreen()

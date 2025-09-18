@@ -21,7 +21,7 @@ fun Dukan.toCreateDukanRequest(): CreateDukanRequest {
     )
 }
 
-fun List<DukanCategoryDto>.toEntity(): List<Category> {
+fun List<DukanCategoryDto>.toCategoryList(): List<Category> {
     return map {
         Category(
             id = it.id,
@@ -31,7 +31,7 @@ fun List<DukanCategoryDto>.toEntity(): List<Category> {
     }
 }
 
-fun List<DukanColorDto>.toEntity(): List<Color> {
+fun List<DukanColorDto>.toColorsList(): List<Color> {
     return map {
         Color(
             id = it.id,
@@ -41,7 +41,7 @@ fun List<DukanColorDto>.toEntity(): List<Color> {
 }
 
 
-fun MyDukanStatusDto.toEntity(): MyDukanStatus {
+fun MyDukanStatusDto.toCategoryList(): MyDukanStatus {
     return MyDukanStatus(
         status = Dukan.Status.valueOf(status),
         dukanName = dukanName

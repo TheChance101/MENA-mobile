@@ -3,6 +3,9 @@ package net.thechance.mena.dukan.presentation.util.stubPreviews
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
+import net.thechance.mena.dukan.domain.entity.Color
+import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.ColorUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
@@ -11,6 +14,9 @@ import org.maplibre.compose.camera.CameraPosition
 object PreviewCreateDukanInteractionListener : CreateDukanInteractionListener {
     override fun onButtonClicked() {}
     override fun onBackClicked() {}
+    override fun onColorClicked(color: ColorUiState) {}
+    override fun onStyleClicked(style: Dukan.Style) {}
+    override fun onClickUploadImage() {}
     override fun onClickUploadImage(image: ImageSrc) {}
     override fun onNameChanged(name: String) {}
     override fun onCategorySelected(category: DukanCategoryUiState): Boolean = true
