@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.home.components
+package net.thechance.mena.dukan.presentation.screen.main.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -28,10 +28,10 @@ import mena.dukan_presentation.generated.resources.dukan_icon
 import mena.dukan_presentation.generated.resources.ic_add_dukan
 import mena.dukan_presentation.generated.resources.ic_dukan
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.home.MainScreenUiState
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -80,14 +80,14 @@ private fun DukanIconButton(
         ) {
             when (dukanStatus) {
                 MainScreenUiState.DukanStatusUi.None -> {
-                    MenaIcon(
+                    Icon(
                         painter = painterResource(resource = Res.drawable.ic_add_dukan),
                         contentDescription = stringResource(resource = Res.string.add_dukan_icon)
                     )
                 }
 
                 MainScreenUiState.DukanStatusUi.Pending -> {
-                    MenaIcon(
+                    Icon(
                         painter = painterResource(resource = Res.drawable.ic_dukan),
                         contentDescription = stringResource(resource = Res.string.dukan_icon)
                     )
