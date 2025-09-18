@@ -1,11 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
@@ -24,11 +19,9 @@ class SurahViewModel(
         tryToExecute(
             execute = { quranRepository.getAyatOfSurah(surahId) },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { ayat ->
+            onSuccess = {  ayat ->
                 updateState {
-                    it.copy(
-                        ayatOfSurah = ayat.map { ayah -> ayah.toUiState() }
-                    )
+                    it.copy(ayatOfSurah = mapAyatToUiStates(ayat))
                 }
             },
             onFinally = { updateState { it.copy(isLoading = false) }
@@ -36,6 +29,9 @@ class SurahViewModel(
         )
     }
 
+    private fun mapAyatToUiStates(ayat: List<Ayah>): List<SurahScreenState.AyahUiState> {
+        return ayat.map { ayah -> ayah.toUiState() }
+    }
 
     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
         updateState {
@@ -52,44 +48,19 @@ class SurahViewModel(
             it.copy(
                 isAyahActionButtonsVisible = false,
                 selectedAyah = "",
-                selectedAyahIndex = -1
+                selectedAyahIndex = null
             )
         }
     }
 
     override fun onBackClick() = sendEffect(SurahScreenEffect.NavigateBack)
 
-    override fun onTextLayoutChanged(textLayoutResult: TextLayoutResult) {
-        updateState {
-            it.copy(ayahLayout = textLayoutResult)
-        }
-    }
-
     override fun onBookmarkClick(ayahNumber: Int) {
         updateState {
             it.copy(
                 isAyahActionButtonsVisible = false,
-                selectedAyahIndex = -1
+                selectedAyahIndex = null
             )
-        }
-    }
-
-    override fun onCopyClick(ayahContent: String) {
-        updateState {
-            it.copy(
-                isSnackBarVisible = true,
-                selectedAyah = ayahContent,
-                isAyahActionButtonsVisible = false,
-                selectedAyahIndex = -1,
-            )
-        }
-        viewModelScope.launch {
-            delay(1500)
-            updateState {
-                it.copy(
-                    isSnackBarVisible = false
-                )
-            }
         }
     }
 
@@ -98,7 +69,7 @@ class SurahViewModel(
             it.copy(
                 isAyahActionButtonsVisible = false,
                 selectedAyah = ayahContent,
-                selectedAyahIndex = -1
+                selectedAyahIndex = null
             )
         }
         sendEffect(SurahScreenEffect.ShareAyah(ayahContent))

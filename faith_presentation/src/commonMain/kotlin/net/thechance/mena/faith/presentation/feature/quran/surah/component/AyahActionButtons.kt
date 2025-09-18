@@ -39,7 +39,6 @@ internal fun AyahActionButtons(
     modifier: Modifier = Modifier
 
     ) {
-
         Row(
             modifier = modifier.fillMaxWidth()
                 .padding(Theme.spacing._16)

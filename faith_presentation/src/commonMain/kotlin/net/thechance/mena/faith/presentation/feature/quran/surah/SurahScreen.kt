@@ -1,9 +1,5 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,19 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
-import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.ic_check_circle
-import mena.faith_presentation.generated.resources.snack_bar_message
-import mena.faith_presentation.generated.resources.snack_bar_title
-import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
+import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatContent
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
-import net.thechance.mena.faith.presentation.feature.quran.surah.component.ClickableAyahText
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.createClickableAyahText
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -44,15 +34,17 @@ import org.koin.core.parameter.parametersOf
 fun SurahScreen(
     surahId: Int,
     surahName: String,
-    viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId) })
+    viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     LaunchedEffect(Unit) {
         viewModel.uiEffect.collectLatest { effect ->
             when (effect) {
                 is SurahScreenEffect.NavigateBack -> {}
                 is SurahScreenEffect.ShareAyah -> {}
+
             }
         }
     }
@@ -73,66 +65,34 @@ private fun Content(
 ) {
     val lazyListState = rememberLazyListState()
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Theme.colorScheme.background.surface)
-            .windowInsetsPadding(WindowInsets.statusBars)
-    ) {
-        Column {
-            SurahAppBar(
-                surahName = surahName,
-                onBackClick = listener::onBackClick
-            )
+        Box(
+            modifier = modifier.fillMaxSize()
+                .background(Theme.colorScheme.background.surface)
+                .windowInsetsPadding(WindowInsets.statusBars)
+        ) {
+            Column {
+                SurahAppBar(
+                    surahName = surahName,
+                    onBackClick = listener::onBackClick
+                )
 
-            AyatOfSurah(
-                listener = listener,
+                AyatOfSurah(
+                    listener = listener,
+                    state = state,
+                    lazyListState = lazyListState
+                )
+            }
+
+            AnimatedAyahActionButtons(
                 state = state,
-                lazyListState = lazyListState
+                listener = listener,
+                modifier = Modifier.fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(Theme.spacing._16)
             )
         }
-
-        AnimatedAyahActionButtons(
-            state = state,
-            listener = listener,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(Theme.spacing._16)
-        )
-
-        SurahSnackBar(
-            isVisible = state.isSnackBarVisible,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = Theme.spacing._12,
-                    start = Theme.spacing._16,
-                    end = Theme.spacing._16
-                )
-                .windowInsetsPadding(insets = WindowInsets.statusBars)
-        )
     }
-}
 
-@Composable
-private fun SurahSnackBar(
-    isVisible: Boolean,
-    modifier: Modifier = Modifier
-) {
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(300))
-    ) {
-        SnackBar(
-            title = stringResource(Res.string.snack_bar_title),
-            message = stringResource(Res.string.snack_bar_message),
-            leadingIcon = painterResource(Res.drawable.ic_check_circle),
-            modifier = modifier
-        )
-    }
-}
 
 @Composable
 private fun AyatOfSurah(
@@ -146,7 +106,7 @@ private fun AyatOfSurah(
         selectedAyahIndex = state.selectedAyahIndex
     )
 
-    HandleScrollDismissEffect(
+    HideAyahActionButtonsOnScroll(
         lazyListState = lazyListState,
         state = state,
         listener = listener
@@ -164,17 +124,18 @@ private fun AyatOfSurah(
         }
 
         item {
-            ClickableAyahText(
+            AyatContent(
                 annotatedText = annotatedText,
                 state = state,
                 ayat = state.ayatOfSurah,
-                listener = listener,
-                onTextLayoutResult = { listener.onTextLayoutChanged(it) })
+                listener = listener
+            )
         }
     }
 }
+
 @Composable
-private fun HandleScrollDismissEffect(
+private fun HideAyahActionButtonsOnScroll(
     lazyListState: LazyListState,
     state: SurahScreenState,
     listener: SurahInteractionListener

@@ -10,18 +10,19 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.bismillah
@@ -34,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenState
+import net.thechance.mena.faith.presentation.util.getClipboardManager
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -60,7 +62,7 @@ internal fun SurahAppBar(
 }
 @Composable
 internal fun BasmalaHeader(
-    selectedAyahIndex: Int,
+    selectedAyahIndex: Int?,
     onDismissActionButtons: () -> Unit
 ) {
     MenaImage(
@@ -72,7 +74,7 @@ internal fun BasmalaHeader(
             .pointerInput(selectedAyahIndex) {
                 detectTapGestures(
                     onTap = {
-                        if (selectedAyahIndex >= 0) onDismissActionButtons()
+                        if (selectedAyahIndex != null) onDismissActionButtons()
                     }
                 )
             }
@@ -93,31 +95,36 @@ internal fun AnimatedAyahActionButtons(
         modifier = modifier
     ) {
         if (isValidAyahSelection(state)) {
-            val selectedAyah = state.ayatOfSurah[state.selectedAyahIndex]
+            val selectedAyah = state.selectedAyahIndex?.let { state.ayatOfSurah[it] }
             AyahActionButtons(
-                onBookmarkClick = { listener.onBookmarkClick(selectedAyah.number) },
-                onCopyClick = { listener.onCopyClick(state.selectedAyah) },
+                onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
+                onCopyClick = { getClipboardManager().copy(state.selectedAyah) },
                 onShareClick = { listener.onShareClick(state.selectedAyah) }
             )
         }
     }
 }
 
-private fun isValidAyahSelection(state: SurahScreenState): Boolean =
+private fun isValidAyahSelection(state: SurahScreenState): Boolean {
+    return state.selectedAyahIndex != null &&
             state.selectedAyahIndex >= 0 &&
             state.selectedAyahIndex < state.ayatOfSurah.size
+}
 
 @Composable
-internal fun ClickableAyahText(
+internal fun AyatContent(
     annotatedText: AnnotatedString,
     state: SurahScreenState,
     ayat: List<SurahScreenState.AyahUiState>,
-    listener: SurahInteractionListener,
-    onTextLayoutResult: (TextLayoutResult) -> Unit
+    listener: SurahInteractionListener
 ) {
+    var textLayoutResult by remember {
+        mutableStateOf<TextLayoutResult?>(null )
+    }
+
     BasicText(
         text = annotatedText,
-        onTextLayout = onTextLayoutResult,
+        onTextLayout = {textLayoutResult = it },
         style = getAyahTextStyle(),
         modifier = Modifier
             .fillMaxWidth()
@@ -132,7 +139,7 @@ internal fun ClickableAyahText(
                     onLongPress = { offset ->
                         handleAyahLongPress(
                             offset = offset,
-                            textLayoutResult = state.ayahLayout,
+                            textLayoutResult = textLayoutResult,
                             annotatedText = annotatedText,
                             ayat = ayat,
                             listener = listener
@@ -144,12 +151,11 @@ internal fun ClickableAyahText(
 }
 
 @Composable
-private fun getAyahTextStyle(): TextStyle {
-    return Theme.typography.quran.large.copy(
+private fun getAyahTextStyle() = Theme.typography.quran.large.copy(
         textDirection = TextDirection.Rtl,
         textAlign = TextAlign.Justify
     )
-}
+
 
 
  private fun handleAyahLongPress(

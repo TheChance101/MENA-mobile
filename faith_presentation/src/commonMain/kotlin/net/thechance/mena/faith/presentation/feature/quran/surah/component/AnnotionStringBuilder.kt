@@ -16,7 +16,7 @@ import org.jetbrains.compose.resources.Font
 @Composable
 internal fun createClickableAyahText(
     ayatOfSurah: List<SurahScreenState.AyahUiState>,
-    selectedAyahIndex: Int
+    selectedAyahIndex: Int?
 ): AnnotatedString {
     return buildAnnotatedString {
         ayatOfSurah.forEachIndexed { index, aya ->
@@ -40,11 +40,10 @@ internal fun createClickableAyahText(
 }
 
 @Composable
-private fun getAyahTextColor(selectedAyahIndex: Int, currentIndex: Int): Color {
-    if (selectedAyahIndex == -1)
-         return Theme.colorScheme.shadePrimary
-    if (selectedAyahIndex == currentIndex)
-           return Theme.colorScheme.shadePrimary
-    return Theme.colorScheme.shadeTertiary
+private fun getAyahTextColor(selectedAyahIndex: Int?, currentIndex: Int): Color {
+    return when (selectedAyahIndex) {
+        null -> Theme.colorScheme.shadePrimary
+        currentIndex -> Theme.colorScheme.shadePrimary
+        else -> Theme.colorScheme.shadeTertiary
     }
-
+}

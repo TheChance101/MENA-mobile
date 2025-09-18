@@ -10,9 +10,9 @@ internal val viewModelModule = module {
     viewModelOf(::SurViewModel)
     viewModel { (surahId: Int, surahName: String) ->
         SurahViewModel(
+            quranRepository = get(),
             surahId = surahId,
-            surahName = surahName,
-            quranRepository = get()
+            surahName = surahName
         )
     }
 
