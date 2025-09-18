@@ -10,9 +10,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class BookmarkRepositoryImpl: BookmarkRepository {
 
-    override suspend fun getAllBookmarks(): List<Bookmark> {
-        return bookmarks
-    }
+    override suspend fun getAllBookmarks(): List<Bookmark> = bookmarks
 
     override suspend fun addBookmark(
         surahId: Int,

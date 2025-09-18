@@ -10,7 +10,7 @@ class BookmarkViewModel(
     BookmarkInteractionListener {
 
     init {
-        initializeBookmarks()
+        getBookmarks()
     }
 
     override fun onBackClick() = sendEffect(BookmarkEffect.NavigateBack)
@@ -27,7 +27,7 @@ class BookmarkViewModel(
         )
     }
 
-    private fun initializeBookmarks() {
+    private fun getBookmarks() {
         tryToExecute(
             onStart = { setLoadingState(true) },
             execute = { bookmarkRepository.getAllBookmarks() },

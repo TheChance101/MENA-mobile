@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.component
+package net.thechance.mena.faith.presentation.feature.quran.bookmark.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun EmptyScreenState(
+fun EmptyBookmarkState(
     title: String,
     icon: Painter,
     contentDescription: String,
@@ -74,11 +74,12 @@ fun EmptyScreenState(
         }
     }
 }
+
 @Preview()
 @Composable
 private fun EmptyBookMarkPreview() {
     MenaTheme {
-        EmptyScreenState(
+        EmptyBookmarkState(
             icon = painterResource(Res.drawable.ic_not_saved_book_mark),
             contentDescription = "Empty Bookmark",
             title = "No Bookmarks Yet",

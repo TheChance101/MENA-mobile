@@ -47,7 +47,8 @@ fun SwipeableCard(
     swipeThreshold: Float = 130f,
     cardContent: @Composable (Modifier) -> Unit,
 ) {
-    val currentSwipedCardId = mutableIntStateOf(-1)
+    val currentSwipedCardId = mutableIntStateOf(NORMAL_STATE)
+
     var rawOffsetX by remember { mutableFloatStateOf(0f) }
     val isCurrentCardSwiped = currentSwipedCardId.intValue == id
 
@@ -99,11 +100,11 @@ fun SwipeableCard(
 
 @Composable
 private fun SwipeBackground(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     painter: Painter = painterResource(Res.drawable.bookmark),
     contentDescription: String = stringResource(Res.string.remove_bookmark_icon),
     tintColor: Color = Theme.colorScheme.error,
+    onClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -122,3 +123,5 @@ private fun SwipeBackground(
         )
     }
 }
+
+private const val NORMAL_STATE = -1

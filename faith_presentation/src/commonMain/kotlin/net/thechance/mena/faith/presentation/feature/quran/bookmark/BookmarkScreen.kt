@@ -32,11 +32,11 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.component.BackIcon
-import net.thechance.mena.faith.presentation.component.EmptyScreenState
 import net.thechance.mena.faith.presentation.component.LoadingIndicator
 import net.thechance.mena.faith.presentation.component.SwipeableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.AyaBookmarkCard
+import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -82,7 +82,8 @@ private fun Content(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Theme.colorScheme.background.surface)
-            .padding(horizontal = Theme.spacing._16).statusBarsPadding(),
+            .padding(horizontal = Theme.spacing._16)
+            .statusBarsPadding(),
     ) {
 
         AppBar(
@@ -127,7 +128,7 @@ private fun Content(
 
 @Composable
 private fun EmptyBookmarkState() {
-    EmptyScreenState(
+    EmptyBookmarkState(
         title = stringResource(Res.string.empty_state_bookmark_title),
         icon = painterResource(Res.drawable.ic_not_saved_book_mark),
         contentDescription = stringResource(Res.string.empty_state_bookmark_image),
