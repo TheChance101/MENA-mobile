@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.base
+package net.thechance.mena.dukan.presentation.viewModel.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
