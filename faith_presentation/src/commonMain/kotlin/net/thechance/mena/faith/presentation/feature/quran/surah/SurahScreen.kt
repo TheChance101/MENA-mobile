@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatContent
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
@@ -38,7 +37,7 @@ fun SurahScreen(
     clipboardManager: ClipboardManager,
     viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
 ) {
-    QuranTheme {
+
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
         LaunchedEffect(Unit) {
@@ -57,7 +56,6 @@ fun SurahScreen(
             clipboardManager = clipboardManager
         )
     }
-}
 @Composable
 private fun Content(
     state: SurahScreenState,
@@ -146,9 +144,8 @@ private fun HideAyahActionButtonsOnScroll(
     LaunchedEffect(lazyListState) {
         lazyListState.let { listState ->
             snapshotFlow { listState.isScrollInProgress }.collect { isScrolling ->
-                if (isScrolling && !state.isAyahActionButtonsVisible) {
-                    listener.onDismissActionButtons()
-                }
+                if (isScrolling && !state.isAyahActionButtonsVisible) listener.onDismissActionButtons()
+
             }
         }
     }

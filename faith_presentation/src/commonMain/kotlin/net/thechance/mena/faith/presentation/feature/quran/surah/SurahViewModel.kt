@@ -5,7 +5,7 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
 class SurahViewModel(
-    private val quranRepository: QuranRepository,
+    private val repository: QuranRepository,
     surahId: Int,
     surahName: String
 ): BaseViewModel<SurahScreenState, SurahScreenEffect>(
@@ -17,7 +17,7 @@ class SurahViewModel(
     }
     private fun loadSurahData(surahId: Int) {
         tryToExecute(
-            execute = { quranRepository.getAyatOfSurah(surahId) },
+            execute = { repository.getAyatOfSurah(surahId) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = {  ayat ->
                 updateState {
@@ -29,9 +29,9 @@ class SurahViewModel(
         )
     }
 
-    private fun mapAyatToUiStates(ayat: List<Ayah>): List<SurahScreenState.AyahUiState> {
-        return ayat.map { ayah -> ayah.toUiState() }
-    }
+    private fun mapAyatToUiStates(ayat: List<Ayah>): List<SurahScreenState.AyahUiState> =
+        ayat.map { ayah -> ayah.toUiState() }
+
 
     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
         updateState {

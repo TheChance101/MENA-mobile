@@ -133,9 +133,7 @@ internal fun AyatContent(
             .pointerInput(state.selectedAyahIndex) {
                 detectTapGestures(
                     onTap = {
-                        if (state.isAyahActionButtonsVisible) {
-                            listener.onDismissActionButtons()
-                        }
+                        if (state.isAyahActionButtonsVisible) listener.onDismissActionButtons()
                     },
                     onLongPress = { offset ->
                         handleAyahLongPress(
@@ -156,8 +154,6 @@ private fun getAyahTextStyle() = Theme.typography.quran.large.copy(
         textDirection = TextDirection.Rtl,
         textAlign = TextAlign.Justify
     )
-
-
 
  private fun handleAyahLongPress(
      offset: Offset,
