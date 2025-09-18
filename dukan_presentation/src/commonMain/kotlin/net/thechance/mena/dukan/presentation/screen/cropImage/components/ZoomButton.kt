@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_add
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -46,7 +46,7 @@ fun RoundIconButton(
             .padding(padding),
         contentAlignment = Alignment.Center
     ) {
-        MenaIcon(
+        Icon(
             painter = icon,
             contentDescription = contentDescription,
             tint = if (isEnabled) iconTint else disabledIconTint,

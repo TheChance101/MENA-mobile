@@ -22,12 +22,12 @@ import mena.dukan_presentation.generated.resources.fill_name_and_select_category
 import mena.dukan_presentation.generated.resources.ic_alert_circle
 import mena.dukan_presentation.generated.resources.ic_shop
 import mena.dukan_presentation.generated.resources.you_can_choose_up_to_3_categories
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.createDukan.components.CategorySelectionRow
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.CategorySelectionRow
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
@@ -55,7 +55,7 @@ fun CreateDukanContentBasicInformation(
             TextField(
                 value = state.name,
                 onValueChanged = interactionListener::onNameChanged,
-                placeholder = stringResource(Res.string.enter_dukan_name),
+                hint = stringResource(Res.string.enter_dukan_name),
                 modifier = Modifier.padding(
                     start = Theme.spacing._16,
                     end = Theme.spacing._16,
@@ -82,7 +82,7 @@ fun CreateDukanContentBasicInformation(
 
 @Composable
 private fun HeaderSection() {
-    MenaText(
+    Text(
         text = stringResource(Res.string.enter_your_dukan_information),
         style = Theme.typography.title.medium,
         color = Theme.colorScheme.shadePrimary,
@@ -90,7 +90,7 @@ private fun HeaderSection() {
         textAlign = TextAlign.Start
     )
 
-    MenaText(
+    Text(
         text = stringResource(Res.string.fill_name_and_select_category),
         style = Theme.typography.body.small,
         color = Theme.colorScheme.shadeSecondary,
@@ -105,7 +105,7 @@ private fun HeaderSection() {
 
 @Composable
 private fun CategoryHeaderSection() {
-    MenaText(
+    Text(
         text = stringResource(Res.string.category),
         style = Theme.typography.title.small,
         color = Theme.colorScheme.shadePrimary,
@@ -125,7 +125,7 @@ private fun CategoryHeaderSection() {
         ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MenaIcon(
+        Icon(
             modifier = Modifier
                 .padding(top = Theme.spacing._2, bottom = Theme.spacing._2, end = Theme.spacing._2)
                 .align(Alignment.CenterVertically)
@@ -134,7 +134,7 @@ private fun CategoryHeaderSection() {
             contentDescription = stringResource(Res.string.alert),
             tint = Theme.colorScheme.shadeSecondary
         )
-        MenaText(
+        Text(
             text = stringResource(Res.string.you_can_choose_up_to_3_categories),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary,

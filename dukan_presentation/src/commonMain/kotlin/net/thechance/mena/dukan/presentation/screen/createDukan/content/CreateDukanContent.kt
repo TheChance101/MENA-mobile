@@ -27,9 +27,9 @@ import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.createDukan.components.SnackBar
-import net.thechance.mena.dukan.presentation.screen.createDukan.components.SnackBarType
-import net.thechance.mena.dukan.presentation.screen.createDukan.components.SnackBarUiState
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.SnackBar
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.SnackBarType
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState

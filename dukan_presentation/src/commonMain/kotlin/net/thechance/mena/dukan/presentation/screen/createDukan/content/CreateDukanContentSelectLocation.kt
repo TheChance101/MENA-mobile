@@ -16,7 +16,7 @@ import mena.dukan_presentation.generated.resources.dukan_location
 import mena.dukan_presentation.generated.resources.enter_address_and_pick_dukan_location_on_map
 import mena.dukan_presentation.generated.resources.ic_store_location
 import mena.dukan_presentation.generated.resources.location
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.Map
@@ -36,21 +36,21 @@ fun CreateDukanContentSelectLocation(
             .padding(horizontal = Theme.spacing._16)
     ) {
         item {
-            MenaText(
+            Text(
                 text = stringResource(Res.string.dukan_location),
                 style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary
             )
         }
         item {
-            MenaText(
+            Text(
                 text = stringResource(Res.string.enter_address_and_pick_dukan_location_on_map),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
             )
         }
         item {
-            MenaText(
+            Text(
                 modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4),
                 text = stringResource(Res.string.address),
                 style = Theme.typography.title.small,
@@ -61,14 +61,14 @@ fun CreateDukanContentSelectLocation(
             TextField(
                 value = state.address,
                 onValueChanged = {},
-                placeholder = "",
+                hint = "",
                 leadingIcon = painterResource(Res.drawable.ic_store_location),
                 readOnly = true,
                 enabled = false
             )
         }
         item {
-            MenaText(
+            Text(
                 modifier = Modifier.padding(top = Theme.spacing._12, bottom = Theme.spacing._4),
                 text = stringResource(Res.string.location),
                 style = Theme.typography.title.small,
