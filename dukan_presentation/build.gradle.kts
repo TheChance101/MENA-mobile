@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.mockkery)
     alias(libs.plugins.cocoapods)
-    alias(libs.plugins.mokkery.plugin)
 }
 
 kotlin {
@@ -71,13 +70,6 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.turbine)
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.junit)
-            implementation(libs.mokkery.core)
-        }
-
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.mokkery.core)
