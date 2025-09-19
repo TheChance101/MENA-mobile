@@ -17,8 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +46,9 @@ import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.navigation.BookmarksRoute
+import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.SurahDetailsRoute
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -55,35 +56,30 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SurScreen(
-    onNavigateBack: () -> Unit,
-    onNavigateToBookmarks: () -> Unit = {},
-    onNavigateToSurahDetails: (surahId: Int, surahName: String) -> Unit,
     viewModel: SurViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val effect by viewModel.uiEffect.collectAsState(initial = null)
-
-    LaunchedEffect(effect) {
-        effect?.let { currentEffect ->
-            when (currentEffect) {
-                is SurEffect.NavigateToBack -> {
-                    onNavigateBack()
-                }
-
-                is SurEffect.NavigateToBookmark -> {
-                    onNavigateToBookmarks()
-                }
-
-                is SurEffect.NavigateToSurahDetails -> {
-                    onNavigateToSurahDetails(currentEffect.surahId, currentEffect.surahName)
-                }
-            }
-        }
-    }
-
+    val navController = LocalNavController.current
     Content(
         uiState = state,
-        interactionListener = viewModel
+        interactionListener = object : SurInteractionListener {
+            override fun onSurahClick(surahId: Int, surahName: String) {
+                navController.navigate(
+                    SurahDetailsRoute(
+                        surahId = surahId,
+                        surahName = surahName
+                    )
+                )
+            }
+
+            override fun onBackClick() {
+                navController.popBackStack()
+            }
+
+            override fun onBookmarkClick() {
+                navController.navigate(route = BookmarksRoute)
+            }
+        }
     )
 }
 

@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
@@ -26,31 +25,18 @@ fun FaithNavigation(clipboardManager: ClipboardManager) {
             startDestination = SurRoute
         ) {
             composable<SurRoute> {
-                    QuranTheme {
-                        SurScreen(
-                            onNavigateBack = { navController.popBackStack() },
-                            onNavigateToSurahDetails = { surahId, surahName ->
-                                navController.navigate(
-                                    SurahDetailsRoute(
-                                        surahId = surahId,
-                                        surahName = surahName
-                                    )
-                                )
-                            }
-                        )
-                    }
+                QuranTheme { SurScreen() }
             }
 
             composable<SurahDetailsRoute> { backStackEntry ->
                 val args = backStackEntry.toRoute<SurahDetailsRoute>()
-                    QuranTheme {
-                        SurahScreen(
-                            surahId = args.surahId,
-                            surahName = args.surahName,
-                            clipboardManager = clipboardManager,
-                            onNavigateBack = { navController.navigateUp() }
-                        )
-                    }
+                QuranTheme {
+                    SurahScreen(
+                        surahId = args.surahId,
+                        surahName = args.surahName,
+                        clipboardManager = clipboardManager
+                    )
+                }
             }
         }
     }

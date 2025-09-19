@@ -19,14 +19,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatContent
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.createClickableAyahText
+import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.util.ClipboardManager
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -35,26 +34,36 @@ import org.koin.core.parameter.parametersOf
 fun SurahScreen(
     surahId: Int,
     surahName: String,
-    onNavigateBack: () -> Unit,
     clipboardManager: ClipboardManager,
     viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.uiEffect.collectLatest { effect ->
-            when (effect) {
-                is SurahScreenEffect.NavigateBack -> onNavigateBack()
-                is SurahScreenEffect.ShareAyah -> {}
-
-            }
-        }
-    }
+    val navController = LocalNavController.current
 
     Content(
         state = uiState,
-        listener = viewModel,
+        listener = object : SurahInteractionListener {
+            override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
+                viewModel.onAyahLongPress(ayahContent, ayahIndex)
+            }
+
+            override fun onDismissActionButtons() {
+                viewModel.onDismissActionButtons()
+            }
+
+            override fun onBackClick() {
+                navController.navigateUp()
+            }
+
+            override fun onBookmarkClick(ayahNumber: Int) {
+                viewModel.onBookmarkClick(ayahNumber)
+            }
+
+            override fun onShareClick(ayahContent: String) {
+                viewModel.onShareClick(ayahContent)
+            }
+        },
         clipboardManager = clipboardManager
     )
 }
