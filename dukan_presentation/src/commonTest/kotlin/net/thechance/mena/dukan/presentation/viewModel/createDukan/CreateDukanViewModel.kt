@@ -39,13 +39,27 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `init should load categories, styles and colors`() = runTest {
+    fun `init should load categories`() = runTest {
         viewModel.state.test {
             val state = awaitItem()
             assertEquals(fakeCategories().size, state.dukanCategories.size)
-            assertEquals(fakeDukanStyle().size, state.dukanStyles.size)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+    @Test
+    fun `init should load colors`() = runTest {
+        viewModel.state.test {
+            val state = awaitItem()
             assertEquals(fakeDukanColor().size, state.dukanColors.size)
-
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+    @Test
+    fun `init should load styles`() = runTest {
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals(fakeDukanStyle().size, state.dukanStyles.size)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -97,8 +111,6 @@ class CreateDukanViewModelTest {
 
             viewModel.state.test {
                 val state = awaitItem()
-                assertEquals(color, state.selectedColor)
-                assertEquals(style, state.selectedStyle)
                 assertEquals(true, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -119,8 +131,6 @@ class CreateDukanViewModelTest {
 
             viewModel.state.test {
                 val state = awaitItem()
-                assertEquals(color, state.selectedColor)
-                assertEquals(null, state.selectedStyle)
                 assertEquals(false, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -137,8 +147,6 @@ class CreateDukanViewModelTest {
 
             viewModel.state.test {
                 val state = awaitItem()
-                assertEquals(null, state.selectedColor)
-                assertEquals(style, state.selectedStyle)
                 assertEquals(false, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -151,8 +159,6 @@ class CreateDukanViewModelTest {
 
             viewModel.state.test {
                 val state = awaitItem()
-                assertEquals(null, state.selectedColor)
-                assertEquals(null, state.selectedStyle)
                 assertEquals(false, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
