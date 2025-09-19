@@ -2,6 +2,7 @@ package net.thechance.mena.trends.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import net.thechance.mena.trends.data.dto.ReelDto
@@ -21,7 +22,11 @@ class ReelsRepositoryImpl(
     @Provided private val httpClient: HttpClient
 ) : ReelsRepository {
 
-    override suspend fun deleteReelById(id: Int) = safeApiCall {}
+    override suspend fun deleteReelById(id: String) {
+        safeApiCall {
+            httpClient.delete("$TRENDS/$REELS/$id")
+        }
+    }
 
     override suspend fun getAllReels(pageNumber: Int): List<Reel> {
         return safeApiCall {

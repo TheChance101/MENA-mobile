@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">مينا</string>
+    <string name="app_coin_icon">رمز العملة للتطبيق</string>
+    <string name="cancel_dialog_icon">رمز إلغاء الحوار</string>
+
+    <string name="manage_trends_title">إدارة ترنداتي</string>
+    <string name="profile_image_desc">صورة الملف الشخصي</string>
+    <string name="my_trends">ترنداتي</string>
+    <string name="favorite">المفضلة</string>
+    <string name="trend_image_desc">صورة الاتجاه</string>
+    <string name="back_arrow">سهم العودة</string>
+
+    <string name="delete_reel">حذف الفيديو</string>
+    <string name="confirmation_message">هل أنت متأكد من الحذف؟</string>
+    <string name="success_delete_message">تم الحذف الفيديو بنجاح</string>
+    <string name="success_delete_title">نجح</string>
+    <string name="fail_delete_message">حدث خطأ اثناء الحذف</string>
+    <string name="fail_delete_title">خطأ</string>
+    <string name="delete">حذف</string>
+    <string name="react">ايقونه تفاعليه</string>
+</resources>

@@ -47,7 +47,7 @@ class ManageTrendsViewModel(
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
-    override fun onReelItemClick(reelId: Int) {
+    override fun onReelItemClick(reelId: String) {
         sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId))
     }
 

@@ -33,8 +33,8 @@ fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> {
 }
 
 fun Modifier.gradientShadow(
-    startColor: Color = Color(color = 0x00FFFFFF),
-    endColor: Color = Color(color = 0x33FFFFFF),
+    startColor: Color = Color(color = 0x00000033),
+    endColor: Color = Color(color =  0x00000000),
     spread: Dp = 18.dp,
     offsetY: Dp = 2.dp
 ): Modifier = this.then(

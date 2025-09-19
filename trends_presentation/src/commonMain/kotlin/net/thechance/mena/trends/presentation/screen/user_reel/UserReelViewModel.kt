@@ -8,9 +8,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 class UserReelViewModel(
     @Provided private val reelsRepository: ReelsRepository
-) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()),
-    UserReelInteractionListener {
-
+) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     private fun handleError(throwable: Throwable) {
         val errorRes = when (throwable) {
@@ -30,14 +28,38 @@ class UserReelViewModel(
     }
 
     override fun onDeleteClick() {
-        // Todo
+        updateState {
+            copy(isConfirmationDialogVisible = true)
+        }
     }
 
     override fun onConfirmDeleteClick() {
-        // Todo
+        tryToExecute(
+            block = { reelsRepository.deleteReelById(state.value.id.orEmpty()) },
+            onSuccess = { ::onDeleteReelSuccess },
+            onError = { handleError(it) },
+        )
     }
 
-    fun onDismissDialog() {
-        // Todo
+    private fun onDeleteReelSuccess() {
+        updateState { copy(isConfirmationDialogVisible = false, isReelDeleted = true) }
+    }
+
+    override fun onDismissSuccessDialog() {
+        updateState {
+            copy(isReelDeleted = null, isConfirmationDialogVisible = false)
+        }
+    }
+
+    override fun onDismissConfirmationDialog() {
+        updateState {
+            copy(isConfirmationDialogVisible = false)
+        }
+    }
+
+    override fun onDismissErrorDialog() {
+        updateState {
+            copy(isReelDeleted = null, isConfirmationDialogVisible = false)
+        }
     }
 }

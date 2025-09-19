@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,21 +31,33 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import mena.trends_presentation.generated.resources.Res
+import mena.trends_presentation.generated.resources.confirmation_message
+import mena.trends_presentation.generated.resources.delete
+import mena.trends_presentation.generated.resources.delete_reel
+import mena.trends_presentation.generated.resources.fail_delete_message
+import mena.trends_presentation.generated.resources.fail_delete_title
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_delete
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_like
+import mena.trends_presentation.generated.resources.react
+import mena.trends_presentation.generated.resources.success_delete_message
+import mena.trends_presentation.generated.resources.success_delete_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
 import net.thechance.mena.designsystem.presentation.component.image.MenaImage
 import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -55,6 +68,8 @@ fun UserReelScreen(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val navController = LocalNavController.current
+
     UserReelScreenContent(
         state = state,
         listener = viewModel
@@ -63,7 +78,7 @@ fun UserReelScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                UserReelEffect.NavigateBack -> {}// TODO
+                UserReelEffect.NavigateBack -> navController.popBackStack()
             }
         }
     }
@@ -76,7 +91,54 @@ private fun UserReelScreenContent(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
 
+        Dialog(
+            visible = state.isConfirmationDialogVisible,
+            title = stringResource(Res.string.delete_reel),
+            message = stringResource(Res.string.confirmation_message),
+            buttonText = stringResource(Res.string.delete),
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            onDismiss = { listener.onDismissConfirmationDialog() },
+            onActionClick = { listener.onConfirmDeleteClick() },
+            onCancelClick = { listener.onDismissConfirmationDialog() },
+            modifier = Modifier.align(Alignment.Center).zIndex(3f),
+            dialogCornerShape = RoundedCornerShape(12.dp),
+            cancelBackgroundShape = RoundedCornerShape(50),
+            contentPadding = PaddingValues(16.dp)
+        )
+
+        Dialog(
+            visible = state.isReelDeleted == true,
+            title = stringResource(Res.string.success_delete_title),
+            message = stringResource(Res.string.success_delete_message),
+            buttonText = "",
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            onDismiss = { listener.onDismissSuccessDialog() },
+            onCancelClick = { listener.onDismissSuccessDialog() },
+            modifier = Modifier.align(Alignment.Center).zIndex(3f),
+            dialogCornerShape = RoundedCornerShape(12.dp),
+            cancelBackgroundShape = RoundedCornerShape(50),
+            contentPadding = PaddingValues(16.dp)
+        )
+
+        Dialog(
+            visible = state.isReelDeleted == false,
+            title = stringResource(Res.string.fail_delete_title),
+            message = stringResource(Res.string.fail_delete_message),
+            buttonText = "",
+            dismissOnBackPress = true,
+            dismissOnClickOutside = true,
+            onDismiss = { listener.onDismissErrorDialog() },
+            onCancelClick = { listener.onDismissErrorDialog() },
+            modifier = Modifier.align(Alignment.Center).zIndex(3f),
+            dialogCornerShape = RoundedCornerShape(12.dp),
+            cancelBackgroundShape = RoundedCornerShape(50),
+            contentPadding = PaddingValues(16.dp)
+        )
+
         RunningVideoPlaceHolder()
+
         TopAppBar(onBackClick = listener::onBackClick)
 
         UsersReAct(
@@ -114,7 +176,7 @@ private fun TopAppBar(
         modifier = modifier
             .fillMaxWidth()
             .height(height = 96.dp)
-            .gradientShadow(startColor = Color(0x33FFFFFF), endColor = Color(0x00FFFFFF))
+            .gradientShadow()
             .padding(horizontal = Theme.spacing._16).padding(
                 top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 8.dp
             )
@@ -215,9 +277,10 @@ private fun UsersReAct(
 
         ReActIcon(
             icon = painterResource(resource = Res.drawable.ic_delete),
-            label = "Delete",
-            onClick = { onDeleteClick() }
-        )
+            label = stringResource(Res.string.delete),
+            onClick = { onDeleteClick() },
+
+            )
     }
 }
 
@@ -231,6 +294,7 @@ private fun ReActIcon(
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         MenaIcon(
             painter = icon,
+            contentDescription = stringResource(Res.string.react),
             modifier = Modifier
                 .padding(bottom = 8.dp)
                 .clickable { onClick() },

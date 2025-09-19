@@ -14,6 +14,6 @@ data class ManageTrendsScreenState(
     val errorMessage: StringResource? = null,
 )
 data class ReelUiState(
-    val id: Int,
+    val id: String,
     val thumbnailUrl: String,
 )

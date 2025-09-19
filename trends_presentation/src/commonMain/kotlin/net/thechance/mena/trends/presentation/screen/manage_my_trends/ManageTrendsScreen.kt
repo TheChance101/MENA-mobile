@@ -32,7 +32,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
-import mena.trends_presentation.generated.resources.Back_arrow
+import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.manage_trends_title
@@ -61,7 +61,7 @@ fun ManageTrendsScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ManageTrendsUiEffect.NavigateBack -> navController.popBackStack()
-                is ManageTrendsUiEffect.NavigateToTrend -> navController.navigate(Route.Trend(effect.reelId))
+                is ManageTrendsUiEffect.NavigateToTrend -> navController.navigate(Route.ReelDetails(effect.reelId))
             }
         }
     }
@@ -90,7 +90,7 @@ private fun ManageTrendsScreenContent(
             leadingContent = {
                 MenaIcon(
                     painter = painterResource(Res.drawable.ic_arrow_left),
-                    contentDescription = stringResource(Res.string.Back_arrow)
+                    contentDescription = stringResource(Res.string.back_arrow)
                 )
             },
             title = stringResource(Res.string.manage_trends_title),
@@ -129,7 +129,7 @@ private fun ManageTrendsScreenContent(
 @Composable
 private fun SegmentSection(
     reels: LazyPagingItems<ReelUiState>,
-    onTrendClick: (Int) -> Unit,
+    onTrendClick: (id: String) -> Unit,
 ) {
     Column(
         modifier = Modifier.padding(Theme.spacing._16)
@@ -195,7 +195,7 @@ private fun SegmentSection(
 @Composable
 private fun TrendItem(
     item: ReelUiState,
-    onTrendClick: (Int) -> Unit,
+    onTrendClick: (id: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
