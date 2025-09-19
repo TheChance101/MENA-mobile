@@ -14,12 +14,7 @@ import kotlin.test.Test
 
 class ReelRepositoryImplTest {
 
-    private lateinit var repository: ReelsRepositoryImpl
-
-    @BeforeTest
-    fun setUp() {
-        repository = createReelsRepository()
-    }
+    private var repository = createReelsRepository()
 
     @Test
     fun `should return list of reels mapped to entity successfully when the user has already reels`() =
