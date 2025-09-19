@@ -1,0 +1,47 @@
+package net.thechance.mena.trends.data.utils
+
+import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpStatusCode
+import net.thechance.mena.trends.data.dto.CategoryDto
+import net.thechance.mena.trends.data.dto.ReelDto
+import net.thechance.mena.trends.data.dto.RemoteResponse
+import net.thechance.mena.trends.data.mapper.toEntity
+import net.thechance.mena.trends.domain.entity.Reel
+
+val fakeReelDtoList = RemoteResponse(
+    pageNumber = 1,
+    results = listOf(
+        ReelDto(
+            id = "1",
+            reelImageUrl = "https://example.com/reel1.jpg",
+            videoUrl = "https://example.com/reel1.mp4",
+            description = "Funny reel about Kotlin Multiplatform",
+            createdAt = "2025-09-16T15:06:57.507394",
+            likesCount = 120,
+            viewsCount = 1500,
+            categories = listOf(
+                CategoryDto(id = "1", name = "Comedy", emoji = "😂"),
+                CategoryDto(id = "2", name = "Tech", emoji = "💻")
+            )
+        )
+    ),
+    totalResults = 1
+)
+
+val fakeReelList : List<Reel> = fakeReelDtoList.results.map(ReelDto::toEntity)
+
+fun MockRequestHandleScope.getReelsResponse(
+    reels: List<ReelDto> = fakeReelDtoList.results
+) = respond(
+    content = jsonSerialization.encodeToString(
+        RemoteResponse.serializer(ReelDto.serializer()),
+        RemoteResponse(
+            pageNumber = 1,
+            results = reels,
+            totalResults = reels.size
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers =  jsonHeaders
+)
