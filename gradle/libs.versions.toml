@@ -15,7 +15,6 @@ junit = "4.13.2"
 kotlin = "2.2.10"
 kotlinxCoroutinesTest = "1.10.2"
 kotlinxDatetime = "0.7.1"
-mokkeryVersion = "2.10.0"
 navigationCompose = "2.9.0-rc02"
 ksp = "2.2.10-RC2-2.0.2"
 koin-core = "4.1.0"
@@ -27,7 +26,7 @@ pagingRuntime = "3.3.6"
 pagingCompose = "3.4.0-alpha04"
 assertk = "0.28.1"
 mokkery = "2.10.0"
-turbine = "2.3.2"
+turbine = "1.2.1"
 
 [libraries]
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
@@ -60,7 +59,8 @@ koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-view
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
-mokkery = { module = "mockkery:mokkery", version.ref = "mokkeryVersion" }
+mokkery-core = { module = "dev.mokkery:mokkery-core", version.ref = "mokkery" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine"}
 resources = { module = "dev.icerock.moko:resources", version.ref = "resources" }
 
 # Ktor
@@ -70,7 +70,6 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
-turbine = { module = "turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
