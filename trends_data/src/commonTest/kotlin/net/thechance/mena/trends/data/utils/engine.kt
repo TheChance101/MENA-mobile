@@ -21,19 +21,24 @@ val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Jso
 
 
 fun createReelsRepository(
-    getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
-): ReelsRepositoryImpl{
-    return ReelsRepositoryImpl(createReelsHttpClient(getReels))
+    getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
+    ): ReelsRepositoryImpl{
+    return ReelsRepositoryImpl(createReelsHttpClient(getReels, deleteReel))
 }
 
 
 fun createReelsHttpClient(
     getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): HttpClient {
+    deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
+    ): HttpClient {
     return HttpClient(MockEngine { request ->
-        when (request.url.encodedPath) {
-            "/trends/reels" -> {
+        when {
+            request.url.encodedPath== "/trends/reels" && request.method.value == "GET" -> {
                 getReels?.invoke(this) ?: getReelsResponse()
+            }
+            request.url.encodedPath == "/trends/reels/1" && request.method.value == "DELETE" -> {
+                deleteReel?.invoke(this, "1") ?: deleteReelResponse("1")
             }
 
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)

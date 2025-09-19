@@ -45,3 +45,12 @@ fun MockRequestHandleScope.getReelsResponse(
     status = HttpStatusCode.OK,
     headers =  jsonHeaders
 )
+
+fun MockRequestHandleScope.deleteReelResponse(
+    id: String,
+    status: HttpStatusCode = HttpStatusCode.OK
+) = respond(
+    content = "",
+    status = status,
+    headers = jsonHeaders
+)
