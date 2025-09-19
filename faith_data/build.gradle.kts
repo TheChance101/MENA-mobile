@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlinx.serialization)
+
 }
 
 kotlin {
@@ -15,6 +17,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.room.sqlite.wrapper)
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(projects.faithDomain)
@@ -22,7 +25,12 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.bundles.ktor)
             api(libs.koin.core)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+
         }
     }
 }
