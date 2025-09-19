@@ -5,34 +5,41 @@ import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CreateDukanViewModelTest {
 
     private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
     private val locationRepository = mock<LocationRepository>(mode = MockMode.autofill)
     private lateinit var viewModel: CreateDukanViewModel
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `init should load categories, styles and colors`() = runTest {
+    private val testDispatcher= StandardTestDispatcher()
 
+    @BeforeTest
+    fun setup(){
+        Dispatchers.setMain(testDispatcher)
         everySuspend { dukanRepository.getDukanStyles() } returns fakeDukanStyle()
         everySuspend { dukanRepository.getDukanColors() } returns fakeDukanColor()
         everySuspend { dukanRepository.getCategories() } returns fakeCategories()
 
-        viewModel = CreateDukanViewModel(dukanRepository, locationRepository)
+        viewModel=CreateDukanViewModel(dukanRepository, locationRepository,testDispatcher)
+    }
 
-        advanceUntilIdle()
+    @Test
+    fun `init should load categories, styles and colors`() = runTest {
         viewModel.state.test {
             val state = awaitItem()
             assertEquals(fakeCategories().size, state.dukanCategories.size)
@@ -50,8 +57,6 @@ class CreateDukanViewModelTest {
                 id = "1",
                 color = 0xFFF545
             )
-            viewModel = CreateDukanViewModel(dukanRepository, locationRepository)
-
             viewModel.onColorClicked(color)
 
             viewModel.state.test {
@@ -66,8 +71,6 @@ class CreateDukanViewModelTest {
         runTest {
 
             val style = Dukan.Style.WIDE_IMAGE
-
-            viewModel = CreateDukanViewModel(dukanRepository, locationRepository)
 
             viewModel.onStyleClicked(style)
 
@@ -87,8 +90,6 @@ class CreateDukanViewModelTest {
                 color = 0xFFF545
             )
 
-            viewModel = CreateDukanViewModel(dukanRepository, locationRepository)
-
             viewModel.onStyleClicked(style)
             viewModel.onColorClicked(color)
 
@@ -96,6 +97,8 @@ class CreateDukanViewModelTest {
 
             viewModel.state.test {
                 val state = awaitItem()
+                assertEquals(color, state.selectedColor)
+                assertEquals(style, state.selectedStyle)
                 assertEquals(true, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -110,14 +113,14 @@ class CreateDukanViewModelTest {
                 color = 0xFFF545
             )
 
-            viewModel = CreateDukanViewModel(dukanRepository, locationRepository)
-
             viewModel.onColorClicked(color)
 
             viewModel.updateCreateButtonState()
 
             viewModel.state.test {
                 val state = awaitItem()
+                assertEquals(color, state.selectedColor)
+                assertEquals(null, state.selectedStyle)
                 assertEquals(false, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -128,14 +131,14 @@ class CreateDukanViewModelTest {
         runTest {
             val style = Dukan.Style.WIDE_IMAGE
 
-            viewModel = CreateDukanViewModel(dukanRepository, locationRepository)
-
             viewModel.onStyleClicked(style)
 
             viewModel.updateCreateButtonState()
 
             viewModel.state.test {
                 val state = awaitItem()
+                assertEquals(null, state.selectedColor)
+                assertEquals(style, state.selectedStyle)
                 assertEquals(false, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -144,12 +147,12 @@ class CreateDukanViewModelTest {
     @Test
     fun `Given selectedStyle is null and selectedColor is null, when updateCreateButtonState is called, then isButtonEnabled should be false`() =
         runTest {
-            viewModel = CreateDukanViewModel(dukanRepository, locationRepository)
-
             viewModel.updateCreateButtonState()
 
             viewModel.state.test {
                 val state = awaitItem()
+                assertEquals(null, state.selectedColor)
+                assertEquals(null, state.selectedStyle)
                 assertEquals(false, state.isButtonEnabled)
                 cancelAndIgnoreRemainingEvents()
             }

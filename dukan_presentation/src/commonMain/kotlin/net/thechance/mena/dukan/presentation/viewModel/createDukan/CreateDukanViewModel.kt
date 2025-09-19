@@ -3,6 +3,9 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
@@ -13,7 +16,8 @@ import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
     private val dukanRepository: DukanRepository,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val dispatcher: CoroutineDispatcher= Dispatchers.IO
 ) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
     CreateDukanInteractionListener {
 
