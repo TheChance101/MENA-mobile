@@ -3,6 +3,7 @@ package net.thechance.mena.wallet.presentation.screen.wallet
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Icon
@@ -17,10 +18,12 @@ import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.my_wallet
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.wallet.presentation.base.ErrorType
 import net.thechance.mena.wallet.presentation.base.UiState
-import net.thechance.mena.wallet.presentation.component.Scaffold
+import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
+import net.thechance.mena.wallet.presentation.screen.wallet.component.NoInternetScreen
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -28,77 +31,115 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun WalletScreen(
-    viewModel: WalletViewModel = koinViewModel()
-) {
+private fun WalletScreen(viewModel: WalletViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    ObserveAsEffect(
-        effect = viewModel.uiEffect,
-        onEffect = ::onWalletEffect
-    )
-
-    WalletContent(
-        state = state,
-        interactionListener = viewModel
-    )
+    observeUiEffects(viewModel)
+    walletContent(state, viewModel)
 }
 
 @Composable
-private fun WalletContent(
-    state: WalletScreenState,
-    interactionListener: WalletInteractionListener
-) {
-    Scaffold(
-        modifier = Modifier.statusBarsPadding(),
-        topBar = {
-            AppBar(
-                title = stringResource(Res.string.my_wallet),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_button)
-                    )
-                },
-                onLeadingClick = interactionListener::onBackClicked,
-            )
-        },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
-        ) {
-            BalanceCard(
-                balance = state.balance,
-                onRetry = interactionListener::onRetryLoadBalanceClicked,
-                modifier = Modifier.padding(top = 16.dp)
-            )
+private fun observeUiEffects(viewModel: WalletViewModel) {
+    ObserveAsEffect(viewModel.uiEffect) { effect ->
+        when (effect) {
+            is WalletEffect.NavigateBack -> { /* TODO: Handle navigation back */ }
         }
     }
 }
 
-
-private fun onWalletEffect(effect: WalletEffect) {
-    when (effect) {
-        is WalletEffect.NavigateBack -> { /* TODO("Handle navigation back") */ }
+@Composable
+private fun walletContent(
+    state: WalletScreenState,
+    listener: WalletInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    WalletScaffold(
+        modifier = modifier.statusBarsPadding(),
+        topBar = { topBar(listener::onBackClicked) },
+        snackBar = { SnackBarContainer(state.snackBar) },
+        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+    ) { paddingValues ->
+        mainContent(state, listener, paddingValues)
     }
 }
 
-@Preview
 @Composable
+private fun mainContent(
+    state: WalletScreenState,
+    listener: WalletInteractionListener,
+    paddingValues: PaddingValues
+) {
+    when (val balanceState = state.balance) {
+        is UiState.Error -> {
+            if (balanceState.errorType == ErrorType.NO_INTERNET) {
+                showNoInternetScreen(listener, paddingValues)
+            } else {
+                showBalanceCard(state, listener, paddingValues)
+            }
+        }
+        else -> {
+            showBalanceCard(state, listener, paddingValues)
+        }
+    }
+}
+
+@Composable
+private fun showNoInternetScreen(
+    listener: WalletInteractionListener,
+    paddingValues: PaddingValues
+) {
+    NoInternetScreen(
+        onRetryClicked = listener::onRetryClicked,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    )
+}
+
+
+@Composable
+private fun showBalanceCard(
+    state: WalletScreenState,
+    listener: WalletInteractionListener,
+    paddingValues: PaddingValues
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(paddingValues)
+    ) {
+        BalanceCard(
+            balance = state.balance,
+            onRetry = listener::onRetryLoadBalanceClicked,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
+}
+
+@Composable
+private fun topBar(onBack: () -> Unit) {
+    AppBar(
+        title = stringResource(Res.string.my_wallet),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_button)
+            )
+        },
+        onLeadingClick = onBack
+    )
+}
+
+@Composable
+@Preview
 private fun WalletScreenPreview() {
     MenaTheme {
-        WalletContent(
-            state = WalletScreenState(
-                balance = UiState.Success(530320.55)
-            ),
-            interactionListener = object : WalletInteractionListener {
+        walletContent(
+            state = WalletScreenState(balance = UiState.Success(530320.55)),
+            listener = object : WalletInteractionListener {
                 override fun onBackClicked() {}
                 override fun onRetryLoadBalanceClicked() {}
+                override fun onRetryClicked() {}
             }
         )
     }

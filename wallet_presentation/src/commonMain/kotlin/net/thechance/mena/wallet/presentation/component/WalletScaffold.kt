@@ -3,6 +3,7 @@ package net.thechance.mena.wallet.presentation.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -13,12 +14,13 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
-fun Scaffold(
+fun WalletScaffold(
     modifier: Modifier = Modifier,
-    topBar: (@Composable () -> Unit) ? = null,
+    topBar: (@Composable () -> Unit)? = null,
     snackBar: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
-    content: @Composable () -> Unit
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    content: @Composable (PaddingValues) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -30,7 +32,13 @@ fun Scaffold(
             modifier = Modifier.fillMaxSize()
         ) {
             topBar?.let { topBarContent -> topBarContent() }
-            content()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+            ) {
+                content(contentPadding)
+            }
         }
 
         snackBar?.let { snackBarContent ->

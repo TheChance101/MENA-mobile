@@ -8,6 +8,7 @@ import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.screen.wallet.mappar.toUiError
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -18,10 +19,10 @@ class WalletViewModel(
 ) : BaseViewModel<WalletScreenState, WalletEffect>(WalletScreenState()), WalletInteractionListener {
 
     init {
-        getBalance()
+        loadData()
     }
 
-    private fun getBalance() {
+    private fun loadData() {
         tryToExecute(
             onStart = ::onGetBalanceStart,
             callee = { balanceRepository.getBalance() },
@@ -39,7 +40,7 @@ class WalletViewModel(
     }
 
     private suspend fun onGetBalanceError(throwable: Throwable) {
-        updateState { it.copy(balance = UiState.Error(throwable)) }
+        updateState { it.copy(balance = throwable.toUiError()) }
 
         showSnackBar(
             titleRes = Res.string.error,
@@ -47,7 +48,6 @@ class WalletViewModel(
             isSuccess = false
         )
     }
-
 
     private suspend fun showSnackBar(
         titleRes: StringResource,
@@ -84,6 +84,12 @@ class WalletViewModel(
     }
 
     override fun onRetryLoadBalanceClicked() {
-        getBalance()
+        loadData()
     }
+
+
+    override fun onRetryClicked() {
+        loadData()
+    }
+
 }
