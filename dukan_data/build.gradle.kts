@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.mockkery)
 }
 
 kotlin {
@@ -29,6 +30,13 @@ kotlin {
             // GeoCoder
             implementation(libs.bundles.geoCoder)
             implementation(libs.bundles.ktor)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(kotlin("test-annotations-common"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.bundles.geoCoder)
+            implementation(libs.mokkery.core)
         }
         iosMain.dependencies {
 

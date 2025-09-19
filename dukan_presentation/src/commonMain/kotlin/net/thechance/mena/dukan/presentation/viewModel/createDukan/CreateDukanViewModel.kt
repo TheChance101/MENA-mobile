@@ -3,6 +3,9 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
@@ -13,9 +16,12 @@ import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
     private val dukanRepository: DukanRepository,
-    private val locationRepository: LocationRepository
-) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(CreateDukanUiState()),
-    CreateDukanInteractionListener {
+    private val locationRepository: LocationRepository,
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(
+    initialState = CreateDukanUiState(),
+    defaultDispatcher = defaultDispatcher
+), CreateDukanInteractionListener {
 
     init {
         loadDukanCategories()
@@ -178,7 +184,18 @@ class CreateDukanViewModel(
     }
 
     private fun onCreateClicked() {
-        //TODO("Not yet implemented")
+        tryToExecute(
+            block = ::onCreateClickedBlock,
+            onSuccess = ::onCreateClickedSuccess,
+        )
+    }
+
+    private suspend fun onCreateClickedBlock() {
+        return dukanRepository.createDukan(state.value.toEntity())
+    }
+
+    private fun onCreateClickedSuccess(unit: Unit) {
+        emitEffect(CreateDukanEffect.NavigateToPending(state.value.name))
     }
 
     private fun handleBasicInformationNext() {
@@ -212,24 +229,6 @@ class CreateDukanViewModel(
             block = { onMapClickedBlock(coordinates, pointerLocation) },
             onSuccess = ::onMapClickedSuccess
         )
-        updateNextButtonEnableState()
-    }
-
-    private fun onMapClickedSuccess(address: String) {
-        updateState {
-            copy(address = address)
-        }
-        updateNextButtonEnableState()
-    }
-    override fun onAddressChanged(address: String) {
-        updateState { copy(address = address) }
-        updateNextButtonEnableState()
-    }
-
-    override fun onCameraMoved(
-        camera: CameraPosition
-    ) {
-        updateState { copy(cameraPosition = camera) }
     }
 
     private suspend fun onMapClickedBlock(
@@ -243,6 +242,21 @@ class CreateDukanViewModel(
             )
         }
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
+    }
+
+    private fun onMapClickedSuccess(address: String) {
+        onAddressChanged(address)
+    }
+
+    override fun onAddressChanged(address: String) {
+        updateState { copy(address = address) }
+        updateNextButtonEnableState()
+    }
+
+    override fun onCameraMoved(
+        camera: CameraPosition
+    ) {
+        updateState { copy(cameraPosition = camera) }
     }
 
     override fun onEditMapLocationClicked() {
