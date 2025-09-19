@@ -19,16 +19,16 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
 fun Chip(
     text: String,
-    painter: Painter,
     isSelected: Boolean,
     onClick: () -> Unit,
+    painter: Painter? = null,
     modifier: Modifier = Modifier,
     iconSize: Dp = 16.dp,
     isEnabled: Boolean = true,
@@ -49,7 +49,7 @@ fun Chip(
     )
 
     Row(
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(shape)
@@ -63,19 +63,23 @@ fun Chip(
                 horizontal = Theme.spacing._12
             )
     ) {
-        MenaIcon(
-            painter = painter,
-            tint = if (isEnabled) contentColor else Theme.colorScheme.textDisabled,
-            modifier = Modifier.size(iconSize)
-        )
 
-        MenaText(
+        painter?.let { iconPainter ->
+            Icon(
+                painter = iconPainter,
+                modifier = Modifier.size(iconSize),
+                contentDescription = null,
+                tint = if (isEnabled) contentColor else Theme.colorScheme.textDisabled
+            )
+        }
+
+        Text(
             text = text,
-            color = if (isEnabled) contentColor else Theme.colorScheme.textDisabled,
             style = Theme.typography.label.small,
+            color = if (isEnabled) contentColor else Theme.colorScheme.textDisabled,
             fontSize = 10.sp,
-            lineHeight = 16.sp,
-            letterSpacing = 0.sp
+            letterSpacing = 0.sp,
+            lineHeight = 16.sp
         )
     }
 }

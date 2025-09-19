@@ -17,7 +17,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun MultiLineTextField(
     value: String,
     onValueChanged: (String) -> Unit,
-    placeholder: String,
+    hint: String,
     modifier: Modifier = Modifier,
     minLines: Int = 5,
     maxLines: Int = 5,
@@ -35,7 +35,7 @@ fun MultiLineTextField(
     BasicTextField(
         value = value,
         onValueChanged = onValueChanged,
-        placeholder = placeholder,
+        hint = hint,
         leadingIcon = null,
         trailingIcon = null,
         title = title,
@@ -66,7 +66,7 @@ fun PreviewMultilineTextField() {
         MultiLineTextField(
             value = value,
             onValueChanged = onValueChanged,
-            placeholder = "Placeholder",
+            hint = "Hint",
             modifier = Modifier
         )
     }

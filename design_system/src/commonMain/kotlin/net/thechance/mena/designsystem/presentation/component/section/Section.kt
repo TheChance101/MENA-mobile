@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.ic_arrow_right
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 
@@ -24,7 +24,7 @@ fun Section(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
     ) {
-        MenaText(
+        Text(
             text = title,
             style = Theme.typography.title.small,
             modifier = Modifier.weight(1f)

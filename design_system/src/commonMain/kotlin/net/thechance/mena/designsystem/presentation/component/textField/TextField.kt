@@ -16,7 +16,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 fun TextField(
     value: String,
     onValueChanged: (String) -> Unit,
-    placeholder: String,
+    hint: String,
     modifier: Modifier = Modifier,
     leadingIcon: Painter? = null,
     trailingIcon: Painter? = null,
@@ -36,7 +36,7 @@ fun TextField(
     BasicTextField(
         value = value,
         onValueChanged = onValueChanged,
-        placeholder = placeholder,
+        hint = hint,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         title = title,

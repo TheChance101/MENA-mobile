@@ -101,9 +101,9 @@ fun createThemeTypography(): Typography {
             ),
             extraSmall = TextStyle(
                 fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 11.sp,
-                lineHeight = 14.sp
+                fontWeight = FontWeight.Normal,
+                fontSize = 10.sp,
+                lineHeight = 16.sp
             )
         )
     )

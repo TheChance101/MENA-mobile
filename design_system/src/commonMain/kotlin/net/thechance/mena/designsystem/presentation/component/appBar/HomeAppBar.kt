@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +46,7 @@ fun HomeAppBar(
             .fillMaxWidth()
             .padding(contentPadding)
     ) {
-        Text(
+        net.thechance.mena.designsystem.presentation.component.text.Text(
             text = title,
             color = titleColor,
             style = Theme.typography.title.medium
@@ -74,7 +73,7 @@ private fun DefaultHomeTrailingIcon(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
+        androidx.compose.material3.Text(
             text = coins,
             style = Theme.typography.label.small,
             color = coinSoldTextColor,

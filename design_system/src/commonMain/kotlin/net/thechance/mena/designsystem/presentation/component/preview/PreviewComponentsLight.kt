@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,7 +45,7 @@ import mena.design_system.generated.resources.ic_user
 import mena.design_system.generated.resources.silver_tc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
-import net.thechance.mena.designsystem.presentation.component.bottomNavigation.MeanBottomNavigationBar
+import net.thechance.mena.designsystem.presentation.component.bottomNavigation.BottomNavigationBar
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.button.NegativeButton
 import net.thechance.mena.designsystem.presentation.component.button.NegativeTextButton
@@ -58,10 +56,8 @@ import net.thechance.mena.designsystem.presentation.component.checkBox.Checkbox
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.section.Section
 import net.thechance.mena.designsystem.presentation.component.segment.Segment
-import net.thechance.mena.designsystem.presentation.component.segment.SegmentButton
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.switches.Switch
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
 import net.thechance.mena.designsystem.presentation.component.textField.MobileNumberLeadingContent
 import net.thechance.mena.designsystem.presentation.component.textField.MobileNumberTextField
 import net.thechance.mena.designsystem.presentation.component.textField.MultiLineTextField
@@ -407,7 +403,7 @@ private fun PreviewComponentsLight() {
                 title = "navigation bar",
                 isScrollable = false
             ) {
-                MeanBottomNavigationBar(
+                BottomNavigationBar(
                     onItemClick = {},
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -439,10 +435,10 @@ private fun PreviewComponent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        MenaText(
+        net.thechance.mena.designsystem.presentation.component.text.Text(
             text = title,
-            color = Theme.colorScheme.shadeTertiary,
-            style = Theme.typography.headline.small
+            style = Theme.typography.headline.small,
+            color = Theme.colorScheme.shadeTertiary
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -465,10 +461,10 @@ private fun PreviewTextFieldComponent() {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        MenaText(
+        net.thechance.mena.designsystem.presentation.component.text.Text(
             text = "Text field",
-            color = Theme.colorScheme.shadeTertiary,
-            style = Theme.typography.headline.small
+            style = Theme.typography.headline.small,
+            color = Theme.colorScheme.shadeTertiary
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -478,7 +474,7 @@ private fun PreviewTextFieldComponent() {
             TextField(
                 value = "adad",
                 onValueChanged = {},
-                placeholder = "Placeholder",
+                hint = "Placeholder",
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = painterResource(Res.drawable.ic_profile)
@@ -487,7 +483,7 @@ private fun PreviewTextFieldComponent() {
             TextField(
                 value = "",
                 onValueChanged = {},
-                placeholder = "Placeholder",
+                hint = "Placeholder",
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = painterResource(Res.drawable.ic_profile),
                 trailingIcon = painterResource(Res.drawable.silver_tc)
@@ -496,7 +492,7 @@ private fun PreviewTextFieldComponent() {
             TextField(
                 value = "",
                 onValueChanged = {},
-                placeholder = "Placeholder",
+                hint = "Placeholder",
                 leadingIcon = painterResource(Res.drawable.ic_profile),
                 isError = true,
                 errorMessage = "error message",
@@ -506,7 +502,7 @@ private fun PreviewTextFieldComponent() {
             MultiLineTextField(
                 value = "",
                 onValueChanged = {},
-                placeholder = "Placeholder",
+                hint = "Placeholder",
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -514,7 +510,7 @@ private fun PreviewTextFieldComponent() {
                 value = "",
                 onValueChanged = { },
                 title = "title",
-                placeholder = "value",
+                hint = "value",
                 leadingIcon = painterResource(Res.drawable.ic_profile),
                 leadingContent = {
                     MobileNumberLeadingContent(
@@ -535,10 +531,10 @@ private fun PreviewSnackBarComponent() {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        MenaText(
+        net.thechance.mena.designsystem.presentation.component.text.Text(
             text = "SnackBar",
-            color = Theme.colorScheme.shadeTertiary,
-            style = Theme.typography.headline.small
+            style = Theme.typography.headline.small,
+            color = Theme.colorScheme.shadeTertiary
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

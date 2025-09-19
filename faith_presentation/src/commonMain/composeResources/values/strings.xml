@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="sur">Sur</string>
     <string name="quran">Quran</string>
@@ -19,4 +20,9 @@
     <string name="al_baqarah">Al-Baqarah</string>
     <string name="snack_bar_title">Success</string>
     <string name="snack_bar_message">Copied message successfully</string>
+    <string name="app_name">MENA</string>
+    <string name="success">Success</string>
+    <string name="error">Error</string>
+    <string name="success_icon">Success Icon</string>
+    <string name="error_icon">Error Icon</string>
 </resources>
