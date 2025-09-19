@@ -31,7 +31,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-private fun WalletScreen(viewModel: WalletViewModel = koinViewModel()) {
+fun WalletScreen(viewModel: WalletViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     observeUiEffects(viewModel)
     walletContent(state, viewModel)
