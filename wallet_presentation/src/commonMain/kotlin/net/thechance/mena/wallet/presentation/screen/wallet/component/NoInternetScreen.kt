@@ -16,11 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.img_silver
+import mena.wallet_presentation.generated.resources.internet_issue
+import mena.wallet_presentation.generated.resources.no_internet_description
+import mena.wallet_presentation.generated.resources.no_internet_title
+import mena.wallet_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -60,20 +64,20 @@ fun NoInternetContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(Res.drawable.img_silver),
+                    painter = painterResource(Res.drawable.internet_issue),
                     contentDescription = null,
                     modifier = Modifier
                         .height(97.dp)
                 )
                 Text(
-                    text = "",
+                    text = stringResource(Res.string.no_internet_title),
                     style = Theme.typography.title.small,
                     color = Theme.colorScheme.shadePrimary,
                     modifier = Modifier.padding(top = 12.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "",
+                    text = stringResource(Res.string.no_internet_description),
                     style = Theme.typography.label.extraSmall,
                     color = Theme.colorScheme.shadeSecondary,
                     modifier = Modifier.padding(top = 4.dp)
@@ -82,7 +86,7 @@ fun NoInternetContent(
             onRetryClicked?.let {
                 Spacer(modifier = Modifier.height(12.dp))
                 PrimaryButton(
-                    text = "",
+                    text = stringResource(Res.string.retry),
                     onClick = it,
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)

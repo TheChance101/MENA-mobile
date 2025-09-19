@@ -7,7 +7,7 @@
     <string name="couldnt_load_tap_to_retry">Couldn’t load, tap to retry</string>
     <string name="error">Error</string>
     <string name="balance_fetch_error_description">Something went wrong while fetching your balance</string>
-    <string name="no_internet_title">Oops!It looks like you’re offline</string>
+    <string name="no_internet_title">Oops! It looks like you're offline</string>
     <string name="no_internet_description">Check your connection and try again</string>
-    <string name="retry">Re_try</string>
+    <string name="retry">Re-try</string>
 </resources>
