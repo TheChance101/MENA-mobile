@@ -74,6 +74,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(kotlin("test-annotations-common"))
+            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
             implementation(libs.mokkery.core)
         }
