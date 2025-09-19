@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
+package net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.dukanstyle
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +22,8 @@ import mena.dukan_presentation.generated.resources.style_has_image
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.ListItemStyle
+import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.ShimmerRow
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

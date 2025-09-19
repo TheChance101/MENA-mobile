@@ -10,6 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.presentation.screen.CreateDukan.content.component.dukanstyle.WideImageStyle
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 

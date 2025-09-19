@@ -35,8 +35,8 @@ data class CreateDukanUiState(
 ) {
 
     data class CoordinatesUiState(
-        val latitude: Double = 28.0,
-        val longitude: Double = 29.0,
+        val latitude: Double = 0.0,
+        val longitude: Double = 0.0,
     )
 
     enum class CreateDukanStep {

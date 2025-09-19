@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Dukan.Coordinates
 import net.thechance.mena.dukan.domain.entity.Dukan.Style
 
@@ -25,6 +26,11 @@ fun Color.toUiColor(): ColorUiState {
     )
 }
 
+fun ColorUiState.toEntity() = Color(
+    id = id,
+    hexCode = "#${color.toULong().toString(16).padStart(8, '0').uppercase()}"
+)
+
 fun List<Category>.toUiState(): List<DukanCategoryUiState> {
     return map { category ->
         DukanCategoryUiState(
@@ -34,6 +40,24 @@ fun List<Category>.toUiState(): List<DukanCategoryUiState> {
         )
     }
 }
+
+fun DukanCategoryUiState.toEntity() = Category(
+    id = id,
+    name = name,
+    imageUrl = imageUrl
+)
+
+fun CreateDukanUiState.toEntity() = Dukan(
+    id = "",
+    name = name,
+    imageUrl = "",
+    categories = selectedCategories.map { it.toEntity() }.toSet(),
+    coordinates = currentLocation.toEntity(),
+    address = address,
+    status = Dukan.Status.PENDING,
+    color = selectedColor?.toEntity()!!,
+    style = selectedStyle!!
+)
 
 fun CreateDukanUiState.CoordinatesUiState.toEntity() = Coordinates(
     latitude = latitude,

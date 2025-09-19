@@ -52,24 +52,6 @@ fun CreateDukanContentSelectLocation(
         item {
             Text(
                 modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4),
-                text = stringResource(Res.string.address),
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary
-            )
-        }
-        item {
-            TextField(
-                value = state.address,
-                onValueChanged = {},
-                hint = "",
-                leadingIcon = painterResource(Res.drawable.ic_store_location),
-                readOnly = true,
-                enabled = false
-            )
-        }
-        item {
-            Text(
-                modifier = Modifier.padding(top = Theme.spacing._12, bottom = Theme.spacing._4),
                 text = stringResource(Res.string.location),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary
@@ -87,6 +69,22 @@ fun CreateDukanContentSelectLocation(
                 onMapClick = listener::onMapClicked,
                 onCameraMoved = listener::onCameraMoved,
                 onEditClick = listener::onEditMapLocationClicked
+            )
+        }
+        item {
+            Text(
+                modifier = Modifier.padding(top = Theme.spacing._12, bottom = Theme.spacing._4),
+                text = stringResource(Res.string.address),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary
+            )
+        }
+        item {
+            TextField(
+                value = state.address,
+                onValueChanged = listener::onAddressChanged,
+                hint = "",
+                leadingIcon = painterResource(Res.drawable.ic_store_location),
             )
         }
     }
