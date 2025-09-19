@@ -7,4 +7,8 @@
     <string name="couldnt_load_tap_to_retry">فشل التحميل، اضغط لإعادة المحاولة</string>
     <string name="error">خطأ</string>
     <string name="balance_fetch_error_description">حدث خطأ أثناء تحميل رصيدك</string>
+    <string name="no_internet_title">لأسف يبدو أنك غير متصل!</string>
+    <string name="no_internet_description">تأكد من اتصالك بالانترن وحاول مرة أخرى</string>
+    <string name="retry">حاول مجددا</string>
+
 </resources>
