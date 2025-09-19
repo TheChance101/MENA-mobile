@@ -5,9 +5,7 @@ sealed class UiState<out T> {
     object Loading : UiState<Nothing>()
     data class Success<T>(val data: T) : UiState<T>()
     data class Error(
-        val throwable: Throwable? = null,
-        val errorType: ErrorType = ErrorType.UNKNOWN,
-        val message: String? = null
+        val errorType: ErrorType = ErrorType.UNKNOWN
     ) : UiState<Nothing>()
 
     val UiState<*>.isLoading get() = this is UiState.Loading

@@ -8,20 +8,14 @@ import net.thechance.mena.wallet.presentation.base.UiState
 fun Throwable.toUiError(): UiState.Error {
     return when (this) {
         is NoInternetException -> UiState.Error(
-            throwable = this,
-            errorType = ErrorType.NO_INTERNET,
-            message = this.message
+            errorType = ErrorType.NO_INTERNET
         )
+
         is UnknownException -> UiState.Error(
-            throwable = this,
-            errorType = ErrorType.UNKNOWN,
-            message = this.message
+            errorType = ErrorType.UNKNOWN
         )
         else -> UiState.Error(
-            throwable = this,
             errorType = ErrorType.UNKNOWN,
-            message = this.message ?: UNKNOWN_ERROR
         )
     }
 }
-const val UNKNOWN_ERROR = "Unknown Error"

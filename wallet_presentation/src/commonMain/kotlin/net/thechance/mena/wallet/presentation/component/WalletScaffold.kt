@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.screen.wallet.component.NoInternetScreen
 
 @Composable
 fun WalletScaffold(
@@ -20,6 +21,9 @@ fun WalletScaffold(
     snackBar: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    showTopBar: Boolean = true,
+    isErrorMode: Boolean = false,
+    onRetryClicked: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Box(
@@ -28,16 +32,30 @@ fun WalletScaffold(
             .background(backgroundColor)
             .then(modifier)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            topBar?.let { topBarContent -> topBarContent() }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(contentPadding)
-            ) {
-                content(contentPadding)
+        when {
+            isErrorMode -> {
+                NoInternetScreen(
+                    onRetryClicked = onRetryClicked ?: {},
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            else -> {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    if (showTopBar) {
+                        topBar?.let { topBarContent -> topBarContent() }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(contentPadding)
+                    ) {
+                        content(contentPadding)
+                    }
+                }
             }
         }
 
@@ -45,7 +63,11 @@ fun WalletScaffold(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(start = 16.dp, end = 16.dp, top = 68.dp)
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = if (isErrorMode) 16.dp else if (showTopBar) 68.dp else 16.dp
+                    )
             ) {
                 snackBarContent()
             }

@@ -3,7 +3,6 @@ package net.thechance.mena.wallet.presentation.screen.wallet
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Icon
@@ -18,12 +17,10 @@ import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.my_wallet
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.wallet.presentation.base.ErrorType
 import net.thechance.mena.wallet.presentation.base.UiState
-import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
+import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
-import net.thechance.mena.wallet.presentation.screen.wallet.component.NoInternetScreen
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -52,52 +49,23 @@ private fun walletContent(
     listener: WalletInteractionListener,
     modifier: Modifier = Modifier
 ) {
+    val isError = state.balance is UiState.Error
+
     WalletScaffold(
         modifier = modifier.statusBarsPadding(),
         topBar = { topBar(listener::onBackClicked) },
         snackBar = { SnackBarContainer(state.snackBar) },
-        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
-    ) { paddingValues ->
-        mainContent(state, listener, paddingValues)
-    }
+        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp),
+        isErrorMode = isError,
+        onRetryClicked = listener::onRetryClicked,
+        content = { paddingValues ->
+            mainContent(state, listener, paddingValues)
+        }
+    )
 }
 
 @Composable
 private fun mainContent(
-    state: WalletScreenState,
-    listener: WalletInteractionListener,
-    paddingValues: PaddingValues
-) {
-    when (val balanceState = state.balance) {
-        is UiState.Error -> {
-            if (balanceState.errorType == ErrorType.NO_INTERNET) {
-                showNoInternetScreen(listener, paddingValues)
-            } else {
-                showBalanceCard(state, listener, paddingValues)
-            }
-        }
-        else -> {
-            showBalanceCard(state, listener, paddingValues)
-        }
-    }
-}
-
-@Composable
-private fun showNoInternetScreen(
-    listener: WalletInteractionListener,
-    paddingValues: PaddingValues
-) {
-    NoInternetScreen(
-        onRetryClicked = listener::onRetryClicked,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-    )
-}
-
-
-@Composable
-private fun showBalanceCard(
     state: WalletScreenState,
     listener: WalletInteractionListener,
     paddingValues: PaddingValues

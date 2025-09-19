@@ -241,7 +241,7 @@ private fun BalanceCardPreview() {
         ) {
             BalanceCard(balance = UiState.Loading, onRetry = {})
             BalanceCard(balance = UiState.Success(530320.55), onRetry = {})
-            BalanceCard(balance = UiState.Error(Exception()), onRetry = {})
+            BalanceCard(balance = UiState.Error(), onRetry = {})
         }
     }
 }
