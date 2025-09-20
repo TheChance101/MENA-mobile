@@ -50,20 +50,7 @@ fun SurahScreen(
     Content(
         state = uiState,
         snackBarState = snackBarState,
-        listener = object : SurahInteractionListener {
-            override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) =
-                viewModel.onAyahLongPress(ayahContent, ayahIndex)
-
-            override fun onCopyClick(ayahContent: String) = viewModel.onCopyClick(ayahContent)
-
-            override fun onDismissActionButtons() = viewModel.onDismissActionButtons()
-
-            override fun onBackClick() = viewModel.onBackClick()
-
-            override fun onBookmarkClick(ayahNumber: Int) = viewModel.onBookmarkClick(ayahNumber)
-
-            override fun onShareClick(ayahContent: String) = viewModel.onShareClick(ayahContent)
-        }
+        listener = viewModel
     )
 }
 

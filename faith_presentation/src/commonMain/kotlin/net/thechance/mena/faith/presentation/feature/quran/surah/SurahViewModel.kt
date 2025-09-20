@@ -8,7 +8,7 @@ import net.thechance.mena.faith.presentation.util.ClipboardManager
 class SurahViewModel(
     surahId: Int,
     surahName: String,
-    private val repository: QuranRepository,
+    private val quranRepository: QuranRepository,
     private val clipboardManager: ClipboardManager
 ) : BaseViewModel<SurahScreenState, SurahScreenEffect>(
     initialState = SurahScreenState(surahId = surahId, surahName = surahName)
@@ -20,7 +20,7 @@ class SurahViewModel(
 
     private fun loadSurahData(surahId: Int) {
         tryToExecute(
-            execute = { repository.getAyatOfSurah(surahId) },
+            execute = { quranRepository.getAyatOfSurah(surahId) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { ayat ->
                 updateState { it.copy(ayatOfSurah = ayat) }
