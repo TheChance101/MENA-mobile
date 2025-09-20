@@ -62,12 +62,14 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SurScreen(
     viewModel: SurViewModel = koinViewModel(),
 ) {
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is SurEffect.NavigateBack -> navController.navigateUp()
-            is SurEffect.NavigateToBookmark -> navController.navigate(BookmarksRoute)
+            is SurEffect.NavigateToBookmark -> {}
             is SurEffect.NavigateToSurahDetails -> navController.navigate(
                 SurahDetailsRoute(
                     surahId = effect.surahId,
@@ -76,6 +78,7 @@ fun SurScreen(
             )
         }
     }
+
     Content(
         uiState = state,
         interactionListener = viewModel
@@ -97,7 +100,8 @@ private fun Content(
                 onBackClick = { interactionListener.onBackClick() },
                 onBookmarkClick = { interactionListener.onBookmarkClick() },
             )
-        }) {
+        }
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
