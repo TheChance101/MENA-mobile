@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,7 +54,7 @@ fun Button(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .then(
-                if (isLoading) modifier.wrapContentWidth(align = Alignment.Start)
+                if (isLoading) modifier.fillMaxWidth()
                 else modifier
             )
             .clip(shape)
