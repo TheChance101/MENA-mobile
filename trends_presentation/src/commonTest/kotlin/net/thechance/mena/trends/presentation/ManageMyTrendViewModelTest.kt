@@ -1,18 +1,27 @@
 package net.thechance.mena.trends.presentation
 
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
-import dev.mokkery.MockMode
-import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
-import dev.mokkery.mock
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsUiEffect
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsViewModel
+import net.thechance.mena.trends.presentation.screen.manage_my_trends.toUiState
+import net.thechance.mena.trends.utils.FakeRepository
 import net.thechance.mena.trends.utils.mockkReels
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertNotNull
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
+
+@OptIn(ExperimentalCoroutinesApi::class)
 
 class ManageMyTrendViewModelTest {
 
@@ -21,18 +30,50 @@ class ManageMyTrendViewModelTest {
 
     @BeforeTest
     fun setUp() {
+        Dispatchers.setMain(StandardTestDispatcher())
 
-        repository = mock(mode = MockMode.autofill)
+        repository = FakeRepository()
         viewModel = ManageTrendsViewModel(repository)
-        everySuspend { repository.getAllReels(1) } returns mockkReels
+    }
+
+
+    @Test
+    fun `init function should load reels`() = runTest {
+
+        viewModel.state.test {
+            val state = awaitItem()
+
+            val expectedReels = mockkReels.map { it.toUiState() }
+            val actualReels = state.reels.asSnapshot()
+
+            assertTrue(actualReels.containsAll(expectedReels))
+        }
     }
 
     @Test
-    fun `init function should load reels`() = runTest{
+    fun `onReelItemClick should navigate to trend screen`() = runTest {
+        val reelId = "1"
+        viewModel.onReelItemClick(reelId)
 
-        viewModel.state.test{
-            val state = awaitItem()
-            assertNotNull(state.reels)
+        viewModel.effect.test {
+            val effect = awaitItem()
+            assertEquals(ManageTrendsUiEffect.NavigateToTrend(reelId), effect)
         }
+    }
+
+    @Test
+    fun `onBackClick should navigate back`() = runTest {
+        viewModel.onBackClick()
+        
+        viewModel.effect.test {
+
+            val effect = awaitItem()
+            assertEquals(ManageTrendsUiEffect.NavigateBack, effect)
+        }
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 }

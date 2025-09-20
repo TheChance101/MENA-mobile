@@ -1,9 +1,19 @@
 package net.thechance.mena.trends.utils
 
+import io.ktor.http.HttpStatusCode
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.repository.ReelsRepository
 
+
+class FakeRepository(): ReelsRepository {
+    override suspend fun deleteReelById(id: String) {}
+
+    override suspend fun getAllReels(pageNumber: Int): List<Reel> {
+      return mockkReels
+    }
+}
 
 val mockkReels = listOf(
     Reel(
