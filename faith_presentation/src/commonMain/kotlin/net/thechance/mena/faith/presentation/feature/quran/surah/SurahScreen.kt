@@ -1,10 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -20,7 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.base.FaithScaffold
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.base.SnackBarState
+import net.thechance.mena.faith.presentation.component.FaithSnackBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatContent
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
@@ -38,6 +38,7 @@ fun SurahScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
@@ -46,9 +47,9 @@ fun SurahScreen(
             is SurahScreenEffect.ShareAyah -> {}
         }
     }
-
     Content(
         state = uiState,
+        snackBarState = snackBarState,
         listener = object : SurahInteractionListener {
             override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) =
                 viewModel.onAyahLongPress(ayahContent, ayahIndex)
@@ -66,39 +67,48 @@ fun SurahScreen(
     )
 }
 
+
 @Composable
 private fun Content(
     state: SurahScreenState,
     listener: SurahInteractionListener,
+    snackBarState: SnackBarState,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
 
-    Box(
-        modifier = modifier.fillMaxSize()
-            .background(Theme.colorScheme.background.surface)
-            .windowInsetsPadding(WindowInsets.statusBars)
-    ) {
-        Column {
+    FaithScaffold(
+        modifier = modifier.windowInsetsPadding(WindowInsets.statusBars),
+        topBar = {
             SurahAppBar(
                 surahName = state.surahName,
                 onBackClick = listener::onBackClick
             )
-
+        },
+        snackBar = {
+            FaithSnackBar(
+                message = snackBarState.message,
+                isVisible = snackBarState.isVisible,
+                status = snackBarState.status,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }) {
+        Box(
+            modifier.fillMaxWidth()
+        ) {
             AyatOfSurah(
                 listener = listener,
                 state = state,
                 lazyListState = lazyListState
             )
+            AnimatedAyahActionButtons(
+                state = state,
+                listener = listener,
+                modifier = Modifier.fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(Theme.spacing._16)
+            )
         }
-
-        AnimatedAyahActionButtons(
-            state = state,
-            listener = listener,
-            modifier = Modifier.fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(Theme.spacing._16)
-        )
     }
 }
 
