@@ -57,11 +57,9 @@ kotlin {
             implementation(libs.resources)
         }
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.turbine)
-            implementation(libs.mokkery.core)
             implementation(libs.kotlinx.datetime)
+            implementation( libs.androidx.paging.testing)
+            implementation(libs.bundles.commonTest)
         }
         iosMain.dependencies {
 
