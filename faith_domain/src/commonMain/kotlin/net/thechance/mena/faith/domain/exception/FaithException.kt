@@ -1,8 +1,9 @@
 package net.thechance.mena.faith.domain.exception
 
-open class FaithException() : Throwable()
-class UnknownException() : FaithException()
-class NoInternetException() : FaithException()
-class UnauthorizedException() : FaithException()
-class NetworkException() : FaithException()
+sealed class FaithException : Throwable() {
+    object UnknownException : FaithException()
+    object NoInternetException : FaithException()
+    object UnauthorizedException : FaithException()
+    object NetworkException : FaithException()
+}
 

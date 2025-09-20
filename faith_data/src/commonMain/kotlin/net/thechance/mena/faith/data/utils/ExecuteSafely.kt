@@ -6,10 +6,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
-import net.thechance.mena.faith.domain.exception.NetworkException
-import net.thechance.mena.faith.domain.exception.NoInternetException
-import net.thechance.mena.faith.domain.exception.UnauthorizedException
-import net.thechance.mena.faith.domain.exception.UnknownException
+import net.thechance.mena.faith.domain.exception.FaithException
 
 
 suspend inline fun <reified T> handleRequest(
@@ -28,41 +25,41 @@ suspend inline fun <reified T> handleRequest(
                 response.body<T>()
             } catch (e: Exception) {
                 Napier.d(tag = "NetworkError", message = "Error parsing response: ${e.message}")
-                throw NetworkException()
+                throw FaithException.NetworkException
             }
         }
 
         HttpStatusCode.Unauthorized -> {
             Napier.d(tag = "NetworkError", message = "Unauthorized access")
-            throw UnauthorizedException()
+            throw FaithException.UnauthorizedException
         }
 
         HttpStatusCode.TooManyRequests -> {
             Napier.d(tag = "NetworkError", message = "Too many requests")
-            throw NetworkException()
+            throw FaithException.NetworkException
         }
 
         HttpStatusCode.RequestTimeout -> {
             Napier.d(tag = "NetworkError", message = "Request timed out")
-            throw NetworkException()
+            throw FaithException.NetworkException
         }
 
         500..599 -> {
             Napier.d(tag = "NetworkError", message = "Server error: ${response.status.value}")
-            throw NetworkException()
+            throw FaithException.NetworkException
         }
 
         else -> {
             Napier.d(tag = "NetworkError", message = "Unknown error: ${response.status.value}")
-            throw UnknownException()
+            throw FaithException.UnknownException
         }
     }
 }
 
-fun mapToNetworkException(e: Throwable): NetworkException {
+fun mapToNetworkException(e: Throwable): FaithException.NetworkException {
     return when (e) {
-        is IOException -> NoInternetException()
-        is SerializationException -> NetworkException()
-        else -> UnknownException()
-    } as NetworkException
+        is IOException -> FaithException.NoInternetException
+        is SerializationException -> FaithException.NetworkException
+        else -> FaithException.UnknownException
+    } as FaithException.NetworkException
 }
