@@ -92,7 +92,6 @@ class SurahViewModel(
         showSnackBar(
             message = "Copied message successfully",
             status = SnackBarState.Status.Success,
-            durationMillis = 3000L,
         )
     }
 
@@ -100,7 +99,6 @@ class SurahViewModel(
         showSnackBar(
             message = "Copied message Failed",
             status = SnackBarState.Status.Error,
-            durationMillis = 3000L,
         )
     }
 }

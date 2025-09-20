@@ -30,7 +30,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     val snackBarState = _snackBarState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<UI_EFFECT>()
-    val uiEffect = _uiEffect.asSharedFlow().debounce(300L)
+    val uiEffect = _uiEffect.asSharedFlow()
 
     protected fun updateState(updater: (UI_STATE) -> UI_STATE) {
         _uiState.update(updater)
