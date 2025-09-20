@@ -29,7 +29,6 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.bundles.ktor)
             api(libs.koin.core)
-            implementation(compose.runtime)
             implementation(libs.napier)
 
         }

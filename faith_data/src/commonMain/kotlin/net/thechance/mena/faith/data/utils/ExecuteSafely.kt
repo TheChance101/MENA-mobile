@@ -8,7 +8,7 @@ import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import net.thechance.mena.faith.domain.exception.NetworkException
 import net.thechance.mena.faith.domain.exception.NoInternetException
-import net.thechance.mena.faith.domain.exception.UnAuthorizedException
+import net.thechance.mena.faith.domain.exception.UnauthorizedException
 import net.thechance.mena.faith.domain.exception.UnknownException
 
 
@@ -34,7 +34,7 @@ suspend inline fun <reified T> handleRequest(
 
         HttpStatusCode.Unauthorized -> {
             Napier.d(tag = "NetworkError", message = "Unauthorized access")
-            throw UnAuthorizedException()
+            throw UnauthorizedException()
         }
 
         HttpStatusCode.TooManyRequests -> {
