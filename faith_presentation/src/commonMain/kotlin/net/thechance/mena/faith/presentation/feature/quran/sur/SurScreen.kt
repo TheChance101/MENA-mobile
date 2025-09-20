@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -51,8 +50,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.FaithScaffold
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
-import net.thechance.mena.faith.presentation.component.FaithSnackBar
-import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.navigation.BookmarksRoute
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.SurahDetailsRoute
@@ -69,7 +66,7 @@ fun SurScreen(
     val navController = LocalNavController.current
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
-            is SurEffect.NavigateToBack -> navController.navigateUp()
+            is SurEffect.NavigateBack -> navController.navigateUp()
             is SurEffect.NavigateToBookmark -> navController.navigate(BookmarksRoute)
             is SurEffect.NavigateToSurahDetails -> navController.navigate(
                 SurahDetailsRoute(
@@ -92,18 +89,19 @@ private fun Content(
     modifier: Modifier = Modifier
 ) {
     FaithScaffold(
+        backgroundColor = Theme.colorScheme.background.surface,
         modifier = modifier.windowInsetsPadding(WindowInsets.statusBars),
         topBar = {
             Topbar(
-                onBackClick = interactionListener::onBackClick,
-                onBookmarkClick = interactionListener::onBookmarkClick,
+                modifier = modifier.padding(horizontal = Theme.spacing._16),
+                onBackClick = { interactionListener.onBackClick() },
+                onBookmarkClick = { interactionListener.onBookmarkClick() },
             )
         }) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Theme.colorScheme.background.surface)
-                .padding(horizontal = Theme.spacing._16).statusBarsPadding(),
+                .padding(horizontal = Theme.spacing._16),
             contentPadding = PaddingValues(bottom = Theme.spacing._16),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         ) {

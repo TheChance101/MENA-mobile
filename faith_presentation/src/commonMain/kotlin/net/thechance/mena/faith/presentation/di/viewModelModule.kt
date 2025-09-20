@@ -13,9 +13,10 @@ internal val viewModelModule = module {
     }
     viewModel { (surahId: Int, surahName: String) ->
         SurahViewModel(
-            repository = get(),
+            quranRepository = get(),
             surahId = surahId,
             surahName = surahName,
-            clipboardManager = get())
+            clipboardManager = get()
+        )
     }
 }

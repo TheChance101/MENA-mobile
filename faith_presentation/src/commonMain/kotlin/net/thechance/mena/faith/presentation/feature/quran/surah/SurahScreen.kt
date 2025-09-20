@@ -65,11 +65,12 @@ private fun Content(
     val lazyListState = rememberLazyListState()
 
     FaithScaffold(
+        backgroundColor = Theme.colorScheme.background.surface,
         modifier = modifier.windowInsetsPadding(WindowInsets.statusBars),
         topBar = {
             SurahAppBar(
                 surahName = state.surahName,
-                onBackClick = listener::onBackClick
+                onBackClick = { listener.onBackClick() }
             )
         },
         snackBar = {
@@ -124,7 +125,7 @@ private fun AyatOfSurah(
         item {
             if (state.surahId != AT_TAUBAH_ID) BasmalaHeader(
                 selectedAyahIndex = state.selectedAyahIndex,
-                onDismissActionButtons = listener::onDismissActionButtons
+                onDismissActionButtons = { listener.onDismissActionButtons() }
             )
         }
 
