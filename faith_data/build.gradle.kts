@@ -22,6 +22,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(compose.runtime)
+            implementation(libs.koin.core)
             implementation(projects.faithDomain)
             implementation(compose.components.resources)
             implementation(libs.androidx.room.runtime)

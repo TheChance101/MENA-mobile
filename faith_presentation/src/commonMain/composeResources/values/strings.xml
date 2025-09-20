@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MENA</string>
     <string name="back_icon">Back Icon</string>
@@ -11,6 +10,41 @@
     <string name="empty_state_bookmark_image">Empty Bookmark Image</string>
     <string name="empty_state_bookmark_title">No ayah saved yet!</string>
     <string name="empty_state_bookmark_description">Start your tilawah and bookmark the ayah you want to return to later.</string>
+
+    <plurals name="time_seconds_ago">
+        <item quantity="one">%1$d second ago</item>
+        <item quantity="other">%1$d seconds ago</item>
+    </plurals>
+
+    <plurals name="time_minutes_ago">
+        <item quantity="one">%1$d minute ago</item>
+        <item quantity="other">%1$d minutes ago</item>
+    </plurals>
+
+    <plurals name="time_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+
+    <plurals name="time_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+
+    <plurals name="time_weeks_ago">
+        <item quantity="one">%1$d week ago</item>
+        <item quantity="other">%1$d weeks ago</item>
+    </plurals>
+
+    <plurals name="time_months_ago">
+        <item quantity="one">%1$d month ago</item>
+        <item quantity="other">%1$d months ago</item>
+    </plurals>
+
+    <plurals name="time_years_ago">
+        <item quantity="one">%1$d year ago</item>
+        <item quantity="other">%1$d years ago</item>
+    </plurals>
     <string name="success">Success</string>
     <string name="error">Error</string>
     <string name="success_icon">Success Icon</string>

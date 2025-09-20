@@ -23,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
+import net.thechance.mena.faith.presentation.extensions.getTimeAgo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -48,7 +49,7 @@ fun AyaBookmarkCard(
         BookmarkHeader(
             surahName = surahName,
             ayaNumber = ayaNumber,
-            createdAt = createdAt.toString()
+            createdAt = createdAt.getTimeAgo()
         )
 
         MenaText(

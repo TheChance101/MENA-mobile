@@ -31,6 +31,9 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(projects.faithDomain)
             implementation(projects.designSystem)
             implementation(compose.runtime)
