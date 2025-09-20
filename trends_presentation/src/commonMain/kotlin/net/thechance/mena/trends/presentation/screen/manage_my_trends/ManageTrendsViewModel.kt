@@ -14,7 +14,7 @@ import org.koin.core.annotation.Provided
 
 
 @KoinViewModel
-class ManageTrendsViewModel(
+internal class ManageTrendsViewModel(
     @Provided private val repository: ReelsRepository,
 ) : BaseViewModel<ManageTrendsScreenState,
         ManageTrendsUiEffect>(ManageTrendsScreenState()),
@@ -24,7 +24,7 @@ class ManageTrendsViewModel(
         getReels()
     }
 
-    private fun getReels() {
+    fun getReels() {
         tryToExecute(
             block = {
                 createPager(
@@ -34,7 +34,7 @@ class ManageTrendsViewModel(
                 )
             },
             onSuccess = ::onGetReelsSuccess,
-            onError = {},
+            onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } }
         )

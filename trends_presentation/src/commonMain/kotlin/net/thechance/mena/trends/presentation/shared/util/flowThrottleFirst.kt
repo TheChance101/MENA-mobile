@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
-fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> {
+internal fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> {
     var job: Job = Job().apply { complete() }
     return onCompletion { job.cancel() }.run {
         flow {
@@ -32,7 +32,7 @@ fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> {
     }
 }
 
-fun Modifier.gradientShadow(
+internal fun Modifier.gradientShadow(
     startColor: Color = Color(color = 0x00000033),
     endColor: Color = Color(color =  0x00000000),
     spread: Dp = 18.dp,

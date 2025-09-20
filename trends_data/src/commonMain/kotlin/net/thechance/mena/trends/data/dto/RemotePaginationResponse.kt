@@ -4,11 +4,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RemoteResponse<T>(
+internal data class RemotePaginationResponse<T>(
     @SerialName("pageNumber")
-    val pageNumber : Int,
+    val pageNumber : Int? = null,
     @SerialName("results")
-    val results: List<T>,
+    val results: List<T>? = null,
     @SerialName("totalResults")
-    val totalResults: Int
+    val totalResults: Int? = null
 )

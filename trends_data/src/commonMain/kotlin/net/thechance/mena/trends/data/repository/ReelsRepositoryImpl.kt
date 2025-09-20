@@ -1,12 +1,11 @@
 package net.thechance.mena.trends.data.repository
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import net.thechance.mena.trends.data.dto.ReelDto
-import net.thechance.mena.trends.data.dto.RemoteResponse
+import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS
@@ -18,23 +17,21 @@ import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 @Single(binds = [ReelsRepository::class])
-class ReelsRepositoryImpl(
+internal class ReelsRepositoryImpl(
     @Provided private val httpClient: HttpClient
 ) : ReelsRepository {
 
     override suspend fun deleteReelById(id: String) {
-        safeApiCall {
+        safeApiCall<Unit> {
             httpClient.delete("$TRENDS/$REELS/$id")
         }
     }
 
     override suspend fun getAllReels(pageNumber: Int): List<Reel> {
-        return safeApiCall {
-            val response: RemoteResponse<ReelDto> = httpClient.get("$TRENDS/$REELS") {
+        return safeApiCall<RemotePaginationResponse<ReelDto>> {
+            httpClient.get("$TRENDS/$REELS") {
                 parameter(PAGE, pageNumber)
-            }.body()
-
-            response.results.map { it.toEntity() }
-        }
+            }
+        }.results?.mapNotNull { it.toEntity() } ?: emptyList()
     }
 }

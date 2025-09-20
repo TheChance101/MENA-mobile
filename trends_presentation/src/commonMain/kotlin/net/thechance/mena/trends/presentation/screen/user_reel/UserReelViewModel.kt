@@ -1,21 +1,20 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
-class UserReelViewModel(
+internal class UserReelViewModel(
+    savedStateHandle: SavedStateHandle,
     @Provided private val reelsRepository: ReelsRepository
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
-    private fun handleError(throwable: Throwable) {
-        val errorRes = when (throwable) {
-            //TODO() WILL HANDLE EXCEPTIONS
-            else -> {}
-        }
-    }
+    val id = savedStateHandle.toRoute<Route.ReelDetails>().reelId
 
     override fun onDescriptionClick(isCollapsed: Boolean) {
         updateState {
@@ -35,9 +34,9 @@ class UserReelViewModel(
 
     override fun onConfirmDeleteClick() {
         tryToExecute(
-            block = { reelsRepository.deleteReelById(state.value.id.orEmpty()) },
-            onSuccess = { ::onDeleteReelSuccess },
-            onError = { handleError(it) },
+            block = { reelsRepository.deleteReelById(id) },
+            onSuccess = { onDeleteReelSuccess() },
+            onError = { errorState -> updateState { copy(error = errorState) } },
         )
     }
 
@@ -59,7 +58,7 @@ class UserReelViewModel(
 
     override fun onDismissErrorDialog() {
         updateState {
-            copy(isReelDeleted = null, isConfirmationDialogVisible = false)
+            copy(isReelDeleted = null, isConfirmationDialogVisible = false, error = null)
         }
     }
 }

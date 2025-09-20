@@ -62,7 +62,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun UserReelScreen(
+internal fun UserReelScreen(
     viewModel: UserReelViewModel = koinViewModel()
 ) {
 
@@ -108,14 +108,20 @@ private fun UserReelScreenContent(
         )
 
         Dialog(
-            visible = state.isReelDeleted == true,
+            visible = state.isReelDeleted == true && state.error == null,
             title = stringResource(Res.string.success_delete_title),
             message = stringResource(Res.string.success_delete_message),
             buttonText = "",
             dismissOnBackPress = true,
             dismissOnClickOutside = true,
-            onDismiss = { listener.onDismissSuccessDialog() },
-            onCancelClick = { listener.onDismissSuccessDialog() },
+            onDismiss = {
+                listener.onDismissSuccessDialog()
+                listener.onBackClick()
+            },
+            onCancelClick = {
+                listener.onDismissSuccessDialog()
+                listener.onBackClick()
+            },
             modifier = Modifier.align(Alignment.Center).zIndex(3f),
             dialogCornerShape = RoundedCornerShape(12.dp),
             cancelBackgroundShape = RoundedCornerShape(50),
@@ -123,7 +129,7 @@ private fun UserReelScreenContent(
         )
 
         Dialog(
-            visible = state.isReelDeleted == false,
+            visible = state.error != null,
             title = stringResource(Res.string.fail_delete_title),
             message = stringResource(Res.string.fail_delete_message),
             buttonText = "",

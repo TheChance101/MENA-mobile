@@ -2,13 +2,19 @@ package net.thechance.mena.trends.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
-sealed interface Route {
+internal sealed interface Route {
     @Serializable
-    data object Test: Route
+    data object Categories : Route
 
     @Serializable
-    data class ReelDetails(val reelId: String): Route
+    data class Trends(val id: Int) : Route
 
     @Serializable
-    data object ManageReels: Route
+    data class ReelDetails(val reelId: String) : Route
+
+    @Serializable
+    data object ManageReels : Route
+
+    @Serializable
+    data object MainContainer: Route
 }
