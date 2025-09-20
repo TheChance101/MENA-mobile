@@ -5,11 +5,10 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.ReelDto
-import net.thechance.mena.trends.data.dto.RemoteResponse
+import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.domain.entity.Reel
 
-val fakeReelDtoList = RemoteResponse(
+internal val fakeReelDtoList = RemotePaginationResponse(
     pageNumber = 1,
     results = listOf(
         ReelDto(
@@ -29,14 +28,14 @@ val fakeReelDtoList = RemoteResponse(
     totalResults = 1
 )
 
-val fakeReelList : List<Reel> = fakeReelDtoList.results.map(ReelDto::toEntity)
+val fakeReelList = (fakeReelDtoList.results?.map(ReelDto::toEntity) ?: emptyList() )
 
-fun MockRequestHandleScope.getReelsResponse(
-    reels: List<ReelDto> = fakeReelDtoList.results
+internal fun MockRequestHandleScope.getReelsResponse(
+    reels: List<ReelDto> = fakeReelDtoList.results?: emptyList()
 ) = respond(
     content = jsonSerialization.encodeToString(
-        RemoteResponse.serializer(ReelDto.serializer()),
-        RemoteResponse(
+        RemotePaginationResponse.serializer(ReelDto.serializer()),
+        RemotePaginationResponse(
             pageNumber = 1,
             results = reels,
             totalResults = reels.size
