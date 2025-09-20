@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kover)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
@@ -10,6 +11,7 @@ plugins {
 }
 
 kotlin {
+    iosArm64()
     androidTarget()
     iosSimulatorArm64()
     iosArm64()
@@ -17,7 +19,6 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.room.sqlite.wrapper)
-            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -28,11 +29,26 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.bundles.ktor)
             api(libs.koin.core)
+            implementation(compose.runtime)
             implementation(libs.napier)
+
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
+    }
+}
+
+kover.reports {
+    verify {
+        rule {
+            minBound(0)
+        }
+
     }
 }
 

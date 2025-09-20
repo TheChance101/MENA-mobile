@@ -4,5 +4,7 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    <key>BASE_URL</key>
+    <string>$(BASE_URL)</string>
 </dict>
 </plist>

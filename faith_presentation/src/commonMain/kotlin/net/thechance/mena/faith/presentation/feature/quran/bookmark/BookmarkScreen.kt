@@ -1,0 +1,248 @@
+package net.thechance.mena.faith.presentation.feature.quran.bookmark
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.bookmarks
+import mena.faith_presentation.generated.resources.empty_state_bookmark_description
+import mena.faith_presentation.generated.resources.empty_state_bookmark_image
+import mena.faith_presentation.generated.resources.empty_state_bookmark_title
+import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.component.BackIcon
+import net.thechance.mena.faith.presentation.component.LoadingIndicator
+import net.thechance.mena.faith.presentation.component.SwipeableCard
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.AyaBookmarkCard
+import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
+@Composable
+fun BookmarkScreen(
+    viewModel: BookmarkViewModel = koinViewModel(),
+) {
+
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val effect by viewModel.uiEffect.collectAsState(initial = null)
+
+    LaunchedEffect(effect) {
+        effect?.let { currentEffect ->
+            when (currentEffect) {
+                is BookmarkEffect.NavigateBack -> {
+                    // TODO(navigate back)
+                }
+
+                is BookmarkEffect.NavigateToQuran -> {
+                    // TODO(navigate to Quran screen)
+                }
+            }
+        }
+    }
+
+    Content(
+        uiState = state,
+        listener = viewModel
+    )
+}
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun Content(
+    uiState: BookmarksScreenState,
+    listener: BookmarkInteractionListener
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Theme.colorScheme.background.surface)
+            .padding(horizontal = Theme.spacing._16)
+            .statusBarsPadding(),
+    ) {
+
+        AppBar(
+            title = stringResource(Res.string.bookmarks),
+            contentPadding = PaddingValues(
+                top = Theme.spacing._8,
+                bottom = Theme.spacing._16
+            ),
+            leadingContent = { BackIcon() },
+            onLeadingClick = listener::onBackClick
+        )
+
+        AnimatedVisibility(
+            visible = uiState.isLoading,
+            enter = fadeIn(tween()),
+            exit = fadeOut(tween())
+        ) {
+            LoadingIndicator()
+        }
+
+        AnimatedVisibility(
+            visible = uiState.bookmarks.isEmpty() && uiState.isLoading.not(),
+            enter = fadeIn(tween()),
+            exit = fadeOut(tween())
+        ) {
+            EmptyBookmarkState()
+        }
+
+        AnimatedVisibility(
+            visible = uiState.bookmarks.isNotEmpty(),
+            enter = fadeIn(tween()),
+            exit = fadeOut(tween())
+        ) {
+            BookmarkItems(
+                uiState = uiState,
+                onRemoveBookmarkClick = listener::onRemoveBookmarkClick,
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun EmptyBookmarkState() {
+    EmptyBookmarkState(
+        title = stringResource(Res.string.empty_state_bookmark_title),
+        icon = painterResource(Res.drawable.ic_not_saved_book_mark),
+        contentDescription = stringResource(Res.string.empty_state_bookmark_image),
+        subTitle = stringResource(Res.string.empty_state_bookmark_description),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 80.dp)
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = Theme.spacing._16),
+    )
+}
+
+@Composable
+@OptIn(ExperimentalTime::class)
+private fun BookmarkItems(
+    uiState: BookmarksScreenState,
+    onRemoveBookmarkClick: (Int) -> Unit,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(bottom = Theme.spacing._16),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+    ) {
+        items(
+            items = uiState.bookmarks,
+            key = { it.bookmarkId }
+        ) { bookmark ->
+            SwipeableCard(
+                id = bookmark.bookmarkId,
+                onClick = { onRemoveBookmarkClick(bookmark.bookmarkId) },
+                cardContent = { contentModifier ->
+                    AyaBookmarkCard(
+                        surahName = bookmark.surahName,
+                        ayaNumber = bookmark.ayaNumber,
+                        createdAt = bookmark.createdAt,
+                        ayaText = bookmark.ayaText,
+                        modifier = contentModifier
+                    )
+                },
+                modifier = Modifier.animateItem(
+                    fadeInSpec = tween(500),
+                    fadeOutSpec = tween(500)
+                ),
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+private fun BookmarkScreenPreview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = BookmarksScreenState(
+                    bookmarks = listOf(
+                        BookmarksScreenState.BookmarkCardUiState(
+                            1,
+                            "Al-Baqarah",
+                            134,
+                            "تِلْكَ أُمَّةٌ قَدْ خَلَتْ لَهَا مَا كَسَبَتْ وَلَكُمْ مَا كَسَبْتُمْ وَلَا تُسْأَلُونَ عَمَّا كَانُوا يَعْمَلُونَ",
+                            Clock.System.now()
+                        ),
+                        BookmarksScreenState.BookmarkCardUiState(
+                            2,
+                            "Al-Nisa",
+                            176,
+                            "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًا وَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌَ",
+                            Clock.System.now()
+
+                        ),
+                        BookmarksScreenState.BookmarkCardUiState(
+                            3,
+                            "Al-A'raf",
+                            172,
+                            "وَإِذْ أَخَذَ رَبُّكَ مِنْ بَنِي آدَمَ مِنْ ظُهُورِهِمْ ذُرِّيَّتَهُمْ وَأَشْهَدَهُمْ عَلَى أَنْفُسِهِمْ أَلَسْتُ بِرَبِّكُمْ قَالُوا بَلَى شَهِدْنَا أَنْ تَقُولُوا يَوْمَ الْقِيَامَةِ إِنَّا كُنَّا عَنْ هَذَا غَافِلِينَ",
+                            Clock.System.now()
+                        ),
+                        BookmarksScreenState.BookmarkCardUiState(
+                            4,
+                            "Al-Baqarah",
+                            152,
+                            "فَاذْكُرُونِي أَذْكُرْكُمَْ",
+                            Clock.System.now()
+                        ),
+                        BookmarksScreenState.BookmarkCardUiState(
+                            5,
+                            "Al-Maidah",
+                            3,
+                            "حُرِّمَتْ عَلَيْكُمُ الْمَيْتَةُ وَالدَّمُ وَلَحْمُ الْخِنْزِيرِ وَمَا أُهِلَّ بِهِ لِغَيْرِ اللَّهِ وَالْمُنْخَنِقَةُ وَالْمَوْقُوذَةُ وَالْمُتَرَدِّيَةُ وَالنَّطِيحَةُ وَمَا أَكَلَ السَّبُعُ إِلَّا مَا ذَكَّيْتُمْ وَمَا ذُبِحَ عَلَى النُّصُبِ وَأَن تَسْتَقْسِمُوا بِالْأَزْلَامِ ۚ ذَٰلِكُمْ فِسْقٌ ۗ الْيَوْمَ يَئِسَ الَّذِينَ كَفَرُوا مِن دِينِكُمْ فَلَا تَخْشَوْهُمْ وَاخْشَوْنِ ۚ الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا ۚ فَمَنِ اضْطُرَّ فِي مَخْمَصَةٍ غَيْرَ مُتَجَانِفٍ لِّإِثْمٍ فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌَ",
+                            Clock.System.now()
+                        ),
+                        BookmarksScreenState.BookmarkCardUiState(
+                            6,
+                            "Al-Noor",
+                            354,
+                            "اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضٌَِ",
+                            Clock.System.now()
+                        ),
+                        BookmarksScreenState.BookmarkCardUiState(
+                            7,
+                            "Al-Baqarah",
+                            134,
+                            "تِلْكَ أُمَّةٌ قَدْ خَلَتْ لَهَا مَا كَسَبَتْ وَلَكُمْ مَا كَسَبْتُمْ وَلَا تُسْأَلُونَ عَمَّا كَانُوا يَعْمَلُونَ",
+                            Clock.System.now()
+                        ),
+                    ),
+                ),
+                listener = object : BookmarkInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onRemoveBookmarkClick(bookmarkId: Int) {}
+                    override fun onStartTilawahClick() {}
+                }
+            )
+        }
+    }
+}

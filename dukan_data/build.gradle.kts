@@ -1,20 +1,27 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
+    jvm()
     iosArm64()
     iosSimulatorArm64()
 
     sourceSets {
-        androidMain.dependencies {
-
-        }
         commonMain.dependencies {
             implementation(projects.dukanDomain)
         }
-        iosMain.dependencies {
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+    }
+}
 
+kover.reports {
+    verify {
+        rule {
+            minBound(80)
         }
     }
 }

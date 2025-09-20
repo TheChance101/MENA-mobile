@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -25,6 +26,9 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     private val _uiState = MutableStateFlow(initialState)
     val uiState = _uiState.asStateFlow()
 
+    private val _snackBarState = MutableStateFlow(SnackBarState())
+    val snackBarState = _snackBarState.asStateFlow()
+
     private val _uiEffect = MutableSharedFlow<UI_EFFECT>()
     val uiEffect = _uiEffect.asSharedFlow().debounce(1500L)
 
@@ -35,6 +39,42 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     protected fun sendEffect(effect: UI_EFFECT) {
         viewModelScope.launch {
             _uiEffect.emit(effect)
+        }
+    }
+
+    fun showSnackBar(
+        message: String,
+        status: SnackBarState.Status,
+        durationMillis: Long = 3000L,
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            if (snackBarState.value.isVisible) {
+                hideSnackBar()
+                delay(1000L)
+            }
+            _snackBarState.update {
+                SnackBarState(
+                    message = message,
+                    status = status,
+                    isVisible = true
+                )
+            }
+            delay(durationMillis)
+            _snackBarState.update {
+                it.copy(
+                    isVisible = false
+                )
+            }
+        }
+    }
+
+    private fun hideSnackBar() {
+        viewModelScope.launch(Dispatchers.Main) {
+            _snackBarState.update {
+                it.copy(
+                    isVisible = false,
+                )
+            }
         }
     }
 

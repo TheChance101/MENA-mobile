@@ -1,0 +1,99 @@
+name: 'Send notification PR to Slack'
+
+inputs:
+  slack-bot-token:
+    required: true
+  slack-notification-channel-id:
+    required: true
+  bot-app-id:
+    required: true
+  branch-name:
+    required: true
+  message:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Install jq
+      shell: bash
+      run: |
+        sudo apt-get update && sudo apt-get install -y jq
+
+    - name: Send notification to specific squad
+      shell: bash
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-bot-token }}
+        SLACK_NOTIFICATION_CHANNEL_ID: ${{ inputs.slack-notification-channel-id }}
+        BOT_APP_ID: ${{ inputs.bot-app-id }}
+        BRANCH_NAME: ${{ inputs.branch-name }}
+        MESSAGE: ${{ inputs.message }}
+      run: |
+        SQUADS=("IDN" "DKN" "CHT" "FTH" "TRN" "WLT")
+
+        messages=$(curl -s -X POST "https://slack.com/api/conversations.history" \
+          -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+          -H "Content-type: application/json" \
+          --data "{\"channel\": \"$SLACK_NOTIFICATION_CHANNEL_ID\"}")
+
+        bot_messages=$(echo "$messages" | jq --arg app_id "$BOT_APP_ID" '[.messages[] | select(.app_id == $app_id)]')
+        message_count=$(echo "$bot_messages" | jq 'length')
+
+        if [ "$message_count" -lt 6 ]; then
+          for SQUAD in "${SQUADS[@]}"; do
+            curl -s -X POST https://slack.com/api/chat.postMessage \
+              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              -H "Content-type: application/json; charset=utf-8" \
+              --data "{
+                \"channel\": \"$SLACK_NOTIFICATION_CHANNEL_ID\",
+                \"blocks\": [
+                  {
+                    \"type\": \"section\",
+                    \"text\": {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"${SQUAD} prs info\"
+                    }
+                  }
+                ]
+              }"
+          done
+
+          messages=$(curl -s -X POST "https://slack.com/api/conversations.history" \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-type: application/json" \
+            --data "{\"channel\": \"$SLACK_NOTIFICATION_CHANNEL_ID\"}")
+
+          bot_messages=$(echo "$messages" | jq --arg app_id "$BOT_APP_ID" '[.messages[] | select(.app_id == $app_id)]')
+          message_count=$(echo "$bot_messages" | jq 'length')
+        fi
+
+        team=$(echo "$BRANCH_NAME" | cut -d'/' -f2)
+        prefix="${team:0:3}"
+
+        for i in "${!SQUADS[@]}"; do
+          if [[ "${SQUADS[$i]}" == "$prefix" ]]; then
+            thread_ts=$(echo "$bot_messages" | jq -r ".[$message_count - 1 -$i].ts")
+
+            curl -s -X POST "https://slack.com/api/chat.postMessage" \
+              -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+              -H "Content-type: application/json; charset=utf-8" \
+              --data "{
+                \"channel\": \"$SLACK_NOTIFICATION_CHANNEL_ID\",
+                \"unfurl_links\": false,
+                \"unfurl_media\": false,
+                \"thread_ts\": \"$thread_ts\",
+                \"blocks\": [
+                  {
+                    \"type\": \"section\",
+                    \"text\": {
+                      \"type\": \"mrkdwn\",
+                      \"text\": \"$MESSAGE\"
+                    }
+                  }
+                ]
+              }"
+          fi
+        done
