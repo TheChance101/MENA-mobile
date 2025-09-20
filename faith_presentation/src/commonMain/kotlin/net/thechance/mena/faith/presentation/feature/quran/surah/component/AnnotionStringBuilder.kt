@@ -10,12 +10,12 @@ import androidx.compose.ui.text.withStyle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.hafs
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenState
+import net.thechance.mena.faith.domain.entity.Ayah
 import org.jetbrains.compose.resources.Font
 
 @Composable
 internal fun createClickableAyahText(
-    ayatOfSurah: List<SurahScreenState.AyahUiState>,
+    ayatOfSurah: List<Ayah>,
     selectedAyahIndex: Int?
 ): AnnotatedString {
     return buildAnnotatedString {

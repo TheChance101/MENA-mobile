@@ -42,8 +42,8 @@ import mena.faith_presentation.generated.resources.surah_arabic_name_icon
 import mena.faith_presentation.generated.resources.surah_number_container_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.navigation.BookmarksRoute
@@ -104,7 +104,7 @@ private fun Content(
         }
 
         item {
-            MenaText(
+            Text(
                 text = stringResource(resource = Res.string.sur),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
@@ -132,7 +132,7 @@ private fun Topbar(
         modifier = modifier,
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         leadingContent = {
-            MenaIcon(
+            Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(resource = Res.string.back_icon),
                 tint = Theme.colorScheme.primary.primary,
@@ -152,7 +152,7 @@ private fun AppBarBookmarkOption(
     AppBarOptionContainer(
         onClick = onBookmarkClick,
         content = {
-            MenaIcon(
+            Icon(
                 painter = painterResource(Res.drawable.ic_bookmark),
                 contentDescription = stringResource(resource = Res.string.bookmark_icon),
                 tint = Theme.colorScheme.primary.primary,
@@ -193,7 +193,7 @@ private fun SurahItem(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center,
         ) {
-            MenaText(
+            Text(
                 text = surah.surahName,
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadePrimary,
@@ -203,7 +203,7 @@ private fun SurahItem(
             SurahDetailsRow(ayatNumber = surah.ayatCount, isMakki = surah.isMakki)
         }
 
-        MenaIcon(
+        Icon(
             painter = painterResource(resource = surah.arabicNameImg),
             contentDescription = stringResource(resource = Res.string.surah_arabic_name_icon),
             tint = Theme.colorScheme.shadePrimary,
@@ -222,7 +222,7 @@ private fun SurahDetailsRow(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MenaIcon(
+        Icon(
             painter = painterResource(resource = Res.drawable.ic_moshaf),
             tint = Theme.colorScheme.shadeSecondary,
             contentDescription = stringResource(resource = Res.string.moshaf_icon),
@@ -231,7 +231,7 @@ private fun SurahDetailsRow(
                 .padding(end = Theme.spacing._4)
         )
 
-        MenaText(
+        Text(
             text = stringResource(
                 resource = Res.string.ayat_count_format,
                 ayatNumber,
@@ -251,7 +251,7 @@ private fun SurahDetailsRow(
                 )
         )
 
-        MenaText(
+        Text(
             text = if (isMakki) stringResource(resource = Res.string.makki)
             else stringResource(resource = Res.string.madani),
             style = Theme.typography.label.small,
@@ -269,13 +269,13 @@ private fun SurahNumberContainer(
         modifier = modifier.size(36.dp),
         contentAlignment = Alignment.Center
     ) {
-        MenaIcon(
+        Icon(
             painter = painterResource(resource = Res.drawable.ic_surah_number_container),
             contentDescription = stringResource(resource = Res.string.surah_number_container_icon),
             modifier = Modifier.fillMaxSize()
         )
 
-        MenaText(
+        Text(
             text = surahNumber.twoDigitsMinimum(),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.secondary.secondary

@@ -23,8 +23,8 @@ import mena.faith_presentation.generated.resources.ic_copy
 import mena.faith_presentation.generated.resources.ic_link_forward
 import mena.faith_presentation.generated.resources.link_forward
 import mena.faith_presentation.generated.resources.send_to
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -88,7 +88,7 @@ private fun IconTextButton(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MenaIcon(
+        Icon(
             painter = icon,
             tint = Theme.colorScheme.primary.primary,
             contentDescription = contentDescription,
@@ -96,7 +96,7 @@ private fun IconTextButton(
                 indication = null, interactionSource = remember { MutableInteractionSource() }) {
                 onClick()
             })
-        MenaText(
+        Text(
             text = text,
             color = Theme.colorScheme.primary.primary,
             style = Theme.typography.label.small

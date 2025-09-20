@@ -1,36 +1,30 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
-import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
 class SurahViewModel(
     surahId: Int,
     surahName: String,
-    private val repository: QuranRepository
-): BaseViewModel<SurahScreenState, SurahScreenEffect>(
+    private val repository: QuranRepository,
+) : BaseViewModel<SurahScreenState, SurahScreenEffect>(
     initialState = SurahScreenState(surahId = surahId, surahName = surahName)
 ), SurahInteractionListener {
 
     init {
             loadSurahData(surahId)
     }
+
     private fun loadSurahData(surahId: Int) {
         tryToExecute(
             execute = { repository.getAyatOfSurah(surahId) },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = {  ayat ->
-                updateState {
-                    it.copy(ayatOfSurah = mapAyatToUiStates(ayat))
-                }
+            onSuccess = { ayat ->
+                updateState { it.copy(ayatOfSurah = ayat) }
             },
             onFinally = { updateState { it.copy(isLoading = false) } }
         )
     }
-
-    private fun mapAyatToUiStates(ayat: List<Ayah>): List<SurahScreenState.AyahUiState> =
-        ayat.map { ayah -> ayah.toUiState() }
-
 
     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
         updateState {

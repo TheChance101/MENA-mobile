@@ -6,9 +6,11 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 internal val viewModelModule = module {
-    viewModel{SurViewModel(
-        quranRepository = get()
-    )}
+    viewModel {
+        SurViewModel(
+            quranRepository = get()
+        )
+    }
     viewModel { (surahId: Int, surahName: String) ->
         SurahViewModel(
             repository = get(),
