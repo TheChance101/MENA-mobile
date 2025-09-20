@@ -2,4 +2,8 @@
     <string name="app_name">MENA</string>
     <string name="app_coin_icon">App Coin Icon</string>
     <string name="cancel_dialog_icon">Cancel Dialog Icon</string>
+    <string name="no_wifi_content_description">No internet connection icon</string>
+    <string name="no_connection_title">Oops! It looks like you’re offline.</string>
+    <string name="no_connection_message">Check your connection and try again</string>
+    <string name="no_connection_retry">Re-try</string>
 </resources>
