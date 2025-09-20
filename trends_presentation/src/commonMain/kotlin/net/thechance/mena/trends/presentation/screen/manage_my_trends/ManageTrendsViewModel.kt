@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.util.Logger
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
@@ -16,8 +17,10 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class ManageTrendsViewModel(
     @Provided private val repository: ReelsRepository,
+    logger: Logger
 ) : BaseViewModel<ManageTrendsScreenState,
-        ManageTrendsUiEffect>(ManageTrendsScreenState()),
+        ManageTrendsUiEffect>(ManageTrendsScreenState(),logger),
+
     ManageTrendsInteractionListener {
 
     init {

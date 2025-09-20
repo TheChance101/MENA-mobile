@@ -3,18 +3,25 @@ package net.thechance.mena.trends.presentation.screen.user_reel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.util.Logger
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
+import net.thechance.mena.trends.presentation.shared.util.AndroidStateHandle
+import net.thechance.mena.trends.presentation.shared.util.StateHandle
+import net.thechance.mena.trends.presentation.shared.util.toRoute
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
 internal class UserReelViewModel(
-    savedStateHandle: SavedStateHandle,
+    savedStateHandle: StateHandle,
+    logger: Logger,
     @Provided private val reelsRepository: ReelsRepository
-) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
+) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState(), logger = logger), UserReelInteractionListener {
 
-    val id = savedStateHandle.toRoute<Route.ReelDetails>().reelId
+    val id = savedStateHandle.toRoute().reelId
+
+
 
     override fun onDescriptionClick(isCollapsed: Boolean) {
         updateState {

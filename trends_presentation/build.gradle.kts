@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.mokkery)
-
 }
 
 kotlin {
@@ -55,11 +54,12 @@ kotlin {
             implementation(libs.androidx.paging.runtime)
             implementation(libs.androidx.paging.compose)
             implementation(libs.resources)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.datetime)
             implementation( libs.androidx.paging.testing)
-            implementation(libs.bundles.commonTest)
+            implementation(libs.bundles.test)
         }
         iosMain.dependencies {
 

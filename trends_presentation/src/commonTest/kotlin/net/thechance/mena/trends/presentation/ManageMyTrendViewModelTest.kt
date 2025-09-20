@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation
 
+import FakeLogger
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -30,10 +31,8 @@ class ManageMyTrendViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher())
-
         repository = FakeRepository()
-        viewModel = ManageTrendsViewModel(repository)
+        viewModel = ManageTrendsViewModel(repository, FakeLogger())
     }
 
 
@@ -70,10 +69,5 @@ class ManageMyTrendViewModelTest {
             val effect = awaitItem()
             assertEquals(ManageTrendsUiEffect.NavigateBack, effect)
         }
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
     }
 }

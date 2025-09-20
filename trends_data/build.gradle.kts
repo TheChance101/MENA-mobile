@@ -31,9 +31,6 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.bundles.ktor)
         }
-        commonTest.dependencies {
-            implementation(libs.bundles.commonTest)
-        }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }

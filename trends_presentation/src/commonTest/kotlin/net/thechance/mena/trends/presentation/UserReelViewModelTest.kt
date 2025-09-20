@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation
 
+import FakeLogger
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -16,6 +17,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelEffect
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelViewModel
+import net.thechance.mena.trends.presentation.shared.util.StateHandle
 import net.thechance.mena.trends.utils.FakeRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -26,15 +28,19 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class UserReelViewModelTest {
 
-    private lateinit var viewModel: UserReelViewModel
     private lateinit var reelsRepository: ReelsRepository
+    private lateinit var savedStateHandle: StateHandle
+    private val viewModel: UserReelViewModel by lazy {
+        UserReelViewModel (savedStateHandle, FakeLogger(),reelsRepository)
+    }
+
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(StandardTestDispatcher())
 
         reelsRepository = FakeRepository()
-        viewModel = UserReelViewModel(reelsRepository)
+        savedStateHandle = mock<StateHandle>()
     }
 
     @Test

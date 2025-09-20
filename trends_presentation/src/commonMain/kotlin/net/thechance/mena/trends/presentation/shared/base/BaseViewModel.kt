@@ -22,7 +22,8 @@ import net.thechance.mena.trends.presentation.shared.util.throttleFirst
 import org.koin.mp.KoinPlatform.getKoin
 
 internal abstract class BaseViewModel<State, Effect>(
-    initialState: State
+    initialState: State,
+    private val logger: Logger
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(initialState)
@@ -30,8 +31,6 @@ internal abstract class BaseViewModel<State, Effect>(
 
     private val _effect = MutableSharedFlow<Effect>()
     val effect = _effect.throttleFirst(THROTTLE_WINDOW_DURATION)
-
-    private val logger: Logger = getKoin().get()
 
     protected fun updateState(updater: State.() -> State) {
         _state.update { updater(it) }
