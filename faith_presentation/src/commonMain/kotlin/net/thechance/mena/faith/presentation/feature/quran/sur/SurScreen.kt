@@ -46,6 +46,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.navigation.BookmarksRoute
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.SurahDetailsRoute
@@ -60,25 +61,29 @@ fun SurScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+    ObserveAsEffect(viewModel.uiEffect) { effect ->
+        when (effect) {
+            is SurEffect.NavigateToBack -> navController.navigateUp()
+            is SurEffect.NavigateToBookmark -> navController.navigate(BookmarksRoute)
+            is SurEffect.NavigateToSurahDetails -> navController.navigate(
+                SurahDetailsRoute(
+                    surahId = effect.surahId,
+                    surahName = effect.surahName
+                )
+            )
+        }
+    }
     Content(
         uiState = state,
         interactionListener = object : SurInteractionListener {
-            override fun onSurahClick(surahId: Int, surahName: String) {
-                navController.navigate(
-                    SurahDetailsRoute(
-                        surahId = surahId,
-                        surahName = surahName
-                    )
-                )
-            }
+            override fun onSurahClick(surahId: Int, surahName: String) = viewModel.onSurahClick(
+                surahName = surahName,
+                surahId = surahId
+            )
 
-            override fun onBackClick() {
-                navController.popBackStack()
-            }
+            override fun onBackClick() = viewModel.onBackClick()
 
-            override fun onBookmarkClick() {
-                navController.navigate(route = BookmarksRoute)
-            }
+            override fun onBookmarkClick() = viewModel.onBookmarkClick()
         }
     )
 }

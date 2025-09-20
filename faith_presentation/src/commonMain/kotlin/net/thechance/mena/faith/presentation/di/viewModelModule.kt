@@ -15,6 +15,7 @@ internal val viewModelModule = module {
         SurahViewModel(
             repository = get(),
             surahId = surahId,
-            surahName = surahName)
+            surahName = surahName,
+            clipboardManager = get())
     }
 }

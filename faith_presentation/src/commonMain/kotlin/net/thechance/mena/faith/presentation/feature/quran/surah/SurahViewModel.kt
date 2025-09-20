@@ -2,17 +2,20 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.base.SnackBarState
+import net.thechance.mena.faith.presentation.util.ClipboardManager
 
 class SurahViewModel(
     surahId: Int,
     surahName: String,
     private val repository: QuranRepository,
+    private val clipboardManager: ClipboardManager
 ) : BaseViewModel<SurahScreenState, SurahScreenEffect>(
     initialState = SurahScreenState(surahId = surahId, surahName = surahName)
 ), SurahInteractionListener {
 
     init {
-            loadSurahData(surahId)
+        loadSurahData(surahId)
     }
 
     private fun loadSurahData(surahId: Int) {
@@ -34,6 +37,23 @@ class SurahViewModel(
                 selectedAyahIndex = ayahIndex,
             )
         }
+    }
+
+    override fun onCopyClick(ayahContent: String) {
+        tryToExecute(
+            execute = { clipboardManager.copy(ayahContent) },
+            onSuccess = {
+                showSuccessSnackBar()
+                updateState {
+                    it.copy(
+                        isAyahActionButtonsVisible = false,
+                        selectedAyahIndex = null,
+                        selectedAyah = ayahContent
+                    )
+                }
+            },
+            onError = { showErrorSnackBar() }
+        )
     }
 
     override fun onDismissActionButtons() {
@@ -66,5 +86,21 @@ class SurahViewModel(
             )
         }
         sendEffect(SurahScreenEffect.ShareAyah(ayahContent))
+    }
+
+    private fun showSuccessSnackBar() {
+        showSnackBar(
+            message = "Copied message successfully",
+            status = SnackBarState.Status.Success,
+            durationMillis = 3000L,
+        )
+    }
+
+    private fun showErrorSnackBar() {
+        showSnackBar(
+            message = "Copied message Failed",
+            status = SnackBarState.Status.Error,
+            durationMillis = 3000L,
+        )
     }
 }

@@ -20,13 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatContent
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.createClickableAyahText
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
-import net.thechance.mena.faith.presentation.util.ClipboardManager
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -34,37 +34,35 @@ import org.koin.core.parameter.parametersOf
 fun SurahScreen(
     surahId: Int,
     surahName: String,
-    clipboardManager: ClipboardManager,
     viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
+    ObserveAsEffect(viewModel.uiEffect) { effect ->
+        when (effect) {
+            is SurahScreenEffect.NavigateBack -> navController.navigateUp()
+            is SurahScreenEffect.ShareAyah -> {}
+        }
+    }
+
     Content(
         state = uiState,
         listener = object : SurahInteractionListener {
-            override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
+            override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) =
                 viewModel.onAyahLongPress(ayahContent, ayahIndex)
-            }
 
-            override fun onDismissActionButtons() {
-                viewModel.onDismissActionButtons()
-            }
+            override fun onCopyClick(ayahContent: String) = viewModel.onCopyClick(ayahContent)
 
-            override fun onBackClick() {
-                navController.navigateUp()
-            }
+            override fun onDismissActionButtons() = viewModel.onDismissActionButtons()
 
-            override fun onBookmarkClick(ayahNumber: Int) {
-                viewModel.onBookmarkClick(ayahNumber)
-            }
+            override fun onBackClick() = viewModel.onBackClick()
 
-            override fun onShareClick(ayahContent: String) {
-                viewModel.onShareClick(ayahContent)
-            }
-        },
-        clipboardManager = clipboardManager
+            override fun onBookmarkClick(ayahNumber: Int) = viewModel.onBookmarkClick(ayahNumber)
+
+            override fun onShareClick(ayahContent: String) = viewModel.onShareClick(ayahContent)
+        }
     )
 }
 
@@ -72,7 +70,6 @@ fun SurahScreen(
 private fun Content(
     state: SurahScreenState,
     listener: SurahInteractionListener,
-    clipboardManager: ClipboardManager,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -98,14 +95,12 @@ private fun Content(
         AnimatedAyahActionButtons(
             state = state,
             listener = listener,
-            clipboardManager = clipboardManager,
             modifier = Modifier.fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(Theme.spacing._16)
         )
     }
 }
-
 
 @Composable
 private fun AyatOfSurah(
@@ -156,8 +151,9 @@ private fun HideAyahActionButtonsOnScroll(
     LaunchedEffect(lazyListState) {
         lazyListState.let { listState ->
             snapshotFlow { listState.isScrollInProgress }.collect { isScrolling ->
-                if (isScrolling && !state.isAyahActionButtonsVisible) listener.onDismissActionButtons()
-
+                if (isScrolling && state.isAyahActionButtonsVisible) {
+                    listener.onDismissActionButtons()
+                }
             }
         }
     }

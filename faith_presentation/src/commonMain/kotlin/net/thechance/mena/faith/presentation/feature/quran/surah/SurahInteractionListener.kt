@@ -6,4 +6,5 @@ interface SurahInteractionListener {
     fun onShareClick(ayahContent: String)
     fun onBookmarkClick(ayahNumber: Int)
     fun onAyahLongPress(ayahContent: String, ayahIndex: Int)
+    fun onCopyClick(ayahContent: String)
 }

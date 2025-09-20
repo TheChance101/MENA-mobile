@@ -36,7 +36,6 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenState
-import net.thechance.mena.faith.presentation.util.ClipboardManager
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -86,7 +85,6 @@ internal fun BasmalaHeader(
 internal fun AnimatedAyahActionButtons(
     state: SurahScreenState,
     listener: SurahInteractionListener,
-    clipboardManager: ClipboardManager,
     modifier: Modifier = Modifier
 ) {
 
@@ -100,7 +98,7 @@ internal fun AnimatedAyahActionButtons(
             val selectedAyah = state.selectedAyahIndex?.let { state.ayatOfSurah[it] }
             AyahActionButtons(
                 onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
-                onCopyClick = { clipboardManager.copy(state.selectedAyah) },
+                onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
                 onShareClick = { listener.onShareClick(state.selectedAyah) }
             )
         }

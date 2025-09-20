@@ -11,10 +11,9 @@ import androidx.navigation.toRoute
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
-import net.thechance.mena.faith.presentation.util.ClipboardManager
 
 @Composable
-fun FaithNavigation(clipboardManager: ClipboardManager) {
+fun FaithNavigation() {
     val navController = rememberNavController()
 
     CompositionLocalProvider(
@@ -33,9 +32,7 @@ fun FaithNavigation(clipboardManager: ClipboardManager) {
                 QuranTheme {
                     SurahScreen(
                         surahId = args.surahId,
-                        surahName = args.surahName,
-                        clipboardManager = clipboardManager
-                    )
+                        surahName = args.surahName)
                 }
             }
         }
