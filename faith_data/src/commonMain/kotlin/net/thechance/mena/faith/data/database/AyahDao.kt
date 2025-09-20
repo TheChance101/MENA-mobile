@@ -6,7 +6,7 @@ import androidx.room.Query
 @Dao
 interface AyahDao {
     @Query("""
-    SELECT aya_no, aya_text 
+    SELECT aya_no, aya_text ,aya_text_emlaey
     FROM ayat 
     WHERE sura_no = :surahNumber
 """)
