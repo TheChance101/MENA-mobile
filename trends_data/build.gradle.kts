@@ -31,13 +31,7 @@ kotlin {
             implementation(libs.bundles.ktor)
         }
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.kotlin.test.annotations.common)
-            implementation(libs.assertk)
-            implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.ktor.client.mock)
-
-
+            implementation(libs.bundles.commonTest)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
