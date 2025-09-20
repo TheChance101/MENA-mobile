@@ -18,7 +18,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-
+    jvm()
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -63,6 +63,13 @@ kotlin {
         }
         iosMain.dependencies {
 
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.coroutines.test)
+            implementation(libs.assertk)
+            implementation(libs.test.turbine)
+            implementation(libs.koin.test)
         }
     }
 

@@ -22,13 +22,15 @@ import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
 
-fun createCategoryRepository(
+internal fun createCategoryRepository(
     getAllCategories: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    isCategoriesAlreadySelectedByUser: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateInterests: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): CategoryRepositoryImpl {
     return CategoryRepositoryImpl(
         createHttpClient(
             getAllCategories,
+            isCategoriesAlreadySelectedByUser,
             updateInterests
         )
     )
@@ -36,6 +38,7 @@ fun createCategoryRepository(
 
 fun createHttpClient(
     getAllCategories: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    isCategoriesAlreadySelectedByUser: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateInterests: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     return HttpClient(
@@ -43,6 +46,10 @@ fun createHttpClient(
             when (request.url.encodedPath) {
                 "/$TRENDS/$CATEGORY", -> {
                     getAllCategories?.invoke(this) ?: getAllCategoriesResponse()
+                }
+
+                "/$TRENDS/user/categories/status" -> {
+                    isCategoriesAlreadySelectedByUser?.invoke(this) ?: isCategoriesAlreadySelectedByUser()
                 }
 
                 "/$TRENDS/$INTERESTS" -> updateInterests?.invoke(this) ?: updateInterestsResponse()

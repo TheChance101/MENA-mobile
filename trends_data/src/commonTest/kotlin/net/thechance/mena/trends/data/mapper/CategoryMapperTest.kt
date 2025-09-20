@@ -3,6 +3,7 @@ package net.thechance.mena.trends.data.mapper
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import net.thechance.mena.trends.data.dto.CategoryDto
 import kotlin.test.Test
 
@@ -13,9 +14,9 @@ class CategoryMapperTest {
         val dto = CategoryDto(id = "uuid 1", name = "Sport", emoji = "⚽")
         val category = dto.toEntity()
 
-        assertThat(category.id).isEqualTo("uuid 1")
-        assertThat(category.name).isEqualTo("Sport")
-        assertThat(category.emoji).isEqualTo("⚽")
+        assertThat(category?.id).isEqualTo("uuid 1")
+        assertThat(category?.name).isEqualTo("Sport")
+        assertThat(category?.emoji).isEqualTo("⚽")
     }
 
     @Test
@@ -23,9 +24,9 @@ class CategoryMapperTest {
         val dto = CategoryDto()
         val category = dto.toEntity()
 
-        assertThat(category.id).isEmpty()
-        assertThat(category.name).isEmpty()
-        assertThat(category.emoji).isEmpty()
+        assertThat(category?.id).isNull()
+        assertThat(category?.name).isNull()
+        assertThat(category?.emoji).isNull()
     }
 
     @Test
