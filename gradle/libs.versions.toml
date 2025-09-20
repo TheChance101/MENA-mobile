@@ -21,6 +21,7 @@ kotlinx-serialization = "1.6.3"
 ktor = "3.2.3"
 room = "2.8.0"
 sqlite = "2.6.0"
+napier = "2.7.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -37,6 +38,7 @@ compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", v
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 
 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }

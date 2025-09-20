@@ -20,6 +20,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
+            implementation(compose.runtime)
             implementation(projects.faithDomain)
             implementation(compose.components.resources)
             implementation(libs.androidx.room.runtime)
@@ -27,10 +28,10 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.bundles.ktor)
             api(libs.koin.core)
+            implementation(libs.napier)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-
         }
     }
 }
