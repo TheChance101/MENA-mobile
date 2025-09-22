@@ -7,4 +7,21 @@
     <string name="couldnt_load_tap_to_retry">Couldn’t load, tap to retry</string>
     <string name="error">Error</string>
     <string name="balance_fetch_error_description">Something went wrong while fetching your balance</string>
+    <string name="transaction_details_header">Transaction Details</string>
+    <string name="share_receipt">Share Receipt</string>
+    <string name="share_button">share button</string>
+    <string name="send">Send</string>
+    <string name="to">To</string>
+    <string name="receive">Receive</string>
+    <string name="pay">Pay</string>
+    <string name="send_button">Send button</string>
+    <string name="receive_button">Receive button</string>
+    <string name="pay_button">Pay button</string>
+    <string name="status">Status</string>
+    <string name="type">Type</string>
+    <string name="receiver">Receiver</string>
+    <string name="date">Date</string>
+    <string name="transaction_id">Transaction ID</string>
+    <string name="purchase">Purchase</string>
+    <string name="transfer">Transfer</string>
 </resources>

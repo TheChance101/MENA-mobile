@@ -19,13 +19,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.date
+import mena.wallet_presentation.generated.resources.ic_failed
 import mena.wallet_presentation.generated.resources.ic_send
 import mena.wallet_presentation.generated.resources.img_silver
+import mena.wallet_presentation.generated.resources.silver_coin
+import mena.wallet_presentation.generated.resources.status
+import mena.wallet_presentation.generated.resources.transaction_id
+import mena.wallet_presentation.generated.resources.type
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -63,21 +70,21 @@ fun DetailsSection(
                 textStyle = Theme.typography.headline.medium,
                 textColor = Theme.colorScheme.shadePrimary,
                 icon = painterResource(Res.drawable.img_silver),
-                iconContentDescription = "",
+                iconContentDescription = stringResource(Res.string.silver_coin),
                 iconSize = 24.dp,
                 gap = 8.dp,
             )
 
             DetailsInfo(
-                title = "Status",
+                title = stringResource(Res.string.status),
                 content = "Failed",
-                icon = painterResource(Res.drawable.img_silver),
+                icon = painterResource(Res.drawable.ic_failed),
                 iconContentDescription = "",
                 iconTint = Theme.colorScheme.error
             )
 
             DetailsInfo(
-                title = "Transfer",
+                title = stringResource(Res.string.type),
                 content = "Transfer",
             )
 
@@ -87,12 +94,12 @@ fun DetailsSection(
             )
 
             DetailsInfo(
-                title = "Date",
+                title = stringResource(Res.string.date),
                 content = "23 Aug 2025, 2:15 PM",
             )
 
             DetailsInfo(
-                title = "Transaction ID",
+                title = stringResource(Res.string.transaction_id),
                 content = "TX-239481",
             )
         }

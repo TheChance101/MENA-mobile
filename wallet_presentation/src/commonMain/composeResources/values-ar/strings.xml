@@ -7,4 +7,21 @@
     <string name="couldnt_load_tap_to_retry">فشل التحميل، اضغط لإعادة المحاولة</string>
     <string name="error">خطأ</string>
     <string name="balance_fetch_error_description">حدث خطأ أثناء تحميل رصيدك</string>
+    <string name="transaction_details_header">تفاصيل المعاملة</string>
+    <string name="share_receipt">مشاركة الإيصال</string>
+    <string name="share_button">زر المشاركة</string>
+    <string name="send">إرسال</string>
+    <string name="to">إلى</string>
+    <string name="receive">إستلام</string>
+    <string name="pay">دفع</string>
+    <string name="send_button">زر الإرسال</string>
+    <string name="receive_button">زر الاستلام</string>
+    <string name="pay_button">زر الدفع</string>
+    <string name="status">الحالة</string>
+    <string name="type">النوع</string>
+    <string name="receiver">المستلم</string>
+    <string name="date">التاريخ</string>
+    <string name="transaction_id">id المعاملة</string>
+    <string name="purchase">شراء</string>
+    <string name="transfer">تحويل</string>
 </resources>
