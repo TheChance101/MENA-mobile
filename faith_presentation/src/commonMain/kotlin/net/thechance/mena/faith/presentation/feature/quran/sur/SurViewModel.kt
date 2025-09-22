@@ -1,18 +1,23 @@
 package net.thechance.mena.faith.presentation.feature.quran.sur
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
 class SurViewModel(
-    val quranRepository: QuranRepository
+    private val quranRepository: QuranRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<SurScreenState, SurEffect>(SurScreenState()), SurInteractionListener {
 
     init {
         initializeSur()
     }
 
-    override fun onSurahClick(surahId: Int, surahName: String) = sendEffect(SurEffect.NavigateToSurahDetails(surahId, surahName))
+    override fun onSurahClick(surahId: Int, surahName: String) =
+        sendEffect(SurEffect.NavigateToSurahDetails(surahId, surahName))
 
     override fun onBackClick() = sendEffect(SurEffect.NavigateBack)
 
@@ -24,7 +29,8 @@ class SurViewModel(
             execute = { quranRepository.getAllSur() },
             onSuccess = { sur -> handleSuccessState(sur) },
             onError = { throwable -> handleErrorState(throwable) },
-            onFinally = { setLoadingState(false) }
+            onFinally = { setLoadingState(false) },
+            dispatcher = dispatcher
         )
     }
 

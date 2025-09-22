@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.kover)
+    alias(libs.plugins.mockkery)
 }
 
 kotlin {
@@ -50,6 +51,9 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.turbine)
+            implementation(libs.mokkery.core)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
