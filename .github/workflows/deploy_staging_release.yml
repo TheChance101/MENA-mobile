@@ -1,0 +1,44 @@
+name: Deploy staging release APK
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy-staging-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build and Sign APK
+        uses: ./.github/actions/build-release-apk
+        with:
+          android-keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
+          android-key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          android-key-alias-password: ${{ secrets.ANDROID_KEY_ALIAS_PASSWORD }}
+          build-type: Staging
+          base-url: ${{ secrets.BASE_URL_STAGING }}
+
+      - name: Deploy to Firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          file: ${{ env.SIGNED_APK_PATH }}
+          debug: true
+          groups: testers-staging
+
+      - name: Deploy APK to Slack
+        uses: MeilCli/slack-upload-file@v4.0.20
+        with:
+          slack_token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel_id: ${{ secrets.SLACK_STAGING_CHANNEL_ID }}
+          file_path: ${{ env.SIGNED_APK_PATH }}
+          file_name: "${{ env.APK_NAME }}.apk"
+          initial_comment: |
+            📲 *New Staging APK Build Released*
+            *Version:* `${{env.APK_VERSION}}`
+            *File:* `${{ env.APK_NAME }}`

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create">إنشاء</string>
+    <string name="next">التالي</string>
+    <string name="create_new_dukan">إنشاء دكان جديد</string>
+    <string name="dukan_location">موقع الدكان</string>
+    <string name="enter_address_and_pick_dukan_location_on_map">قم بإدخال العنوان وقم باختيار موقع الدكان من الخريطة</string>
+    <string name="address">العنوان</string>
+    <string name="location">الموقع</string>
+    <string name="save">حفظ</string>
+    <string name="reset">إعادة تعيين</string>
+    <string name="upload_another_image">رفع صورة أخرى</string>
+    <string name="click_to_upload">اضغط للرفع</string>
+    <string name="dukan_image">صورة الدكان</string>
+    <string name="upload_dukan_image">قم برفع صورة الدكان، يجب أن تكون بنسبة عرض إلى ارتفاع 9:16</string>
+    <string name="image_size">الصورة (9:16)</string>
+    <string name="image_size_description">قم برفع صورة الدكان، يجب أن تكون بنسبة عرض إلى ارتفاع 9:16</string>
+    <string name="enter_your_dukan_information">أدخل معلومات الدكان الخاصة بك</string>
+    <string name="fill_name_and_select_category">أدخل اسم الدكان واختر الفئة</string>
+    <string name="dukan_name">اسم الدكان</string>
+    <string name="enter_dukan_name">أدخل اسم الدكان</string>
+    <string name="category">الفئة</string>
+    <string name="alert">تنبيه</string>
+    <string name="you_can_choose_up_to_3_categories">يمكنك اختيار ما يصل إلى 3 فئات</string>
+    <string name="please_select_at_least_1_category">يرجى اختيار فئة واحدة على الأقل</string>
+    <string name="you_can_select_maximum_3_categories">يمكنك اختيار 3 فئات كحد أقصى</string>
+    <string name="error">خطأ</string>
+    <string name="success">نجاح</string>
+    <string name="dukan_name_is_already_exist">اسم الدكان موجود بالفعل، حاول استخدام اسم آخر.</string>
+    <string name="back_arrow">سهم الرجوع</string>
+</resources>

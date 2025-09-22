@@ -1,0 +1,89 @@
+name: Test Coverage and Codecov Report
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  detect:
+    name: Detect Changes
+    uses: ./.github/workflows/detect-changed-modules.yml
+    secrets: inherit
+
+  test:
+    name: Test
+    needs: detect
+    if: needs.detect.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ${{ fromJSON(needs.detect.outputs.modules) }}
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: gradle
+
+      - run: chmod +x gradlew
+
+      - name: Run tests
+        run: ./gradlew :${{ matrix.module }}:koverVerify --build-cache --parallel
+
+      - name: Generate reports
+        run: ./gradlew :${{ matrix.module }}:koverXmlReport :${{ matrix.module }}:koverHtmlReport --build-cache
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: html-report-${{ matrix.module }}
+          path: ${{ matrix.module }}/build/reports/kover/html/
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xml-report-${{ matrix.module }}
+          path: ${{ matrix.module }}/build/reports/kover/report.xml
+
+  codecov:
+    name: Coverage
+    needs: [ detect, test ]
+    if: always() && needs.detect.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "xml-report-*"
+          path: coverage-reports
+
+      - uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage-reports/
+          fail_ci_if_error: true
+
+
+  notify-slack-on-failure:
+    if: failure()
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Notify Slack on failure
+        uses: ./.github/actions/slack/send-pr-notification
+        with:
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack-notification-channel-id: ${{ secrets.SLACK_NOTIFICATION_CHANNEL_ID }}
+          bot-app-id: ${{ secrets.BOT_APP_ID }}
+          branch-name: ${{ github.head_ref }}
+          message: |
+            🚨 *Test Coverage Failed!*
+            Branch Name: ${{ github.head_ref }}
+            PR: ${{ github.event.pull_request.html_url }}

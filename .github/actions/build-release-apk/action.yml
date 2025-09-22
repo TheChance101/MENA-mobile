@@ -1,0 +1,112 @@
+name: Build Release APK
+
+inputs:
+  android-keystore-base64:
+    required: true
+  keystore-password:
+    required: true
+  android-key-alias:
+    required: true
+  android-key-alias-password:
+    required: true
+  build-type:
+    required: true
+  base-url:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: gradle
+
+    - name: Cache Gradle
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          gradle-${{ runner.os }}-
+
+    - name: Install ImageMagick 7
+      shell: bash
+      run: |
+        sudo apt-get update && sudo apt-get install -y libfuse2
+        wget https://download.imagemagick.org/ImageMagick/download/binaries/magick
+        chmod +x magick
+        mv magick /usr/local/bin/
+
+    - name: Create local.properties with base URLs
+      shell: bash
+      run: |
+        UPPER_BUILD_TYPE=$(echo "${{ inputs.build-type }}" | tr '[:lower:]' '[:upper:]')
+        echo "BASE_URL_${UPPER_BUILD_TYPE}=${{ inputs.base-url }}" >> local.properties
+
+    - name: Make gradlew executable
+      shell: bash
+      run: chmod +x ./gradlew
+
+    - name: Get Version Name
+      shell: bash
+      run: |
+        VERSION_MAJOR=$(grep VERSION_MAJOR gradle.properties | cut -d'=' -f2 | xargs)
+        VERSION_MINOR=$(grep VERSION_MINOR gradle.properties | cut -d'=' -f2 | xargs)
+        RUN_NUMBER=${{ github.run_number }}
+        
+        APK_VERSION=${VERSION_MAJOR}.${VERSION_MINOR}.${RUN_NUMBER}
+        
+        echo "APK_VERSION=$APK_VERSION" >> $GITHUB_ENV
+
+    - name: Version Bump
+      uses: chkfung/android-version-actions@v1.2.3
+      with:
+        gradlePath: composeApp/build.gradle.kts
+        versionCode: ${{ github.run_number }}
+        versionName: ${{ env.APK_VERSION }}
+
+    - name: convert build type to lowercase
+      id: convert
+      shell: bash
+      run: |
+        BUILD_TYPE_LOWER=$(echo "${{ inputs.build-type }}" | tr '[:upper:]' '[:lower:]')
+        echo "build_type_lower=$BUILD_TYPE_LOWER" >> $GITHUB_OUTPUT
+
+    - name: Generate unsigned APK
+      shell: bash
+      run: ./gradlew :composeApp:assemble${{ inputs.build-type }}Release --build-cache -x test -x lint
+
+    - name: Sign APK
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: composeApp/build/outputs/apk/${{ steps.convert.outputs.build_type_lower }}/release
+        signingKeyBase64: ${{ inputs.android-keystore-base64 }}
+        keyStorePassword: ${{ inputs.keystore-password }}
+        alias: ${{ inputs.android-key-alias }}
+        keyPassword: ${{ inputs.android-key-alias-password }}
+      env:
+        BUILD_TOOLS_VERSION: "35.0.0"
+
+    - name: Set signed APK path to env
+      shell: bash
+      run: |
+        RELEASE_DIRECTORY="composeApp/build/outputs/apk/${{ steps.convert.outputs.build_type_lower }}/release"
+        
+        if [[ "${{ inputs.build-type }}" == "Production" ]]; then
+          VERSION_NAME="Mena"
+        else
+          VERSION_NAME="Mena-${{ inputs.build-type }}"
+        fi
+        
+        APK_NAME="${VERSION_NAME}-v${APK_VERSION}"
+        
+        mv "$RELEASE_DIRECTORY/composeApp-${{ steps.convert.outputs.build_type_lower }}-release-unsigned-signed.apk" \
+        "$RELEASE_DIRECTORY/$APK_NAME.apk"
+        
+        echo "APK_NAME=$APK_NAME" >> $GITHUB_ENV
+        echo "SIGNED_APK_PATH=$RELEASE_DIRECTORY/$APK_NAME.apk" >> $GITHUB_ENV

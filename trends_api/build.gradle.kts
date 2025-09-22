@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -32,6 +33,9 @@ kotlin {
             implementation(compose.ui)
             implementation(libs.koin.core)
             api(libs.koin.annotations)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 
@@ -60,5 +64,13 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+}
+
+kover.reports {
+    verify {
+        rule {
+            minBound(0)
+        }
     }
 }

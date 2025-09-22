@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import kotlin.jvm.java
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kover)
     alias(libs.plugins.ksp)
 }
 
@@ -17,6 +17,9 @@ kotlin {
             api(libs.koin.annotations)
             implementation(libs.kotlinx.datetime)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 
     sourceSets.named("commonMain").configure {
@@ -25,15 +28,24 @@ kotlin {
 }
 
 ksp {
-    arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_CONFIG_CHECK", "true")
 }
+
 
 dependencies {
     add("kspCommonMainMetadata", libs.koin.ksp.compiler)
 }
 
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-    if(name != "kspCommonMainKotlinMetadata") {
+    if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+kover.reports {
+    verify {
+        rule {
+            minBound(0)
+        }
     }
 }
