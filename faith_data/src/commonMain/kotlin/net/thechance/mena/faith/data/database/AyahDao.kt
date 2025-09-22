@@ -6,12 +6,11 @@ import androidx.room.Query
 @Dao
 interface AyahDao {
     @Query("""
-    SELECT aya_no, aya_text ,aya_text_emlaey
+    SELECT *
     FROM ayat 
     WHERE sura_no = :surahNumber
 """)
-    suspend fun getAyatOfSurah(surahNumber: Int): List<SimpleAyahDto>
-
+    suspend fun getAyatOfSurah(surahNumber: Int): List<AyahDto>
 
     @Query("""SELECT 
         sura_no,

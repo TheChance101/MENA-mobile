@@ -8,8 +8,8 @@ actual class QuranDatabaseBuilder(private val context: Context) {
         context = context.applicationContext,
         name = DATABASE_NAME
     ).fallbackToDestructiveMigration(false)
-        .createFromAsset(databaseUri.removePrefix(prefix))
+        .createFromAsset(databaseUri.removePrefix(pathPrefix))
 
-    internal actual val prefix: String
+    internal actual val pathPrefix: String
         get() = "file:///android_asset/"
 }
