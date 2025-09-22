@@ -8,7 +8,7 @@ fun SurahDto.toSurah(): Surah {
     return Surah(
         id = order,
         order = surahOrder,
-        name = nameEn,
+        name = name,
         ayahCount = ayahCount,
         isMakkia = surahOrder.isMakkia
     )
