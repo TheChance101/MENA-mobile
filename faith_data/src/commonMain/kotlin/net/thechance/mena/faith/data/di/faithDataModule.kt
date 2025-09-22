@@ -7,7 +7,7 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import org.koin.dsl.module
 
 val faithDataModule = module {
-    includes(faithPlatformModule())
+    includes(platformModule())
     single<AyahDao> { get<QuranDatabase>().getAyaDao() }
     single<QuranRepository> { QuranRepositoryImpl(get())}
 }

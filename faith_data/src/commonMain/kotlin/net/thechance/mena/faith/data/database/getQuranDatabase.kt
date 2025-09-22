@@ -1,12 +1,9 @@
 package net.thechance.mena.faith.data.database
 
 import androidx.room.RoomDatabase
-import net.thechance.mena.faith.data.utils.DataDispatchers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
 fun getQuranDatabase(
     builder: RoomDatabase.Builder<QuranDatabase>
-): QuranDatabase {
-    return builder
-        .setQueryCoroutineContext(DataDispatchers().io)
-        .build()
-}
+): QuranDatabase = builder.setQueryCoroutineContext(Dispatchers.IO).build()

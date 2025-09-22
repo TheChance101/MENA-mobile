@@ -1,26 +1,12 @@
 package net.thechance.mena.faith.data.mapper
 
-import net.thechance.mena.faith.data.database.SimpleAyahDto
-import net.thechance.mena.faith.data.database.SurahDto
+import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.domain.entity.Ayah
-import net.thechance.mena.faith.domain.entity.Surah
 
-fun SimpleAyahDto.toAyah(): Ayah {
-    return Ayah(
-        number = this.number ?: 1,
-        surahId = this.id ?: 1,
-        displayContent = text ?: "",
-        plainTextContent = ayaTextEmlaey ?: ""
-    )
-}
-
-fun SurahDto.toSurah(): Surah {
-    val surahOrder = Surah.SurahOrder.entries.first { it.order == order }
-    return Surah(
-        id = order,
-        order = surahOrder,
-        name = nameEn,
-        ayahCount = ayahCount,
-        isMakkia = surahOrder.isMakkia
-    )
-}
+fun AyahDto.toAyah() = Ayah(
+    number = number,
+    surahId = id,
+    displayContent = displayContent,
+    plainTextContent = plainTextContent,
+    page = page
+)
