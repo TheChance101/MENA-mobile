@@ -5,7 +5,7 @@ import net.thechance.mena.faith.data.database.QuranDatabaseBuilder
 import net.thechance.mena.faith.data.database.getQuranDatabase
 import org.koin.dsl.module
 
-actual fun quranDatabaseModule() = module {
+internal actual fun platformModule() = module {
     single<QuranDatabase> {
         getQuranDatabase(QuranDatabaseBuilder(context = get()).getBuilder())
     }
