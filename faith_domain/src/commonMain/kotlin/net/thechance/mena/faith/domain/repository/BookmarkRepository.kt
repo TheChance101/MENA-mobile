@@ -1,9 +1,9 @@
 package net.thechance.mena.faith.domain.repository
 
-import net.thechance.mena.faith.domain.entity.Bookmark
+import net.thechance.mena.faith.domain.entity.AyahBookmark
 
 interface BookmarkRepository {
-    suspend fun getAllBookmarks(): List<Bookmark>
-    suspend fun addBookmark(surahId: Int, ayahNumber: Int): Bookmark
-    suspend fun removeBookmark(bookmarkId: Int)
+    suspend fun getAllAyahBookmarks(): List<AyahBookmark>
+    suspend fun addAyahBookmark(surahId: Int, ayahNumber: Int): AyahBookmark
+    suspend fun deleteAyahBookmark(ayahBookmarkId: Int)
 }
