@@ -123,7 +123,8 @@ ktor = [
     "ktor-client-core",
     "ktor-client-content-negotiation",
     "ktor-client-logging",
-    "ktor-serialization-kotlinx-json"
+    "ktor-serialization-kotlinx-json",
+    "ktor-client-auth"
 ]
 
 filekit = [
