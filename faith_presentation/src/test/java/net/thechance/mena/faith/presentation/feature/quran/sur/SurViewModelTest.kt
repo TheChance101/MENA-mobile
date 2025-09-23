@@ -25,22 +25,9 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class SurViewModelTest {
 
-    private lateinit var viewModel: SurViewModel
-    private lateinit var quranRepository: QuranRepository
+    private val quranRepository: QuranRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-
-    @BeforeTest
-    fun setUp() {
-        Dispatchers.setMain(testDispatcher)
-        quranRepository = mock(mode = MockMode.autofill)
-        everySuspend { quranRepository.getAllSur() } returns surList
-        viewModel = SurViewModel(quranRepository, testDispatcher)
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
+    private var viewModel = SurViewModel(quranRepository, testDispatcher)
 
     @Test
     fun `initialize view model should set empty state when getAllSur returns no data`() = runTest {
