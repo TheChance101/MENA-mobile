@@ -10,7 +10,7 @@
     <string name="empty_state_bookmark_image">Empty Bookmark Image</string>
     <string name="empty_state_bookmark_title">No ayah saved yet!</string>
     <string name="empty_state_bookmark_description">Start your tilawah and bookmark the ayah you want to return to later.</string>
-
+    <string name="bookmark_removed_successfully">Bookmark removed successfully</string>
     <plurals name="time_seconds_ago">
         <item quantity="one">%1$d second ago</item>
         <item quantity="other">%1$d seconds ago</item>

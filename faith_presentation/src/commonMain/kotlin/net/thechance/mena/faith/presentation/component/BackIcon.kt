@@ -7,14 +7,14 @@ import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.back_icon
 import mena.faith_presentation.generated.resources.ic_arrow_left
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun BackIcon() {
-    MenaIcon(
+    Icon(
         painter = painterResource(Res.drawable.ic_arrow_left),
         contentDescription = stringResource(Res.string.back_icon),
         tint = Theme.colorScheme.primary.primary,
