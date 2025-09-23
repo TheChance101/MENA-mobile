@@ -1,0 +1,10 @@
+<resources>
+    <string name="back_button">Back button</string>
+    <string name="my_wallet">My Wallet</string>
+    <string name="current_balance">Current balance</string>
+    <string name="silver_coin">Silver coin</string>
+    <string name="reload">Reload</string>
+    <string name="couldnt_load_tap_to_retry">Couldn’t load, tap to retry</string>
+    <string name="error">Error</string>
+    <string name="balance_fetch_error_description">Something went wrong while fetching your balance</string>
+</resources>

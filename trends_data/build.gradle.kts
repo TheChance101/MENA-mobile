@@ -17,6 +17,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+    jvm()
     iosArm64()
     iosSimulatorArm64()
 
@@ -36,6 +37,9 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+        }
+        commonTest.dependencies {
+            implementation(libs.bundles.test)
         }
     }
     sourceSets.named("commonMain").configure {

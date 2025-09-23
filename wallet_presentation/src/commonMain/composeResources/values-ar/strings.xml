@@ -1,0 +1,10 @@
+<resources>
+    <string name="back_button">زر العودة</string>
+    <string name="my_wallet">محفظتي</string>
+    <string name="current_balance">الرصيد الحالي</string>
+    <string name="silver_coin">عملة فضية</string>
+    <string name="reload">أعد المحاولة</string>
+    <string name="couldnt_load_tap_to_retry">فشل التحميل، اضغط لإعادة المحاولة</string>
+    <string name="error">خطأ</string>
+    <string name="balance_fetch_error_description">حدث خطأ أثناء تحميل رصيدك</string>
+</resources>
