@@ -12,13 +12,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.aya
 import mena.faith_presentation.generated.resources.history
 import mena.faith_presentation.generated.resources.time_icon
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
@@ -52,10 +53,12 @@ fun AyaBookmarkCard(
             createdAt = createdAt.getTimeAgo()
         )
 
-        MenaText(
+        Text(
             text = ayaText,
             color = Theme.colorScheme.shadeSecondary,
-            style = Theme.typography.quran.medium
+            style = Theme.typography.quran.medium.copy(
+                textDirection = TextDirection.ContentOrRtl
+            )
         )
     }
 }
@@ -85,7 +88,7 @@ private fun SurahAndAyaInfo(
     ayaNumber: Int
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        MenaText(
+        Text(
             text = surahName,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.medium,
@@ -93,7 +96,7 @@ private fun SurahAndAyaInfo(
 
         DotSeparator()
 
-        MenaText(
+        Text(
             text = stringResource(Res.string.aya, ayaNumber),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.medium,
@@ -117,12 +120,12 @@ private fun DotSeparator() {
 @Composable
 private fun TimeInfo(createdAt: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        MenaIcon(
+        Icon(
             painter = painterResource(Res.drawable.history),
             contentDescription = stringResource(Res.string.time_icon),
             tint = Theme.colorScheme.shadeSecondary,
         )
-        MenaText(
+        Text(
             text = createdAt,
             color = Theme.colorScheme.shadeSecondary,
             modifier = Modifier.padding(start = Theme.spacing._2),
