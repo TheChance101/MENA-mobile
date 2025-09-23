@@ -18,8 +18,8 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
 import mena.faith_presentation.generated.resources.start_tilawah
 import net.thechance.mena.designsystem.presentation.component.button.Button
-import net.thechance.mena.designsystem.presentation.component.image.MenaImage
-import net.thechance.mena.designsystem.presentation.component.text.MenaText
+import net.thechance.mena.designsystem.presentation.component.image.Image
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -40,19 +40,19 @@ fun EmptyBookmarkState(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        MenaImage(
+        Image(
             painter = icon,
             contentDescription = contentDescription,
             modifier = Modifier.size(128.dp)
         )
-        MenaText(
+        Text(
             text = title,
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = Theme.spacing._24, bottom = Theme.spacing._8)
         )
-        MenaText(
+        Text(
             text = subTitle,
             color = Theme.colorScheme.shadeSecondary,
             style = Theme.typography.body.small,
@@ -66,7 +66,7 @@ fun EmptyBookmarkState(
             onClick = onClickButton,
             containerColor = Theme.colorScheme.primary.primary
         ) {
-            MenaText(
+            Text(
                 text = stringResource(Res.string.start_tilawah),
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.primary.onPrimary

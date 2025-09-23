@@ -32,7 +32,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.bookmark
 import mena.faith_presentation.generated.resources.remove_bookmark_icon
 import mena.faith_presentation.generated.resources.swipe_animation
-import net.thechance.mena.designsystem.presentation.component.icon.MenaIcon
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -40,7 +40,7 @@ import kotlin.math.roundToInt
 
 
 @Composable
-fun SwipeableCard(
+fun SwappableCard(
     id: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -113,7 +113,7 @@ private fun SwipeBackground(
             .background(Theme.colorScheme.background.bgError)
             .clickable { onClick() }
     ) {
-        MenaIcon(
+        Icon(
             painter = painter,
             contentDescription = contentDescription,
             tint = tintColor,

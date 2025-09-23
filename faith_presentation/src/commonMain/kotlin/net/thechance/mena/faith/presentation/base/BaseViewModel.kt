@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 
 @OptIn(FlowPreview::class)
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
@@ -43,18 +45,18 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     }
 
     fun showSnackBar(
-        message: String,
+        message: StringResource,
         status: SnackBarState.Status,
         durationMillis: Long = 3000L,
     ) {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             if (snackBarState.value.isVisible) {
                 hideSnackBar()
                 delay(1000L)
             }
             _snackBarState.update {
                 SnackBarState(
-                    message = message,
+                    message = getString(message),
                     status = status,
                     isVisible = true
                 )
@@ -69,7 +71,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     }
 
     private fun hideSnackBar() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             _snackBarState.update {
                 it.copy(
                     isVisible = false,

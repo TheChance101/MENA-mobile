@@ -1,8 +1,11 @@
 package net.thechance.mena.faith.presentation.feature.quran.bookmark
 
-import net.thechance.mena.faith.domain.entity.Bookmark
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.bookmark_removed_successfully
+import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.base.SnackBarState
 
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository
@@ -15,48 +18,50 @@ class BookmarkViewModel(
 
     override fun onBackClick() = sendEffect(BookmarkEffect.NavigateBack)
 
-    override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateToQuran)
+    override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateBack)
 
-    override fun onRemoveBookmarkClick(bookmarkId: Int) {
+    override fun onDeleteBookmarkClick(bookmarkId: Int) {
         tryToExecute(
-            onStart = { setLoadingState(true) },
-            execute = { bookmarkRepository.removeBookmark(bookmarkId) },
-            onSuccess = { removeBookmarkFromState(bookmarkId) },
-            onError = { ::handleErrorState },
-            onFinally = { setLoadingState(false) }
+            execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
+            onSuccess = { onDeleteBookmarkSuccess(bookmarkId) },
+            onError = ::handleErrorState,
         )
     }
 
     private fun getBookmarks() {
         tryToExecute(
-            onStart = { setLoadingState(true) },
-            execute = { bookmarkRepository.getAllBookmarks() },
-            onSuccess = ::handleSuccessState,
+            onStart = ::onStart,
+            execute = { bookmarkRepository.getAllAyahBookmarks() },
+            onSuccess = ::onGetBookmarksSuccess,
             onError = ::handleErrorState,
-            onFinally = { setLoadingState(false) }
+            onFinally = ::onFinally
         )
     }
 
-    private fun handleSuccessState(bookmarks: List<Bookmark>) {
+    private fun onDeleteBookmarkSuccess(bookmarkId: Int) {
+        updateState { currentState ->
+            currentState.copy(
+                bookmarks = currentState.bookmarks.filterNot { it.bookmarkId == bookmarkId }
+            )
+        }
+        showSnackBar(
+            message = Res.string.bookmark_removed_successfully,
+            status = SnackBarState.Status.Success
+        )
+    }
+
+    private fun onGetBookmarksSuccess(ayahBookmarks: List<AyahBookmark>) {
         updateState {
-            it.copy(bookmarks = bookmarks.map { bookmark -> bookmark.toUiState() })
+            it.copy(bookmarks = ayahBookmarks.map { bookmark -> bookmark.toUiState() })
         }
     }
 
     private fun handleErrorState(throwable: Throwable) {
-        updateState { it.copy(error = "${throwable.message}") }
+        // TODO: handle error here
     }
 
-    private fun setLoadingState(isLoading: Boolean) {
-        updateState { it.copy(isLoading = isLoading) }
-    }
+    private fun onStart() = updateState { it.copy(isLoading = true) }
 
-    private fun removeBookmarkFromState(bookmarkId: Int) {
-        updateState { currentState ->
-            currentState.copy(
-                bookmarks = currentState.bookmarks.filter { it.bookmarkId != bookmarkId }
-            )
-        }
-    }
+    private fun onFinally() = updateState { it.copy(isLoading = false) }
 
 }
