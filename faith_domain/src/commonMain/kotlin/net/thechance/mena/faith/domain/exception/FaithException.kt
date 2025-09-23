@@ -1,9 +1,9 @@
 package net.thechance.mena.faith.domain.exception
 
 sealed class FaithException : Throwable() {
-    object UnknownException : FaithException()
-    object NoInternetException : FaithException()
-    object UnauthorizedException : FaithException()
-    object NetworkException : FaithException()
+    data object UnknownException : FaithException()
+    data object NoInternetException : FaithException()
+    data object UnauthorizedException : FaithException()
+    data object NetworkException : FaithException()
 }
 
