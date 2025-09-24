@@ -7,7 +7,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 data class BookmarksScreenState(
     val bookmarks: List<BookmarkCardUiState> = emptyList(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val error: String? = null
 ){
     data class BookmarkCardUiState (

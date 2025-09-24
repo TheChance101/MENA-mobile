@@ -29,10 +29,10 @@ import mena.faith_presentation.generated.resources.empty_state_bookmark_title
 import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.base.FaithScaffold
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.SnackBarState
 import net.thechance.mena.faith.presentation.component.BackIcon
+import net.thechance.mena.faith.presentation.component.FaithScaffold
 import net.thechance.mena.faith.presentation.component.FaithSnackBar
 import net.thechance.mena.faith.presentation.component.LoadingIndicator
 import net.thechance.mena.faith.presentation.component.SwappableCard
@@ -99,7 +99,6 @@ private fun Content(
                     .fillMaxSize()
                     .background(color = Theme.colorScheme.background.surface)
                     .padding(horizontal = Theme.spacing._16)
-                    .statusBarsPadding(),
             ) {
                 AnimatedVisibility(
                     visible = uiState.isLoading,
