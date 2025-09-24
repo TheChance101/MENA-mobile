@@ -24,11 +24,6 @@ class SurahViewModelTest {
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
 
-    @BeforeTest
-    fun setup() {
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-    }
-
     private fun createTestViewModel(
         surahId: Int = DEFAULT_SURAH_ID,
         surahName: String = DEFAULT_SURAH_NAME
