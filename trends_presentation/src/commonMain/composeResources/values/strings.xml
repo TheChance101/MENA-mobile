@@ -27,4 +27,10 @@
     <string name="error_no_internet">Could not connect, please check your internet connection</string>
     <string name="error_generic">Something went wrong, please try again later</string>
     <string name="error_request_timeout">Request timed out, please try again later</string>
+
+    <string name="new_trend">New Trend</string>
+    <string name="add_categories_to_video">Add categories to video</string>
+    <string name="choose_categories">You can choose up to 3 categories</string>
+    <string name="publish_video">Publish Video</string>
+
 </resources>
