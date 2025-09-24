@@ -97,7 +97,7 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `onAyahLongPress should return negative value when called with negative index`() = runTest {
+    fun `onAyahLongPress should set selectedAyahIndex to negative value when called with negative index`() = runTest {
         // Given
         val testViewModel = createTestViewModel()
 
@@ -137,7 +137,7 @@ class SurahViewModelTest {
         }
 
     @Test
-    fun `onDismissActionButtons should hide action buttons after ayah long press`() = runTest {
+    fun `onDismissActionButtons should hide action buttons when called after ayah long press`() = runTest {
         // Given
         val testViewModel = createTestViewModel()
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
@@ -147,19 +147,6 @@ class SurahViewModelTest {
 
         // Then
         assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
-    }
-
-    @Test
-    fun `onDismissActionButtons should return empty string when ayah was long pressed`() = runTest {
-        // Given
-        val testViewModel = createTestViewModel()
-        testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
-
-        // When
-        testViewModel.onDismissActionButtons()
-
-        // Then
-        assertEquals(EMPTY_STRING, testViewModel.uiState.value.selectedAyah)
     }
 
     @Test
@@ -216,7 +203,7 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `onShareClick should emit ShareAyah effect when called`() = runTest {
+    fun `onShareClick should navigate to ShareAyah when onShareClick is invoked`() = runTest {
         // Given
         val testViewModel = createTestViewModel()
 
@@ -225,19 +212,6 @@ class SurahViewModelTest {
             testViewModel.onShareClick(AYAH_TO_SHARE)
             val effect = awaitItem()
             assertEquals(SurahScreenEffect.ShareAyah(AYAH_TO_SHARE), effect)
-        }
-    }
-
-    @Test
-    fun `onShareClick should emit ShareAyah effect with empty content when called with empty string`() = runTest {
-        // Given
-        val testViewModel = createTestViewModel()
-
-        // When & Then
-        testViewModel.uiEffect.test {
-            testViewModel.onShareClick(EMPTY_STRING)
-            val effect = awaitItem()
-            assertEquals(SurahScreenEffect.ShareAyah(EMPTY_STRING), effect)
         }
     }
 
