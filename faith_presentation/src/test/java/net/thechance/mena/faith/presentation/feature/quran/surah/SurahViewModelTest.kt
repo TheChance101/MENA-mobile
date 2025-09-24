@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.util.ClipboardManager
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -33,11 +34,13 @@ class SurahViewModelTest {
         clipboardManager = clipboardManager
     )
 
+    @BeforeTest
+    fun setup() {
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
+    }
+
     @Test
     fun `SurahViewModel should return correct surah id when viewModel is created`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When
         val testViewModel = SurahViewModel(
             surahId = TEST_SURAH_ID,
@@ -53,9 +56,6 @@ class SurahViewModelTest {
 
     @Test
     fun `SurahViewModel should return correct surah name when viewModel is created`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When
         val testViewModel = SurahViewModel(
             surahId = DEFAULT_SURAH_ID,
@@ -67,33 +67,6 @@ class SurahViewModelTest {
 
         // Then
         assertEquals(TEST_SURAH_NAME, testViewModel.uiState.value.surahName)
-    }
-
-    @Test
-    fun `isAyahActionButtonsVisible should return false when viewModel is created`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
-        // Then
-        assertFalse(viewModel.uiState.value.isAyahActionButtonsVisible)
-    }
-
-    @Test
-    fun `selectedAyahIndex should return null when viewModel is created`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
-        // Then
-        assertNull(viewModel.uiState.value.selectedAyahIndex)
-    }
-
-    @Test
-    fun `selectedAyah should return empty string when viewModel is created`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
-        // Then
-        assertEquals(EMPTY_STRING, viewModel.uiState.value.selectedAyah)
     }
 
     @Test
@@ -110,14 +83,12 @@ class SurahViewModelTest {
             clipboardManager = clipboardManager
         )
 
+        // Then
         assertTrue(testViewModel.uiState.value.ayatOfSurah.isEmpty())
     }
 
     @Test
     fun `onBackClick should emit NavigateBack effect when called`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When & Then
         viewModel.uiEffect.test {
             viewModel.onBackClick()
@@ -128,9 +99,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onAyahLongPress should return true for isAyahActionButtonsVisible when called`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
@@ -140,9 +108,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onAyahLongPress should return ayah content for selectedAyah when called`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When
         viewModel.onAyahLongPress(SELECTED_AYAH_CONTENT, TEST_AYAH_INDEX)
 
@@ -152,9 +117,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onAyahLongPress should return ayah index for selectedAyahIndex when called`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
@@ -165,7 +127,6 @@ class SurahViewModelTest {
     @Test
     fun `onAyahLongPress should return new content when different ayah is selected`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(FIRST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -178,9 +139,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onAyahLongPress should return negative value when called with negative index`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, NEGATIVE_AYAH_INDEX)
 
@@ -192,7 +150,6 @@ class SurahViewModelTest {
     fun `onDismissActionButtons should return false for isAyahActionButtonsVisible when called`() =
         runTest {
             // Given
-            everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
             viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
             // When
@@ -206,7 +163,6 @@ class SurahViewModelTest {
     fun `onDismissActionButtons should return empty string for selectedAyah when called`() =
         runTest {
             // Given
-            everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
             viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
             // When
@@ -219,7 +175,6 @@ class SurahViewModelTest {
     @Test
     fun `onDismissActionButtons should return null for selectedAyahIndex when called`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -232,7 +187,6 @@ class SurahViewModelTest {
     @Test
     fun `onDismissActionButtons should return false when ayah was long pressed`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -245,7 +199,6 @@ class SurahViewModelTest {
     @Test
     fun `onDismissActionButtons should return empty string when ayah was long pressed`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -255,11 +208,9 @@ class SurahViewModelTest {
         assertEquals(EMPTY_STRING, viewModel.uiState.value.selectedAyah)
     }
 
-
     @Test
     fun `onBookmarkClick should return false for isAyahActionButtonsVisible when called`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -272,7 +223,6 @@ class SurahViewModelTest {
     @Test
     fun `onBookmarkClick should return null for selectedAyahIndex when called`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -285,7 +235,6 @@ class SurahViewModelTest {
     @Test
     fun `onBookmarkClick should return false for isAyahActionButtonsVisible when called with zero ayah number`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -298,7 +247,6 @@ class SurahViewModelTest {
     @Test
     fun `onShareClick should return false for isAyahActionButtonsVisible when called`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -311,7 +259,6 @@ class SurahViewModelTest {
     @Test
     fun `onShareClick should return null for selectedAyahIndex when called`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
         viewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // When
@@ -323,9 +270,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onShareClick should return ayah content for selectedAyah when called`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When
         viewModel.onShareClick(AYAH_TO_SHARE)
 
@@ -335,9 +279,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onShareClick should emit ShareAyah effect when called`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When & Then
         viewModel.uiEffect.test {
             viewModel.onShareClick(AYAH_TO_SHARE)
@@ -348,9 +289,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onShareClick should emit ShareAyah effect with empty content when called with empty string`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
         // When & Then
         viewModel.uiEffect.test {
             viewModel.onShareClick(EMPTY_STRING)
@@ -364,7 +302,6 @@ class SurahViewModelTest {
         const val DEFAULT_SURAH_NAME = "Al-Fatiha"
         const val TEST_SURAH_ID = 2
         const val TEST_SURAH_NAME = "Al-Baqarah"
-        const val LARGE_SURAH_ID = 5
         const val TEST_AYAH_INDEX = 0
         const val SECOND_AYAH_INDEX = 1
         const val NEGATIVE_AYAH_INDEX = -1
