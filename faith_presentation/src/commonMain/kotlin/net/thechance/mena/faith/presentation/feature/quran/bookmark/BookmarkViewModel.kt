@@ -30,11 +30,9 @@ class BookmarkViewModel(
 
     private fun getBookmarks() {
         tryToExecute(
-            onStart = ::onStart,
             execute = { bookmarkRepository.getAllAyahBookmarks() },
             onSuccess = ::onGetBookmarksSuccess,
             onError = ::handleErrorState,
-            onFinally = ::onFinally
         )
     }
 
@@ -59,9 +57,5 @@ class BookmarkViewModel(
     private fun handleErrorState(throwable: Throwable) {
         // TODO: handle error here
     }
-
-    private fun onStart() = updateState { it.copy(isLoading = true) }
-
-    private fun onFinally() = updateState { it.copy(isLoading = false) }
 
 }
