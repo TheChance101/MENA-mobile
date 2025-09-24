@@ -45,11 +45,12 @@ class TransactionDetailsViewModel() :
         TODO("Not yet implemented")
     }
 
-    private fun onShareReceiptFinish(){
-        updateState { it.copy(isShareReceiptLoading = false) }
+    private fun onShareReceiptSuccess(){
+        updateState { it.copy(shareReceipt = UiState.Success(Unit)) }
     }
 
     private suspend fun onShareReceiptError(throwable: Throwable){
+        updateState { it.copy(shareReceipt = UiState.Error(throwable)) }
         showSnackBar(
             titleRes = Res.string.error,
             messageRes = Res.string.share_transaction_details_error_msg,
@@ -58,7 +59,7 @@ class TransactionDetailsViewModel() :
     }
 
     private fun onShareReceiptStart(){
-        updateState { it.copy(isShareReceiptLoading = true) }
+        updateState { it.copy(shareReceipt = UiState.Loading) }
     }
 
     private suspend fun showSnackBar(
@@ -93,5 +94,9 @@ class TransactionDetailsViewModel() :
 
     override fun onRefresh() {
         getTransactionDetails()
+    }
+
+    override fun onSendToDeviceBtnClicked() {
+        TODO("Not yet implemented")
     }
 }

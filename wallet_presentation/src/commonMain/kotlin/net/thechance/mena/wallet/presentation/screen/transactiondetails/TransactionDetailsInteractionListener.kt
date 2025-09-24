@@ -4,4 +4,5 @@ interface TransactionDetailsInteractionListener {
     fun onBackBtnClicked()
     fun onShareReceiptBtnClicked()
     fun onRefresh()
+    fun onSendToDeviceBtnClicked()
 }

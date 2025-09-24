@@ -18,19 +18,24 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share
+import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.share_button
 import mena.wallet_presentation.generated.resources.share_receipt
 import mena.wallet_presentation.generated.resources.transaction_details_header
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.base.UiState.Idle.isLoading
+import net.thechance.mena.wallet.presentation.base.UiState.Idle.isSuccess
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.DetailsSection
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.Transaction
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.ShareTransactionDetailsBottomSheetContent
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -76,7 +81,23 @@ private fun TransactionDetailsScreenContent(
                 onLeadingClick = interactionListener::onBackBtnClicked,
             )
         },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) }
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        overlays = {
+            bottomSheet(isVisible = state.shareReceipt.isSuccess){
+                BottomSheet(
+                    isVisible = state.shareReceipt.isSuccess,
+                    onDismissRequest = {},
+                    sheetContent = {
+                        item {
+                            ShareTransactionDetailsBottomSheetContent(
+                                image = painterResource(Res.drawable.img_silver),
+                                onSendToDeviceBtnClicked = interactionListener::onSendToDeviceBtnClicked
+                            )
+                        }
+                    }
+                )
+            }
+        }
     ) {
         Crossfade(
             targetState = state.transaction,
@@ -84,8 +105,7 @@ private fun TransactionDetailsScreenContent(
         ) { transactionState ->
             when (transactionState) {
                 is UiState.Error -> TODO()
-                is UiState.Loading -> TODO()
-                is UiState.Idle -> TODO()
+                is UiState.Loading, UiState.Idle -> TODO()
                 is UiState.Success -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         DetailsSection(
@@ -104,7 +124,7 @@ private fun TransactionDetailsScreenContent(
                             iconSize = 20.dp,
                             contentDescription = stringResource(Res.string.share_button),
                             iconStartPadding = 8.dp,
-                            isLoading = false,
+                            isLoading = state.shareReceipt.isLoading,
                             contentColor = Theme.colorScheme.primary.primary,
                             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
                             shape = RoundedCornerShape(Theme.radius.md)
@@ -132,6 +152,7 @@ private fun TransactionDetailsScreenPreview() {
                 override fun onBackBtnClicked() {}
                 override fun onShareReceiptBtnClicked() {}
                 override fun onRefresh() {}
+                override fun onSendToDeviceBtnClicked() {}
             }
         )
     }

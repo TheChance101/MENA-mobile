@@ -30,4 +30,8 @@
     <string name="failed_icon">أيقونة الفشل</string>
     <string name="success_icon">أيقونة النجاح</string>
     <string name="share_transaction_details_error_msg">فشل في مشاركة الإيصال</string>
+    <string name="share_transaction_details_bottom_sheet_header">مشاركة تفاصيل المعاملة</string>
+    <string name="send_to_your_device">أرسل إلى جهازك</string>
+    <string name="transaction_details_screenshot">لقطة شاشة لتفاصيل المعاملة</string>
+    <string name="computer_phone_sync_icon">أيقونة مزامنة الهاتف والكمبيوتر</string>
 </resources>
