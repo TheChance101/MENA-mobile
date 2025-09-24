@@ -1,5 +1,8 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.SnackBarState
@@ -9,7 +12,8 @@ class SurahViewModel(
     surahId: Int,
     surahName: String,
     private val quranRepository: QuranRepository,
-    private val clipboardManager: ClipboardManager
+    private val clipboardManager: ClipboardManager,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<SurahScreenState, SurahScreenEffect>(
     initialState = SurahScreenState(surahId = surahId, surahName = surahName)
 ), SurahInteractionListener {
@@ -25,7 +29,9 @@ class SurahViewModel(
             onSuccess = { ayat ->
                 updateState { it.copy(ayatOfSurah = ayat) }
             },
-            onFinally = { updateState { it.copy(isLoading = false) } }
+            onFinally = { updateState { it.copy(isLoading = false) }
+            },
+            dispatcher = dispatcher
         )
     }
 
@@ -52,7 +58,8 @@ class SurahViewModel(
                     )
                 }
             },
-            onError = { showErrorSnackBar() }
+            onError = { showErrorSnackBar() },
+            dispatcher = dispatcher
         )
     }
 
