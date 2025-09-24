@@ -1,9 +1,11 @@
 package net.thechance.mena.core_chat.presentation.screen.contacts
 
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_load_the_contacts
 import mena.core_chat_presentation.generated.resources.something_went_wrong
@@ -19,12 +21,25 @@ import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 
 class ContactsViewModel(
     private val contactsRepository: ContactsRepository,
+    private val contactsScreenArgs: ContactsScreenArgs,
     effector: ChatEffector
 ) : BaseViewModel<ContactsScreenState>(ContactsScreenState(), effector),
     ContactsScreenInteractionListener {
 
     init {
+        observeSyncSuccess()
         loadContacts()
+    }
+
+    private fun observeSyncSuccess() {
+        viewModelScope.launch {
+            contactsScreenArgs.isSyncSuccess.collect { success ->
+                if (success) {
+                    onRefreshContacts()
+                    contactsScreenArgs.setIsSyncSuccessToFalse()
+                }
+            }
+        }
     }
 
     private fun loadContacts() {

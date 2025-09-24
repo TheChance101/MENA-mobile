@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,6 +18,7 @@ import mena.core_chat_presentation.generated.resources.contacts_title
 import mena.core_chat_presentation.generated.resources.ic_arrow_left
 import mena.core_chat_presentation.generated.resources.ic_resync
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreenArgs.Companion.IS_SYNC_SUCCESS
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.ContactsList
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
@@ -28,28 +27,19 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
+fun ContactsScreen() {
+
+    val navController = LocalNavController.current
+    val backStackEntry = navController.currentBackStackEntry!!
+
+    val viewModel: ContactsViewModel = koinViewModel (
+        parameters = { parametersOf(backStackEntry.savedStateHandle.getMutableStateFlow(IS_SYNC_SUCCESS,false)) }
+    )
 
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val navController = LocalNavController.current
-
-    val stateFlow = navController.currentBackStackEntry
-        ?.savedStateHandle
-        ?.getStateFlow("is_sync_success", false)
-
-    val isSyncedState = stateFlow?.collectAsState(initial = false)
-    val isSynced = isSyncedState?.value == true
-
-    LaunchedEffect(isSynced) {
-        if (isSynced) {
-            viewModel.onRefreshContacts()
-            navController.currentBackStackEntry
-                ?.savedStateHandle
-                ?.set("is_sync_success", false)
-        }
-    }
 
     ContactsContent(
         state = state,
