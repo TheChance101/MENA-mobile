@@ -2,16 +2,12 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 
 import app.cash.turbine.test
 import dev.mokkery.MockMode
-import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.util.ClipboardManager
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
