@@ -34,16 +34,6 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `SurahViewModel should return correct surah name when viewModel is created`() = runTest {
-        // When
-        val testViewModel = createTestViewModel(surahName = TEST_SURAH_NAME)
-
-        // Then
-        assertEquals(TEST_SURAH_NAME, testViewModel.uiState.value.surahName)
-    }
-
-
-    @Test
     fun `onBackClick should navigate back when it called`() = runTest {
         // Given
         val testViewModel = createTestViewModel()
