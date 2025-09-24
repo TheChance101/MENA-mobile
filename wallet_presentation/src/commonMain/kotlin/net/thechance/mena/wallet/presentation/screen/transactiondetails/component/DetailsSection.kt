@@ -1,7 +1,6 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,26 +19,46 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.date
+import mena.wallet_presentation.generated.resources.failed
+import mena.wallet_presentation.generated.resources.failed_icon
+import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.ic_failed
+import mena.wallet_presentation.generated.resources.ic_pay
 import mena.wallet_presentation.generated.resources.ic_send
+import mena.wallet_presentation.generated.resources.ic_success
 import mena.wallet_presentation.generated.resources.img_silver
+import mena.wallet_presentation.generated.resources.pay
+import mena.wallet_presentation.generated.resources.pay_button
+import mena.wallet_presentation.generated.resources.purchase
+import mena.wallet_presentation.generated.resources.receive
+import mena.wallet_presentation.generated.resources.receive_button
+import mena.wallet_presentation.generated.resources.send
+import mena.wallet_presentation.generated.resources.send_button
 import mena.wallet_presentation.generated.resources.silver_coin
 import mena.wallet_presentation.generated.resources.status
+import mena.wallet_presentation.generated.resources.success
+import mena.wallet_presentation.generated.resources.success_icon
+import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transaction_id
+import mena.wallet_presentation.generated.resources.transfer
 import mena.wallet_presentation.generated.resources.type
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionStatus
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionType
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.Transaction
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DetailsSection(
-    modifier: Modifier = Modifier
-){
-    Box(
+internal fun DetailsSection(
+    modifier: Modifier = Modifier,
+    transaction: Transaction,
+) {
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
@@ -49,60 +68,87 @@ fun DetailsSection(
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(16.dp)
-    ){
-        Column(Modifier.fillMaxWidth()) {
+    ) {
+        TextWithIcon(
+            modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally),
+            text = when (transaction.transactionType) {
+                TransactionType.PAY -> stringResource(Res.string.pay)
+                TransactionType.SEND -> stringResource(Res.string.send)
+                TransactionType.RECEIVE -> stringResource(Res.string.receive)
+            },
+            textStyle = Theme.typography.label.small,
+            textColor = Theme.colorScheme.shadeSecondary,
+            icon = when (transaction.transactionType) {
+                TransactionType.PAY -> painterResource(Res.drawable.ic_pay)
+                TransactionType.SEND -> painterResource(Res.drawable.ic_send)
+                TransactionType.RECEIVE -> painterResource(Res.drawable.ic_send)
+            },
+            iconContentDescription = when (transaction.transactionType) {
+                TransactionType.PAY -> stringResource(Res.string.pay_button)
+                TransactionType.SEND -> stringResource(Res.string.send_button)
+                TransactionType.RECEIVE -> stringResource(Res.string.receive_button)
+            },
+            iconTint = Theme.colorScheme.shadeSecondary,
+            iconSize = 16.dp,
+            gap = 4.dp,
+        )
 
-            TextWithIcon(
-                modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally),
-                text = "Send",
-                textStyle = Theme.typography.label.small,
-                textColor = Theme.colorScheme.shadeSecondary,
-                icon = painterResource(Res.drawable.ic_send),
-                iconContentDescription = "",
-                iconTint = Theme.colorScheme.shadeSecondary,
-                iconSize = 16.dp,
-                gap = 4.dp,
-            )
+        TextWithIcon(
+            modifier = Modifier.padding(vertical = 8.dp).align(Alignment.CenterHorizontally),
+            text = transaction.amount,
+            textStyle = Theme.typography.headline.medium,
+            textColor = Theme.colorScheme.shadePrimary,
+            icon = painterResource(Res.drawable.img_silver),
+            iconContentDescription = stringResource(Res.string.silver_coin),
+            iconSize = 24.dp,
+            gap = 8.dp,
+        )
 
-            TextWithIcon(
-                modifier = Modifier.padding(vertical = 8.dp).align(Alignment.CenterHorizontally),
-                text = "530,320",
-                textStyle = Theme.typography.headline.medium,
-                textColor = Theme.colorScheme.shadePrimary,
-                icon = painterResource(Res.drawable.img_silver),
-                iconContentDescription = stringResource(Res.string.silver_coin),
-                iconSize = 24.dp,
-                gap = 8.dp,
-            )
+        DetailsInfo(
+            title = stringResource(Res.string.status),
+            content = when (transaction.transactionStatus) {
+                TransactionStatus.FAILED -> stringResource(Res.string.failed)
+                TransactionStatus.SUCCESS -> stringResource(Res.string.success)
+            },
+            icon = when (transaction.transactionStatus) {
+                TransactionStatus.FAILED -> painterResource(Res.drawable.ic_failed)
+                TransactionStatus.SUCCESS -> painterResource(Res.drawable.ic_success)
+            },
+            iconContentDescription = when (transaction.transactionStatus) {
+                TransactionStatus.FAILED -> stringResource(Res.string.failed_icon)
+                TransactionStatus.SUCCESS -> stringResource(Res.string.success_icon)
+            },
+            iconTint = when (transaction.transactionStatus) {
+                TransactionStatus.FAILED -> Theme.colorScheme.error
+                TransactionStatus.SUCCESS -> Theme.colorScheme.success
+            }
+        )
 
-            DetailsInfo(
-                title = stringResource(Res.string.status),
-                content = "Failed",
-                icon = painterResource(Res.drawable.ic_failed),
-                iconContentDescription = "",
-                iconTint = Theme.colorScheme.error
-            )
+        DetailsInfo(
+            title = stringResource(Res.string.type),
+            content = when (transaction.transactionType) {
+                TransactionType.SEND, TransactionType.RECEIVE -> stringResource(Res.string.transfer)
+                TransactionType.PAY -> stringResource(Res.string.purchase)
+            },
+        )
 
-            DetailsInfo(
-                title = stringResource(Res.string.type),
-                content = "Transfer",
-            )
+        DetailsInfo(
+            title = when (transaction.transactionType) {
+                TransactionType.SEND, TransactionType.PAY -> stringResource(Res.string.to)
+                TransactionType.RECEIVE -> stringResource(Res.string.from)
+            },
+            content = transaction.otherParty,
+        )
 
-            DetailsInfo(
-                title = "To",
-                content = "Ahmed Ali",
-            )
+        DetailsInfo(
+            title = stringResource(Res.string.date),
+            content = transaction.date,
+        )
 
-            DetailsInfo(
-                title = stringResource(Res.string.date),
-                content = "23 Aug 2025, 2:15 PM",
-            )
-
-            DetailsInfo(
-                title = stringResource(Res.string.transaction_id),
-                content = "TX-239481",
-            )
-        }
+        DetailsInfo(
+            title = stringResource(Res.string.transaction_id),
+            content = transaction.id,
+        )
     }
 }
 
@@ -143,13 +189,13 @@ private fun DetailsInfo(
     icon: Painter? = null,
     iconContentDescription: String = "",
     iconTint: Color = Theme.colorScheme.success
-){
+) {
     HorizontalDivider(
         modifier = Modifier.padding(top = 12.dp),
         thickness = 1.dp,
         color = Theme.colorScheme.stroke
     )
-    Row (
+    Row(
         modifier = Modifier.padding(top = 12.dp).fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -177,8 +223,10 @@ private fun DetailsInfo(
 
 @Preview
 @Composable
-private fun DetailsSectionPreview(){
+private fun DetailsSectionPreview() {
     MenaTheme {
-        DetailsSection()
+        DetailsSection(
+            transaction = Transaction()
+        )
     }
 }

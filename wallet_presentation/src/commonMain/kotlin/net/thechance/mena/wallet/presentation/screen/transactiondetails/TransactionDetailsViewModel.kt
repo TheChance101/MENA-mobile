@@ -10,7 +10,7 @@ class TransactionDetailsViewModel() :
     ) , TransactionDetailsInteractionListener
 {
     override fun onBackBtnClicked() {
-        TODO("Not yet implemented")
+        sendEffect(TransactionDetailsEffect.NavigateBack)
     }
 
     override fun onShareReceiptBtnClicked() {

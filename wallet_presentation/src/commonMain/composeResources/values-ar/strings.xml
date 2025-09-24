@@ -12,6 +12,7 @@
     <string name="share_button">زر المشاركة</string>
     <string name="send">إرسال</string>
     <string name="to">إلى</string>
+    <string name="from">من</string>
     <string name="receive">إستلام</string>
     <string name="pay">دفع</string>
     <string name="send_button">زر الإرسال</string>
@@ -24,4 +25,8 @@
     <string name="transaction_id">id المعاملة</string>
     <string name="purchase">شراء</string>
     <string name="transfer">تحويل</string>
+    <string name="failed">فاشلة</string>
+    <string name="success">ناجحة</string>
+    <string name="failed_icon">أيقونة الفشل</string>
+    <string name="success_icon">أيقونة النجاح</string>
 </resources>

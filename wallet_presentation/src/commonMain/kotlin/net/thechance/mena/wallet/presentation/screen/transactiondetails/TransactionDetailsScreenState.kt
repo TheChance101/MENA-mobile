@@ -1,11 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
+import net.thechance.mena.wallet.presentation.base.SnackBarState
+import net.thechance.mena.wallet.presentation.base.UiState
+
 data class TransactionDetailsScreenState(
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val transaction: Transaction = Transaction(),
-    val isShareLoading: Boolean = false,
-    val isShareError: String? = null,
+    val transaction: UiState<Transaction> = UiState.Idle,
+    val share: UiState<Unit> = UiState.Idle,
+    val snackBar: SnackBarState = SnackBarState()
 ){
     data class Transaction(
         val id: String = "",
@@ -13,11 +14,17 @@ data class TransactionDetailsScreenState(
         val date: String = "",
         val otherParty: String = "",
         val transactionType: TransactionType = TransactionType.PAY,
+        val transactionStatus: TransactionStatus = TransactionStatus.FAILED
     )
 
     enum class TransactionType{
         PAY,
         SEND,
         RECEIVE
+    }
+
+    enum class TransactionStatus{
+        FAILED,
+        SUCCESS
     }
 }
