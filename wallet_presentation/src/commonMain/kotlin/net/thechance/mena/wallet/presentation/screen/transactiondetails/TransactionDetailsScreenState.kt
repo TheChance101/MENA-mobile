@@ -12,6 +12,7 @@ data class TransactionDetailsScreenState(
         val id: String = "",
         val amount: String = "",
         val date: String = "",
+        val userName: String = "",
         val otherParty: String = "",
         val transactionType: TransactionType = TransactionType.PAY,
         val transactionStatus: TransactionStatus = TransactionStatus.FAILED

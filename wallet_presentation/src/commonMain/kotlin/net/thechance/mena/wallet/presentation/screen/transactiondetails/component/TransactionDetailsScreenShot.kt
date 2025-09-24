@@ -45,10 +45,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun DetailsSection(
+internal fun TransactionDetailsScreenShot(
     modifier: Modifier = Modifier,
     transaction: Transaction,
-) {
+){
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -93,6 +93,14 @@ internal fun DetailsSection(
             iconContentDescription = stringResource(Res.string.silver_coin),
             iconSize = 24.dp,
             gap = 8.dp,
+        )
+
+        DetailsInfo(
+            title = when (transaction.transactionType) {
+                TransactionType.SEND, TransactionType.PAY -> stringResource(Res.string.from)
+                TransactionType.RECEIVE -> stringResource(Res.string.to)
+            },
+            content = transaction.userName,
         )
 
         DetailsInfo(
@@ -145,9 +153,9 @@ internal fun DetailsSection(
 
 @Preview
 @Composable
-private fun DetailsSectionPreview() {
+private fun TransactionDetailsScreenShotPreview() {
     MenaTheme {
-        DetailsSection(
+        TransactionDetailsScreenShot(
             transaction = Transaction()
         )
     }

@@ -1,5 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,7 +60,6 @@ internal fun ShareTransactionDetailsBottomSheetContent(
             painter = image,
             contentDescription = stringResource(Res.string.transaction_details_screenshot)
         )
-
         Button(
             modifier = Modifier.align(Alignment.Start),
             onClick = onSendToDeviceBtnClicked,
@@ -79,7 +80,13 @@ internal fun ShareTransactionDetailsBottomSheetContent(
                 )
             }
         )
-
+        Box(
+            modifier = Modifier
+                .padding(vertical = 12.dp)
+                .height(0.5.dp)
+                .fillMaxWidth()
+                .background(color = Theme.colorScheme.shadeTertiary)
+        )
     }
 }
 
