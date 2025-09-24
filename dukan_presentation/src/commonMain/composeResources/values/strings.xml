@@ -44,4 +44,6 @@
     <string name="dukan_request_pending">Creating your dukan %s request is pending now</string>
 
     <string name="dukan_waiting_approval">Waiting until it be approved and add your shelves directly!</string>
+    <string name="delete">Delete</string>
+    <string name="dismiss">Dismiss</string>
 </resources>
