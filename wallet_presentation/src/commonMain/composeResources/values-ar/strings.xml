@@ -29,4 +29,5 @@
     <string name="success">ناجحة</string>
     <string name="failed_icon">أيقونة الفشل</string>
     <string name="success_icon">أيقونة النجاح</string>
+    <string name="share_transaction_details_error_msg">فشل في مشاركة الإيصال</string>
 </resources>

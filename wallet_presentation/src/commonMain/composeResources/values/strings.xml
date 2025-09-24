@@ -29,4 +29,5 @@
     <string name="success">Success</string>
     <string name="failed_icon">failed icon</string>
     <string name="success_icon">Success icon</string>
+    <string name="share_transaction_details_error_msg">Failed to share receipt</string>
 </resources>

@@ -5,7 +5,7 @@ import net.thechance.mena.wallet.presentation.base.UiState
 
 data class TransactionDetailsScreenState(
     val transaction: UiState<Transaction> = UiState.Idle,
-    val share: UiState<Unit> = UiState.Idle,
+    val isShareReceiptLoading: Boolean = false,
     val snackBar: SnackBarState = SnackBarState()
 ){
     data class Transaction(
