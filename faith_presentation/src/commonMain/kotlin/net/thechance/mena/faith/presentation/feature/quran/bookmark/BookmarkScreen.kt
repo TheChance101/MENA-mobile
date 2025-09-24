@@ -36,6 +36,7 @@ import net.thechance.mena.faith.presentation.component.FaithScaffold
 import net.thechance.mena.faith.presentation.component.FaithSnackBar
 import net.thechance.mena.faith.presentation.component.LoadingIndicator
 import net.thechance.mena.faith.presentation.component.SwappableCard
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.AyaBookmarkCard
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
 import org.jetbrains.compose.resources.painterResource
@@ -72,61 +73,63 @@ private fun Content(
     listener: BookmarkInteractionListener,
     snackBarState: SnackBarState
 ) {
-
-    FaithScaffold(
-        modifier = Modifier.statusBarsPadding().systemBarsPadding(),
-        topBar = {
-            AppBar(
-                title = stringResource(Res.string.bookmarks),
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16, vertical = Theme.spacing._8
-                ),
-                leadingContent = { BackIcon() },
-                onLeadingClick = listener::onBackClick,
-            )
-        },
-        snackBar = {
-            FaithSnackBar(
-                message = snackBarState.message,
-                isVisible = snackBarState.isVisible,
-                status = snackBarState.status
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Theme.colorScheme.background.surface)
-                .padding(horizontal = Theme.spacing._16)
-        ) {
-            AnimatedVisibility(
-                visible = uiState.isLoading,
-                enter = fadeIn(tween()),
-                exit = fadeOut(tween())
-            ) {
-                LoadingIndicator()
-            }
-
-            AnimatedVisibility(
-                visible = uiState.bookmarks.isEmpty() && uiState.isLoading.not(),
-                enter = fadeIn(tween()),
-                exit = fadeOut(tween())
-            ) {
-                EmptyBookmarkState()
-            }
-
-            AnimatedVisibility(
-                visible = uiState.bookmarks.isNotEmpty(),
-                enter = fadeIn(tween()),
-                exit = fadeOut(tween())
-            ) {
-                BookmarkItems(
-                    uiState = uiState,
-                    onRemoveBookmarkClick = listener::onDeleteBookmarkClick,
+    QuranTheme {
+        FaithScaffold(
+            modifier = Modifier.statusBarsPadding().systemBarsPadding(),
+            topBar = {
+                AppBar(
+                    title = stringResource(Res.string.bookmarks),
+                    contentPadding = PaddingValues(
+                        horizontal = Theme.spacing._16, vertical = Theme.spacing._8
+                    ),
+                    leadingContent = { BackIcon() },
+                    onLeadingClick = listener::onBackClick,
                 )
+            },
+            snackBar = {
+                FaithSnackBar(
+                    message = snackBarState.message,
+                    isVisible = snackBarState.isVisible,
+                    status = snackBarState.status
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Theme.colorScheme.background.surface)
+                    .padding(horizontal = Theme.spacing._16)
+            ) {
+                AnimatedVisibility(
+                    visible = uiState.isLoading,
+                    enter = fadeIn(tween()),
+                    exit = fadeOut(tween())
+                ) {
+                    LoadingIndicator()
+                }
+
+                AnimatedVisibility(
+                    visible = uiState.bookmarks.isEmpty() && uiState.isLoading.not(),
+                    enter = fadeIn(tween()),
+                    exit = fadeOut(tween())
+                ) {
+                    EmptyBookmarkState()
+                }
+
+                AnimatedVisibility(
+                    visible = uiState.bookmarks.isNotEmpty(),
+                    enter = fadeIn(tween()),
+                    exit = fadeOut(tween())
+                ) {
+                    BookmarkItems(
+                        uiState = uiState,
+                        onRemoveBookmarkClick = listener::onDeleteBookmarkClick,
+                    )
+                }
             }
         }
     }
+
 }
 
 @Composable
