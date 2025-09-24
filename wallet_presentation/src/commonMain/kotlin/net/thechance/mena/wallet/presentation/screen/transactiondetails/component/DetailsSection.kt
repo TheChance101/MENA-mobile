@@ -17,6 +17,7 @@ import mena.wallet_presentation.generated.resources.failed_icon
 import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.ic_failed
 import mena.wallet_presentation.generated.resources.ic_pay
+import mena.wallet_presentation.generated.resources.ic_receive
 import mena.wallet_presentation.generated.resources.ic_send
 import mena.wallet_presentation.generated.resources.ic_success
 import mena.wallet_presentation.generated.resources.img_silver
@@ -72,7 +73,7 @@ internal fun DetailsSection(
             icon = when (transaction.transactionType) {
                 TransactionType.PAY -> painterResource(Res.drawable.ic_pay)
                 TransactionType.SEND -> painterResource(Res.drawable.ic_send)
-                TransactionType.RECEIVE -> painterResource(Res.drawable.ic_send)
+                TransactionType.RECEIVE -> painterResource(Res.drawable.ic_receive)
             },
             iconContentDescription = when (transaction.transactionType) {
                 TransactionType.PAY -> stringResource(Res.string.pay_button)
