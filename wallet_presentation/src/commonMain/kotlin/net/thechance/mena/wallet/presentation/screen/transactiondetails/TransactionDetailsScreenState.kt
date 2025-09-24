@@ -7,6 +7,7 @@ data class TransactionDetailsScreenState(
     val transaction: UiState<Transaction> = UiState.Idle,
     val shareReceipt: UiState<Unit> = UiState.Idle,
     val snackBar: SnackBarState = SnackBarState(),
+    val isBottomSheetVisible: Boolean = false,
 ){
     data class Transaction(
         val id: String = "",

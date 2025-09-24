@@ -81,7 +81,10 @@ internal fun DetailsSection(
                 TransactionType.RECEIVE -> stringResource(Res.string.receive_button)
             },
             iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = 16.dp,
+            iconSize = when (transaction.transactionType) {
+                TransactionType.PAY -> 16.dp
+                TransactionType.SEND, TransactionType.RECEIVE -> 10.dp
+            },
             gap = 4.dp,
         )
 

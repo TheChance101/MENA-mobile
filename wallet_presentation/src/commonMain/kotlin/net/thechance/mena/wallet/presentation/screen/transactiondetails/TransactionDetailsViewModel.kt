@@ -15,25 +15,24 @@ import org.koin.android.annotation.KoinViewModel
 class TransactionDetailsViewModel() :
     BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
         TransactionDetailsScreenState()
-    ) , TransactionDetailsInteractionListener
-{
+    ), TransactionDetailsInteractionListener {
     init {
         getTransactionDetails()
     }
 
-    private fun getTransactionDetails(){
+    private fun getTransactionDetails() {
         TODO("Not yet implemented")
     }
 
-    private fun onGetTransactionDetailsSuccess(){
+    private fun onGetTransactionDetailsSuccess() {
         updateState { it.copy(transaction = UiState.Success(Transaction())) }
     }
 
-    private fun onGetTransactionDetailsError(throwable: Throwable){
+    private fun onGetTransactionDetailsError(throwable: Throwable) {
         updateState { it.copy(transaction = UiState.Error(throwable)) }
     }
 
-    private fun onGetTransactionDetailsStart(){
+    private fun onGetTransactionDetailsStart() {
         updateState { it.copy(transaction = UiState.Loading) }
     }
 
@@ -45,11 +44,16 @@ class TransactionDetailsViewModel() :
         TODO("Not yet implemented")
     }
 
-    private fun onShareReceiptSuccess(){
-        updateState { it.copy(shareReceipt = UiState.Success(Unit)) }
+    private fun onShareReceiptSuccess() {
+        updateState {
+            it.copy(
+                shareReceipt = UiState.Success(Unit),
+                isBottomSheetVisible = true
+            )
+        }
     }
 
-    private suspend fun onShareReceiptError(throwable: Throwable){
+    private suspend fun onShareReceiptError(throwable: Throwable) {
         updateState { it.copy(shareReceipt = UiState.Error(throwable)) }
         showSnackBar(
             titleRes = Res.string.error,
@@ -58,7 +62,7 @@ class TransactionDetailsViewModel() :
         )
     }
 
-    private fun onShareReceiptStart(){
+    private fun onShareReceiptStart() {
         updateState { it.copy(shareReceipt = UiState.Loading) }
     }
 
@@ -98,5 +102,9 @@ class TransactionDetailsViewModel() :
 
     override fun onSendToDeviceBtnClicked() {
         TODO("Not yet implemented")
+    }
+
+    override fun onBottomSheetDismissRequest() {
+        updateState { it.copy(isBottomSheetVisible = false) }
     }
 }

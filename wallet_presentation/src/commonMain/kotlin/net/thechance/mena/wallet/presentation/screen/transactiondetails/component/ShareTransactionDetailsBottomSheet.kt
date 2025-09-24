@@ -24,18 +24,42 @@ import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.send_to_your_device
 import mena.wallet_presentation.generated.resources.transaction_details_header
 import mena.wallet_presentation.generated.resources.transaction_details_screenshot
+import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.image.Image
+import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+internal fun ScaffoldScope.shareTransactionDetailsBottomSheet(
+    isVisible: Boolean,
+    onDismissRequest: () -> Unit,
+    onSendToDeviceBtnClicked: () -> Unit,
+     image: DrawableResource,
+){
+    bottomSheet(isVisible = isVisible){
+        BottomSheet(
+            isVisible = isVisible,
+            onDismissRequest = onDismissRequest,
+            sheetContent = {
+                item {
+                    ShareTransactionDetailsBottomSheetContent(
+                        image = painterResource(image),
+                        onSendToDeviceBtnClicked = onSendToDeviceBtnClicked
+                    )
+                }
+            }
+        )
+    }
+}
 @Composable
-internal fun ShareTransactionDetailsBottomSheetContent(
+private fun ShareTransactionDetailsBottomSheetContent(
     image: Painter,
     onSendToDeviceBtnClicked: () -> Unit,
     modifier: Modifier = Modifier,
