@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.mockkery)
 }
 
 kotlin {
@@ -17,7 +18,6 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -32,6 +32,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.coil.network.ktor3)
         }
         commonMain.dependencies {
             implementation(projects.trendsDomain)
@@ -40,7 +41,6 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -49,9 +49,20 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.annotations)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.bundles.coil)
+            implementation(libs.androidx.paging.runtime)
+            implementation(libs.androidx.paging.compose)
+            implementation(libs.resources)
         }
         iosMain.dependencies {
 
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.assertk)
+            implementation(libs.turbine)
+            implementation(libs.koin.test)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
