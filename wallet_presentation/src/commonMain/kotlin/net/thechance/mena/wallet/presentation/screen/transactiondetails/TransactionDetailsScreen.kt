@@ -32,7 +32,7 @@ import net.thechance.mena.wallet.presentation.base.UiState.Idle.isLoading
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.DetailsSection
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.Transaction
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.shareTransactionDetailsBottomSheet
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -90,7 +90,7 @@ private fun TransactionDetailsScreenContent(
         }
     ) {
         Crossfade(
-            targetState = state.transaction,
+            targetState = state.transactionDetailsUiState,
             modifier = Modifier.fillMaxSize()
         ) { transactionState ->
             when (transactionState) {
@@ -100,7 +100,7 @@ private fun TransactionDetailsScreenContent(
                     Box(modifier = Modifier.fillMaxSize()) {
                         DetailsSection(
                             modifier = Modifier.align(Alignment.Center),
-                            transaction = transactionState.data
+                            transactionDetailsUiState = transactionState.data
                         )
                         OutlinedButton(
                             text = stringResource(Res.string.share_receipt),
@@ -137,7 +137,7 @@ private fun onTransactionDetailsEffect(effect: TransactionDetailsEffect) {
 private fun TransactionDetailsScreenPreview() {
     MenaTheme {
         TransactionDetailsScreenContent(
-            state = TransactionDetailsScreenState(transaction = UiState.Success(Transaction())),
+            state = TransactionDetailsScreenState(transactionDetailsUiState = UiState.Success(TransactionDetailsUiState())),
             interactionListener = object : TransactionDetailsInteractionListener {
                 override fun onBackBtnClicked() {}
                 override fun onShareReceiptBtnClicked() {}

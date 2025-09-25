@@ -7,7 +7,7 @@ import mena.wallet_presentation.generated.resources.share_transaction_details_er
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.Transaction
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 
@@ -25,15 +25,15 @@ class TransactionDetailsViewModel() :
     }
 
     private fun onGetTransactionDetailsSuccess() {
-        updateState { it.copy(transaction = UiState.Success(Transaction())) }
+        updateState { it.copy(transactionDetailsUiState = UiState.Success(TransactionDetailsUiState())) }
     }
 
     private fun onGetTransactionDetailsError(throwable: Throwable) {
-        updateState { it.copy(transaction = UiState.Error(throwable)) }
+        updateState { it.copy(transactionDetailsUiState = UiState.Error(throwable)) }
     }
 
     private fun onGetTransactionDetailsStart() {
-        updateState { it.copy(transaction = UiState.Loading) }
+        updateState { it.copy(transactionDetailsUiState = UiState.Loading) }
     }
 
     override fun onBackBtnClicked() {

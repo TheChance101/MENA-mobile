@@ -38,7 +38,7 @@ import mena.wallet_presentation.generated.resources.transfer
 import mena.wallet_presentation.generated.resources.type
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.Transaction
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionStatus
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionType
 import org.jetbrains.compose.resources.painterResource
@@ -48,7 +48,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun DetailsSection(
     modifier: Modifier = Modifier,
-    transaction: Transaction,
+    transactionDetailsUiState: TransactionDetailsUiState,
 ) {
     Column(
         modifier = modifier
@@ -63,25 +63,25 @@ internal fun DetailsSection(
     ) {
         TextWithIcon(
             modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally),
-            text = when (transaction.transactionType) {
+            text = when (transactionDetailsUiState.transactionType) {
                 TransactionType.PAY -> stringResource(Res.string.pay)
                 TransactionType.SEND -> stringResource(Res.string.send)
                 TransactionType.RECEIVE -> stringResource(Res.string.receive)
             },
             textStyle = Theme.typography.label.small,
             textColor = Theme.colorScheme.shadeSecondary,
-            icon = when (transaction.transactionType) {
+            icon = when (transactionDetailsUiState.transactionType) {
                 TransactionType.PAY -> painterResource(Res.drawable.ic_pay)
                 TransactionType.SEND -> painterResource(Res.drawable.ic_send)
                 TransactionType.RECEIVE -> painterResource(Res.drawable.ic_receive)
             },
-            iconContentDescription = when (transaction.transactionType) {
+            iconContentDescription = when (transactionDetailsUiState.transactionType) {
                 TransactionType.PAY -> stringResource(Res.string.pay_button)
                 TransactionType.SEND -> stringResource(Res.string.send_button)
                 TransactionType.RECEIVE -> stringResource(Res.string.receive_button)
             },
             iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = when (transaction.transactionType) {
+            iconSize = when (transactionDetailsUiState.transactionType) {
                 TransactionType.PAY -> 16.dp
                 TransactionType.SEND, TransactionType.RECEIVE -> 10.dp
             },
@@ -90,7 +90,7 @@ internal fun DetailsSection(
 
         TextWithIcon(
             modifier = Modifier.padding(vertical = 8.dp).align(Alignment.CenterHorizontally),
-            text = transaction.amount,
+            text = transactionDetailsUiState.amount,
             textStyle = Theme.typography.headline.medium,
             textColor = Theme.colorScheme.shadePrimary,
             icon = painterResource(Res.drawable.img_silver),
@@ -101,19 +101,19 @@ internal fun DetailsSection(
 
         DetailsInfo(
             title = stringResource(Res.string.status),
-            content = when (transaction.transactionStatus) {
+            content = when (transactionDetailsUiState.transactionStatus) {
                 TransactionStatus.FAILED -> stringResource(Res.string.failed)
                 TransactionStatus.SUCCESS -> stringResource(Res.string.success)
             },
-            icon = when (transaction.transactionStatus) {
+            icon = when (transactionDetailsUiState.transactionStatus) {
                 TransactionStatus.FAILED -> painterResource(Res.drawable.ic_failed)
                 TransactionStatus.SUCCESS -> painterResource(Res.drawable.ic_success)
             },
-            iconContentDescription = when (transaction.transactionStatus) {
+            iconContentDescription = when (transactionDetailsUiState.transactionStatus) {
                 TransactionStatus.FAILED -> stringResource(Res.string.failed_icon)
                 TransactionStatus.SUCCESS -> stringResource(Res.string.success_icon)
             },
-            iconTint = when (transaction.transactionStatus) {
+            iconTint = when (transactionDetailsUiState.transactionStatus) {
                 TransactionStatus.FAILED -> Theme.colorScheme.error
                 TransactionStatus.SUCCESS -> Theme.colorScheme.success
             }
@@ -121,28 +121,28 @@ internal fun DetailsSection(
 
         DetailsInfo(
             title = stringResource(Res.string.type),
-            content = when (transaction.transactionType) {
+            content = when (transactionDetailsUiState.transactionType) {
                 TransactionType.SEND, TransactionType.RECEIVE -> stringResource(Res.string.transfer)
                 TransactionType.PAY -> stringResource(Res.string.purchase)
             },
         )
 
         DetailsInfo(
-            title = when (transaction.transactionType) {
+            title = when (transactionDetailsUiState.transactionType) {
                 TransactionType.SEND, TransactionType.PAY -> stringResource(Res.string.to)
                 TransactionType.RECEIVE -> stringResource(Res.string.from)
             },
-            content = transaction.otherParty,
+            content = transactionDetailsUiState.otherParty,
         )
 
         DetailsInfo(
             title = stringResource(Res.string.date),
-            content = transaction.date,
+            content = transactionDetailsUiState.date,
         )
 
         DetailsInfo(
             title = stringResource(Res.string.transaction_id),
-            content = transaction.id,
+            content = transactionDetailsUiState.id,
         )
     }
 }
@@ -152,7 +152,7 @@ internal fun DetailsSection(
 private fun DetailsSectionPreview() {
     MenaTheme {
         DetailsSection(
-            transaction = Transaction()
+            transactionDetailsUiState = TransactionDetailsUiState()
         )
     }
 }
