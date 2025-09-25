@@ -12,11 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute
-import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
-import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
-import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
@@ -28,19 +24,6 @@ fun MainScreen(
     viewModel: MainViewModel = koinViewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val navController = LocalNavController.current
-    ObserveAsEffect(viewModel.effect) { effect ->
-        when (effect) {
-            MainEffect.NavigateToAddDukanScreen -> navController.navigate(DukanRoute.CreateDukanScreenRoute)
-            MainEffect.NavigateToPendingDukanScreen -> navController.navigate(
-                DukanRoute.PendingScreenRoute(
-                    state.value.dukanState.name
-                )
-            )
-        }
-    }
-
-
     MainContent(
         listener = viewModel,
         state = state.value
