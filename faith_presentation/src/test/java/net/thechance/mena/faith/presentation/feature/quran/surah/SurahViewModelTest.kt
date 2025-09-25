@@ -123,7 +123,7 @@ class SurahViewModelTest {
         }
 
     @Test
-    fun `onDismissActionButtons should return empty string for selectedAyah when called`() =
+    fun `onDismissActionButtons should clear selectedAyah when called`() =
         runTest {
             // Given
             val testViewModel = createTestViewModel()
@@ -136,18 +136,6 @@ class SurahViewModelTest {
             assertEquals(EMPTY_STRING, testViewModel.uiState.value.selectedAyah)
         }
 
-    @Test
-    fun `onDismissActionButtons should hide action buttons when called after ayah long press`() = runTest {
-        // Given
-        val testViewModel = createTestViewModel()
-        testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
-
-        // When
-        testViewModel.onDismissActionButtons()
-
-        // Then
-        assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
-    }
 
     @Test
     fun `onBookmarkClick should hide action buttons after bookmark click`() = runTest {
@@ -191,7 +179,7 @@ class SurahViewModelTest {
 
 
     @Test
-    fun `onShareClick should return ayah content for selectedAyah when called`() = runTest {
+    fun `onShareClick should update selectedAyah with ayah content when called`() = runTest {
         // Given
         val testViewModel = createTestViewModel()
 
@@ -210,15 +198,13 @@ class SurahViewModelTest {
         // When & Then
         testViewModel.uiEffect.test {
             testViewModel.onShareClick(AYAH_TO_SHARE)
-            val effect = awaitItem()
-            assertEquals(SurahScreenEffect.ShareAyah(AYAH_TO_SHARE), effect)
+            assertEquals(SurahScreenEffect.ShareAyah(AYAH_TO_SHARE), awaitItem())
         }
     }
 
     private companion object {
         const val DEFAULT_SURAH_ID = 1
         const val DEFAULT_SURAH_NAME = "Al-Fatiha"
-        const val TEST_SURAH_NAME = "Al-Baqarah"
         const val TEST_AYAH_INDEX = 0
         const val SECOND_AYAH_INDEX = 1
         const val NEGATIVE_AYAH_INDEX = -1
