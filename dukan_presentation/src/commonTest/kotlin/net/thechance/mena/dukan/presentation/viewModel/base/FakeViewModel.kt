@@ -12,7 +12,7 @@ class FakeViewModel(
     initialState: String = "initial",
     navigator: DukanNavigator = mock<DukanNavigator>(),
     dispatcher: CoroutineDispatcher = StandardTestDispatcher()
-) : BaseViewModel<String>(initialState, dispatcher,navigator) {
+) : BaseViewModel<String>(initialState, navigator,dispatcher) {
 
     fun setState(newValue: String) {
         updateState { newValue }
