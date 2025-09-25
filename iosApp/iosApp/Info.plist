@@ -8,10 +8,5 @@
     <string>$(BASE_URL)</string>
 	<key>NSContactsUsageDescription</key>
 	<string>We need access to your contacts.</string>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
 </dict>
 </plist>
