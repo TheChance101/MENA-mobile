@@ -32,6 +32,7 @@ import net.thechance.mena.wallet.presentation.base.UiState.Idle.isLoading
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionStatus
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.DetailsSection
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.TransactionDetailsScreenShot
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.shareTransactionDetailsBottomSheet
@@ -108,30 +109,32 @@ private fun TransactionDetailsScreenContent(
                             modifier = Modifier.padding(bottom = 88.dp).align(Alignment.Center),
                             transactionDetailsUiState = transactionState.data
                         )
-                        OutlinedButton(
-                            text = stringResource(Res.string.share_receipt),
-                            onClick = interactionListener::onShareReceiptBtnClicked,
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(horizontal = 16.dp, vertical = 24.dp)
-                                .heightIn(min = 48.dp)
-                                .fillMaxWidth(),
-                            trailingIcon = painterResource(Res.drawable.ic_share),
-                            iconSize = 20.dp,
-                            contentDescription = stringResource(Res.string.share_button),
-                            iconStartPadding = 8.dp,
-                            isLoading = state.shareReceipt.isLoading,
-                            contentColor = Theme.colorScheme.primary.primary,
-                            contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
-                            shape = RoundedCornerShape(Theme.radius.md)
-                        )
-                        TransactionDetailsScreenShot(
-                            captureController = state.captureController,
-                            onScreenShotCapture = { imageBitmap ->
-                                interactionListener.onScreenShotCaptured(imageBitmap)
-                            },
-                            transactionDetailsUiState = transactionState.data,
-                        )
+                        if (transactionState.data.transactionStatus == TransactionStatus.SUCCESS){
+                            OutlinedButton(
+                                text = stringResource(Res.string.share_receipt),
+                                onClick = interactionListener::onShareReceiptBtnClicked,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                                    .heightIn(min = 48.dp)
+                                    .fillMaxWidth(),
+                                trailingIcon = painterResource(Res.drawable.ic_share),
+                                iconSize = 20.dp,
+                                contentDescription = stringResource(Res.string.share_button),
+                                iconStartPadding = 8.dp,
+                                isLoading = state.shareReceipt.isLoading,
+                                contentColor = Theme.colorScheme.primary.primary,
+                                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+                                shape = RoundedCornerShape(Theme.radius.md)
+                            )
+                            TransactionDetailsScreenShot(
+                                captureController = state.captureController,
+                                onScreenShotCapture = { imageBitmap ->
+                                    interactionListener.onScreenShotCaptured(imageBitmap)
+                                },
+                                transactionDetailsUiState = transactionState.data,
+                            )
+                        }
                     }
                 }
             }
