@@ -5,15 +5,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanNavigator
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 
 class MainViewModel(
     private val dukanRepository: DukanRepository,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<MainScreenUiState, MainEffect>(
+    dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    navigator: DukanNavigator
+) : BaseViewModel<MainScreenUiState>(
     initialState = MainScreenUiState(),
-    defaultDispatcher = dispatcher
+    defaultDispatcher = dispatcher,
+    dukanNavigator = navigator
 ), MainInteractionListener {
 
     init {
@@ -33,8 +37,8 @@ class MainViewModel(
     }
 
     private fun onGetDukanStateSuccess(dukanState: MainScreenUiState.DukanState?) {
-        dukanState?.let {
-            updateState { copy(dukanState = dukanState) }
+        dukanState?.let { state ->
+            updateState { copy(dukanState = state) }
         }
     }
 
@@ -53,8 +57,8 @@ class MainViewModel(
 
     override fun onDukanButtonClicked() {
         when (state.value.dukanState.status) {
-            DukanStatusUi.None -> emitEffect(MainEffect.NavigateToAddDukanScreen)
-            DukanStatusUi.Pending -> emitEffect(MainEffect.NavigateToPendingDukanScreen)
+            DukanStatusUi.None -> navigate(DukanRoute.CreateDukanScreenRoute)
+            DukanStatusUi.Pending -> navigate(DukanRoute.PendingScreenRoute(state.value.dukanState.name))
         }
     }
 }

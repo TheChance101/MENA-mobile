@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
+import androidx.navigation.navOptions
 import com.attafitamim.krop.core.images.ImageSrc
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +11,8 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanNavigator
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
@@ -18,10 +21,12 @@ import org.maplibre.compose.camera.CameraPosition
 class CreateDukanViewModel(
     private val dukanRepository: DukanRepository,
     private val locationRepository: LocationRepository,
-    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    navigator: DukanNavigator,
+) : BaseViewModel<CreateDukanUiState>(
     initialState = CreateDukanUiState(),
-    defaultDispatcher = defaultDispatcher
+    defaultDispatcher = defaultDispatcher,
+    dukanNavigator = navigator
 ), CreateDukanInteractionListener {
 
     init {
@@ -45,7 +50,7 @@ class CreateDukanViewModel(
             return
         }
         if (current == CreateDukanStep.BASIC_INFORMATION) {
-            emitEffect(CreateDukanEffect.NavigateBack)
+            navigateUp()
         } else {
             updateState {
                 copy(currentStep = previousStep(current))
@@ -197,7 +202,13 @@ class CreateDukanViewModel(
     }
 
     private fun onCreateClickedSuccess(unit: Unit) {
-        emitEffect(CreateDukanEffect.NavigateToPending(state.value.name))
+        val navOptions = navOptions {
+            popUpTo(DukanRoute.MainScreenRoute)
+        }
+        navigate(
+            route = DukanRoute.PendingScreenRoute(state.value.name),
+            navOptions = navOptions
+        )
     }
 
     private fun handleBasicInformationNext() {

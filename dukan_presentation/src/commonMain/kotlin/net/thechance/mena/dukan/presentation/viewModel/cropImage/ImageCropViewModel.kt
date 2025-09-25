@@ -2,20 +2,30 @@ package net.thechance.mena.dukan.presentation.viewModel.cropImage
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.lifecycle.viewModelScope
 import com.attafitamim.krop.core.crop.CropError
 import com.attafitamim.krop.core.crop.CropResult
 import com.attafitamim.krop.core.crop.CropState
 import com.attafitamim.krop.core.crop.crop
 import com.attafitamim.krop.core.images.ImageSrc
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import net.thechance.mena.dukan.presentation.navigation.DukanNavigator
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropUiState.Companion.MAX_ZOOM
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropUiState.Companion.MIN_ZOOM
 
-class ImageCropViewModel() : BaseViewModel<
-        ImageCropUiState, ImageCropEffects>(
-    initialState = ImageCropUiState()
+class ImageCropViewModel(
+    navigator: DukanNavigator,
+) : BaseViewModel<ImageCropUiState>(
+    initialState = ImageCropUiState(),
+    dukanNavigator = navigator
 ), ImageCropInteractionListener {
 
+    private val _effect = MutableSharedFlow<ImageCropEffects>()
+    val effect: SharedFlow<ImageCropEffects> = _effect.asSharedFlow()
 
     fun onSelectImage(imageSrc: ImageSrc?) {
         tryToExecute(
@@ -56,7 +66,11 @@ class ImageCropViewModel() : BaseViewModel<
     }
 
     private fun onCropImageSuccess(selectedImage: ImageBitmap) {
-        emitEffect(ImageCropEffects.NavigateBack(selectedImage))
+        viewModelScope.launch(
+            context = defaultDispatcher,
+        ) {
+            _effect.emit(ImageCropEffects.NavigateBack(selectedImage))
+        }
     }
 
 
