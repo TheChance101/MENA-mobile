@@ -22,7 +22,7 @@ import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 @Single(binds = [ReelsRepository::class])
-class ReelsRepositoryImpl(
+internal class ReelsRepositoryImpl(
     @Provided private val httpClient: HttpClient
 ) : ReelsRepository {
 
