@@ -63,6 +63,8 @@ kotlin {
             implementation(libs.assertk)
             implementation(libs.turbine)
             implementation(libs.koin.test)
+            implementation(libs.kotlinx.datetime)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
