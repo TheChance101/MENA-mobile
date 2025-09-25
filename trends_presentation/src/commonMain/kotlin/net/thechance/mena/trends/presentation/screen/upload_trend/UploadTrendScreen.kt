@@ -32,6 +32,7 @@ import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
+import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -45,7 +46,6 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
 
-            is UploadTrendsScreenEffect.ShowSnackBar -> {}
             is UploadTrendsScreenEffect.NavigateToDescription -> {
                 // TODO
             }
@@ -63,12 +63,12 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
         onResult = { file ->
             file?.let {
                 coroutineScope.launch {
-                    val fileMeta = UploadTrendsScreenState.SelectedFileMeta(
+                    val fileMeta = FileUiState(
                         name = file.name,
                         extension = file.extension,
                         sizeInBytes = file.size()
                     )
-                    viewModel.onSelectFile(fileMeta) { file.readBytes() }
+                    viewModel.onRetrieveVideo(fileMeta) { file.readBytes() }
                 }
             }
         }
@@ -133,7 +133,7 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                 Text("${state.uploadedMegaBytes} MB", style = Theme.typography.body.small)
             }
 
-            if (state.selectedFileMeta.name.isNotBlank()) {
+            if (state.selectedFile.name.isNotBlank()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -146,19 +146,19 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                     )
 
                     Text(
-                        "Name: ${state.selectedFileMeta.name}",
+                        "Name: ${state.selectedFile.name}",
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "Size: ${state.selectedFileMeta.size}",
+                        "Size: ${state.selectedFile.size}",
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "MIME Type: ${state.selectedFileMeta.extension}",
+                        "MIME Type: ${state.selectedFile.extension}",
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "Duration: ${state.selectedFileMeta.duration} ms",
+                        "Duration: ${state.selectedFile.duration} ms",
                         style = Theme.typography.body.small
                     )
                 }
@@ -181,7 +181,7 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                 }
 
                 Button(
-                    onClick = { viewModel.onRetryClick() },
+                    onClick = { viewModel.onRetryUploadClick() },
                 ) {
                     Text(text = "Retry", style = Theme.typography.title.medium)
                 }

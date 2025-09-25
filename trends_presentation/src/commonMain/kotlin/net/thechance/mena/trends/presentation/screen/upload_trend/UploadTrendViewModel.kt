@@ -6,12 +6,12 @@ import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.UploadReelsRepository
 import net.thechance.mena.trends.domain.usecase.validation.VideoMetaDataValidator
-import net.thechance.mena.trends.presentation.screen.upload_trend.UploadTrendsScreenState.SelectedFileMeta
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import net.thechance.mena.trends.presentation.util.formatBytes
-import net.thechance.mena.trends.presentation.util.formatDuration
-import net.thechance.mena.trends.presentation.util.getVideoDuration
+import net.thechance.mena.trends.presentation.shared.model.FileUiState
+import net.thechance.mena.trends.presentation.shared.util.formatBytes
+import net.thechance.mena.trends.presentation.shared.util.formatDuration
+import net.thechance.mena.trends.presentation.shared.util.getVideoDuration
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
@@ -29,12 +29,12 @@ internal class UploadTrendViewModel(
         sendEffect(UploadTrendsScreenEffect.NavigateToDescription())
     }
 
-    override fun onUploadFileClick() {
+    override fun onUploadVideoClick() {
         // TODO:
     }
 
-    override fun onSelectFile(file: SelectedFileMeta, readBytes: suspend () -> ByteArray) {
-        var bytes =  ByteArray(0)
+    override fun onRetrieveVideo(file: FileUiState, readBytes: suspend () -> ByteArray) {
+        var bytes = ByteArray(0)
         tryToExecute(
             block = {
                 validator.validateSize(file.sizeInBytes).also {
@@ -51,12 +51,12 @@ internal class UploadTrendViewModel(
         updateState { copy(errorState = errorState) }
     }
 
-    private fun onValidationSuccess(file: SelectedFileMeta, bytes: ByteArray) {
+    private fun onValidationSuccess(file: FileUiState, bytes: ByteArray) {
         viewModelScope.launch {
             val duration = getVideoDuration(bytes) ?: 0L
             updateState {
                 copy(
-                    selectedFileMeta = SelectedFileMeta(
+                    selectedFile = FileUiState(
                         name = file.name,
                         extension = file.extension,
                         duration = formatDuration(duration),
@@ -67,10 +67,10 @@ internal class UploadTrendViewModel(
                 )
             }
         }
-        uploadTrend(state.value.selectedFileMeta)
+        uploadTrend(state.value.selectedFile)
     }
 
-    private fun uploadTrend(trendFile: SelectedFileMeta) {
+    private fun uploadTrend(trendFile: FileUiState) {
         job = tryToCollectFlow(
             block = {
                 uploadReelsRepository.uploadReel(
@@ -129,7 +129,7 @@ internal class UploadTrendViewModel(
         }
     }
 
-    override fun onEditClick() {
+    override fun onEditVideoClick() {
         job?.cancel()
         // TODO("pick new file")
     }
@@ -141,7 +141,7 @@ internal class UploadTrendViewModel(
         }
     }
 
-    override fun onDeleteClick() {
+    override fun onDeleteVideoClick() {
         job?.cancel()
         updateState {
             copy(
@@ -149,13 +149,13 @@ internal class UploadTrendViewModel(
                 uploadingProgress = "",
                 uploadedMegaBytes = "",
                 isNextButtonEnabled = false,
-                selectedFileMeta = SelectedFileMeta()
+                selectedFile = FileUiState()
             )
         }
     }
 
-    override fun onRetryClick() {
-        uploadTrend(state.value.selectedFileMeta)
+    override fun onRetryUploadClick() {
+        uploadTrend(state.value.selectedFile)
     }
 
     override fun onNextClick() {

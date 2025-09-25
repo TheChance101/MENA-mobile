@@ -1,15 +1,17 @@
 package net.thechance.mena.trends.presentation.screen.upload_trend
 
+import net.thechance.mena.trends.presentation.shared.model.FileUiState
+
 interface UploadTrendInteractionListener {
     fun onBackClick()
-    fun onUploadFileClick()
-    fun onSelectFile(
-        file: UploadTrendsScreenState.SelectedFileMeta,
+    fun onUploadVideoClick()
+    fun onRetrieveVideo(
+        file: FileUiState,
         readBytes: suspend () -> ByteArray
     )
+    fun onEditVideoClick()
     fun onCancelUploadClick()
-    fun onEditClick()
-    fun onDeleteClick()
-    fun onRetryClick()
+    fun onDeleteVideoClick()
+    fun onRetryUploadClick()
     fun onNextClick()
 }

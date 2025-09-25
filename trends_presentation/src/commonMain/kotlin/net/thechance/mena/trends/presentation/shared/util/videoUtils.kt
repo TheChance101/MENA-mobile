@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.util
+package net.thechance.mena.trends.presentation.shared.util
 
 import kotlin.math.roundToInt
 

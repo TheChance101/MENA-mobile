@@ -1,5 +1,6 @@
-package net.thechance.mena.trends.presentation.util
+package net.thechance.mena.trends.presentation.shared.util
 
+import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.refTo
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -35,7 +36,7 @@ actual suspend fun getVideoDuration(videoBytes: ByteArray): Long? {
 @OptIn(ExperimentalForeignApi::class)
 fun ByteArray.toNSData(): NSData {
     return NSData.create(
-        bytes = this.refTo(0),
+        bytes = this.refTo(0) as COpaquePointer?,
         length = this.size.toULong()
     )
 }
