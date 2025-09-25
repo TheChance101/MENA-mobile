@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.util.Logger
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
+import org.koin.core.annotation.InjectedParam
 import org.koin.mp.KoinPlatform.getKoin
 
 internal abstract class BaseViewModel<State, Effect>(
@@ -31,7 +32,8 @@ internal abstract class BaseViewModel<State, Effect>(
     private val _effect = MutableSharedFlow<Effect>()
     val effect = _effect.throttleFirst(THROTTLE_WINDOW_DURATION)
 
-    private val logger: Logger = getKoin().get()
+    @setparam:InjectedParam
+    lateinit var  logger: Logger
 
     protected fun updateState(updater: State.() -> State) {
         _state.update { updater(it) }

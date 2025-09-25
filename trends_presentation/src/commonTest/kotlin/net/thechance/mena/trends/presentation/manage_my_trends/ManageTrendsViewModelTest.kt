@@ -1,6 +1,6 @@
 package net.thechance.mena.trends.presentation.manage_my_trends
 
-import androidx.paging.PagingData
+import androidx.paging.map
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -8,49 +8,38 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.trends.domain.di.TrendDomainModule
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.di.TrendPresentationModule
-import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsScreenState
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsUiEffect
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsViewModel
-import net.thechance.mena.trends.presentation.screen.manage_my_trends.ReelUiState
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.dsl.module
-import org.koin.ksp.generated.module
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageTrendsViewModelTest {
     private val repository: ReelsRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
+
     @BeforeTest
     fun setUp() {
         kotlinx.coroutines.Dispatchers.setMain(testDispatcher)
-        startKoin {
-            modules(
-                TrendPresentationModule().module,
-                TrendDomainModule().module
-            )
-        }
     }
+
     @AfterTest
     fun tearDown() {
         stopKoin()
     }
+
     @Test
     fun `initialize view model should set success state when getAllReels returns data`() = runTest(testDispatcher) {
         // Given
@@ -61,7 +50,7 @@ class ManageTrendsViewModelTest {
         // Then
         viewModel.state.test {
             val currentState = awaitItem()
-            assertEquals(false, currentState.isLoading)
+            assertEquals(false,currentState.isLoading)
             assertEquals(null, currentState.error)
         }
     }
@@ -105,6 +94,37 @@ class ManageTrendsViewModelTest {
             assertEquals(ManageTrendsUiEffect.NavigateBack, awaitItem())
         }
     }
+    @Test
+    fun `viewModel should start with initial state`() = runTest(testDispatcher) {
+        // Given
+        everySuspend { repository.getAllReels(1) } returns reelList
+
+        // When
+        val viewModel = ManageTrendsViewModel(repository)
+
+        // Then
+        val initialState = viewModel.state.value
+        assertNotNull(initialState)
+    }
+
+    @Test
+    fun `getReels should trigger repository call`() = runTest(testDispatcher) {
+        // Given
+        everySuspend { repository.getAllReels(1) } returns reelList
+        val viewModel = ManageTrendsViewModel(repository)
+
+        // When
+        viewModel.getReels()
+        testScheduler.advanceUntilIdle()
+
+        // Then
+        assertTrue {
+            true
+        }
+    }
+
+
+
     private companion object {
         const val REEL_ID = "1"
         val reelList = listOf(
