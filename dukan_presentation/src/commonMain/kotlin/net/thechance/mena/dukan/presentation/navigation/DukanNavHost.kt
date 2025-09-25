@@ -9,16 +9,29 @@ import androidx.navigation.toRoute
 import net.thechance.mena.dukan.presentation.screen.createDukan.CreateDukanScreen
 import net.thechance.mena.dukan.presentation.screen.main.MainScreen
 import net.thechance.mena.dukan.presentation.screen.pendingDukan.PendingDukanScreen
+import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import org.koin.compose.koinInject
 
 @Composable
-fun DukanNavHost() {
+fun DukanNavHost(
+    dukanNavigator: DukanNavigator = koinInject(),
+) {
+
     val navController = rememberNavController()
+
+    ObserveAsEffect(effects = dukanNavigator.dukanEffects) { effect ->
+        when (effect) {
+            is DukanEffect.Navigate -> navController.navigate( route = effect.destination, navOptions = effect.navOptions)
+            is DukanEffect.NavigateUp -> navController.navigateUp()
+        }
+    }
+
     CompositionLocalProvider(
         LocalNavController provides navController
     ) {
         NavHost(
             navController = navController,
-            startDestination = DukanRoute.MainScreenRoute,
+            startDestination = dukanNavigator.startDestination,
         ) {
             composable<DukanRoute.MainScreenRoute> {
                 MainScreen()

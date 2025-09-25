@@ -12,11 +12,13 @@ import kotlinx.coroutines.withContext
 @Composable
 fun <T> ObserveAsEffect(
     effects: Flow<T>,
+    key1: Any? = null,
+    key2: Any? = null,
     onEvent: suspend (T) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(key1 = lifecycleOwner.lifecycle) {
+    LaunchedEffect(key1 = lifecycleOwner.lifecycle, key2 = key1, key3 = key2) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             withContext(Dispatchers.Main.immediate) {
                 effects.collect(onEvent)
