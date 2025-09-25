@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import app.cash.turbine.test
@@ -10,10 +11,12 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Category
@@ -21,6 +24,7 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import net.thechance.mena.dukan.presentation.navigation.DukanNavigator
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,6 +41,7 @@ class CreateDukanViewModelTest {
     private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
     private lateinit var createDukanViewModel: CreateDukanViewModel
     private val testDispatcher = StandardTestDispatcher()
+    private val navigator = mock<DukanNavigator>(mode = MockMode.autofill)
 
     @BeforeTest
     fun setup() {
@@ -48,9 +53,10 @@ class CreateDukanViewModelTest {
 
 
         createDukanViewModel = CreateDukanViewModel(
-            dukanRepository,
-            locationRepository,
-            testDispatcher
+            dukanRepository = dukanRepository,
+            locationRepository = locationRepository,
+            defaultDispatcher = testDispatcher,
+            navigator = navigator
         )
     }
 
@@ -754,14 +760,22 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onBackClicked SHOULD emit NavigateBack WHEN current step is BASIC_INFORMATION`() =
+    fun `onImageCrop SHOULD update selectedImage and isImageBeingCropped`()=runTest{
+        val imageMock = mock<ImageBitmap>()
+        createDukanViewModel.onImageCrop(imageMock)
+        advanceUntilIdle()
+        val state = createDukanViewModel.state.value
+        assertEquals(imageMock, state.croppedImage)
+        assertNull(state.selectedImage)
+        assertFalse(state.isImageBeingCropped)
+    }
+
+    @Test
+    fun `onBackClicked SHOULD NavigateBack WHEN current step is BASIC_INFORMATION`() =
         runTest {
             createDukanViewModel.onBackClicked()
-
-            createDukanViewModel.effect.test {
-                assertEquals(CreateDukanEffect.NavigateBack, awaitItem())
-                cancelAndIgnoreRemainingEvents()
-            }
+            advanceUntilIdle()
+            verifySuspend { navigator.navigateUp() }
         }
 
     @Test
@@ -804,7 +818,27 @@ class CreateDukanViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+    @Test
+    fun `onButtonClicked should create dukan and navigate to pending screen when step is SELECT_STYLE`() = runTest {
+        createDukanViewModel.updateState {
+            copy(
+                currentStep = CreateDukanUiState.CreateDukanStep.SELECT_STYLE,
+                name = "My Dukan",
+                croppedImage = null,
+                selectedStyle = Dukan.Style.WIDE_IMAGE,
+                selectedColor = ColorUiState(
+                    id = "1",
+                    color = 0xFFF545
+                )
+            )
+        }
+        everySuspend { dukanRepository.createDukan(any()) } returns Unit
 
+        createDukanViewModel.onButtonClicked()
+        advanceUntilIdle()
+
+        verifySuspend { navigator.navigate(any(), any()) }
+    }
     @Test
     fun `onCancelCrop SHOULD clear selectedImage and disable cropping`() = runTest {
 

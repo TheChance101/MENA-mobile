@@ -1,11 +1,15 @@
 package net.thechance.mena.dukan.presentation.viewModel.base
 
-import app.cash.turbine.test
+import dev.mokkery.MockMode
+import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.dukan.presentation.navigation.DukanNavigator
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,11 +18,12 @@ import kotlin.test.assertEquals
 class BaseViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
+    private val navigator = mock<DukanNavigator>(mode = MockMode.autofill)
     private lateinit var viewModel: FakeViewModel
 
     @BeforeTest
     fun setup() {
-        viewModel = FakeViewModel(dispatcher = dispatcher)
+        viewModel = FakeViewModel(dispatcher = dispatcher, navigator = navigator)
     }
 
     @Test
@@ -41,14 +46,6 @@ class BaseViewModelTest {
         assertEquals("error:boom", viewModel.state.value)
     }
 
-    @Test
-    fun `emitEffect SHOULD emit effect`() = runTest(dispatcher) {
-        viewModel.effect.test {
-            viewModel.sendEffect()
-            assertEquals("effect", awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
 
     @Test
     fun `tryToCollect SHOULD collect flow values`() = runTest(dispatcher) {
@@ -56,5 +53,20 @@ class BaseViewModelTest {
         viewModel.collectFlow(flow)
         advanceUntilIdle()
         assertEquals("c", viewModel.state.value) // last collected
+    }
+
+    @Test
+    fun `navigate SHOULD navigate to route`() = runTest(dispatcher) {
+        val route = DukanRoute.MainScreenRoute
+        viewModel.navigateToScreen(route = route , navOptions = null)
+        advanceUntilIdle()
+        verifySuspend { navigator.navigate(route) }
+    }
+
+    @Test
+    fun `navigateUp SHOULD navigate up`() = runTest(dispatcher) {
+        viewModel.navigateBack()
+        advanceUntilIdle()
+        verifySuspend { navigator.navigateUp() }
     }
 }

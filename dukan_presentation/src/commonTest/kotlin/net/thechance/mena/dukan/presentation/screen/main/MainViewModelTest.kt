@@ -5,7 +5,9 @@ import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -14,7 +16,8 @@ import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
-import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
+import net.thechance.mena.dukan.presentation.navigation.DukanNavigator
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
@@ -25,6 +28,7 @@ import kotlin.test.assertEquals
 class MainViewModelTest {
 
     private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val navigator = mock<DukanNavigator>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     @Test
@@ -34,7 +38,8 @@ class MainViewModelTest {
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
+                dispatcher = testDispatcher,
+                navigator = navigator,
             )
 
             mainViewModel.state.test {
@@ -60,8 +65,9 @@ class MainViewModelTest {
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
-            )
+                dispatcher = testDispatcher,
+                navigator = navigator,
+                )
 
             mainViewModel.state.test {
                 awaitItem()
@@ -84,8 +90,9 @@ class MainViewModelTest {
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
-            )
+                dispatcher = testDispatcher,
+                navigator = navigator,
+                )
 
             mainViewModel.state.test {
                 val result = awaitItem()
@@ -95,27 +102,24 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
+    fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should use navigator to navigate to AddDukanScreen`() =
         runTest(testDispatcher) {
             everySuspend { dukanRepository.getMyDukanStatus() } returns null
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
-            )
+                dispatcher = testDispatcher,
+                navigator = navigator,
+                )
             advanceUntilIdle()
 
             mainViewModel.onDukanButtonClicked()
 
-            mainViewModel.effect.test {
-                val currentEffect = awaitItem()
-                assertEquals(MainEffect.NavigateToAddDukanScreen, currentEffect)
-                cancelAndIgnoreRemainingEvents()
-            }
+            verifySuspend { navigator.navigate(route = DukanRoute.CreateDukanScreenRoute) }
         }
 
     @Test
-    fun `When the dukanStatusUi is pending and user clicks on the Dukan button, then it should emit NavigateToPendingDukanScreen`() =
+    fun `When the dukanStatusUi is pending and user clicks on the Dukan button, then it should use navigator to navigate to PendingDukanScreen`() =
         runTest(testDispatcher) {
             everySuspend { dukanRepository.getMyDukanStatus() } returns MyDukanStatus(
                 status = Dukan.Status.PENDING,
@@ -124,17 +128,14 @@ class MainViewModelTest {
 
             val mainViewModel = MainViewModel(
                 dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
-            )
+                dispatcher = testDispatcher,
+                navigator = navigator,
+                )
             advanceUntilIdle()
 
             mainViewModel.onDukanButtonClicked()
 
-            mainViewModel.effect.test {
-                val currentEffect = awaitItem()
-                assertEquals(MainEffect.NavigateToPendingDukanScreen, currentEffect)
-                cancelAndIgnoreRemainingEvents()
-            }
+            verifySuspend { navigator.navigate(route = DukanRoute.PendingScreenRoute(any())) }
         }
 
 }
