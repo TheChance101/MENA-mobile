@@ -19,9 +19,9 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 
 abstract class BaseViewModel<S>(
     initialState: S,
-    protected val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val dukanNavigator: DukanNavigator
-) : ViewModel() {
+    private val dukanNavigator: DukanNavigator,
+    protected val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    ) : ViewModel() {
 
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<S> = _state.asStateFlow()

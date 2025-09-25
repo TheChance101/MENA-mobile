@@ -12,9 +12,9 @@ import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiSt
 
 class MainViewModel(
     private val dukanRepository: DukanRepository,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    navigator: DukanNavigator
-) : BaseViewModel<MainScreenUiState>(
+    navigator: DukanNavigator,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ) : BaseViewModel<MainScreenUiState>(
     initialState = MainScreenUiState(),
     defaultDispatcher = dispatcher,
     dukanNavigator = navigator

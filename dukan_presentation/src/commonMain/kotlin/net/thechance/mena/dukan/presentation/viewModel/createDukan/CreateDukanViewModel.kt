@@ -21,12 +21,12 @@ import org.maplibre.compose.camera.CameraPosition
 class CreateDukanViewModel(
     private val dukanRepository: DukanRepository,
     private val locationRepository: LocationRepository,
-    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
     navigator: DukanNavigator,
-) : BaseViewModel<CreateDukanUiState>(
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    ) : BaseViewModel<CreateDukanUiState>(
     initialState = CreateDukanUiState(),
+    dukanNavigator = navigator,
     defaultDispatcher = defaultDispatcher,
-    dukanNavigator = navigator
 ), CreateDukanInteractionListener {
 
     init {
