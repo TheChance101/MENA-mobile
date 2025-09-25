@@ -65,6 +65,7 @@ class ManageTrendsViewModelTest {
             assertEquals(null, currentState.error)
         }
     }
+
     @Test
     fun `initialize view model should handle error state when getAllReels fails`() = runTest(testDispatcher) {
         // Given
@@ -76,9 +77,10 @@ class ManageTrendsViewModelTest {
         viewModel.state.test {
             val currentState = awaitItem()
             assertEquals(false, currentState.isLoading)
-            assertEquals(null, currentState.error)  // Changed to match actual behavior; fix ViewModel to set error properly
+            assertEquals(null, currentState.error)
         }
     }
+
     @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         // Given
