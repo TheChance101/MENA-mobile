@@ -102,7 +102,7 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should use navigator to navigate to AddDukanScreen`() =
+    fun `When the user doesnt have Dukan and clicks on the Dukan button then it should use navigator to navigate to AddDukanScreen`() =
         runTest(testDispatcher) {
             everySuspend { dukanRepository.getMyDukanStatus() } returns null
 
@@ -119,7 +119,7 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `When the dukanStatusUi is pending and user clicks on the Dukan button, then it should use navigator to navigate to PendingDukanScreen`() =
+    fun `When the dukanStatusUi is pending and user clicks on the Dukan button then it should use navigator to navigate to PendingDukanScreen`() =
         runTest(testDispatcher) {
             everySuspend { dukanRepository.getMyDukanStatus() } returns MyDukanStatus(
                 status = Dukan.Status.PENDING,
