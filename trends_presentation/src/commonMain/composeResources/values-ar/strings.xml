@@ -27,4 +27,7 @@
     <string name="error_no_internet">تعذر الاتصال، برجاء التحقق من اتصالك بالانترنت</string>
     <string name="error_generic">حدث خطأ، حاول مجددًا لاحقًا</string>
     <string name="error_request_timeout">استغرق الأمر وقتًا طويلًا، حاول مجددًا</string>
+
+    <string name="max_file_size_exceeded">الحد الأقصى للحجم المسموح به هو 100 ميجا بايت</string>
+    <string name="max_file_duration_exceeded">الحد الأقصى للمدة المسموح بها دقيقة واحدة</string>
 </resources>

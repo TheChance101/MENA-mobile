@@ -27,4 +27,7 @@
     <string name="error_no_internet">Could not connect, please check your internet connection</string>
     <string name="error_generic">Something went wrong, please try again later</string>
     <string name="error_request_timeout">Request timed out, please try again later</string>
+
+    <string name="max_file_size_exceeded">Maximum allowed size is 100 MB</string>
+    <string name="max_file_duration_exceeded">Maximum allowed duration is 1 minute</string>
 </resources>

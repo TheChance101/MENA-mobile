@@ -8,14 +8,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
+import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.util.Logger
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
@@ -73,6 +79,26 @@ internal abstract class BaseViewModel<State, Effect>(
         }
     }
 
+    protected fun <T> tryToCollectFlow(
+        block: () -> Flow<T>,
+        onStart: () -> Unit = {},
+        onEach: (T) -> Unit,
+        onError: (ErrorState) -> Unit,
+        onComplete: (ErrorState?) -> Unit = {},
+        scope: CoroutineScope = viewModelScope
+    ): Job {
+        return block()
+            .onStart { onStart() }
+            .onEach { onEach(it) }
+            .onCompletion { throwable ->
+                throwable?.let {
+                    mapExceptionToErrorState(throwable, onError)
+                } ?: onComplete(null)
+            }
+            .catch { throwable -> mapExceptionToErrorState(throwable, onError) }
+            .launchIn(scope)
+    }
+
     private suspend fun mapExceptionToErrorState(
         throwable: Throwable,
         onError: suspend (ErrorState) -> Unit,
@@ -81,6 +107,8 @@ internal abstract class BaseViewModel<State, Effect>(
         val message = throwable.message
         when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
+            is MaxFileSizeExceededException -> ErrorState.FileTooLarge
+            is MaxFileDurationExceededException -> ErrorState.DurationTooLarge
             else -> ErrorState.RequestFailed(message).also { logError(throwable) }
         }.also { errorState ->
             logger.logError(LOG_TAG, "error state: $errorState")
