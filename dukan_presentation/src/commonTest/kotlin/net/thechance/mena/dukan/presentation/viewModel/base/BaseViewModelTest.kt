@@ -3,11 +3,13 @@ package net.thechance.mena.dukan.presentation.viewModel.base
 import dev.mokkery.MockMode
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.presentation.navigation.DukanNavigator
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import kotlin.test.BeforeTest
@@ -23,6 +25,7 @@ class BaseViewModelTest {
 
     @BeforeTest
     fun setup() {
+        Dispatchers.setMain(dispatcher)
         viewModel = FakeViewModel(dispatcher = dispatcher, navigator = navigator)
     }
 

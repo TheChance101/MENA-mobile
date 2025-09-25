@@ -8,10 +8,12 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
@@ -21,26 +23,32 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
 
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val dukanRepository = mock<DukanRepository>()
     private val navigator = mock<DukanNavigator>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
+    lateinit var mainViewModel: MainViewModel
+
+    @BeforeTest
+    fun setup(){
+        Dispatchers.setMain(testDispatcher)
+        mainViewModel = MainViewModel(
+            dukanRepository = dukanRepository,
+            dispatcher = testDispatcher,
+            navigator = navigator,
+        )
+    }
 
     @Test
     fun `When a user doesnt have dukan then the DukanStatusUi should be None`() =
         runTest(testDispatcher) {
             everySuspend { dukanRepository.getMyDukanStatus() } returns null
-
-            val mainViewModel = MainViewModel(
-                dukanRepository = dukanRepository,
-                dispatcher = testDispatcher,
-                navigator = navigator,
-            )
 
             mainViewModel.state.test {
                 val init = awaitItem()
@@ -62,14 +70,12 @@ class MainViewModelTest {
                 status = Dukan.Status.PENDING,
                 dukanName = "Dukan El Sa3ada"
             )
-
-            val mainViewModel = MainViewModel(
+            val init = MainViewModel(
                 dukanRepository = dukanRepository,
                 dispatcher = testDispatcher,
                 navigator = navigator,
-                )
-
-            mainViewModel.state.test {
+            )
+            init.state.test {
                 awaitItem()
                 val secondEmit = awaitItem()
                 assertEquals(
@@ -88,12 +94,6 @@ class MainViewModelTest {
         runTest(testDispatcher) {
             everySuspend { dukanRepository.getMyDukanStatus() } throws DukanNotFoundException()
 
-            val mainViewModel = MainViewModel(
-                dukanRepository = dukanRepository,
-                dispatcher = testDispatcher,
-                navigator = navigator,
-                )
-
             mainViewModel.state.test {
                 val result = awaitItem()
                 assertEquals(null, result.errorMessage)
@@ -106,14 +106,8 @@ class MainViewModelTest {
         runTest(testDispatcher) {
             everySuspend { dukanRepository.getMyDukanStatus() } returns null
 
-            val mainViewModel = MainViewModel(
-                dukanRepository = dukanRepository,
-                dispatcher = testDispatcher,
-                navigator = navigator,
-                )
-            advanceUntilIdle()
-
             mainViewModel.onDukanButtonClicked()
+            advanceUntilIdle()
 
             verifySuspend { navigator.navigate(route = DukanRoute.CreateDukanScreenRoute) }
         }
@@ -126,14 +120,8 @@ class MainViewModelTest {
                 dukanName = "Dukan El Sa3ada"
             )
 
-            val mainViewModel = MainViewModel(
-                dukanRepository = dukanRepository,
-                dispatcher = testDispatcher,
-                navigator = navigator,
-                )
-            advanceUntilIdle()
-
             mainViewModel.onDukanButtonClicked()
+            advanceUntilIdle()
 
             verifySuspend { navigator.navigate(route = DukanRoute.PendingScreenRoute(any())) }
         }
