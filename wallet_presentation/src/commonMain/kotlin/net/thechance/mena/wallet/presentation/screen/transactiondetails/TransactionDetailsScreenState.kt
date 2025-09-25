@@ -1,13 +1,16 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
+import androidx.compose.ui.graphics.ImageBitmap
+import io.github.suwasto.capturablecompose.CaptureController
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
 
 data class TransactionDetailsScreenState(
     val transactionDetailsUiState: UiState<TransactionDetailsUiState> = UiState.Idle,
-    val shareReceipt: UiState<Unit> = UiState.Idle,
+    val shareReceipt: UiState<ImageBitmap> = UiState.Idle,
     val snackBar: SnackBarState = SnackBarState(),
     val isBottomSheetVisible: Boolean = false,
+    val captureController: CaptureController = CaptureController()
 ){
     data class TransactionDetailsUiState(
         val id: String = "",

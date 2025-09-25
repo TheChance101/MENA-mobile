@@ -10,29 +10,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.computer_phone_sync_icon
 import mena.wallet_presentation.generated.resources.ic_computer_phone_sync
-import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.send_to_your_device
 import mena.wallet_presentation.generated.resources.transaction_details_header
 import mena.wallet_presentation.generated.resources.transaction_details_screenshot
 import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -41,7 +39,7 @@ internal fun ScaffoldScope.shareTransactionDetailsBottomSheet(
     isVisible: Boolean,
     onDismissRequest: () -> Unit,
     onSendToDeviceBtnClicked: () -> Unit,
-     image: DrawableResource,
+     image: ImageBitmap,
 ){
     bottomSheet(isVisible = isVisible){
         BottomSheet(
@@ -50,7 +48,7 @@ internal fun ScaffoldScope.shareTransactionDetailsBottomSheet(
             sheetContent = {
                 item {
                     ShareTransactionDetailsBottomSheetContent(
-                        image = painterResource(image),
+                        image = image,
                         onSendToDeviceBtnClicked = onSendToDeviceBtnClicked
                     )
                 }
@@ -60,7 +58,7 @@ internal fun ScaffoldScope.shareTransactionDetailsBottomSheet(
 }
 @Composable
 private fun ShareTransactionDetailsBottomSheetContent(
-    image: Painter,
+    image: ImageBitmap,
     onSendToDeviceBtnClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -81,8 +79,8 @@ private fun ShareTransactionDetailsBottomSheetContent(
                 .width(160.dp)
                 .height(190.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            painter = image,
-            contentDescription = stringResource(Res.string.transaction_details_screenshot)
+            bitmap = image,
+            contentDescription = stringResource(Res.string.transaction_details_screenshot),
         )
         Button(
             modifier = Modifier.align(Alignment.Start),
@@ -119,7 +117,7 @@ private fun ShareTransactionDetailsBottomSheetContent(
 private fun ShareTransactionDetailsBottomSheetContentPreview() {
     MenaTheme {
         ShareTransactionDetailsBottomSheetContent(
-            image = painterResource(Res.drawable.img_silver),
+            image = ImageBitmap(100,100),
             onSendToDeviceBtnClicked = {}
         )
     }

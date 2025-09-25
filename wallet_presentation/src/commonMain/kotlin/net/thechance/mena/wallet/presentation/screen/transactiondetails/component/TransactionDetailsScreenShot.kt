@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,8 +9,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
+import io.github.suwasto.capturablecompose.Capturable
+import io.github.suwasto.capturablecompose.CaptureController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.date
 import mena.wallet_presentation.generated.resources.failed
@@ -47,9 +52,30 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun TransactionDetailsScreenShot(
+    captureController: CaptureController,
+    onScreenShotCapture: (ImageBitmap) -> Unit,
+    transactionDetailsUiState: TransactionDetailsUiState,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.alpha(0f)) {
+        Capturable(
+            captureController = captureController,
+            onCaptured = { onScreenShotCapture(it) }
+        )
+        {
+            TransactionDetailsScreenShotComponent(
+                modifier = modifier,
+                transactionDetailsUiState = transactionDetailsUiState
+            )
+        }
+    }
+}
+
+@Composable
+private fun TransactionDetailsScreenShotComponent(
     modifier: Modifier = Modifier,
     transactionDetailsUiState: TransactionDetailsUiState,
-){
+) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -60,7 +86,8 @@ internal fun TransactionDetailsScreenShot(
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(16.dp)
-    ) {
+    )
+    {
         TextWithIcon(
             modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally),
             text = when (transactionDetailsUiState.transactionType) {
@@ -156,7 +183,7 @@ internal fun TransactionDetailsScreenShot(
 @Composable
 private fun TransactionDetailsScreenShotPreview() {
     MenaTheme {
-        TransactionDetailsScreenShot(
+        TransactionDetailsScreenShotComponent(
             transactionDetailsUiState = TransactionDetailsUiState()
         )
     }

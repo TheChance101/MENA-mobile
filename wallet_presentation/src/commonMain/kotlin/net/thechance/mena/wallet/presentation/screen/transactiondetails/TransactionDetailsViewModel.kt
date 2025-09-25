@@ -1,5 +1,6 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.delay
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
@@ -21,11 +22,16 @@ class TransactionDetailsViewModel() :
     }
 
     private fun getTransactionDetails() {
-        TODO("Not yet implemented")
+        tryToExecute(
+            callee = { return@tryToExecute TransactionDetailsUiState()},
+            onSuccess = ::onGetTransactionDetailsSuccess,
+            onError = ::onGetTransactionDetailsError,
+            onStart = ::onGetTransactionDetailsStart,
+        )
     }
 
-    private fun onGetTransactionDetailsSuccess() {
-        updateState { it.copy(transactionDetailsUiState = UiState.Success(TransactionDetailsUiState())) }
+    private fun onGetTransactionDetailsSuccess(transaction: TransactionDetailsUiState) {
+        updateState { it.copy(transactionDetailsUiState = UiState.Success(transaction)) }
     }
 
     private fun onGetTransactionDetailsError(throwable: Throwable) {
@@ -41,16 +47,16 @@ class TransactionDetailsViewModel() :
     }
 
     override fun onShareReceiptBtnClicked() {
-        TODO("Not yet implemented")
+        updateState { it.copy(shareReceipt = UiState.Loading) }
+        state.value.captureController.capture()
     }
 
-    private fun onShareReceiptSuccess() {
-        updateState {
-            it.copy(
-                shareReceipt = UiState.Success(Unit),
-                isBottomSheetVisible = true
-            )
-        }
+    override fun onScreenShotCaptured(imageBitmap: ImageBitmap) {
+        //val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
+        updateState { it.copy(
+            shareReceipt = UiState.Success(imageBitmap),
+            isBottomSheetVisible = true
+        ) }
     }
 
     private suspend fun onShareReceiptError(throwable: Throwable) {

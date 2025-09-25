@@ -12,13 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share
-import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.share_button
 import mena.wallet_presentation.generated.resources.share_receipt
 import mena.wallet_presentation.generated.resources.transaction_details_header
@@ -31,8 +31,9 @@ import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.base.UiState.Idle.isLoading
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.DetailsSection
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.DetailsSection
+import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.TransactionDetailsScreenShot
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.shareTransactionDetailsBottomSheet
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -81,12 +82,17 @@ private fun TransactionDetailsScreenContent(
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         overlays = {
-            shareTransactionDetailsBottomSheet(
-                isVisible = state.isBottomSheetVisible,
-                onDismissRequest = interactionListener::onBottomSheetDismissRequest,
-                onSendToDeviceBtnClicked = interactionListener::onSendToDeviceBtnClicked,
-                image = Res.drawable.img_silver
-            )
+            when (state.shareReceipt) {
+                is UiState.Error, UiState.Loading, UiState.Idle -> {}
+                is UiState.Success<*> -> {
+                    shareTransactionDetailsBottomSheet(
+                        isVisible = state.isBottomSheetVisible,
+                        onDismissRequest = interactionListener::onBottomSheetDismissRequest,
+                        onSendToDeviceBtnClicked = interactionListener::onSendToDeviceBtnClicked,
+                        image = state.shareReceipt.data as ImageBitmap
+                    )
+                }
+            }
         }
     ) {
         Crossfade(
@@ -94,12 +100,12 @@ private fun TransactionDetailsScreenContent(
             modifier = Modifier.fillMaxSize()
         ) { transactionState ->
             when (transactionState) {
-                is UiState.Error -> TODO()
-                is UiState.Loading, UiState.Idle -> TODO()
+                is UiState.Error -> {}
+                is UiState.Loading, UiState.Idle -> {}
                 is UiState.Success -> {
                     Box(modifier = Modifier.fillMaxSize()) {
                         DetailsSection(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.padding(bottom = 88.dp).align(Alignment.Center),
                             transactionDetailsUiState = transactionState.data
                         )
                         OutlinedButton(
@@ -119,6 +125,13 @@ private fun TransactionDetailsScreenContent(
                             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
                             shape = RoundedCornerShape(Theme.radius.md)
                         )
+                        TransactionDetailsScreenShot(
+                            captureController = state.captureController,
+                            onScreenShotCapture = { imageBitmap ->
+                                interactionListener.onScreenShotCaptured(imageBitmap)
+                            },
+                            transactionDetailsUiState = transactionState.data,
+                        )
                     }
                 }
             }
@@ -137,10 +150,15 @@ private fun onTransactionDetailsEffect(effect: TransactionDetailsEffect) {
 private fun TransactionDetailsScreenPreview() {
     MenaTheme {
         TransactionDetailsScreenContent(
-            state = TransactionDetailsScreenState(transactionDetailsUiState = UiState.Success(TransactionDetailsUiState())),
+            state = TransactionDetailsScreenState(
+                transactionDetailsUiState = UiState.Success(
+                    TransactionDetailsUiState()
+                )
+            ),
             interactionListener = object : TransactionDetailsInteractionListener {
                 override fun onBackBtnClicked() {}
                 override fun onShareReceiptBtnClicked() {}
+                override fun onScreenShotCaptured(imageBitmap: ImageBitmap) {}
                 override fun onRefresh() {}
                 override fun onSendToDeviceBtnClicked() {}
                 override fun onBottomSheetDismissRequest() {}

@@ -50,6 +50,9 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.annotations)
             implementation(libs.kotlinx.serialization.json)
+
+            //Kmp capturable
+            implementation(libs.kmp.capturable.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
