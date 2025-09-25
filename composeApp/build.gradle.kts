@@ -1,12 +1,13 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.Properties
 import java.io.ByteArrayOutputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kover)
 }
 
 val localProperties = Properties()
@@ -37,6 +38,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -47,6 +49,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.designSystem)
+            implementation(libs.bundles.voyager)
+            implementation(projects.identityPresentation)
+            implementation(projects.identityData)
+            implementation(projects.identityDomain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -151,10 +157,24 @@ abstract class GenerateBadgedIconTask : DefaultTask() {
                 val resizedBanner = temporaryDir.resolve("${densityDirName}_banner_resized.png")
                 val outputIconPath = mipmapDir.resolve(iconFile.name).path
                 execOperations.exec {
-                    commandLine("magick", bannerFile.get().asFile.path, "-resize", "${iconWidth}x${iconWidth}", resizedBanner.path)
+                    commandLine(
+                        "magick",
+                        bannerFile.get().asFile.path,
+                        "-resize",
+                        "${iconWidth}x${iconWidth}",
+                        resizedBanner.path
+                    )
                 }
                 execOperations.exec {
-                    commandLine("magick", "composite", "-gravity", "southeast", resizedBanner.path, iconFile.path, outputIconPath)
+                    commandLine(
+                        "magick",
+                        "composite",
+                        "-gravity",
+                        "southeast",
+                        resizedBanner.path,
+                        iconFile.path,
+                        outputIconPath
+                    )
                 }
             }
     }
@@ -163,14 +183,16 @@ abstract class GenerateBadgedIconTask : DefaultTask() {
 androidComponents {
     onVariants { variant ->
         if (variant.flavorName == "development" || variant.flavorName == "staging") {
-            val bannerFileName = if (variant.flavorName == "development") "banner_dev.png" else "banner_staging.png"
-            val task = tasks.register<GenerateBadgedIconTask>("generate${variant.name.replaceFirstChar { it.uppercase() }}BadgedIcon") {
-                group = "Icon Generation"
-                description = "Generates a badged icon for the ${variant.name} build."
-                baseIconResDir.set(project.layout.projectDirectory.dir("src/androidMain/res"))
-                bannerFile.set(project.file("build-assets/$bannerFileName"))
-                outputDir.set(layout.buildDirectory.dir("generated/icons/res"))
-            }
+            val bannerFileName =
+                if (variant.flavorName == "development") "banner_dev.png" else "banner_staging.png"
+            val task =
+                tasks.register<GenerateBadgedIconTask>("generate${variant.name.replaceFirstChar { it.uppercase() }}BadgedIcon") {
+                    group = "Icon Generation"
+                    description = "Generates a badged icon for the ${variant.name} build."
+                    baseIconResDir.set(project.layout.projectDirectory.dir("src/androidMain/res"))
+                    bannerFile.set(project.file("build-assets/$bannerFileName"))
+                    outputDir.set(layout.buildDirectory.dir("generated/icons/res"))
+                }
             variant.sources.res?.addGeneratedSourceDirectory(
                 taskProvider = task,
                 wiredWith = GenerateBadgedIconTask::outputDir
@@ -191,7 +213,8 @@ tasks.register("generateEnvironmentXcconfig") {
         else -> developmentUrl
     }
 
-    val outputFileProperty = project.layout.buildDirectory.file("generated/ios/environment.xcconfig")
+    val outputFileProperty =
+        project.layout.buildDirectory.file("generated/ios/environment.xcconfig")
 
     doLast {
         val outputFile = outputFileProperty.get().asFile

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
@@ -77,7 +78,7 @@ fun Button(
             if (loadingColors.isNotEmpty()) {
                 DotsProgressIndicator(
                     colors = loadingColors,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
                 )
             }
         } else {
