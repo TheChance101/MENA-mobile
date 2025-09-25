@@ -47,6 +47,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.dukanDomain)
+            implementation(projects.dukanApi)
             implementation(projects.designSystem)
             implementation(compose.runtime)
             implementation(libs.koin.core)
