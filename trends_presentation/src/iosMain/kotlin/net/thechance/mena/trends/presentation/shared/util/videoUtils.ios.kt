@@ -1,12 +1,18 @@
 package net.thechance.mena.trends.presentation.shared.util
 
-import kotlinx.cinterop.COpaquePointer
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.refTo
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.suspendCancellableCoroutine
-import platform.AVFoundation.*
+import platform.AVFoundation.AVURLAsset
 import platform.CoreMedia.CMTimeGetSeconds
-import platform.Foundation.*
+import platform.Foundation.NSData
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSTemporaryDirectory
+import platform.Foundation.NSURL
+import platform.Foundation.create
+import platform.Foundation.writeToURL
 import kotlin.coroutines.resume
 
 @OptIn(ExperimentalForeignApi::class)
@@ -33,10 +39,12 @@ actual suspend fun getVideoDuration(videoBytes: ByteArray): Long? {
     }
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 fun ByteArray.toNSData(): NSData {
-    return NSData.create(
-        bytes = this.refTo(0) as COpaquePointer?,
-        length = this.size.toULong()
-    )
+    return this.usePinned { pinned ->
+        NSData.create(
+            bytes = pinned.addressOf(0),
+            length = this.size.toULong()
+        )
+    }
 }
