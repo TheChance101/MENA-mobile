@@ -5,8 +5,15 @@ import kotlinx.serialization.Serializable
 sealed interface DukanRoute {
     @Serializable
     object MainScreenRoute : DukanRoute
+
     @Serializable
     object CreateDukanScreenRoute : DukanRoute
+
+    @Serializable
+    object CreateShelfScreenRoute : DukanRoute
+
+    @Serializable
+    object ApprovedDukanScreenRoute : DukanRoute
 
     @Serializable
     object MyDukanScreenRoute : DukanRoute
