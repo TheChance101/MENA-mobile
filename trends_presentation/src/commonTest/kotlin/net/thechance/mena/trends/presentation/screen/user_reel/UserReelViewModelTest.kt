@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.user_reel
+package net.thechance.mena.trends.presentation.screen.user_reel
 
 import app.cash.turbine.test
 import dev.mokkery.MockMode
@@ -14,8 +14,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.screen.user_reel.UserReelEffect
-import net.thechance.mena.trends.presentation.screen.user_reel.UserReelViewModel
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import kotlin.test.AfterTest
