@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.approvedDukan
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.approvedDukan.content.ApprovedDukanContent
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -21,9 +22,9 @@ fun ApprovedDukanScreen(
         when (effect) {
             ApprovedDukanEffect.NavigateBack -> navController.popBackStack()
 
-            ApprovedDukanEffect.NavigateToAddShelf -> {
-                // TODO: Navigate to add shelf screen
-            }
+            ApprovedDukanEffect.NavigateToAddShelf -> navController.navigate(
+                DukanRoute.CreateShelfScreenRoute
+            )
 
             ApprovedDukanEffect.NavigateToEditShelf -> {
                 // TODO: Navigate to edit shelf screen
