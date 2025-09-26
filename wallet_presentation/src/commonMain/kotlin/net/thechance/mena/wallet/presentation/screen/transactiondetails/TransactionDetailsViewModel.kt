@@ -16,7 +16,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @KoinViewModel
 class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
@@ -58,7 +57,7 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    override fun onScreenShotCaptured(imageBitmap: ImageBitmap) {
+    override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {
         val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
         updateState { it.copy(
             shareReceipt = UiState.Success(imageBitmap),
@@ -68,8 +67,8 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
             callee = {
                 imageSharer.shareImage(
                     imageBytes = byteArray,
-                    fileName = Uuid.random().toString()+".png",
-                    mimeType = "image/png"
+                    fileName = "$fileName.png",
+                    mimeType = IMAGE_TYPE
                 )
             },
             onSuccess = { updateState { it.copy(shareReceipt = UiState.Idle) } },
@@ -131,5 +130,9 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
 
     override fun onBottomSheetDismissRequest() {
         updateState { it.copy(isBottomSheetVisible = false) }
+    }
+
+    private companion object{
+        const val IMAGE_TYPE = "image/png"
     }
 }

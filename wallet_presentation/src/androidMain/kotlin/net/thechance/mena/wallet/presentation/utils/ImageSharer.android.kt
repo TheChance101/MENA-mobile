@@ -16,19 +16,20 @@ import org.koin.core.context.GlobalContext
 import java.io.File
 
 actual class ImageSharer ( @Provided private val context: Context) {
-    actual fun shareImage(
+    actual suspend fun shareImage(
         imageBytes: ByteArray,
         fileName: String,
         mimeType: String
     ) {
-        val file = File(context.cacheDir, fileName)
-        file.writeBytes(imageBytes)
-
-        val contentUri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
+        val contentUri = withContext(Dispatchers.IO) {
+            val file = File(context.cacheDir, fileName)
+            file.writeBytes(imageBytes)
+            FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file
+            )
+        }
 
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = mimeType

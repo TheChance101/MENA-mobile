@@ -130,7 +130,10 @@ private fun TransactionDetailsScreenContent(
                             TransactionDetailsScreenShot(
                                 captureController = state.captureController,
                                 onScreenShotCapture = { imageBitmap ->
-                                    interactionListener.onScreenShotCaptured(imageBitmap)
+                                    interactionListener.onScreenShotCaptured(
+                                        imageBitmap = imageBitmap,
+                                        fileName = transactionState.data.id
+                                    )
                                 },
                                 transactionDetailsUiState = transactionState.data,
                             )
@@ -161,7 +164,7 @@ private fun TransactionDetailsScreenPreview() {
             interactionListener = object : TransactionDetailsInteractionListener {
                 override fun onBackBtnClicked() {}
                 override fun onShareReceiptBtnClicked() {}
-                override fun onScreenShotCaptured(imageBitmap: ImageBitmap) {}
+                override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {}
                 override fun onRefresh() {}
                 override fun onSendToDeviceBtnClicked() {}
                 override fun onBottomSheetDismissRequest() {}

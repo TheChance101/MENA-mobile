@@ -19,7 +19,7 @@ data class TransactionDetailsScreenState(
         val userName: String = "",
         val otherParty: String = "",
         val transactionType: TransactionType = TransactionType.PAY,
-        val transactionStatus: TransactionStatus = TransactionStatus.FAILED
+        val transactionStatus: TransactionStatus = TransactionStatus.SUCCESS
     )
 
     enum class TransactionType{

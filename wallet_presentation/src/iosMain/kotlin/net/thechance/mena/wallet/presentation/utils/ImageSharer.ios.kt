@@ -5,8 +5,6 @@ import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSData
 import platform.Foundation.NSTemporaryDirectory
@@ -21,20 +19,18 @@ import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 @OptIn(ExperimentalForeignApi::class)
 actual class ImageSharer {
 
-    actual fun shareImage(
+    actual suspend fun shareImage(
         imageBytes: ByteArray,
         fileName: String,
         mimeType: String
     ) {
-        MainScope().launch {
-            val url = withContext(Dispatchers.IO) {
-                saveFile(imageBytes, fileName)
-            }
-            val activityViewController = UIActivityViewController(listOf(url), null)
-            UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
-                activityViewController, animated = true, completion = null
-            )
+        val url = withContext(Dispatchers.IO) {
+            saveFile(imageBytes, fileName)
         }
+        val activityViewController = UIActivityViewController(listOf(url), null)
+        UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
+            activityViewController, animated = true, completion = null
+        )
     }
 
     actual suspend fun saveImageToGallery(
