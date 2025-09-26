@@ -53,11 +53,9 @@ private fun <T> SelectionChip(
 ) {
     Chip(
         text = getItemName(item),
-        painter = if (getItemImageUrl(item).isNotEmpty()) {
-            rememberAsyncImagePainter(getItemImageUrl(item))
-        } else {
-            null // No image for shelves
-        },
+        painter = if (getItemImageUrl(item).isNotEmpty()) rememberAsyncImagePainter(
+            getItemImageUrl(item)
+        ) else null,
         isSelected = isSelected,
         isEnabled = isEnabled,
         modifier = Modifier,
