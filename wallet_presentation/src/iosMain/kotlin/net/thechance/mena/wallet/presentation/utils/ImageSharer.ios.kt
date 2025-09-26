@@ -4,17 +4,19 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSData
+import platform.Foundation.NSTemporaryDirectory
+import platform.Foundation.NSURL
 import platform.Foundation.dataWithBytes
+import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageWriteToSavedPhotosAlbum
-import platform.UIKit.UIViewController
-import platform.UIKit.UIWindow
 
 @OptIn(ExperimentalForeignApi::class)
 actual class ImageSharer {
@@ -25,12 +27,13 @@ actual class ImageSharer {
         mimeType: String
     ) {
         MainScope().launch {
-            try {
-                val uiImage = byteArrayToUIImage(imageBytes) ?: return@launch
-                shareImageIOS(uiImage)
-            } catch (e: Exception) {
-                throw Exception("Error sharing image: ${e.message}")
+            val url = withContext(Dispatchers.IO) {
+                saveFile(imageBytes, fileName)
             }
+            val activityViewController = UIActivityViewController(listOf(url), null)
+            UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
+                activityViewController, animated = true, completion = null
+            )
         }
     }
 
@@ -49,6 +52,17 @@ actual class ImageSharer {
         }
     }
 
+    @OptIn(ExperimentalForeignApi::class)
+    private fun saveFile(bytes: ByteArray, name: String): NSURL? {
+        val tempDir = NSTemporaryDirectory()
+        val sharedFile = tempDir + name
+        val saved = bytes.usePinned {
+            val nsData = NSData.dataWithBytes(it.addressOf(0), bytes.size.toULong())
+            nsData.writeToFile(sharedFile, true)
+        }
+        return if (saved) NSURL.fileURLWithPath(sharedFile) else null
+    }
+
     private fun byteArrayToUIImage(imageBytes: ByteArray): UIImage? {
         return imageBytes.usePinned { pinned ->
             val nsData = NSData.dataWithBytes(
@@ -57,32 +71,6 @@ actual class ImageSharer {
             )
             return UIImage.imageWithData(nsData)
         }
-    }
-
-    private fun shareImageIOS(image: UIImage) {
-        val activityViewController = UIActivityViewController(
-            activityItems = listOf(image),
-            applicationActivities = null
-        )
-
-        val rootViewController = getRootViewController()
-        rootViewController?.presentViewController(
-            viewControllerToPresent = activityViewController,
-            animated = true,
-            completion = null
-        )
-    }
-
-    private fun getRootViewController(): UIViewController? {
-        val windows = UIApplication.sharedApplication.windows
-
-        for (i in 0 until windows.size) {
-            val window = windows[i] as? UIWindow
-            if (window?.rootViewController != null) {
-                return window.rootViewController
-            }
-        }
-        return null
     }
 }
 
