@@ -8,5 +8,4 @@ fun AyahDto.toAyah() = Ayah(
     surahId = id,
     displayContent = displayContent,
     plainTextContent = plainTextContent,
-    page = page
 )
