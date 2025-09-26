@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 interface ApprovedDukanInteractionListener {
     fun onBackButtonClicked()
     fun onDismissSnackBar()
-    fun onShelfSelected(shelfId: String)
     fun onAddProductClicked()
     fun onEditShelfClicked()
     fun onAddShelfClicked()
