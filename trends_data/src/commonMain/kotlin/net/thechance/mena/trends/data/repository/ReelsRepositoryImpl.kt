@@ -65,7 +65,7 @@ internal class ReelsRepositoryImpl(
                         send(
                             UploadReelProgress(
                                 reelId = "",
-                                uploadedBytes = sent,
+                                numberOfUploadedBytes = sent,
                                 totalBytes = total
                             )
                         )
@@ -75,7 +75,7 @@ internal class ReelsRepositoryImpl(
             send(
                 UploadReelProgress(
                     reelId = "", // TODO: id of uploaded reel
-                    uploadedBytes = size,
+                    numberOfUploadedBytes = size,
                     totalBytes = size
                 )
             )

@@ -81,7 +81,7 @@ internal class UploadTrendViewModel(
     private fun onCollectEachFlow(progress: UploadReelProgress) {
         updateState {
             copy(
-                uploadedMegaBytes = formatBytes(progress.uploadedBytes),
+                uploadedMegaBytes = formatBytes(progress.numberOfUploadedBytes),
                 selectedFile = state.value.selectedFile.copy(id = progress.reelId)
             )
         }
