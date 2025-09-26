@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.UploadReelsRepository
-import net.thechance.mena.trends.domain.usecase.validation.VideoMetaDataValidator
+import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
@@ -24,13 +24,12 @@ internal class UploadTrendViewModel(
     private var job: Job? = null
 
     override fun onRetrieveVideo(file: FileUiState, readBytes: suspend () -> ByteArray) {
-        var bytes = ByteArray(0)
+        var bytes: ByteArray
         tryToExecute(
             block = {
-                validator.validateSize(file.sizeInBytes).also {
-                    bytes = readBytes()
-                    getVideoDuration(bytes)?.let { validator.validateDuration(it) }
-                }
+                validator.validateSize(file.sizeInBytes)
+                bytes = readBytes()
+                getVideoDuration(bytes)?.let { validator.validateDuration(it) }
                 file.copy(bytes = bytes)
             },
             onError = ::onValidationError,
@@ -97,12 +96,8 @@ internal class UploadTrendViewModel(
         }
     }
 
-    private fun onUploadCompleted(errorState: ErrorState?) {
-        errorState?.let {
-            updateState {
-                copy(uploadingState = UploadTrendsScreenState.UploadingState.FAILED)
-            }
-        } ?: updateState {
+    private fun onUploadCompleted() {
+        updateState {
             copy(
                 uploadingState = UploadTrendsScreenState.UploadingState.SUCCESS,
                 isNextButtonEnabled = true

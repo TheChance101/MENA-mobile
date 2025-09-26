@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.domain.usecase.validation
+package net.thechance.mena.trends.domain.validation
 
 import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
 import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException

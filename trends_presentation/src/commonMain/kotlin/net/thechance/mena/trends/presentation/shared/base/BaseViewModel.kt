@@ -37,9 +37,6 @@ internal abstract class BaseViewModel<State, Effect>(
     private val _effect = MutableSharedFlow<Effect>()
     val effect = _effect.throttleFirst(THROTTLE_WINDOW_DURATION)
 
-    @setparam:InjectedParam
-    lateinit var  logger: Logger
-
     protected fun updateState(updater: State.() -> State) {
         _state.update { updater(it) }
     }
@@ -85,19 +82,26 @@ internal abstract class BaseViewModel<State, Effect>(
         onStart: () -> Unit = {},
         onEach: (T) -> Unit,
         onError: (ErrorState) -> Unit,
-        onComplete: (ErrorState?) -> Unit = {},
+        onComplete: () -> Unit = {},
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         scope: CoroutineScope = viewModelScope
     ): Job {
-        return block()
-            .onStart { onStart() }
-            .onEach { onEach(it) }
-            .onCompletion { throwable ->
-                throwable?.let {
-                    mapExceptionToErrorState(throwable, onError)
-                } ?: onComplete(null)
-            }
-            .catch { throwable -> mapExceptionToErrorState(throwable, onError) }
-            .launchIn(scope)
+        val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+            onError(ErrorState.RequestFailed(exception.message))
+        }
+
+        return scope.launch(dispatcher + exceptionHandler) {
+            block()
+                .onStart { onStart() }
+                .onEach { onEach(it) }
+                .onCompletion { throwable ->
+                    throwable?.let {
+                        mapExceptionToErrorState(throwable, onError)
+                    } ?: onComplete()
+                }
+                .catch { throwable -> mapExceptionToErrorState(throwable, onError) }
+                .launchIn(scope)
+        }
     }
 
     private suspend fun mapExceptionToErrorState(
@@ -112,12 +116,12 @@ internal abstract class BaseViewModel<State, Effect>(
             is MaxFileDurationExceededException -> ErrorState.DurationTooLarge
             else -> ErrorState.RequestFailed(message).also { logError(throwable) }
         }.also { errorState ->
-            logger.logError(LOG_TAG, "error state: $errorState")
+            // logger.logError(LOG_TAG, "error state: $errorState")
         }.let { onError(it) }
     }
 
     private fun logError(throwable: Throwable) {
-        logger.logError(LOG_TAG, "${throwable}: ${throwable.message}")
+        // logger.logError(LOG_TAG, "${throwable}: ${throwable.message}")
     }
 
     companion object {
