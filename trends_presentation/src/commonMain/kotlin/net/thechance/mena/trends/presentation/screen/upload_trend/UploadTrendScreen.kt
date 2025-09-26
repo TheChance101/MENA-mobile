@@ -46,7 +46,7 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
 
-            is UploadTrendsScreenEffect.NavigateToDescription -> {
+            is UploadTrendsScreenEffect.NavigateToAddDescription -> {
                 // TODO
             }
 

@@ -138,6 +138,6 @@ internal class UploadTrendViewModel(
     }
 
     override fun onNextClick() {
-        sendEffect(UploadTrendsScreenEffect.NavigateToDescription(state.value.selectedFile.id))
+        sendEffect(UploadTrendsScreenEffect.NavigateToAddDescription(state.value.selectedFile.id))
     }
 }
