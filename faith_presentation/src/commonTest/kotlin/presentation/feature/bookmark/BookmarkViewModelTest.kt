@@ -7,6 +7,8 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.AyahBookmark
@@ -24,11 +26,14 @@ class BookmarkViewModelTest {
 
     private val repository: BookmarkRepository = mock(MockMode.autofill)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init should load bookmarks when viewModel is created`() = runTest {
         everySuspend { repository.getAllAyahBookmarks() } returns FakeData.fakeBookmarks
 
         val viewModel = BookmarkViewModel(repository)
+
+        advanceUntilIdle()
         viewModel.uiState.test {
             val state = awaitItem()
             assertEquals(1, state.bookmarks.size)
