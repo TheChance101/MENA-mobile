@@ -17,21 +17,27 @@ fun ApprovedDukanScreen(
     val state by viewModel.state.collectAsState()
     val navController = LocalNavController.current
 
-        ObserveAsEffect(viewModel.effect) { effect ->
-            when (effect) {
-                ApprovedDukanEffect.NavigateBack -> navController.popBackStack()
+    ObserveAsEffect(viewModel.effect) { effect ->
+        when (effect) {
+            ApprovedDukanEffect.NavigateBack -> navController.popBackStack()
 
-                ApprovedDukanEffect.NavigateToAddShelf -> {
-                    // TODO: Navigate to add shelf screen
-                }
-                ApprovedDukanEffect.NavigateToEditShelf -> {
-                    // TODO: Navigate to edit shelf screen
-                }
-                ApprovedDukanEffect.NavigateToAddProduct -> {
-                    // TODO: Navigate to add product screen
-                }
+            ApprovedDukanEffect.NavigateToAddShelf -> {
+                // TODO: Navigate to add shelf screen
+            }
+
+            ApprovedDukanEffect.NavigateToEditShelf -> {
+                // TODO: Navigate to edit shelf screen
+            }
+
+            ApprovedDukanEffect.NavigateToAddProduct -> {
+                // TODO: Navigate to add product screen
+            }
+
+            ApprovedDukanEffect.NavigateToProductDetails -> {
+                // TODO: Navigate to product details screen
             }
         }
+    }
 
     ApprovedDukanContent(
         state = state,
