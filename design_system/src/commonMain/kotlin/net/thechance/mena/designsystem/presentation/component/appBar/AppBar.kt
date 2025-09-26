@@ -28,8 +28,7 @@ fun AppBar(
     title: String,
     modifier: Modifier = Modifier,
     titleColor: Color = Theme.colorScheme.shadePrimary,
-    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
-    contentTitlePadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     leadingContent: (@Composable () -> Unit)? = null,
     onLeadingClick: (() -> Unit)? = null,
     trailingContent: (@Composable () -> Unit)? = null
@@ -44,6 +43,7 @@ fun AppBar(
         leadingContent?.let { content ->
             AppBarOptionContainer(
                 onClick = onLeadingClick,
+                modifier = Modifier.padding(end = 8.dp),
                 content = content
             )
         }
@@ -51,11 +51,16 @@ fun AppBar(
             text = title,
             color = titleColor,
             style = Theme.typography.title.medium,
-            modifier = Modifier
-                .weight(1f)
-                .padding(contentTitlePadding)
+            modifier = Modifier.weight(1f)
         )
-        trailingContent?.invoke()
+        trailingContent?.let {
+            Row(
+                modifier = Modifier.padding(start = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                trailingContent()
+            }
+        }
     }
 }
 
@@ -83,7 +88,7 @@ private fun AppBarWithBackNavigationPreview() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Theme.colorScheme.background.surface),
+                .background(Theme.colorScheme.background.surfaceLow),
             contentAlignment = Alignment.Center
         ) {
             AppBar(
@@ -106,7 +111,7 @@ private fun AppBarWithOptionsPreview() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Theme.colorScheme.background.surface),
+                .background(Theme.colorScheme.background.surfaceLow),
             contentAlignment = Alignment.Center
         ) {
             AppBar(
@@ -116,10 +121,12 @@ private fun AppBarWithOptionsPreview() {
                         contentDescription = null
                     )
                 },
+                onLeadingClick = {},
                 title = "Screen title",
                 trailingContent = {
                     AppBarOptionContainer(
                         isBadgeVisible = true,
+                        onClick = {},
                         badgeColor = Theme.colorScheme.error
                     ) {
                         Icon(
@@ -129,6 +136,7 @@ private fun AppBarWithOptionsPreview() {
                     }
                     AppBarOptionContainer(
                         isBadgeVisible = true,
+                        onClick = {},
                         badgeColor = Theme.colorScheme.primary.primary
                     ) {
                         Icon(

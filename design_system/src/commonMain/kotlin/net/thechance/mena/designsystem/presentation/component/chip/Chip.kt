@@ -14,14 +14,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import mena.design_system.generated.resources.Res
+import mena.design_system.generated.resources.ic_chip
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun Chip(
@@ -81,5 +87,38 @@ fun Chip(
             letterSpacing = 0.sp,
             lineHeight = 16.sp
         )
+    }
+}
+
+@Preview
+@Composable
+private fun ChipPreview() {
+    MenaTheme {
+        Row(
+            Modifier.background(Color(0xFFF2F4F7)),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Chip(
+                text = "Not selected",
+                painter = painterResource(Res.drawable.ic_chip),
+                isSelected = false,
+                onClick = {}
+            )
+
+            Chip(
+                text = "Selected",
+                painter = painterResource(Res.drawable.ic_chip),
+                isSelected = true,
+                onClick = {}
+            )
+
+            Chip(
+                text = "Not enabled",
+                painter = painterResource(Res.drawable.ic_chip),
+                isSelected = true,
+                isEnabled = false,
+                onClick = {}
+            )
+        }
     }
 }
