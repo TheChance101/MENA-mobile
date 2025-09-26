@@ -50,9 +50,7 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                 // TODO
             }
 
-            UploadTrendsScreenEffect.OpenFilePicker -> {
-
-            }
+            UploadTrendsScreenEffect.NavigateBack -> { } // TODO()
         }
     }
 
@@ -63,12 +61,12 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
         onResult = { file ->
             file?.let {
                 coroutineScope.launch {
-                    val fileMeta = FileUiState(
+                    val fileState = FileUiState(
                         name = file.name,
                         extension = file.extension,
                         sizeInBytes = file.size()
                     )
-                    viewModel.onRetrieveVideo(fileMeta) { file.readBytes() }
+                    viewModel.onRetrieveVideo(fileState) { file.readBytes() }
                 }
             }
         }
@@ -133,7 +131,8 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                 Text("${state.uploadedMegaBytes} MB", style = Theme.typography.body.small)
             }
 
-            if (state.selectedFile.name.isNotBlank()) {
+            state.selectedFile?.let {
+                if (it.name.isNotBlank()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -146,22 +145,20 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                     )
 
                     Text(
-                        "Name: ${state.selectedFile.name}",
+                        "Name: ${it.name}",
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "Size: ${state.selectedFile.size}",
+                        "Size: ${it.size}",
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "MIME Type: ${state.selectedFile.extension}",
-                        style = Theme.typography.body.small
-                    )
-                    Text(
-                        "Duration: ${state.selectedFile.duration} ms",
+                        "MIME Type: ${it.extension}",
                         style = Theme.typography.body.small
                     )
                 }
+            }
+
             }
 
             Row(
