@@ -4,7 +4,7 @@ import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 
 data class UploadTrendsScreenState(
-    val selectedFile: FileUiState = FileUiState(),
+    val selectedFile: FileUiState? = null,
     val uploadingState: UploadingState = UploadingState.IDLE,
     val uploadingProgress: String = "",
     val uploadedMegaBytes: String = "",

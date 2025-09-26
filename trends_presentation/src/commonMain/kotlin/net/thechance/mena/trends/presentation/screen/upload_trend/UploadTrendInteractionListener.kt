@@ -4,7 +4,6 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 
 interface UploadTrendInteractionListener {
     fun onBackClick()
-    fun onUploadVideoClick()
     fun onRetrieveVideo(
         file: FileUiState,
         readBytes: suspend () -> ByteArray
