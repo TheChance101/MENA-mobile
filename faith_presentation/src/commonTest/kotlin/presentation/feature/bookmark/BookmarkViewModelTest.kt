@@ -97,26 +97,25 @@ class BookmarkViewModelTest {
         }
     }
 
-}
-
-object FakeData {
-    @OptIn(ExperimentalTime::class)
-    val fakeBookmarks = listOf(
-        AyahBookmark(
-            id = 1,
-            surah = Surah(
+    private companion object FakeData {
+        @OptIn(ExperimentalTime::class)
+        val fakeBookmarks = listOf(
+            AyahBookmark(
                 id = 1,
-                order = Surah.SurahOrder.AlFatihah,
-                name = "Al-Fatihah",
-                ayahCount = 7,
-                isMakkia = true
-            ),
-            ayah = Ayah(
-                number = 1,
-                surahId = 1,
-                content = "بسم الله الرحمن الرحيم"
-            ),
-            createdAt = Instant.DISTANT_PAST
+                surah = Surah(
+                    id = 1,
+                    order = Surah.SurahOrder.AlFatihah,
+                    name = "Al-Fatihah",
+                    ayahCount = 7,
+                    isMakkia = true
+                ),
+                ayah = Ayah(
+                    number = 1,
+                    surahId = 1,
+                    content = "بسم الله الرحمن الرحيم"
+                ),
+                createdAt = Instant.DISTANT_PAST
+            )
         )
-    )
+    }
 }
