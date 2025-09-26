@@ -5,6 +5,6 @@ data class FileUiState(
     val name: String = "",
     val extension: String = "",
     val sizeInBytes: Long = 0L,
-    val size: String = "",
+    val sizeInMegaBytes: String = "",
     val bytes: ByteArray = ByteArray(0),
 )

@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.upload_trend
 
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -48,7 +47,7 @@ internal class UploadTrendViewModel(
                     name = file.name,
                     extension = file.extension,
                     sizeInBytes = file.sizeInBytes,
-                    size = formatBytes(file.sizeInBytes),
+                    sizeInMegaBytes = formatBytes(file.sizeInBytes),
                     bytes = file.bytes
                 )
             )

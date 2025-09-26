@@ -7,15 +7,17 @@ import org.koin.core.annotation.Single
 @Single
 class VideoMetaDataValidator {
     fun validateSize(sizeInBytes: Long) {
-        sizeInBytes.takeIf { it <= MAX_FILE_SIZE } ?: throw MaxFileSizeExceededException()
+        sizeInBytes.takeIf { it <= MAX_FILE_SIZE_100MB } ?: throw MaxFileSizeExceededException()
     }
 
     fun validateDuration(durationInMillis: Long?) {
-        durationInMillis?.takeIf { it <= MAX_FILE_DURATION } ?: throw MaxFileDurationExceededException()
+        durationInMillis?.takeIf {
+            it <= MAX_FILE_DURATION_IN_MILLIS
+        } ?: throw MaxFileDurationExceededException()
     }
 
     private companion object {
-        const val MAX_FILE_SIZE = 100 * 1024 * 1024
-        const val MAX_FILE_DURATION = 60_000
+        const val MAX_FILE_SIZE_100MB = 100 * 1024 * 1024
+        const val MAX_FILE_DURATION_IN_MILLIS = 60_000
     }
 }

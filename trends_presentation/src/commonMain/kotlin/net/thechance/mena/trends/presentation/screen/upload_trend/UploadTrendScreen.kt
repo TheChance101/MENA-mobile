@@ -148,7 +148,7 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "Size: $size",
+                        "Size: $sizeInMegaBytes",
                         style = Theme.typography.body.small
                     )
                     Text(
