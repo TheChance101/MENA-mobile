@@ -61,16 +61,18 @@ class ApprovedDukanViewModel(
             onStart = { updateState { copy(isLoading = true) } },
             block = { shelfRepository.getMyDukanShelves() },
             onSuccess = { shelves -> handleShelvesLoaded(shelves) },
-            onError = {
-                updateState {
-                    copy(
-                        isLoading = false,
-                        showSnackBar = true
-                    )
-                }
-            },
+            onError = { handleLoadShelvesError() },
             dispatcher = ioDispatcher
         )
+    }
+
+    private fun handleLoadShelvesError() {
+        updateState {
+            copy(
+                isLoading = false,
+                showSnackBar = true
+            )
+        }
     }
 
     private fun handleShelvesLoaded(shelves: List<Shelf>) {
@@ -86,10 +88,7 @@ class ApprovedDukanViewModel(
     }
 
     private fun selectFirstShelfByDefault(shelves: List<Shelf>): Set<Shelf> {
-        return if (shelves.isNotEmpty()) {
-            setOf(shelves.first())
-        } else {
-            emptySet()
-        }
+        return if (shelves.isNotEmpty()) setOf(shelves.first()) else emptySet()
     }
+
 }
