@@ -7,9 +7,7 @@ fun Int?.orZero(): Int = this ?: 0
 
 fun String?.parseDateStringOrNull(): LocalDateTime? {
     if (this.isNullOrBlank()) return null
-    return try {
+    return runCatching {
         LocalDateTime.parse(this)
-    } catch (e: Exception) {
-        null
-    }
+    }.getOrNull()
 }
