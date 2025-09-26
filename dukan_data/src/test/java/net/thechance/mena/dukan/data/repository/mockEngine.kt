@@ -96,6 +96,11 @@ fun MockRequestHandleScope.defaultNameAvailableResponse(isTaken: Boolean) = resp
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultDeleteShelfResponse() = respond(
+    content = "",
+    status = HttpStatusCode.NoContent,
+    headers = jsonHeaders
+)
 
 fun createHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -105,7 +110,10 @@ fun createHttpClient(
     statusResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
+     val shelfId="1"
+
     return HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
             "/dukan/create" -> createResponse?.invoke(this) ?: defaultCreateResponse()
@@ -115,14 +123,25 @@ fun createHttpClient(
             "/dukan/statues" -> statusResponse?.invoke(this) ?: defaultStatusResponse()
             "/dukan/image" -> uploadResponse?.invoke(this) ?: defaultUploadResponse()
             "/dukan/available" -> nameResponse?.invoke(this) ?: defaultNameAvailableResponse(false)
+            "/dukan/shelf/$shelfId" -> deleteResponse?.invoke(this) ?: defaultDeleteShelfResponse()
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
     }) {
         install(ContentNegotiation) { json(jsonSerialization) }
         install(DefaultRequest) { contentType(ContentType.Application.Json) }
     }
+
 }
 
+fun shelfRepository(
+    deleteShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+): ShelfRepositoryImpl {
+    return ShelfRepositoryImpl(
+        client = createHttpClient(
+            deleteResponse = deleteShelfResponse
+        )
+    )
+}
 
 fun createDukanRepository(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,

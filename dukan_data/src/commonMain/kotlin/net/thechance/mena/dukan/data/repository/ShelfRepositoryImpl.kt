@@ -21,14 +21,14 @@ class ShelfRepositoryImpl (
     override suspend fun deleteShelf(shelfId: String): Boolean {
         val response: HttpResponse = safeApiCall {
             client.delete(
-                urlString = "$BASE_URL/dukan/shelf/$shelfId",
+                urlString = "$BASE_URL/shelf/$shelfId",
             )
         }
-        return response.status.value in SUCCESS
+        return isSuccess(response.status.value)
     }
 
     companion object {
         private const val BASE_URL = "/dukan"
-        private val SUCCESS = 200..299
+        private fun isSuccess(status: Int) = status in 200..299
     }
 }
