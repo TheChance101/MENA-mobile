@@ -43,7 +43,7 @@ class BookmarkViewModelTest {
         verifySuspend { repository.getAllAyahBookmarks() }
     }
 
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `onDeleteBookmarkClick should remove bookmark from state when repository succeeds`() =
         runTest {
@@ -53,6 +53,7 @@ class BookmarkViewModelTest {
             val viewModel = BookmarkViewModel(repository)
             viewModel.onDeleteBookmarkClick(1)
 
+            advanceUntilIdle()
             viewModel.uiState.test {
                 val state = awaitItem()
                 assertTrue(state.bookmarks.isEmpty())
