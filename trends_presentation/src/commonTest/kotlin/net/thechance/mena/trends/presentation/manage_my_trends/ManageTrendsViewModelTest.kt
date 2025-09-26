@@ -52,46 +52,48 @@ class ManageTrendsViewModelTest {
     }
 
     @Test
-    fun `view model should update state by reels when getAllReels returns data`() = runTest(testDispatcher) {
-        // Given
-        everySuspend { repository.getAllReels(1) } returns reelList
+    fun `view model should update state by reels when getAllReels returns data`() =
+        runTest(testDispatcher) {
+            // Given
+            everySuspend { repository.getAllReels(1) } returns reelList
 
-        // When
-        val viewModel = ManageTrendsViewModel(repository)
-        testScheduler.advanceUntilIdle()
+            // When
+            val viewModel = ManageTrendsViewModel(repository)
+            testScheduler.advanceUntilIdle()
 
-        // Then
-        viewModel.state.test {
-            val currentState = awaitItem()
-            assertEquals(false, currentState.isLoading)
-            assertNotNull(currentState.reels)
-            assertEquals(null, currentState.error)
+            // Then
+            viewModel.state.test {
+                val currentState = awaitItem()
+                assertEquals(false, currentState.isLoading)
+                assertNotNull(currentState.reels)
+                assertEquals(null, currentState.error)
 
-            val reelsSnapshot: List<ReelUiState> = currentState.reels.asSnapshot()
-            assertEquals(expectedReelUiStateList, reelsSnapshot)
+                val reelsSnapshot: List<ReelUiState> = currentState.reels.asSnapshot()
+                assertEquals(expectedReelUiStateList, reelsSnapshot)
+            }
         }
-    }
 
     @Test
-    fun `initialize view model should handle error state when getAllReels fails`() = runTest(testDispatcher) {
-        // Given
-        val errorMessage = "Network error"
-        everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
+    fun `initialize view model should handle error state when getAllReels fails`() =
+        runTest(testDispatcher) {
+            // Given
+            val errorMessage = "Network error"
+            everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
 
-        // When
-        val viewModel = ManageTrendsViewModel(repository)
-        testScheduler.advanceUntilIdle()
+            // When
+            val viewModel = ManageTrendsViewModel(repository)
+            testScheduler.advanceUntilIdle()
 
-        // Then
-        viewModel.state.test {
-            val currentState = awaitItem()
-            assertEquals(false, currentState.isLoading)
-            assertNull(currentState.error)
+            // Then
+            viewModel.state.test {
+                val currentState = awaitItem()
+                assertEquals(false, currentState.isLoading)
+                assertNull(currentState.error)
+            }
+            assertFailsWith<Exception> {
+                viewModel.state.value.reels?.asSnapshot()
+            }
         }
-        assertFailsWith<Exception> {
-            viewModel.state.value.reels?.asSnapshot()
-        }
-    }
 
     @Test
     fun `getReels should set loading state during execution`() = runTest(testDispatcher) {
@@ -181,6 +183,7 @@ class ManageTrendsViewModelTest {
             assertEquals(expectedReelUiStateList, reelsSnapshot)
         }
     }
+
     @Test
     fun `toUiState extension function should map correctly`() {
         // Given
