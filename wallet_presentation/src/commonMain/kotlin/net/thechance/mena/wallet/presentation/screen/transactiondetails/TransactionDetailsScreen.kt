@@ -70,7 +70,6 @@ private fun TransactionDetailsScreenContent(
                 title = stringResource(Res.string.transaction_details_header),
                 titleColor = Theme.colorScheme.shadePrimary,
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                contentTitlePadding = PaddingValues(start = 8.dp),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),

@@ -43,15 +43,12 @@ internal fun ScaffoldScope.shareTransactionDetailsBottomSheet(
 ){
     bottomSheet(isVisible = isVisible){
         BottomSheet(
-            isVisible = isVisible,
             onDismissRequest = onDismissRequest,
             sheetContent = {
-                item {
-                    ShareTransactionDetailsBottomSheetContent(
-                        image = image,
-                        onSendToDeviceBtnClicked = onSendToDeviceBtnClicked
-                    )
-                }
+                ShareTransactionDetailsBottomSheetContent(
+                    image = image,
+                    onSendToDeviceBtnClicked = onSendToDeviceBtnClicked
+                )
             }
         )
     }
