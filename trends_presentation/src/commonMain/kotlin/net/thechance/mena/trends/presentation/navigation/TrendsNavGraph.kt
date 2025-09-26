@@ -14,10 +14,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.trends.presentation.screen.main_container.MainContainerScreen
 import net.thechance.mena.trends.presentation.screen.category_pick.CategoryPickScreen
+import net.thechance.mena.trends.presentation.screen.main_container.MainContainerScreen
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsScreen
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelScreen
+import net.thechance.mena.trends.presentation.screen.video_description.VideoDescriptionScreen
 
 @Composable
 fun TrendsNavHost() {
@@ -60,6 +61,10 @@ fun TrendsNavHost() {
                   .fillMaxSize()
                   .padding(top = 100.dp)
             )
+         }
+
+         composable<Route.VideoDescription> {
+            VideoDescriptionScreen()
          }
       }
    }

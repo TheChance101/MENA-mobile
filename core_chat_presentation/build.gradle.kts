@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kover)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.mockkery)
 }
 
 kotlin {
@@ -29,22 +31,52 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.android)
         }
         commonMain.dependencies {
+            implementation(projects.coreChatApi)
             implementation(projects.coreChatDomain)
             implementation(projects.designSystem)
+
+            // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            //coil
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
+
+            //data time
+            implementation(libs.kotlinx.datetime)
+
+            // Serialization
+            implementation(libs.kotlinx.serialization.json)
+
+            // Navigation
+            implementation(libs.androidx.navigation.compose)
+
+            // Paging 3
+            implementation(libs.androidx.paging.runtime)
+            implementation(libs.androidx.paging.compose)
+
+            // Koin
+            implementation(libs.bundles.koin.compose)
+
+            //permission
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.compose)
         }
         iosMain.dependencies {
-
+            implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
+                implementation(libs.kotlin.test)
+                implementation(libs.assertk)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.turbine)
         }
     }
 }
@@ -58,6 +90,10 @@ android {
     }
 }
 
+dependencies {
+    debugImplementation(compose.uiTooling)
+}
+
 kover.reports {
     verify {
         rule {
@@ -66,8 +102,11 @@ kover.reports {
     }
 
     filters {
-        excludes {
-            packages("mena.core_chat_presentation.generated.resources*")
+        includes {
+            classes(
+                "*SyncContactsViewModel*",
+                "*ContactsViewModel*",
+            )
         }
     }
 }
