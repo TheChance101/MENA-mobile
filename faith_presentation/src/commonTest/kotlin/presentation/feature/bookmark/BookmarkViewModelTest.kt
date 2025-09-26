@@ -26,18 +26,15 @@ class BookmarkViewModelTest {
 
     @Test
     fun `init should load bookmarks when viewModel is created`() = runTest {
-
         everySuspend { repository.getAllAyahBookmarks() } returns FakeData.fakeBookmarks
 
-
         val viewModel = BookmarkViewModel(repository)
-
-
         viewModel.uiState.test {
             val state = awaitItem()
             assertEquals(1, state.bookmarks.size)
             assertEquals(1, state.bookmarks.first().bookmarkId)
         }
+
         verifySuspend { repository.getAllAyahBookmarks() }
     }
 
@@ -45,15 +42,11 @@ class BookmarkViewModelTest {
     @Test
     fun `onDeleteBookmarkClick should remove bookmark from state when repository succeeds`() =
         runTest {
-
             everySuspend { repository.getAllAyahBookmarks() } returns FakeData.fakeBookmarks
             everySuspend { repository.deleteAyahBookmark(1) } returns Unit
 
             val viewModel = BookmarkViewModel(repository)
-
-
             viewModel.onDeleteBookmarkClick(1)
-
 
             viewModel.uiState.test {
                 val state = awaitItem()
@@ -65,15 +58,12 @@ class BookmarkViewModelTest {
 
     @Test
     fun `onDeleteBookmarkClick should keep bookmarks when repository fails`() = runTest {
-
         everySuspend { repository.getAllAyahBookmarks() } returns FakeData.fakeBookmarks
         everySuspend { repository.deleteAyahBookmark(1) } throws RuntimeException("delete failed")
 
         val viewModel = BookmarkViewModel(repository)
 
-
         viewModel.onDeleteBookmarkClick(1)
-
 
         viewModel.uiState.test {
             val state = awaitItem()
