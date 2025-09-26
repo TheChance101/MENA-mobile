@@ -11,19 +11,15 @@ import coil3.compose.rememberAsyncImagePainter
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
-interface SelectableItem {
-    val id: String
-    val name: String
-    val imageUrl: String
-}
-
 @Composable
-fun <T : SelectableItem> SelectionRow(
+fun <T> SelectionRow(
     availableItems: List<T>,
     isItemSelected: (T) -> Boolean,
     onItemSelected: (T) -> Boolean,
     onItemDeselected: (T) -> Boolean,
-    onItemEnabled: (T) -> Boolean
+    onItemEnabled: (T) -> Boolean,
+    getItemName: (T) -> String,
+    getItemImageUrl: (T) -> String = { "" }
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
@@ -36,7 +32,9 @@ fun <T : SelectableItem> SelectionRow(
                     isSelected = isItemSelected(item),
                     isEnabled = onItemEnabled(item),
                     onItemSelected = onItemSelected,
-                    onItemDeselected = onItemDeselected
+                    onItemDeselected = onItemDeselected,
+                    getItemName = getItemName,
+                    getItemImageUrl = getItemImageUrl
                 )
             }
         }
@@ -44,17 +42,19 @@ fun <T : SelectableItem> SelectionRow(
 }
 
 @Composable
-private fun <T : SelectableItem> SelectionChip(
+private fun <T> SelectionChip(
     item: T,
     isSelected: Boolean,
     isEnabled: Boolean,
     onItemSelected: (T) -> Boolean,
-    onItemDeselected: (T) -> Boolean
+    onItemDeselected: (T) -> Boolean,
+    getItemName: (T) -> String,
+    getItemImageUrl: (T) -> String
 ) {
     Chip(
-        text = item.name,
-        painter = if (item.imageUrl.isNotEmpty()) {
-            rememberAsyncImagePainter(item.imageUrl)
+        text = getItemName(item),
+        painter = if (getItemImageUrl(item).isNotEmpty()) {
+            rememberAsyncImagePainter(getItemImageUrl(item))
         } else {
             null // No image for shelves
         },

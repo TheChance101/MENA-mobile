@@ -74,7 +74,9 @@ fun CreateDukanContentBasicInformation(
                 isItemSelected = interactionListener.isCategorySelected(),
                 onItemSelected = interactionListener::onCategorySelected,
                 onItemDeselected = interactionListener::onCategoryDeselected,
-                onItemEnabled = interactionListener::onCategoryEnabled
+                onItemEnabled = interactionListener::onCategoryEnabled,
+                getItemName = { it.name },
+                getItemImageUrl = { it.imageUrl }
             )
         }
     }

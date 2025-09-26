@@ -94,7 +94,8 @@ fun ApprovedDukanContent(
                     isItemSelected = listener.isShelfSelected(),
                     onItemSelected = listener::onShelfSelected,
                     onItemDeselected = listener::onShelfDeselected,
-                    onItemEnabled = listener::onShelfEnabled
+                    onItemEnabled = listener::onShelfEnabled,
+                    getItemName = { it.name }
                 )
             }
 

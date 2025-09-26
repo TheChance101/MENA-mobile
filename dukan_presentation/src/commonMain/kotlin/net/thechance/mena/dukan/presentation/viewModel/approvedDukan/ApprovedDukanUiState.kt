@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.presentation.component.SelectableItem
 
 data class ApprovedDukanUiState(
     val shelves: List<Shelf> = emptyList(),
@@ -13,7 +12,6 @@ data class ApprovedDukanUiState(
 )
 
 data class ShelfUiState(
-    override val id: String,
-    override val name: String,
-    override val imageUrl: String = ""
-) : SelectableItem
+    val id: String,
+    val name: String,
+)
