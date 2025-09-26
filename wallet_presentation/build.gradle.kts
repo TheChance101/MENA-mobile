@@ -39,10 +39,12 @@ kotlin {
             implementation(projects.designSystem)
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            //data time
+            implementation(libs.kotlinx.datetime)
 
             //Koin
             implementation(libs.koin.core)

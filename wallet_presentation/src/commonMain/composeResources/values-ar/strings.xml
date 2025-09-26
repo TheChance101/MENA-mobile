@@ -34,4 +34,19 @@
     <string name="send_to_your_device">أرسل إلى جهازك</string>
     <string name="transaction_details_screenshot">لقطة شاشة لتفاصيل المعاملة</string>
     <string name="computer_phone_sync_icon">أيقونة مزامنة الهاتف والكمبيوتر</string>
+    <string name="month_january">يناير</string>
+    <string name="month_february">فبراير</string>
+    <string name="month_march">مارس</string>
+    <string name="month_april">أبريل</string>
+    <string name="month_may">مايو</string>
+    <string name="month_june">يونيو</string>
+    <string name="month_july">يوليو</string>
+    <string name="month_august">أغسطس</string>
+    <string name="month_september">سبتمبر</string>
+    <string name="month_october">أكتوبر</string>
+    <string name="month_november">نوفمبر</string>
+    <string name="month_december">ديسمبر</string>
+    <string name="pick_start_date">اختر تاريخ البداية</string>
+    <string name="pick_end_date">اختار تاريخ النهاية</string>
+    <string name="pick">اختر</string>
 </resources>
