@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_add_bold
@@ -29,10 +32,11 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.presentation.component.SelectionRow
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
-import net.thechance.mena.dukan.presentation.component.SelectionRow
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewApprovedDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
@@ -106,7 +110,14 @@ fun ApprovedDukanContent(
             }
 
             item {
-                if (state.shelves.isEmpty()) EmptyStateContent() else ProductListContent()
+                when {
+                    state.isLoadingProducts -> LoadingProductsContent()
+                    state.products.isEmpty() -> EmptyStateContent()
+                    else -> ProductListContent(
+                        products = state.products,
+                        onProductClick = listener::onProductClick
+                    )
+                }
             }
         }
 
@@ -185,21 +196,64 @@ private fun EmptyStateContent() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // TODO add empty state
+        // TODO: Replace with EmptyState component from design system when ready
+        Text(
+            text = "No products in this shelf",
+            style = Theme.typography.body.medium,
+            color = Theme.colorScheme.shadeSecondary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
 @Composable
-private fun ProductListContent() {
+private fun LoadingProductsContent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
-        // TODO add product list
+        // TODO: Replace with Loading component when ready
+        repeat(3) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .background(
+                        Theme.colorScheme.shadeSecondary.copy(alpha = 0.1f),
+                        RoundedCornerShape(Theme.radius.lg)
+                    )
+            )
+        }
     }
 }
+
+@Composable
+private fun ProductListContent(
+    products: List<Product>,
+    onProductClick: (Product) -> Unit
+) {
+    // TODO: Replace with ProductCard component when ready
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing._16),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+    ) {
+        products.forEach { product ->
+            Column(
+                modifier = Modifier
+            ) {
+                Text(
+                    text = product.name,
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary
+                )
+            }
+        }
+    }
+}
+
 
 @Preview
 @Composable

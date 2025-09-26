@@ -112,7 +112,7 @@ class ApprovedDukanViewModel(
             onStart = { updateState { copy(isLoadingProducts = isLoading) } },
             block = { getProductsForShelves(selectedShelves) },
             onSuccess = { products -> handleProductsLoaded(products) },
-            onError = { handleLoadProductsError() }
+            onError = { updateState { copy(isLoadingProducts = false) } }
         )
     }
 
@@ -132,11 +132,6 @@ class ApprovedDukanViewModel(
         }
     }
 
-    private fun handleLoadProductsError() {
-        updateState { copy(isLoadingProducts = false) }
-        showSnackBar("Failed to load products")
-    }
-
     private fun clearProducts() {
         updateState {
             copy(
@@ -149,10 +144,6 @@ class ApprovedDukanViewModel(
 
     private fun selectFirstShelfByDefault(shelves: List<Shelf>): Set<Shelf> {
         return if (shelves.isNotEmpty()) setOf(shelves.first()) else emptySet()
-    }
-
-    private fun showSnackBar(message: String) {
-        updateState { copy(showSnackBar = true) }
     }
 
 }
