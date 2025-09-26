@@ -1,9 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import org.koin.android.annotation.KoinViewModel
@@ -39,11 +36,7 @@ internal class UserReelViewModel(
     }
 
     private fun onDeleteReelSuccess() {
-
-
         updateState { copy(isConfirmationDialogVisible = false, isReelDeleted = true) }
-
-
     }
 
     override fun onDismissSuccessDialog() {
