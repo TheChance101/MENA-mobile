@@ -13,12 +13,9 @@ import platform.Foundation.dataWithBytes
 import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
-import platform.UIKit.UIImage
-import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 
 @OptIn(ExperimentalForeignApi::class)
 actual class ImageSharer {
-
     actual suspend fun shareImage(
         imageBytes: ByteArray,
         fileName: String,
@@ -33,21 +30,6 @@ actual class ImageSharer {
         )
     }
 
-    actual suspend fun saveImageToGallery(
-        imageBytes: ByteArray,
-        fileName: String
-    ): Boolean {
-        return withContext(Dispatchers.Main) {
-            try {
-                val uiImage = byteArrayToUIImage(imageBytes) ?: return@withContext false
-                UIImageWriteToSavedPhotosAlbum(uiImage, null, null, null)
-                true
-            } catch (e: Exception) {
-                throw Exception("Error saving image to gallery: ${e.message}")
-            }
-        }
-    }
-
     @OptIn(ExperimentalForeignApi::class)
     private fun saveFile(bytes: ByteArray, name: String): NSURL? {
         val tempDir = NSTemporaryDirectory()
@@ -57,16 +39,6 @@ actual class ImageSharer {
             nsData.writeToFile(sharedFile, true)
         }
         return if (saved) NSURL.fileURLWithPath(sharedFile) else null
-    }
-
-    private fun byteArrayToUIImage(imageBytes: ByteArray): UIImage? {
-        return imageBytes.usePinned { pinned ->
-            val nsData = NSData.dataWithBytes(
-                bytes = pinned.addressOf(0),
-                length = imageBytes.size.toULong()
-            )
-            return UIImage.imageWithData(nsData)
-        }
     }
 }
 
