@@ -132,8 +132,8 @@ fun ApprovedDukanContent(
 
     SnackBar(
         snackBarUiState = SnackBarUiState(
-            snackBarType = SnackBarType.ERROR,
-            message = "Failed to load shelves"
+            snackBarType = if (state.showShelfAddedSuccess) SnackBarType.SUCCESS else SnackBarType.ERROR,
+            message = if (state.showShelfAddedSuccess) "Add shelf successfully" else "Failed to Add shelf"
         ),
         isVisible = state.showSnackBar,
         onDismiss = listener::onDismissSnackBar

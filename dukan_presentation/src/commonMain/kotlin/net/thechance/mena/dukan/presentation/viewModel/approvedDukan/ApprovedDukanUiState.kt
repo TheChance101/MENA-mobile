@@ -11,5 +11,6 @@ data class ApprovedDukanUiState(
     val productCount: Int = 0,
     val isLoading: Boolean = false,
     val isLoadingProducts: Boolean = false,
-    val showSnackBar: Boolean = false
+    val showSnackBar: Boolean = false,
+    val showShelfAddedSuccess: Boolean = false
 )

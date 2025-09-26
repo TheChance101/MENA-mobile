@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.approvedDukan
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -17,6 +18,10 @@ fun ApprovedDukanScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val navController = LocalNavController.current
+
+    LaunchedEffect(Unit) {
+        viewModel.showShelfAddedSuccess()
+    }
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {

@@ -27,9 +27,13 @@ class ApprovedDukanViewModel(
     }
 
     override fun onDismissSnackBar() {
-        updateState { copy(showSnackBar = false) }
+        updateState { 
+            copy(
+                showSnackBar = false,
+                showShelfAddedSuccess = false
+            ) 
+        }
     }
-
 
     override fun onAddProductClicked() {
         emitEffect(ApprovedDukanEffect.NavigateToAddProduct)
@@ -40,6 +44,7 @@ class ApprovedDukanViewModel(
     }
 
     override fun onAddShelfClicked() {
+        updateState { copy(showShelfAddedSuccess = true) }
         emitEffect(ApprovedDukanEffect.NavigateToAddShelf)
     }
 
@@ -69,6 +74,16 @@ class ApprovedDukanViewModel(
 
     override fun onShelfEnabled(shelf: Shelf): Boolean = true
 
+    fun showShelfAddedSuccess() {
+        if (state.value.showShelfAddedSuccess) {
+            updateState {
+                copy(
+                    showSnackBar = true
+                )
+            }
+        }
+    }
+
     private fun loadShelves() {
         tryToExecute(
             onStart = { updateState { copy(isLoading = true) } },
@@ -82,7 +97,8 @@ class ApprovedDukanViewModel(
         updateState {
             copy(
                 isLoading = false,
-                showSnackBar = true
+                showSnackBar = true,
+                showShelfAddedSuccess = false
             )
         }
     }
