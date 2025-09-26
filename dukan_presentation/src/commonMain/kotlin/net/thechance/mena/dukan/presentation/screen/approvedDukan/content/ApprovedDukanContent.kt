@@ -82,7 +82,7 @@ fun ApprovedDukanContent(
                     color = Theme.colorScheme.shadePrimary,
                     modifier = Modifier.padding(
                         horizontal = Theme.spacing._16,
-                        vertical = Theme.spacing._4
+                        vertical = Theme.spacing._8
                     )
                 )
             }
