@@ -9,7 +9,6 @@ data class TransactionDetailsScreenState(
     val transactionDetailsUiState: UiState<TransactionDetailsUiState> = UiState.Idle,
     val shareReceipt: UiState<ImageBitmap> = UiState.Idle,
     val snackBar: SnackBarState = SnackBarState(),
-    val isBottomSheetVisible: Boolean = false,
     val captureController: CaptureController = CaptureController()
 ){
     data class TransactionDetailsUiState(

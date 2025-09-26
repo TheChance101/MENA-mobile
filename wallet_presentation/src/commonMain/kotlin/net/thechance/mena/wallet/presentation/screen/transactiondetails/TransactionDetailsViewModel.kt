@@ -61,7 +61,6 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
         val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
         updateState { it.copy(
             shareReceipt = UiState.Success(imageBitmap),
-            //isBottomSheetVisible = true
         ) }
         tryToExecute(
             callee = {
@@ -129,7 +128,6 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
     }
 
     override fun onBottomSheetDismissRequest() {
-        updateState { it.copy(isBottomSheetVisible = false) }
     }
 
     private companion object{

@@ -18,7 +18,6 @@ fun WalletScaffold(
     modifier: Modifier = Modifier,
     topBar: (@Composable () -> Unit) ? = null,
     snackBar: (@Composable () -> Unit)? = null,
-    overlays: ScaffoldScope .() -> Unit = {},
     backgroundColor: Color = Theme.colorScheme.background.surface,
     content: @Composable () -> Unit
 ) {
@@ -30,7 +29,6 @@ fun WalletScaffold(
     ) {
         Scaffold(
             topBar = { topBar?.invoke() },
-            overlays = overlays,
             content = content
         )
 

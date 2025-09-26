@@ -35,7 +35,6 @@ import net.thechance.mena.wallet.presentation.screen.transactiondetails.Transact
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionStatus
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.DetailsSection
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.TransactionDetailsScreenShot
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.shareTransactionDetailsBottomSheet
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -81,19 +80,6 @@ private fun TransactionDetailsScreenContent(
             )
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
-        overlays = {
-            when (state.shareReceipt) {
-                is UiState.Error, UiState.Loading, UiState.Idle -> {}
-                is UiState.Success<*> -> {
-                    shareTransactionDetailsBottomSheet(
-                        isVisible = state.isBottomSheetVisible,
-                        onDismissRequest = interactionListener::onBottomSheetDismissRequest,
-                        onSendToDeviceBtnClicked = interactionListener::onSendToDeviceBtnClicked,
-                        image = state.shareReceipt.data as ImageBitmap
-                    )
-                }
-            }
-        }
     ) {
         Crossfade(
             targetState = state.transactionDetailsUiState,
