@@ -1,13 +1,12 @@
 package net.thechance.mena.trends.presentation.user_reel
 
 import app.cash.turbine.test
+import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
-import dev.mokkery.mock
-import dev.mokkery.MockMode
 import dev.mokkery.every
 import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -15,19 +14,16 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelEffect
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelViewModel
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -42,7 +38,6 @@ class UserReelViewModelTest {
 
     @BeforeTest
     fun setup() {
-        // Given
         Dispatchers.setMain(testDispatcher)
 
         every { userReelArgs.realId } returns "1"
@@ -53,7 +48,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should initialize with default state`() = runTest {
+    fun `should initialize UserReelUiState with default state`() = runTest {
         // When
         viewModel.state.test {
             val initialState = awaitItem()
@@ -171,10 +166,25 @@ class UserReelViewModelTest {
         }
     }
 
+    @Test
+    fun `onConfirmDeleteClick should update error state when repository throws exception`() = runTest {
+        // Given
+        val errorMessage = "Delete failed"
+        everySuspend { mockReelsRepository.deleteReelById("1") } throws Exception(errorMessage)
+
+        // When
+        viewModel.onConfirmDeleteClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        viewModel.state.test {
+            val errorState = awaitItem()
+            assertNotNull(errorState.error is ErrorState)
+        }
+    }
 
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
-        stopKoin()
     }
 }
