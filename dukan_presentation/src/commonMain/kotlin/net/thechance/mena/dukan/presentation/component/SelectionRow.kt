@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component
+package net.thechance.mena.dukan.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,25 +13,25 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
 
 @Composable
-fun CategorySelectionRow(
-    availableCategories: List<DukanCategoryUiState>,
-    isCategorySelected: (DukanCategoryUiState) -> Boolean,
-    onCategorySelected: (DukanCategoryUiState) -> Boolean,
-    onCategoryDeselected: (DukanCategoryUiState) -> Boolean,
-    onCategoryEnabled: (DukanCategoryUiState) -> Boolean
+fun SelectionRow(
+    availableItems: List<DukanCategoryUiState>,
+    isItemSelected: (DukanCategoryUiState) -> Boolean,
+    onItemSelected: (DukanCategoryUiState) -> Boolean,
+    onItemDeselected: (DukanCategoryUiState) -> Boolean,
+    onItemEnabled: (DukanCategoryUiState) -> Boolean
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        availableCategories.forEach { category ->
+        availableItems.forEach { item ->
             item {
-                CategoryChip(
-                    category = category,
-                    isSelected = isCategorySelected(category),
-                    isEnabled = onCategoryEnabled(category),
-                    onCategorySelected = onCategorySelected,
-                    onCategoryDeselected = onCategoryDeselected
+                SelectionChip(
+                    item = item,
+                    isSelected = isItemSelected(item),
+                    isEnabled = onItemEnabled(item),
+                    onItemSelected = onItemSelected,
+                    onItemDeselected = onItemDeselected
                 )
             }
         }
@@ -39,23 +39,23 @@ fun CategorySelectionRow(
 }
 
 @Composable
-private fun CategoryChip(
-    category: DukanCategoryUiState,
+private fun SelectionChip(
+    item: DukanCategoryUiState,
     isSelected: Boolean,
     isEnabled: Boolean,
-    onCategorySelected: (DukanCategoryUiState) -> Boolean,
-    onCategoryDeselected: (DukanCategoryUiState) -> Boolean
+    onItemSelected: (DukanCategoryUiState) -> Boolean,
+    onItemDeselected: (DukanCategoryUiState) -> Boolean
 ) {
     Chip(
-        text = category.name,
-        painter = rememberAsyncImagePainter(category.imageUrl),
+        text = item.name,
+        painter = rememberAsyncImagePainter(item.imageUrl),
         isSelected = isSelected,
         isEnabled = isEnabled,
         modifier = Modifier,
         iconSize = 16.dp,
         shape = RoundedCornerShape(Theme.radius.full),
         onClick = {
-            if (isSelected) onCategoryDeselected(category) else onCategorySelected(category)
+            if (isSelected) onItemDeselected(item) else onItemSelected(item)
         }
     )
 }

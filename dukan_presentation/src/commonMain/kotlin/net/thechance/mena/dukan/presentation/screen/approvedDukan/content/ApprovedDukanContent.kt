@@ -32,7 +32,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
-import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.CategorySelectionRow
+import net.thechance.mena.dukan.presentation.component.SelectionRow
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewApprovedDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
@@ -88,12 +88,12 @@ fun ApprovedDukanContent(
             }
 
             item {
-                CategorySelectionRow(
-                    availableCategories = state.categories,
-                    isCategorySelected = listener.isCategorySelected(),
-                    onCategorySelected = listener::onCategorySelected,
-                    onCategoryDeselected = listener::onCategoryDeselected,
-                    onCategoryEnabled = listener::onCategoryEnabled
+                SelectionRow(
+                    availableItems = state.categories,
+                    isItemSelected = listener.isItemSelected(),
+                    onItemSelected = listener::onItemSelected,
+                    onItemDeselected = listener::onItemDeselected,
+                    onItemEnabled = listener::onItemEnabled
                 )
             }
 
