@@ -1,17 +1,17 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
+import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ShelfUiState
 
 object PreviewApprovedDukanInteractionListener : ApprovedDukanInteractionListener {
     override fun onBackButtonClicked() {}
     override fun onDismissSnackBar() {}
-    override fun onCategorySelected(categoryId: String) {}
+    override fun onShelfSelected(shelfId: String) {}
     override fun onAddProductClicked() {}
     override fun onEditShelfClicked() {}
     override fun onAddShelfClicked() {}
-    override fun isShelfSelected(): (DukanCategoryUiState) -> Boolean = { false }
-    override fun onShelfSelected(shelf: DukanCategoryUiState): Boolean = true
-    override fun onShelfDeselected(shelf: DukanCategoryUiState): Boolean = true
-    override fun onShelfEnabled(shelf: DukanCategoryUiState): Boolean = true
+    override fun isShelfSelected(): (ShelfUiState) -> Boolean = { false }
+    override fun onShelfSelected(shelf: ShelfUiState): Boolean = true
+    override fun onShelfDeselected(shelf: ShelfUiState): Boolean = true
+    override fun onShelfEnabled(shelf: ShelfUiState): Boolean = true
 }

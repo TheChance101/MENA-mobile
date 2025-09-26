@@ -37,6 +37,7 @@ import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewApprovedDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ShelfUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -89,7 +90,7 @@ fun ApprovedDukanContent(
 
             item {
                 SelectionRow(
-                    availableItems = state.categories,
+                    availableItems = state.availableShelves,
                     isItemSelected = listener.isShelfSelected(),
                     onItemSelected = listener::onShelfSelected,
                     onItemDeselected = listener::onShelfDeselected,

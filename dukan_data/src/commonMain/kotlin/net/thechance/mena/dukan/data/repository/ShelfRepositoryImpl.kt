@@ -24,7 +24,24 @@ class ShelfRepositoryImpl(
     }
 
     override suspend fun getMyDukanShelves(): List<Shelf> {
-        TODO("Provide the return value")
+        // TODO: Replace with actual API call when backend is ready
+        return listOf(
+            Shelf(
+                id = "shelf_1",
+                name = "Electronics",
+                dukanId = "dukan_123"
+            ),
+            Shelf(
+                id = "shelf_2", 
+                name = "Clothing",
+                dukanId = "dukan_123"
+            ),
+            Shelf(
+                id = "shelf_3",
+                name = "Books",
+                dukanId = "dukan_123"
+            )
+        )
     }
 
     override suspend fun deleteShelf(shelfId: String): Boolean {

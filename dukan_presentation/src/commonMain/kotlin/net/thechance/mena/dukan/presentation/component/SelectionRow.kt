@@ -10,15 +10,20 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
+
+interface SelectableItem {
+    val id: String
+    val name: String
+    val imageUrl: String
+}
 
 @Composable
-fun SelectionRow(
-    availableItems: List<DukanCategoryUiState>,
-    isItemSelected: (DukanCategoryUiState) -> Boolean,
-    onItemSelected: (DukanCategoryUiState) -> Boolean,
-    onItemDeselected: (DukanCategoryUiState) -> Boolean,
-    onItemEnabled: (DukanCategoryUiState) -> Boolean
+fun <T : SelectableItem> SelectionRow(
+    availableItems: List<T>,
+    isItemSelected: (T) -> Boolean,
+    onItemSelected: (T) -> Boolean,
+    onItemDeselected: (T) -> Boolean,
+    onItemEnabled: (T) -> Boolean
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
@@ -39,16 +44,20 @@ fun SelectionRow(
 }
 
 @Composable
-private fun SelectionChip(
-    item: DukanCategoryUiState,
+private fun <T : SelectableItem> SelectionChip(
+    item: T,
     isSelected: Boolean,
     isEnabled: Boolean,
-    onItemSelected: (DukanCategoryUiState) -> Boolean,
-    onItemDeselected: (DukanCategoryUiState) -> Boolean
+    onItemSelected: (T) -> Boolean,
+    onItemDeselected: (T) -> Boolean
 ) {
     Chip(
         text = item.name,
-        painter = rememberAsyncImagePainter(item.imageUrl),
+        painter = if (item.imageUrl.isNotEmpty()) {
+            rememberAsyncImagePainter(item.imageUrl)
+        } else {
+            null // No image for shelves
+        },
         isSelected = isSelected,
         isEnabled = isEnabled,
         modifier = Modifier,

@@ -3,12 +3,12 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 import kotlinx.coroutines.CoroutineDispatcher
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
 
 class ApprovedDukanViewModel(
     private val shelfRepository: ShelfRepository,
     private val ioDispatcher: CoroutineDispatcher
-) : BaseViewModel<ApprovedDukanUiState, ApprovedDukanEffect>(ApprovedDukanUiState()), ApprovedDukanInteractionListener {
+) : BaseViewModel<ApprovedDukanUiState, ApprovedDukanEffect>(ApprovedDukanUiState()),
+    ApprovedDukanInteractionListener {
 
     init {
         loadShelves()
@@ -22,16 +22,16 @@ class ApprovedDukanViewModel(
         updateState { copy(showSnackBar = false) }
     }
 
-    override fun onCategorySelected(categoryId: String) {
-        val category = state.value.categories.find { it.id == categoryId }
-        if (category != null) {
-            val updatedSelectedCategories = state.value.selectedCategories.toMutableSet()
-            if (updatedSelectedCategories.contains(category)) {
-                updatedSelectedCategories.remove(category)
+    override fun onShelfSelected(shelfId: String) {
+        val shelf = state.value.availableShelves.find { it.id == shelfId }
+        if (shelf != null) {
+            val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
+            if (updatedSelectedShelves.contains(shelf)) {
+                updatedSelectedShelves.remove(shelf)
             } else {
-                updatedSelectedCategories.add(category)
+                updatedSelectedShelves.add(shelf)
             }
-            updateState { copy(selectedCategories = updatedSelectedCategories) }
+            updateState { copy(selectedShelves = updatedSelectedShelves) }
         }
     }
 
@@ -47,49 +47,75 @@ class ApprovedDukanViewModel(
         emitEffect(ApprovedDukanEffect.NavigateToAddShelf)
     }
 
-    // SelectionRow methods for shelves
-    override fun isShelfSelected(): (DukanCategoryUiState) -> Boolean = { shelf ->
-        state.value.selectedCategories.contains(shelf)
+    override fun isShelfSelected(): (ShelfUiState) -> Boolean = { shelf ->
+        state.value.selectedShelves.contains(shelf)
     }
 
-    override fun onShelfSelected(shelf: DukanCategoryUiState): Boolean {
-        val updatedSelectedCategories = state.value.selectedCategories.toMutableSet()
-        updatedSelectedCategories.add(shelf)
-        updateState { copy(selectedCategories = updatedSelectedCategories) }
+    override fun onShelfSelected(shelf: ShelfUiState): Boolean {
+        val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
+        updatedSelectedShelves.add(shelf)
+        updateState { copy(selectedShelves = updatedSelectedShelves) }
         return true
     }
 
-    override fun onShelfDeselected(shelf: DukanCategoryUiState): Boolean {
-        val updatedSelectedCategories = state.value.selectedCategories.toMutableSet()
-        updatedSelectedCategories.remove(shelf)
-        updateState { copy(selectedCategories = updatedSelectedCategories) }
+    override fun onShelfDeselected(shelf: ShelfUiState): Boolean {
+        val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
+        updatedSelectedShelves.remove(shelf)
+        updateState { copy(selectedShelves = updatedSelectedShelves) }
         return true
     }
 
-    override fun onShelfEnabled(shelf: DukanCategoryUiState): Boolean = true
+    override fun onShelfEnabled(shelf: ShelfUiState): Boolean = true
 
     private fun loadShelves() {
         tryToExecute(
             onStart = { updateState { copy(isLoading = true) } },
             block = { shelfRepository.getMyDukanShelves() },
             onSuccess = { shelves ->
-                updateState {
-                    copy(
-                        shelves = shelves,
-                        productCount = shelves.size,
-                        isLoading = false
-                    )
-                }
+                updateStateWithShelves(
+                    shelves,
+                    selectFirstShelfByDefault(shelves)
+                )
             },
-            onError = {
-                updateState { copy(isLoading = false) }
-                showSnackBar("Failed to load shelves")
-            },
+            onError = { handleLoadShelvesError() },
             dispatcher = ioDispatcher
         )
     }
 
-    private fun showSnackBar(message: String) {
+    private fun selectFirstShelfByDefault(shelves: List<net.thechance.mena.dukan.domain.entity.Shelf>): Set<ShelfUiState> {
+        return if (shelves.isNotEmpty()) {
+            val firstShelf = shelves.first()
+            setOf(ShelfUiState(id = firstShelf.id, name = firstShelf.name, imageUrl = ""))
+        } else {
+            emptySet()
+        }
+    }
+
+    private fun updateStateWithShelves(
+        shelves: List<net.thechance.mena.dukan.domain.entity.Shelf>,
+        selectedShelves: Set<ShelfUiState>
+    ) {
+        val availableShelves = shelves.map { shelf ->
+            ShelfUiState(id = shelf.id, name = shelf.name, imageUrl = "")
+        }
+
+        updateState {
+            copy(
+                shelves = shelves,
+                availableShelves = availableShelves,
+                selectedShelves = selectedShelves,
+                productCount = shelves.size,
+                isLoading = false
+            )
+        }
+    }
+
+    private fun handleLoadShelvesError() {
+        updateState { copy(isLoading = false) }
+        showSnackBar()
+    }
+
+    private fun showSnackBar() {
         updateState { copy(showSnackBar = true) }
     }
 }

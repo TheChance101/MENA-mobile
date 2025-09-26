@@ -1,16 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
-
 interface ApprovedDukanInteractionListener {
     fun onBackButtonClicked()
     fun onDismissSnackBar()
-    fun onCategorySelected(categoryId: String)
+    fun onShelfSelected(shelfId: String)
     fun onAddProductClicked()
     fun onEditShelfClicked()
     fun onAddShelfClicked()
-    fun isShelfSelected(): (DukanCategoryUiState) -> Boolean
-    fun onShelfSelected(shelf: DukanCategoryUiState): Boolean
-    fun onShelfDeselected(shelf: DukanCategoryUiState): Boolean
-    fun onShelfEnabled(shelf: DukanCategoryUiState): Boolean
+    fun isShelfSelected(): (ShelfUiState) -> Boolean
+    fun onShelfSelected(shelf: ShelfUiState): Boolean
+    fun onShelfDeselected(shelf: ShelfUiState): Boolean
+    fun onShelfEnabled(shelf: ShelfUiState): Boolean
 }
