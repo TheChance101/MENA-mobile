@@ -1,6 +1,8 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
 import androidx.compose.ui.graphics.ImageBitmap
+import io.github.suwasto.capturablecompose.CompressionFormat
+import io.github.suwasto.capturablecompose.toByteArray
 import kotlinx.coroutines.delay
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
@@ -8,12 +10,16 @@ import mena.wallet_presentation.generated.resources.share_transaction_details_er
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Provided
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @KoinViewModel
-class TransactionDetailsViewModel() :
+class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
     BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
         TransactionDetailsScreenState()
     ), TransactionDetailsInteractionListener {
@@ -51,12 +57,25 @@ class TransactionDetailsViewModel() :
         state.value.captureController.capture()
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     override fun onScreenShotCaptured(imageBitmap: ImageBitmap) {
-        //val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
+        val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
         updateState { it.copy(
             shareReceipt = UiState.Success(imageBitmap),
-            isBottomSheetVisible = true
+            //isBottomSheetVisible = true
         ) }
+        tryToExecute(
+            callee = {
+                imageSharer.shareImage(
+                    imageBytes = byteArray,
+                    fileName = Uuid.random().toString()+".png",
+                    mimeType = "image/png"
+                )
+            },
+            onSuccess = { updateState { it.copy(shareReceipt = UiState.Idle) } },
+            onError = ::onShareReceiptError,
+            onStart = ::onShareReceiptStart,
+        )
     }
 
     private suspend fun onShareReceiptError(throwable: Throwable) {
