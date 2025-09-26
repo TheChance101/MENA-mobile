@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="Dukan">Dukan</string>
+    <string name="dukan_button">dukan button</string>
+    <string name="dukan_icon">dukan icon</string>
+    <string name="add_dukan_icon">add dukan icon</string>
+
     <string name="dukan_location">Dukan location</string>
     <string name="enter_address_and_pick_dukan_location_on_map">Enter address and pick dukan location on map</string>
     <string name="address">Address</string>
@@ -40,8 +45,10 @@
     <string name="dukan_name_is_already_exist">Dukan name already exists, try with another one.</string>
     <string name="back_arrow">Back Arrow</string>
     <string name="my_dukan">My Dukan</string>
-
     <string name="dukan_request_pending">Creating your dukan %s request is pending now</string>
-
     <string name="dukan_waiting_approval">Waiting until it be approved and add your shelves directly!</string>
+    <string name="product_image"> Product image</string>
+    <string name="edit_product_pencil">Edit Product Pencil </string>
+    <string name="koin_icon">Koin Icon</string>
+    <string name="discount_icon">Discount Icon</string>
 </resources>
