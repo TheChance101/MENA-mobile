@@ -58,6 +58,7 @@ class UserReelViewModelTest {
             assertFalse(initialState.isConfirmationDialogVisible)
             assertNull(initialState.isReelDeleted)
             assertFalse(initialState.isDescriptionExpanded)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -70,7 +71,9 @@ class UserReelViewModelTest {
          viewModel.state.test {
             val state = awaitItem()
             assertTrue(state.isDescriptionExpanded)
-        }
+             cancelAndIgnoreRemainingEvents()
+
+         }
     }
 
     @Test
@@ -83,6 +86,8 @@ class UserReelViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertFalse(state.isDescriptionExpanded)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
@@ -95,6 +100,8 @@ class UserReelViewModelTest {
         viewModel.effect.test {
             val effect = awaitItem()
             assertTrue(effect is UserReelEffect.NavigateBack)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
@@ -107,6 +114,8 @@ class UserReelViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertTrue(state.isConfirmationDialogVisible)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
@@ -120,6 +129,8 @@ class UserReelViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertFalse(state.isConfirmationDialogVisible)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
@@ -136,6 +147,8 @@ class UserReelViewModelTest {
             assertFalse(state2.isConfirmationDialogVisible)
 
             assertEquals(true ,state2.isReelDeleted)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
@@ -149,6 +162,8 @@ class UserReelViewModelTest {
             val state = awaitItem()
             assertNull(state.isReelDeleted)
             assertFalse(state.isConfirmationDialogVisible)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
@@ -161,6 +176,8 @@ class UserReelViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertFalse(state.isConfirmationDialogVisible)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
@@ -178,6 +195,8 @@ class UserReelViewModelTest {
         viewModel.state.test {
             val errorState = awaitItem()
             assertNotNull(errorState.error is ErrorState)
+            cancelAndIgnoreRemainingEvents()
+
         }
     }
 
