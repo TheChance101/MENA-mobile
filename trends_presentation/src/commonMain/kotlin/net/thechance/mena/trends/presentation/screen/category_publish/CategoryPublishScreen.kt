@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,12 +23,17 @@ import mena.trends_presentation.generated.resources.add_categories_to_video
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.choose_categories
 import mena.trends_presentation.generated.resources.ic_arrow_left
+import mena.trends_presentation.generated.resources.ic_warring
 import mena.trends_presentation.generated.resources.new_trend
+import mena.trends_presentation.generated.resources.publish_categories_screen_count
+import mena.trends_presentation.generated.resources.publish_hint
 import mena.trends_presentation.generated.resources.publish_video
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
@@ -78,10 +81,15 @@ private fun CategoryPublishContent(
                     title = stringResource(Res.string.new_trend),
                     trailingContent = {
                         Text(
-                            text = "3/3",
+                            text = stringResource(Res.string.publish_categories_screen_count),
                             style = Theme.typography.body.small,
                             color = Theme.colorScheme.shadeSecondary,
-                            modifier = Modifier.padding(end = Theme.spacing._16)
+                            modifier = Modifier
+                                .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
+                                .background(
+                                    shape = RoundedCornerShape(Theme.radius.full),
+                                    color = Theme.colorScheme.background.surface
+                                )
                         )
                     }
                 )
@@ -89,8 +97,8 @@ private fun CategoryPublishContent(
             bottomBar = {
                 PublishButton(
                     onPublishClick = { listener::onPublishClick },
-                    isButtonEnabled = !state.isPublishButtonVisible,
-                    isButtonLoading = state.isPublishButtonVisible
+                    isButtonEnabled = state.isPublishButtonEnabled(),
+                    isButtonLoading = state.isPublishButtonVisible,
                 )
             }
         ) {
@@ -108,14 +116,21 @@ private fun CategoryPublishContent(
                             bottom = Theme.spacing._4,
                             start = Theme.spacing._16,
                             end = Theme.spacing._16,
-                            top = 72.dp
+                            top = Theme.spacing._16
                         )
                 )
 
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Theme.spacing._16)
+                ) {
                     Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow),
+                        painter = painterResource(Res.drawable.ic_warring),
+                        contentDescription = stringResource(Res.string.publish_hint),
+                        modifier = Modifier
+                            .align(alignment = Alignment.CenterVertically)
+                            .padding(end = Theme.spacing._2)
                     )
 
                     Text(
@@ -204,6 +219,6 @@ private fun LoadingProgressBar() {
             .background(Theme.colorScheme.background.surface),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        DotsProgressIndicator()
     }
 }

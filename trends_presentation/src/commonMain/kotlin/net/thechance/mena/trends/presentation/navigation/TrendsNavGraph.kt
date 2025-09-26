@@ -16,55 +16,61 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.main_container.MainContainerScreen
 import net.thechance.mena.trends.presentation.screen.category_pick.CategoryPickScreen
+import net.thechance.mena.trends.presentation.screen.category_publish.CategoryPublishScreen
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsScreen
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelScreen
 
 @Composable
 fun TrendsNavHost() {
 
-   val navController = rememberNavController()
+    val navController = rememberNavController()
 
-   CompositionLocalProvider(
-      LocalNavController provides navController
-   ) {
-      NavHost(
-         modifier = Modifier.fillMaxSize(),
-         navController = navController,
-         startDestination = Route.MainContainer,
-      ) {
+    CompositionLocalProvider(
+        LocalNavController provides navController
+    ) {
+        NavHost(
+            modifier = Modifier.fillMaxSize(),
+            navController = navController,
+            startDestination = Route.CategoriesPublish,
+        ) {
 
-         composable<Route.MainContainer> {
-            MainContainerScreen()
-         }
+            composable<Route.MainContainer> {
+                MainContainerScreen()
+            }
 
-         composable<Route.Categories> {
-            CategoryPickScreen()
-         }
+            composable<Route.Categories> {
+                CategoryPickScreen()
+            }
 
-         composable<Route.ManageReels> {
-            ManageTrendsScreen()
-         }
+            composable<Route.ManageReels> {
+                ManageTrendsScreen()
+            }
 
-         composable<Route.ReelDetails> {
-            UserReelScreen()
-         }
+            composable<Route.ReelDetails> {
+                UserReelScreen()
+            }
 
-         composable<Route.Trends> {
-            // TODO: Just a placeholder for navigation until its user story
-            Text(
-               text = "Trends Screen",
-               style = Theme.typography.headline.large,
-               color = Theme.colorScheme.primary.primary,
-               textAlign = TextAlign.Center,
-               modifier = Modifier
-                  .fillMaxSize()
-                  .padding(top = 100.dp)
-            )
-         }
-      }
-   }
+            composable<Route.CategoriesPublish> {
+                CategoryPublishScreen()
+            }
+
+
+            composable<Route.Trends> {
+                // TODO: Just a placeholder for navigation until its user story
+                Text(
+                    text = "Trends Screen",
+                    style = Theme.typography.headline.large,
+                    color = Theme.colorScheme.primary.primary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 100.dp)
+                )
+            }
+        }
+    }
 }
 
 val LocalNavController = compositionLocalOf<NavController> {
-   error("NavController not provided")
+    error("NavController not provided")
 }

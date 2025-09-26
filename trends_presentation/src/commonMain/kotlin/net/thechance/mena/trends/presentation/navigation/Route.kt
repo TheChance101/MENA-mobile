@@ -17,4 +17,7 @@ internal sealed interface Route {
 
     @Serializable
     data object MainContainer: Route
+
+    @Serializable
+    data object CategoriesPublish: Route
 }
