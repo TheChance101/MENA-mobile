@@ -5,4 +5,5 @@ sealed interface ApprovedDukanEffect {
     object NavigateToAddShelf : ApprovedDukanEffect
     object NavigateToEditShelf : ApprovedDukanEffect
     object NavigateToAddProduct : ApprovedDukanEffect
+    object NavigateToProductDetails : ApprovedDukanEffect
 }
