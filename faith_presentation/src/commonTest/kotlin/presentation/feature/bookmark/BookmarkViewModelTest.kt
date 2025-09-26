@@ -29,7 +29,7 @@ class BookmarkViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init should load bookmarks when viewModel is created`() = runTest {
-        everySuspend { repository.getAllAyahBookmarks() } returns FakeData.fakeBookmarks
+        everySuspend { repository.getAllAyahBookmarks() } returns fakeBookmarks
 
         val viewModel = BookmarkViewModel(repository)
 
@@ -47,7 +47,7 @@ class BookmarkViewModelTest {
     @Test
     fun `onDeleteBookmarkClick should remove bookmark from state when repository succeeds`() =
         runTest {
-            everySuspend { repository.getAllAyahBookmarks() } returns FakeData.fakeBookmarks
+            everySuspend { repository.getAllAyahBookmarks() } returns fakeBookmarks
             everySuspend { repository.deleteAyahBookmark(1) } returns Unit
 
             val viewModel = BookmarkViewModel(repository)
@@ -64,7 +64,7 @@ class BookmarkViewModelTest {
 
     @Test
     fun `onDeleteBookmarkClick should keep bookmarks when repository fails`() = runTest {
-        everySuspend { repository.getAllAyahBookmarks() } returns FakeData.fakeBookmarks
+        everySuspend { repository.getAllAyahBookmarks() } returns fakeBookmarks
         everySuspend { repository.deleteAyahBookmark(1) } throws RuntimeException("delete failed")
 
         val viewModel = BookmarkViewModel(repository)
