@@ -9,7 +9,8 @@ import org.koin.core.annotation.Provided
 import org.koin.core.context.GlobalContext
 import java.io.File
 
-actual class ImageSharer ( @Provided private val context: Context) {
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+actual class ImageSharer (@Provided private val context: Context) {
     actual suspend fun shareImage(
         imageBytes: ByteArray,
         fileName: String,
