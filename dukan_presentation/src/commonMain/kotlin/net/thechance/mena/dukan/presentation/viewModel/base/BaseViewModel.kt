@@ -85,4 +85,8 @@ abstract class BaseViewModel<S>(
     protected fun navigateUp() {
         viewModelScope.launch { dukanNavigator.navigateUp() }
     }
+
+    protected fun popBackStackWithArgs(vararg arguments:Pair<String,Any>){
+        viewModelScope.launch { dukanNavigator.popBackStackWithArgs(arguments = arguments) }
+    }
 }

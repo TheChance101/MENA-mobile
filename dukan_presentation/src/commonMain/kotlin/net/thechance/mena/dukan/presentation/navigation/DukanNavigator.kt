@@ -8,4 +8,5 @@ interface DukanNavigator {
     val dukanEffects: SharedFlow<DukanEffect>
     suspend fun navigate(route: DukanRoute, navOptions: NavOptions? = null)
     suspend fun navigateUp()
+    suspend fun popBackStackWithArgs(vararg arguments: Pair<String,Any>)
 }

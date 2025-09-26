@@ -47,4 +47,7 @@ class FakeViewModel(
     fun navigateBack() {
         navigateUp()
     }
+    fun popBackStack(vararg args:Pair<String,Any>){
+        popBackStackWithArgs(arguments = args)
+    }
 }

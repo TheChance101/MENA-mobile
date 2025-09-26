@@ -72,4 +72,12 @@ class BaseViewModelTest {
         advanceUntilIdle()
         verifySuspend { navigator.navigateUp() }
     }
+
+    @Test
+    fun `popBackStackWithArgs SHOULD navigate up and pass arguments`() =runTest(dispatcher) {
+        val args = Pair("key", "value")
+        viewModel.popBackStack(args)
+        advanceUntilIdle()
+        verifySuspend { navigator.popBackStackWithArgs(args) }
+    }
 }

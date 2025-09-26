@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,8 +22,12 @@ fun DukanNavHost(
 
     ObserveAsEffect(effects = dukanNavigator.dukanEffects) { effect ->
         when (effect) {
-            is DukanEffect.Navigate -> navController.navigate( route = effect.destination, navOptions = effect.navOptions)
+            is DukanEffect.Navigate -> navController.navigate(
+                route = effect.route,
+                navOptions = effect.navOptions
+            )
             is DukanEffect.NavigateUp -> navController.navigateUp()
+            is DukanEffect.PopBackStackWithArgs -> navController.popBackStackWithArgs(effect.arguments)
         }
     }
 
@@ -53,4 +58,10 @@ fun DukanNavHost(
             }
         }
     }
+}
+
+private fun NavController.popBackStackWithArgs(args: Map<String, Any>) {
+    val backStack = previousBackStackEntry ?: return
+    args.forEach { (key, value) -> backStack.savedStateHandle[key] = value }
+    popBackStack()
 }
