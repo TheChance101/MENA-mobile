@@ -3,6 +3,7 @@ package net.thechance.mena.trends.data.mapper
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.domain.entity.Category
@@ -29,7 +30,9 @@ internal class ReelMapperTest {
         assertThat(entity.description).isEqualTo("sample reel")
         assertThat(entity.likesCount).isEqualTo(10)
         assertThat(entity.viewsCount).isEqualTo(100)
-        assertThat(entity.createdAt).isEqualTo("2025-09-25T12:00:00")
+
+        val expectedCreatedAt = LocalDateTime(2025, 9, 25, 12, 0, 0)
+        assertThat(entity.createdAt).isEqualTo(expectedCreatedAt)
     }
 
     @Test
