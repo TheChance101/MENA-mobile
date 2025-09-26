@@ -49,9 +49,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionStatus
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionType
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -76,26 +75,26 @@ internal fun DetailsSection(
         TextWithIcon(
             modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally),
             text = when (transactionDetailsUiState.transactionType) {
-                TransactionType.PAY -> stringResource(Res.string.pay)
-                TransactionType.SEND -> stringResource(Res.string.send)
-                TransactionType.RECEIVE -> stringResource(Res.string.receive)
+                Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.pay)
+                Transaction.Type.SENT -> stringResource(Res.string.send)
+                Transaction.Type.RECEIVED -> stringResource(Res.string.receive)
             },
             textStyle = Theme.typography.label.small,
             textColor = Theme.colorScheme.shadeSecondary,
             icon = when (transactionDetailsUiState.transactionType) {
-                TransactionType.PAY -> painterResource(Res.drawable.ic_pay)
-                TransactionType.SEND -> painterResource(Res.drawable.ic_send)
-                TransactionType.RECEIVE -> painterResource(Res.drawable.ic_receive)
+                Transaction.Type.ONLINE_PURCHASE -> painterResource(Res.drawable.ic_pay)
+                Transaction.Type.SENT -> painterResource(Res.drawable.ic_send)
+                Transaction.Type.RECEIVED -> painterResource(Res.drawable.ic_receive)
             },
             iconContentDescription = when (transactionDetailsUiState.transactionType) {
-                TransactionType.PAY -> stringResource(Res.string.pay_button)
-                TransactionType.SEND -> stringResource(Res.string.send_button)
-                TransactionType.RECEIVE -> stringResource(Res.string.receive_button)
+                Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.pay_button)
+                Transaction.Type.SENT -> stringResource(Res.string.send_button)
+                Transaction.Type.RECEIVED -> stringResource(Res.string.receive_button)
             },
             iconTint = Theme.colorScheme.shadeSecondary,
             iconSize = when (transactionDetailsUiState.transactionType) {
-                TransactionType.PAY -> 16.dp
-                TransactionType.SEND, TransactionType.RECEIVE -> 10.dp
+                Transaction.Type.ONLINE_PURCHASE -> 16.dp
+                Transaction.Type.SENT, Transaction.Type.RECEIVED -> 10.dp
             },
             gap = 4.dp,
         )
@@ -114,8 +113,8 @@ internal fun DetailsSection(
         if (isUserNameShown){
             DetailsInfo(
                 title = when (transactionDetailsUiState.transactionType) {
-                    TransactionType.SEND, TransactionType.PAY -> stringResource(Res.string.from)
-                    TransactionType.RECEIVE -> stringResource(Res.string.to)
+                    Transaction.Type.SENT, Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.from)
+                    Transaction.Type.RECEIVED -> stringResource(Res.string.to)
                 },
                 content = transactionDetailsUiState.userName,
             )
@@ -124,35 +123,35 @@ internal fun DetailsSection(
         DetailsInfo(
             title = stringResource(Res.string.status),
             content = when (transactionDetailsUiState.transactionStatus) {
-                TransactionStatus.FAILED -> stringResource(Res.string.failed)
-                TransactionStatus.SUCCESS -> stringResource(Res.string.success)
+                Transaction.Status.FAIL -> stringResource(Res.string.failed)
+                Transaction.Status.SUCCESS -> stringResource(Res.string.success)
             },
             icon = when (transactionDetailsUiState.transactionStatus) {
-                TransactionStatus.FAILED -> painterResource(Res.drawable.ic_failed)
-                TransactionStatus.SUCCESS -> painterResource(Res.drawable.ic_success)
+                Transaction.Status.FAIL -> painterResource(Res.drawable.ic_failed)
+                Transaction.Status.SUCCESS -> painterResource(Res.drawable.ic_success)
             },
             iconContentDescription = when (transactionDetailsUiState.transactionStatus) {
-                TransactionStatus.FAILED -> stringResource(Res.string.failed_icon)
-                TransactionStatus.SUCCESS -> stringResource(Res.string.success_icon)
+                Transaction.Status.FAIL -> stringResource(Res.string.failed_icon)
+                Transaction.Status.SUCCESS -> stringResource(Res.string.success_icon)
             },
             iconTint = when (transactionDetailsUiState.transactionStatus) {
-                TransactionStatus.FAILED -> Theme.colorScheme.error
-                TransactionStatus.SUCCESS -> Theme.colorScheme.success
+                Transaction.Status.FAIL -> Theme.colorScheme.error
+                Transaction.Status.SUCCESS -> Theme.colorScheme.success
             }
         )
 
         DetailsInfo(
             title = stringResource(Res.string.type),
             content = when (transactionDetailsUiState.transactionType) {
-                TransactionType.SEND, TransactionType.RECEIVE -> stringResource(Res.string.transfer)
-                TransactionType.PAY -> stringResource(Res.string.purchase)
+                Transaction.Type.SENT, Transaction.Type.RECEIVED -> stringResource(Res.string.transfer)
+                Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.purchase)
             },
         )
 
         DetailsInfo(
             title = when (transactionDetailsUiState.transactionType) {
-                TransactionType.SEND, TransactionType.PAY -> stringResource(Res.string.to)
-                TransactionType.RECEIVE -> stringResource(Res.string.from)
+                Transaction.Type.SENT, Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.to)
+                Transaction.Type.RECEIVED -> stringResource(Res.string.from)
             },
             content = transactionDetailsUiState.otherParty,
         )

@@ -27,12 +27,12 @@ import net.thechance.mena.designsystem.presentation.component.button.OutlinedBut
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.base.UiState.Idle.isLoading
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionStatus
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.DetailsSection
 import net.thechance.mena.wallet.presentation.screen.transactiondetails.component.TransactionDetailsScreenShot
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -94,7 +94,7 @@ private fun TransactionDetailsScreenContent(
                             modifier = Modifier.padding(bottom = 88.dp).align(Alignment.Center),
                             transactionDetailsUiState = transactionState.data
                         )
-                        if (transactionState.data.transactionStatus == TransactionStatus.SUCCESS){
+                        if (transactionState.data.transactionStatus == Transaction.Status.SUCCESS){
                             OutlinedButton(
                                 text = stringResource(Res.string.share_receipt),
                                 onClick = interactionListener::onShareReceiptBtnClicked,
