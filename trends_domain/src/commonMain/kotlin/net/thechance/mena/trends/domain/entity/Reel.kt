@@ -1,7 +1,5 @@
 package net.thechance.mena.trends.domain.entity
 
-import kotlinx.datetime.LocalDateTime
-
 data class Reel(
     val id: String,
     val thumbnailUrl: String,
@@ -9,6 +7,6 @@ data class Reel(
     val description: String,
     val likesCount: Int,
     val viewsCount: Int,
-    val createdAt: LocalDateTime,
+    val createdAt: String?,
     val categories: List<Category>
 )

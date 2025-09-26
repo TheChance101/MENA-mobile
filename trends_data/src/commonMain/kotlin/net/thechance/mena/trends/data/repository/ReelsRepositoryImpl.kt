@@ -6,8 +6,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
@@ -37,7 +35,7 @@ internal class ReelsRepositoryImpl(
             httpClient.get("$TRENDS_PATH/$REELS_ENDPOINT") {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
-        }.results?.mapNotNull { it.toEntity() } ?: emptyList()
+        }.results?.map { it.toEntity() } ?: emptyList()
     }
 
     override suspend fun updateReelById(
@@ -48,9 +46,8 @@ internal class ReelsRepositoryImpl(
         val request = UpdateReelRequestDTO(description, categoryIds)
         return safeApiCall<ReelDto> {
             httpClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
-                contentType(ContentType.Application.Json)//TODO dont know if this part is necessary
                 setBody(request)
             }
-        }.toEntity() ?: throw Exception("Update failed")//TODO dont know if it okey if i throw exception and what it will replace it
+        }.toEntity()
     }
 }
