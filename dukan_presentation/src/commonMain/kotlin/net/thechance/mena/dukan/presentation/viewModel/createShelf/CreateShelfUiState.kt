@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.createShelf
 
-import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 
 data class CreateShelfUiState(
     val shelfTitle: String = "",

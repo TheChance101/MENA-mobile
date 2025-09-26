@@ -5,8 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.SnackBarType
-import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class CreateShelfViewModel(
@@ -74,7 +74,7 @@ class CreateShelfViewModel(
                 "Shelf created successfully",
                 SnackBarType.SUCCESS
             )
-            emitEffect(CreateShelfEffect.NavigateBack)
+            emitEffect(CreateShelfEffect.NavigateToApprovedDukan)
         } else {
             showSnackBar("Shelf name already exists")
         }
@@ -108,6 +108,7 @@ class CreateShelfViewModel(
             )
         }
     }
+
 
     companion object {
         private val validTitleRegex = Regex("^[\\p{L}\\s-]+$")
