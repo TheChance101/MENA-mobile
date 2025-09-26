@@ -6,20 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_add_bold
@@ -38,8 +32,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
-import net.thechance.mena.dukan.presentation.screen.approvedDukan.content.component.ProductCard
-import net.thechance.mena.dukan.presentation.screen.approvedDukan.content.component.ProductUiState
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.CategorySelectionRow
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewApprovedDukanInteractionListener
@@ -113,12 +105,7 @@ fun ApprovedDukanContent(
             }
 
             item {
-                // Empty state or shelf content
-                if (state.shelves.isEmpty()) {
-                    EmptyStateContent()
-                } else {
-                    ProductListContent()
-                }
+                if (state.shelves.isEmpty()) EmptyStateContent() else ProductListContent()
             }
         }
 
@@ -142,82 +129,6 @@ fun ApprovedDukanContent(
 }
 
 @Composable
-private fun EmptyStateContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(Theme.spacing._32),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(RoundedCornerShape(Theme.radius.lg))
-                .background(Theme.colorScheme.background.surfaceLow),
-            contentAlignment = Alignment.Center
-        ) {}
-
-        Spacer(modifier = Modifier.height(Theme.spacing._16))
-
-        Text(
-            text = "This shelf is empty",
-            style = Theme.typography.title.medium,
-            color = Theme.colorScheme.shadePrimary,
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(Theme.spacing._8))
-
-        Text(
-            text = "start adding your products to shelf by click on add button above!",
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadeSecondary,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-private fun ProductListContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
-    ) {
-        // Sample products - in real app, these would come from the state
-        val sampleProducts = listOf(
-            ProductUiState(
-                id = "1",
-                name = "Sample Product 1",
-                price = "$29.99",
-                category = "Electronics"
-            ),
-            ProductUiState(
-                id = "2",
-                name = "Sample Product 2",
-                price = "$15.50",
-                category = "Clothing"
-            ),
-            ProductUiState(
-                id = "3",
-                name = "Sample Product 3",
-                price = "$45.00",
-                category = "Home & Garden"
-            )
-        )
-
-        sampleProducts.forEach { product ->
-            ProductCard(
-                product = product,
-                onClick = { /* TODO: Handle product click */ }
-            )
-        }
-    }
-}
-
-@Composable
 private fun ProductCountRow(
     productCount: Int,
     listener: ApprovedDukanInteractionListener
@@ -229,7 +140,6 @@ private fun ProductCountRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Product count text
         Text(
             text = "$productCount products",
             style = Theme.typography.label.medium,
@@ -262,6 +172,31 @@ private fun ProductCountRow(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyStateContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(Theme.spacing._32),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // TODO add empty state
+    }
+}
+
+@Composable
+private fun ProductListContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing._16),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+    ) {
+        // TODO add product list
     }
 }
 
