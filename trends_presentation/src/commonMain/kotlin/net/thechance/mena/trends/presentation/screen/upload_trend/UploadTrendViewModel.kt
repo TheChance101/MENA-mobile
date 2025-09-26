@@ -69,8 +69,7 @@ internal class UploadTrendViewModel(
             onStart = ::onUploadStarted,
             onEach = ::onCollectEachFlow,
             onError = ::onUploadError,
-            onComplete = ::onUploadCompleted,
-            scope = viewModelScope
+            onComplete = ::onUploadCompleted
         )
     }
 
