@@ -61,6 +61,7 @@ fun BasicTextField(
     enabled: Boolean = true,
     readOnly: Boolean = false,
     isError: Boolean = false,
+    showTrailingDivider: Boolean = true,
     errorMessage: String? = null,
     shape: Shape = RoundedCornerShape(Theme.radius.md),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -111,6 +112,7 @@ fun BasicTextField(
                         leadingIcon = leadingIcon,
                         trailingIcon = trailingIcon,
                         onTrailingIconClick = onTrailingIconClick,
+                        showTrailingDivider = showTrailingDivider,
                         leadingIconTint = leadingIconTint
                     )
                 },
@@ -150,6 +152,7 @@ private fun TextFieldContent(
     leadingIconTint: Color,
     isError: Boolean,
     singleLine: Boolean,
+    showTrailingDivider: Boolean = true,
     onTrailingIconClick: (() -> Unit)? = null,
 ) {
 
@@ -182,7 +185,8 @@ private fun TextFieldContent(
         )
 
         trailingIcon?.let {
-            VerticalDivider()
+            if (showTrailingDivider)
+                VerticalDivider()
             Image(
                 painter = trailingIcon,
                 contentDescription = null,

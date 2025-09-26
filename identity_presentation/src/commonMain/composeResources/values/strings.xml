@@ -1,0 +1,38 @@
+<resources>
+
+    <string name="app_name">MENA</string>
+    <string name="welcome_back">Welcome Back to MENA</string>
+    <string name="login_prompt">Fill your information to login</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="password">Password</string>
+    <string name="forget_password">Forget Password?</string>
+    <string name="login">Login</string>
+    <string name="register_prompt">You are new?</string>
+    <string name="register_now">Register Now</string>
+    <string name="error">Error</string>
+
+
+    <string name="pick_your_country">Pick Your Country</string>
+    <string name="country_flag_image">Country Flag Image</string>
+    <string name="confirm">Confirm</string>
+    <string name="algeria">Algeria</string>
+    <string name="bahrain">Bahrain</string>
+    <string name="egypt">Egypt</string>
+    <string name="iran">Iran</string>
+    <string name="iraq">Iraq</string>
+    <string name="jordan">Jordan</string>
+    <string name="kuwait">Kuwait</string>
+    <string name="lebanon">Lebanon</string>
+    <string name="libya">Libya</string>
+    <string name="morocco">Morocco</string>
+    <string name="oman">Oman</string>
+    <string name="palestine">Palestine</string>
+    <string name="qatar">Qatar</string>
+    <string name="saudi_arabia">Saudi Arabia</string>
+    <string name="somalia">Somalia</string>
+    <string name="sudan">Sudan</string>
+    <string name="syria">Syria</string>
+    <string name="tunisia">Tunisia</string>
+    <string name="uae">United Arab Emirates</string>
+    <string name="yemen">Yemen</string>
+</resources>

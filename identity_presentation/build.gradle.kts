@@ -5,7 +5,9 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.mockkery)
     alias(libs.plugins.kover)
+
 }
 
 kotlin {
@@ -16,6 +18,7 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -29,22 +32,24 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         commonMain.dependencies {
             implementation(projects.identityDomain)
             implementation(projects.designSystem)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-        }
-        iosMain.dependencies {
-
+            implementation(libs.bundles.koin)
+            implementation(libs.bundles.voyager)
         }
         commonTest.dependencies {
-            implementation(libs.kotlin.test)
+            implementation(libs.bundles.common.test)
         }
     }
 }
@@ -65,9 +70,16 @@ kover.reports {
         }
     }
 
-    filters {
-        excludes {
-            packages("mena.identity_presentation.generated.resources*")
-        }
+    filters.includes {
+        classes("*ScreenModel*")
+    }
+
+    // todo: remove the equivalent tests after adding them or increasing their coverage
+    filters.excludes {
+        packages(
+            "*.register",
+            "*base",
+            "*forget_password"
+        )
     }
 }

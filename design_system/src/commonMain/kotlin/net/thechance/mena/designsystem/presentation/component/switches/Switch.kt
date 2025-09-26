@@ -12,13 +12,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun Switch(
@@ -37,13 +41,13 @@ fun Switch(
 ) {
     val transition = updateTransition(isChecked)
     val containerColor by transition.animateColor(
-        targetValueByState = { isChecked ->
-            if (isChecked) onContainerColor else offContainerColor
+        targetValueByState = { checked ->
+            if (checked) onContainerColor else offContainerColor
         }
     )
     val contentColor by transition.animateColor(
-        targetValueByState = { isChecked ->
-            if (isChecked) onContentColor else offContentColor
+        targetValueByState = { checked ->
+            if (checked) onContentColor else offContentColor
         }
     )
     val disabledContainerColor =
@@ -73,6 +77,19 @@ fun Switch(
                 .background(if (isEnabled) contentColor else disabledContentColor)
                 .size(20.dp)
 
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewSwitch() {
+    MenaTheme {
+        val (isSwitchChecked, onCheckedChange) = remember { mutableStateOf(false) }
+
+        Switch(
+            isChecked = isSwitchChecked,
+            onCheckedChange = onCheckedChange
         )
     }
 }
