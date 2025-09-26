@@ -28,6 +28,7 @@
     <string name="success">نجاح</string>
     <string name="dukan_name_is_already_exist">اسم الدكان موجود بالفعل، حاول استخدام اسم آخر.</string>
     <string name="back_arrow">سهم الرجوع</string>
+    <string name="manage_shelf">إدارة الرف</string>
     <string name="create_shelf">إنشاء رف</string>
     <string name="title">العنوان</string>
     <string name="shelf_title">عنوان الرف</string>
@@ -35,4 +36,5 @@
     <string name="shelf_name_validation">يمكن أن يحتوي اسم الرف على أحرف ومسافات وعلامة '-' فقط</string>
     <string name="shelf_name_is_already_exist">اسم الرف موجود بالفعل، جرب اسمًا آخر.</string>
     <string name="failed_to_create_shelf">فشل في إنشاء الرف</string>
+    <string name="delete_icon">ايقونة الحذف</string>
 </resources>
