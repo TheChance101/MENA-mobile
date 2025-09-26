@@ -207,6 +207,7 @@
 /* Begin XCBuildConfiguration section */
 		8DA817EA172F66A4AB6E7D4F /* ReleaseProduction */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 222C270CA1E62259D495897C /* Pods-iosApp.releaseproduction.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -236,6 +237,7 @@
 		};
 		95D40AFC4E8940AAAD822E26 /* DebugProduction */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 375D4F9E233BBC7A3BA2D3C3 /* Pods-iosApp.debugproduction.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -323,6 +325,7 @@
 		};
 		AAC924EC2E74C82F00188871 /* ReleaseDevelopment */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5A8E76F3FDCC99A2B19D39C /* Pods-iosApp.releasedevelopment.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -410,6 +413,7 @@
 		};
 		AAC924EE2E74C83B00188871 /* ReleaseStaging */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F0B040B53B4C858220B2A3B9 /* Pods-iosApp.releasestaging.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -504,6 +508,7 @@
 		};
 		AAC924F02E74C84A00188871 /* DebugDevelopment */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2E7E6429158D55891D9C10D7 /* Pods-iosApp.debugdevelopment.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -598,6 +603,7 @@
 		};
 		AAC924F22E74C85200188871 /* DebugStaging */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8C70BF569D98D3F190E4E68 /* Pods-iosApp.debugstaging.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
