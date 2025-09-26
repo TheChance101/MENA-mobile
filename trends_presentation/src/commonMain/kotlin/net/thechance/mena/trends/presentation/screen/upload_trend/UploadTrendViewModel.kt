@@ -3,7 +3,7 @@ package net.thechance.mena.trends.presentation.screen.upload_trend
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
-import net.thechance.mena.trends.domain.repository.UploadReelsRepository
+import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
@@ -15,7 +15,7 @@ import org.koin.core.annotation.Provided
 
 @KoinViewModel
 internal class UploadTrendViewModel(
-    @Provided private val uploadReelsRepository: UploadReelsRepository,
+    @Provided private val reelsRepository: ReelsRepository,
     @Provided private val validator: VideoMetaDataValidator
 ) : BaseViewModel<UploadTrendsScreenState, UploadTrendsScreenEffect>(
     UploadTrendsScreenState()
@@ -59,7 +59,7 @@ internal class UploadTrendViewModel(
     private fun uploadTrend(trendFile: FileUiState) {
         job = tryToCollectFlow(
             block = {
-                uploadReelsRepository.uploadReel(
+                reelsRepository.uploadReel(
                     name = trendFile.name,
                     mimeType = trendFile.extension,
                     size = trendFile.sizeInBytes,
