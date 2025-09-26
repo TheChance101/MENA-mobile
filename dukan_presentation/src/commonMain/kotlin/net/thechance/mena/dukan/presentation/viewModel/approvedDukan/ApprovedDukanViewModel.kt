@@ -36,25 +36,25 @@ class ApprovedDukanViewModel(
         emitEffect(ApprovedDukanEffect.NavigateToAddShelf)
     }
 
-    override fun isShelfSelected(): (ShelfUiState) -> Boolean = { shelf ->
+    override fun isShelfSelected(): (Shelf) -> Boolean = { shelf ->
         state.value.selectedShelves.contains(shelf)
     }
 
-    override fun onShelfSelected(shelf: ShelfUiState): Boolean {
+    override fun onShelfSelected(shelf: Shelf): Boolean {
         val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
         updatedSelectedShelves.add(shelf)
         updateState { copy(selectedShelves = updatedSelectedShelves) }
         return true
     }
 
-    override fun onShelfDeselected(shelf: ShelfUiState): Boolean {
+    override fun onShelfDeselected(shelf: Shelf): Boolean {
         val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
         updatedSelectedShelves.remove(shelf)
         updateState { copy(selectedShelves = updatedSelectedShelves) }
         return true
     }
 
-    override fun onShelfEnabled(shelf: ShelfUiState): Boolean = true
+    override fun onShelfEnabled(shelf: Shelf): Boolean = true
 
     private fun loadShelves() {
         tryToExecute(
@@ -77,7 +77,7 @@ class ApprovedDukanViewModel(
         updateState {
             copy(
                 shelves = shelves,
-                availableShelves = shelves.map { ShelfUiState(id = it.id, name = it.name) },
+                availableShelves = shelves,
                 selectedShelves = selectFirstShelfByDefault(shelves),
                 productCount = shelves.size,
                 isLoading = false
@@ -85,10 +85,9 @@ class ApprovedDukanViewModel(
         }
     }
 
-    private fun selectFirstShelfByDefault(shelves: List<net.thechance.mena.dukan.domain.entity.Shelf>): Set<ShelfUiState> {
+    private fun selectFirstShelfByDefault(shelves: List<Shelf>): Set<Shelf> {
         return if (shelves.isNotEmpty()) {
-            val firstShelf = shelves.first()
-            setOf(ShelfUiState(id = firstShelf.id, name = firstShelf.name))
+            setOf(shelves.first())
         } else {
             emptySet()
         }

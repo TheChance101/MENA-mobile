@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
+import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ShelfUiState
 
 object PreviewApprovedDukanInteractionListener : ApprovedDukanInteractionListener {
     override fun onBackButtonClicked() {}
@@ -9,8 +9,8 @@ object PreviewApprovedDukanInteractionListener : ApprovedDukanInteractionListene
     override fun onAddProductClicked() {}
     override fun onEditShelfClicked() {}
     override fun onAddShelfClicked() {}
-    override fun isShelfSelected(): (ShelfUiState) -> Boolean = { false }
-    override fun onShelfSelected(shelf: ShelfUiState): Boolean = true
-    override fun onShelfDeselected(shelf: ShelfUiState): Boolean = true
-    override fun onShelfEnabled(shelf: ShelfUiState): Boolean = true
+    override fun isShelfSelected(): (Shelf) -> Boolean = { false }
+    override fun onShelfSelected(shelf: Shelf): Boolean = true
+    override fun onShelfDeselected(shelf: Shelf): Boolean = true
+    override fun onShelfEnabled(shelf: Shelf): Boolean = true
 }
