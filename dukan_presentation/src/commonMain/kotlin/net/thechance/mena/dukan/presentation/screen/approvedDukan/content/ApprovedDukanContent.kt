@@ -19,12 +19,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.add_product
+import mena.dukan_presentation.generated.resources.add_shelf_successfully
+import mena.dukan_presentation.generated.resources.back_arrow
+import mena.dukan_presentation.generated.resources.edit_shelf
+import mena.dukan_presentation.generated.resources.failed_to_add_shelf
 import mena.dukan_presentation.generated.resources.ic_add_bold
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_package_add
 import mena.dukan_presentation.generated.resources.ic_pencil_edit
 import mena.dukan_presentation.generated.resources.my_dukan
+import mena.dukan_presentation.generated.resources.products
 import mena.dukan_presentation.generated.resources.shelves
+import mena.dukan_presentation.generated.resources.this_shelf_is_empty
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
@@ -72,7 +79,7 @@ fun ApprovedDukanContent(
                     leadingContent = {
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_left),
-                            contentDescription = "Back",
+                            contentDescription = stringResource(Res.string.back_arrow),
                             tint = Theme.colorScheme.shadePrimary
                         )
                     }
@@ -133,7 +140,9 @@ fun ApprovedDukanContent(
     SnackBar(
         snackBarUiState = SnackBarUiState(
             snackBarType = if (state.showShelfAddedSuccess) SnackBarType.SUCCESS else SnackBarType.ERROR,
-            message = if (state.showShelfAddedSuccess) "Add shelf successfully" else "Failed to Add shelf"
+            message = if (state.showShelfAddedSuccess) stringResource(Res.string.add_shelf_successfully) else stringResource(
+                Res.string.failed_to_add_shelf
+            )
         ),
         isVisible = state.showSnackBar,
         onDismiss = listener::onDismissSnackBar
@@ -153,7 +162,7 @@ private fun ProductCountRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$productCount products",
+            text = "$productCount ${stringResource(Res.string.products)}",
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
@@ -168,7 +177,7 @@ private fun ProductCountRow(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_package_add),
-                    contentDescription = "Add Product",
+                    contentDescription = stringResource(Res.string.add_product),
                     tint = Theme.colorScheme.shadePrimary
                 )
             }
@@ -179,7 +188,7 @@ private fun ProductCountRow(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pencil_edit),
-                    contentDescription = "Edit Shelf",
+                    contentDescription = stringResource(Res.string.edit_shelf),
                     tint = Theme.colorScheme.shadePrimary
                 )
             }
@@ -198,7 +207,7 @@ private fun EmptyStateContent() {
     ) {
         // TODO: Replace with EmptyState component from design system when ready
         Text(
-            text = "No products in this shelf",
+            text = stringResource(Res.string.this_shelf_is_empty),
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadeSecondary,
             textAlign = TextAlign.Center
