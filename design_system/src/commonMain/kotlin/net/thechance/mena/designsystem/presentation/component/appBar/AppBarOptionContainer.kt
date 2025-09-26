@@ -34,18 +34,15 @@ fun AppBarOptionContainer(
     shape: Shape = RoundedCornerShape(Theme.radius.md),
     badgeShape: Shape = RoundedCornerShape(Theme.radius.full),
     iconContentPadding: PaddingValues = PaddingValues(10.dp),
-    containerContentPadding: PaddingValues = PaddingValues(horizontal = 4.dp),
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     val clickableModifier = onClick?.let {
-        Modifier.clickable { it.invoke() }
+        Modifier.clickable(onClick = it)
     } ?: Modifier
 
     Box(
-        modifier = modifier
-            .padding(containerContentPadding)
-            .size(40.dp)
+        modifier = modifier.size(40.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -83,7 +80,7 @@ private fun IconContainerPreview() {
                 .background(Theme.colorScheme.background.surface),
             contentAlignment = Alignment.Center
         ) {
-            AppBarOptionContainer(isBadgeVisible = true, content = {
+            AppBarOptionContainer(isBadgeVisible = true, onClick = {}, content = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_user),
                     contentDescription = null,

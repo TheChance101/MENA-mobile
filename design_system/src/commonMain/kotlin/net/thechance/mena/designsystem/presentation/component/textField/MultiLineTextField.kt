@@ -16,8 +16,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun MultiLineTextField(
     value: String,
-    onValueChanged: (String) -> Unit,
     hint: String,
+    onValueChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     minLines: Int = 5,
     maxLines: Int = 5,
