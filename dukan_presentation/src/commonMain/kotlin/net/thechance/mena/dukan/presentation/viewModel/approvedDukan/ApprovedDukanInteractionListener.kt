@@ -8,10 +8,9 @@ interface ApprovedDukanInteractionListener {
     fun onCategorySelected(categoryId: String)
     fun onAddProductClicked()
     fun onEditShelfClicked()
-    
-    // CategorySelectionRow methods
-    fun isCategorySelected(): (DukanCategoryUiState) -> Boolean
-    fun onCategorySelected(category: DukanCategoryUiState): Boolean
-    fun onCategoryDeselected(category: DukanCategoryUiState): Boolean
-    fun onCategoryEnabled(category: DukanCategoryUiState): Boolean
+    fun onAddShelfClicked()
+    fun isShelfSelected(): (DukanCategoryUiState) -> Boolean
+    fun onShelfSelected(shelf: DukanCategoryUiState): Boolean
+    fun onShelfDeselected(shelf: DukanCategoryUiState): Boolean
+    fun onShelfEnabled(shelf: DukanCategoryUiState): Boolean
 }

@@ -43,26 +43,30 @@ class ApprovedDukanViewModel(
         emitEffect(ApprovedDukanEffect.NavigateToEditShelf)
     }
 
-    // CategorySelectionRow methods
-    override fun isCategorySelected(): (DukanCategoryUiState) -> Boolean = { category ->
-        state.value.selectedCategories.contains(category)
+    override fun onAddShelfClicked() {
+        emitEffect(ApprovedDukanEffect.NavigateToAddShelf)
     }
 
-    override fun onCategorySelected(category: DukanCategoryUiState): Boolean {
+    // SelectionRow methods for shelves
+    override fun isShelfSelected(): (DukanCategoryUiState) -> Boolean = { shelf ->
+        state.value.selectedCategories.contains(shelf)
+    }
+
+    override fun onShelfSelected(shelf: DukanCategoryUiState): Boolean {
         val updatedSelectedCategories = state.value.selectedCategories.toMutableSet()
-        updatedSelectedCategories.add(category)
+        updatedSelectedCategories.add(shelf)
         updateState { copy(selectedCategories = updatedSelectedCategories) }
         return true
     }
 
-    override fun onCategoryDeselected(category: DukanCategoryUiState): Boolean {
+    override fun onShelfDeselected(shelf: DukanCategoryUiState): Boolean {
         val updatedSelectedCategories = state.value.selectedCategories.toMutableSet()
-        updatedSelectedCategories.remove(category)
+        updatedSelectedCategories.remove(shelf)
         updateState { copy(selectedCategories = updatedSelectedCategories) }
         return true
     }
 
-    override fun onCategoryEnabled(category: DukanCategoryUiState): Boolean = true
+    override fun onShelfEnabled(shelf: DukanCategoryUiState): Boolean = true
 
     private fun loadShelves() {
         tryToExecute(

@@ -90,10 +90,10 @@ fun ApprovedDukanContent(
             item {
                 SelectionRow(
                     availableItems = state.categories,
-                    isItemSelected = listener.isItemSelected(),
-                    onItemSelected = listener::onItemSelected,
-                    onItemDeselected = listener::onItemDeselected,
-                    onItemEnabled = listener::onItemEnabled
+                    isItemSelected = listener.isShelfSelected(),
+                    onItemSelected = listener::onShelfSelected,
+                    onItemDeselected = listener::onShelfDeselected,
+                    onItemEnabled = listener::onShelfEnabled
                 )
             }
 

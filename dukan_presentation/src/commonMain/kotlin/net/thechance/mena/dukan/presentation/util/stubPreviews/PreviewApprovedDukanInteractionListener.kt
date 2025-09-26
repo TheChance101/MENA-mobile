@@ -9,10 +9,9 @@ object PreviewApprovedDukanInteractionListener : ApprovedDukanInteractionListene
     override fun onCategorySelected(categoryId: String) {}
     override fun onAddProductClicked() {}
     override fun onEditShelfClicked() {}
-    
-    // CategorySelectionRow methods
-    override fun isCategorySelected(): (DukanCategoryUiState) -> Boolean = { false }
-    override fun onCategorySelected(category: DukanCategoryUiState): Boolean = true
-    override fun onCategoryDeselected(category: DukanCategoryUiState): Boolean = true
-    override fun onCategoryEnabled(category: DukanCategoryUiState): Boolean = true
+    override fun onAddShelfClicked() {}
+    override fun isShelfSelected(): (DukanCategoryUiState) -> Boolean = { false }
+    override fun onShelfSelected(shelf: DukanCategoryUiState): Boolean = true
+    override fun onShelfDeselected(shelf: DukanCategoryUiState): Boolean = true
+    override fun onShelfEnabled(shelf: DukanCategoryUiState): Boolean = true
 }
