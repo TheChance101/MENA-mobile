@@ -64,6 +64,7 @@ kotlin {
             implementation(libs.turbine)
             implementation(libs.koin.test)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.paging.testing)
 
         }
         commonTest.dependencies {
