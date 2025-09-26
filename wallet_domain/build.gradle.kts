@@ -15,6 +15,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.koin.core)
             api(libs.koin.annotations)
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -47,7 +48,7 @@ kover.reports {
     }
     filters {
         excludes {
-            classes("**.di.**","**.exceptions.**", "**.repository.**", "**.generated.**")
+            classes("**.di.**","**.exceptions.**", "**.repository.**", "**.generated.**","**.entity.**")
         }
     }
 }

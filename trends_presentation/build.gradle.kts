@@ -53,7 +53,7 @@ kotlin {
             implementation(libs.androidx.paging.runtime)
             implementation(libs.androidx.paging.compose)
             implementation(libs.resources)
-
+            implementation(libs.kermit)
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs.compose)
         }
