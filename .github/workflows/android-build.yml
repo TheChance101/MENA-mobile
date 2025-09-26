@@ -27,6 +27,14 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Install ImageMagick 7
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y libfuse2
+          wget https://download.imagemagick.org/ImageMagick/download/binaries/magick
+          chmod +x magick
+          mv magick /usr/local/bin/
+
       - name: Grant execute permission
         run: chmod +x gradlew
 

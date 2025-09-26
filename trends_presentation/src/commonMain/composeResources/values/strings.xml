@@ -27,4 +27,16 @@
     <string name="error_no_internet">Could not connect, please check your internet connection</string>
     <string name="error_generic">Something went wrong, please try again later</string>
     <string name="error_request_timeout">Request timed out, please try again later</string>
+
+    <!-- Video Description Screen  -->
+    <string name="new_trend">New Trend</string>
+    <string name="add_video_description_title">Add Video Description</string>
+    <string name="add_video_description_subtitle">Write a short description to tell viewers what your video is about..</string>
+    <string name="hint">Tell viewers about your video...</string>
+    <string name="characters"> %1$d / %2$d characters</string>
+    <string name="page_number"> %1$d / %2$d </string>
+    <string name="characters_color_animation_label">CharactersColorAnimation</string>
+
+
+
 </resources>

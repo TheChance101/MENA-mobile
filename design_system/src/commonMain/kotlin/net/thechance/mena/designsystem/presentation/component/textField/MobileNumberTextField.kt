@@ -3,6 +3,7 @@ package net.thechance.mena.designsystem.presentation.component.textField
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,22 +16,27 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.ic_arrow_down
+import mena.design_system.generated.resources.ic_iraq
+import mena.design_system.generated.resources.ic_profile
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MobileNumberTextField(
     value: String,
-    onValueChanged: (String) -> Unit,
     hint: String,
     leadingIcon: Painter,
+    onValueChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     leadingContent: (@Composable () -> Unit)? = null,
     title: String? = null,
@@ -89,6 +95,7 @@ fun MobileNumberLeadingContent(
         Image(
             painter = countryPainter,
             contentDescription = "country image",
+            contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .clip(RoundedCornerShape(Theme.radius.full))
                 .size(20.dp)
@@ -105,6 +112,28 @@ fun MobileNumberLeadingContent(
             painter = painterResource(Res.drawable.ic_arrow_down),
             contentDescription = "arrow down",
             modifier = Modifier.size(16.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewMobileNumberTextField() {
+    MenaTheme {
+        MobileNumberTextField(
+            value = "",
+            onValueChanged = { },
+            title = "title",
+            hint = "value",
+            leadingIcon = painterResource(Res.drawable.ic_profile),
+            leadingContent = {
+                MobileNumberLeadingContent(
+                    countryCode = "+964",
+                    countryPainter = painterResource(Res.drawable.ic_iraq),
+                    onClick = {}
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
