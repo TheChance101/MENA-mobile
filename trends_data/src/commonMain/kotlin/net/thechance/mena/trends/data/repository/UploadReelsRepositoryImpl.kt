@@ -34,7 +34,7 @@ class UploadReelsRepositoryImpl(
     ): Flow<UploadReelProgress> {
         return channelFlow {
             safeApiCall<Unit> {  // TODO: return UploadVideoDto
-                httpClient.post(urlString = "") {  // TODO: change to real endpoint
+                httpClient.post(urlString = "https://dlptest.com/https-post/") {  // TODO: change to real endpoint
                     infiniteTimeOut()
                     setBody(createUploadReelBody(name, bytes, size, mimeType))
                     observeUploading { sent, total ->

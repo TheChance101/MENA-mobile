@@ -24,16 +24,17 @@ internal class UploadTrendViewModel(
     private var job: Job? = null
 
     override fun onRetrieveVideo(file: FileUiState, readBytes: suspend () -> ByteArray) {
+        var bytes = ByteArray(0)
         tryToExecute(
             block = {
                 validator.validateSize(file.sizeInBytes).also {
-                    val bytes = readBytes()
+                    bytes = readBytes()
                     getVideoDuration(bytes)?.let { validator.validateDuration(it) }
-                    file.copy(bytes = bytes)
                 }
+                file.copy(bytes = bytes)
             },
             onError = ::onValidationError,
-            onSuccess = { onValidationSuccess(file) }
+            onSuccess = ::onValidationSuccess
         )
     }
 
@@ -53,27 +54,25 @@ internal class UploadTrendViewModel(
                 )
             )
         }
-        state.value.selectedFile?.let { uploadTrend(it) }
+        uploadTrend(file)
     }
 
-    private fun uploadTrend(trendFile: FileUiState?) {
-        trendFile?.let {
-            job = tryToCollectFlow(
-                block = {
-                    uploadReelsRepository.uploadReel(
-                        name = trendFile.name,
-                        mimeType = trendFile.extension,
-                        size = trendFile.sizeInBytes,
-                        bytes = trendFile.bytes
-                    )
-                },
-                onStart = ::onUploadStarted,
-                onEach = ::onCollectEachFlow,
-                onError = ::onUploadError,
-                onComplete = ::onUploadCompleted,
-                scope = viewModelScope
-            )
-        }
+    private fun uploadTrend(trendFile: FileUiState) {
+        job = tryToCollectFlow(
+            block = {
+                uploadReelsRepository.uploadReel(
+                    name = trendFile.name,
+                    mimeType = trendFile.extension,
+                    size = trendFile.sizeInBytes,
+                    bytes = trendFile.bytes
+                )
+            },
+            onStart = ::onUploadStarted,
+            onEach = ::onCollectEachFlow,
+            onError = ::onUploadError,
+            onComplete = ::onUploadCompleted,
+            scope = viewModelScope
+        )
     }
 
     private fun onUploadStarted() {
@@ -81,14 +80,10 @@ internal class UploadTrendViewModel(
     }
 
     private fun onCollectEachFlow(progress: UploadReelProgress) {
-        val uploadedMB = progress.uploadedBytes / (1024f * 1024f)
-        val percentage = (progress.uploadedBytes.toFloat() / progress.totalBytes * 100).toInt()
-
         updateState {
             copy(
-                uploadingProgress = percentage.toString(),
-                uploadedMegaBytes = uploadedMB.toString(),
-                selectedFile = state.value.selectedFile?.copy(id = progress.reelId)
+                uploadedMegaBytes = formatBytes(progress.uploadedBytes),
+                selectedFile = state.value.selectedFile.copy(id = progress.reelId)
             )
         }
     }
@@ -135,10 +130,9 @@ internal class UploadTrendViewModel(
         updateState {
             copy(
                 uploadingState = UploadTrendsScreenState.UploadingState.IDLE,
-                uploadingProgress = "",
                 uploadedMegaBytes = "",
                 isNextButtonEnabled = false,
-                selectedFile = null
+                selectedFile = FileUiState()
             )
         }
     }
@@ -149,8 +143,6 @@ internal class UploadTrendViewModel(
     }
 
     override fun onNextClick() {
-        state.value.selectedFile?.let {
-            sendEffect(UploadTrendsScreenEffect.NavigateToDescription(it.id))
-        }
+        sendEffect(UploadTrendsScreenEffect.NavigateToDescription(state.value.selectedFile.id))
     }
 }

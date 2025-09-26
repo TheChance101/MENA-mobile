@@ -127,12 +127,11 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
             }
 
             if (state.uploadingState == UploadTrendsScreenState.UploadingState.UPLOADING) {
-                Text("${state.uploadingProgress}%", style = Theme.typography.body.small)
-                Text("${state.uploadedMegaBytes} MB", style = Theme.typography.body.small)
+                Text(state.uploadedMegaBytes, style = Theme.typography.body.small)
             }
 
-            state.selectedFile?.let {
-                if (it.name.isNotBlank()) {
+            with(state.selectedFile) {
+                if (name.isNotBlank()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,15 +144,15 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                     )
 
                     Text(
-                        "Name: ${it.name}",
+                        "Name: $name",
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "Size: ${it.size}",
+                        "Size: $size",
                         style = Theme.typography.body.small
                     )
                     Text(
-                        "MIME Type: ${it.extension}",
+                        "MIME Type: $extension",
                         style = Theme.typography.body.small
                     )
                 }

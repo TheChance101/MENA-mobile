@@ -9,8 +9,8 @@ fun formatBytes(bytes: Long): String {
     val mb = kb * 1024
 
     return when {
-        bytes >= mb -> "${(bytes / mb).roundToInt()} MB"
-        bytes >= kb -> "${(bytes / kb).roundToInt()} KB"
+        bytes >= mb -> "${((bytes / mb) * 10).roundToInt() / 10.0} MB"
+        bytes >= kb -> "${((bytes / kb) * 10).roundToInt() / 10.0} KB"
         else -> "$bytes B"
     }
 }
