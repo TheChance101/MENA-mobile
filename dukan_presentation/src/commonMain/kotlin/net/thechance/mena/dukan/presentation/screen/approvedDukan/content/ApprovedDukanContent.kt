@@ -132,7 +132,7 @@ fun ApprovedDukanContent(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = Theme.spacing._16, bottom = Theme.spacing._24),
-            onClick = listener::onAddProductClicked,
+            onClick = listener::onAddShelfClicked,
             painter = painterResource(Res.drawable.ic_add_bold)
         )
     }
