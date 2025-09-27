@@ -16,6 +16,7 @@ coil = "3.3.0"
 composeMultiplatform = "1.8.2"
 jetbrainsKotlinxDatetime = "0.5.0"
 junit = "4.13.2"
+kermit = "2.0.8"
 kotlin = "2.2.10"
 koverVersion = "0.9.1"
 kotlinxDatetime = "0.7.1"
@@ -57,6 +58,7 @@ coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-core" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

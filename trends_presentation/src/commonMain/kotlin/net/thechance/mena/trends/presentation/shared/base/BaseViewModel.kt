@@ -2,6 +2,7 @@ package net.thechance.mena.trends.presentation.shared.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -15,9 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.exception.NoInternetException
-import net.thechance.mena.trends.domain.util.Logger
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
-import org.koin.core.annotation.InjectedParam
 
 internal abstract class BaseViewModel<State, Effect>(
     initialState: State,
@@ -28,9 +27,6 @@ internal abstract class BaseViewModel<State, Effect>(
 
     private val _effect = MutableSharedFlow<Effect>()
     val effect = _effect.throttleFirst(THROTTLE_WINDOW_DURATION)
-
-    @setparam:InjectedParam
-    lateinit var  logger: Logger
 
     protected fun updateState(updater: State.() -> State) {
         _state.update { updater(it) }
@@ -82,12 +78,12 @@ internal abstract class BaseViewModel<State, Effect>(
             is NoInternetException -> ErrorState.NoInternet
             else -> ErrorState.RequestFailed(message).also { logError(throwable) }
         }.also { errorState ->
-            logger.logError(LOG_TAG, "error state: $errorState")
+            Logger.e(LOG_TAG){errorState.toString()}
         }.let { onError(it) }
     }
 
     private fun logError(throwable: Throwable) {
-        logger.logError(LOG_TAG, "${throwable}: ${throwable.message}")
+        Logger.e(LOG_TAG){"${throwable}: ${throwable.message}"}
     }
 
     companion object {
