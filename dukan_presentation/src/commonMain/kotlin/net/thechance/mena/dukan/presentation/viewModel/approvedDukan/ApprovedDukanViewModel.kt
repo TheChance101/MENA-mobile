@@ -44,7 +44,6 @@ class ApprovedDukanViewModel(
     }
 
     override fun onAddShelfClicked() {
-        updateState { copy(showShelfAddedSuccess = true) }
         emitEffect(ApprovedDukanEffect.NavigateToAddShelf)
     }
 

@@ -19,10 +19,6 @@ fun ApprovedDukanScreen(
     val state by viewModel.state.collectAsState()
     val navController = LocalNavController.current
 
-    LaunchedEffect(Unit) {
-        viewModel.showShelfAddedSuccess()
-    }
-
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             ApprovedDukanEffect.NavigateBack -> navController.popBackStack()
