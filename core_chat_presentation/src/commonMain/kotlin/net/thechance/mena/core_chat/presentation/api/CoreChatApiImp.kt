@@ -6,7 +6,7 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatNavHost
 
 class CoreChatApiImp: CoreChatApi {
     @Composable
-    override fun launch() {
+    override fun TabEntry() {
         ChatNavHost()
     }
 }

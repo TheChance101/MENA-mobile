@@ -11,7 +11,7 @@ import net.thechance.mena.identity.api.IdentityFeatureApi
 
 class IdentityFeatureApiImpl : IdentityFeatureApi {
     @Composable
-    override fun ProfileScreenApi() {
+    override fun ProfileTabEntry() {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,

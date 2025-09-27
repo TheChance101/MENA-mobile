@@ -43,31 +43,26 @@ fun BottomNavigationBar(
             selectedIcon = painterResource(Res.drawable.ic_home_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_home),
             title = stringResource(Res.string.home),
-            tab = MenaTap.HOME,
         ),
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_dukan_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_dukan),
             title = stringResource(Res.string.dukan),
-            tab = MenaTap.DUKAN,
         ),
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_trends_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_trends),
             title = stringResource(Res.string.trends),
-            tab = MenaTap.TRENDS,
         ),
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_faith_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_faith),
             title = stringResource(Res.string.faith),
-            tab = MenaTap.FAITH,
         ),
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_profile_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_profile),
             title = stringResource(Res.string.profile),
-            tab = MenaTap.PROFILE,
         )
     )
     var selectedItemIndex by remember {

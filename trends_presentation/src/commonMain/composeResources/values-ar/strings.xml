@@ -29,6 +29,12 @@
     <string name="error_request_timeout">استغرق الأمر وقتًا طويلًا، حاول مجددًا</string>
 
 
+    <!--    Publish Trend-->
+    <string name="upload_your_video">ارفع الفيديو الخاص بك</string>
+    <string name="available_video_format">MP4، MOV حتى 100 ميجابايت</string>
+    <string name="thumbnail_description">الصورة المصغرة للفيديو المرفوع</string>
+    <string name="edit_button_description">أيقونة زر التعديل</string>
+
     <!-- Video Description Screen  -->
     <string name="new_trend">ترند جديد</string>
     <string name="add_video_description_title">إضافة وصف للفيديو</string>
