@@ -8,4 +8,5 @@ data class CreateShelfUiState(
     val isLoading: Boolean = false,
     val showSnackBar: Boolean = false,
     val snackBarState: SnackBarUiState? = null,
+    val showShelfAddedSuccess: Boolean = false,
 )

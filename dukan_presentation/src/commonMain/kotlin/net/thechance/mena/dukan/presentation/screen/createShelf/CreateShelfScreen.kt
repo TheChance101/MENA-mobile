@@ -28,9 +28,9 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
-import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateShelfInteractionListener
@@ -53,7 +53,9 @@ fun CreateShelfScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             CreateShelfEffect.NavigateBack -> navController.popBackStack()
-            CreateShelfEffect.NavigateToApprovedDukan -> navController.navigate(DukanRoute.ApprovedDukanScreenRoute)
+            CreateShelfEffect.NavigateToApprovedDukan -> {
+                navController.navigate(DukanRoute.ApprovedDukanScreenRoute)
+            }
         }
     }
 
