@@ -14,10 +14,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ProductsLayout(
+    columnCount: Int,
     products: List<ProductUiState>
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(1),
+        columns = GridCells.Fixed(columnCount),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(products) { product ->
@@ -33,7 +34,10 @@ fun ProductsLayout(
 @Composable
 private fun ProductsLayoutPreview() {
     MenaTheme {
-        ProductsLayout(fakeProducts())
+        ProductsLayout(
+            1,
+            fakeProducts()
+        )
     }
 }
 
