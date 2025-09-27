@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @Single
 class TransactionRepositoryImpl() : TransactionRepository {
-    override fun getTransactionDetails(transactionId: Uuid): Transaction {
+    override suspend fun getTransactionDetails(transactionId: Uuid): Transaction {
         return Transaction(
             id = transactionId,
             createdAt = LocalDateTime(

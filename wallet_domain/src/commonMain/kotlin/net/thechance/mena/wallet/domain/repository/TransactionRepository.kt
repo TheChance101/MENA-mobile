@@ -6,5 +6,5 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 interface TransactionRepository {
-    fun getTransactionDetails(transactionId: Uuid): Transaction
+    suspend fun getTransactionDetails(transactionId: Uuid): Transaction
 }
