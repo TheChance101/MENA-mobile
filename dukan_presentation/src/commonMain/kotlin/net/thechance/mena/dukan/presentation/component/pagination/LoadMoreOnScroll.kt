@@ -7,21 +7,20 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-fun LazyListState.LoadMoreOnScroll(
-    hasMore: Boolean,
-    isLoading: Boolean,
+fun <T : Any> LazyListState.LoadMoreOnScroll(
+    pager: Pager<Int, T>,
     loadNextPage: suspend () -> Unit,
-    buffer: Int = 0
 ) {
-    LaunchedEffect(Unit) {
+    LaunchedEffect(this) {
         snapshotFlow {
-            val layoutInfo = this@LoadMoreOnScroll.layoutInfo
+            val layoutInfo = layoutInfo
             val totalItems = layoutInfo.totalItemsCount
-            val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            lastVisibleIndex >= totalItems - buffer - 1
+            val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+
+            lastVisibleItemIndex to totalItems
         }.distinctUntilChanged()
-            .collect { shouldLoadMore ->
-                if (shouldLoadMore && hasMore && !isLoading) {
+            .collect { (lastVisible, total) ->
+                if (pager.isShouldLoadMore(lastVisible, total)) {
                     loadNextPage()
                 }
             }
