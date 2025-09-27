@@ -6,7 +6,8 @@ import net.thechance.mena.trends.domain.entity.UploadReelProgress
 
 interface ReelsRepository {
     suspend fun deleteReelById(id: String)
-    suspend fun getAllReels(pageNumber : Int): List<Reel>
+    suspend fun getAllReels(pageNumber: Int): List<Reel>
+    suspend fun updateReelById(id: String, description: String, categoryIds: List<String>)
     fun uploadReel(
         name: String,
         mimeType: String,

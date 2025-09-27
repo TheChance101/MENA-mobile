@@ -2,21 +2,23 @@ package net.thechance.mena.trends.presentation.shared.component.modifier
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 
-@Composable
+
 internal fun Modifier.noRippleClickable(
+    enabled: Boolean = true,
     onClick: () -> Unit
-): Modifier {
+): Modifier = composed {
     val interactionSource = remember { MutableInteractionSource() }
 
-    return this.then(
+    this.then(
         other = Modifier.clickable(
             interactionSource = interactionSource,
             indication = null,
-            onClick = onClick
+            onClick = onClick,
+            enabled = enabled
         )
     )
 }
