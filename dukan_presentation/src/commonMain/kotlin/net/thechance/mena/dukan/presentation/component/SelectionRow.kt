@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,18 +26,19 @@ fun <T> SelectionRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        availableItems.forEach { item ->
-            item {
-                SelectionChip(
-                    item = item,
-                    isSelected = isItemSelected(item),
-                    isEnabled = onItemEnabled(item),
-                    onItemSelected = onItemSelected,
-                    onItemDeselected = onItemDeselected,
-                    getItemName = getItemName,
-                    getItemImageUrl = getItemImageUrl
-                )
-            }
+        items(
+            items = availableItems,
+            key = { item -> getItemName(item) }
+        ) { item ->
+            SelectionChip(
+                item = item,
+                isSelected = isItemSelected(item),
+                isEnabled = onItemEnabled(item),
+                onItemSelected = onItemSelected,
+                onItemDeselected = onItemDeselected,
+                getItemName = getItemName,
+                getItemImageUrl = getItemImageUrl
+            )
         }
     }
 }
