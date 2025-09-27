@@ -14,15 +14,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
+import mena.wallet_presentation.generated.resources.filter
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_filter
 import mena.wallet_presentation.generated.resources.ic_receive
 import mena.wallet_presentation.generated.resources.ic_send
 import mena.wallet_presentation.generated.resources.ic_share
 import mena.wallet_presentation.generated.resources.ic_shopping_bag
-import mena.wallet_presentation.generated.resources.online_purchase
-import mena.wallet_presentation.generated.resources.received
-import mena.wallet_presentation.generated.resources.sent
+import mena.wallet_presentation.generated.resources.share
+import mena.wallet_presentation.generated.resources.transaction_pay
+import mena.wallet_presentation.generated.resources.transaction_receive
+import mena.wallet_presentation.generated.resources.transaction_send
+import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -46,7 +49,7 @@ fun TransactionHistoryContent(
         modifier = Modifier.statusBarsPadding(),
         topBar = {
             AppBar(
-                title = "Transactions History",
+                title = Res.string.transactions_history.toString(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(
@@ -57,9 +60,9 @@ fun TransactionHistoryContent(
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
                     Icon(
-                        modifier = Modifier.clickable {},
+                        modifier = Modifier.clickable {interactionListener.onShareClicked() },
                         painter = painterResource(Res.drawable.ic_share),
-                        contentDescription = "share button"
+                        contentDescription = Res.string.share.toString()
                     )
                 },
             )
@@ -80,11 +83,11 @@ fun TransactionHistoryContent(
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_filter),
-                        contentDescription = "filter icon"
+                        contentDescription = Res.string.filter.toString()
                     )
                     Text(
                         modifier = Modifier.padding(start = 4.dp),
-                        text = "Filter",
+                        text = Res.string.filter.toString(),
                         style = Theme.typography.label.small,
                         color = Theme.colorScheme.primary.primary
                     )
@@ -117,7 +120,7 @@ private fun getTransactionTypeIcon(type: Transaction.Type): DrawableResource =
 
 private fun getTransactionTitle(transactionType: Transaction.Type): StringResource =
     when (transactionType) {
-        Transaction.Type.ONLINE_PURCHASE -> Res.string.online_purchase
-        Transaction.Type.SENT ->  Res.string.sent
-        Transaction.Type.RECEIVED ->  Res.string.received
+        Transaction.Type.ONLINE_PURCHASE -> Res.string.transaction_pay
+        Transaction.Type.SENT ->  Res.string.transaction_send
+        Transaction.Type.RECEIVED ->  Res.string.transaction_receive
     }

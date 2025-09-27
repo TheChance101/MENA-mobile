@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.error
+import mena.wallet_presentation.generated.resources.transaction_type_icon
 import mena.wallet_presentation.generated.resources.failed
 import mena.wallet_presentation.generated.resources.ic_failed
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -58,13 +58,13 @@ fun TransactionHistoryCard(
         ) {
             Icon(
                 painter = painterResource(transactionTypeIcon),
-                contentDescription = "transaction type icon",
+                contentDescription = Res.string.transaction_type_icon.toString(),
                 modifier = Modifier.size(24.dp)
             )
             if (transactionStatus == Transaction.Status.FAIL) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_failed),
-                    contentDescription = Res.string.error.toString(),
+                    contentDescription = Res.string.failed.toString(),
                     modifier = Modifier.align(Alignment.BottomCenter).offset(y = 20.dp)
                 )
             }

@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.img_silver
+import mena.wallet_presentation.generated.resources.money_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -94,7 +95,7 @@ private fun TransactionAmountRow(
         )
         Icon(
             painter = painterResource(Res.drawable.img_silver),
-            contentDescription = "money icon",
+            contentDescription = Res.string.money_icon.toString(),
             Modifier.size(16.dp)
         )
     }
