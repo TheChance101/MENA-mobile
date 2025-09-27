@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.category_pick.CategoryPickScreen
+import net.thechance.mena.trends.presentation.screen.category_publish.CategoryPublishScreen
 import net.thechance.mena.trends.presentation.screen.main_container.MainContainerScreen
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsScreen
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelScreen
@@ -23,7 +24,7 @@ import net.thechance.mena.trends.presentation.screen.video_description.VideoDesc
 @Composable
 fun TrendsNavHost() {
 
-   val navController = rememberNavController()
+    val navController = rememberNavController()
 
    CompositionLocalProvider(
       LocalNavController provides navController
@@ -34,21 +35,21 @@ fun TrendsNavHost() {
          startDestination = Route.MainContainer,
       ) {
 
-         composable<Route.MainContainer> {
-            MainContainerScreen()
-         }
+            composable<Route.MainContainer> {
+                MainContainerScreen()
+            }
 
-         composable<Route.Categories> {
-            CategoryPickScreen()
-         }
+            composable<Route.Categories> {
+                CategoryPickScreen()
+            }
 
-         composable<Route.ManageReels> {
-            ManageTrendsScreen()
-         }
+            composable<Route.ManageReels> {
+                ManageTrendsScreen()
+            }
 
-         composable<Route.ReelDetails> {
-            UserReelScreen()
-         }
+            composable<Route.ReelDetails> {
+                UserReelScreen()
+            }
 
             composable<Route.CategoriesPublish> {
                 CategoryPublishScreen()
@@ -68,14 +69,13 @@ fun TrendsNavHost() {
                 )
             }
 
-          composable<Route.VideoDescription> {
-              VideoDescriptionScreen()
-          }
-      }
+            composable<Route.VideoDescription> {
+                VideoDescriptionScreen()
+            }
         }
     }
 }
 
 val LocalNavController = compositionLocalOf<NavController> {
-   error("NavController not provided")
+    error("NavController not provided")
 }

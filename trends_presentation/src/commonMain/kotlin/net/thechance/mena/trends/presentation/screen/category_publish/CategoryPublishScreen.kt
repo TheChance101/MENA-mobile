@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -93,13 +94,6 @@ private fun CategoryPublishContent(
                         )
                     }
                 )
-            },
-            bottomBar = {
-                PublishButton(
-                    onPublishClick = { listener::onPublishClick },
-                    isButtonEnabled = state.isPublishButtonEnabled(),
-                    isButtonLoading = state.isPublishButtonVisible,
-                )
             }
         ) {
             Column(
@@ -123,26 +117,20 @@ private fun CategoryPublishContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
+                        .padding(horizontal = Theme.spacing._16),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_warring),
                         contentDescription = stringResource(Res.string.publish_hint),
-                        modifier = Modifier
-                            .align(alignment = Alignment.CenterVertically)
-                            .padding(end = Theme.spacing._2)
+                        modifier = Modifier.padding(end = Theme.spacing._2)
                     )
 
                     Text(
                         text = stringResource(Res.string.choose_categories),
                         style = Theme.typography.body.small,
                         color = Theme.colorScheme.shadeSecondary,
-                        modifier = Modifier
-                            .padding(
-                                bottom = Theme.spacing._24,
-                                start = Theme.spacing._16,
-                                end = Theme.spacing._16
-                            )
+                        modifier = Modifier.padding(end = Theme.spacing._16)
                     )
                 }
 
@@ -152,7 +140,6 @@ private fun CategoryPublishContent(
                         .padding(
                             start = Theme.spacing._16,
                             end = Theme.spacing._16,
-                            bottom = 100.dp
                         )
                 ) {
                     state.categories.forEach { category ->
@@ -164,6 +151,14 @@ private fun CategoryPublishContent(
                         )
                     }
                 }
+
+                Spacer(Modifier.weight(1f))
+
+                PublishButton(
+                    onPublishClick = { listener::onPublishClick },
+                    isButtonEnabled = state.isPublishButtonEnabled(),
+                    isButtonLoading = state.isPublishButtonVisible,
+                )
             }
         }
     } else {
@@ -188,7 +183,6 @@ private fun PublishButton(
             .padding(
                 start = Theme.spacing._16,
                 end = Theme.spacing._16,
-                bottom = Theme.spacing._24
             ),
         shape = RoundedCornerShape(Theme.radius.md),
         containerColor = Theme.colorScheme.primary.primary,
