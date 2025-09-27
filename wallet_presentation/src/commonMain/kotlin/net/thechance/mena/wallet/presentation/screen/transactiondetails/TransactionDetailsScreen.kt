@@ -75,7 +75,7 @@ private fun TransactionDetailsScreenContent(
                         contentDescription = stringResource(Res.string.back_button)
                     )
                 },
-                onLeadingClick = interactionListener::onBackBtnClicked,
+                onLeadingClick = interactionListener::onBackButtonClicked,
             )
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
@@ -96,7 +96,7 @@ private fun TransactionDetailsScreenContent(
                         if (transactionState.data.transactionStatus == Transaction.Status.SUCCESS){
                             OutlinedButton(
                                 text = stringResource(Res.string.share_receipt),
-                                onClick = interactionListener::onShareReceiptBtnClicked,
+                                onClick = interactionListener::onShareReceiptButtonClicked,
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
                                     .padding(horizontal = 16.dp, vertical = 24.dp)
@@ -146,8 +146,8 @@ private fun TransactionDetailsScreenPreview() {
                 )
             ),
             interactionListener = object : TransactionDetailsInteractionListener {
-                override fun onBackBtnClicked() {}
-                override fun onShareReceiptBtnClicked() {}
+                override fun onBackButtonClicked() {}
+                override fun onShareReceiptButtonClicked() {}
                 override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {}
                 override fun onRefresh() {}
             }

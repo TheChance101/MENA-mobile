@@ -52,11 +52,11 @@ class TransactionDetailsViewModel(
         updateState { it.copy(transactionDetailsUiState = UiState.Loading) }
     }
 
-    override fun onBackBtnClicked() {
+    override fun onBackButtonClicked() {
         sendEffect(TransactionDetailsEffect.NavigateBack)
     }
 
-    override fun onShareReceiptBtnClicked() {
+    override fun onShareReceiptButtonClicked() {
         tryToExecute(
             callee = { state.value.captureController.capture() },
             onSuccess = {},
