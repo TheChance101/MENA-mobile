@@ -1,11 +1,14 @@
 package net.thechance.mena.dukan.data.repository
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import net.thechance.mena.dukan.data.repository.dto.ShelfResponse
 import net.thechance.mena.dukan.data.repository.mapper.toCreateShelfRequest
+import net.thechance.mena.dukan.data.repository.mapper.toShelfList
 import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -24,7 +27,9 @@ class ShelfRepositoryImpl(
     }
 
     override suspend fun getMyDukanShelves(): List<Shelf> {
-        TODO("Provide the return value")
+        return safeApiCall<List<ShelfResponse>> {
+            client.get("$BASE_URL/shelf")
+        }.toShelfList()
     }
 
     override suspend fun deleteShelf(shelfId: String): Boolean {
