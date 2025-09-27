@@ -2,14 +2,13 @@ package net.thechance.mena.trends.presentation.shared.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,21 +16,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.exception.NoInternetException
-import net.thechance.mena.trends.domain.util.Logger
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
-import org.koin.mp.KoinPlatform.getKoin
 
 internal abstract class BaseViewModel<State, Effect>(
-    initialState: State
-) : ViewModel() {
+    initialState: State,
+    ) : ViewModel() {
 
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<Effect>()
     val effect = _effect.throttleFirst(THROTTLE_WINDOW_DURATION)
-
-    private val logger: Logger = getKoin().get()
 
     protected fun updateState(updater: State.() -> State) {
         _state.update { updater(it) }
@@ -83,12 +78,12 @@ internal abstract class BaseViewModel<State, Effect>(
             is NoInternetException -> ErrorState.NoInternet
             else -> ErrorState.RequestFailed(message).also { logError(throwable) }
         }.also { errorState ->
-            logger.logError(LOG_TAG, "error state: $errorState")
+            Logger.e(LOG_TAG){errorState.toString()}
         }.let { onError(it) }
     }
 
     private fun logError(throwable: Throwable) {
-        logger.logError(LOG_TAG, "${throwable}: ${throwable.message}")
+        Logger.e(LOG_TAG){"${throwable}: ${throwable.message}"}
     }
 
     companion object {

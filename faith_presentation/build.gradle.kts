@@ -18,6 +18,7 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -35,6 +36,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.faithDomain)
             implementation(projects.designSystem)
+            implementation(projects.faithApi)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
@@ -76,7 +78,9 @@ kover.reports {
 
     filters {
         excludes {
-            packages("mena.faith_presentation.generated.resources*")
+            packages(
+                "mena.faith.presentation.feature.quran.surah.component.*"
+            )
         }
     }
 }

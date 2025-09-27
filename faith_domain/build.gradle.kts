@@ -5,6 +5,7 @@ plugins {
 
 kotlin {
     jvm()
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -22,6 +23,15 @@ kover.reports {
     verify {
         rule {
             minBound(0)
+        }
+    }
+
+    filters {
+        excludes {
+            packages(
+                "mena.faith_presentation.generated.resources*",
+                "mena.faith.domain*"
+            )
         }
     }
 }

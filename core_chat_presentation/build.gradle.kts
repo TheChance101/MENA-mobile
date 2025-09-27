@@ -18,6 +18,7 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -68,6 +69,9 @@ kotlin {
             //permission
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.compose)
+
+            // back handler
+            implementation(libs.compose.ui.backhandler)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

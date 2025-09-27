@@ -10,9 +10,9 @@ plugins {
 }
 
 kotlin {
-    iosArm64()
     androidTarget()
     iosSimulatorArm64()
+    iosX64()
     iosArm64()
 
     sourceSets {
@@ -40,6 +40,16 @@ kover.reports {
     verify {
         rule {
             minBound(0)
+        }
+    }
+
+    filters {
+        excludes {
+            packages(
+                "mena.faith.data.database.*",
+                "mena.faith.data.mapper.*",
+                "mena.faith.data.di.*"
+            )
         }
     }
 }
