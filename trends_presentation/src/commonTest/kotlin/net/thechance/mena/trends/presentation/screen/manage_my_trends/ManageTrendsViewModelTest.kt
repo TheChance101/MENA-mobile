@@ -17,8 +17,6 @@ import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import org.koin.core.context.stopKoin
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -39,12 +37,6 @@ class ManageTrendsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         viewModel = ManageTrendsViewModel(repository, testDispatcher)
-    }
-
-
-    @AfterTest
-    fun tearDown() {
-        stopKoin()
     }
 
 
@@ -147,14 +139,11 @@ class ManageTrendsViewModelTest {
 
     @Test
     fun `should update error state in getReel when repository throws exception`() = runTest {
-        // Given
         val errorMessage = "error"
         everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
+
         testScheduler.advanceUntilIdle()
-        println("ttttttttttt${viewModel.state.value.reels.toString()}")
-        println("eeeeeeeeeee${viewModel.state.value.error}")
-        println("eeeeeeeeeee${viewModel.state.value.errorMessage}")
-        // Then
+
         viewModel.state.test {
             val errorState = awaitItem()
             assertNotNull(errorState.error is ErrorState)
