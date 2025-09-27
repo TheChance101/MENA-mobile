@@ -84,3 +84,8 @@ enum class SnackBarType {
     SUCCESS,
     ERROR
 }
+
+sealed class SnackBarMessage {
+    object Success : SnackBarMessage()
+    object Error : SnackBarMessage()
+}

@@ -5,8 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.SnackBarMessage
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class CreateShelfViewModel(
@@ -36,7 +35,9 @@ class CreateShelfViewModel(
     override fun onCreateButtonClicked() {
         val title = state.value.shelfTitle
         if (!isTitleValid(title)) {
-            showSnackBar("Shelf name is invalid")
+            updateState {
+                copy(snackBarMessage = SnackBarMessage.Error)
+            }
             return
         }
 
@@ -74,38 +75,25 @@ class CreateShelfViewModel(
             updateState { copy(showShelfAddedSuccess = true) }
             emitEffect(CreateShelfEffect.NavigateToApprovedDukan)
         } else {
-            showSnackBar("Shelf name already exists")
+            updateState {
+                copy(snackBarMessage = SnackBarMessage.Error)
+            }
         }
     }
 
     private fun onCreateClickedError() {
         updateState { copy(isLoading = false) }
-        showSnackBar("Failed to create shelf")
+        updateState {
+            copy(snackBarMessage = SnackBarMessage.Error)
+        }
     }
 
     override fun onDismissSnackBar() {
         updateState {
-            copy(
-                showSnackBar = false,
-                snackBarState = null
-            )
+            copy(snackBarMessage = null)
         }
     }
 
-    fun showSnackBar(
-        message: String,
-        type: SnackBarType = SnackBarType.ERROR
-    ) {
-        updateState {
-            copy(
-                showSnackBar = true,
-                snackBarState = SnackBarUiState(
-                    snackBarType = type,
-                    message = message
-                )
-            )
-        }
-    }
 
 
     companion object {
