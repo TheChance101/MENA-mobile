@@ -251,7 +251,7 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `loadSurahData should handle repository returning null when called`() = runTest {
+    fun `loadSurahData should handle repository returning empty list when called`() = runTest {
         // Given
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
 
