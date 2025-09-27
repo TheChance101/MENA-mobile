@@ -86,8 +86,10 @@ private fun TransactionIcon(
     transactionStatus: Transaction.Status,
 ) {
     Box(
-        modifier = Modifier.wrapContentSize()
-            .background(Theme.colorScheme.primary.onPrimary, shape = CircleShape).padding(12.dp)
+        modifier = Modifier
+            .wrapContentSize()
+            .background(Theme.colorScheme.primary.onPrimary, shape = CircleShape)
+            .padding(12.dp)
     ) {
         Icon(
             painter = painterResource(transactionTypeIcon),
@@ -153,7 +155,9 @@ private fun TransactionTitleAndAmount(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().wrapContentHeight(),
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
