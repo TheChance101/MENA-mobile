@@ -22,11 +22,11 @@ import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BookmarkViewModelTest {
 
     private val repository: BookmarkRepository = mock(MockMode.autofill)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `init should load bookmarks when viewModel is created`() = runTest {
         everySuspend { repository.getAllAyahBookmarks() } returns fakeBookmarks
@@ -36,40 +36,36 @@ class BookmarkViewModelTest {
         advanceUntilIdle()
         viewModel.uiState.test {
             val state = awaitItem()
-            assertEquals(1, state.bookmarks.size)
-            assertEquals(1, state.bookmarks.first().bookmarkId)
+            assertEquals(BOOKMARK_ID, state.bookmarks.size)
+            assertEquals(BOOKMARK_ID, state.bookmarks.first().bookmarkId)
         }
-
-        verifySuspend { repository.getAllAyahBookmarks() }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `onDeleteBookmarkClick should remove bookmark from state when repository succeeds`() =
         runTest {
             everySuspend { repository.getAllAyahBookmarks() } returns fakeBookmarks
-            everySuspend { repository.deleteAyahBookmark(1) } returns Unit
+            everySuspend { repository.deleteAyahBookmark(BOOKMARK_ID) } returns Unit
 
             val viewModel = BookmarkViewModel(repository)
-            viewModel.onDeleteBookmarkClick(1)
+            viewModel.onDeleteBookmarkClick(BOOKMARK_ID)
 
             advanceUntilIdle()
             viewModel.uiState.test {
                 val state = awaitItem()
                 assertTrue(state.bookmarks.isEmpty())
             }
-            verifySuspend { repository.deleteAyahBookmark(1) }
+            verifySuspend { repository.deleteAyahBookmark(BOOKMARK_ID) }
         }
-
 
     @Test
     fun `onDeleteBookmarkClick should keep bookmarks when repository fails`() = runTest {
         everySuspend { repository.getAllAyahBookmarks() } returns fakeBookmarks
-        everySuspend { repository.deleteAyahBookmark(1) } throws RuntimeException("delete failed")
+        everySuspend { repository.deleteAyahBookmark(BOOKMARK_ID) } throws RuntimeException("delete failed")
 
         val viewModel = BookmarkViewModel(repository)
 
-        viewModel.onDeleteBookmarkClick(1)
+        viewModel.onDeleteBookmarkClick(BOOKMARK_ID)
 
         viewModel.uiState.test {
             val state = awaitItem()
@@ -78,7 +74,7 @@ class BookmarkViewModelTest {
     }
 
     @Test
-    fun `onBackClick should emit NavigateBack effect`() = runTest {
+    fun `onBackClick should should navigate back`() = runTest {
         val viewModel = BookmarkViewModel(repository)
 
         viewModel.uiEffect.test {
@@ -98,20 +94,25 @@ class BookmarkViewModelTest {
     }
 
     private companion object FakeData {
+        const val BOOKMARK_ID = 1
+        const val SURAH_ID = 1
+        const val AYAH_NUMBER = 1
+        const val SURAH_AYAH_COUNT = 7
+
         @OptIn(ExperimentalTime::class)
         val fakeBookmarks = listOf(
             AyahBookmark(
-                id = 1,
+                id = BOOKMARK_ID,
                 surah = Surah(
-                    id = 1,
+                    id = SURAH_ID,
                     order = Surah.SurahOrder.AlFatihah,
                     name = "Al-Fatihah",
-                    ayahCount = 7,
+                    ayahCount = SURAH_AYAH_COUNT,
                     isMakkia = true
                 ),
                 ayah = Ayah(
-                    number = 1,
-                    surahId = 1,
+                    number = AYAH_NUMBER,
+                    surahId = SURAH_ID,
                     content = "بسم الله الرحمن الرحيم"
                 ),
                 createdAt = Instant.DISTANT_PAST
