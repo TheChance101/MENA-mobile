@@ -7,7 +7,6 @@
     <string name="couldnt_load_tap_to_retry">Couldn’t load, tap to retry</string>
     <string name="error">Error</string>
     <string name="balance_fetch_error_description">Something went wrong while fetching your balance</string>
-
     <string name="type">Type</string>
     <string name="status">Status</string>
     <string name="from">From</string>
@@ -19,8 +18,6 @@
     <string name="all">All</string>
     <string name="success">Success</string>
     <string name="failed">Failed</string>
-
-
     <string name="month_january">January</string>
     <string name="month_february">February</string>
     <string name="month_march">March</string>
@@ -38,10 +35,8 @@
     <string name="pick">Pick</string>
     <string name="transactions_history">Transactions History</string>
     <string name="filter">Filter</string>
-
     <string name="transaction_pay">Online shopping</string>
     <string name="transaction_send">Send to</string>
     <string name="transaction_receive">Receive from</string>
     <string name="money_icon">money icon</string>
-
 </resources>
