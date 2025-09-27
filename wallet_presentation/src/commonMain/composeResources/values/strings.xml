@@ -36,6 +36,12 @@
     <string name="pick_start_date">Pick the start date</string>
     <string name="pick_end_date">Pick the end date</string>
     <string name="pick">Pick</string>
+    <string name="transactions_history">Transactions History</string>
+    <string name="filter">Filter</string>
 
-    <string name="failed">Failed</string>
+    <string name="transaction_pay">Online shopping</string>
+    <string name="transaction_send">Send to</string>
+    <string name="transaction_receive">Receive from</string>
+    <string name="money_icon">money icon</string>
+
 </resources>

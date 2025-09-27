@@ -35,6 +35,13 @@
     <string name="pick_start_date">اختر تاريخ البداية</string>
     <string name="pick_end_date">اختار تاريخ النهاية</string>
     <string name="pick">اختر</string>
+    <string name="transactions_history">سجل المعاملات</string>
+    <string name="filter">تصفية</string>
 
-    <string name="failed">فشلت</string>
+    <string name="transaction_pay">تسوق عبر الإنترنت</string>
+    <string name="transaction_send">إرسال إلى</string>
+    <string name="transaction_receive">استلام من</string>
+    <string name="money_icon">أيقونة المال</string>
+
+
 </resources>
