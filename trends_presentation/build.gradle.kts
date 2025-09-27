@@ -54,6 +54,8 @@ kotlin {
             implementation(libs.androidx.paging.compose)
             implementation(libs.resources)
             implementation(libs.kermit)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.paging.testing)
         }
         iosMain.dependencies {
 
