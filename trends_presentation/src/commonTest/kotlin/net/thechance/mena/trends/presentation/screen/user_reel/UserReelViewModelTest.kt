@@ -161,7 +161,6 @@ class UserReelViewModelTest {
     fun `onConfirmDeleteClick should update error state when repository throws exception`() = runTest {
         val errorMessage = "Delete failed"
 
-        // Create a separate mock for this test with error behavior
         val errorMockRepository: ReelsRepository = mock(MockMode.autofill) {
             everySuspend { deleteReelById("1") } throws Exception(errorMessage)
         }
