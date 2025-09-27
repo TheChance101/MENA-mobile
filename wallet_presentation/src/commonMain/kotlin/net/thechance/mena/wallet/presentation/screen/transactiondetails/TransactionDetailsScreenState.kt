@@ -1,6 +1,5 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
-import androidx.compose.ui.graphics.ImageBitmap
 import io.github.suwasto.capturablecompose.CaptureController
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.base.SnackBarState
