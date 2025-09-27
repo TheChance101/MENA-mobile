@@ -49,7 +49,7 @@ class ApprovedDukanViewModelTest {
         approvedDukanViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals(fakeShelves().size, state.shelves.size)
+            assertEquals(3, state.shelves.size)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -60,7 +60,7 @@ class ApprovedDukanViewModelTest {
         approvedDukanViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals(fakeShelves().size, state.availableShelves.size)
+            assertEquals(3, state.availableShelves.size)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -77,12 +77,23 @@ class ApprovedDukanViewModelTest {
     }
 
     @Test
-    fun `init SHOULD select first shelf from available shelves`() = runTest {
+    fun `init SHOULD select first shelf with correct id`() = runTest {
         // When
         approvedDukanViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals(fakeShelves().first(), state.selectedShelves.first())
+            assertEquals("shelf_1", state.selectedShelves.first().id)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `init SHOULD select first shelf with correct name`() = runTest {
+        // When
+        approvedDukanViewModel.state.test {
+            val state = awaitItem()
+            // Then
+            assertEquals("Electronics", state.selectedShelves.first().name)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -233,7 +244,35 @@ class ApprovedDukanViewModelTest {
         // Then
         val selectedShelves = approvedDukanViewModel.state.value.selectedShelves
         assertTrue(selectedShelves.contains(secondShelf))
+    }
+
+    @Test
+    fun `onShelfSelected SHOULD not contain previous shelf when replacing`() = runTest {
+        // Given
+        val firstShelf = fakeShelves().first()
+        val secondShelf = fakeShelves()[1]
+        approvedDukanViewModel.updateState { copy(selectedShelves = setOf(firstShelf)) }
+
+        // When
+        approvedDukanViewModel.onShelfSelected(secondShelf)
+
+        // Then
+        val selectedShelves = approvedDukanViewModel.state.value.selectedShelves
         assertFalse(selectedShelves.contains(firstShelf))
+    }
+
+    @Test
+    fun `onShelfSelected SHOULD have exactly one shelf when replacing`() = runTest {
+        // Given
+        val firstShelf = fakeShelves().first()
+        val secondShelf = fakeShelves()[1]
+        approvedDukanViewModel.updateState { copy(selectedShelves = setOf(firstShelf)) }
+
+        // When
+        approvedDukanViewModel.onShelfSelected(secondShelf)
+
+        // Then
+        val selectedShelves = approvedDukanViewModel.state.value.selectedShelves
         assertEquals(1, selectedShelves.size)
     }
 
@@ -242,7 +281,7 @@ class ApprovedDukanViewModelTest {
     fun `onShelfSelected SHOULD load products with correct count`() = runTest {
         // Given
         val shelf = fakeShelves().first()
-        val products = fakeProducts()
+        val products = fakeProducts().filter { it.shelfId == shelf.id }
         everySuspend { productRepository.getProductsByShelfId(shelf.id) } returns products
 
         // When
@@ -258,7 +297,7 @@ class ApprovedDukanViewModelTest {
     fun `onShelfSelected SHOULD update product count correctly`() = runTest {
         // Given
         val shelf = fakeShelves().first()
-        val products = fakeProducts()
+        val products = fakeProducts().filter { it.shelfId == shelf.id }
         everySuspend { productRepository.getProductsByShelfId(shelf.id) } returns products
 
         // When
@@ -302,11 +341,12 @@ class ApprovedDukanViewModelTest {
     fun `onShelfDeselected SHOULD clear products when no shelves selected`() = runTest {
         // Given
         val shelf = fakeShelves().first()
+        val products = fakeProducts().filter { it.shelfId == shelf.id }
         approvedDukanViewModel.updateState {
             copy(
                 selectedShelves = setOf(shelf),
-                products = fakeProducts(),
-                totalProducts = fakeProducts().size
+                products = products,
+                totalProducts = products.size
             )
         }
 
@@ -319,24 +359,26 @@ class ApprovedDukanViewModelTest {
     }
 
     @Test
-    fun `onShelfDeselected SHOULD reset product count to zero when no shelves selected`() = runTest {
-        // Given
-        val shelf = fakeShelves().first()
-        approvedDukanViewModel.updateState {
-            copy(
-                selectedShelves = setOf(shelf),
-                products = fakeProducts(),
-                totalProducts = fakeProducts().size
-            )
+    fun `onShelfDeselected SHOULD reset product count to zero when no shelves selected`() =
+        runTest {
+            // Given
+            val shelf = fakeShelves().first()
+            val products = fakeProducts().filter { it.shelfId == shelf.id }
+            approvedDukanViewModel.updateState {
+                copy(
+                    selectedShelves = setOf(shelf),
+                    products = products,
+                    totalProducts = products.size
+                )
+            }
+
+            // When
+            approvedDukanViewModel.onShelfDeselected(shelf)
+
+            // Then
+            val state = approvedDukanViewModel.state.value
+            assertEquals(0, state.totalProducts)
         }
-
-        // When
-        approvedDukanViewModel.onShelfDeselected(shelf)
-
-        // Then
-        val state = approvedDukanViewModel.state.value
-        assertEquals(0, state.totalProducts)
-    }
 
     @Test
     fun `onShelfEnabled SHOULD always return true`() = runTest {
@@ -349,9 +391,6 @@ class ApprovedDukanViewModelTest {
         // Then
         assertTrue(result)
     }
-
-
-
 
 
     @Test
@@ -385,19 +424,19 @@ class ApprovedDukanViewModelTest {
     }
 
     @Test
-    fun `init SHOULD load shelves from fake repository`() = runTest {
+    fun `init SHOULD load shelves from mock repository`() = runTest {
         // When
         approvedDukanViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals(3, state.shelves.size) // Fake repository has 3 shelves
+            assertEquals(3, state.shelves.size)
             assertEquals(3, state.availableShelves.size)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `init SHOULD select first shelf by default from fake data`() = runTest {
+    fun `init SHOULD select first shelf by default from mock data`() = runTest {
         // When
         approvedDukanViewModel.state.test {
             val state = awaitItem()
@@ -410,21 +449,11 @@ class ApprovedDukanViewModelTest {
     }
 
     @Test
-    fun `onShelfSelected SHOULD load products from fake repository`() = runTest {
+    fun `onShelfSelected SHOULD load correct number of products from mock repository`() = runTest {
         // Given
         val shelf = fakeShelves().first()
-        val fakeProducts = listOf(
-            Product(
-                id = "product_1",
-                name = "iPhone 15",
-                description = "Latest iPhone model",
-                price = 999.99,
-                shelfId = "shelf_1",
-                dukanId = "dukan_123",
-                imageUrls = listOf("https://example.com/iphone.jpg")
-            )
-        )
-        everySuspend { productRepository.getProductsByShelfId(shelf.id) } returns fakeProducts
+        val mockProducts = fakeProducts().filter { it.shelfId == shelf.id }
+        everySuspend { productRepository.getProductsByShelfId(shelf.id) } returns mockProducts
 
         // When
         approvedDukanViewModel.onShelfSelected(shelf)
@@ -432,13 +461,40 @@ class ApprovedDukanViewModelTest {
 
         // Then
         val state = approvedDukanViewModel.state.value
-        assertEquals(1, state.products.size)
-        assertEquals("iPhone 15", state.products.first().name)
-        assertEquals(1, state.totalProducts)
+        assertEquals(mockProducts.size, state.products.size)
     }
 
-}
+    @Test
+    fun `onShelfSelected SHOULD load correct product name from mock repository`() = runTest {
+        // Given
+        val shelf = fakeShelves().first()
+        val mockProducts = fakeProducts().filter { it.shelfId == shelf.id }
+        everySuspend { productRepository.getProductsByShelfId(shelf.id) } returns mockProducts
 
+        // When
+        approvedDukanViewModel.onShelfSelected(shelf)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertEquals("iPhone 15", state.products.first().name)
+    }
+
+    @Test
+    fun `onShelfSelected SHOULD update total products count from fake repository`() = runTest {
+        // Given
+        val shelf = fakeShelves().first()
+        val fakeProducts = fakeProducts().filter { it.shelfId == shelf.id }
+        everySuspend { productRepository.getProductsByShelfId(shelf.id) } returns fakeProducts
+
+        // When
+        approvedDukanViewModel.onShelfSelected(shelf)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(fakeProducts.size, approvedDukanViewModel.state.value.totalProducts)
+    }
+}
 // ===== FAKE DATA FUNCTIONS =====
 
 private fun fakeShelves(): List<Shelf> {
@@ -491,4 +547,5 @@ private fun fakeProducts(): List<Product> {
             imageUrls = listOf("https://example.com/tshirt.jpg")
         )
     )
+
 }
