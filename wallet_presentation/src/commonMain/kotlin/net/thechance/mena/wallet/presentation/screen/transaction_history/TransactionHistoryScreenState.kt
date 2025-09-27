@@ -1,18 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
+import net.thechance.mena.wallet.domain.entity.Transaction
+
 data class TransactionHistoryScreenState(
-    val transactionType: TransactionType,
+    val transactionType: Transaction.Type,
     val transactionTimeAndDate: String,
     val amount: String,
-    val transactionStatus: TransactionStatus,
+    val transactionStatus: Transaction.Status,
     val sender: String? = null,
     val receiver: String? = null
-) {
-    enum class TransactionType {
-        PAY, SEND, RECEIVE
-    }
-
-    enum class TransactionStatus {
-        SUCCESS, FAILED
-    }
-}
+)
