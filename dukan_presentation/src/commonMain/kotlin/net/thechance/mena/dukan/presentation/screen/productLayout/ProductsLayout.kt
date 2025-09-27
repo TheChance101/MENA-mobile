@@ -1,28 +1,25 @@
 package net.thechance.mena.dukan.presentation.screen.productLayout
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.productCard.EditProductIcon
-import net.thechance.mena.dukan.presentation.component.productCard.ProductCardHorizontal
+import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
 fun ProductsLayout(
-    column: Int,
     products: List<ProductUiState>
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(column),
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(products) { product ->
-            ProductCardHorizontal(
+            ProductCard(
                 productUiState = product,
                 productAction = { EditProductIcon(onClick = {}) }
             )
@@ -35,7 +32,6 @@ fun ProductsLayout(
 private fun ProductsLayoutPreview() {
     MenaTheme {
         ProductsLayout(
-            1,
             fakeProducts()
         )
     }

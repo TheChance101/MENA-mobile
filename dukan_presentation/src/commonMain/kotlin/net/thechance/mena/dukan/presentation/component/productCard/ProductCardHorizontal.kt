@@ -28,7 +28,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
-fun ProductCardHorizontal(
+fun ProductCard(
     productUiState: ProductUiState,
     productAction: @Composable () -> Unit,
     modifier: Modifier = Modifier
@@ -100,7 +100,7 @@ fun ProductCardHorizontal(
 @Composable
 private fun ProductCardHorizontalPreview() {
     MenaTheme {
-        ProductCardHorizontal(
+        ProductCard(
             ProductUiState(
                 id = "1",
                 imageUrl = "https://calvinklein.scene7.com/is/image/CalvinKlein/LX001376_100_alternate1?wid=1728&qlt=80%2C0&resMode=sharp2&op_usm=0.9%2C1.0%2C8%2C0&iccEmbed=0&fmt=webp",
