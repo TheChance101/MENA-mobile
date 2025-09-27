@@ -53,17 +53,15 @@ class ApprovedDukanViewModel(
     }
 
     override fun onShelfSelected(shelf: Shelf): Boolean {
-        val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
-        updatedSelectedShelves.add(shelf)
-        updateState { copy(selectedShelves = updatedSelectedShelves) }
+        if (state.value.selectedShelves.contains(shelf)) return true
+        updateState { copy(selectedShelves = setOf(shelf)) }
         loadProductsForSelectedShelves()
         return true
     }
 
     override fun onShelfDeselected(shelf: Shelf): Boolean {
-        val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
-        updatedSelectedShelves.remove(shelf)
-        updateState { copy(selectedShelves = updatedSelectedShelves) }
+        if (!state.value.selectedShelves.contains(shelf)) return true
+        updateState { copy(selectedShelves = emptySet()) }
         loadProductsForSelectedShelves()
         return true
     }
@@ -100,24 +98,22 @@ class ApprovedDukanViewModel(
     private fun loadProductsForSelectedShelves() {
         val selectedShelves = state.value.selectedShelves
         when {
-            selectedShelves.isNotEmpty() -> loadProductsFromRepository(selectedShelves)
+            selectedShelves.isNotEmpty() -> {
+                val selectedShelf = selectedShelves.first()
+                loadProductsFromRepository(selectedShelf)
+            }
+
             else -> clearProducts()
         }
     }
 
-    private fun loadProductsFromRepository(selectedShelves: Set<Shelf>) {
+    private fun loadProductsFromRepository(selectedShelf: Shelf) {
         tryToExecute(
             onStart = { updateState { copy(isLoadingProducts = isLoading) } },
-            block = { getProductsForShelves(selectedShelves) },
+            block = { productRepository.getProductsByShelfId(selectedShelf.id) },
             onSuccess = { products -> handleProductsLoaded(products) },
             onError = { updateState { copy(isLoadingProducts = false) } }
         )
-    }
-
-    private suspend fun getProductsForShelves(selectedShelves: Set<Shelf>): List<Product> {
-        return selectedShelves.flatMap { shelf ->
-            productRepository.getProductsByShelfId(shelf.id)
-        }
     }
 
     private fun handleProductsLoaded(products: List<Product>) {
