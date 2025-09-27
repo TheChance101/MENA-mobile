@@ -81,7 +81,7 @@ internal abstract class BaseViewModel<State, Effect>(
         onStart: () -> Unit = {},
         onEach: (T) -> Unit,
         onError: (ErrorState) -> Unit,
-        onComplete: () -> Unit = {},
+        onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         scope: CoroutineScope = viewModelScope
     ): Job {
@@ -96,7 +96,7 @@ internal abstract class BaseViewModel<State, Effect>(
                 .onCompletion { throwable ->
                     throwable?.let {
                         mapExceptionToErrorState(throwable, onError)
-                    } ?: onComplete()
+                    } ?: onEnd()
                 }
                 .catch { throwable -> mapExceptionToErrorState(throwable, onError) }
                 .launchIn(scope)

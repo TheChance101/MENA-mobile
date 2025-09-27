@@ -78,7 +78,7 @@ internal class UploadTrendViewModel(
             onStart = ::onUploadStarted,
             onEach = ::onCollectEachFlow,
             onError = ::onUploadError,
-            onComplete = ::onUploadCompleted,
+            onEnd = ::onUploadCompleted,
             dispatcher = defaultDispatcher
         )
     }
