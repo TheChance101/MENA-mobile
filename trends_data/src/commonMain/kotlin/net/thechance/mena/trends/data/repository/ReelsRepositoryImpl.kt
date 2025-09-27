@@ -2,6 +2,9 @@ package net.thechance.mena.trends.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.InputProvider
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.put
@@ -71,7 +74,7 @@ internal class ReelsRepositoryImpl(
     ): Flow<UploadReelProgress> {
         return channelFlow {
             safeApiCall<Unit> {  // TODO: return UploadVideoDto
-                httpClient.post(urlString = "https://dlptest.com/https-post/") {  // TODO: change to real endpoint
+                httpClient.post(urlString = "") {  // TODO: change to real endpoint
                     infiniteTimeOut()
                     setBody(createUploadReelBody(name, bytes, size, mimeType))
                     observeUploading { sent, total ->
@@ -105,7 +108,9 @@ internal class ReelsRepositoryImpl(
             formData {
                 append(
                     key = "video", // TODO:
-                    value = InputProvider(size) { ByteReadChannel(reelBytes).asSource().buffered() },
+                    value = InputProvider(size) {
+                        ByteReadChannel(reelBytes).asSource().buffered()
+                    },
                     headers = Headers.build {
                         append(HttpHeaders.ContentType, "video/*")
                         append(HttpHeaders.ContentDisposition, "filename=\"$name.$mimeType\"")
