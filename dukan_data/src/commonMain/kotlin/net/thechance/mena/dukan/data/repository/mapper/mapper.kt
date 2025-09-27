@@ -1,16 +1,13 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
 import net.thechance.mena.dukan.data.repository.dto.CreateDukanRequest
-import net.thechance.mena.dukan.data.repository.dto.CreateShelfRequest
 import net.thechance.mena.dukan.data.repository.dto.DukanCategoryDto
 import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
-import net.thechance.mena.dukan.data.repository.dto.ShelfResponse
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
-import net.thechance.mena.dukan.domain.entity.Shelf
 
 fun Dukan.toCreateDukanRequest(): CreateDukanRequest {
     return CreateDukanRequest(
@@ -49,20 +46,4 @@ fun MyDukanStatusDto.toMyDukanStatus(): MyDukanStatus {
         status = Dukan.Status.valueOf(status),
         dukanName = dukanName
     )
-}
-
-fun Shelf.toCreateShelfRequest(): CreateShelfRequest {
-    return CreateShelfRequest(title = name)
-}
-
-fun ShelfResponse.toShelf(): Shelf {
-    return Shelf(
-        id = id,
-        name = title,
-        dukanId = dukanId
-    )
-}
-
-fun List<ShelfResponse>.toShelfList(): List<Shelf> {
-    return map { it.toShelf() }
 }
