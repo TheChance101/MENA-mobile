@@ -24,3 +24,4 @@ class InvalidCredentialsException : AuthenticationException(
 
 class UnknownException : AuthenticationException("Unknown Exception")
 class UnAuthorizedException : AuthenticationException("user has no access to application")
+class InvalidOTPException : AuthenticationException("Invalid OTP")
