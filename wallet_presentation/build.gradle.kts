@@ -20,6 +20,7 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -37,6 +38,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.walletDomain)
             implementation(projects.designSystem)
+            implementation(projects.walletApi)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)

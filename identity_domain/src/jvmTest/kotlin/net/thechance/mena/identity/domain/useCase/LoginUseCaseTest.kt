@@ -72,7 +72,7 @@ internal class LoginUseCaseTest {
     @Test
     fun `should login with valid credentials`() = runTest {
         every { mobileNumberValidator.isValid(any(), any()) } returns true
-        coEvery { authenticationRepository.login(any(), any(), any()) } just Runs
+        coEvery { authenticationRepository.login(any(), any()) } just Runs
         val password = "12345678"
         val countryCode = ValidMobileNumbersDummyData.MOROCCO.countryCode
         val number = ValidMobileNumbersDummyData.MOROCCO.mobileNumber

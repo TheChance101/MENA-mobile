@@ -18,7 +18,7 @@ class LoginScreenModel(
 
 
     override fun onLoginClicked() {
-        updateState { copy(isLoading = true, errorMessage = "Test KLJSD") }
+        updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
             function = ::onLogin,
             onSuccess = ::onLoginSuccess,
@@ -47,7 +47,6 @@ class LoginScreenModel(
             )
         }
     }
-
 
 
     private fun changeIsLoginEnabled() {

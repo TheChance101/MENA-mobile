@@ -4,8 +4,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
+import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
@@ -32,6 +35,19 @@ internal class ReelsRepositoryImpl(
             httpClient.get("$TRENDS_PATH/$REELS_ENDPOINT") {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
-        }.results?.mapNotNull { it.toEntity() } ?: emptyList()
+        }.results?.map { it.toEntity() } ?: emptyList()
+    }
+
+    override suspend fun updateReelById(
+        id: String,
+        description: String,
+        categoryIds: List<String>
+    ) {
+        val request = UpdateReelRequestDTO(description, categoryIds)
+         safeApiCall<Unit> {
+            httpClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
+                setBody(request)
+            }
+        }
     }
 }

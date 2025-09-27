@@ -12,44 +12,57 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import mena.design_system.generated.resources.Res
+import mena.design_system.generated.resources.dukan
+import mena.design_system.generated.resources.faith
+import mena.design_system.generated.resources.home
 import mena.design_system.generated.resources.ic_dukan
 import mena.design_system.generated.resources.ic_dukan_selected
+import mena.design_system.generated.resources.ic_faith
+import mena.design_system.generated.resources.ic_faith_selected
 import mena.design_system.generated.resources.ic_home
 import mena.design_system.generated.resources.ic_home_selected
 import mena.design_system.generated.resources.ic_profile
 import mena.design_system.generated.resources.ic_profile_selected
 import mena.design_system.generated.resources.ic_trends
 import mena.design_system.generated.resources.ic_trends_selected
+import mena.design_system.generated.resources.profile
+import mena.design_system.generated.resources.trends
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BottomNavigationBar(
     onItemClick: (BottomNavigationItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val items = listOf(
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_home_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_home),
-            title = "Home"
+            title = stringResource(Res.string.home),
         ),
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_dukan_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_dukan),
-            title = "Dukan"
+            title = stringResource(Res.string.dukan),
         ),
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_trends_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_trends),
-            title = "Trends"
+            title = stringResource(Res.string.trends),
+        ),
+        BottomNavigationItem(
+            selectedIcon = painterResource(Res.drawable.ic_faith_selected),
+            notSelectedIcon = painterResource(Res.drawable.ic_faith),
+            title = stringResource(Res.string.faith),
         ),
         BottomNavigationItem(
             selectedIcon = painterResource(Res.drawable.ic_profile_selected),
             notSelectedIcon = painterResource(Res.drawable.ic_profile),
-            title = "Profile"
+            title = stringResource(Res.string.profile),
         )
     )
     var selectedItemIndex by remember {

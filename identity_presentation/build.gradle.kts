@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         commonMain.dependencies {
+            implementation(projects.identityApi)
             implementation(projects.identityDomain)
             implementation(projects.designSystem)
 
