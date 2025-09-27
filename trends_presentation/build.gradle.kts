@@ -57,8 +57,6 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs.compose)
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.androidx.paging.testing)
         }
         iosMain.dependencies {
 
@@ -69,6 +67,8 @@ kotlin {
             implementation(libs.assertk)
             implementation(libs.turbine)
             implementation(libs.koin.test)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.paging.testing)
         }
     }
     sourceSets.named("commonMain").configure {

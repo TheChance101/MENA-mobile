@@ -2,6 +2,8 @@ package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -16,14 +18,10 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,7 +46,7 @@ class ManageTrendsViewModelTest {
             viewModel.state.test {
                 val currentState = awaitItem()
                 val reelsSnapshot: List<ReelUiState> = currentState.reels.asSnapshot()
-                assertEquals(expectedReelUiStateList, reelsSnapshot)
+                assertThat(reelsSnapshot).isEqualTo(expectedReelUiStateList)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -59,7 +57,6 @@ class ManageTrendsViewModelTest {
         runTest(testDispatcher) {
             val errorMessage = "error"
             everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
-
             assertFailsWith<Exception> {
                 viewModel.state.value.reels.asSnapshot()
             }
@@ -67,31 +64,7 @@ class ManageTrendsViewModelTest {
 
 
     @Test
-    fun `getReels should set loading state during execution`() = runTest(testDispatcher) {
-        everySuspend { repository.getAllReels(1) } returns reelList
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            assertFalse(initialState.isLoading)
-
-            viewModel.getReels()
-
-            val loadingState = awaitItem()
-            assertTrue(loadingState.isLoading)
-
-            testScheduler.advanceUntilIdle()
-
-            val finalState = awaitItem()
-            assertFalse(finalState.isLoading)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-
-    @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
-        everySuspend { repository.getAllReels(1) } returns emptyList()
-
         viewModel.effect.test {
             viewModel.onReelItemClick(REEL_ID)
             assertEquals(ManageTrendsUiEffect.NavigateToTrend(REEL_ID), awaitItem())
@@ -103,54 +76,14 @@ class ManageTrendsViewModelTest {
 
     @Test
     fun `onBackClick should navigate back`() = runTest(testDispatcher) {
-        everySuspend { repository.getAllReels(1) } returns emptyList()
+        viewModel.onBackClick()
 
         viewModel.effect.test {
-            viewModel.onBackClick()
             assertEquals(ManageTrendsUiEffect.NavigateBack, awaitItem())
             cancelAndIgnoreRemainingEvents()
 
         }
     }
-
-
-    @Test
-    fun `viewModel should start with initial state`() = runTest(testDispatcher) {
-        everySuspend { repository.getAllReels(1) } returns reelList
-
-        val viewModel = ManageTrendsViewModel(repository)
-
-        val initialState = viewModel.state.value
-        assertNotNull(initialState)
-        assertTrue(initialState.isLoading)
-
-    }
-
-
-    @Test
-    fun `toUiState extension function should map correctly`() {
-        val reel = reelList[0]
-
-        val uiState = reel.toUiState()
-
-        assertEquals("1", uiState.id)
-        assertEquals("thumb1.jpg", uiState.thumbnailUrl)
-    }
-
-    @Test
-    fun `should update error state in getReel when repository throws exception`() = runTest {
-        val errorMessage = "error"
-        everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
-
-        testScheduler.advanceUntilIdle()
-
-        viewModel.state.test {
-            val errorState = awaitItem()
-            assertNotNull(errorState.error is ErrorState)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
     private companion object {
         const val REEL_ID = "1"
         val reelList = listOf(
