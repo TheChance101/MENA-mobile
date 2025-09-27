@@ -111,7 +111,7 @@ fun ApprovedDukanContent(
 
             item {
                 ProductCountRow(
-                    productCount = state.productCount,
+                    productCount = state.totalProducts,
                     listener = listener
                 )
             }

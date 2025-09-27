@@ -131,7 +131,7 @@ class ApprovedDukanViewModel(
         updateState {
             copy(
                 products = products,
-                productCount = products.size,
+                totalProducts = products.size,
                 isLoadingProducts = false
             )
         }
@@ -141,7 +141,7 @@ class ApprovedDukanViewModel(
         updateState {
             copy(
                 products = emptyList(),
-                productCount = 0,
+                totalProducts = 0,
                 isLoadingProducts = false
             )
         }

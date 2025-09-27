@@ -268,7 +268,7 @@ class ApprovedDukanViewModelTest {
 
         // Then
         val state = approvedDukanViewModel.state.value
-        assertEquals(products.size, state.productCount)
+        assertEquals(products.size, state.totalProducts)
     }
 
     @Test
@@ -306,7 +306,7 @@ class ApprovedDukanViewModelTest {
             copy(
                 selectedShelves = setOf(shelf),
                 products = fakeProducts(),
-                productCount = fakeProducts().size
+                totalProducts = fakeProducts().size
             )
         }
 
@@ -326,7 +326,7 @@ class ApprovedDukanViewModelTest {
             copy(
                 selectedShelves = setOf(shelf),
                 products = fakeProducts(),
-                productCount = fakeProducts().size
+                totalProducts = fakeProducts().size
             )
         }
 
@@ -335,7 +335,7 @@ class ApprovedDukanViewModelTest {
 
         // Then
         val state = approvedDukanViewModel.state.value
-        assertEquals(0, state.productCount)
+        assertEquals(0, state.totalProducts)
     }
 
     @Test
@@ -388,7 +388,7 @@ class ApprovedDukanViewModelTest {
 
         // Then
         val state = approvedDukanViewModel.state.value
-        assertEquals(products1.size + products2.size, state.productCount)
+        assertEquals(products1.size + products2.size, state.totalProducts)
     }
 
     @Test
@@ -399,7 +399,7 @@ class ApprovedDukanViewModelTest {
             copy(
                 selectedShelves = setOf(shelf),
                 products = fakeProducts(),
-                productCount = fakeProducts().size
+                totalProducts = fakeProducts().size
             )
         }
 
@@ -419,7 +419,7 @@ class ApprovedDukanViewModelTest {
             copy(
                 selectedShelves = setOf(shelf),
                 products = fakeProducts(),
-                productCount = fakeProducts().size
+                totalProducts = fakeProducts().size
             )
         }
 
@@ -428,7 +428,7 @@ class ApprovedDukanViewModelTest {
 
         // Then
         val state = approvedDukanViewModel.state.value
-        assertEquals(0, state.productCount)
+        assertEquals(0, state.totalProducts)
     }
 
     @Test
@@ -439,7 +439,7 @@ class ApprovedDukanViewModelTest {
             copy(
                 selectedShelves = setOf(shelf),
                 products = fakeProducts(),
-                productCount = fakeProducts().size
+                totalProducts = fakeProducts().size
             )
         }
 
