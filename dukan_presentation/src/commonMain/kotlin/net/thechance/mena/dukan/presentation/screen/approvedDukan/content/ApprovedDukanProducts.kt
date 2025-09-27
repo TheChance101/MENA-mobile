@@ -32,7 +32,7 @@ fun ApprovedDukanProducts(
         state.isLoadingProducts -> LoadingProductsContent()
         state.shelves.isEmpty() -> NoShelvesContent()
         state.products.isEmpty() -> EmptyStateContent()
-        else -> ScrollableProductListContent(
+        else -> ProductListContent(
             products = state.products,
             onProductClick = onProductClick
         )
@@ -44,7 +44,7 @@ private fun NoShelvesContent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Theme.spacing._32),
+            .padding(horizontal = Theme.spacing._24),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -70,7 +70,7 @@ private fun EmptyStateContent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(Theme.spacing._32),
+            .padding(horizontal = Theme.spacing._24),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -89,7 +89,7 @@ private fun LoadingProductsContent() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16),
+            .padding(horizontal = Theme.spacing._24),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
         // TODO: Replace with Loading component when ready
@@ -107,7 +107,7 @@ private fun LoadingProductsContent() {
 }
 
 @Composable
-private fun ScrollableProductListContent(
+private fun ProductListContent(
     products: List<Product>,
     onProductClick: (Product) -> Unit
 ) {
