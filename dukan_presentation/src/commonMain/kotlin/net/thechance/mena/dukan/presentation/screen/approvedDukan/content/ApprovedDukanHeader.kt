@@ -63,7 +63,7 @@ private fun ProductCountRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._16),
+            .padding(start = Theme.spacing._16, end = Theme.spacing._16, top = Theme.spacing._16),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

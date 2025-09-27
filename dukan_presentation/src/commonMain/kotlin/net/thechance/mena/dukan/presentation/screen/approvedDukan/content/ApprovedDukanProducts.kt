@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -113,10 +114,14 @@ private fun ProductListContent(
 ) {
     // TODO: Replace with ProductCard component when ready
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+        contentPadding = PaddingValues(
+            start = Theme.spacing._16,
+            end = Theme.spacing._16,
+            top = Theme.spacing._8,
+            bottom = Theme.spacing._24
+        )
     ) {
         items(products) { product ->
             Column(
