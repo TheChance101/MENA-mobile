@@ -54,6 +54,12 @@ kotlin {
             implementation(projects.identityPresentation)
             implementation(projects.identityData)
             implementation(projects.identityDomain)
+
+
+            implementation(projects.walletApi)
+            implementation(projects.walletPresentation)
+            implementation(projects.walletData)
+            implementation(projects.walletDomain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
