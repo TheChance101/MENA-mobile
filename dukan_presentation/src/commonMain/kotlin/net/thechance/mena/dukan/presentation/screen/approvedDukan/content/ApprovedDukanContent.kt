@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -149,7 +151,7 @@ private fun ProductCountRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._16),
+            .padding(start = Theme.spacing._16, end = Theme.spacing._16, top = Theme.spacing._16),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -261,13 +263,17 @@ private fun ProductListContent(
     onProductClick: (Product) -> Unit
 ) {
     // TODO: Replace with ProductCard component when ready
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        contentPadding = PaddingValues(
+            start = Theme.spacing._16,
+            end = Theme.spacing._16,
+            top = Theme.spacing._8,
+            bottom = Theme.spacing._24
+        )
     ) {
-        products.forEach { product ->
+        items(products) { product ->
             Column(
                 modifier = Modifier
             ) {
@@ -280,7 +286,6 @@ private fun ProductListContent(
         }
     }
 }
-
 
 @Preview
 @Composable
