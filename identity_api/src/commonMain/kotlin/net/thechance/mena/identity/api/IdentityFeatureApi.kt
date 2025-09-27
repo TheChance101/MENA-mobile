@@ -5,4 +5,7 @@ import androidx.compose.runtime.Composable
 interface IdentityFeatureApi {
     @Composable
     fun ProfileTabEntry()
+
+    @Composable
+    fun LoginFlow()
 }
