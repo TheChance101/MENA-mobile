@@ -1,15 +1,50 @@
 package net.thechance.mena.faith.data.mapper.ayahBookmark
 
 import net.thechance.mena.faith.data.database.AyahDto
+import net.thechance.mena.faith.domain.entity.Ayah
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class AyahMapperKtTest {
 
     @Test
-    fun toAyah_shouldReturnMappedAyah_whenDtoHasValidValues() {
-        // Given
-        val ayahDto = AyahDto(
+    fun `toAyah should return mapped ayah when dto has valid values`() {
+        val result = TestData.validAyahDto.toAyah()
+        assertEquals(TestData.expectedValidAyah, result)
+    }
+
+    @Test
+    fun `toAyah should return mapped ayah when dto has minimum integer values`() {
+        val result = TestData.minIntAyahDto.toAyah()
+        assertEquals(TestData.expectedMinIntAyah, result)
+    }
+
+    @Test
+    fun `toAyah should return mapped ayah when dto has maximum integer values`() {
+        val result = TestData.maxIntAyahDto.toAyah()
+        assertEquals(TestData.expectedMaxIntAyah, result)
+    }
+
+    @Test
+    fun `toAyah should return mapped ayah when displayContent is empty`() {
+        val result = TestData.emptyContentAyahDto.toAyah()
+        assertEquals(TestData.expectedEmptyContentAyah, result)
+    }
+
+    @Test
+    fun `toAyah should return mapped ayah when displayContent is very long`() {
+        val result = TestData.longContentAyahDto.toAyah()
+        assertEquals(TestData.expectedLongContentAyah, result)
+    }
+
+    @Test
+    fun `toAyah should return mapped ayah when dto has zero values`() {
+        val result = TestData.zeroValuesAyahDto.toAyah()
+        assertEquals(TestData.expectedZeroValuesAyah, result)
+    }
+
+    companion object TestData {
+        val validAyahDto = AyahDto(
             id = 1,
             surahNumber = 2,
             surahName = "Al-Baqarah",
@@ -22,19 +57,13 @@ class AyahMapperKtTest {
             jozz = 3,
             page = 42
         )
+        val expectedValidAyah = Ayah(
+            number = 255,
+            surahId = 2,
+            content = "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ"
+        )
 
-        // When
-        val result = ayahDto.toAyah()
-
-        // Then
-        assertEquals(255, result.number)
-        assertEquals(2, result.surahId)
-        assertEquals("اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ", result.content)
-    }
-
-    @Test
-    fun toAyah_shouldReturnMappedAyah_whenDtoHasMinimumIntegerValues() {
-        val ayahDto = AyahDto(
+        val minIntAyahDto = AyahDto(
             id = Int.MIN_VALUE,
             surahNumber = Int.MIN_VALUE,
             surahName = "Test",
@@ -47,44 +76,30 @@ class AyahMapperKtTest {
             jozz = Int.MIN_VALUE,
             page = Int.MIN_VALUE
         )
+        val expectedMinIntAyah = Ayah(
+            number = Int.MIN_VALUE,
+            surahId = Int.MIN_VALUE,
+            content = "Test content"
+        )
 
-        val result = ayahDto.toAyah()
-
-        assertEquals(Int.MIN_VALUE, result.number)
-        assertEquals(Int.MIN_VALUE, result.surahId)
-        assertEquals("Test content", result.content)
-    }
-
-    @Test
-    fun toAyah_shouldReturnMappedAyah_whenDtoHasMaximumIntegerValues() {
-        val ayahDto = AyahDto(
+        val maxIntAyahDto = minIntAyahDto.copy(
             id = Int.MAX_VALUE,
             surahNumber = Int.MAX_VALUE,
-            surahName = "Test",
-            surahNameAr = "اختبار",
             number = Int.MAX_VALUE,
             displayContent = "Test content",
-            plainTextContent = "Test plain",
             lineStart = Int.MAX_VALUE,
             lineEnd = Int.MAX_VALUE,
             jozz = Int.MAX_VALUE,
             page = Int.MAX_VALUE
         )
+        val expectedMaxIntAyah = Ayah(
+            number = Int.MAX_VALUE,
+            surahId = Int.MAX_VALUE,
+            content = "Test content"
+        )
 
-        val result = ayahDto.toAyah()
-
-        assertEquals(Int.MAX_VALUE, result.number)
-        assertEquals(Int.MAX_VALUE, result.surahId)
-        assertEquals("Test content", result.content)
-    }
-
-    @Test
-    fun toAyah_shouldReturnMappedAyah_whenDisplayContentIsEmpty() {
-        val ayahDto = AyahDto(
-            id = 1,
+        val emptyContentAyahDto = validAyahDto.copy(
             surahNumber = 1,
-            surahName = "Al-Fatiha",
-            surahNameAr = "الفاتحة",
             number = 1,
             displayContent = "",
             plainTextContent = "",
@@ -93,70 +108,30 @@ class AyahMapperKtTest {
             jozz = 1,
             page = 1
         )
-
-        val result = ayahDto.toAyah()
-
-        assertEquals(1, result.number)
-        assertEquals(1, result.surahId)
-        assertEquals("", result.content)
-    }
-
-    @Test
-    fun toAyah_shouldReturnMappedAyah_whenDisplayContentHasSpecialCharacters() {
-        val specialContent =
-            "Hello 🌍 Unicode: \u0645\u0631\u062D\u0628\u0627 Emoji: 😊 Punctuation: !@#$%^&*()"
-        val ayahDto = AyahDto(
-            id = 1,
-            surahNumber = 1,
-            surahName = "Test",
-            surahNameAr = "اختبار",
+        val expectedEmptyContentAyah = Ayah(
             number = 1,
-            displayContent = specialContent,
-            plainTextContent = "Test plain",
-            lineStart = 1,
-            lineEnd = 1,
-            jozz = 1,
-            page = 1
+            surahId = 1,
+            content = ""
         )
 
-        val result = ayahDto.toAyah()
 
-        assertEquals(1, result.number)
-        assertEquals(1, result.surahId)
-        assertEquals(specialContent, result.content)
-    }
-
-    @Test
-    fun toAyah_shouldReturnMappedAyah_whenDisplayContentIsVeryLong() {
+        // Long content
         val longContent = "A".repeat(10000)
-        val ayahDto = AyahDto(
-            id = 1,
+        val longContentAyahDto = validAyahDto.copy(
             surahNumber = 1,
-            surahName = "Test",
-            surahNameAr = "اختبار",
             number = 1,
-            displayContent = longContent,
-            plainTextContent = "Test plain",
-            lineStart = 1,
-            lineEnd = 1,
-            jozz = 1,
-            page = 1
+            displayContent = longContent
+        )
+        val expectedLongContentAyah = Ayah(
+            number = 1,
+            surahId = 1,
+            content = longContent
         )
 
-        val result = ayahDto.toAyah()
-
-        assertEquals(1, result.number)
-        assertEquals(1, result.surahId)
-        assertEquals(longContent, result.content)
-    }
-
-    @Test
-    fun toAyah_shouldReturnMappedAyah_whenDtoHasZeroValues() {
-        val ayahDto = AyahDto(
+        // Zero values
+        val zeroValuesAyahDto = validAyahDto.copy(
             id = 0,
             surahNumber = 0,
-            surahName = "Test",
-            surahNameAr = "اختبار",
             number = 0,
             displayContent = "Test content",
             plainTextContent = "Test plain",
@@ -165,11 +140,10 @@ class AyahMapperKtTest {
             jozz = 0,
             page = 0
         )
-
-        val result = ayahDto.toAyah()
-
-        assertEquals(0, result.number)
-        assertEquals(0, result.surahId)
-        assertEquals("Test content", result.content)
+        val expectedZeroValuesAyah = Ayah(
+            number = 0,
+            surahId = 0,
+            content = "Test content"
+        )
     }
 }
