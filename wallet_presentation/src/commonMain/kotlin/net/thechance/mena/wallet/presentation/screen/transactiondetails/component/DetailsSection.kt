@@ -17,6 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
@@ -219,10 +221,10 @@ private fun ColumnScope.DetailsInfo(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.weight(1f),
             text = title,
             style = Theme.typography.body.small,
-            color = Theme.colorScheme.shadeSecondary
+            color = Theme.colorScheme.shadeSecondary,
+            maxLines = 1
         )
         icon?.let {
             Icon(
@@ -233,9 +235,13 @@ private fun ColumnScope.DetailsInfo(
             )
         }
         Text(
+            modifier = Modifier.weight(1f),
             text = content,
             style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary
+            overflow = TextOverflow.Ellipsis,
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            textAlign = TextAlign.End
         )
     }
 }
