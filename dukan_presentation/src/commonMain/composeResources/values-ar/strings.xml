@@ -36,5 +36,12 @@
     <string name="shelf_name_validation">يمكن أن يحتوي اسم الرف على أحرف ومسافات وعلامة '-' فقط</string>
     <string name="shelf_name_is_already_exist">اسم الرف موجود بالفعل، جرب اسمًا آخر.</string>
     <string name="failed_to_create_shelf">فشل في إنشاء الرف</string>
+    <string name="shelves">الأرفف</string>
+    <string name="add_shelf_successfully">تمت إضافة الرف بنجاح.</string>
+    <string name="failed_to_add_shelf">فشل في إضافة الرف</string>
+    <string name="add_product">إضافة منتج</string>
+    <string name="edit_shelf">تعديل الرف</string>
+    <string name="this_shelf_is_empty">هذا الرف فارغ</string>
+    <string name="products">المنتجات</string>
     <string name="delete_icon">ايقونة الحذف</string>
 </resources>
