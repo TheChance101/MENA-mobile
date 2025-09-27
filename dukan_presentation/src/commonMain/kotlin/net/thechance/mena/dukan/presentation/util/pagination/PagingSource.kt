@@ -15,7 +15,7 @@ abstract class PagingSource<Key : Any, Value : Any> {
         ) : LoadResult<Key, Value>()
 
         data class Error<Key : Any, Value : Any>(
-            val throwable: Throwable
+            val throwable: Exception
         ) : LoadResult<Key, Value>()
     }
 

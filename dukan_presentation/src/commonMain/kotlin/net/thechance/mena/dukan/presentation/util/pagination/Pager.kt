@@ -78,7 +78,7 @@ class Pager<Key : Any, Value : Any>(
         load()
     }
 
-    private fun setErrorState(throwable: Throwable) {
+    private fun setErrorState(throwable: Exception) {
         _flow.value = _flow.value.copy(
             isLoading = false,
             error = throwable,
