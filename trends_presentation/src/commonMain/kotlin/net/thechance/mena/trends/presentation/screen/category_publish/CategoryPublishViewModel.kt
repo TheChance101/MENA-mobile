@@ -24,18 +24,14 @@ internal class CategoryPublishViewModel(
             block = { categoryRepository.getAllCategories() },
             onSuccess = ::handleLoadCategoriesSuccess,
             onError = { errorState -> updateState { copy(error = errorState) } },
-            onStart = ::startLoading,
-            onEnd = ::endLoading
+            onStart = { updateState { copy(isLoading = true) } },
+            onEnd = { updateState { copy(isLoading = false) } }
         )
     }
 
     private fun handleLoadCategoriesSuccess(categories: List<Category>) {
         updateState { copy(categories = categories.toUiStates()) }
     }
-
-    private fun startLoading() = updateState { copy(isLoading = true) }
-
-    private fun endLoading() = updateState { copy(isLoading = false) }
 
     override fun onBackClick() = sendEffect(CategoryPublishEffect.NavigateBack)
 
@@ -47,9 +43,9 @@ internal class CategoryPublishViewModel(
         tryToExecute(
             block = { saveSelectedCategories() },
             onSuccess = { sendEffect(CategoryPublishEffect.NavigateToTrends) },
-            onStart = ::onStartPublish,
-            onEnd = ::onEndPublish,
             onError = { errorState -> updateState { copy(error = errorState) } },
+            onStart = { updateState { copy(isPublishButtonLoadingVisible = true) } },
+            onEnd = { updateState { copy(isPublishButtonLoadingVisible = false) } }
         )
     }
 
@@ -62,7 +58,4 @@ internal class CategoryPublishViewModel(
             categoryRepository.updateUserInterestedCategories(selectedIds)
         }
     }
-
-    private fun onStartPublish() = updateState { copy(isPublishButtonVisible = true) }
-    private fun onEndPublish() = updateState { copy(isPublishButtonVisible = false) }
 }

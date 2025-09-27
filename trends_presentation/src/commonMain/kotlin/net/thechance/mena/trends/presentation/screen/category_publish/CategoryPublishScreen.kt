@@ -89,7 +89,7 @@ private fun CategoryPublishContent(
             ) {
                 Text(
                     text = stringResource(Res.string.add_categories_to_video),
-                    style = Theme.typography.title.medium,
+                    style = Theme.typography.title.small,
                     color = Theme.colorScheme.shadePrimary,
                     modifier = Modifier
                         .padding(
@@ -114,7 +114,7 @@ private fun CategoryPublishContent(
 
                     Text(
                         text = stringResource(Res.string.choose_categories),
-                        style = Theme.typography.body.small,
+                        style = Theme.typography.label.small,
                         color = Theme.colorScheme.shadeSecondary,
                         modifier = Modifier.padding(end = Theme.spacing._16)
                     )
@@ -123,10 +123,7 @@ private fun CategoryPublishContent(
                 FlowRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                        )
+                        .padding(horizontal = Theme.spacing._16)
                 ) {
                     state.categories.forEach { category ->
                         CategoryItem(
@@ -143,7 +140,7 @@ private fun CategoryPublishContent(
                 PublishButton(
                     onPublishClick = { listener.onPublishClick() },
                     isButtonEnabled = state.isPublishButtonEnabled(),
-                    isButtonLoading = state.isPublishButtonVisible,
+                    isButtonLoading = state.isPublishButtonLoadingVisible,
                 )
             }
         }
@@ -169,8 +166,8 @@ private fun CategoryPublishAppBar(
         trailingContent = {
             Text(
                 text = screenCount,
-                style = Theme.typography.body.small,
-                color = Theme.colorScheme.shadeSecondary,
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
                     .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
                     .background(
@@ -195,11 +192,7 @@ private fun PublishButton(
         isLoading = isButtonLoading,
         modifier = modifier
             .fillMaxWidth()
-            .background(Theme.colorScheme.background.surface)
-            .padding(
-                start = Theme.spacing._16,
-                end = Theme.spacing._16,
-            ),
+            .padding(horizontal = Theme.spacing._16),
         shape = RoundedCornerShape(Theme.radius.md),
         containerColor = Theme.colorScheme.primary.primary,
         disabledContainerColor = Theme.colorScheme.primary.primary.copy(alpha = 0.5f),

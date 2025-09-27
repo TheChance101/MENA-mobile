@@ -51,11 +51,6 @@ fun TrendsNavHost() {
                 UserReelScreen()
             }
 
-            composable<Route.CategoriesPublish> {
-                CategoryPublishScreen()
-            }
-
-
             composable<Route.Trends> {
                 // TODO: Just a placeholder for navigation until its user story
                 Text(
@@ -72,10 +67,14 @@ fun TrendsNavHost() {
             composable<Route.VideoDescription> {
                 VideoDescriptionScreen()
             }
-        }
-    }
+
+          composable<Route.CategoriesPublish> {
+              CategoryPublishScreen()
+          }
+         }
+     }
 }
 
 val LocalNavController = compositionLocalOf<NavController> {
-    error("NavController not provided")
+     error("NavController not provided")
 }

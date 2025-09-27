@@ -22,5 +22,5 @@ internal sealed interface Route {
     data class VideoDescription(val trendId : String) : Route
 
     @Serializable
-    data object CategoriesPublish: Route
+    data class CategoriesPublish(val trendId : String,val description : String) : Route
 }

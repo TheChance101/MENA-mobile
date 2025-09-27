@@ -8,7 +8,7 @@ internal data class CategoryPublishState(
     val isLoading: Boolean = true,
     val error: ErrorState? = null,
     val categories: List<Selectable<CategoryUiState>> = emptyList(),
-    val isPublishButtonVisible: Boolean = false
+    val isPublishButtonLoadingVisible: Boolean = false
 )
 
 internal fun CategoryPublishState.isPublishButtonEnabled() =
