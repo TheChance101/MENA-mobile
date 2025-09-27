@@ -41,8 +41,17 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 data class BottomNavigationItem(
     val notSelectedIcon: Painter,
     val selectedIcon: Painter,
-    val title: String
+    val title: String,
+    val tab: MenaTap,
 )
+
+enum class MenaTap {
+    HOME,
+    DUKAN,
+    TRENDS,
+    FAITH,
+    PROFILE,
+}
 
 @Composable
 fun BottomNavigationBarContent(
@@ -97,22 +106,26 @@ private fun PreviewBottomNavigationBar() {
             BottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_home_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_home),
-                title = "Home"
+                title = "Home",
+                tab = MenaTap.HOME,
             ),
             BottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_dukan_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_dukan),
-                title = "Dukan"
+                title = "Dukan",
+                tab = MenaTap.DUKAN,
             ),
             BottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_trends_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_trends),
-                title = "Trends"
+                title = "Trends",
+                tab = MenaTap.TRENDS,
             ),
             BottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_profile_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_profile),
-                title = "Profile"
+                title = "Profile",
+                tab = MenaTap.PROFILE,
             )
         )
         var selectedItemIndex by remember {

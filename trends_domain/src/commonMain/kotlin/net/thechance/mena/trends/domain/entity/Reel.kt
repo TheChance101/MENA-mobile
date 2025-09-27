@@ -9,6 +9,6 @@ data class Reel(
     val description: String,
     val likesCount: Int,
     val viewsCount: Int,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDateTime?,
     val categories: List<Category>
 )

@@ -26,24 +26,33 @@ val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Jso
 internal fun createReelsRepository(
     getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
+    updateReel: (suspend MockRequestHandleScope.(id: String, description: String, categoryIds: List<String>) -> HttpResponseData)? = null
 ): ReelsRepositoryImpl {
-    return ReelsRepositoryImpl(createReelsHttpClient(getReels, deleteReel))
+    return ReelsRepositoryImpl(createReelsHttpClient(getReels, deleteReel,updateReel))
 }
 
 internal fun createReelsHttpClient(
     getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
+    updateReel: (suspend MockRequestHandleScope.(id: String, description: String, categoryIds: List<String>) -> HttpResponseData)? = null
 ): HttpClient {
     return HttpClient(MockEngine { request ->
         when {
-            request.url.encodedPath== "/trends/reels" && request.method.value == "GET" -> {
+            request.url.encodedPath == "/trends/reels" && request.method.value == "GET" -> {
                 getReels?.invoke(this) ?: getReelsResponse()
             }
+
             request.url.encodedPath == "/trends/reels/1" && request.method.value == "DELETE" -> {
                 deleteReel?.invoke(this, "1") ?: deleteReelResponse("1")
             }
 
-            else -> respond("", HttpStatusCode.BadRequest,
+            request.url.encodedPath == "/trends/reels/1" && request.method.value == "PUT" -> {
+                updateReel?.invoke(this, "1", "Updated description", listOf("cat1"))
+                    ?: updateReelResponse("1", "Updated description", listOf("cat1"))
+
+            }
+            else -> respond(
+                "", HttpStatusCode.BadRequest,
                 jsonHeaders
             )
         }
@@ -75,7 +84,7 @@ internal fun createHttpClient(
     return HttpClient(
         MockEngine { request ->
             when (request.url.encodedPath) {
-                "/$TRENDS_PATH/$CATEGORIES_ENDPOINT", -> {
+                "/$TRENDS_PATH/$CATEGORIES_ENDPOINT" -> {
                     getAllCategories?.invoke(this) ?: getAllCategoriesResponse()
                 }
 
