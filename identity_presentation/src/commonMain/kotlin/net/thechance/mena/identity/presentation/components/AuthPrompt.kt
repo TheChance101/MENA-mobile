@@ -17,11 +17,11 @@ internal fun AuthPrompt(
     message:String,
     actionLabel:String,
     onActionClick:()->Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEnabled : Boolean = true
 ) {
     Row(
-        modifier
-            .fillMaxWidth(),
+        modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -35,7 +35,7 @@ internal fun AuthPrompt(
         TextButton(
             text = actionLabel,
             onClick = { onActionClick() },
-            isEnabled = true
+            isEnabled = isEnabled
         )
     }
 }
