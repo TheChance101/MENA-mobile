@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.upload_trend
+package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -16,14 +16,14 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
-internal class UploadTrendViewModel(
+internal class UploadReelViewModel(
     @Provided private val reelsRepository: ReelsRepository,
     @Provided private val videoValidator: VideoMetaDataValidator,
     @Provided private val videoDurationExtractor: VideoDurationExtractor,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<UploadTrendsScreenState, UploadTrendsScreenEffect>(
-    UploadTrendsScreenState()
-), UploadTrendInteractionListener {
+) : BaseViewModel<UploadReelScreenState, UploadReelScreenEffect>(
+    UploadReelScreenState()
+), UploadReelInteractionListener {
 
     private var uploadingTrendJob: Job? = null
 
@@ -84,7 +84,7 @@ internal class UploadTrendViewModel(
     }
 
     private fun onUploadStarted() {
-        updateState { copy(uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.UPLOADING) }
+        updateState { copy(uploadingTrendState = UploadReelScreenState.UploadingTrendState.UPLOADING) }
     }
 
     private fun onCollectEachFlow(progress: UploadReelProgress) {
@@ -99,7 +99,7 @@ internal class UploadTrendViewModel(
     private fun onUploadError(errorState: ErrorState) {
         updateState {
             copy(
-                uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.FAILED,
+                uploadingTrendState = UploadReelScreenState.UploadingTrendState.FAILED,
                 errorState = errorState
             )
         }
@@ -108,14 +108,14 @@ internal class UploadTrendViewModel(
     private fun onUploadCompleted() {
         updateState {
             copy(
-                uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.SUCCESS,
+                uploadingTrendState = UploadReelScreenState.UploadingTrendState.SUCCESS,
                 isNextButtonEnabled = true
             )
         }
     }
 
     override fun onBackClick() {
-        sendEffect(UploadTrendsScreenEffect.NavigateBack)
+        sendEffect(UploadReelScreenEffect.NavigateBack)
     }
 
     override fun onEditVideoClick() {
@@ -124,12 +124,12 @@ internal class UploadTrendViewModel(
 
     override fun onCancelUploadClick() {
         uploadingTrendJob?.cancel()
-        updateState { UploadTrendsScreenState() }
+        updateState { UploadReelScreenState() }
     }
 
     override fun onDeleteVideoClick() {
         uploadingTrendJob?.cancel()
-        updateState { UploadTrendsScreenState() }
+        updateState { UploadReelScreenState() }
     }
 
     override fun onRetryUploadClick() {
@@ -138,6 +138,6 @@ internal class UploadTrendViewModel(
     }
 
     override fun onNextClick() {
-        sendEffect(UploadTrendsScreenEffect.NavigateToAddDescription(state.value.selectedFile.id))
+        sendEffect(UploadReelScreenEffect.NavigateToAddDescription(state.value.selectedFile.id))
     }
 }

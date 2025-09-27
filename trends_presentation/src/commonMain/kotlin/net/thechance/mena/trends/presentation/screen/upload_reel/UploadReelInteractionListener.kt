@@ -1,8 +1,8 @@
-package net.thechance.mena.trends.presentation.screen.upload_trend
+package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 
-interface UploadTrendInteractionListener {
+interface UploadReelInteractionListener {
     fun onBackClick()
     fun onRetrieveVideo(
         file: FileUiState,

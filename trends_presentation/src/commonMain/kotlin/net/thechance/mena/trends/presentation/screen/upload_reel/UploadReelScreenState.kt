@@ -1,9 +1,9 @@
-package net.thechance.mena.trends.presentation.screen.upload_trend
+package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 
-data class UploadTrendsScreenState(
+data class UploadReelScreenState(
     val selectedFile: FileUiState = FileUiState(),
     val uploadingTrendState: UploadingTrendState = UploadingTrendState.IDLE,
     val uploadedMegaBytes: String = "",
