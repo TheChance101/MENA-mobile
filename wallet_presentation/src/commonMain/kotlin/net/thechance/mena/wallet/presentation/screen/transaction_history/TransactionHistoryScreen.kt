@@ -10,8 +10,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.filter
@@ -32,16 +34,36 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
+import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun TransactionHistoryScreen(
+    viewModel: TransactionHistoryViewModel = koinViewModel()
+){
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveAsEffect(
+        effect = viewModel.uiEffect,
+        onEffect = ::onTransactionHistoryEffect
+    )
+
+    TransactionHistoryContent(
+        state = state,
+        interactionListener = viewModel
+    )
+}
 
 @Composable
 fun TransactionHistoryContent(
-    state: List<TransactionHistoryScreenState>,
+    state: TransactionHistoryScreenState,
     interactionListener: TransactionHistoryInteractionListener
 ) {
     WalletScaffold(
@@ -67,43 +89,50 @@ fun TransactionHistoryContent(
             )
         }
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Theme.colorScheme.background.surface)
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-        ) {
-            item {
-                Button(
-                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
-                    onClick = interactionListener::onFilterClicked,
-                    containerColor = Theme.colorScheme.brand.brandVariant,
-                    shape = CircleShape,
+        when (state.history) {
+            is UiState.Error -> {}
+            is UiState.Loading, UiState.Idle -> {}
+            is UiState.Success -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Theme.colorScheme.background.surface)
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
                 ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_filter),
-                        contentDescription = Res.string.filter.toString()
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 4.dp),
-                        text = Res.string.filter.toString(),
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.primary.primary
-                    )
-                }
-            }
-            items(state) { transaction ->
-                TransactionHistoryCard(
-                    transactionTypeIcon = getTransactionTypeIcon(transaction.type),
-                    transactionTitle = getTransactionTitle(transaction.type),
-                    transactionTimeAndDate = transaction.timeAndDate,
-                    amount = transaction.amount,
-                    transactionStatus = transaction.status,
-                    onTransactionCardClicked = interactionListener::onTransactionCardClicked,
-                    sender = transaction.sender,
-                    receiver = transaction.receiver
-                )
+                    item {
+                        Button(
+                            contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
+                            onClick = interactionListener::onFilterClicked,
+                            containerColor = Theme.colorScheme.brand.brandVariant,
+                            shape = CircleShape,
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_filter),
+                                contentDescription = Res.string.filter.toString()
+                            )
+                            Text(
+                                modifier = Modifier.padding(start = 4.dp),
+                                text = Res.string.filter.toString(),
+                                style = Theme.typography.label.small,
+                                color = Theme.colorScheme.primary.primary
+                            )
+                        }
+                    }
+                    val history = state.history
+                    items(history.data) { transaction ->
+                        TransactionHistoryCard(
+                            transactionTypeIcon = getTransactionTypeIcon(transaction.type),
+                            transactionTitle = getTransactionTitle(transaction.type),
+                            transactionTimeAndDate = transaction.timeAndDate,
+                            amount = transaction.amount,
+                            transactionStatus = transaction.status,
+                            onTransactionCardClicked = interactionListener::onTransactionCardClicked,
+                            sender = transaction.sender,
+                            receiver = transaction.receiver
+                        )
 
+                    }
+                }
             }
         }
     }
@@ -122,3 +151,8 @@ private fun getTransactionTitle(transactionType: Transaction.Type): StringResour
         Transaction.Type.SENT -> Res.string.transaction_send
         Transaction.Type.RECEIVED -> Res.string.transaction_receive
     }
+private fun onTransactionHistoryEffect(effect: TransactionHistoryEffect) {
+    when (effect) {
+        is TransactionHistoryEffect.NavigateBack -> { /* TODO("Handle navigation back") */ }
+    }
+}
