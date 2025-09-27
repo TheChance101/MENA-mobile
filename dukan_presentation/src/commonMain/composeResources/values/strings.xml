@@ -50,6 +50,11 @@
     <string name="shelf_name_validation">Shelf name can only contain letters, spaces, and ‘-’</string>
     <string name="shelf_name_is_already_exist">Shelf name already exists, try another one.</string>
     <string name="failed_to_create_shelf">Failed to create shelf</string>
+    <string name="dukan_approved_now">create dukan request is approved now</string>
+    <string name="creating_shelf">Start creating your shelf and products by clicking on create button below</string>
+    <string name="delete_icon">Delete Icon</string>
+    <string name="foreground_image">Foreground Image</string>
+    <string name="blur_image">Blur Image</string>
     <string name="shelves">Shelves</string>
     <string name="add_shelf_successfully">Add shelf successfully.</string>
     <string name="failed_to_add_shelf">Failed to add shelf</string>

@@ -55,6 +55,7 @@ class MainViewModel(
         when (state.value.dukanState.status) {
             DukanStatusUi.None -> emitEffect(MainEffect.NavigateToAddDukanScreen)
             DukanStatusUi.Pending -> emitEffect(MainEffect.NavigateToPendingDukanScreen)
+            DukanStatusUi.Approved -> TODO()
         }
     }
 }

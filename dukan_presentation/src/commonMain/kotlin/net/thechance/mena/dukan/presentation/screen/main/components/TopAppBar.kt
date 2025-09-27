@@ -92,6 +92,13 @@ private fun DukanIconButton(
                         contentDescription = stringResource(resource = Res.string.dukan_icon)
                     )
                 }
+
+                MainScreenUiState.DukanStatusUi.Approved -> {
+                    Icon(
+                        painter = painterResource(resource = Res.drawable.ic_dukan),
+                        contentDescription = stringResource(resource = Res.string.dukan_icon)
+                    )
+                }
             }
         }
     }
