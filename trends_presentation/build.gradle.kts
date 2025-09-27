@@ -64,9 +64,6 @@ kotlin {
             implementation(libs.turbine)
             implementation(libs.koin.test)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
     }
     sourceSets.named("commonMain").configure {
         kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

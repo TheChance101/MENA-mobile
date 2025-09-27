@@ -1,5 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -9,7 +12,8 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class UserReelViewModel(
     @Provided private val userReelArgs: UserReelArgs,
-    @Provided private val reelsRepository: ReelsRepository
+    @Provided private val reelsRepository: ReelsRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
     override fun onDescriptionClick(isCollapsed: Boolean) {
         updateState {
@@ -32,6 +36,7 @@ internal class UserReelViewModel(
             block = { reelsRepository.deleteReelById(userReelArgs.realId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
+            dispatcher = ioDispatcher
         )
     }
 

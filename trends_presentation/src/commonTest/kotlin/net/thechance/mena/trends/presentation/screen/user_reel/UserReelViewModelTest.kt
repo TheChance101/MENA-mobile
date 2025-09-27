@@ -42,7 +42,7 @@ class UserReelViewModelTest {
 
         everySuspend { mockReelsRepository.deleteReelById("1") }
 
-        viewModel = UserReelViewModel(userReelArgs, mockReelsRepository)
+        viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
     }
 
     @Test
@@ -141,7 +141,7 @@ class UserReelViewModelTest {
 
         // Then
         viewModel.state.test {
-            awaitItem()
+            skipItems(1)
             val state2 = awaitItem()
 
             assertFalse(state2.isConfirmationDialogVisible)
