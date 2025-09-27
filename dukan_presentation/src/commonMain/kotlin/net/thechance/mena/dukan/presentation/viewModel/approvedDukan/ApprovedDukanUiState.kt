@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.presentation.component.SnackBarMessage
 
 data class ApprovedDukanUiState(
     val shelves: List<Shelf> = emptyList(),
@@ -11,6 +12,5 @@ data class ApprovedDukanUiState(
     val totalProducts: Int = 0,
     val isLoading: Boolean = false,
     val isLoadingProducts: Boolean = false,
-    val showSnackBar: Boolean = false,
-    val showShelfAddedSuccess: Boolean = false
+    val snackBarMessage: SnackBarMessage? = null
 )

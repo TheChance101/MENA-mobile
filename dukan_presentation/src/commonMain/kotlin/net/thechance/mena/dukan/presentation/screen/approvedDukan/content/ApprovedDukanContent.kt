@@ -23,7 +23,6 @@ import mena.dukan_presentation.generated.resources.add_product
 import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.edit_shelf
-import mena.dukan_presentation.generated.resources.failed_to_add_shelf
 import mena.dukan_presentation.generated.resources.ic_add_bold
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_package_add
@@ -137,16 +136,16 @@ fun ApprovedDukanContent(
         )
     }
 
-    SnackBar(
-        snackBarUiState = SnackBarUiState(
-            snackBarType = if (state.showShelfAddedSuccess) SnackBarType.SUCCESS else SnackBarType.ERROR,
-            message = if (state.showShelfAddedSuccess) stringResource(Res.string.add_shelf_successfully) else stringResource(
-                Res.string.failed_to_add_shelf
-            )
-        ),
-        isVisible = state.showSnackBar,
-        onDismiss = listener::onDismissSnackBar
-    )
+    state.snackBarMessage?.let { snackBarMessage ->
+        SnackBar(
+            snackBarUiState = SnackBarUiState(
+                snackBarType = SnackBarType.SUCCESS,
+                message = stringResource(Res.string.add_shelf_successfully)
+            ),
+            isVisible = true,
+            onDismiss = listener::onDismissSnackBar
+        )
+    }
 }
 
 @Composable

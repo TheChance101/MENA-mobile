@@ -27,11 +27,8 @@ class ApprovedDukanViewModel(
     }
 
     override fun onDismissSnackBar() {
-        updateState { 
-            copy(
-                showSnackBar = false,
-                showShelfAddedSuccess = false
-            ) 
+        updateState {
+            copy(snackBarMessage = null)
         }
     }
 
@@ -84,11 +81,7 @@ class ApprovedDukanViewModel(
 
     private fun handleLoadShelvesError() {
         updateState {
-            copy(
-                isLoading = false,
-                showSnackBar = true,
-                showShelfAddedSuccess = false
-            )
+            copy(isLoading = false)
         }
     }
 
