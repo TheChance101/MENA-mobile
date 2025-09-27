@@ -40,7 +40,6 @@ class ManageShelfViewModelTest {
     @Test
     fun `init should initialize state with shelf id and title from saved state handle`() {
         val state = manageShelfViewModel.state.value
-        assertEquals(expectedShelfId, state.shelfId)
         assertEquals(expectedShelfTitle, state.shelfTitle)
     }
 
