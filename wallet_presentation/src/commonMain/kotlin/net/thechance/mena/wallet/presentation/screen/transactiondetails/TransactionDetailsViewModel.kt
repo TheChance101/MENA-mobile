@@ -69,7 +69,6 @@ class TransactionDetailsViewModel(
             onStart = ::onShareReceiptStart,
             dispatcher = ioDispatcher
         )
-
     }
 
     @OptIn(ExperimentalUuidApi::class)
