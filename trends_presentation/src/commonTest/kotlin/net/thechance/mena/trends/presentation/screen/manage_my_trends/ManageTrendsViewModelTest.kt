@@ -38,7 +38,7 @@ class ManageTrendsViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel =  ManageTrendsViewModel(repository,testDispatcher)
+        viewModel = ManageTrendsViewModel(repository, testDispatcher)
     }
 
 
@@ -65,7 +65,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `initialize view model should handle error state when getAllReels fails`() =
         runTest(testDispatcher) {
-            val errorMessage = "Network error"
+            val errorMessage = "error"
             everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
 
             assertFailsWith<Exception> {
@@ -148,12 +148,12 @@ class ManageTrendsViewModelTest {
     @Test
     fun `should update error state in getReel when repository throws exception`() = runTest {
         // Given
-        val errorMessage = " failed"
+        val errorMessage = "error"
         everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
-
-        viewModel.getReels()
         testScheduler.advanceUntilIdle()
-
+        println("ttttttttttt${viewModel.state.value.reels.toString()}")
+        println("eeeeeeeeeee${viewModel.state.value.error}")
+        println("eeeeeeeeeee${viewModel.state.value.errorMessage}")
         // Then
         viewModel.state.test {
             val errorState = awaitItem()
@@ -161,30 +161,6 @@ class ManageTrendsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-//    @Test
-//    fun `should update ehrror state in getReel when repository throws exception`() = runTest {
-//        // Given
-//        val errorMessage = " failed"
-//        everySuspend { repository.getAllReels(1) } throws Exception()
-//
-//        // Then
-//        viewModel.state.test {
-//            val errorState = awaitItem()
-//            assertNotNull(errorState.error is ErrorState.NoInternet)
-//        }
-//    }
-//    @Test
-//    fun `should update errior state in getReel when repository throws exception`() = runTest {
-//        // Given
-//        val errorMessage = " failed"
-//        everySuspend { repository.getAllReels(1) } throws Exception()
-//
-//        // Then
-//        viewModel.state.test {
-//            val errorState = awaitItem()
-//            assertNotNull(errorState.error is ErrorState.RequestTimeout)
-//        }
-//    }
 
     private companion object {
         const val REEL_ID = "1"
