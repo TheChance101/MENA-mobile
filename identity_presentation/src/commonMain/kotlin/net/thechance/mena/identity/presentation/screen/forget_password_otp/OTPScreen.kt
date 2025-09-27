@@ -25,7 +25,7 @@ class OTPScreen(
     private val phoneNumber: String,
     private val countryCode: String
 ) : BaseScreen<
-        OTPScreenModel,
+        OTPScreenViewModel,
         OTPScreenUIState,
         OTPScreenUIEffect,
         OTPScreenInteractionListener>() {

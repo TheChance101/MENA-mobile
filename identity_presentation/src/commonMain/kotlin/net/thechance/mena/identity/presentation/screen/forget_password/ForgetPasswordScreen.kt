@@ -21,7 +21,7 @@ import net.thechance.mena.identity.presentation.screen.forget_password_otp.OTPSc
 import org.jetbrains.compose.resources.painterResource
 
 class ForgetPasswordScreen : BaseScreen<
-        ForgetPasswordScreenModel,
+        ForgetPasswordScreenViewModel,
         ForgetPasswordScreenUIState,
         ForgetPasswordScreenUIEffect,
         ForgetPasswordScreenInteractionListener>() {

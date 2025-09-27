@@ -10,7 +10,7 @@ import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 
-class OTPScreenModel(
+class OTPScreenViewModel(
     private val forgetPasswordRepository: ForgetPasswordRepository,
     private val phoneNumber: String,
     private val countryCode: String
