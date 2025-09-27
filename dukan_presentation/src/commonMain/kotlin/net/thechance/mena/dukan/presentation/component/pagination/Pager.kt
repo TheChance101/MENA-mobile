@@ -52,29 +52,14 @@ class Pager<Key : Any, Value : Any>(
                         currentKey = result.nextKey
                         loadedItemsCount = finalItems.size
 
-                        _flow.value = _flow.value.copy(
-                            items = finalItems,
-                            isLoading = false,
-                            error = null,
-                            hasMore = result.nextKey != null,
-                            isRefreshing = false
-                        )
+                        setSuccessState(finalItems, result.nextKey)
                     }
-
                     is PagingSource.LoadResult.Error -> {
-                        _flow.value = _flow.value.copy(
-                            isLoading = false,
-                            error = result.throwable,
-                            isRefreshing = false
-                        )
+                        setErrorState(result.throwable)
                     }
                 }
             } catch (e: Exception) {
-                _flow.value = _flow.value.copy(
-                    isLoading = false,
-                    error = e,
-                    isRefreshing = false
-                )
+                setErrorState(e)
             }
         }
     }
@@ -89,8 +74,28 @@ class Pager<Key : Any, Value : Any>(
     suspend fun refresh() {
         _flow.value = _flow.value.copy(isRefreshing = true)
         currentKey = null
-        currentPagingSource = null
         loadedItemsCount = 0
         load()
+    }
+
+    private fun setErrorState(throwable: Throwable) {
+        _flow.value = _flow.value.copy(
+            isLoading = false,
+            error = throwable,
+            isRefreshing = false
+        )
+    }
+
+    private fun setSuccessState(
+        finalItems: List<Value>,
+        nextKey: Key?
+    ) {
+        _flow.value = _flow.value.copy(
+            items = finalItems,
+            isLoading = false,
+            error = null,
+            hasMore = nextKey != null,
+            isRefreshing = false
+        )
     }
 }
