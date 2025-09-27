@@ -1,39 +1,48 @@
 package net.thechance.mena.identity.data.repository
 
-import net.thechance.mena.identity.data.datasource.AuthRemoteDataSource
-import net.thechance.mena.identity.data.datasource.LocalDataSource
+import com.russhwolf.settings.Settings
+import io.ktor.client.HttpClient
 import net.thechance.mena.identity.data.dto.auth.LoginRequestDto
-import net.thechance.mena.identity.data.dto.auth.LoginResponseDto
+import net.thechance.mena.identity.data.dto.auth.AuthenticationResponse
 import net.thechance.mena.identity.data.dto.auth.RefreshRequestDto
+import net.thechance.mena.identity.data.utils.accessToken
+import net.thechance.mena.identity.data.utils.postJson
+import net.thechance.mena.identity.data.utils.refreshToken
 import net.thechance.mena.identity.data.utils.safeWrapper
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 
 class AuthenticationRepositoryImpl(
-    private val remoteAuthService: AuthRemoteDataSource,
-    private val localDataSource: LocalDataSource,
+    private val client: HttpClient,
+    private val settings: Settings
 ) : AuthenticationRepository {
-    override suspend fun login(countryCode: String, number: String, password: String) {
+    override suspend fun login(phoneNumber: PhoneNumber, password: String) {
         return safeWrapper {
-            val mobileNumber = countryCode + number
-            val loginResponse = remoteAuthService.login(LoginRequestDto(mobileNumber, password))
+            val loginResponse: AuthenticationResponse = client.postJson(LoginRequestDto(phoneNumber.getFormattedPhoneNumber(), password), LOGIN)
             saveAuthTokens(loginResponse)
         }
     }
 
     override suspend fun refreshAccessToken(): String {
-        val refreshResponse = safeWrapper {
-            remoteAuthService.refreshToken(RefreshRequestDto(localDataSource.getRefreshToken()))
+        val refreshResponse: AuthenticationResponse = safeWrapper {
+            client.postJson(RefreshRequestDto(settings.refreshToken), REFRESH)
         }
         saveAuthTokens(refreshResponse)
-        return localDataSource.getAccessToken()
+        return settings.accessToken
     }
 
     override suspend fun getAccessToken(): String {
-        return localDataSource.getAccessToken()
+        return settings.accessToken
     }
 
-    private fun saveAuthTokens(loginResponseDto: LoginResponseDto) {
-        localDataSource.saveAccessToken(loginResponseDto.accessToken)
-        localDataSource.saveRefreshToken(loginResponseDto.refreshToken)
+    private fun saveAuthTokens(authInfo: AuthenticationResponse) {
+        settings.accessToken = authInfo.accessToken
+        settings.refreshToken = authInfo.refreshToken
+    }
+
+    companion object {
+        const val LOGIN = "identity/login"
+        const val REFRESH = "identity/refresh"
+
     }
 }

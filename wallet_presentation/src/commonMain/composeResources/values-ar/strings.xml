@@ -7,4 +7,33 @@
     <string name="couldnt_load_tap_to_retry">فشل التحميل، اضغط لإعادة المحاولة</string>
     <string name="error">خطأ</string>
     <string name="balance_fetch_error_description">حدث خطأ أثناء تحميل رصيدك</string>
+  
+    <string name="type">النوع</string>
+    <string name="status">الحالة</string>
+    <string name="from">من</string>
+    <string name="to">الى</string>
+    <string name="select_date">اختار التاريخ</string>
+    <string name="sent">مرسل</string>
+    <string name="received">مستلم</string>
+    <string name="online_purchase">شراء عبر الإنترنت</string>
+    <string name="all">الكل</string>
+    <string name="success">ناجح</string>
+    <string name="failed">فشل</string>
+
+    <string name="month_january">يناير</string>
+    <string name="month_february">فبراير</string>
+    <string name="month_march">مارس</string>
+    <string name="month_april">أبريل</string>
+    <string name="month_may">مايو</string>
+    <string name="month_june">يونيو</string>
+    <string name="month_july">يوليو</string>
+    <string name="month_august">أغسطس</string>
+    <string name="month_september">سبتمبر</string>
+    <string name="month_october">أكتوبر</string>
+    <string name="month_november">نوفمبر</string>
+    <string name="month_december">ديسمبر</string>
+    <string name="pick_start_date">اختر تاريخ البداية</string>
+    <string name="pick_end_date">اختار تاريخ النهاية</string>
+    <string name="pick">اختر</string>
+
 </resources>

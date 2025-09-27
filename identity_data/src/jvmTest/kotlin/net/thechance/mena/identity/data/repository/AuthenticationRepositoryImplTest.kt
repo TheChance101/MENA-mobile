@@ -2,6 +2,8 @@ package net.thechance.mena.identity.data.repository
 
 import assertk.assertFailure
 import assertk.assertions.isInstanceOf
+import com.russhwolf.settings.Settings
+import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
@@ -10,10 +12,9 @@ import io.mockk.every
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.identity.data.datasource.AuthRemoteDataSource
-import net.thechance.mena.identity.data.datasource.LocalDataSource
+
 import net.thechance.mena.identity.data.dto.auth.LoginRequestDto
-import net.thechance.mena.identity.data.dto.auth.LoginResponseDto
+import net.thechance.mena.identity.data.dto.auth.AuthenticationResponse
 import net.thechance.mena.identity.data.dto.auth.RefreshRequestDto
 import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
@@ -21,13 +22,15 @@ import net.thechance.mena.identity.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 import org.junit.Test
 
+//TODO: fix all test cases to use client and settings instead of datasources
+// also rename all functions to match the new checks
+// finally split test cases with multiple assertion or verification into multiple test cases
 class AuthenticationRepositoryImplTest {
 
-    private val authRemoteDataSource = mockk<AuthRemoteDataSource>()
-    private val localDataSource = mockk<LocalDataSource>(relaxed = true)
-    private val authenticationRepository = AuthenticationRepositoryImpl(
-        authRemoteDataSource, localDataSource
-    )
+    private val client: HttpClient = mockk(relaxed = true)
+    private val settings: Settings = mockk(relaxed = true)
+
+    private val authenticationRepository = AuthenticationRepositoryImpl(client, settings)
 
     @Test
     fun `login should call remote service with correct credentials when successful`() = runTest {
@@ -213,7 +216,7 @@ class AuthenticationRepositoryImplTest {
 
 }
 
-val fakeLoginResponse = LoginResponseDto(
+val fakeLoginResponse = AuthenticationResponse(
     accessToken = "fake_access_token",
     refreshToken = "fake_refresh_token"
 )
