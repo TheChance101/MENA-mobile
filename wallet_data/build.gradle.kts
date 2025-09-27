@@ -39,6 +39,8 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
+            //date time
+            implementation(libs.kotlinx.datetime)
         }
         iosMain.dependencies {
 

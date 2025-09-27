@@ -7,19 +7,24 @@ import kotlinx.coroutines.delay
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
+import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
-class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
-    BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
+class TransactionDetailsViewModel(
+    @Provided val imageSharer: ImageSharer,
+    @Provided val transactionRepository: TransactionRepository
+) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
         TransactionDetailsScreenState()
     ), TransactionDetailsInteractionListener {
     init {
@@ -28,15 +33,15 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
 
     private fun getTransactionDetails() {
         tryToExecute(
-            callee = { return@tryToExecute TransactionDetailsUiState()},
+            callee = { transactionRepository.getTransactionDetails(Uuid.random()) },
             onSuccess = ::onGetTransactionDetailsSuccess,
             onError = ::onGetTransactionDetailsError,
             onStart = ::onGetTransactionDetailsStart,
         )
     }
 
-    private fun onGetTransactionDetailsSuccess(transaction: TransactionDetailsUiState) {
-        updateState { it.copy(transactionDetailsUiState = UiState.Success(transaction)) }
+    private fun onGetTransactionDetailsSuccess(transaction: Transaction) {
+        updateState { it.copy(transactionDetailsUiState = UiState.Success(transaction.toUi())) }
     }
 
     private fun onGetTransactionDetailsError(throwable: Throwable) {
@@ -59,9 +64,11 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
     @OptIn(ExperimentalUuidApi::class)
     override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {
         val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
-        updateState { it.copy(
-            shareReceipt = UiState.Success(imageBitmap),
-        ) }
+        updateState {
+            it.copy(
+                shareReceipt = UiState.Success(imageBitmap),
+            )
+        }
         tryToExecute(
             callee = {
                 imageSharer.shareImage(
@@ -130,7 +137,7 @@ class TransactionDetailsViewModel(@Provided val imageSharer: ImageSharer) :
     override fun onBottomSheetDismissRequest() {
     }
 
-    private companion object{
+    private companion object {
         const val IMAGE_TYPE = "image/png"
     }
 }

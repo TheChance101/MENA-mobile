@@ -55,6 +55,8 @@ kotlin {
 
             //Kmp capturable
             implementation(libs.kmp.capturable.compose)
+            //date time
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
