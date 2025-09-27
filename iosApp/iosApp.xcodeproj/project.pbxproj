@@ -71,7 +71,6 @@
 				F2A2D9007EC184837D541AE6 /* Pods-iosApp.releasestaging.xcconfig */,
 				241B184C0B1157B50EBF614B /* Pods-iosApp.releasedevelopment.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -110,12 +109,10 @@
 			buildConfigurationList = 620EC33049E133A3FB836427 /* Build configuration list for PBXNativeTarget "iosApp" */;
 			buildPhases = (
 				6CF182435CF2BA97EF3FD772 /* [CP] Check Pods Manifest.lock */,
-				AA530A912E75AE860071062F /* Badge App Icon */,
 				6C1C1DCB45EE2FB611673510 /* Compile Kotlin Framework */,
 				D21C05603AD67961BB6451F7 /* Sources */,
 				6365C4AF1AAD164DCCE558F9 /* Frameworks */,
 				D081E6A75F3CC26B3E25D43C /* Resources */,
-				AAB542D72E75A5F300610DA4 /* Restore App Icon */,
 				C2EBC9292D22C90630BD52E8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
@@ -215,42 +212,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		AA530A912E75AE860071062F /* Badge App Icon */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Badge App Icon";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "#!/bin/bash\n\nSOURCE_ICON_SET=\"${PROJECT_DIR}/iosApp/Assets.xcassets/AppIcon.appiconset\"\n\ngit restore -- $SOURCE_ICON_SET\n\n# Only run for non-Production configurations.\nif [[ \"$CONFIGURATION\" == *\"Production\"* ]]; then\n  echo \"Skipping icon badging for Production build.\"\n  exit 0\nfi\n\n# ... (The rest of the script is the same, just without the 'trap' line) ...\n\nif ! [ -x \"$(command -v convert)\" ] || ! [ -x \"$(command -v composite)\" ]; then\n  echo \"error: ImageMagick is not installed. Please run 'brew install imagemagick'.\" >&2\n  exit 1\nfi\n\nif [[ \"$CONFIGURATION\" == *\"Development\"* ]]; then\n  BANNER_FILE=\"${PROJECT_DIR}/../composeApp/build-assets/banner_dev.png\"\nelif [[ \"$CONFIGURATION\" == *\"Staging\"* ]]; then\n  BANNER_FILE=\"${PROJECT_DIR}/../composeApp/build-assets/banner_staging.png\"\nelse\n  echo \"No banner for configuration: $CONFIGURATION\"\n  exit 0\nfi\n\nif [ ! -f \"$BANNER_FILE\" ] || [ ! -d \"$SOURCE_ICON_SET\" ]; then\n  echo \"error: Required files are missing. Banner: $BANNER_FILE, Icon Set: $SOURCE_ICON_SET\" >&2\n  exit 1\nfi\n\necho \"Temporarily modifying source icons for '$CONFIGURATION' build...\"\nRESIZED_BANNER_PATH=\"${TARGET_TEMP_DIR}/temp_banner.png\"\n\nfind \"$SOURCE_ICON_SET\" -name \"*.png\" | while read icon_file; do\n    width=$(identify -format %w \"$icon_file\")\n    convert \"$BANNER_FILE\" -resize ${width}x${width} \"$RESIZED_BANNER_PATH\"\n    composite -gravity center \"$RESIZED_BANNER_PATH\" \"$icon_file\" \"$icon_file\"\ndone\n\nrm -f \"$RESIZED_BANNER_PATH\"\n\necho \"Icon badging complete. The build will now use the modified source icons.\"\n";
-		};
-		AAB542D72E75A5F300610DA4 /* Restore App Icon */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Restore App Icon";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "# Restores the original app icons after the build is complete.\ngit restore -- \"${PROJECT_DIR}/iosApp/Assets.xcassets/AppIcon.appiconset\"\n";
 		};
 		C2EBC9292D22C90630BD52E8 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -405,7 +366,7 @@
 			baseConfigurationReference = 241B184C0B1157B50EBF614B /* Pods-iosApp.releasedevelopment.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Development";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -493,7 +454,7 @@
 			baseConfigurationReference = F2A2D9007EC184837D541AE6 /* Pods-iosApp.releasestaging.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Staging";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -588,7 +549,7 @@
 			baseConfigurationReference = C2DDD26143EFF1E4591ACBBB /* Pods-iosApp.debugdevelopment.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Development";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -683,7 +644,7 @@
 			baseConfigurationReference = CCD218F1746D7F5B96F574D4 /* Pods-iosApp.debugstaging.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Staging";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
