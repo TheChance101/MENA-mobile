@@ -285,15 +285,15 @@ class SurahViewModelTest {
     fun `onCopyClick should update state correctly when copy operation succeeds`() = runTest {
         // Given
         val testViewModel = createTestViewModel()
-        testViewModel.onAyahLongPress(DUMMY_PREVIOUS_CONTENT, DUMMY_SELECTED_INDEX)
+        testViewModel.onAyahLongPress(PREVIOUS_CONTENT, SELECTED_INDEX)
 
         // When
-        testViewModel.onCopyClick(DUMMY_AYAH_CONTENT)
+        testViewModel.onCopyClick(AYAH_CONTENT)
         Dispatchers.setMain(testDispatcher)
 
         // Then
         val testState = testViewModel.uiState.value
-        assertEquals(DUMMY_SELECTED_INDEX, testState.selectedAyahIndex)
+        assertEquals(SELECTED_INDEX, testState.selectedAyahIndex)
 
     }
 
@@ -311,9 +311,9 @@ class SurahViewModelTest {
         const val SELECTED_AYAH_CONTENT = "Selected ayah content"
         const val AYAH_TO_SHARE = "Ayah to share"
         const val EMPTY_STRING = ""
-        const val DUMMY_AYAH_CONTENT = "Test ayah content"
-        const val DUMMY_PREVIOUS_CONTENT = "Previous content"
-        const val DUMMY_SELECTED_INDEX = 5
+        const val AYAH_CONTENT = "Test ayah content"
+        const val PREVIOUS_CONTENT = "Previous content"
+        const val SELECTED_INDEX = 5
         const val AYAH_TO_COPY = "Ayah to copy"
     }
 }
