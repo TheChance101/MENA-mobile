@@ -1,13 +1,12 @@
 package net.thechance.mena.trends.data.util
 
+import co.touchlab.kermit.Logger
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.io.IOException
 import net.thechance.mena.trends.domain.exception.NoInternetException
-import net.thechance.mena.trends.domain.util.Logger
-import org.koin.mp.KoinPlatform.getKoin
 
 internal suspend inline fun <reified T> safeApiCall(
     execute: suspend () -> HttpResponse
@@ -90,8 +89,7 @@ private fun logError(
     type: String,
     message: String
 ) {
-    val logger: Logger = getKoin().get()
-    logger.logError(tag, "$type: $message")
+    Logger.e(tag) { "$type: $message" }
 }
 
 private const val SAFE_API_CALL_TAG = "safeApiCall"

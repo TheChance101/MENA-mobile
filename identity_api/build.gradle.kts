@@ -30,7 +30,6 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.ui)
-            api(projects.identityPresentation)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -1,20 +1,20 @@
 package net.thechance.mena.trends.data.mapper
 
-import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.data.dto.ReelDto
+import net.thechance.mena.trends.data.util.orZero
+import net.thechance.mena.trends.data.util.parseDateStringOrNull
 import net.thechance.mena.trends.domain.entity.Reel
 
-internal fun ReelDto.toEntity(): Reel? {
-    if (id == null || createdAt == null) return null
 
+internal fun ReelDto.toEntity(): Reel {
     return Reel(
-        id = id,
-        thumbnailUrl = reelImageUrl ?: "",
-        videoUrl = videoUrl ?: "",
-        description = description ?: "",
-        likesCount = likesCount ?: 0,
-        viewsCount = viewsCount ?: 0,
-        createdAt = LocalDateTime.parse(createdAt),
-        categories = categories?.mapNotNull { it.toEntity() } ?: emptyList()
+        id = id.orEmpty(),
+        thumbnailUrl = reelImageUrl.orEmpty(),
+        videoUrl = videoUrl.orEmpty(),
+        description = description.orEmpty(),
+        likesCount = likesCount.orZero(),
+        viewsCount = viewsCount.orZero(),
+        createdAt = createdAt.parseDateStringOrNull(),
+        categories = categories?.mapNotNull { it.toEntity() }.orEmpty()
     )
 }

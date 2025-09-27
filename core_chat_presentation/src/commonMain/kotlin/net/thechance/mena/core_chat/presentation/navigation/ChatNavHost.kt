@@ -18,6 +18,7 @@ import net.thechance.mena.core_chat.presentation.components.AnimatedSnackBarHost
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.screen.chats.ChatsScreen
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
+import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -77,6 +78,7 @@ fun ChatNavHost(
             composable<ChatsRoute> { ChatsScreen() }
             composable<ContactsRoute> { ContactsScreen() }
             composable<SyncContactsRoute> { SyncContactsScreen() }
+            composable<ChatDetailsRoute> { ChatScreen() }
         }
 
 

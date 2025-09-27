@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.domain.useCase
 
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidPasswordException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
@@ -13,8 +14,7 @@ open class LoginUseCase(
         if (!isPasswordValid(password)) throw InvalidPasswordException()
         if (!isMobileNumberValid(countryCode, number)) throw InvalidMobileNumberException(number)
         authenticationRepository.login(
-            countryCode = countryCode,
-            number = number,
+            phoneNumber = PhoneNumber(countryCode, number),
             password = password
         )
     }
