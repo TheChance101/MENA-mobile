@@ -100,7 +100,9 @@ private fun TransactionIcon(
             Icon(
                 painter = painterResource(Res.drawable.ic_failed),
                 contentDescription = Res.string.failed.toString(),
-                modifier = Modifier.align(Alignment.BottomCenter).offset(y = 18.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = 18.dp)
             )
         }
     }
