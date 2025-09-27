@@ -1,217 +1,207 @@
 package net.thechance.mena.identity.data.repository
 
 import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.mockk.coEvery
-import io.mockk.coVerify
+import io.ktor.http.headersOf
+import io.ktor.serialization.kotlinx.json.json
 import io.mockk.every
 import io.mockk.mockk
-import junit.framework.TestCase.assertEquals
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
-
-import net.thechance.mena.identity.data.dto.auth.LoginRequestDto
+import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.data.dto.auth.AuthenticationResponse
-import net.thechance.mena.identity.data.dto.auth.RefreshRequestDto
+import net.thechance.mena.identity.data.utils.ACCESS_TOKEN
+import net.thechance.mena.identity.data.utils.REFRESH_TOKEN
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
-import net.thechance.mena.identity.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 import org.junit.Test
+import kotlin.test.assertEquals
 
-//TODO: fix all test cases to use client and settings instead of datasources
-// also rename all functions to match the new checks
-// finally split test cases with multiple assertion or verification into multiple test cases
+
 class AuthenticationRepositoryImplTest {
 
     private val client: HttpClient = mockk(relaxed = true)
     private val settings: Settings = mockk(relaxed = true)
 
-    private val authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+    private var authenticationRepository: AuthenticationRepositoryImpl =
+        AuthenticationRepositoryImpl(client, settings)
 
-    @Test
-    fun `login should call remote service with correct credentials when successful`() = runTest {
-        val mobileNumber = "0123456789"
-        val passWord = "testpassword"
-        val countryCoed = "+20"
-        coEvery { authRemoteDataSource.login(any()) } returns fakeLoginResponse
 
-        // When
-        authenticationRepository.login(countryCoed, mobileNumber, passWord)
-
-        // Then
-        coVerify {
-            authRemoteDataSource.login(
-                LoginRequestDto(
-                    countryCoed + mobileNumber,
-                    passWord
-                )
-            )
+    private fun mockHttpClient(response: AuthenticationResponse): HttpClient {
+        return HttpClient(MockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+            engine {
+                addHandler { request ->
+                    respond(
+                        content = Json.encodeToString(response),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(
+                            HttpHeaders.ContentType,
+                            ContentType.Application.Json.toString()
+                        )
+                    )
+                }
+            }
         }
     }
 
+    private fun mockHttpClientError(status: HttpStatusCode): HttpClient {
+        return HttpClient(MockEngine) {
+            install(ContentNegotiation) {
+                json()
+            }
+            engine {
+                addHandler {
+                    respondError(
+                        status = status
+                    )
+                }
+            }
+        }
+    }
+
+
     @Test
-    fun `login should save access token to local source when successful`() = runTest {
-        // Given
-        val mobileNumber = "0123456789"
-        val passWord = "testpassword"
-        val countryCoed = "+20"
-        coEvery { authRemoteDataSource.login(any()) } returns fakeLoginResponse
+    fun `refresh token should be stored in settings after successful login`() = runTest {
 
-        // When
-        authenticationRepository.login(countryCoed, mobileNumber, passWord)
+        val client = mockHttpClient(fakeLoginResponse)
 
-        // Then
-        coVerify { localDataSource.saveAccessToken(fakeLoginResponse.accessToken) }
+        authenticationRepository = AuthenticationRepositoryImpl(client = client, settings)
+
+        authenticationRepository.login(PhoneNumber("20", "1234567890"), "password123")
+
+        verify { settings.putString(REFRESH_TOKEN, "fake_refresh_token") }
     }
 
     @Test
-    fun `login should save refresh token to local source when successful`() = runTest {
-        // Given
-        val mobileNumber = "0123456789"
-        val passWord = "testpassword"
-        val countryCoed = "+20"
-        coEvery { authRemoteDataSource.login(any()) } returns fakeLoginResponse
+    fun `access token should be stored in settings after successful login`() = runTest {
 
-        // When
-        authenticationRepository.login(countryCoed, mobileNumber, passWord)
+        val client = mockHttpClient(fakeLoginResponse)
 
-        // Then
-        coVerify { localDataSource.saveRefreshToken(fakeLoginResponse.refreshToken) }
+        authenticationRepository = AuthenticationRepositoryImpl(client = client, settings)
+
+        authenticationRepository.login(PhoneNumber("20", "1234567890"), "password123")
+
+        verify { settings.putString(ACCESS_TOKEN, "fake_access_token") }
     }
 
     @Test
-    fun `getToken should save access token after successful refresh`() = runTest {
-        // Given
-        val oldRefreshToken = "old_refresh_token"
-        coEvery { localDataSource.getRefreshToken() } returns oldRefreshToken
-        coEvery { authRemoteDataSource.refreshToken(RefreshRequestDto(oldRefreshToken)) } returns fakeLoginResponse
-        coEvery { localDataSource.getAccessToken() } returns "invalid_or_expired_token"
+    fun `login() should throw UnAuthorizedException when server returns 401`() = runTest {
 
-        // When
-        authenticationRepository.refreshAccessToken()
+        val client = mockHttpClientError(HttpStatusCode.Unauthorized)
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
 
-        // Then
-        coVerify { localDataSource.saveAccessToken(fakeLoginResponse.accessToken) }
-    }
-
-    @Test
-    fun `getToken should save refresh token after successful refresh`() = runTest {
-        // Given
-        val oldRefreshToken = "old_refresh_token"
-        coEvery { localDataSource.getRefreshToken() } returns oldRefreshToken
-        coEvery { authRemoteDataSource.refreshToken(RefreshRequestDto(oldRefreshToken)) } returns fakeLoginResponse
-        coEvery { localDataSource.getAccessToken() } returns "invalid_or_expired_token"
-
-        // When
-        authenticationRepository.refreshAccessToken()
-
-        // Then
-        coVerify { localDataSource.saveRefreshToken(fakeLoginResponse.refreshToken) }
-    }
-
-    @Test
-    fun `getToken should return new access token after successful refresh`() = runTest {
-        // Given
-        val oldRefreshToken = "old_refresh_token"
-        coEvery { localDataSource.getRefreshToken() } returns oldRefreshToken
-        coEvery { authRemoteDataSource.refreshToken(RefreshRequestDto(oldRefreshToken)) } returns fakeLoginResponse
-        coEvery { localDataSource.getAccessToken() } returns fakeLoginResponse.accessToken
-
-        // When
-        val result = authenticationRepository.getAccessToken()
-
-        // Then
-        assertEquals(fakeLoginResponse.accessToken, result)
-    }
-
-    @Test
-    fun `login should throw UnAuthorizedException when remote returns 401`() = runTest {
-        // Given
-        val clientException = ClientRequestException(
-            response = mockk(relaxed = true) {
-                every { status } returns HttpStatusCode.Unauthorized
-            },
-            cachedResponseText = "Unauthorized"
-        )
-        coEvery { authRemoteDataSource.login(any()) } throws clientException
-
-        // When & Then
         assertFailure {
-            authenticationRepository.login("+20", "01234567", "password123")
+            authenticationRepository.login(PhoneNumber("20", "1234567890"), "wrongPassword")
         }.isInstanceOf<UnAuthorizedException>()
     }
 
     @Test
-    fun `login should throw InvalidCredentialsException when remote returns 404`() = runTest {
-        // Given
-        val clientException = ClientRequestException(
-            response = mockk(relaxed = true) {
-                every { status } returns HttpStatusCode.NotFound
-            },
-            cachedResponseText = "Not Found"
-        )
-        coEvery { authRemoteDataSource.login(any()) } throws clientException
+    fun `login() should throw InvalidCredentialsException when server returns 404`() = runTest {
 
-        // When & Then
+        val client = mockHttpClientError(HttpStatusCode.NotFound)
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
         assertFailure {
-            authenticationRepository.login("+20", "01234567", "password123")
+            authenticationRepository.login(PhoneNumber("20", "12345670"), "Password123")
         }.isInstanceOf<InvalidCredentialsException>()
 
     }
 
     @Test
-    fun `login should throw UserIsBlockedException when remote returns 403`() = runTest {
-        // Given
-        val clientException = ClientRequestException(
-            response = mockk(relaxed = true) {
-                every { status } returns HttpStatusCode.Forbidden
-            },
-            cachedResponseText = "Forbidden"
-        )
-        coEvery { authRemoteDataSource.login(any()) } throws clientException
+    fun `login() should throw UserIsBlockedException when server returns 403`() = runTest {
 
-        // When & Then
+        val client = mockHttpClientError(HttpStatusCode.Forbidden)
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
         assertFailure {
-            authenticationRepository.login("+20", "01234567", "password123")
+            authenticationRepository.login(PhoneNumber("+20", "01234567"), "password123")
         }.isInstanceOf<UserIsBlockedException>()
     }
 
+    @Test
+    fun `refresh token should be stored in settings after successful refreshAccessTokens`() = runTest {
+
+            val client = mockHttpClient(fakeLoginResponse)
+
+            authenticationRepository = AuthenticationRepositoryImpl(client = client, settings)
+
+            authenticationRepository.refreshAccessToken()
+
+            verify { settings.putString(REFRESH_TOKEN, "fake_refresh_token") }
+        }
 
     @Test
-    fun `getToken should throw UnAuthorizedException when remote returns 401`() = runTest {
-        // Given
-        val clientException = ClientRequestException(
-            response = mockk(relaxed = true) {
-                every { status } returns HttpStatusCode.Unauthorized
-            },
-            cachedResponseText = "Unauthorized"
-        )
-        coEvery { authRemoteDataSource.refreshToken(any()) } throws clientException
+    fun `access token should be stored in settings after successful refreshAccessTokens`() = runTest {
 
-        // When & Then
-        assertFailure {
+            val client = mockHttpClient(fakeLoginResponse)
+
+            every { settings.getString(ACCESS_TOKEN, "") } returns fakeLoginResponse.accessToken
+
+            authenticationRepository = AuthenticationRepositoryImpl(client = client, settings)
+
             authenticationRepository.refreshAccessToken()
-        }.isInstanceOf<UnAuthorizedException>()
+
+            verify { settings.putString(ACCESS_TOKEN, "fake_access_token") }
+        }
+
+    @Test
+    fun `refreshAccessToken() should return stored access token`() = runTest {
+        val client = mockHttpClient(fakeLoginResponse)
+        every { settings.getString(ACCESS_TOKEN, "") } returns fakeLoginResponse.accessToken
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
+        val actual = authenticationRepository.refreshAccessToken()
+
+        assertEquals(fakeLoginResponse.accessToken, actual)
     }
 
     @Test
-    fun `login should throw UnknownException when remote returns other error`() = runTest {
-        // Given
-        val clientException = ClientRequestException(
-            response = mockk(relaxed = true) {
-                every { status } returns HttpStatusCode.InternalServerError
-            },
-            cachedResponseText = "Internal Server Error"
-        )
-        coEvery { authRemoteDataSource.login(any()) } throws clientException
+    fun `refreshAccessToken() should throw UnAuthorizedException when server returns 401`() = runTest {
 
-        assertFailure {
-            authenticationRepository.login("+20", "01234567", "password123")
-        }.isInstanceOf<UnknownException>()
+            val client = mockHttpClientError(HttpStatusCode.Unauthorized)
+            authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
+            assertFailure {
+                authenticationRepository.refreshAccessToken()
+            }.isInstanceOf<UnAuthorizedException>()
+        }
+
+    @Test
+    fun `getAccessToken() should return stored token from settings`() = runTest {
+
+        val expectedToken = fakeLoginResponse.accessToken
+        every { settings.getString(ACCESS_TOKEN, "") } returns expectedToken
+
+
+        val result = authenticationRepository.getAccessToken()
+
+        assertThat(result).isEqualTo(expectedToken)
+    }
+
+    @Test
+    fun `getAccessToken() should return empty string when no token stored`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns ""
+
+        val result = authenticationRepository.getAccessToken()
+
+        assertThat(result).isEmpty()
     }
 
 }

@@ -9,9 +9,9 @@ plugins {
 }
 
 kotlin {
-    iosArm64()
     androidTarget()
     iosSimulatorArm64()
+    iosX64()
     iosArm64()
 
     sourceSets {

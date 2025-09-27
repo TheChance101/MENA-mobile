@@ -44,7 +44,6 @@ import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.api.ComposeAppApi
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.components.AuthPrompt
@@ -57,7 +56,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class LoginScreen(
-    val appApi: ComposeAppApi
 ) : BaseScreen<
         LoginScreenModel,
         LoginScreenUIState,
@@ -199,7 +197,7 @@ class LoginScreen(
         when (effect) {
             is LoginScreenUIEffect.NavigateToRegister -> navigator.push(RegisterScreen())
             LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ForgetPasswordScreen())
-            LoginScreenUIEffect.NavigateToHome -> navigator.push(appApi.getMainScreen())
+            LoginScreenUIEffect.NavigateToHome -> TODO()
         }
     }
 }

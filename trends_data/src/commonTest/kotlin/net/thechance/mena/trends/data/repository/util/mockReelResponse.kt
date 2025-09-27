@@ -64,3 +64,11 @@ internal fun MockRequestHandleScope.updateReelResponse(
     status = status,
     headers = jsonHeaders
 )
+
+internal fun MockRequestHandleScope.uploadReelResponse(
+    status: HttpStatusCode = HttpStatusCode.OK
+) = respond(
+    content = "",
+    status = status,
+    headers = jsonHeaders
+)

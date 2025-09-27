@@ -48,12 +48,37 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.designSystem)
-            implementation(libs.bundles.voyager)
             implementation(libs.bundles.koin)
+
             implementation(projects.identityApi)
             implementation(projects.identityPresentation)
             implementation(projects.identityData)
             implementation(projects.identityDomain)
+
+            implementation(projects.coreChatApi)
+            implementation(projects.coreChatPresentation)
+            implementation(projects.coreChatDomain)
+            implementation(projects.coreChatData)
+
+            implementation(projects.dukanApi)
+            implementation(projects.dukanPresentation)
+            implementation(projects.dukanData)
+            implementation(projects.dukanDomain)
+
+            implementation(projects.faithApi)
+            implementation(projects.faithPresentation)
+            implementation(projects.faithData)
+            implementation(projects.faithDomain)
+
+            implementation(projects.walletApi)
+            implementation(projects.walletPresentation)
+            implementation(projects.walletData)
+            implementation(projects.walletDomain)
+
+            implementation(projects.trendsApi)
+            implementation(projects.trendsPresentation)
+            implementation(projects.trendsDomain)
+            implementation(projects.trendsData)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

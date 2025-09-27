@@ -4,5 +4,5 @@ import androidx.compose.runtime.Composable
 
 interface CoreChatApi {
     @Composable
-    fun launch()
+    fun TabEntry()
 }
