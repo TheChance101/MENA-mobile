@@ -10,6 +10,7 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import net.thechance.mena.dukan.presentation.component.SnackBarMessage
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
@@ -116,7 +117,7 @@ class CreateDukanViewModel(
     }
 
     override fun onDismissSnackBar() {
-        updateState { copy(showSnackBar = false) }
+        updateState { copy(snackBarMessage = null) }
     }
 
     override fun onImageCrop(image: ImageBitmap) {
@@ -141,7 +142,7 @@ class CreateDukanViewModel(
     }
 
     override fun onNameChanged(name: String) {
-        updateState { copy(name = limitNameLength(name), showSnackBar = false) }
+        updateState { copy(name = limitNameLength(name), snackBarMessage = null) }
         updateNextButtonEnableState()
     }
 
@@ -202,7 +203,7 @@ class CreateDukanViewModel(
 
     private fun handleBasicInformationNext() {
         if (!isBasicInformationStepValid(state.value)) {
-            updateState { copy(showSnackBar = true, isNameUnique = false) }
+            updateState { copy(snackBarMessage = SnackBarMessage.Error, isNameUnique = false) }
             return
         }
         checkNameUniqueness(state.value.name)
@@ -308,15 +309,15 @@ class CreateDukanViewModel(
     private fun updateNameValidationState(isTaken: Boolean, current: CreateDukanStep) {
         updateState {
             copy(
-                isNameUnique = !isTaken,
-                showSnackBar = isTaken,
-                currentStep = if (isTaken) current else nextStep(current)
+                snackBarMessage = if (isTaken) SnackBarMessage.Error else null,
+                currentStep = if (isTaken) current else nextStep(current),
+                isNameUnique = !isTaken
             )
         }
     }
 
     private fun handleNameValidationError() {
-        updateState { copy(isNameUnique = false, showSnackBar = true) }
+        updateState { copy(snackBarMessage = SnackBarMessage.Error) }
         updateNextButtonEnableState()
     }
 
@@ -334,7 +335,7 @@ class CreateDukanViewModel(
     private fun isBasicInformationStepValid(state: CreateDukanUiState): Boolean {
         return state.name.isNotBlank() &&
                 state.selectedCategories.size in MIN_CATEGORIES..MAX_CATEGORIES &&
-                !state.showSnackBar
+                state.snackBarMessage == null
     }
 
     private fun isLocationValid(currentState: CreateDukanUiState): Boolean {

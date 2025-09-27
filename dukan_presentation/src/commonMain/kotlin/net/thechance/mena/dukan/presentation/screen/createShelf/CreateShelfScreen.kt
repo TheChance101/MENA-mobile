@@ -140,7 +140,6 @@ private fun CreateShelfContent(
                         is SnackBarMessage.Error -> stringResource(Res.string.shelf_name_is_already_exist)
                     }
                 ),
-                isVisible = true,
                 onDismiss = interactionListener::onDismissSnackBar
             )
         }

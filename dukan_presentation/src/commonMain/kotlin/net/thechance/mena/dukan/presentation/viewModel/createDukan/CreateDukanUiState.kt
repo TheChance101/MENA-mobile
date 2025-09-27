@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
 import io.github.dellisd.spatialk.geojson.Position
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.presentation.component.SnackBarMessage
 import org.maplibre.compose.camera.CameraPosition
 
 data class CreateDukanUiState(
@@ -23,7 +24,7 @@ data class CreateDukanUiState(
     val dukanCategories: List<DukanCategoryUiState> = emptyList(),
     val selectedCategories: Set<DukanCategoryUiState> = emptySet(),
     val isNameUnique: Boolean = true,
-    val showSnackBar: Boolean = false,
+    val snackBarMessage: SnackBarMessage? = null,
     val isEditIconVisible: Boolean = false,
     val selectedImage: ImageSrc? = null,
     val isImageBeingCropped: Boolean = false,

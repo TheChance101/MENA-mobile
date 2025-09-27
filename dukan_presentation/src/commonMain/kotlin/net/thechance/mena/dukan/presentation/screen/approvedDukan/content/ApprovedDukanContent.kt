@@ -89,14 +89,13 @@ fun ApprovedDukanContent(
     }
 
     state.snackBarMessage?.let { snackBarMessage ->
-        SnackBar(
-            snackBarUiState = SnackBarUiState(
-                snackBarType = SnackBarType.SUCCESS,
-                message = stringResource(Res.string.add_shelf_successfully)
-            ),
-            isVisible = true,
-            onDismiss = listener::onDismissSnackBar
-        )
+            SnackBar(
+                snackBarUiState = SnackBarUiState(
+                    snackBarType = SnackBarType.SUCCESS,
+                    message = stringResource(Res.string.add_shelf_successfully)
+                ),
+                onDismiss = listener::onDismissSnackBar
+            )
     }
 }
 

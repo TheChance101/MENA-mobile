@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -25,6 +24,7 @@ import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -104,6 +104,7 @@ fun CreateDukanContent(
                         state = state,
                         listener = listener
                     )
+
                     CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle(
                         state = state,
                         listener = listener
@@ -128,14 +129,15 @@ fun CreateDukanContent(
                 )
         }
 
-        SnackBar(
-            snackBarUiState = SnackBarUiState(
-                snackBarType = SnackBarType.ERROR,
-                message = stringResource(Res.string.dukan_name_is_already_exist)
-            ),
-            isVisible = state.showSnackBar,
-            onDismiss = listener::onDismissSnackBar
-        )
+        state.snackBarMessage?.let { snackBarMessage ->
+                SnackBar(
+                    snackBarUiState = SnackBarUiState(
+                        snackBarType = SnackBarType.ERROR,
+                        message = stringResource(Res.string.dukan_name_is_already_exist)
+                    ),
+                    onDismiss = listener::onDismissSnackBar
+                )
+        }
     }
 }
 
