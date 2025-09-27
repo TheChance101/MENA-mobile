@@ -2,8 +2,6 @@ package net.thechance.mena.dukan.presentation.component.pagination
 
 abstract class BasePagingSource<T : Any> : PagingSource<Int, T>() {
 
-    override fun getRefreshKey(state: PagingData<T>): Int? = null
-
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
         return try {
             val page = params.key ?: FIRST_PAGE

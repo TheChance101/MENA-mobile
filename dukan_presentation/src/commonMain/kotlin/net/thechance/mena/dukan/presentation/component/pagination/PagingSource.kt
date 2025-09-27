@@ -20,6 +20,4 @@ abstract class PagingSource<Key : Any, Value : Any> {
     }
 
     abstract suspend fun load(params: LoadParams<Key>): LoadResult<Key, Value>
-
-    open fun getRefreshKey(state: PagingData<Value>): Key? = null
 }
