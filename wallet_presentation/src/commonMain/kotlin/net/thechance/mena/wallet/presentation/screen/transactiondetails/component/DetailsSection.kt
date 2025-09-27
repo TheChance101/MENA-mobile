@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -218,7 +219,8 @@ private fun ColumnScope.DetailsInfo(
     )
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = title,
@@ -226,23 +228,24 @@ private fun ColumnScope.DetailsInfo(
             color = Theme.colorScheme.shadeSecondary,
             maxLines = 1
         )
-        icon?.let {
-            Icon(
-                painter = icon,
-                contentDescription = iconContentDescription,
-                modifier = Modifier.padding(end = 4.dp).size(20.dp),
-                tint = iconTint
+        Row {
+            icon?.let {
+                Icon(
+                    painter = icon,
+                    contentDescription = iconContentDescription,
+                    modifier = Modifier.padding(end = 4.dp).size(20.dp),
+                    tint = iconTint
+                )
+            }
+            Text(
+                text = content,
+                style = Theme.typography.label.medium,
+                overflow = TextOverflow.Ellipsis,
+                color = Theme.colorScheme.shadePrimary,
+                maxLines = 1,
+                textAlign = TextAlign.End
             )
         }
-        Text(
-            modifier = Modifier.weight(1f),
-            text = content,
-            style = Theme.typography.label.medium,
-            overflow = TextOverflow.Ellipsis,
-            color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            textAlign = TextAlign.End
-        )
     }
 }
 
