@@ -45,4 +45,7 @@
 
     <string name="max_file_size_exceeded">Maximum allowed size is 100 MB</string>
     <string name="max_file_duration_exceeded">Maximum allowed duration is 1 minute</string>
+
+    <string name="upload_video">Upload Video</string>
+    <string name="upload_video_description">Upload your video to share it with others. Make sure the file is clear and does not exceed the allowed size.</string>
 </resources>
