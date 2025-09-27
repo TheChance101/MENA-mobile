@@ -35,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
@@ -71,28 +72,9 @@ private fun CategoryPublishContent(
     if (state.isLoading.not()) {
         Scaffold(
             topBar = {
-                AppBar(
-                    onLeadingClick = listener::onBackClick,
-                    leadingContent = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_arrow_left),
-                            contentDescription = stringResource(Res.string.back_arrow)
-                        )
-                    },
-                    title = stringResource(Res.string.new_trend),
-                    trailingContent = {
-                        Text(
-                            text = stringResource(Res.string.publish_categories_screen_count),
-                            style = Theme.typography.body.small,
-                            color = Theme.colorScheme.shadeSecondary,
-                            modifier = Modifier
-                                .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
-                                .background(
-                                    shape = RoundedCornerShape(Theme.radius.full),
-                                    color = Theme.colorScheme.background.surface
-                                )
-                        )
-                    }
+                CategoryPublishAppBar(
+                    onBackClick = listener::onBackClick,
+                    screenCount = stringResource(Res.string.publish_categories_screen_count)
                 )
             }
         ) {
@@ -155,7 +137,7 @@ private fun CategoryPublishContent(
                 Spacer(Modifier.weight(1f))
 
                 PublishButton(
-                    onPublishClick = { listener::onPublishClick },
+                    onPublishClick = { listener.onPublishClick() },
                     isButtonEnabled = state.isPublishButtonEnabled(),
                     isButtonLoading = state.isPublishButtonVisible,
                 )
@@ -164,6 +146,36 @@ private fun CategoryPublishContent(
     } else {
         LoadingProgressBar()
     }
+}
+
+@Composable
+private fun CategoryPublishAppBar(
+    onBackClick: () -> Unit,
+    screenCount: String
+) {
+    AppBar(
+        onLeadingClick = onBackClick,
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_arrow)
+            )
+        },
+        title = stringResource(Res.string.new_trend),
+        trailingContent = {
+            Text(
+                text = screenCount,
+                style = Theme.typography.body.small,
+                color = Theme.colorScheme.shadeSecondary,
+                modifier = Modifier
+                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
+                    .background(
+                        shape = RoundedCornerShape(Theme.radius.full),
+                        color = Theme.colorScheme.background.surface
+                    )
+            )
+        }
+    )
 }
 
 @Composable
@@ -204,7 +216,6 @@ private fun PublishButton(
     }
 }
 
-@Preview
 @Composable
 private fun LoadingProgressBar() {
     Box(
@@ -214,5 +225,20 @@ private fun LoadingProgressBar() {
         contentAlignment = Alignment.Center
     ) {
         DotsProgressIndicator()
+    }
+}
+
+@Preview
+@Composable
+private fun CategoryPublishScreenPreview() {
+    MenaTheme {
+        CategoryPublishContent(
+            state = CategoryPublishState(),
+            listener = object : CategoryPublishInteractionListener {
+                override fun onBackClick() {}
+                override fun onCategoryClick(categoryId: String) {}
+                override fun onPublishClick() {}
+            }
+        )
     }
 }
