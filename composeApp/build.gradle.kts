@@ -146,36 +146,36 @@ abstract class GenerateBadgedIconTask : DefaultTask() {
             .forEach { iconFile ->
                 val densityDirName = iconFile.parentFile.name
                 val widthBaos = ByteArrayOutputStream()
-                execOperations.exec {
-                    commandLine("magick", "identify", "-format", "%w", iconFile.path)
-                    standardOutput = widthBaos
-                }
+//                execOperations.exec {
+//                    commandLine("magick", "identify", "-format", "%w", iconFile.path)
+//                    standardOutput = widthBaos
+//                }
                 val iconWidth = widthBaos.toString().trim()
                 val outDir = outputDir.get().asFile
                 val mipmapDir = outDir.resolve(densityDirName)
                 mipmapDir.mkdirs()
                 val resizedBanner = temporaryDir.resolve("${densityDirName}_banner_resized.png")
                 val outputIconPath = mipmapDir.resolve(iconFile.name).path
-                execOperations.exec {
-                    commandLine(
-                        "magick",
-                        bannerFile.get().asFile.path,
-                        "-resize",
-                        "${iconWidth}x${iconWidth}",
-                        resizedBanner.path
-                    )
-                }
-                execOperations.exec {
-                    commandLine(
-                        "magick",
-                        "composite",
-                        "-gravity",
-                        "southeast",
-                        resizedBanner.path,
-                        iconFile.path,
-                        outputIconPath
-                    )
-                }
+//                execOperations.exec {
+//                    commandLine(
+//                        "magick",
+//                        bannerFile.get().asFile.path,
+//                        "-resize",
+//                        "${iconWidth}x${iconWidth}",
+//                        resizedBanner.path
+//                    )
+//                }
+//                execOperations.exec {
+//                    commandLine(
+//                        "magick",
+//                        "composite",
+//                        "-gravity",
+//                        "southeast",
+//                        resizedBanner.path,
+//                        iconFile.path,
+//                        outputIconPath
+//                    )
+//                }
             }
     }
 }
@@ -219,8 +219,13 @@ tasks.register("generateEnvironmentXcconfig") {
     doLast {
         val outputFile = outputFileProperty.get().asFile
         outputFile.parentFile.mkdirs()
-        outputFile.writeText("BASE_URL=$baseUrl")
-        println("Generated environment.xcconfig")
+
+        outputFile.writeText(
+            """
+          SLASH = /
+          BASE_URL = ${baseUrl.replace("//", "$(SLASH)$(SLASH)")}
+        """.trimIndent()
+        )
     }
 }
 

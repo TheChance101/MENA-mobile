@@ -30,6 +30,7 @@ room = "2.8.0"
 sqlite = "2.6.0"
 resources = "0.25.0"
 paging-compose-version = "3.3.0-alpha02-0.5.1"
+coroutines = "1.10.2"
 kotlinx-coroutines-test = "1.10.2"
 assertk = "0.28.1"
 mockkery = "2.10.0"
@@ -74,6 +75,7 @@ compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", v
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
 # Test libraries
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }

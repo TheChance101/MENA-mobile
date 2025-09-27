@@ -79,7 +79,8 @@ class ContactsViewModel(
     }
 
     override fun onContactClick(contactId: Int) {
-        navigate(ChatDetailsRoute(contactId = contactId))
+        // todo
+        navigate(ChatDetailsRoute(chatId = contactId.toString()))
     }
 
     private fun onDataLoadError(e: Throwable) {

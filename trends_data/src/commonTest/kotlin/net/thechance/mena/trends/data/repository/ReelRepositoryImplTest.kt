@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.data.repository.util.createReelsRepository
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
+import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import kotlin.test.Test
 
 internal class ReelRepositoryImplTest {
@@ -34,4 +35,22 @@ internal class ReelRepositoryImplTest {
 
         assertThat(result).isSuccess()
     }
+
+    @Test
+    fun `should update reel successfully`() = runTest {
+        repository = createReelsRepository { id, description, categoryIds ->
+            updateReelResponse(id, description, categoryIds, HttpStatusCode.NoContent)
+        }
+
+        val result = runCatching {
+            repository.updateReelById(
+                id = "1",
+                description = "Updated description",
+                categoryIds = listOf("cat1")
+            )
+        }
+
+        assertThat(result).isSuccess()
+    }
+
 }
