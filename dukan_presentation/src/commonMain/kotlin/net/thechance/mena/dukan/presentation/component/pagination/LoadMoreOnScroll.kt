@@ -11,7 +11,7 @@ fun <T : Any> LazyListState.LoadMoreOnScroll(
     pager: Pager<Int, T>,
     loadNextPage: suspend () -> Unit,
 ) {
-    LaunchedEffect(this) {
+    LaunchedEffect(pager) {
         snapshotFlow {
             val layoutInfo = layoutInfo
             val totalItems = layoutInfo.totalItemsCount
