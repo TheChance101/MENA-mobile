@@ -63,25 +63,28 @@ fun ApprovedDukanContent(
             .background(Theme.colorScheme.background.surface)
             .statusBarsPadding()
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            AppBar(
-                title = stringResource(Res.string.my_dukan),
-                onLeadingClick = listener::onBackButtonClicked,
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._8
-                ),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow),
-                        tint = Theme.colorScheme.shadePrimary
-                    )
-                }
-            )
+        AppBar(
+            title = stringResource(Res.string.my_dukan),
+            onLeadingClick = listener::onBackButtonClicked,
+            contentPadding = PaddingValues(
+                horizontal = Theme.spacing._16,
+                vertical = Theme.spacing._8
+            ),
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_arrow_left),
+                    contentDescription = stringResource(Res.string.back_arrow),
+                    tint = Theme.colorScheme.shadePrimary
+                )
+            },
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 64.dp)
+        ) {
             Text(
                 text = stringResource(Res.string.shelves),
                 style = Theme.typography.title.small,
@@ -108,6 +111,7 @@ fun ApprovedDukanContent(
 
             when {
                 state.isLoadingProducts -> LoadingProductsContent()
+                state.shelves.isEmpty() -> NoShelvesContent()
                 state.products.isEmpty() -> EmptyStateContent()
                 else -> ProductListContent(
                     products = state.products,
@@ -181,6 +185,32 @@ private fun ProductCountRow(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun NoShelvesContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(Theme.spacing._32),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // TODO: Replace with EmptyState component from design system when ready
+        Text(
+            text = "Create dukan request it approved now",
+            style = Theme.typography.title.medium,
+            color = Theme.colorScheme.shadePrimary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = Theme.spacing._8)
+        )
+        Text(
+            text = "Start create you shelf and products by click on create button below!",
+            style = Theme.typography.body.medium,
+            color = Theme.colorScheme.shadeSecondary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
