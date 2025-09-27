@@ -26,6 +26,7 @@ val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Jso
 internal fun createReelsRepository(
     getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
+    uploadReel: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateReel: (suspend MockRequestHandleScope.(id: String, description: String, categoryIds: List<String>) -> HttpResponseData)? = null
 ): ReelsRepositoryImpl {
     return ReelsRepositoryImpl(createReelsHttpClient(getReels, deleteReel,updateReel))
@@ -34,7 +35,8 @@ internal fun createReelsRepository(
 internal fun createReelsHttpClient(
     getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
-    updateReel: (suspend MockRequestHandleScope.(id: String, description: String, categoryIds: List<String>) -> HttpResponseData)? = null
+    updateReel: (suspend MockRequestHandleScope.(id: String, description: String, categoryIds: List<String>) -> HttpResponseData)? = null,
+    uploadReel: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     return HttpClient(MockEngine { request ->
         when {
@@ -50,6 +52,10 @@ internal fun createReelsHttpClient(
                 updateReel?.invoke(this, "1", "Updated description", listOf("cat1"))
                     ?: updateReelResponse("1", "Updated description", listOf("cat1"))
 
+            }
+
+            request.url.encodedPath == "" && request.method.value == "POST" -> {  // TODO: change endpoint
+                uploadReel?.invoke(this) ?: uploadReelResponse()
             }
             else -> respond(
                 "", HttpStatusCode.BadRequest,

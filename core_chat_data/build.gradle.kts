@@ -32,6 +32,7 @@ kotlin {
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(projects.identityDomain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
