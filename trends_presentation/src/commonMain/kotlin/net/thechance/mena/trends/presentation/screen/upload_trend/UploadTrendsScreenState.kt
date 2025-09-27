@@ -5,12 +5,12 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 
 data class UploadTrendsScreenState(
     val selectedFile: FileUiState = FileUiState(),
-    val uploadingState: UploadingState = UploadingState.IDLE,
+    val uploadingTrendState: UploadingTrendState = UploadingTrendState.IDLE,
     val uploadedMegaBytes: String = "",
     val isNextButtonEnabled: Boolean = false,
     val errorState: ErrorState? = null
 ) {
-    enum class UploadingState {
+    enum class UploadingTrendState {
         IDLE,
         UPLOADING,
         FAILED,

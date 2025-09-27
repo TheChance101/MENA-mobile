@@ -97,19 +97,19 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                 Text(text = "Upload Trend", style = Theme.typography.title.medium)
             }
 
-            when (state.uploadingState) {
-                UploadTrendsScreenState.UploadingState.IDLE -> {
+            when (state.uploadingTrendState) {
+                UploadTrendsScreenState.UploadingTrendState.IDLE -> {
                     Text(
                         "Status: Idle", style = Theme.typography.body.medium,
                         color = Color.Gray
                     )
                 }
 
-                UploadTrendsScreenState.UploadingState.UPLOADING -> {
+                UploadTrendsScreenState.UploadingTrendState.UPLOADING -> {
                     Text("Status: Uploading...", style = Theme.typography.body.medium)
                 }
 
-                UploadTrendsScreenState.UploadingState.SUCCESS -> {
+                UploadTrendsScreenState.UploadingTrendState.SUCCESS -> {
                     Text(
                         "Status: Upload Successful",
                         style = Theme.typography.body.medium,
@@ -117,7 +117,7 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                     )
                 }
 
-                UploadTrendsScreenState.UploadingState.FAILED -> {
+                UploadTrendsScreenState.UploadingTrendState.FAILED -> {
                     Text(
                         "Status: Upload Failed",
                         style = Theme.typography.body.medium,
@@ -126,7 +126,7 @@ internal fun UploadTrendScreen(viewModel: UploadTrendViewModel = koinViewModel()
                 }
             }
 
-            if (state.uploadingState == UploadTrendsScreenState.UploadingState.UPLOADING) {
+            if (state.uploadingTrendState == UploadTrendsScreenState.UploadingTrendState.UPLOADING) {
                 Text(state.uploadedMegaBytes, style = Theme.typography.body.small)
             }
 

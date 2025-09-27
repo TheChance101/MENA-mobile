@@ -20,20 +20,29 @@ internal class UploadTrendViewModel(
     UploadTrendsScreenState()
 ), UploadTrendInteractionListener {
 
-    private var job: Job? = null
+    private var uploadingTrendJob: Job? = null
 
-    override fun onRetrieveVideo(file: FileUiState, readBytes: suspend () -> ByteArray) {
-        var bytes: ByteArray
+    override fun onRetrieveVideo(
+        file: FileUiState,
+        readBytes: suspend () -> ByteArray
+    ) {
         tryToExecute(
-            block = {
-                validator.validateSize(file.sizeInBytes)
-                bytes = readBytes()
-                getVideoDuration(bytes)?.let { validator.validateDuration(it) }
-                file.copy(bytes = bytes)
-            },
+            block = { validateFile(file, readBytes) },
             onError = ::onValidationError,
             onSuccess = ::onValidationSuccess
         )
+    }
+
+    private suspend fun validateFile(
+        file: FileUiState,
+        readBytes: suspend () -> ByteArray
+    ): FileUiState {
+        validator.validateSize(file.sizeInBytes)
+        val bytes = readBytes()
+        getVideoDuration(bytes)?.let { duration ->
+            validator.validateDuration(duration)
+        }
+        return file.copy(bytes = bytes)
     }
 
     private fun onValidationError(errorState: ErrorState) {
@@ -56,7 +65,7 @@ internal class UploadTrendViewModel(
     }
 
     private fun uploadTrend(trendFile: FileUiState) {
-        job = tryToCollectFlow(
+        uploadingTrendJob = tryToCollectFlow(
             block = {
                 reelsRepository.uploadReel(
                     name = trendFile.name,
@@ -73,7 +82,7 @@ internal class UploadTrendViewModel(
     }
 
     private fun onUploadStarted() {
-        updateState { copy(uploadingState = UploadTrendsScreenState.UploadingState.UPLOADING) }
+        updateState { copy(uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.UPLOADING) }
     }
 
     private fun onCollectEachFlow(progress: UploadReelProgress) {
@@ -88,7 +97,7 @@ internal class UploadTrendViewModel(
     private fun onUploadError(errorState: ErrorState) {
         updateState {
             copy(
-                uploadingState = UploadTrendsScreenState.UploadingState.FAILED,
+                uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.FAILED,
                 errorState = errorState
             )
         }
@@ -97,7 +106,7 @@ internal class UploadTrendViewModel(
     private fun onUploadCompleted() {
         updateState {
             copy(
-                uploadingState = UploadTrendsScreenState.UploadingState.SUCCESS,
+                uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.SUCCESS,
                 isNextButtonEnabled = true
             )
         }
@@ -108,21 +117,21 @@ internal class UploadTrendViewModel(
     }
 
     override fun onEditVideoClick() {
-        job?.cancel()
+        uploadingTrendJob?.cancel()
     }
 
     override fun onCancelUploadClick() {
-        job?.cancel()
+        uploadingTrendJob?.cancel()
         updateState {
-            copy(uploadingState = UploadTrendsScreenState.UploadingState.FAILED)
+            copy(uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.FAILED)
         }
     }
 
     override fun onDeleteVideoClick() {
-        job?.cancel()
+        uploadingTrendJob?.cancel()
         updateState {
             copy(
-                uploadingState = UploadTrendsScreenState.UploadingState.IDLE,
+                uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.IDLE,
                 uploadedMegaBytes = "",
                 isNextButtonEnabled = false,
                 selectedFile = FileUiState()
@@ -131,7 +140,7 @@ internal class UploadTrendViewModel(
     }
 
     override fun onRetryUploadClick() {
-        job?.cancel()
+        uploadingTrendJob?.cancel()
         uploadTrend(state.value.selectedFile)
     }
 
