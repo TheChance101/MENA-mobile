@@ -7,5 +7,4 @@ data class CreateShelfUiState(
     val isCreateButtonEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val snackBarMessage: SnackBarMessage? = null,
-    val showShelfAddedSuccess: Boolean = false,
 )

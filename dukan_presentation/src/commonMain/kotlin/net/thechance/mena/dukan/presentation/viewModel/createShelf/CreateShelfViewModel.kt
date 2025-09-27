@@ -28,7 +28,6 @@ class CreateShelfViewModel(
     }
 
     override fun onBackButtonClicked() {
-        updateState { copy(showShelfAddedSuccess = false) }
         emitEffect(CreateShelfEffect.NavigateBack)
     }
 
@@ -72,7 +71,6 @@ class CreateShelfViewModel(
     private fun onCreateClickedSuccess(isCreated: Boolean) {
         updateState { copy(isLoading = false) }
         if (isCreated) {
-            updateState { copy(showShelfAddedSuccess = true) }
             emitEffect(CreateShelfEffect.NavigateToApprovedDukan)
         } else {
             updateState {
