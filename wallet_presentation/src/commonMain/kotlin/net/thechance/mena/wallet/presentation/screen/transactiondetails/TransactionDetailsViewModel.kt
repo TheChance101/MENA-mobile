@@ -3,6 +3,9 @@ package net.thechance.mena.wallet.presentation.screen.transactiondetails
 import androidx.compose.ui.graphics.ImageBitmap
 import io.github.suwasto.capturablecompose.CompressionFormat
 import io.github.suwasto.capturablecompose.toByteArray
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
@@ -23,7 +26,8 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class TransactionDetailsViewModel(
     @Provided val imageSharer: ImageSharer,
-    @Provided val transactionRepository: TransactionRepository
+    @Provided val transactionRepository: TransactionRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
         TransactionDetailsScreenState()
     ), TransactionDetailsInteractionListener {
@@ -37,6 +41,7 @@ class TransactionDetailsViewModel(
             onSuccess = ::onGetTransactionDetailsSuccess,
             onError = ::onGetTransactionDetailsError,
             onStart = ::onGetTransactionDetailsStart,
+            dispatcher = ioDispatcher
         )
     }
 
@@ -62,6 +67,7 @@ class TransactionDetailsViewModel(
             onSuccess = {},
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
+            dispatcher = ioDispatcher
         )
 
     }
@@ -81,6 +87,7 @@ class TransactionDetailsViewModel(
             onSuccess = { updateState { it.copy(isShareReceiptBtnLoading = false) } },
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
+            dispatcher = ioDispatcher
         )
     }
 

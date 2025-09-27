@@ -16,8 +16,8 @@ import platform.UIKit.UIApplication
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 @OptIn(ExperimentalForeignApi::class)
-actual class ImageSharer {
-    actual suspend fun shareImage(
+class ImageSharerImpl : ImageSharer {
+    override suspend fun shareImage(
         imageBytes: ByteArray,
         fileName: String,
         mimeType: String
@@ -44,5 +44,5 @@ actual class ImageSharer {
 }
 
 actual fun getImageSharer(): ImageSharer {
-    return ImageSharer()
+    return ImageSharerImpl()
 }

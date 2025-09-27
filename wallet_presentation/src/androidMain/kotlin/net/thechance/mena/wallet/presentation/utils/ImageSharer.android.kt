@@ -10,8 +10,8 @@ import org.koin.core.context.GlobalContext
 import java.io.File
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual class ImageSharer (@Provided private val context: Context) {
-    actual suspend fun shareImage(
+class ImageSharerImpl (@Provided private val context: Context) : ImageSharer {
+    override suspend fun shareImage(
         imageBytes: ByteArray,
         fileName: String,
         mimeType: String
@@ -41,5 +41,5 @@ actual class ImageSharer (@Provided private val context: Context) {
 
 actual fun getImageSharer(): ImageSharer {
     val context = GlobalContext.get().get<Context>()
-    return ImageSharer(context)
+    return ImageSharerImpl(context)
 }
