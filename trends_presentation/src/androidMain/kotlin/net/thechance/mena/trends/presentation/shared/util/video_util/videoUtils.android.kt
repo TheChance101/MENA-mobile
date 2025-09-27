@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.shared.util
+package net.thechance.mena.trends.presentation.shared.util.video_util
 
 import android.media.MediaMetadataRetriever
 import kotlinx.coroutines.Dispatchers
