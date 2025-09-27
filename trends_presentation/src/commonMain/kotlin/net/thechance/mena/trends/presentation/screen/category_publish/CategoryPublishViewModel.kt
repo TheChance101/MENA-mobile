@@ -10,8 +10,8 @@ import org.koin.core.annotation.Provided
 
 @KoinViewModel
 internal class CategoryPublishViewModel(
-    @Provided private val categoryRepository: CategoryRepository
-): BaseViewModel<CategoryPublishState, CategoryPublishEffect>(
+    @Provided private val categoryRepository: CategoryRepository,
+) : BaseViewModel<CategoryPublishState, CategoryPublishEffect>(
     initialState = CategoryPublishState()
 ), CategoryPublishInteractionListener {
 
@@ -19,7 +19,7 @@ internal class CategoryPublishViewModel(
         loadCategories()
     }
 
-    private fun loadCategories(){
+    private fun loadCategories() {
         tryToExecute(
             block = { categoryRepository.getAllCategories() },
             onSuccess = ::handleLoadCategoriesSuccess,
@@ -29,7 +29,7 @@ internal class CategoryPublishViewModel(
         )
     }
 
-    private fun handleLoadCategoriesSuccess(categories: List<Category>){
+    private fun handleLoadCategoriesSuccess(categories: List<Category>) {
         updateState { copy(categories = categories.toUiStates()) }
     }
 
@@ -44,6 +44,25 @@ internal class CategoryPublishViewModel(
     }
 
     override fun onPublishClick() {
-        TODO("Not yet implemented")
+        tryToExecute(
+            block = { saveSelectedCategories() },
+            onSuccess = { sendEffect(CategoryPublishEffect.NavigateToTrends) },
+            onStart = ::onStartPublish,
+            onEnd = ::onEndPublish,
+            onError = { errorState -> updateState { copy(error = errorState) } },
+        )
     }
+
+    private suspend fun saveSelectedCategories() {
+        val selectedIds = state.value.categories
+            .filter { it.isSelected }
+            .mapNotNull { it.value.id }
+
+        if (selectedIds.isNotEmpty()) {
+            categoryRepository.updateUserInterestedCategories(selectedIds)
+        }
+    }
+
+    private fun onStartPublish() = updateState { copy(isPublishButtonVisible = true) }
+    private fun onEndPublish() = updateState { copy(isPublishButtonVisible = false) }
 }
