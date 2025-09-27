@@ -132,8 +132,8 @@ class ApprovedDukanViewModel(
     }
 
     private suspend fun getProductsForShelves(selectedShelves: Set<Shelf>): List<Product> {
-        return productRepository.getAllProducts().filter { product ->
-            selectedShelves.any { shelf -> shelf.id == product.shelfId }
+        return selectedShelves.flatMap { shelf ->
+            productRepository.getProductsByShelfId(shelf.id)
         }
     }
 
