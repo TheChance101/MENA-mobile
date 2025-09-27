@@ -24,19 +24,17 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
-import net.thechance.mena.faith.presentation.extensions.getTimeAgo
+import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.TimeAgo
+import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.getTimeAgo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
 @Composable
 fun AyaBookmarkCard(
     surahName: String,
     ayaNumber: Int,
-    createdAt: Instant,
+    createdAt: TimeAgo,
     ayaText: String,
     modifier: Modifier = Modifier
 ) {
@@ -134,7 +132,6 @@ private fun TimeInfo(createdAt: String) {
     }
 }
 
-@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 private fun AyahBookmarkCardPreview() {
@@ -143,7 +140,7 @@ private fun AyahBookmarkCardPreview() {
             AyaBookmarkCard(
                 surahName = "Al-Maidah",
                 ayaNumber = 3,
-                createdAt = Instant.DISTANT_PAST,
+                createdAt = TimeAgo(),
                 ayaText = "حُرِّمَتْ عَلَيْكُمُ الْمَيْتَةُ وَالدَّمُ وَلَحْمُ الْخِنْزِيرِ وَمَا أُهِلَّ بِهِ لِغَيْرِ اللَّهِ وَالْمُنْخَنِقَةُ وَالْمَوْقُوذَةُ وَالْمُتَرَدِّيَةُ وَالنَّطِيحَةُ وَمَا أَكَلَ السَّبُعُ إِلَّا مَا ذَكَّيْتُمْ وَمَا ذُبِحَ عَلَى النُّصُبِ وَأَن تَسْتَقْسِمُوا بِالْأَزْلَامِ ۚ ذَٰلِكُمْ فِسْقٌ ۗ الْيَوْمَ يَئِسَ الَّذِينَ كَفَرُوا مِن دِينِكُمْ فَلَا تَخْشَوْهُمْ وَاخْشَوْنِ ۚ الْيَوْمَ أَكْمَلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الْإِسْلَامَ دِينًا ۚ فَمَنِ اضْطُرَّ فِي مَخْمَصَةٍ غَيْرَ مُتَجَانِفٍ لِّإِثْمٍ فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ",
             )
         }

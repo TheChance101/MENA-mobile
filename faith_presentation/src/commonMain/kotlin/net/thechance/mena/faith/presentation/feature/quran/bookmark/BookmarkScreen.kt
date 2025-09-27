@@ -42,7 +42,6 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.Em
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.ExperimentalTime
 
 @Composable
 fun BookmarkScreen(
@@ -148,7 +147,6 @@ private fun EmptyBookmarkState() {
 }
 
 @Composable
-@OptIn(ExperimentalTime::class)
 private fun BookmarkItems(
     uiState: BookmarksScreenState,
     onRemoveBookmarkClick: (Int) -> Unit,
