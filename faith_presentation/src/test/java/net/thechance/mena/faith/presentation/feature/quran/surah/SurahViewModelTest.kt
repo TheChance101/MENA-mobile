@@ -2,11 +2,17 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 
 import app.cash.turbine.test
 import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.base.SnackBarState
 import net.thechance.mena.faith.presentation.util.ClipboardManager
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -202,6 +208,95 @@ class SurahViewModelTest {
         }
     }
 
+    @Test
+    fun `onAyahLongPress should keep previous selectedAyah when called with same content`() =
+        runTest {
+            // Given
+            val testViewModel = createTestViewModel()
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
+
+            // When
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, SECOND_AYAH_INDEX)
+
+            // Then
+            assertEquals(TEST_AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
+        }
+
+    @Test
+    fun `onAyahLongPress should update selectedAyahIndex when called with different index`() =
+        runTest {
+            // Given
+            val testViewModel = createTestViewModel()
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
+
+            // When
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, SECOND_AYAH_INDEX)
+
+            // Then
+            assertEquals(SECOND_AYAH_INDEX, testViewModel.uiState.value.selectedAyahIndex)
+        }
+
+
+    @Test
+    fun `showSuccessSnackBar should display success status when called`() = runTest {
+        // Given
+        val testViewModel = createTestViewModel()
+
+        // When & Then
+        testViewModel.snackBarState.test {
+            testViewModel.onCopyClick(AYAH_TO_COPY)
+            val snackBarState = awaitItem()
+            assertEquals(SnackBarState.Status.Success, snackBarState.status)
+        }
+    }
+
+    @Test
+    fun `loadSurahData should handle repository returning null when called`() = runTest {
+        // Given
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
+
+        // When
+        val testViewModel = createTestViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(emptyList(), testViewModel.uiState.value.ayatOfSurah)
+
+    }
+
+    @Test
+    fun `onCopyClick should call clipboardManager copy with correct content when called`() =
+        runTest {
+            // Given
+            val testViewModel = createTestViewModel()
+
+            // When
+            testViewModel.onCopyClick(AYAH_TO_COPY)
+
+
+            // Then
+            testViewModel.snackBarState.test {
+                val snackBarState = awaitItem()
+                assertEquals(SnackBarState.Status.Success, snackBarState.status)
+            }
+        }
+
+    @Test
+    fun `onCopyClick should update state correctly when copy operation succeeds`() = runTest {
+        // Given
+        val testViewModel = createTestViewModel()
+        testViewModel.onAyahLongPress(DUMMY_PREVIOUS_CONTENT, DUMMY_SELECTED_INDEX)
+
+        // When
+        testViewModel.onCopyClick(DUMMY_AYAH_CONTENT)
+        Dispatchers.setMain(testDispatcher)
+
+        // Then
+        val testState = testViewModel.uiState.value
+        assertEquals(DUMMY_SELECTED_INDEX, testState.selectedAyahIndex)
+
+    }
+
     private companion object {
         const val DEFAULT_SURAH_ID = 1
         const val DEFAULT_SURAH_NAME = "Al-Fatiha"
@@ -216,5 +311,9 @@ class SurahViewModelTest {
         const val SELECTED_AYAH_CONTENT = "Selected ayah content"
         const val AYAH_TO_SHARE = "Ayah to share"
         const val EMPTY_STRING = ""
+        const val DUMMY_AYAH_CONTENT = "Test ayah content"
+        const val DUMMY_PREVIOUS_CONTENT = "Previous content"
+        const val DUMMY_SELECTED_INDEX = 5
+        const val AYAH_TO_COPY = "Ayah to copy"
     }
 }
