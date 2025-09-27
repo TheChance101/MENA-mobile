@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.component.productCard
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,11 +20,9 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.product_image
 import mena.dukan_presentation.generated.resources.silver_tc
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.productLayout.ProductUiState
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -73,19 +70,10 @@ fun ProductCardHorizontal(
                     end = Theme.spacing._4
                 ),
         ) {
-            Text(
-                text = productUiState.name,
-                style = Theme.typography.label.medium,
-                color = Theme.colorScheme.shadePrimary
+            ProductInfo(
+                name = productUiState.name,
+                description = productUiState.description
             )
-            productUiState.description?.let { description ->
-                Text(
-                    text = description,
-                    style = Theme.typography.label.small,
-                    color = Theme.colorScheme.shadeTertiary,
-                    modifier = Modifier.padding(top = Theme.spacing._2)
-                )
-            }
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -95,21 +83,11 @@ fun ProductCardHorizontal(
                     .padding(vertical = Theme.spacing._4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                Text(
-                    text = "${productUiState.price}",
-                    style = Theme.typography.label.large,
-                    color = Theme.colorScheme.shadePrimary,
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.silver_tc),
+                PriceWithIcon(
+                    price = productUiState.price.toString(),
+                    iconRes = Res.drawable.silver_tc,
                     contentDescription = stringResource(Res.string.koin_icon),
-                    modifier = Modifier
-                        .padding(start = Theme.spacing._4)
-                        .size(20.dp)
                 )
-
                 Spacer(modifier = Modifier.weight(1f))
 
                 productAction()
@@ -132,6 +110,6 @@ private fun ProductCardHorizontalPreview() {
             ),
             productAction = { EditProductIcon(onClick = {}) },
             modifier = Modifier.padding(Theme.spacing._12),
-            )
+        )
     }
 }

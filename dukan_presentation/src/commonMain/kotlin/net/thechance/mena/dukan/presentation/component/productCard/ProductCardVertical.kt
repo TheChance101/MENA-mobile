@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -22,7 +21,6 @@ import mena.dukan_presentation.generated.resources.discount_icon
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.product_image
 import mena.dukan_presentation.generated.resources.silver_tc
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.productLayout.ProductUiState
@@ -58,12 +56,11 @@ fun ProductCardVertical(
             productAction(Modifier.align(Alignment.BottomCenter))
 
         }
-        Text(
-            text = productUiState.name,
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(start = Theme.spacing._4)
+        ProductInfo(
+            name = productUiState.name,
+            description = productUiState.description
         )
+
         Row(
             modifier = Modifier.padding(start = Theme.spacing._4, top = Theme.spacing._2),
             verticalAlignment = Alignment.CenterVertically,
@@ -74,16 +71,10 @@ fun ProductCardVertical(
                 contentDescription = stringResource(Res.string.discount_icon),
             )
 
-            Text(
-                text = "${productUiState.price}",
-                style = Theme.typography.label.medium,
-                color = Theme.colorScheme.shadePrimary
-            )
-            Image(
-                painter = painterResource(Res.drawable.silver_tc),
+            PriceWithIcon(
+                price = productUiState.price.toString(),
+                iconRes = Res.drawable.silver_tc,
                 contentDescription = stringResource(Res.string.koin_icon),
-                modifier = Modifier
-                    .size(20.dp)
             )
         }
     }
