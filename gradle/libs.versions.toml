@@ -90,7 +90,6 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mokkery-core = { module = "dev.mokkery:mokkery-core", version.ref = "mockkery" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-core" }
-kotlinx-datetime-v040 = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetimeVersion" }
 # Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-core" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-core" }
