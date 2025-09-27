@@ -60,7 +60,7 @@ fun TransactionHistoryContent(
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
                     Icon(
-                        modifier = Modifier.clickable {interactionListener.onShareClicked() },
+                        modifier = Modifier.clickable { interactionListener.onShareClicked() },
                         painter = painterResource(Res.drawable.ic_share),
                         contentDescription = Res.string.share.toString()
                     )
@@ -95,11 +95,11 @@ fun TransactionHistoryContent(
             }
             items(state) { transaction ->
                 TransactionHistoryCard(
-                    transactionTypeIcon = getTransactionTypeIcon(transaction.transactionType),
-                    transactionTitle = getTransactionTitle(transaction.transactionType),
-                    transactionTimeAndDate = transaction.transactionTimeAndDate,
+                    transactionTypeIcon = getTransactionTypeIcon(transaction.type),
+                    transactionTitle = getTransactionTitle(transaction.type),
+                    transactionTimeAndDate = transaction.timeAndDate,
                     amount = transaction.amount,
-                    transactionStatus = transaction.transactionStatus,
+                    transactionStatus = transaction.status,
                     onTransactionCardClicked = interactionListener::onTransactionCardClicked,
                     sender = transaction.sender,
                     receiver = transaction.receiver
@@ -109,7 +109,6 @@ fun TransactionHistoryContent(
         }
     }
 }
-
 
 private fun getTransactionTypeIcon(type: Transaction.Type): DrawableResource =
     when (type) {
@@ -121,6 +120,6 @@ private fun getTransactionTypeIcon(type: Transaction.Type): DrawableResource =
 private fun getTransactionTitle(transactionType: Transaction.Type): StringResource =
     when (transactionType) {
         Transaction.Type.ONLINE_PURCHASE -> Res.string.transaction_pay
-        Transaction.Type.SENT ->  Res.string.transaction_send
-        Transaction.Type.RECEIVED ->  Res.string.transaction_receive
+        Transaction.Type.SENT -> Res.string.transaction_send
+        Transaction.Type.RECEIVED -> Res.string.transaction_receive
     }

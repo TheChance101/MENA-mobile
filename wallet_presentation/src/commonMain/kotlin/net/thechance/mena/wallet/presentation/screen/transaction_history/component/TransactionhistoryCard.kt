@@ -64,13 +64,13 @@ fun TransactionHistoryCard(
             transactionStatus = transactionStatus
         )
         TransactionDataColumn(
+            modifier = Modifier.weight(1f).wrapContentHeight().align(Alignment.CenterVertically),
             transactionTitle = transactionTitle,
             transactionTimeAndDate = transactionTimeAndDate,
             amount = amount,
             transactionStatus = transactionStatus,
             sender = sender,
             receiver = receiver,
-            modifier = Modifier.weight(1f).wrapContentHeight().align(Alignment.CenterVertically)
         )
         Box(
             modifier = Modifier
