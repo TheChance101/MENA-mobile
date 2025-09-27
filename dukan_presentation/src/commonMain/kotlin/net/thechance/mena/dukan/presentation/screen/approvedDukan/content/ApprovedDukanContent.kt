@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -64,66 +63,56 @@ fun ApprovedDukanContent(
             .background(Theme.colorScheme.background.surface)
             .statusBarsPadding()
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            item {
-                AppBar(
-                    title = stringResource(Res.string.my_dukan),
-                    onLeadingClick = listener::onBackButtonClicked,
-                    contentPadding = PaddingValues(
-                        horizontal = Theme.spacing._16,
-                        vertical = Theme.spacing._8
-                    ),
-                    leadingContent = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_arrow_left),
-                            contentDescription = stringResource(Res.string.back_arrow),
-                            tint = Theme.colorScheme.shadePrimary
-                        )
-                    }
-                )
-            }
-
-            item {
-                Text(
-                    text = stringResource(Res.string.shelves),
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier.padding(
-                        horizontal = Theme.spacing._16,
-                        vertical = Theme.spacing._8
-                    )
-                )
-            }
-
-            item {
-                SelectionRow(
-                    availableItems = state.availableShelves,
-                    isItemSelected = listener.isShelfSelected(),
-                    onItemSelected = listener::onShelfSelected,
-                    onItemDeselected = listener::onShelfDeselected,
-                    onItemEnabled = listener::onShelfEnabled,
-                    getItemName = { it.name }
-                )
-            }
-
-            item {
-                ProductCountRow(
-                    productCount = state.totalProducts,
-                    listener = listener
-                )
-            }
-
-            item {
-                when {
-                    state.isLoadingProducts -> LoadingProductsContent()
-                    state.products.isEmpty() -> EmptyStateContent()
-                    else -> ProductListContent(
-                        products = state.products,
-                        onProductClick = listener::onProductClick
+            AppBar(
+                title = stringResource(Res.string.my_dukan),
+                onLeadingClick = listener::onBackButtonClicked,
+                contentPadding = PaddingValues(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._8
+                ),
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_arrow_left),
+                        contentDescription = stringResource(Res.string.back_arrow),
+                        tint = Theme.colorScheme.shadePrimary
                     )
                 }
+            )
+
+            Text(
+                text = stringResource(Res.string.shelves),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._8
+                )
+            )
+
+            SelectionRow(
+                availableItems = state.availableShelves,
+                isItemSelected = listener.isShelfSelected(),
+                onItemSelected = listener::onShelfSelected,
+                onItemDeselected = listener::onShelfDeselected,
+                onItemEnabled = listener::onShelfEnabled,
+                getItemName = { it.name }
+            )
+
+            ProductCountRow(
+                productCount = state.totalProducts,
+                listener = listener
+            )
+
+            when {
+                state.isLoadingProducts -> LoadingProductsContent()
+                state.products.isEmpty() -> EmptyStateContent()
+                else -> ProductListContent(
+                    products = state.products,
+                    onProductClick = listener::onProductClick
+                )
             }
         }
 
