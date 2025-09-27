@@ -22,6 +22,7 @@ import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
 import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
+import net.thechance.mena.dukan.data.repository.dto.ShelfDto
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -117,6 +118,9 @@ fun createHttpClient(
     return HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
             "/dukan/create" -> createResponse?.invoke(this) ?: defaultCreateResponse()
+            "/dukan/shelf/create" -> createResponse?.invoke(this) ?: defaultCreateResponse()
+            //    "/dukan/shelf/list" -> shelvesResponse?.invoke(this) ?: defaultShelvesResponse()      //will be added
+            //  "/dukan/shelf/delete" -> deleteShelfResponse?.invoke(this) ?: defaultDeleteResponse()  //will be added
             "/dukan/styles" -> stylesResponse?.invoke(this) ?: defaultStylesResponse()
             "/dukan/categories" -> categoriesResponse?.invoke(this) ?: defaultCategoriesResponse()
             "/dukan/colors" -> colorsResponse?.invoke(this) ?: defaultColorsResponse()
@@ -161,6 +165,39 @@ fun createDukanRepository(
             statusResponse,
             uploadResponse,
             nameResponse
+        )
+    )
+}
+
+fun MockRequestHandleScope.defaultShelvesResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        ListSerializer(ShelfDto.serializer()),
+        listOf(
+            ShelfDto("1", "Shelf 1", "123"),
+            ShelfDto("2", "Shelf 2", "123"),
+            ShelfDto("3", "Shelf 3", "123")
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun MockRequestHandleScope.defaultDeleteResponse() = respond(
+    content = """{}""",
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun createShelfRepository(
+    createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    //shelvesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    //deleteShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+): ShelfRepositoryImpl {
+    return ShelfRepositoryImpl(
+        client = createHttpClient(
+            createResponse = createResponse,
+            //   shelvesResponse = shelvesResponse,
+            // deleteShelfResponse = deleteShelfResponse
         )
     )
 }

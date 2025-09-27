@@ -4,8 +4,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
 import io.github.dellisd.spatialk.geojson.Position
-import org.maplibre.compose.camera.CameraPosition
 import net.thechance.mena.dukan.domain.entity.Dukan
+import org.maplibre.compose.camera.CameraPosition
 
 data class CreateDukanUiState(
     val name: String = "",
@@ -55,6 +55,7 @@ data class DukanStyleUiState(
     val style: Dukan.Style,
     val name: String,
 )
+
 data class ColorUiState(
     val id: String,
     val color: Long
