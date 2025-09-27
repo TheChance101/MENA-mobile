@@ -72,7 +72,6 @@ class UserReelViewModelTest {
             val state = awaitItem()
             assertTrue(state.isDescriptionExpanded)
              cancelAndIgnoreRemainingEvents()
-
          }
     }
 
@@ -87,7 +86,6 @@ class UserReelViewModelTest {
             val state = awaitItem()
             assertFalse(state.isDescriptionExpanded)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
@@ -101,7 +99,6 @@ class UserReelViewModelTest {
             val effect = awaitItem()
             assertTrue(effect is UserReelEffect.NavigateBack)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
@@ -115,7 +112,6 @@ class UserReelViewModelTest {
             val state = awaitItem()
             assertTrue(state.isConfirmationDialogVisible)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
@@ -130,7 +126,6 @@ class UserReelViewModelTest {
             val state = awaitItem()
             assertFalse(state.isConfirmationDialogVisible)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
@@ -148,7 +143,6 @@ class UserReelViewModelTest {
 
             assertEquals(true ,state2.isReelDeleted)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
@@ -163,7 +157,6 @@ class UserReelViewModelTest {
             assertNull(state.isReelDeleted)
             assertFalse(state.isConfirmationDialogVisible)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
@@ -177,7 +170,6 @@ class UserReelViewModelTest {
             val state = awaitItem()
             assertFalse(state.isConfirmationDialogVisible)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
@@ -196,7 +188,6 @@ class UserReelViewModelTest {
             val errorState = awaitItem()
             assertNotNull(errorState.error is ErrorState)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
 
