@@ -73,16 +73,6 @@ class ApprovedDukanViewModel(
 
     override fun onShelfEnabled(shelf: Shelf): Boolean = true
 
-    fun showShelfAddedSuccess() {
-        if (state.value.showShelfAddedSuccess) {
-            updateState {
-                copy(
-                    showSnackBar = true
-                )
-            }
-        }
-    }
-
     private fun loadShelves() {
         tryToExecute(
             onStart = { updateState { copy(isLoading = true) } },
