@@ -13,7 +13,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarMessage
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -73,8 +73,7 @@ class CreateShelfViewModelTest {
             skipItems(1)
             val state = awaitItem()
 
-            assertTrue(state.showSnackBar)
-            assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+            assertTrue(state.snackBarMessage is SnackBarMessage.Error)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -89,8 +88,7 @@ class CreateShelfViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = createShelfViewModel.state.value
-        assertTrue(state.showSnackBar)
-        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+        assertTrue(state.snackBarMessage is SnackBarMessage.Error)
     }
 
     @Test
@@ -102,21 +100,18 @@ class CreateShelfViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = createShelfViewModel.state.value
-        assertTrue(state.showSnackBar)
-        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+        assertTrue(state.snackBarMessage is SnackBarMessage.Error)
     }
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
-        createShelfViewModel.showSnackBar(
-            message = "Invalid shelf",
-            type = SnackBarType.ERROR
-        )
+        createShelfViewModel.updateState {
+            copy(snackBarMessage = SnackBarMessage.Error)
+        }
 
         createShelfViewModel.onDismissSnackBar()
 
         val state = createShelfViewModel.state.value
-        assertFalse(state.showSnackBar)
-        assertEquals(null, state.snackBarState)
+        assertTrue(state.snackBarMessage == null)
     }
 }
