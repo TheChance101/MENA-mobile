@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class Pager<Key : Any, Value : Any>(
-    private val config: PagingConfig = PagingConfig(),
+    private val config: PagingConfig,
     private val pagingSourceFactory: () -> PagingSource<Key, Value>
 ) {
     private val _flow = MutableStateFlow(PagingData<Value>())
@@ -73,7 +73,7 @@ class Pager<Key : Any, Value : Any>(
         }
     }
 
-    fun shouldLoadMore(lastVisibleIndex: Int, totalItems: Int): Boolean {
+    fun isShouldLoadMore(lastVisibleIndex: Int, totalItems: Int): Boolean {
         val remainingItems = totalItems - lastVisibleIndex
         return remainingItems <= config.prefetchDistance &&
                 _flow.value.hasMore &&

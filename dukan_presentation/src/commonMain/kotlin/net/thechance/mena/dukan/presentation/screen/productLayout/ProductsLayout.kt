@@ -18,7 +18,7 @@ fun ProductsLayout(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(products) { product ->
             ProductCardHorizontal(

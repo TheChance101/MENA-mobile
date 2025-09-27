@@ -42,7 +42,7 @@ fun ProductCardHorizontal(
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(size = Theme.radius.md)
-            ).height(106.dp)
+            ).height(104.dp)
             .padding(Theme.spacing._4),
     ) {
         Box(

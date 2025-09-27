@@ -1,4 +1,9 @@
-package net.thechance.mena.dukan.presentation.component.pagination
+package net.thechance.mena.dukan.presentation.component.pagination.base
+
+import net.thechance.mena.dukan.presentation.component.pagination.PagedFetchResponse
+import net.thechance.mena.dukan.presentation.component.pagination.Pager
+import net.thechance.mena.dukan.presentation.component.pagination.PagingConfig
+import net.thechance.mena.dukan.presentation.component.pagination.PagingSource
 
 abstract class BasePagingSource<T : Any> : PagingSource<Int, T>() {
 
@@ -6,13 +11,11 @@ abstract class BasePagingSource<T : Any> : PagingSource<Int, T>() {
         return try {
             val page = params.key ?: FIRST_PAGE
             val fetchResponse = onFetchPage(pageNumber = page)
-            val isFirstPage = fetchResponse.currentPage == FIRST_PAGE
-            val isLastPage = fetchResponse.totalPages == page || fetchResponse.items.isEmpty()
 
             LoadResult.Page(
                 data = fetchResponse.items,
-                prevKey = if (isFirstPage) null else page.minus(1),
-                nextKey = if (isLastPage) null else page.plus(1),
+                prevKey = if (fetchResponse.hasPrevious) page - 1 else null,
+                nextKey = if (fetchResponse.hasNext) page + 1 else null,
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -27,9 +30,11 @@ abstract class BasePagingSource<T : Any> : PagingSource<Int, T>() {
 }
 
 fun <T : Any> createPagingSource(
+    config: PagingConfig = PagingConfig(),
     block: suspend (pageNumber: Int) -> PagedFetchResponse<T>
 ): Pager<Int, T> {
     return Pager(
+        config = config,
         pagingSourceFactory = {
             object : BasePagingSource<T>() {
                 override suspend fun onFetchPage(pageNumber: Int): PagedFetchResponse<T> {
