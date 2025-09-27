@@ -43,6 +43,6 @@
     <string name="page_number"> %1$d / %2$d </string>
     <string name="characters_color_animation_label">CharactersColorAnimation</string>
 
-
-
+    <string name="max_file_size_exceeded">Maximum allowed size is 100 MB</string>
+    <string name="max_file_duration_exceeded">Maximum allowed duration is 1 minute</string>
 </resources>
