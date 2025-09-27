@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.component.pagination
+package net.thechance.mena.dukan.presentation.util.pagination
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable

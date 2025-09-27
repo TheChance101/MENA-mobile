@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.component.pagination
+package net.thechance.mena.dukan.presentation.util.pagination
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

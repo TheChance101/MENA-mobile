@@ -1,9 +1,9 @@
-package net.thechance.mena.dukan.presentation.component.pagination.base
+package net.thechance.mena.dukan.presentation.util.pagination.base
 
-import net.thechance.mena.dukan.presentation.component.pagination.PagedFetchResponse
-import net.thechance.mena.dukan.presentation.component.pagination.Pager
-import net.thechance.mena.dukan.presentation.component.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.component.pagination.PagingSource
+import net.thechance.mena.dukan.presentation.util.pagination.PagedFetchResponse
+import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
+import net.thechance.mena.dukan.presentation.util.pagination.PagingSource
 
 abstract class BasePagingSource<T : Any> : PagingSource<Int, T>() {
 
