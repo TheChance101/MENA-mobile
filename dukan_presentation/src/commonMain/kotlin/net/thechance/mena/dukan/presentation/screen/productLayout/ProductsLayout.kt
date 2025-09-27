@@ -14,11 +14,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ProductsLayout(
-    columnCount: Int,
+    column: Int,
     products: List<ProductUiState>
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(columnCount),
+        columns = GridCells.Fixed(column),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(products) { product ->
