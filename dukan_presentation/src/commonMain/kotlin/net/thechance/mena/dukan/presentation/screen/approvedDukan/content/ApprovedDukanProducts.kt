@@ -115,7 +115,7 @@ private fun ProductListContent(
     // TODO: Replace with ProductCard component when ready
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(
             start = Theme.spacing._16,
             end = Theme.spacing._16,
