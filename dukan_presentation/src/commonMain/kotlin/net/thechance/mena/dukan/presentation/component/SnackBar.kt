@@ -24,7 +24,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SnackBar(
     snackBarUiState: SnackBarUiState,
-    isVisible: Boolean,
     onDismiss: () -> Unit,
     autoDismissMillis: Long = 3000L,
     modifier: Modifier = Modifier.padding(
@@ -34,15 +33,13 @@ fun SnackBar(
     )
 ) {
 
-    LaunchedEffect(isVisible) {
-        if (isVisible) {
-            delay(autoDismissMillis)
-            onDismiss()
-        }
+    LaunchedEffect(Unit) {
+        delay(autoDismissMillis)
+        onDismiss()
     }
 
     AnimatedVisibility(
-        visible = isVisible,
+        visible = true,
         enter = slideInVertically(
             initialOffsetY = { -it },
             animationSpec = tween(400)
