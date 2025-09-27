@@ -23,12 +23,12 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun TransactionTitleAndAmount(
-    modifier: Modifier = Modifier,
     transactionTitle: StringResource,
     amount: String,
     sender: String?,
-    receiver: String?
-) {
+    receiver: String?,
+    modifier: Modifier = Modifier
+    ) {
     Row(
         modifier = modifier.fillMaxWidth().wrapContentHeight(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -94,9 +94,9 @@ private fun TransactionAmountRow(
             color = Theme.colorScheme.shadePrimary
         )
         Icon(
+            modifier = Modifier.size(16.dp),
             painter = painterResource(Res.drawable.img_silver),
-            contentDescription = Res.string.money_icon.toString(),
-            Modifier.size(16.dp)
+            contentDescription = Res.string.money_icon.toString()
         )
     }
 }

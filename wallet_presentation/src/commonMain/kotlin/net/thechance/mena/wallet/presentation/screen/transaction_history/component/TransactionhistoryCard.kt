@@ -39,10 +39,10 @@ fun TransactionHistoryCard(
     transactionTimeAndDate: String,
     amount: String,
     transactionStatus: Transaction.Status,
-    sender: String? = null,
-    receiver: String? = null,
     onTransactionCardClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sender: String? = null,
+    receiver: String? = null
 ) {
     Row(
         modifier = modifier.fillMaxWidth()
