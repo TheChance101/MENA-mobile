@@ -60,20 +60,7 @@ internal fun MockRequestHandleScope.updateReelResponse(
     categoryIds: List<String>,
     status: HttpStatusCode = HttpStatusCode.OK
 ) = respond(
-    content = """
-        {
-          "reelId": "$id",
-          "videoUrl": "video.mp4",
-          "thumbnailUrl": "",
-          "description": "$description",
-          "likesCount": 10,
-          "viewsCount": 100,
-          "createdAt": "2026-02-02T02:02:00",
-          "categories": [
-            ${categoryIds.joinToString(",") { """{"id":"$it","name":"Category ","emoji":"🔥"}""" }}
-          ]
-        }
-    """.trimIndent(),
+    content = "",
     status = status,
     headers = jsonHeaders
 )

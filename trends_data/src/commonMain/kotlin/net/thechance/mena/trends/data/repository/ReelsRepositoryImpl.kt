@@ -42,12 +42,12 @@ internal class ReelsRepositoryImpl(
         id: String,
         description: String,
         categoryIds: List<String>
-    ): Reel {
+    ) {
         val request = UpdateReelRequestDTO(description, categoryIds)
-        return safeApiCall<ReelDto> {
+         safeApiCall<Unit> {
             httpClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
                 setBody(request)
             }
-        }.toEntity()
+        }
     }
 }
