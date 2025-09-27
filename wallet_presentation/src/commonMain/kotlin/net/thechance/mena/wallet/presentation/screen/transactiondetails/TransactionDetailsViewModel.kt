@@ -57,18 +57,19 @@ class TransactionDetailsViewModel(
     }
 
     override fun onShareReceiptBtnClicked() {
-        updateState { it.copy(shareReceipt = UiState.Loading) }
-        state.value.captureController.capture()
+        tryToExecute(
+            callee = { state.value.captureController.capture() },
+            onSuccess = {},
+            onError = ::onShareReceiptError,
+            onStart = ::onShareReceiptStart,
+        )
+
     }
 
     @OptIn(ExperimentalUuidApi::class)
     override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {
         val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
-        updateState {
-            it.copy(
-                shareReceipt = UiState.Success(imageBitmap),
-            )
-        }
+        updateState { it.copy(isShareReceiptBtnLoading = false) }
         tryToExecute(
             callee = {
                 imageSharer.shareImage(
@@ -77,14 +78,14 @@ class TransactionDetailsViewModel(
                     mimeType = IMAGE_TYPE
                 )
             },
-            onSuccess = { updateState { it.copy(shareReceipt = UiState.Idle) } },
+            onSuccess = { updateState { it.copy(isShareReceiptBtnLoading = false) } },
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
         )
     }
 
     private suspend fun onShareReceiptError(throwable: Throwable) {
-        updateState { it.copy(shareReceipt = UiState.Error(throwable)) }
+        updateState { it.copy(isShareReceiptBtnLoading = false) }
         showSnackBar(
             titleRes = Res.string.error,
             messageRes = Res.string.share_transaction_details_error_msg,
@@ -93,7 +94,7 @@ class TransactionDetailsViewModel(
     }
 
     private fun onShareReceiptStart() {
-        updateState { it.copy(shareReceipt = UiState.Loading) }
+        updateState { it.copy(isShareReceiptBtnLoading = true) }
     }
 
     private suspend fun showSnackBar(
@@ -128,13 +129,6 @@ class TransactionDetailsViewModel(
 
     override fun onRefresh() {
         getTransactionDetails()
-    }
-
-    override fun onSendToDeviceBtnClicked() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onBottomSheetDismissRequest() {
     }
 
     private companion object {

@@ -107,7 +107,7 @@ private fun TransactionDetailsScreenContent(
                                 iconSize = 20.dp,
                                 contentDescription = stringResource(Res.string.share_button),
                                 iconStartPadding = 8.dp,
-                                isLoading = state.shareReceipt.isLoading,
+                                isLoading = state.isShareReceiptBtnLoading,
                                 contentColor = Theme.colorScheme.primary.primary,
                                 contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
                                 shape = RoundedCornerShape(Theme.radius.md)
@@ -151,8 +151,6 @@ private fun TransactionDetailsScreenPreview() {
                 override fun onShareReceiptBtnClicked() {}
                 override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {}
                 override fun onRefresh() {}
-                override fun onSendToDeviceBtnClicked() {}
-                override fun onBottomSheetDismissRequest() {}
             }
         )
     }

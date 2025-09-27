@@ -7,6 +7,4 @@ interface TransactionDetailsInteractionListener {
     fun onShareReceiptBtnClicked()
     fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String)
     fun onRefresh()
-    fun onSendToDeviceBtnClicked()
-    fun onBottomSheetDismissRequest()
 }

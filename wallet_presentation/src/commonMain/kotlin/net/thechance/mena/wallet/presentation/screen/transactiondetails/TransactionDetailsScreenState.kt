@@ -10,7 +10,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 data class TransactionDetailsScreenState(
     val transactionDetailsUiState: UiState<TransactionDetailsUiState> = UiState.Idle,
-    val shareReceipt: UiState<ImageBitmap> = UiState.Idle,
+    val isShareReceiptBtnLoading: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
     val captureController: CaptureController = CaptureController()
 ){
