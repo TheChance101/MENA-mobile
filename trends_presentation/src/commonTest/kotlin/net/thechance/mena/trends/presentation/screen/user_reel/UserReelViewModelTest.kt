@@ -29,21 +29,22 @@ import kotlin.test.assertTrue
 class UserReelViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val viewModel by lazy {
-        UserReelViewModel(userReelArgs, mockReelsRepository,testDispatcher)
-    }
-    private val mockReelsRepository: ReelsRepository = mock(MockMode.autofill)
-    private val userReelArgs: UserReelArgs = mock(MockMode.autofill)
 
+    private val mockReelsRepository: ReelsRepository = mock(MockMode.autofill) {
+        everySuspend { deleteReelById("1") } returns Unit
+    }
+
+    private val userReelArgs: UserReelArgs = mock(MockMode.autofill) {
+        every { realId } returns "1"
+    }
+
+    private val viewModel by lazy {
+        UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
+    }
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-
-        every { userReelArgs.realId } returns "1"
-
-        everySuspend { mockReelsRepository.deleteReelById("1") }
-
     }
 
     @Test
@@ -65,11 +66,11 @@ class UserReelViewModelTest {
     fun `should expand description when onDescriptionClick is called with collapsed state`() = runTest {
         viewModel.onDescriptionClick(isCollapsed = false)
 
-         viewModel.state.test {
+        viewModel.state.test {
             val state = awaitItem()
             assertTrue(state.isDescriptionExpanded)
-             cancelAndIgnoreRemainingEvents()
-         }
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -159,12 +160,18 @@ class UserReelViewModelTest {
     @Test
     fun `onConfirmDeleteClick should update error state when repository throws exception`() = runTest {
         val errorMessage = "Delete failed"
-        everySuspend { mockReelsRepository.deleteReelById("1") } throws Exception(errorMessage)
 
-        viewModel.onConfirmDeleteClick()
+        // Create a separate mock for this test with error behavior
+        val errorMockRepository: ReelsRepository = mock(MockMode.autofill) {
+            everySuspend { deleteReelById("1") } throws Exception(errorMessage)
+        }
+
+        val errorViewModel = UserReelViewModel(userReelArgs, errorMockRepository, testDispatcher)
+
+        errorViewModel.onConfirmDeleteClick()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.state.test {
+        errorViewModel.state.test {
             val errorState = awaitItem()
             assertNotNull(errorState.error is ErrorState)
             cancelAndIgnoreRemainingEvents()
