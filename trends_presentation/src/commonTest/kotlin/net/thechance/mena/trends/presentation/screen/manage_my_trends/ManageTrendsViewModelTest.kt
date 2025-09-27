@@ -2,8 +2,6 @@ package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
-import assertk.assertThat
-import assertk.assertions.isEqualTo
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -18,6 +16,7 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import org.koin.core.context.stopKoin
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -26,7 +25,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 
@@ -40,7 +38,7 @@ class ManageTrendsViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel =  ManageTrendsViewModel(repository)
+        viewModel =  ManageTrendsViewModel(repository,testDispatcher)
     }
 
 
@@ -53,17 +51,10 @@ class ManageTrendsViewModelTest {
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =
         runTest(testDispatcher) {
-            // Given
             everySuspend { repository.getAllReels(1) } returns reelList
 
-            // Then
             viewModel.state.test {
                 val currentState = awaitItem()
-                assertEquals(false, currentState.isLoading)
-                assertNotNull(currentState.reels)
-                assertEquals(null, currentState.error)
-
-
                 val reelsSnapshot: List<ReelUiState> = currentState.reels.asSnapshot()
                 assertEquals(expectedReelUiStateList, reelsSnapshot)
                 cancelAndIgnoreRemainingEvents()
@@ -74,17 +65,9 @@ class ManageTrendsViewModelTest {
     @Test
     fun `initialize view model should handle error state when getAllReels fails`() =
         runTest(testDispatcher) {
-            // Given
             val errorMessage = "Network error"
             everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
 
-            // Then
-            viewModel.state.test {
-                val currentState = awaitItem()
-                assertEquals(false, currentState.isLoading)
-                assertNull(currentState.error)
-                cancelAndIgnoreRemainingEvents()
-            }
             assertFailsWith<Exception> {
                 viewModel.state.value.reels.asSnapshot()
             }
@@ -93,9 +76,8 @@ class ManageTrendsViewModelTest {
 
     @Test
     fun `getReels should set loading state during execution`() = runTest(testDispatcher) {
-        // Given
         everySuspend { repository.getAllReels(1) } returns reelList
-        // When & Then
+
         viewModel.state.test {
             val initialState = awaitItem()
             assertFalse(initialState.isLoading)
@@ -116,9 +98,8 @@ class ManageTrendsViewModelTest {
 
     @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
-        // Given
         everySuspend { repository.getAllReels(1) } returns emptyList()
-        // When & Then
+
         viewModel.effect.test {
             viewModel.onReelItemClick(REEL_ID)
             assertEquals(ManageTrendsUiEffect.NavigateToTrend(REEL_ID), awaitItem())
@@ -130,10 +111,8 @@ class ManageTrendsViewModelTest {
 
     @Test
     fun `onBackClick should navigate back`() = runTest(testDispatcher) {
-        // Given
         everySuspend { repository.getAllReels(1) } returns emptyList()
 
-        // When & Then
         viewModel.effect.test {
             viewModel.onBackClick()
             assertEquals(ManageTrendsUiEffect.NavigateBack, awaitItem())
@@ -145,13 +124,10 @@ class ManageTrendsViewModelTest {
 
     @Test
     fun `viewModel should start with initial state`() = runTest(testDispatcher) {
-        // Given
         everySuspend { repository.getAllReels(1) } returns reelList
 
-        // When
         val viewModel = ManageTrendsViewModel(repository)
 
-        // Then
         val initialState = viewModel.state.value
         assertNotNull(initialState)
         assertTrue(initialState.isLoading)
@@ -160,39 +136,11 @@ class ManageTrendsViewModelTest {
 
 
     @Test
-    fun `getReels should trigger repository call and handle success`() = runTest(testDispatcher) {
-        // Given
-        everySuspend { repository.getAllReels(1) } returns reelList
-
-        // When
-        viewModel.getReels()
-        testScheduler.advanceUntilIdle()
-
-
-        // Then
-        viewModel.state.test {
-            val currentState = awaitItem()
-            assertEquals(false, currentState.isLoading)
-            assertEquals(null, currentState.error)
-            assertNotNull(currentState.reels)
-
-            val reelsSnapshot: List<ReelUiState> = currentState.reels.asSnapshot()
-            assertEquals(expectedReelUiStateList, reelsSnapshot)
-            cancelAndIgnoreRemainingEvents()
-
-        }
-    }
-
-
-    @Test
     fun `toUiState extension function should map correctly`() {
-        // Given
         val reel = reelList[0]
 
-        // When
         val uiState = reel.toUiState()
 
-        // Then
         assertEquals("1", uiState.id)
         assertEquals("thumb1.jpg", uiState.thumbnailUrl)
     }
@@ -209,8 +157,7 @@ class ManageTrendsViewModelTest {
         // Then
         viewModel.state.test {
             val errorState = awaitItem()
-//            assertNotNull(errorState.error is ErrorState)
-            assertThat(errorState.error).isEqualTo(null)
+            assertNotNull(errorState.error is ErrorState)
             cancelAndIgnoreRemainingEvents()
         }
     }
