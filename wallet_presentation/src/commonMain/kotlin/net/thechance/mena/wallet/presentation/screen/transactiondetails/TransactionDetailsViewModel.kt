@@ -61,7 +61,7 @@ class TransactionDetailsViewModel(
     override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
         tryToExecute(
             callee = { capture() },
-            onSuccess = {},
+            onSuccess = {updateState { it.copy(isShareReceiptBtnLoading = false) }},
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
             dispatcher = ioDispatcher

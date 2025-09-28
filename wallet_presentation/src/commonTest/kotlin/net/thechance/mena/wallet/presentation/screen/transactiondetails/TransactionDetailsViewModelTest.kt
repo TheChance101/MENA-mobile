@@ -185,6 +185,26 @@ class TransactionDetailsViewModelTest {
     }
 
     @Test
+    fun `onShareReceiptButtonClicked should reset loading state to false when success`() = runTest {
+        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+
+        val viewModel = TransactionDetailsViewModel(
+            imageSharer = imageSharer,
+            transactionRepository = transactionRepository,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.state.test {
+            skipItems(2)
+
+            viewModel.onShareReceiptButtonClicked({})
+
+            val finalState = awaitItem()
+            assertTrue(!finalState.isShareReceiptBtnLoading)
+        }
+    }
+
+    @Test
     fun `onRefresh should set transaction with loading when initially called`() = runTest {
         everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
 
