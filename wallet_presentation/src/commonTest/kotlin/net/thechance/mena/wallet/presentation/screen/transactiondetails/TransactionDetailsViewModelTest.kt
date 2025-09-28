@@ -78,7 +78,7 @@ class TransactionDetailsViewModelTest {
             skipItems(2)
             val successState = awaitItem()
             assertTrue(successState.transactionDetailsUiState is UiState.Success)
-            val transactionUiState = (successState.transactionDetailsUiState as UiState.Success).data
+            val transactionUiState = successState.transactionDetailsUiState.data
             assertEquals(transaction1uiState, transactionUiState)
         }
     }
