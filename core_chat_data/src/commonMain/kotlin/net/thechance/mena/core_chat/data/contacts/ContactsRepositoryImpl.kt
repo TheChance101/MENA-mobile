@@ -10,6 +10,7 @@ import com.bilalazzam.contacts_provider.ContactField.LAST_NAME
 import com.bilalazzam.contacts_provider.ContactField.PHONE_NUMBERS
 import com.bilalazzam.contacts_provider.ContactsProvider
 import io.ktor.client.HttpClient
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -28,11 +29,12 @@ import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedExceptio
 import net.thechance.mena.core_chat.domain.exception.DataStoreException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import com.bilalazzam.contacts_provider.Contact as DeviceContact
-
 
 class ContactsRepositoryImpl(
     private val client: HttpClient,
+    private val authenticationRepository: AuthenticationRepository,
     private val contactsProvider: ContactsProvider,
     private val dataStore: DataStore<Preferences>
 ) : ContactsRepository, BaseRepository {
@@ -42,9 +44,12 @@ class ContactsRepositoryImpl(
             defaultException = { ContactsFetchFailedException("Couldn't get user contacts", it) },
             bodyType = typeInfo<PagedDataDto<ContactDto>>()
         ) {
-            client.get(CONTACTS_ENDPOINT) {
-                parameter(PAGE_NUMBER_PARAMETER, pageNumber)
-                parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
+            authenticationRepository.getAccessToken().let { token ->
+                client.get(CONTACTS_ENDPOINT) {
+                    parameter(PAGE_NUMBER_PARAMETER, pageNumber)
+                    parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
+                    bearerAuth(token)
+                }
             }
         }.toPagedListOfContacts()
     }
@@ -55,8 +60,11 @@ class ContactsRepositoryImpl(
             bodyType = typeInfo<Unit>()
         ) {
             val contacts = getDeviceContacts()
-            client.post(SYNC_CONTACTS_ENDPOINT) {
-                setBody(contacts.toListOfContactCreationRequestDto())
+            authenticationRepository.getAccessToken().let { token ->
+                client.post(SYNC_CONTACTS_ENDPOINT) {
+                    setBody(contacts.toListOfContactCreationRequestDto())
+                    bearerAuth(token)
+                }
             }
         }
     }

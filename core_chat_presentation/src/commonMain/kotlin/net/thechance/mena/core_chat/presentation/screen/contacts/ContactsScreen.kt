@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -58,7 +56,6 @@ private fun ContactsContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Theme.colorScheme.background.surface)
-            .statusBarsPadding()
             .navigationBarsPadding()
     ) {
         AppBar(
@@ -93,7 +90,7 @@ private fun ContactsContent(
         )
         AnimatedContent(
             targetState = contacts.loadState.refresh,
-            modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) { loadState ->
             when (loadState) {

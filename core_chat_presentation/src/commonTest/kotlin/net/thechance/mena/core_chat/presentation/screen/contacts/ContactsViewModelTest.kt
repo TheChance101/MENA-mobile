@@ -1,14 +1,18 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class, DelicateMokkeryApi::class)
 
 package net.thechance.mena.core_chat.presentation.screen.contacts
 
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import dev.mokkery.annotations.DelicateMokkeryApi
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
+import dev.mokkery.matcher.matches
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -22,16 +26,26 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.contact_not_mena_user
+import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.model.PagedData
+import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
+import net.thechance.mena.core_chat.presentation.navigation.NavigationConstants.IS_SYNC_SUCCESS
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ContactsViewModelTest {
     private val contactsRepository = mock<ContactsRepository>()
+
+    private val chatRepository = mock<ChatRepository>()
     private val effector = mock<ChatEffector>()
     private val isSyncSuccessState: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -59,7 +73,8 @@ class ContactsViewModelTest {
             isLastPage = true
         )
 
-        val viewModel = ContactsViewModel(contactsRepository, effector, testDispatcher)
+        val viewModel =
+            ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         isSyncSuccessState.update { true }
 
         viewModel.state.test {
@@ -79,7 +94,8 @@ class ContactsViewModelTest {
             isLastPage = true
         )
 
-        val viewModel = ContactsViewModel(contactsRepository, effector, testDispatcher)
+        val viewModel =
+            ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -96,7 +112,8 @@ class ContactsViewModelTest {
             totalItems = 1,
             isLastPage = true
         )
-        val viewModel = ContactsViewModel(contactsRepository, effector, testDispatcher)
+        val viewModel =
+            ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
         viewModel.onRefreshContacts()
@@ -117,7 +134,8 @@ class ContactsViewModelTest {
                 totalItems = 0,
                 isLastPage = true
             )
-            val viewModel = ContactsViewModel(contactsRepository, effector, testDispatcher)
+            val viewModel =
+                ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
             advanceUntilIdle()
 
             viewModel.onRefreshContacts()
@@ -133,7 +151,8 @@ class ContactsViewModelTest {
     @Test
     fun `onBackClick should call popBackStack when invoked`() = runTest {
         everySuspend { effector.popBackStack() } returns Unit
-        val viewModel = ContactsViewModel(contactsRepository, effector, testDispatcher)
+        val viewModel =
+            ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
         viewModel.onBackClick()
@@ -147,7 +166,8 @@ class ContactsViewModelTest {
     @Test
     fun `onResyncClick should navigate to sync contacts when invoked`() = runTest {
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
-        val viewModel = ContactsViewModel(contactsRepository, effector, testDispatcher)
+        val viewModel =
+            ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
         viewModel.onReSyncClick()
@@ -158,16 +178,73 @@ class ContactsViewModelTest {
 
     @Test
     fun `onContactClick should navigate to chat screen when called`() = runTest {
+        val expectedChat = Chat(
+            id = Uuid.random(),
+            imageUrl = null,
+            name = "John Doe"
+        )
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
-        val viewModel = ContactsViewModel(contactsRepository, effector, testDispatcher)
+        everySuspend { chatRepository.getChatByContactUserId(any()) } returns expectedChat
+
+        val viewModel =
+            ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
-
-        viewModel.onContactClick(1)
+        val contactId = Uuid.random().toString()
+        viewModel.onContactClick(contactId)
         advanceUntilIdle()
 
         verifySuspend { effector.navigate(any(), any(), any()) }
     }
+
+    @Test
+    fun `onContactClick should show snack bar when repository throws error`() = runTest {
+        everySuspend { chatRepository.getChatByContactUserId(any()) } throws Exception()
+        everySuspend { effector.showSnackBar(any()) } returns Unit
+
+        val viewModel =
+            ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
+        advanceUntilIdle()
+
+        viewModel.onContactClick(Uuid.random().toString())
+        advanceUntilIdle()
+
+        verifySuspend {
+            effector.showSnackBar(matches {
+                assertThat(it.message).isEqualTo(UiText.StringRes(Res.string.contact_not_mena_user))
+                true
+            })
+        }
+    }
+
+    @Test
+    fun `observeSyncSuccess should refresh contacts and reset flag when sync success is true`() =
+        runTest {
+
+            everySuspend { contactsRepository.getUserContacts(any()) } returns PagedData(
+                data = listOf(expectedContact),
+                totalItems = 1,
+                isLastPage = true
+            )
+            val fakeFlow = MutableSharedFlow<Map<String, Any>>(replay = 1)
+            every { effector.popBackStackArgsFlow } returns fakeFlow
+            everySuspend { effector.setNavigationArgs(any()) } returns Unit
+
+            val viewModel =
+                ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
+            advanceUntilIdle()
+
+            fakeFlow.emit(mapOf(IS_SYNC_SUCCESS to true))
+            advanceUntilIdle()
+
+            viewModel.state.test {
+                val state = awaitItem()
+                assertThat(state.contacts).isNotNull()
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            verifySuspend { effector.setNavigationArgs(IS_SYNC_SUCCESS to false) }
+        }
 
     companion object {
         val expectedContact = Contact(

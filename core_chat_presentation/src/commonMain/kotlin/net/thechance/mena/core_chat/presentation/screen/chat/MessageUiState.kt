@@ -1,20 +1,27 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
 import net.thechance.mena.core_chat.presentation.utils.now
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+import net.thechance.mena.core_chat.domain.entity.MessageStatus as DomainMessageStatus
 
 abstract class MessageUiState(
-    open val id: String,
-    open val senderId: String,
+    open val id: Uuid = Uuid.random(),
+    open val senderId: Uuid = Uuid.random(),
+    open val chatId: Uuid = Uuid.random(),
     open val sendTime: LocalDateTime,
-    open val status: MessageStatus,
-    open val isMine: Boolean
+    open val status: MessageStatusUiState,
+    open val isMine: Boolean,
 )
 
-enum class MessageStatus {
+enum class MessageStatusUiState {
     SENDING,
     SENT,
     READ,
@@ -28,15 +35,17 @@ data class MarkedMessageUiState(
 )
 
 data class TextMessageUiState(
-    override val id: String,
-    override val senderId: String,
+    override val id: Uuid = Uuid.random(),
+    override val senderId: Uuid = Uuid.random(),
+    override val chatId: Uuid = Uuid.random(),
     override val sendTime: LocalDateTime,
-    override val status: MessageStatus,
+    override val status: MessageStatusUiState,
     override val isMine: Boolean,
     val text: String
-): MessageUiState(
+) : MessageUiState(
     id,
     senderId,
+    chatId,
     sendTime,
     status,
     isMine
@@ -100,3 +109,45 @@ fun List<MarkedMessageUiState>.withDateSeparators(
     return result.asReversed()
 }
 
+
+fun Message.toUi(currentUserId: Uuid): TextMessageUiState {
+    return TextMessageUiState(
+        id = id,
+        senderId = senderId,
+        chatId = chatId,
+        sendTime = sendAt,
+        status = status.toUi(),
+        isMine = senderId == currentUserId,
+        text = text
+    )
+}
+
+fun TextMessageUiState.toEntity(): Message {
+    return Message(
+        id = id,
+        senderId = senderId,
+        chatId = chatId,
+        text = text,
+        sendAt = sendTime,
+        status = status.toEntity()
+    )
+}
+
+
+private fun DomainMessageStatus.toUi(): MessageStatusUiState {
+    return when (this) {
+        DomainMessageStatus.LOADING -> MessageStatusUiState.SENDING
+        DomainMessageStatus.SENT -> MessageStatusUiState.SENT
+        DomainMessageStatus.READ -> MessageStatusUiState.READ
+        DomainMessageStatus.FAILED -> MessageStatusUiState.FAILED
+    }
+}
+
+private fun MessageStatusUiState.toEntity(): DomainMessageStatus {
+    return when (this) {
+        MessageStatusUiState.SENDING -> DomainMessageStatus.LOADING
+        MessageStatusUiState.SENT -> DomainMessageStatus.SENT
+        MessageStatusUiState.READ -> DomainMessageStatus.READ
+        MessageStatusUiState.FAILED -> DomainMessageStatus.FAILED
+    }
+}

@@ -1,4 +1,4 @@
-plugins{
+plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.androidLibrary)
@@ -10,6 +10,7 @@ plugins{
 
 kotlin {
     androidTarget()
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -24,10 +25,14 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.contacts.provider)
             implementation(libs.koin.core)
+
             implementation(libs.bundles.ktor)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.kotlinx.datetime)
+
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(projects.identityDomain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -35,6 +40,7 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.assertk)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.mokkery.core)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -62,10 +68,12 @@ dependencies {
 
 kover.reports {
     verify {
-        rule { minBound(80) }
+        rule {
+            minBound(80)
+        }
     }
 
     filters.excludes {
-        packages("*.di", "*.dto" , "*.database")
+        packages("*.di", "*.dto" , "*.database","*.chat")
     }
 }

@@ -28,6 +28,11 @@
     <string name="error_generic">حدث خطأ، حاول مجددًا لاحقًا</string>
     <string name="error_request_timeout">استغرق الأمر وقتًا طويلًا، حاول مجددًا</string>
 
+    <!--    Publish Trend-->
+    <string name="upload_your_video">ارفع الفيديو الخاص بك</string>
+    <string name="available_video_format">MP4، MOV حتى 100 ميجابايت</string>
+    <string name="thumbnail_description">الصورة المصغرة للفيديو المرفوع</string>
+    <string name="edit_button_description">أيقونة زر التعديل</string>
 
     <!-- Video Description Screen  -->
     <string name="new_trend">ترند جديد</string>
@@ -38,4 +43,6 @@
     <string name="page_number"> %1$d / %2$d </string>
     <string name="characters_color_animation_label">حركه لون الحروف</string>
 
+    <string name="max_file_size_exceeded">الحد الأقصى للحجم المسموح به هو 100 ميجا بايت</string>
+    <string name="max_file_duration_exceeded">الحد الأقصى للمدة المسموح بها دقيقة واحدة</string>
 </resources>
