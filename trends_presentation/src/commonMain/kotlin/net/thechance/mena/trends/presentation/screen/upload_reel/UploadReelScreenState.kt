@@ -10,6 +10,7 @@ data class UploadReelScreenState(
     val uploadingTrendState: UploadingTrendState = UploadingTrendState.IDLE,
     val uploadedMegaBytes: String = "",
     val isNextButtonEnabled: Boolean = false,
+    val isNextButtonLoading: Boolean = false,
     val errorState: ErrorState? = null,
     val trendId: String? = null
 ) {

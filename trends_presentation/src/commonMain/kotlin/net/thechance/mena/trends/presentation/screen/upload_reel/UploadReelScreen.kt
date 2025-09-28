@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -32,6 +33,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
 import net.thechance.mena.trends.presentation.shared.component.VideoLoadingCardItem
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
@@ -114,7 +116,7 @@ private fun UploadReelScreenContent(
                 videoSize = state.selectedFile.sizeInMegaBytes,
                 videoState = state.uploadingTrendState,
                 progress = state.uploadedMegaBytes.toFloat() / state.selectedFile.sizeInMegaBytes.toFloat(),
-                modifier = Modifier.padding(bottom = Theme.spacing._24),
+                modifier = Modifier.padding(bottom = Theme.spacing._16),
                 onAction = { action ->
                     when (action) {
                         VideoAction.Cancel -> listener.onCancelUploadClick()
@@ -122,6 +124,15 @@ private fun UploadReelScreenContent(
                         VideoAction.Delete -> listener.onDeleteVideoClick()
                     }
                 }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            NextButton(
+                onNextClick = listener::onNextClick,
+                isButtonEnabled = state.isNextButtonEnabled,
+                isButtonLoading = state.isNextButtonLoading,
+                modifier = Modifier.padding(bottom = Theme.spacing._16)
             )
         }
     }
@@ -145,6 +156,22 @@ private fun launchFilePicker(
 }
 
 @Composable
+private fun UploadReelScreenTopBar(
+    onBackClick: () -> Unit
+) {
+    AppBar(
+        onLeadingClick = onBackClick,
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_arrow)
+            )
+        },
+        title = stringResource(Res.string.new_trend),
+    )
+}
+
+@Composable
 private fun UploadReelScreenHeader(
     modifier: Modifier = Modifier
 ) {
@@ -165,20 +192,4 @@ private fun UploadReelScreenHeader(
             color = Theme.colorScheme.shadeSecondary
         )
     }
-}
-
-@Composable
-private fun UploadReelScreenTopBar(
-    onBackClick: () -> Unit
-) {
-    AppBar(
-        onLeadingClick = onBackClick,
-        leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
-            )
-        },
-        title = stringResource(Res.string.new_trend),
-    )
 }
