@@ -1,22 +1,14 @@
 package net.thechance.mena.dukan.presentation.screen.approvedDukan.content
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.approved_dukan
 import mena.dukan_presentation.generated.resources.dukan_approved_body
@@ -37,7 +29,6 @@ fun ApprovedDukanProducts(
     onProductClick: (Product) -> Unit
 ) {
     when {
-        state.isLoadingProducts -> LoadingProductsContent()
         state.shelves.isEmpty() -> NoShelvesContent()
         state.products.isEmpty() -> EmptyStateContent()
         else -> ProductListContent(
@@ -49,23 +40,18 @@ fun ApprovedDukanProducts(
 
 @Composable
 private fun NoShelvesContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        ImageWithTextContainer(
-            foregroundImageRes = Res.drawable.approved_dukan,
-            header = {
-                Text(
-                    text = stringResource(Res.string.dukan_approved_header),
-                    style = Theme.typography.title.medium,
-                    color = Theme.colorScheme.shadePrimary,
-                    textAlign = TextAlign.Center
-                )
-            },
-            bodyText = stringResource(Res.string.dukan_approved_body)
-        )
-    }
+    ImageWithTextContainer(
+        foregroundImageRes = Res.drawable.approved_dukan,
+        header = {
+            Text(
+                text = stringResource(Res.string.dukan_approved_header),
+                style = Theme.typography.title.medium,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center
+            )
+        },
+        bodyText = stringResource(Res.string.dukan_approved_body)
+    )
 }
 
 @Composable
@@ -82,28 +68,6 @@ private fun EmptyStateContent() {
         },
         bodyText = stringResource(Res.string.shelf_empty_body)
     )
-}
-
-@Composable
-private fun LoadingProductsContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._24),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
-    ) {
-        // TODO: Replace with Loading component when ready
-        repeat(3) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .background(
-                        Theme.colorScheme.shadeSecondary.copy(alpha = 0.1f),
-                        RoundedCornerShape(Theme.radius.lg)
-                    )
-            )
-        }
-    }
 }
 
 @Composable

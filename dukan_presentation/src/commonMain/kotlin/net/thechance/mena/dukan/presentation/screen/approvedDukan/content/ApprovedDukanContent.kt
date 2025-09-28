@@ -64,7 +64,9 @@ fun ApprovedDukanContent(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            if (state.shelves.isEmpty() || state.products.isEmpty()) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
 
             ApprovedDukanProducts(
                 state = state,
