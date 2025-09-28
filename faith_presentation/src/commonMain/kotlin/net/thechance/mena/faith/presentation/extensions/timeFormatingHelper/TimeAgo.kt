@@ -1,8 +1,6 @@
 package net.thechance.mena.faith.presentation.extensions.timeFormatingHelper
 
 data class TimeAgo(
-    val amount: Int = noValue,
+    val amount: Int = 0,
     val unit: TimeUnit = TimeUnit.SECONDS
 )
-
-const val noValue = 0
