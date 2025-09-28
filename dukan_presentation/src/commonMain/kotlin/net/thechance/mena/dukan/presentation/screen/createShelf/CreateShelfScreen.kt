@@ -29,8 +29,6 @@ import net.thechance.mena.designsystem.presentation.component.textField.TextFiel
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -124,7 +122,7 @@ private fun CreateShelfContent(
                 )
             }
         }
-        
+
         state.snackBarState?.let { snackBarState ->
             SnackBar(
                 snackBarUiState = snackBarState,

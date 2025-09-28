@@ -3,9 +3,12 @@ package net.thechance.mena.dukan.presentation.viewModel.createShelf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarMessage
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class CreateShelfViewModel(
@@ -35,7 +38,12 @@ class CreateShelfViewModel(
         val title = state.value.shelfTitle
         if (!isTitleValid(title)) {
             updateState {
-                copy(snackBarMessage = SnackBarMessage.Error)
+                copy(
+                    snackBarState = SnackBarUiState(
+                        snackBarType = SnackBarType.ERROR,
+                        message = Res.string.shelf_name_is_already_exist
+                    )
+                )
             }
             return
         }
@@ -74,7 +82,12 @@ class CreateShelfViewModel(
             emitEffect(CreateShelfEffect.NavigateToApprovedDukan)
         } else {
             updateState {
-                copy(snackBarMessage = SnackBarMessage.Error)
+                copy(
+                    snackBarState = SnackBarUiState(
+                        snackBarType = SnackBarType.ERROR,
+                        message = Res.string.shelf_name_is_already_exist
+                    )
+                )
             }
         }
     }
@@ -82,17 +95,20 @@ class CreateShelfViewModel(
     private fun onCreateClickedError() {
         updateState { copy(isLoading = false) }
         updateState {
-            copy(snackBarMessage = SnackBarMessage.Error)
+            copy(
+                snackBarState = SnackBarUiState(
+                    snackBarType = SnackBarType.ERROR,
+                    message = Res.string.shelf_name_is_already_exist
+                )
+            )
         }
     }
 
     override fun onDismissSnackBar() {
         updateState {
-            copy(snackBarMessage = null)
+            copy(snackBarState = null)
         }
     }
-
-
 
     companion object {
         private val validTitleRegex = Regex("^[\\p{L}\\s-]+$")
