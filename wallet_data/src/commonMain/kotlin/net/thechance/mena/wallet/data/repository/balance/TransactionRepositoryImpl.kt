@@ -3,20 +3,10 @@ package net.thechance.mena.wallet.data.repository.balance
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
-@OptIn(FormatStringsInDatetimeFormats::class)
-fun formatTransactionDateTime(dateTime: LocalDateTime): String {
-    val formatter = LocalDateTime.Format {
-        byUnicodePattern("dd MMM yyyy HH:mm") // مثال: 27 Sep 2025 14:45
-    }
-    return formatter.format(dateTime)
-}
 
 class TransactionRepositoryImpl(): TransactionRepository {
         @OptIn(ExperimentalUuidApi::class)
