@@ -44,7 +44,6 @@ class TransactionDetailsViewModelTest {
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val imageSharer = mock<ImageSharer>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private val captureController = mock<CaptureController>()
 
     @BeforeTest
     fun setup() {
@@ -153,32 +152,76 @@ class TransactionDetailsViewModelTest {
 //        }
 //    }
 
-//    @Test
-//    fun `onScreenShotCaptured should share image and reset loading state`() = runTest {
-//        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
-//        everySuspend { imageSharer.shareImage(any(), any(), any()) } returns Unit
-//
-//        val mockBitmap: ImageBitmap = mock()
-//        val viewModel = TransactionDetailsViewModel(
-//            imageSharer = imageSharer,
-//            transactionRepository = transactionRepository,
-//            ioDispatcher = testDispatcher
-//        )
-//
-//        viewModel.state.test {
-//            skipItems(2)
-//
-//            viewModel.onScreenShotCaptured(mockBitmap, "test_file")
-//
-//            val finalState = awaitItem()
-//            assertTrue(!finalState.isShareReceiptBtnLoading)
-//        }
-//    }
+    @Test
+    fun `onScreenShotCaptured should share image and reset loading state to false when success`() = runTest {
+        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { imageSharer.shareImage(any(), any(), any()) } returns Unit
+
+        val byteArray = byteArrayOf()
+        val viewModel = TransactionDetailsViewModel(
+            imageSharer = imageSharer,
+            transactionRepository = transactionRepository,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.state.test {
+            skipItems(2)
+
+            viewModel.onScreenShotCaptured(byteArray, "test_file")
+
+            val finalState = awaitItem()
+            assertTrue(!finalState.isShareReceiptBtnLoading)
+        }
+    }
+
+    @Test
+    fun `onScreenShotCaptured should reset loading state to false when fail`() = runTest {
+        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
+
+        val byteArray = byteArrayOf()
+        val viewModel = TransactionDetailsViewModel(
+            imageSharer = imageSharer,
+            transactionRepository = transactionRepository,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.state.test {
+            skipItems(2)
+
+            viewModel.onScreenShotCaptured(byteArray, "test_file")
+
+            val finalState = awaitItem()
+            assertTrue(!finalState.isShareReceiptBtnLoading)
+        }
+    }
+
+    @Test
+    fun `onScreenShotCaptured should show error snack bar when fail`() = runTest {
+        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
+
+        val byteArray = byteArrayOf()
+        val viewModel = TransactionDetailsViewModel(
+            imageSharer = imageSharer,
+            transactionRepository = transactionRepository,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.state.test {
+            skipItems(3)
+            viewModel.onScreenShotCaptured(byteArray, "test_file")
+            val finalState = awaitItem()
+            assertEquals(true, finalState.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 
 //    @Test
 //    fun `onShareReceiptError should show error snackbar and reset loading state`() = runTest {
 //        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
-//        everySuspend { mockCaptureController.capture() } throws RuntimeException("Capture failed")
+//        everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
 //
 //        val viewModel = TransactionDetailsViewModel(
 //            imageSharer = imageSharer,
