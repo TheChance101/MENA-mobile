@@ -74,7 +74,7 @@ class BookmarkViewModelTest {
     }
 
     @Test
-    fun `onBackClick should should navigate back`() = runTest {
+    fun `onBackClick should navigate back`() = runTest {
         val viewModel = BookmarkViewModel(repository)
 
         viewModel.uiEffect.test {
