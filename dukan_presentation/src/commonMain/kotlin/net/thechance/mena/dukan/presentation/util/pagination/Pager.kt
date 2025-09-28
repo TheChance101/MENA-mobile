@@ -21,43 +21,15 @@ class Pager<Key : Any, Value : Any>(
     suspend fun load(key: Key? = null) {
 
         loadMutex.withLock {
+
             if (_flow.value.isLoading) return
 
-            _flow.value = _flow.value.copy(isLoading = true, error = null)
-
+            startLoading()
             try {
-                val pagingSource = currentPagingSource ?: pagingSourceFactory().also {
-                    currentPagingSource = it
-                }
+                val pagingSource = setPagingSource()
+                val params = setParams(key)
+                handleLoadResult(pagingSource.load(params), key)
 
-
-                val params = PagingSource.LoadParams(
-                    key = key ?: currentKey,
-                    loadSize = config.pageSize
-                )
-
-                when (val result = pagingSource.load(params)) {
-                    is PagingSource.LoadResult.Page -> {
-                        val isRefresh = key == null && currentKey == null
-                        val newItems = if (isRefresh) result.data
-                        else _flow.value.items + result.data
-
-                        val finalItems =
-                            if (config.maxSize != Int.MAX_VALUE && newItems.size > config.maxSize) {
-                                newItems.takeLast(config.maxSize)
-                            } else {
-                                newItems
-                            }
-
-                        currentKey = result.nextKey
-                        loadedItemsCount = finalItems.size
-
-                        setSuccessState(finalItems, result.nextKey)
-                    }
-                    is PagingSource.LoadResult.Error -> {
-                        setErrorState(result.throwable)
-                    }
-                }
             } catch (e: Exception) {
                 setErrorState(e)
             }
@@ -96,6 +68,55 @@ class Pager<Key : Any, Value : Any>(
             error = null,
             hasMore = nextKey != null,
             isRefreshing = false
+        )
+    }
+
+
+    private fun handleLoadResult(
+        result: PagingSource.LoadResult<Key, Value>,
+        key: Key?
+    ) {
+        when (result) {
+            is PagingSource.LoadResult.Page -> setPageResult(result, key)
+            is PagingSource.LoadResult.Error -> setErrorState(result.throwable)
+        }
+    }
+
+    private fun setPageResult(
+        result: PagingSource.LoadResult.Page<Key, Value>,
+        key: Key?
+    ) {
+        val isRefresh = key == null && currentKey == null
+        val newItems = if (isRefresh) result.data else _flow.value.items + result.data
+
+        val finalItems = limitMaxSize(newItems)
+
+        currentKey = result.nextKey
+        loadedItemsCount = finalItems.size
+
+        setSuccessState(finalItems, result.nextKey)
+    }
+
+    private fun limitMaxSize(items: List<Value>): List<Value> {
+        return if (config.maxSize != Int.MAX_VALUE && items.size > config.maxSize)
+            items.takeLast(config.maxSize)
+        else items
+    }
+
+    private fun startLoading() {
+        _flow.value = _flow.value.copy(isLoading = true, error = null)
+    }
+
+    private fun setPagingSource(): PagingSource<Key, Value> {
+        return currentPagingSource ?: pagingSourceFactory().also {
+            currentPagingSource = it
+        }
+    }
+
+    private fun setParams(key: Key?): PagingSource.LoadParams<Key> {
+        return PagingSource.LoadParams(
+            key = key ?: currentKey,
+            loadSize = config.pageSize
         )
     }
 }
