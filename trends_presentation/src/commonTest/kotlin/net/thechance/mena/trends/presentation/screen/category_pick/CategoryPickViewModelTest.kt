@@ -1,0 +1,144 @@
+package net.thechance.mena.trends.presentation.screen.category_pick
+
+import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isNotNull
+import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import kotlinx.coroutines.test.runTest
+import net.thechance.mena.trends.domain.entity.Category
+import net.thechance.mena.trends.domain.repository.CategoryRepository
+import net.thechance.mena.trends.presentation.utils.TestExtensions
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class CategoryPickViewModelTest : TestExtensions() {
+    private val repository: CategoryRepository = mock<CategoryRepository>(mode = MockMode.autofill)
+    private val viewModel by lazy {
+        CategoryPickViewModel(
+            repository = repository,
+            defaultDispatcher = testDispatcher
+        )
+    }
+    private val demoCategories = listOf(
+        Category(id = "1", name = "Category 1", emoji = "🫡"),
+        Category(id = "2", name = "Category 2", emoji = "🔥"),
+        Category(id = "3", name = "Category 3", emoji = "👻")
+    )
+
+    @BeforeTest
+    fun setup() {
+        everySuspend { repository.getAllCategories() } returns demoCategories
+    }
+
+    @Test
+    fun `loadCategories should start loading when initially called`() =
+        runTest(testDispatcher) {
+            viewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.isLoading)
+            }
+        }
+
+    @Test
+    fun `loadCategories should return categories with success when repository returns value`() =
+        runTest(testDispatcher) {
+            viewModel.state.test {
+                skipItems(1)
+                val state = awaitItem()
+                assertEquals(demoCategories.size, state.categories.size)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `loadCategories should throw exception when initially called`() =
+        runTest(testDispatcher) {
+            everySuspend { repository.getAllCategories() } throws Exception()
+
+            viewModel.state.test {
+                skipItems(1)
+                val state = awaitItem()
+                assertThat(state.error).isNotNull()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `loadCategories should end loading when initially called`() =
+        runTest(testDispatcher) {
+            viewModel.state.test {
+                skipItems(2)
+                val state = awaitItem()
+                assertFalse(state.isLoading)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `onCategoryClick should toggle category selection state`() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(2)
+            val state = awaitItem()
+            val firstCategory = state.categories.first()
+            firstCategory.value.id?.let {
+                viewModel.onCategoryClick(it)
+            }
+
+            val updatedState = awaitItem()
+            val updatedFirstCategory =
+                updatedState.categories.first { it.value.id == firstCategory.value.id }
+            assertTrue(updatedFirstCategory.isSelected)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onBackClick should send NavigateBack effect when called`() = runTest(testDispatcher) {
+        viewModel.onBackClick()
+
+        viewModel.effect.test {
+            val effect = awaitItem()
+            assertTrue(effect is CategoryPickScreenEffect.NavigateBack)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onNextClick should called updateUserInterestedCategories from repository with success`() =
+        runTest(testDispatcher) {
+            val selectedIds = listOf(demoCategories.first().id)
+            everySuspend { repository.updateUserInterestedCategories(selectedIds) } returns Unit
+
+            viewModel.onNextClick()
+
+            viewModel.effect.test {
+                val effect = awaitItem()
+                assertTrue(effect is CategoryPickScreenEffect.NavigateToTrends)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `onNextClick should throw exception when called`() =
+        runTest(testDispatcher) {
+            everySuspend { repository.updateUserInterestedCategories(any()) } throws Exception()
+
+            viewModel.onNextClick()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.state.test {
+                val state = awaitItem()
+                assertThat(state.error).isNotNull()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+}
