@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forget_password
+package net.thechance.mena.identity.presentation.screen.forgetPassword
 
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry

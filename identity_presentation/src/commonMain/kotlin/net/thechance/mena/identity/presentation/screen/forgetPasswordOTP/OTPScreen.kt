@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forget_password_otp
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer

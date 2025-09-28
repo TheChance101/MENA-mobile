@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forget_password
+package net.thechance.mena.identity.presentation.screen.forgetPassword
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +22,7 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledPhoneNumberInput
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.screen.forget_password_otp.OTPScreen
+import net.thechance.mena.identity.presentation.screen.forgetPasswordOTP.OTPScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

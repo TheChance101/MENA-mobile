@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forget_password_otp
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineScope

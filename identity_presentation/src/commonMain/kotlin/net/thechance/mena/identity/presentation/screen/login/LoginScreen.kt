@@ -43,7 +43,7 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledPhoneNumberInput
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.screen.forget_password.ForgetPasswordScreen
+import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreen
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
