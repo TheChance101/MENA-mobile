@@ -34,7 +34,7 @@
     <string name="pick_end_date">Pick the end date</string>
     <string name="pick">Pick</string>
     <string name="transactions_history">Transactions History</string>
-    <string name="filter">Filter</string>
+    <string name="filter">Filters</string>
     <string name="transaction_pay">Online shopping</string>
     <string name="transaction_send">Send to </string>
     <string name="transaction_receive">Receive from </string>

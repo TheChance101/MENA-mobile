@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -81,26 +82,30 @@ private fun TransactionIcon(
     transactionStatus: Transaction.Status,
 ) {
     Box(
-        modifier = Modifier
-            .wrapContentSize()
-            .background(Theme.colorScheme.primary.onPrimary, shape = CircleShape)
-            .padding(12.dp)
+        modifier = Modifier.height(64.dp)
     ) {
-        Icon(
-            painter = painterResource(transactionTypeIcon),
-            contentDescription = stringResource(Res.string.transaction_type_icon),
-            modifier = Modifier.size(24.dp)
-        )
+        Box(
+            modifier = Modifier
+                .background(Theme.colorScheme.primary.onPrimary, CircleShape)
+                .padding(12.dp).align(Alignment.Center)
+        ) {
+            Icon(
+                painter = painterResource(transactionTypeIcon),
+                contentDescription = stringResource(Res.string.transaction_type_icon),
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
         if (transactionStatus == Transaction.Status.FAIL) {
             Icon(
                 painter = painterResource(Res.drawable.ic_failed),
                 contentDescription = stringResource(Res.string.failed),
-                modifier = Modifier
+                modifier = Modifier.size(20.dp)
                     .align(Alignment.BottomCenter)
-                    .offset(y = 18.dp)
             )
         }
     }
+
 }
 
 @Composable
