@@ -5,6 +5,10 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import dev.mokkery.answering.returns
+import dev.mokkery.every
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
@@ -22,6 +26,7 @@ import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedExc
 import net.thechance.mena.core_chat.domain.exception.DataStoreException
 import net.thechance.mena.core_chat.domain.exception.UnAuthorizedException
 import net.thechance.mena.core_chat.domain.exception.UnknownException
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -30,6 +35,7 @@ import kotlin.test.assertFailsWith
 class ContactsRepositoryImplTest {
     private val mockContactsProvider = FakeContactsProvider()
     private val mockDataStore = FakeDataStore()
+    private val authenticationRepository = mock<AuthenticationRepository>()
     private lateinit var httpClient: HttpClient
     private lateinit var repository: ContactsRepositoryImpl
 
@@ -39,7 +45,9 @@ class ContactsRepositoryImplTest {
         mockDataStore.reset()
         httpClient = createHttpClient()
 
-        repository = createRepository(mockContactsProvider, mockDataStore)
+        everySuspend { authenticationRepository.getAccessToken() } returns "token"
+
+        repository = createRepository(mockContactsProvider, mockDataStore, authenticationRepository,)
     }
 
     @Test
@@ -61,6 +69,7 @@ class ContactsRepositoryImplTest {
         repository = createRepository(
             contactsProvider = mockContactsProvider,
             contactsDataStore = mockDataStore,
+            authenticationRepository = authenticationRepository,
             contactsResponse = {
                 mockSuccessPagedResponse<PagedDataDto<ContactDto>>(
                     body = PagedDataDto(
@@ -88,6 +97,7 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
+                authenticationRepository = authenticationRepository,
                 contactsResponse = {
                     mockErrorPagedResponse<PagedDataDto<ContactDto>>(
                         status = HttpStatusCode.Unauthorized
@@ -106,6 +116,7 @@ class ContactsRepositoryImplTest {
         repository = createRepository(
             contactsProvider = mockContactsProvider,
             contactsDataStore = mockDataStore,
+            authenticationRepository = authenticationRepository,
             contactsResponse = {
                 mockErrorPagedResponse<PagedDataDto<ContactDto>>(
                     status = HttpStatusCode.InternalServerError
@@ -126,6 +137,7 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
+                authenticationRepository = authenticationRepository,
                 contactsResponse = {
                     throw IOException()
                 }
@@ -160,6 +172,7 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
+                authenticationRepository = authenticationRepository,
                 syncContactsResponse = {
                     throw IOException()
                 }
@@ -178,6 +191,7 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
+                authenticationRepository = authenticationRepository,
                 syncContactsResponse = {
                     mockErrorPagedResponse<PagedDataDto<ContactDto>>(
                         status = HttpStatusCode.Unauthorized
@@ -331,59 +345,63 @@ class ContactsRepositoryImplTest {
         }
 
     @Test
-    fun `should return right pageSize when getUserContacts is called and response contains data`() = runTest {
-        val page1Contacts = createPagedDataDto(
-            data = List(10) { i ->
-                ContactDto(
-                    firstName = "Page1",
-                    lastName = "User$i",
-                    phoneNumber = "010000000$i",
-                    isMenaUser = false,
-                    imageUrl = null
-                )
-            },
-            pageNumber = 1,
-            pageSize = 10,
-            totalItems = 15,
-            totalPages = 2
-        )
+    fun `should return right pageSize when getUserContacts is called and response contains data`() =
+        runTest {
+            val page1Contacts = createPagedDataDto(
+                data = List(10) { i ->
+                    ContactDto(
+                        firstName = "Page1",
+                        lastName = "User$i",
+                        phoneNumber = "010000000$i",
+                        isMenaUser = false,
+                        imageUrl = null
+                    )
+                },
+                pageNumber = 1,
+                pageSize = 10,
+                totalItems = 15,
+                totalPages = 2
+            )
 
-        repository = createRepository(
-            contactsProvider = mockContactsProvider,
-            contactsDataStore = mockDataStore,
-            contactsResponse = {
-                mockSuccessPagedResponse(
-                    body = page1Contacts
-                )
-            }
-        )
+            repository = createRepository(
+                contactsProvider = mockContactsProvider,
+                contactsDataStore = mockDataStore,
+                authenticationRepository = authenticationRepository,
+                contactsResponse = {
+                    mockSuccessPagedResponse(
+                        body = page1Contacts
+                    )
+                }
+            )
 
-        val result = repository.getUserContacts(pageNumber = 1)
+            val result = repository.getUserContacts(pageNumber = 1)
 
-        assertThat(result.data).isEqualTo(page1Contacts.data?.map { it.toDomain() })
-    }
+            assertThat(result.data).isEqualTo(page1Contacts.data?.map { it.toDomain() })
+        }
 
     @Test
-    fun `should return empty list when getUserContacts requests page beyond total pages`() = runTest {
-        repository = createRepository(
-            contactsProvider = mockContactsProvider,
-            contactsDataStore = mockDataStore,
-            contactsResponse = {
-                mockSuccessPagedResponse<PagedDataDto<ContactDto>>(
-                    body = PagedDataDto(
-                        data = emptyList(),
-                        pageNumber = 3,
-                        pageSize = 10,
-                        totalItems = 15,
-                        totalPages = 2
+    fun `should return empty list when getUserContacts requests page beyond total pages`() =
+        runTest {
+            repository = createRepository(
+                contactsProvider = mockContactsProvider,
+                contactsDataStore = mockDataStore,
+                authenticationRepository = authenticationRepository,
+                contactsResponse = {
+                    mockSuccessPagedResponse<PagedDataDto<ContactDto>>(
+                        body = PagedDataDto(
+                            data = emptyList(),
+                            pageNumber = 3,
+                            pageSize = 10,
+                            totalItems = 15,
+                            totalPages = 2
+                        )
                     )
-                )
-            }
-        )
+                }
+            )
 
-        val result = repository.getUserContacts(pageNumber = 3)
+            val result = repository.getUserContacts(pageNumber = 3)
 
-        assertThat(result.data).isEmpty()
-    }
+            assertThat(result.data).isEmpty()
+        }
 
 }

@@ -48,7 +48,8 @@ import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class LoginScreen : BaseScreen<
+class LoginScreen(
+) : BaseScreen<
         LoginScreenModel,
         LoginScreenUIState,
         LoginScreenUIEffect,
@@ -148,13 +149,32 @@ class LoginScreen : BaseScreen<
                             .fillMaxWidth()
                             .padding(bottom = 12.dp)
                     )
-
                     AuthPrompt(
                         modifier = Modifier.imePadding(),
                         message = stringResource(Res.string.register_prompt),
                         actionLabel = stringResource(Res.string.register_now),
                         onActionClick = listener::onRegisterClicked
                     )
+                }
+                AnimatedVisibility(
+                    visible = state.errorMessage != null,
+                    enter = slideInHorizontally(initialOffsetX = { it }),
+                    exit = slideOutHorizontally(targetOffsetX = { it })
+                ) {
+                    SnackBar(
+                        title = stringResource(Res.string.error),
+                        message = state.errorMessage ?: "",
+                        leadingIcon = painterResource(Res.drawable.ic_close_circle),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
+                            .padding(horizontal = 16.dp)
+                    )
+                }
+
+                LaunchedEffect(state.errorMessage) {
+                    delay(3000)
+                    listener.clearErrorMessage()
                 }
             }
         }
@@ -167,7 +187,7 @@ class LoginScreen : BaseScreen<
         when (effect) {
             is LoginScreenUIEffect.NavigateToRegister -> navigator.push(RegisterScreen())
             LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ForgetPasswordScreen())
-            LoginScreenUIEffect.NavigateToHome -> navigator.push(ForgetPasswordScreen())
+            LoginScreenUIEffect.NavigateToHome -> TODO()
         }
     }
 }
