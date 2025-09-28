@@ -5,8 +5,6 @@ import mena.dukan_presentation.generated.resources.delete
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.dismiss
-import mena.dukan_presentation.generated.resources.dismiss_description
-import mena.dukan_presentation.generated.resources.dismiss_title
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState

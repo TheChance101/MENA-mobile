@@ -20,10 +20,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product
-import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.edit_shelf
-import mena.dukan_presentation.generated.resources.failed_to_add_shelf
 import mena.dukan_presentation.generated.resources.ic_add_bold
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_package_add
@@ -42,8 +40,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.presentation.component.SelectionRow
 import net.thechance.mena.dukan.presentation.component.SnackBar
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewApprovedDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
@@ -55,7 +51,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ApprovedDukanContent(
     state: ApprovedDukanUiState,
-    listener: ApprovedDukanInteractionListener
+    listener: ApprovedDukanInteractionListener,
 ) {
     OnSystemBackPressed(listener::onBackButtonClicked)
 
@@ -138,14 +134,9 @@ fun ApprovedDukanContent(
     }
 
     SnackBar(
-        snackBarUiState = SnackBarUiState(
-            snackBarType = if (state.showShelfAddedSuccess) SnackBarType.SUCCESS else SnackBarType.ERROR,
-            message = if (state.showShelfAddedSuccess) stringResource(Res.string.add_shelf_successfully) else stringResource(
-                Res.string.failed_to_add_shelf
-            )
-        ),
+        snackBarUiState = state.snackBarState,
         isVisible = state.showSnackBar,
-        onDismiss = listener::onDismissSnackBar
+        onDismiss = { listener.onDismissSnackBar() },
     )
 }
 
