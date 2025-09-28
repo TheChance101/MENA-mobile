@@ -11,6 +11,7 @@ object PreviewApprovedDukanInteractionListener : ApprovedDukanInteractionListene
     override fun onEditShelfClicked() {}
     override fun onAddShelfClicked() {}
     override fun onProductClick(product: Product) {}
+    override fun onShelfAddedSuccessfully() {}
     override fun isShelfSelected(): (Shelf) -> Boolean = { false }
     override fun onShelfSelected(shelf: Shelf): Boolean = true
     override fun onShelfDeselected(shelf: Shelf): Boolean = true

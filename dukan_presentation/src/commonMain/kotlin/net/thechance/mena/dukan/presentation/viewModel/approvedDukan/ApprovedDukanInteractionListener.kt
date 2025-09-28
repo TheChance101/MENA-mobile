@@ -10,9 +10,9 @@ interface ApprovedDukanInteractionListener {
     fun onProductClick(product: Product)
     fun onEditShelfClicked()
     fun onAddShelfClicked()
+    fun onShelfAddedSuccessfully()
     fun isShelfSelected(): (Shelf) -> Boolean
     fun onShelfSelected(shelf: Shelf): Boolean
     fun onShelfDeselected(shelf: Shelf): Boolean
     fun onShelfEnabled(shelf: Shelf): Boolean
-    suspend fun onShelfAddedSuccessfully()
 }

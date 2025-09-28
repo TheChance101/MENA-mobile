@@ -12,7 +12,6 @@ import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
-import org.jetbrains.compose.resources.getString
 
 class ApprovedDukanViewModel(
     private val shelfRepository: ShelfRepository,
@@ -73,13 +72,12 @@ class ApprovedDukanViewModel(
 
     override fun onShelfEnabled(shelf: Shelf): Boolean = true
 
-    override suspend fun onShelfAddedSuccessfully() {
-        val successMessage = getString(Res.string.add_shelf_successfully)
+    override fun onShelfAddedSuccessfully() {
         updateState {
             copy(
                 snackBarState = SnackBarUiState(
                     snackBarType = SnackBarType.SUCCESS,
-                    message = successMessage
+                    message = Res.string.add_shelf_successfully
                 )
             )
         }
