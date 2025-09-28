@@ -98,7 +98,7 @@ fun ProductCard(
 
 @Preview
 @Composable
-private fun ProductCardHorizontalPreview() {
+private fun ProductCardPreview() {
     MenaTheme {
         ProductCard(
             ProductUiState(
