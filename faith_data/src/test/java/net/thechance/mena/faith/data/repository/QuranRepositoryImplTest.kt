@@ -185,7 +185,7 @@ class QuranRepositoryImplTest {
         assertEquals("", result)
     }
 
-    companion object {
+    private companion object {
         private const val BISMILLAH_TEXT = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
         private const val BISMILLAH_PLAIN = "Bismillah"
         private const val ALHAMDULILLAH_TEXT = "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ"
