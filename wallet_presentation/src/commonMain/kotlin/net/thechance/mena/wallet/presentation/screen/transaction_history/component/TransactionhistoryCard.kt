@@ -129,7 +129,7 @@ private fun TransactionDataColumn(
         if (transactionStatus == Transaction.Status.FAIL) {
             Text(
                 modifier = Modifier.align(Alignment.Start),
-                text = Res.string.failed.toString(),
+                text = stringResource(Res.string.failed),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.error
             )

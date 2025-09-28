@@ -111,11 +111,11 @@ fun TransactionHistoryContent(
                         ) {
                             Icon(
                                 painter = painterResource(Res.drawable.ic_filter),
-                                contentDescription = Res.string.filter.toString()
+                                contentDescription = stringResource(Res.string.filter)
                             )
                             Text(
                                 modifier = Modifier.padding(start = 4.dp),
-                                text = Res.string.filter.toString(),
+                                text = stringResource(Res.string.filter),
                                 style = Theme.typography.label.small,
                                 color = Theme.colorScheme.primary.primary
                             )
