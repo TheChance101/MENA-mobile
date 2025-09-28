@@ -18,7 +18,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_close_circle
 import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatus
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
 import net.thechance.mena.core_chat.presentation.utils.formatAsTime
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -34,12 +34,12 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun MessageInfo(
     messageTime: LocalDateTime,
-    messageStatus: MessageStatus,
+    messageStatus: MessageStatusUiState,
     messageIsMine: Boolean,
     onFailClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val messageInfoColor = if (messageStatus == MessageStatus.FAILED)
+    val messageInfoColor = if (messageStatus == MessageStatusUiState.FAILED)
         Theme.colorScheme.error
     else
         Theme.colorScheme.shadeTertiary
@@ -57,7 +57,7 @@ fun MessageInfo(
 
         if (messageIsMine) {
             when (messageStatus) {
-                MessageStatus.SENDING -> {
+                MessageStatusUiState.SENDING -> {
                     DotsProgressIndicator(
                         numberOfDots = 3,
                         colors = listOf(
@@ -68,7 +68,7 @@ fun MessageInfo(
                     )
                 }
 
-                MessageStatus.SENT -> {
+                MessageStatusUiState.SENT -> {
                     Icon(
                         painter = painterResource(Res.drawable.ic_message_sent),
                         contentDescription = "Sent",
@@ -77,7 +77,7 @@ fun MessageInfo(
                     )
                 }
 
-                MessageStatus.READ -> {
+                MessageStatusUiState.READ -> {
                     Icon(
                         painter = painterResource(Res.drawable.ic_message_read),
                         contentDescription = "Read",
@@ -86,7 +86,7 @@ fun MessageInfo(
                     )
                 }
 
-                MessageStatus.FAILED -> {
+                MessageStatusUiState.FAILED -> {
                     Icon(
                         painter = painterResource(Res.drawable.ic_close_circle),
                         contentDescription = "Failed",
@@ -114,7 +114,7 @@ private fun PreviewReadMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatus.READ,
+                messageStatus = MessageStatusUiState.READ,
                 messageIsMine = true
             )
         }
@@ -133,7 +133,7 @@ private fun PreviewSentMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatus.SENT,
+                messageStatus = MessageStatusUiState.SENT,
                 messageIsMine = true
             )
         }
@@ -152,7 +152,7 @@ private fun PreviewFailedMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatus.FAILED,
+                messageStatus = MessageStatusUiState.FAILED,
                 messageIsMine = true
             )
         }
@@ -171,7 +171,7 @@ private fun PreviewSendingMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatus.SENDING,
+                messageStatus = MessageStatusUiState.SENDING,
                 messageIsMine = true
             )
         }

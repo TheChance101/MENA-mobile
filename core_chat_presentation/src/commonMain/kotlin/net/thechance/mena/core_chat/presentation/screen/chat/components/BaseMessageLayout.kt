@@ -1,9 +1,10 @@
-@file:OptIn(ExperimentalTime::class)
+@file:OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatus
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.now
@@ -29,6 +30,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun BaseMessageLayout(
@@ -38,6 +41,7 @@ fun BaseMessageLayout(
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
     onFailClick: () -> Unit = {},
+    onMessageClick: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     val messageBackground = if (message.isMine)
@@ -104,6 +108,7 @@ fun BaseMessageLayout(
                         color = messageBackground,
                         shape = messageShape
                     )
+                    .clickable(onClick = onMessageClick)
                     .padding(
                         horizontal = Theme.spacing._8,
                         vertical = Theme.spacing._4
@@ -141,12 +146,12 @@ private fun PreviewBaseMessageLayout() {
         ) {
             BaseMessageLayout(
                 message = TextMessageUiState(
-                    "0",
-                    "1",
-                    LocalDateTime.now(),
-                    MessageStatus.READ,
-                    false,
-                    ""
+                    Uuid.random(),
+                    Uuid.random(),
+                    sendTime = LocalDateTime.now(),
+                    status = MessageStatusUiState.READ,
+                    isMine = false,
+                    text = ""
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true

@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 internal val networkModule = module {
     single { createHttpClientEngine() }
-    single { createHttpClient(get(named("baseUrl")), get()) }
+    single(named("chatClient")) { createHttpClient(get(named("baseUrl")), get()) }
 }
 
 expect fun createHttpClientEngine(): HttpClientEngineFactory<HttpClientEngineConfig>

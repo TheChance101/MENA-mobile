@@ -1,9 +1,8 @@
-@file:OptIn(ExperimentalTime::class)
+@file:OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatus
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -20,6 +19,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun TextMessageItem(
@@ -37,13 +38,13 @@ fun TextMessageItem(
         isMarkedLastInSeries = isMarkedLastInSeries,
         chatAvatarUrl = chatAvatarUrl,
         onFailClick = onFailClick,
+        onMessageClick = onClick,
         modifier = modifier
     ) {
         Text(
             text = message.text,
             style = Theme.typography.body.small,
-            color = Theme.colorScheme.shadeSecondary,
-            modifier = Modifier.clickable(onClick = onClick)
+            color = Theme.colorScheme.shadeSecondary
         )
     }
 }
@@ -62,12 +63,12 @@ private fun PreviewTextMessageItem() {
             TextMessageItem(
                 modifier = Modifier,
                 message = TextMessageUiState(
-                    "0",
-                    "1",
-                    LocalDateTime.now(),
-                    MessageStatus.READ,
-                    false,
-                    "Hello Bilal"
+                    id = Uuid.random(),
+                    senderId = Uuid.random(),
+                    sendTime = LocalDateTime.now(),
+                    status = MessageStatusUiState.READ,
+                    isMine = false,
+                    text = "Hello Bilal"
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true
