@@ -35,4 +35,18 @@
     <string name="tunisia">Tunisia</string>
     <string name="uae">United Arab Emirates</string>
     <string name="yemen">Yemen</string>
+
+
+    <string name="forget_password_prompt">please enter the phone number associated with your account, We'll send a OTP to help you regain access</string>
+    <string name="forget_password_prompt_title">Reset your password</string>
+    <string name="reset_password">Reset password</string>
+    <string name="otp_code">OTP code</string>
+    <string name="verify">Verify</string>
+    <string name="resend">Resend</string>
+    <string name="resend_timer">Resend in %1$d:%2$s</string>
+    <string name="continue">Continue</string>
+    <string name="did_not_receive_code">Didn't receive the code?</string>
+    <string name="otp_prompt_title">Enter the verification code</string>
+    <string name="otp_prompt">Please enter the OTP code that was sent to your phone number end with **%1$s to reset your password.</string>
+
 </resources>

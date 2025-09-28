@@ -8,6 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.`continue`
+import mena.identity_presentation.generated.resources.forget_password_prompt
+import mena.identity_presentation.generated.resources.forget_password_prompt_title
+import mena.identity_presentation.generated.resources.reset_password
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
@@ -19,6 +24,7 @@ import net.thechance.mena.identity.presentation.components.LabeledPhoneNumberInp
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.forget_password_otp.OTPScreen
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 class ForgetPasswordScreen : BaseScreen<
         ForgetPasswordScreenViewModel,
@@ -49,7 +55,7 @@ class ForgetPasswordScreen : BaseScreen<
             },
             topBar = {
                 AuthAppBar(
-                    title = "Reset password",
+                    title = stringResource(Res.string.reset_password),
                     onBackClicked = listener::onBackClicked
                 )
             },
@@ -62,8 +68,8 @@ class ForgetPasswordScreen : BaseScreen<
         ) {
             AuthScreenContainer() {
                 PageDescription(
-                    title = "Reset your password",
-                    subtitle = "please enter the phone number associated with your account, We'll send a OTP to help you regain access",
+                    title = stringResource(Res.string.forget_password_prompt_title),
+                    subtitle = stringResource(Res.string.forget_password_prompt),
                 )
 
                 LabeledPhoneNumberInput(
@@ -77,7 +83,7 @@ class ForgetPasswordScreen : BaseScreen<
                 Spacer(modifier = Modifier.weight(1f))
 
                 PrimaryButton(
-                    text = "Continue",
+                    text = stringResource(Res.string.`continue`),
                     onClick = listener::onContinueClicked,
                     isEnabled = state.isContinueEnabled,
                     isLoading = state.isLoading,

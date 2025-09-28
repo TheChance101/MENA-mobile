@@ -8,6 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.did_not_receive_code
+import mena.identity_presentation.generated.resources.otp_code
+import mena.identity_presentation.generated.resources.otp_prompt
+import mena.identity_presentation.generated.resources.otp_prompt_title
+import mena.identity_presentation.generated.resources.resend
+import mena.identity_presentation.generated.resources.resend_timer
+import mena.identity_presentation.generated.resources.reset_password
+import mena.identity_presentation.generated.resources.verify
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -19,6 +28,7 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 class OTPScreen(
@@ -43,7 +53,7 @@ class OTPScreen(
         Scaffold(
             topBar = {
                 AuthAppBar(
-                    title = "Reset password",
+                    title = stringResource(Res.string.reset_password),
                     onBackClicked = listener::onBackClicked
                 )
             },
@@ -56,15 +66,12 @@ class OTPScreen(
         ) {
             AuthScreenContainer {
                 PageDescription(
-                    title = "Enter the verification code",
-                    subtitle = "please enter the OTP code that send to your phone number end with **${
-                        phoneNumber.takeLast(
-                            2
-                        )
-                    } to reset your password",
+                    title = stringResource(Res.string.otp_prompt_title),
+                    subtitle = stringResource(Res.string.otp_prompt, phoneNumber.takeLast(2))
                 )
+
                 Text(
-                    text = "OTP code",
+                    text = stringResource(Res.string.otp_code),
                     style = Theme.typography.title.small,
                     color = Theme.colorScheme.shadePrimary,
                     modifier = Modifier
@@ -80,7 +87,7 @@ class OTPScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 PrimaryButton(
-                    text = "Verify",
+                    text = stringResource(Res.string.verify),
                     onClick = listener::onVerifyClicked,
                     isEnabled = state.isVerifyEnabled,
                     isLoading = state.isLoading,
@@ -90,9 +97,16 @@ class OTPScreen(
                         .padding(bottom = 12.dp, top = 24.dp)
                 )
 
+                val minutes = state.timer.toInt() / 60
+                val seconds = (state.timer.toInt() % 60).toString().padStart(2, '0')
+
                 AuthPrompt(
-                    message = "Didn't receive the code?",
-                    actionLabel = if (state.isResendEnabled) "Resend" else "Resend in ${state.timer.toInt() / 60}:${state.timer.toInt() % 60}",
+                    message = stringResource(Res.string.did_not_receive_code),
+                    actionLabel = if (state.isResendEnabled) stringResource(Res.string.resend) else stringResource(
+                        Res.string.resend_timer,
+                        minutes,
+                        seconds
+                    ),
                     onActionClick = listener::onResendClicked,
                     isEnabled = state.isResendEnabled
                 )
