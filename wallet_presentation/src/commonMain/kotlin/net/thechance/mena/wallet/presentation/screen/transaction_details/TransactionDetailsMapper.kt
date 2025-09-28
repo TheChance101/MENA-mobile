@@ -4,6 +4,7 @@ package net.thechance.mena.wallet.presentation.screen.transaction_details
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.unit.dp
 import io.github.suwasto.capturablecompose.CompressionFormat
 import io.github.suwasto.capturablecompose.toByteArray
 import mena.wallet_presentation.generated.resources.Res
@@ -56,6 +57,11 @@ fun getTransactionTypeText(type : Transaction.Type) = when (type) {
     Transaction.Type.ONLINE_PURCHASE -> Res.string.pay
     Transaction.Type.SENT -> Res.string.send
     Transaction.Type.RECEIVED -> Res.string.receive
+}
+
+fun getIconSize(type : Transaction.Type) = when (type) {
+    Transaction.Type.ONLINE_PURCHASE -> 16.dp
+    Transaction.Type.SENT, Transaction.Type.RECEIVED -> 10.dp
 }
 
 fun getTransactionTypeIcon(type : Transaction.Type) = when (type) {

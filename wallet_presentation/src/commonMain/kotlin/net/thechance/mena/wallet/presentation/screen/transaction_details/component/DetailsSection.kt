@@ -33,8 +33,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getIconSize
 import net.thechance.mena.wallet.presentation.screen.transaction_details.getIconTint
 import net.thechance.mena.wallet.presentation.screen.transaction_details.getOtherPartyTitle
 import net.thechance.mena.wallet.presentation.screen.transaction_details.getStatusContent
@@ -82,10 +82,7 @@ internal fun DetailsSection(
                 resource = getTransactionTypeIconDescription(transactionDetailsUiState.transactionType)
             ),
             iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = when (transactionDetailsUiState.transactionType) {
-                Transaction.Type.ONLINE_PURCHASE -> Theme.spacing._16
-                Transaction.Type.SENT, Transaction.Type.RECEIVED -> 10.dp
-            },
+            iconSize = getIconSize(transactionDetailsUiState.transactionType),
             gap = Theme.spacing._4,
         )
 
