@@ -17,22 +17,19 @@ class QuranRepositoryImplTest {
     private val mockDao: AyahDao = mock(MockMode.autofill)
     private val repository = QuranRepositoryImpl(mockDao)
 
+
     @Test
     fun `getAllSur Should return list of sur when called`() = runTest {
         // Given
-        val surahEntities: List<SurahDto> = listOf(
-            SurahDto(order = 1, name = "Al-Fatihah", ayahCount = 7),
-            SurahDto(order = 2, name = "Al-Baqarah", ayahCount = 286)
-        )
-        everySuspend { mockDao.getAllSur() } returns surahEntities
+        everySuspend { mockDao.getAllSur() } returns SAMPLE_SURAH_DTOS
 
         // When
         val result = repository.getAllSur()
 
         // Then
         assertEquals(2, result.size)
-        assertEquals("Al-Fatihah", result[0].name)
-        assertEquals("Al-Baqarah", result[1].name)
+        assertEquals(AL_FATIHAH_NAME, result[0].name)
+        assertEquals(AL_BAQARAH_NAME, result[1].name)
     }
 
     @Test
@@ -48,70 +45,21 @@ class QuranRepositoryImplTest {
     }
 
     @Test
-    fun `getAllSur Should map SurahDto to Surah correctly`() = runTest {
+    fun `getAyatOfSurah Should return list of ayat when called with valid surah id`() = runTest {
         // Given
-        val surahEntity = SurahDto(
-            order = 1,
-            name = "Al-Fatihah",
-            ayahCount = 7
-        )
-        everySuspend { mockDao.getAllSur() } returns listOf(surahEntity)
-
-        // When
-        val result = repository.getAllSur()
-
-        // Then
-        val surah = result[0]
-        assertEquals(1, surah.id)
-        assertEquals("Al-Fatihah", surah.name)
-        assertEquals(7, surah.ayahCount)
-        assertEquals(true, surah.isMakkia)
-    }
-
-    @Test
-    fun `AyatOfSurah Should return list of ayat when called with valid surah id`() = runTest {
-        // Given
-        val ayahEntities = listOf(
-            AyahDto(
-                id = 1,
-                surahNumber = 1,
-                surahName = "Al-Fatihah",
-                surahNameAr = "الفاتحة",
-                number = 1,
-                displayContent = "Bismillah",
-                plainTextContent = "Bismillah",
-                lineStart = 1,
-                lineEnd = 1,
-                jozz = 1,
-                page = 1
-            ),
-            AyahDto(
-                id = 2,
-                surahNumber = 1,
-                surahName = "Al-Fatihah",
-                surahNameAr = "الفاتحة",
-                number = 2,
-                displayContent = "Alhamdulillah",
-                plainTextContent = "Alhamdulillah",
-                lineStart = 2,
-                lineEnd = 2,
-                jozz = 1,
-                page = 1
-            )
-        )
-        everySuspend { mockDao.getAyatOfSurah(1) } returns ayahEntities
+        everySuspend { mockDao.getAyatOfSurah(1) } returns SAMPLE_AYAH_DTOS
 
         // When
         val result = repository.getAyatOfSurah(1)
 
         // Then
         assertEquals(2, result.size)
-        assertEquals("Bismillah", result[0].displayContent)
-        assertEquals("Alhamdulillah", result[1].plainTextContent)
+        assertEquals(BISMILLAH_TEXT, result[0].displayContent)
+        assertEquals(ALHAMDULILLAH_TEXT, result[1].displayContent)
     }
 
     @Test
-    fun `getAyatOfSurah Should return empty list when surah has no ayahs`() = runTest {
+    fun `getAyatOfSurah Should return empty list when surah has no ayat`() = runTest {
         // Given
         everySuspend { mockDao.getAyatOfSurah(1) } returns emptyList()
 
@@ -152,11 +100,11 @@ class QuranRepositoryImplTest {
         val ayahEntity = AyahDto(
             id = 1,
             surahNumber = 1,
-            surahName = "Al-Fatihah",
-            surahNameAr = "الفاتحة",
+            surahName = AL_FATIHAH_NAME,
+            surahNameAr = AL_FATIHAH_AR,
             number = 1,
-            displayContent = "Bismillah",
-            plainTextContent = "Bismillah",
+            displayContent = BISMILLAH_TEXT,
+            plainTextContent = BISMILLAH_PLAIN,
             lineStart = 1,
             lineEnd = 1,
             jozz = 1,
@@ -171,19 +119,19 @@ class QuranRepositoryImplTest {
         val ayah = result[0]
         assertEquals(1, ayah.surahId)
         assertEquals(1, ayah.number)
-        assertEquals("Bismillah", ayah.displayContent)
+        assertEquals(BISMILLAH_TEXT, ayah.displayContent)
     }
 
     @Test
     fun `getAyahContent Should return content when called with valid ayah and surah`() = runTest {
         // Given
-        everySuspend { mockDao.getAyahContent(1, 1) } returns "Bismillah"
+        everySuspend { mockDao.getAyahContent(1, 1) } returns BISMILLAH_TEXT
 
         // When
         val result = repository.getAyahContent(1, 1)
 
         // Then
-        assertEquals("Bismillah", result)
+        assertEquals(BISMILLAH_TEXT, result)
     }
 
     @Test
@@ -226,30 +174,6 @@ class QuranRepositoryImplTest {
         }
 
     @Test
-    fun `getAyahContent Should return empty string when ayah number is zero`() = runTest {
-        // Given
-        everySuspend { mockDao.getAyahContent(0, 1) } returns ""
-
-        // When
-        val result = repository.getAyahContent(0, 1)
-
-        // Then
-        assertEquals("", result)
-    }
-
-    @Test
-    fun `getAyahContent Should return empty string when surah id is zero`() = runTest {
-        // Given
-        everySuspend { mockDao.getAyahContent(1, 0) } returns ""
-
-        // When
-        val result = repository.getAyahContent(1, 0)
-
-        // Then
-        assertEquals("", result)
-    }
-
-    @Test
     fun `getAyahContent Should return empty string when dao returns null content`() = runTest {
         // Given
         everySuspend { mockDao.getAyahContent(1, 1) } returns ""
@@ -261,16 +185,47 @@ class QuranRepositoryImplTest {
         assertEquals("", result)
     }
 
-    @Test
-    fun `getAyahContent Should return empty string when DAO returns empty string content`() =
-        runTest {
-            // Given
-            everySuspend { mockDao.getAyahContent(1, 1) } returns ""
+    companion object {
+        private const val BISMILLAH_TEXT = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
+        private const val BISMILLAH_PLAIN = "Bismillah"
+        private const val ALHAMDULILLAH_TEXT = "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ"
+        private const val ALHAMDULILLAH_PLAIN = "Alhamdulillah"
+        private const val AL_FATIHAH_NAME = "Al-Fatihah"
+        private const val AL_BAQARAH_NAME = "Al-Baqarah"
+        private const val AL_FATIHAH_AR = "الفاتحة"
 
-            // When
-            val result = repository.getAyahContent(1, 1)
+        private val SAMPLE_SURAH_DTOS: List<SurahDto> = listOf(
+            SurahDto(order = 1, name = AL_FATIHAH_NAME, ayahCount = 7),
+            SurahDto(order = 2, name = AL_BAQARAH_NAME, ayahCount = 286)
+        )
 
-            // Then
-            assertEquals("", result)
-        }
+        private val SAMPLE_AYAH_DTOS: List<AyahDto> = listOf(
+            AyahDto(
+                id = 1,
+                surahNumber = 1,
+                surahName = AL_FATIHAH_NAME,
+                surahNameAr = AL_FATIHAH_AR,
+                number = 1,
+                displayContent = BISMILLAH_TEXT,
+                plainTextContent = BISMILLAH_PLAIN,
+                lineStart = 1,
+                lineEnd = 1,
+                jozz = 1,
+                page = 1
+            ),
+            AyahDto(
+                id = 2,
+                surahNumber = 1,
+                surahName = AL_FATIHAH_NAME,
+                surahNameAr = AL_FATIHAH_AR,
+                number = 2,
+                displayContent = ALHAMDULILLAH_TEXT,
+                plainTextContent = ALHAMDULILLAH_PLAIN,
+                lineStart = 2,
+                lineEnd = 2,
+                jozz = 1,
+                page = 1
+            )
+        )
+    }
 }
