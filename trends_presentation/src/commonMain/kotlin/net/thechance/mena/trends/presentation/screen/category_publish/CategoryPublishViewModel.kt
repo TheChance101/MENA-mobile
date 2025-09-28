@@ -45,7 +45,7 @@ internal class CategoryPublishViewModel(
 
     override fun onPublishClick() {
         tryToExecute(
-            block = { updateReelWithSelectedCategories() },
+            block = { updateReel() },
             onSuccess = { sendEffect(CategoryPublishEffect.NavigateToTrends) },
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isPublishButtonLoadingVisible = true) } },
@@ -53,8 +53,10 @@ internal class CategoryPublishViewModel(
         )
     }
 
-    private suspend fun updateReelWithSelectedCategories() {
-        val selectedIds = getSelectedCategoriesIds()
+    private suspend fun updateReel() {
+        val selectedIds =  state.value.categories
+            .filter { it.isSelected }
+            .mapNotNull { it.value.id }
 
         if (selectedIds.isNotEmpty()) {
             reelsRepository.updateReelById(
@@ -65,8 +67,4 @@ internal class CategoryPublishViewModel(
         }
     }
 
-    private fun getSelectedCategoriesIds(): List<String> =
-        state.value.categories
-            .filter { it.isSelected }
-            .mapNotNull { it.value.id }
 }

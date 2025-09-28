@@ -78,7 +78,7 @@ private fun CategoryPublishContent(
             topBar = {
                 CategoryPublishAppBar(
                     onBackClick = listener::onBackClick,
-                    screenCount = stringResource(Res.string.publish_categories_screen_count)
+                    currentStepNumber = stringResource(Res.string.publish_categories_screen_count)
                 )
             }
         ) {
@@ -152,7 +152,7 @@ private fun CategoryPublishContent(
 @Composable
 private fun CategoryPublishAppBar(
     onBackClick: () -> Unit,
-    screenCount: String
+    currentStepNumber: String
 ) {
     AppBar(
         onLeadingClick = onBackClick,
@@ -165,15 +165,15 @@ private fun CategoryPublishAppBar(
         title = stringResource(Res.string.new_trend),
         trailingContent = {
             Text(
-                text = screenCount,
+                text = currentStepNumber,
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
-                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
                     .background(
                         shape = RoundedCornerShape(Theme.radius.full),
                         color = Theme.colorScheme.background.surface
                     )
+                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
             )
         }
     )
