@@ -2,6 +2,9 @@
 
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
+import androidx.compose.ui.graphics.ImageBitmap
+import io.github.suwasto.capturablecompose.CompressionFormat
+import io.github.suwasto.capturablecompose.toByteArray
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.utils.formateTransactionDate
 import kotlin.uuid.ExperimentalUuidApi
@@ -23,3 +26,6 @@ fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState
     transactionType = type,
     transactionStatus = status
 )
+
+fun imageBitmapToByteArray(imageBitmap: ImageBitmap) =
+    imageBitmap.toByteArray(CompressionFormat.PNG, 100)

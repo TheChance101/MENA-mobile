@@ -1,8 +1,5 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
-import androidx.compose.ui.graphics.ImageBitmap
-import io.github.suwasto.capturablecompose.CompressionFormat
-import io.github.suwasto.capturablecompose.toByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -72,9 +69,7 @@ class TransactionDetailsViewModel(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {
-        val byteArray = imageBitmap.toByteArray(CompressionFormat.PNG, 100)
-        updateState { it.copy(isShareReceiptBtnLoading = false) }
+    override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {
         tryToExecute(
             callee = {
                 imageSharer.shareImage(

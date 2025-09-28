@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
@@ -115,7 +114,7 @@ private fun TransactionDetailsScreenContent(
                                 captureController = state.captureController,
                                 onScreenShotCapture = { imageBitmap ->
                                     interactionListener.onScreenShotCaptured(
-                                        imageBitmap = imageBitmap,
+                                        byteArray = imageBitmapToByteArray(imageBitmap),
                                         fileName = transactionState.data.id
                                     )
                                 },
@@ -148,7 +147,7 @@ private fun TransactionDetailsScreenPreview() {
             interactionListener = object : TransactionDetailsInteractionListener {
                 override fun onBackButtonClicked() {}
                 override fun onShareReceiptButtonClicked() {}
-                override fun onScreenShotCaptured(imageBitmap: ImageBitmap, fileName: String) {}
+                override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {}
                 override fun onRefresh() {}
             }
         )
