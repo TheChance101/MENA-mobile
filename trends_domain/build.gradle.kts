@@ -54,7 +54,7 @@ kover.reports {
 
     filters {
         excludes {
-            packages("mena.trends_presentation.generated.resources*")
+            packages("mena.trends_domain.generated.resources*")
             classes(
                 "**.di.**",
                 "**.entity.**",
