@@ -2,10 +2,16 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import org.jetbrains.compose.resources.StringResource
 
 interface ApprovedDukanInteractionListener {
     fun onBackButtonClicked()
     fun onDismissSnackBar()
+    fun showSnackBar(message: StringResource, type: SnackBarType)
+    fun onDismissDeleteShelfConfirmationDialog()
+    fun onShowDeleteShelfConfirmationDialog()
+    fun deleteShelf(shelfId: String)
     fun onAddProductClicked()
     fun onProductClick(product: Product)
     fun onEditShelfClicked()
