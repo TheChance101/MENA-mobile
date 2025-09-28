@@ -10,12 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.extension
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.size
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
@@ -31,7 +33,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
+import net.thechance.mena.trends.presentation.shared.component.VideoLoadingCardItem
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
+import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -52,6 +56,7 @@ internal fun UploadReelScreen(
                     navController.navigate(Route.VideoDescription(it))
                 }
             }
+
             UploadReelScreenEffect.NavigateBack -> navController.popBackStack()
         }
     }
@@ -71,16 +76,11 @@ private fun UploadReelScreenContent(
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Video,
         onResult = { file ->
-            file?.let {
-                coroutineScope.launch {
-                    val fileState = FileUiState(
-                        name = file.name,
-                        extension = file.extension,
-                        sizeInBytes = file.size()
-                    )
-                    listener.onRetrieveVideo(fileState) { file.readBytes() }
-                }
-            }
+            launchFilePicker(
+                file = file,
+                coroutineScope = coroutineScope,
+                onRetrieveVideo = listener::onRetrieveVideo
+            )
         }
     )
 
@@ -105,8 +105,41 @@ private fun UploadReelScreenContent(
                 thumbnail = state.thumbnail,
                 isEnabled = state.isUploadVideoCardEnabled,
                 onCardClick = launcher::launch,
-                onEditClick = listener::onEditVideoClick
+                onEditClick = listener::onEditVideoClick,
+                modifier = Modifier.padding(bottom = Theme.spacing._24)
             )
+
+            VideoLoadingCardItem(
+                title = state.selectedFile.name + "." + state.selectedFile.extension,
+                videoSize = state.selectedFile.sizeInMegaBytes,
+                videoState = state.uploadingTrendState,
+                progress = state.uploadedMegaBytes.toFloat() / state.selectedFile.sizeInMegaBytes.toFloat(),
+                modifier = Modifier.padding(bottom = Theme.spacing._24),
+                onAction = { action ->
+                    when (action) {
+                        VideoAction.Cancel -> listener.onCancelUploadClick()
+                        VideoAction.Retry -> listener.onRetryUploadClick()
+                        VideoAction.Delete -> listener.onDeleteVideoClick()
+                    }
+                }
+            )
+        }
+    }
+}
+
+private fun launchFilePicker(
+    file: PlatformFile?,
+    coroutineScope: CoroutineScope,
+    onRetrieveVideo: (file: FileUiState, readBytes: suspend () -> ByteArray) -> Unit
+) {
+    file?.let {
+        coroutineScope.launch {
+            val fileState = FileUiState(
+                name = file.name,
+                extension = file.extension,
+                sizeInBytes = file.size()
+            )
+            onRetrieveVideo(fileState) { file.readBytes() }
         }
     }
 }

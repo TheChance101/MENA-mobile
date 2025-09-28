@@ -29,8 +29,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
-import net.thechance.mena.trends.presentation.shared.model.VideoUploadingState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -38,7 +38,7 @@ import org.jetbrains.compose.resources.stringResource
 fun VideoLoadingCardItem(
     title: String,
     videoSize: String,
-    videoState: VideoUploadingState,
+    videoState: UploadReelScreenState.UploadingTrendState,
     progress: Float,
     modifier: Modifier = Modifier,
     onAction: (VideoAction) -> Unit
@@ -60,7 +60,7 @@ fun VideoLoadingCardItem(
         )
 
         when (videoState) {
-            VideoUploadingState.Loading -> {
+            UploadReelScreenState.UploadingTrendState.UPLOADING -> {
                 Icon(
                     painter = painterResource(Res.drawable.ic_cancel),
                     contentDescription = stringResource(Res.string.loading),
@@ -72,7 +72,7 @@ fun VideoLoadingCardItem(
                 )
             }
 
-            VideoUploadingState.Error -> {
+            UploadReelScreenState.UploadingTrendState.FAILED -> {
                 Row(
                     modifier = Modifier.padding(top = Theme.spacing._24),
                     horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
@@ -97,7 +97,7 @@ fun VideoLoadingCardItem(
                 }
             }
 
-            VideoUploadingState.Success -> {
+            UploadReelScreenState.UploadingTrendState.SUCCESS -> {
                 Icon(
                     painter = painterResource(Res.drawable.ic_delete),
                     contentDescription = stringResource(Res.string.success),
@@ -108,6 +108,8 @@ fun VideoLoadingCardItem(
                         .clickable { onAction(VideoAction.Delete) }
                 )
             }
+
+            UploadReelScreenState.UploadingTrendState.IDLE -> {}
         }
     }
 }
@@ -116,7 +118,7 @@ fun VideoLoadingCardItem(
 private fun VideoInfoSection(
     title: String,
     videoSize: String,
-    videoState: VideoUploadingState,
+    videoState: UploadReelScreenState.UploadingTrendState,
     progress: Float,
     modifier: Modifier = Modifier,
 ) {
@@ -150,7 +152,7 @@ private fun VideoInfoSection(
             )
 
             when (videoState) {
-                VideoUploadingState.Loading -> {
+                UploadReelScreenState.UploadingTrendState.UPLOADING -> {
                     Text(
                         text = videoSize,
                         color = Theme.colorScheme.shadeSecondary,
@@ -171,7 +173,7 @@ private fun VideoInfoSection(
                     )
                 }
 
-                VideoUploadingState.Success -> {
+                UploadReelScreenState.UploadingTrendState.SUCCESS -> {
                     Text(
                         text = videoSize,
                         color = Theme.colorScheme.shadeSecondary,
@@ -180,7 +182,7 @@ private fun VideoInfoSection(
                     )
                 }
 
-                VideoUploadingState.Error -> {
+                UploadReelScreenState.UploadingTrendState.FAILED -> {
                     Text(
                         text = stringResource(Res.string.upload_failed),
                         color = Theme.colorScheme.border.error,
@@ -191,6 +193,8 @@ private fun VideoInfoSection(
                         )
                     )
                 }
+
+                UploadReelScreenState.UploadingTrendState.IDLE -> {}
             }
         }
     }
