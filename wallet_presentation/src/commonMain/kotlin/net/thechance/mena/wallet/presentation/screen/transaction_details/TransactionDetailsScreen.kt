@@ -39,15 +39,18 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun TransactionDetailsScreen(
-    id: Uuid,
+    id: String,
     onNavigateBackClicked: () -> Unit,
-    viewModel: TransactionDetailsViewModel = koinViewModel()
+    viewModel: TransactionDetailsViewModel = koinViewModel(
+        key = id,
+        parameters = { parametersOf(id) }
+    )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

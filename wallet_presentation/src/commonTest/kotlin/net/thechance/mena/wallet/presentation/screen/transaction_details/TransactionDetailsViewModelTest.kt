@@ -6,7 +6,6 @@ import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
-import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -36,9 +35,6 @@ class TransactionDetailsViewModelTest {
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val imageSharer = mock<ImageSharer>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private val transactionDetailsArgs: TransactionDetailsArgs = mock(MockMode.autofill) {
-        every { id } returns transaction1Id.toString()
-    }
 
     @BeforeTest
     fun setup() {
@@ -57,7 +53,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -76,7 +72,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -97,7 +93,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -117,7 +113,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -136,7 +132,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -159,7 +155,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -182,7 +178,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -202,7 +198,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
@@ -223,7 +219,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
             transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
+            transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 

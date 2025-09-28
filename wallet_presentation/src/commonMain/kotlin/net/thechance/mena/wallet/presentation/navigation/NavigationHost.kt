@@ -14,7 +14,6 @@ import net.thechance.mena.wallet.presentation.screen.transactions_history.Transa
 import net.thechance.mena.wallet.presentation.screen.view_transactions_statement.ViewTransactionStatementScreen
 import net.thechance.mena.wallet.presentation.screen.wallet.WalletMainScreen
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 const val TransitionDuration = 300
 
@@ -69,7 +68,7 @@ fun NavigationHost(
         composable<TransactionDetailsScreenRoute> { backStackEntry ->
             TransactionDetailsScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
-                id = backStackEntry.toRoute<TransactionDetailsScreenRoute>().id.let(Uuid::parse)
+                id = backStackEntry.toRoute<TransactionDetailsScreenRoute>().id
             )
         }
         composable<ExportTransactionsScreenRoute> {

@@ -24,8 +24,8 @@ import kotlin.uuid.Uuid
 class TransactionDetailsViewModel(
     @Provided val imageSharer: ImageSharer,
     @Provided val transactionRepository: TransactionRepository,
-    @Provided val transactionDetailsArgs: TransactionDetailsArgs,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    @Provided private val transactionId: String,
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
     TransactionDetailsScreenState()
 ), TransactionDetailsInteractionListener {
@@ -41,7 +41,7 @@ class TransactionDetailsViewModel(
     override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
         tryToExecute(
             callee = { capture() },
-            onSuccess = { updateState { it.copy(isShareReceiptBtnLoading = false) } },
+            onSuccess = ::onShareReceiptSuccess,
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
             dispatcher = ioDispatcher
@@ -58,7 +58,7 @@ class TransactionDetailsViewModel(
                     mimeType = IMAGE_TYPE
                 )
             },
-            onSuccess = { onScreenShotCapturedSuccess() },
+            onSuccess = ::onScreenShotCapturedSuccess,
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
             dispatcher = ioDispatcher
@@ -73,7 +73,7 @@ class TransactionDetailsViewModel(
         tryToExecute(
             callee = {
                 transactionRepository.getTransactionDetails(
-                    transactionId = Uuid.parse(transactionDetailsArgs.id)
+                    transactionId = Uuid.parse(transactionId)
                 )
             },
             onSuccess = ::onGetTransactionDetailsSuccess,
@@ -99,8 +99,12 @@ class TransactionDetailsViewModel(
         updateState { it.copy(transactionDetailsUiState = UiState.Loading) }
     }
 
-    private fun onScreenShotCapturedSuccess() {
+    private fun onScreenShotCapturedSuccess(x: Unit) {
         { updateState { it.copy(isShareReceiptBtnLoading = false) } }
+    }
+
+    private fun onShareReceiptSuccess(x: Unit) {
+        updateState { it.copy(isShareReceiptBtnLoading = false) }
     }
 
     private suspend fun onShareReceiptError(throwable: Throwable) {
