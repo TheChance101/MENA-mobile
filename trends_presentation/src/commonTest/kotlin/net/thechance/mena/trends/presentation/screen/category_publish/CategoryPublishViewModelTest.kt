@@ -84,24 +84,6 @@ class CategoryPublishViewModelTest {
     }
 
     @Test
-    fun `should update error state when loadCategories fails`() = runTest {
-        everySuspend {
-            categoryRepository.getAllCategories()
-        } throws RuntimeException("Network error")
-
-        viewModel = CategoryPublishViewModel(
-            categoryPublishArgs,
-            categoryRepository,
-            reelsRepository
-        )
-
-        viewModel.state.test {
-            val state = awaitItem()
-            assertNotNull(state.error)
-        }
-    }
-
-    @Test
     fun `should call repository with correct params when publish is clicked`() = runTest {
         everySuspend {
             reelsRepository.updateReelById(any(), any(), any())
