@@ -172,7 +172,7 @@ private fun CategoryPublishAppBar(
                 modifier = Modifier
                     .background(
                         shape = RoundedCornerShape(Theme.radius.full),
-                        color = Theme.colorScheme.background.surface
+                        color = Theme.colorScheme.background.surfaceLow
                     )
                     .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
             )
