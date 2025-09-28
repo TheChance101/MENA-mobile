@@ -9,6 +9,7 @@ import net.thechance.mena.identity.data.dto.forgetPassword.VerifyOTPRequestDto
 import net.thechance.mena.identity.data.dto.forgetPassword.VerifyOTPResponse
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.OTPExpiredException
@@ -27,15 +28,15 @@ class ForgetPasswordRepositoryImpl(
         }
     }
 
-    override suspend fun verifyOTPCode(otpCode: String) {
+    override suspend fun verifyOTPCode(otpCode: String , phoneNumber: String) {
         forgetPasswordSafeWrapper<VerifyOTPResponse> {
-            client.postJson(VerifyOTPRequestDto(otpCode, sessionId), VERIFY_OTP)
+            client.postJson(VerifyOTPRequestDto(otpCode,phoneNumber ,sessionId), VERIFY_OTP)
         }
     }
 
     companion object {
-        const val REQUEST_OTP = "identity/otp/request"
-        const val VERIFY_OTP = "identity/otp/verify"
+        const val REQUEST_OTP = "identity/request-reset-password-otp"
+        const val VERIFY_OTP = "identity/verify-otp"
     }
 
     private suspend fun <T> forgetPasswordSafeWrapper(block: suspend () -> T): T {

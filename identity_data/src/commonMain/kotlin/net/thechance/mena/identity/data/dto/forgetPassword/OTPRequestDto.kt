@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class OTPRequestDto(
     val phoneNumber: String,
-    val countryCode: String
+    val defaultRegion: String
 )

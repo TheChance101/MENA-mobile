@@ -30,7 +30,12 @@ class OTPScreenViewModel(
 
     override fun onVerifyClicked() {
         tryToExecute(
-            function = { forgetPasswordRepository.verifyOTPCode(otpCode = state.value.otpValue) },
+            function = {
+                forgetPasswordRepository.verifyOTPCode(
+                    otpCode = state.value.otpValue,
+                    phoneNumber = phoneNumber
+                )
+            },
             onSuccess = ::verifySuccess,
             onError = ::onError
         )
