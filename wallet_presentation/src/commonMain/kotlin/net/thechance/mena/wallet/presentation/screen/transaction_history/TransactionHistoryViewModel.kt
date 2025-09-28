@@ -1,12 +1,17 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.UiState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class TransactionHistoryViewModel(
     @Provided private val transactionRepository: TransactionRepository
@@ -23,7 +28,8 @@ class TransactionHistoryViewModel(
             callee = { transactionRepository.getTransactionHistory() },
             onStart = ::onGetTransactionDetailsStart,
             onSuccess = ::onGetTransactionHistorySuccess,
-            onError = ::onGetTransactionHistoryError
+            onError = ::onGetTransactionHistoryError,
+            dispatcher = Dispatchers.IO
         )
     }
 
@@ -41,19 +47,18 @@ class TransactionHistoryViewModel(
     }
 
     override fun onBackClicked() {
-        TODO("Not yet implemented")
+        sendEffect(TransactionHistoryEffect.NavigateBack)
     }
 
-    override fun onTransactionCardClicked() {
-        TODO("Not yet implemented")
+    override fun onTransactionCardClicked(id: Uuid) {
+        sendEffect(TransactionHistoryEffect.NavigateToTransactionDetails(id))
     }
 
     override fun onShareClicked() {
-        TODO("Not yet implemented")
+        sendEffect(TransactionHistoryEffect.NavigateToExportTransaction)
     }
 
     override fun onFilterClicked() {
-        TODO("Not yet implemented")
+        sendEffect(TransactionHistoryEffect.NavigateToFilterBottomSheet)
     }
-
 }

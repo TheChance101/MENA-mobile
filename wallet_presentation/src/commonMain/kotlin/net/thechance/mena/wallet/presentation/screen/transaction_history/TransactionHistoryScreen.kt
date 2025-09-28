@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.compose.foundation.background
@@ -49,16 +51,29 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun TransactionHistoryScreen(
-    viewModel: TransactionHistoryViewModel = koinViewModel()
+    viewModel: TransactionHistoryViewModel = koinViewModel(),
+    onNavigateBackClicked: () -> Unit,
+    navigateToTransactionDetails: (id: Uuid) -> Unit,
+    navigateToExportTransaction: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
-        onEffect = ::onTransactionHistoryEffect
+        onEffect = { effect ->
+            onTransactionHistoryEffect(
+                effect = effect,
+                onNavigateBackClicked = onNavigateBackClicked,
+                navigateToTransactionDetails = navigateToTransactionDetails,
+                navigateToExportTransaction = navigateToExportTransaction
+            )
+        }
     )
 
     TransactionHistoryContent(
@@ -135,10 +150,8 @@ fun TransactionHistoryContent(
                             transactionTimeAndDate = transaction.timeAndDate,
                             amount = transaction.amount,
                             transactionStatus = transaction.status,
-                            onTransactionCardClicked = interactionListener::onTransactionCardClicked,
-                            sender = transaction.sender,
-                            receiver = transaction.receiver
-                        )
+                            onTransactionCardClicked = { interactionListener.onTransactionCardClicked(transaction.id) },
+                            contactName = transaction.contactName)
                         Box(
                             modifier = Modifier
                                 .padding(top = 4.dp).fillMaxWidth(1f).height(1.dp)
@@ -165,9 +178,19 @@ private fun getTransactionTitle(transactionType: Transaction.Type): StringResour
         Transaction.Type.RECEIVED -> Res.string.transaction_receive
     }
 
-private fun onTransactionHistoryEffect(effect: TransactionHistoryEffect) {
+@OptIn(ExperimentalUuidApi::class)
+private fun onTransactionHistoryEffect(
+    effect: TransactionHistoryEffect,
+    onNavigateBackClicked: () -> Unit,
+    navigateToTransactionDetails: (id: Uuid) -> Unit,
+    navigateToExportTransaction: () -> Unit
+) {
     when (effect) {
-        is TransactionHistoryEffect.NavigateBack -> { /* TODO("Handle navigation back") */
+        TransactionHistoryEffect.NavigateBack -> onNavigateBackClicked()
+        TransactionHistoryEffect.NavigateToExportTransaction -> navigateToExportTransaction()
+        TransactionHistoryEffect.NavigateToFilterBottomSheet -> {/*TODO: navigate to filter bottom sheet*/}
+        is TransactionHistoryEffect.NavigateToTransactionDetails -> {
+            navigateToTransactionDetails(effect.id)
         }
     }
 }

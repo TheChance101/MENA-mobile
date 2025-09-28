@@ -1,8 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@OptIn(ExperimentalUuidApi::class)
 interface TransactionHistoryInteractionListener {
     fun onBackClicked()
-    fun onTransactionCardClicked()
+    fun onTransactionCardClicked(id: Uuid)
     fun onShareClicked()
     fun onFilterClicked()
 
