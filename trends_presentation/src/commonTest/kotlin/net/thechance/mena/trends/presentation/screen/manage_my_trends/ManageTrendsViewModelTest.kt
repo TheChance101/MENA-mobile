@@ -20,7 +20,6 @@ import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 
@@ -30,13 +29,11 @@ class ManageTrendsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ManageTrendsViewModel
 
-
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         viewModel = ManageTrendsViewModel(repository, testDispatcher)
     }
-
 
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =
@@ -51,7 +48,6 @@ class ManageTrendsViewModelTest {
             }
         }
 
-
     @Test
     fun `initialize view model should handle error state when getAllReels fails`() =
         runTest(testDispatcher) {
@@ -62,28 +58,25 @@ class ManageTrendsViewModelTest {
             }
         }
 
-
     @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         viewModel.effect.test {
             viewModel.onReelItemClick(REEL_ID)
-            assertEquals(ManageTrendsUiEffect.NavigateToTrend(REEL_ID), awaitItem())
+            assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateToTrend(REEL_ID))
             cancelAndIgnoreRemainingEvents()
-
         }
     }
-
 
     @Test
     fun `onBackClick should navigate back`() = runTest(testDispatcher) {
         viewModel.onBackClick()
 
         viewModel.effect.test {
-            assertEquals(ManageTrendsUiEffect.NavigateBack, awaitItem())
+            assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateBack)
             cancelAndIgnoreRemainingEvents()
-
         }
     }
+
     private companion object {
         const val REEL_ID = "1"
         val reelList = listOf(
@@ -108,8 +101,6 @@ class ManageTrendsViewModelTest {
                 categories = listOf(Category("2", "Viral", ":rocket:"))
             )
         )
-
-
         val expectedReelUiStateList = listOf(
             ReelUiState(
                 id = "1",
@@ -119,7 +110,6 @@ class ManageTrendsViewModelTest {
                 id = "2",
                 thumbnailUrl = "thumb2.jpg",
             )
-
         )
     }
 }
