@@ -24,29 +24,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.date
-import mena.wallet_presentation.generated.resources.failed
-import mena.wallet_presentation.generated.resources.failed_icon
-import mena.wallet_presentation.generated.resources.from
-import mena.wallet_presentation.generated.resources.ic_failed
-import mena.wallet_presentation.generated.resources.ic_pay
-import mena.wallet_presentation.generated.resources.ic_receive
-import mena.wallet_presentation.generated.resources.ic_send
-import mena.wallet_presentation.generated.resources.ic_success
 import mena.wallet_presentation.generated.resources.img_silver
-import mena.wallet_presentation.generated.resources.pay
-import mena.wallet_presentation.generated.resources.pay_button
-import mena.wallet_presentation.generated.resources.purchase
-import mena.wallet_presentation.generated.resources.receive
-import mena.wallet_presentation.generated.resources.receive_button
-import mena.wallet_presentation.generated.resources.send
-import mena.wallet_presentation.generated.resources.send_button
 import mena.wallet_presentation.generated.resources.silver_coin
 import mena.wallet_presentation.generated.resources.status
-import mena.wallet_presentation.generated.resources.success
-import mena.wallet_presentation.generated.resources.success_icon
-import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transaction_id
-import mena.wallet_presentation.generated.resources.transfer
 import mena.wallet_presentation.generated.resources.type
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -54,6 +35,16 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getIconTint
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getOtherPartyTitle
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getStatusContent
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getStatusIcon
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getStatusIconDescription
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getTransactionTypeIcon
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getTransactionTypeIconDescription
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getTransactionTypeText
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getTypeContent
+import net.thechance.mena.wallet.presentation.screen.transaction_details.getUserInfo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -79,23 +70,17 @@ internal fun DetailsSection(
             modifier = Modifier
                 .padding(top = Theme.spacing._8)
                 .align(Alignment.CenterHorizontally),
-            text = when (transactionDetailsUiState.transactionType) {
-                Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.pay)
-                Transaction.Type.SENT -> stringResource(Res.string.send)
-                Transaction.Type.RECEIVED -> stringResource(Res.string.receive)
-            },
+            text = stringResource(
+                resource = getTransactionTypeText(transactionDetailsUiState.transactionType)
+            ),
             textStyle = Theme.typography.label.small,
             textColor = Theme.colorScheme.shadeSecondary,
-            icon = when (transactionDetailsUiState.transactionType) {
-                Transaction.Type.ONLINE_PURCHASE -> painterResource(Res.drawable.ic_pay)
-                Transaction.Type.SENT -> painterResource(Res.drawable.ic_send)
-                Transaction.Type.RECEIVED -> painterResource(Res.drawable.ic_receive)
-            },
-            iconContentDescription = when (transactionDetailsUiState.transactionType) {
-                Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.pay_button)
-                Transaction.Type.SENT -> stringResource(Res.string.send_button)
-                Transaction.Type.RECEIVED -> stringResource(Res.string.receive_button)
-            },
+            icon = painterResource(
+                resource = getTransactionTypeIcon(transactionDetailsUiState.transactionType)
+            ),
+            iconContentDescription = stringResource(
+                resource = getTransactionTypeIconDescription(transactionDetailsUiState.transactionType)
+            ),
             iconTint = Theme.colorScheme.shadeSecondary,
             iconSize = when (transactionDetailsUiState.transactionType) {
                 Transaction.Type.ONLINE_PURCHASE -> Theme.spacing._16
@@ -117,49 +102,40 @@ internal fun DetailsSection(
             gap = Theme.spacing._8,
         )
 
-        if (isUserNameShown){
+        if (isUserNameShown) {
             DetailsInfo(
-                title = when (transactionDetailsUiState.transactionType) {
-                    Transaction.Type.SENT, Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.from)
-                    Transaction.Type.RECEIVED -> stringResource(Res.string.to)
-                },
+                title = stringResource(
+                    resource = getUserInfo(transactionDetailsUiState.transactionType)
+                ),
                 content = transactionDetailsUiState.userName,
             )
         }
 
         DetailsInfo(
             title = stringResource(Res.string.status),
-            content = when (transactionDetailsUiState.transactionStatus) {
-                Transaction.Status.FAIL -> stringResource(Res.string.failed)
-                Transaction.Status.SUCCESS -> stringResource(Res.string.success)
-            },
-            icon = when (transactionDetailsUiState.transactionStatus) {
-                Transaction.Status.FAIL -> painterResource(Res.drawable.ic_failed)
-                Transaction.Status.SUCCESS -> painterResource(Res.drawable.ic_success)
-            },
-            iconContentDescription = when (transactionDetailsUiState.transactionStatus) {
-                Transaction.Status.FAIL -> stringResource(Res.string.failed_icon)
-                Transaction.Status.SUCCESS -> stringResource(Res.string.success_icon)
-            },
-            iconTint = when (transactionDetailsUiState.transactionStatus) {
-                Transaction.Status.FAIL -> Theme.colorScheme.error
-                Transaction.Status.SUCCESS -> Theme.colorScheme.success
-            }
+            content = stringResource(
+                resource = getStatusContent(transactionDetailsUiState.transactionStatus)
+            ),
+            icon = painterResource(
+                resource = getStatusIcon(transactionDetailsUiState.transactionStatus)
+            ),
+            iconContentDescription = stringResource(
+                resource = getStatusIconDescription (transactionDetailsUiState.transactionStatus)
+            ),
+            iconTint = getIconTint(transactionDetailsUiState.transactionStatus)
         )
 
         DetailsInfo(
             title = stringResource(Res.string.type),
-            content = when (transactionDetailsUiState.transactionType) {
-                Transaction.Type.SENT, Transaction.Type.RECEIVED -> stringResource(Res.string.transfer)
-                Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.purchase)
-            },
+            content =  stringResource(
+                resource = getTypeContent(transactionDetailsUiState.transactionType)
+            ),
         )
 
         DetailsInfo(
-            title = when (transactionDetailsUiState.transactionType) {
-                Transaction.Type.SENT, Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.to)
-                Transaction.Type.RECEIVED -> stringResource(Res.string.from)
-            },
+            title = stringResource(
+                resource = getOtherPartyTitle (transactionDetailsUiState.transactionType)
+            ),
             content = transactionDetailsUiState.otherParty,
         )
 
@@ -234,26 +210,41 @@ private fun ColumnScope.DetailsInfo(
             color = Theme.colorScheme.shadeSecondary,
             maxLines = 1
         )
-        Row {
-            icon?.let {
-                Icon(
-                    painter = icon,
-                    contentDescription = iconContentDescription,
-                    modifier = Modifier
-                        .padding(end = Theme.spacing._4)
-                        .size(20.dp),
-                    tint = iconTint
-                )
-            }
-            Text(
-                text = content,
-                style = Theme.typography.label.medium,
-                overflow = TextOverflow.Ellipsis,
-                color = Theme.colorScheme.shadePrimary,
-                maxLines = 1,
-                textAlign = TextAlign.End
+        DetailsInfoContent(
+            content = content,
+            icon = icon,
+            iconContentDescription = iconContentDescription,
+            iconTint = iconTint
+        )
+    }
+}
+
+@Composable
+private fun DetailsInfoContent(
+    content: String,
+    icon: Painter? = null,
+    iconContentDescription: String = "",
+    iconTint: Color = Theme.colorScheme.success
+){
+    Row {
+        icon?.let {
+            Icon(
+                painter = icon,
+                contentDescription = iconContentDescription,
+                modifier = Modifier
+                    .padding(end = Theme.spacing._4)
+                    .size(20.dp),
+                tint = iconTint
             )
         }
+        Text(
+            text = content,
+            style = Theme.typography.label.medium,
+            overflow = TextOverflow.Ellipsis,
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            textAlign = TextAlign.End
+        )
     }
 }
 

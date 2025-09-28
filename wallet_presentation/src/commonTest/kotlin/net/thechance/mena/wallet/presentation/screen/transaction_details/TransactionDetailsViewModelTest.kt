@@ -48,7 +48,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `getTransactionDetails should set transaction with loading when initially called`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
@@ -67,7 +67,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `getTransactionDetails should update transaction ui state with success when repository returns value`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
@@ -88,7 +88,7 @@ class TransactionDetailsViewModelTest {
     @Test
     fun `getTransactionDetails should update transaction ui state with error when repository fails`() = runTest {
         val expectedError = Exception()
-        everySuspend { transactionRepository.getTransactionDetails(any()) } throws expectedError
+        everySuspend { transactionRepository.getTransactionById(any()) } throws expectedError
 
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
@@ -108,7 +108,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `onBackButtonClicked should send NavigateBack effect`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
@@ -125,7 +125,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `onScreenShotCaptured should share image and reset loading state to false when success`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
         everySuspend { imageSharer.shareImage(any(), any(), any()) } returns Unit
 
         val byteArray = byteArrayOf()
@@ -148,7 +148,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `onScreenShotCaptured should reset loading state to false when fail`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
         everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
 
         val byteArray = byteArrayOf()
@@ -171,7 +171,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `onScreenShotCaptured should show error snack bar when fail`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
         everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
 
         val byteArray = byteArrayOf()
@@ -193,7 +193,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `onShareReceiptButtonClicked should reset loading state to false when success`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,
@@ -214,7 +214,7 @@ class TransactionDetailsViewModelTest {
 
     @Test
     fun `onRefresh should set transaction with loading when initially called`() = runTest {
-        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val viewModel = TransactionDetailsViewModel(
             imageSharer = imageSharer,

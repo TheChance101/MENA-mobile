@@ -72,7 +72,7 @@ class TransactionDetailsViewModel(
     private fun getTransactionDetails() {
         tryToExecute(
             callee = {
-                transactionRepository.getTransactionDetails(
+                transactionRepository.getTransactionById(
                     transactionId = Uuid.parse(transactionId)
                 )
             },
