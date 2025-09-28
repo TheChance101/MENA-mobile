@@ -132,14 +132,28 @@ internal class UploadReelViewModel(
 
     override fun onEditVideoClick() {
         uploadingTrendJob?.cancel()
-        // TODO
+        updateState {
+            copy(
+                selectedFile = FileUiState(),
+                thumbnail = null,
+                uploadingTrendState = UploadReelScreenState.UploadingTrendState.IDLE,
+                uploadedBytes = 0,
+                isNextButtonEnabled = false,
+                isNextButtonLoading = false
+            )
+        }
     }
 
     override fun onCancelUploadClick() {
         uploadingTrendJob?.cancel()
         updateState {
             copy(
-                // TODO
+                selectedFile = FileUiState(),
+                thumbnail = null,
+                uploadingTrendState = UploadReelScreenState.UploadingTrendState.FAILED,
+                uploadedBytes = 0,
+                isNextButtonEnabled = false,
+                isNextButtonLoading = false
             )
         }
     }

@@ -107,7 +107,10 @@ private fun UploadReelScreenContent(
                 thumbnail = state.thumbnail,
                 isEnabled = state.isUploadVideoCardEnabled,
                 onCardClick = launcher::launch,
-                onEditClick = listener::onEditVideoClick,
+                onEditClick = {
+                    listener.onEditVideoClick()
+                    launcher.launch()
+                },
                 modifier = Modifier.padding(bottom = Theme.spacing._24)
             )
 
