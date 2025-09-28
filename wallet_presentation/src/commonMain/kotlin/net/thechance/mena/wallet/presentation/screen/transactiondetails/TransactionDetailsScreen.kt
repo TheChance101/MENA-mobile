@@ -66,7 +66,6 @@ private fun TransactionDetailsScreenContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.transaction_details_header),
-                titleColor = Theme.colorScheme.shadePrimary,
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(

@@ -60,8 +60,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun DetailsSection(
-    modifier: Modifier = Modifier,
     transactionDetailsUiState: TransactionDetailsUiState,
+    modifier: Modifier = Modifier,
     isUserNameShown: Boolean = false
 ) {
     Column(
@@ -178,10 +178,10 @@ private fun TextWithIcon(
     textColor: Color,
     icon: Painter,
     iconContentDescription: String,
-    iconTint: Color = Color.Unspecified,
     iconSize: Dp,
+    modifier: Modifier = Modifier,
+    iconTint: Color = Color.Unspecified,
     gap: Dp = 4.dp,
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
