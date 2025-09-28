@@ -19,6 +19,7 @@ kotlin {
         }
     }
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -53,6 +54,9 @@ kotlin {
             implementation(libs.androidx.paging.runtime)
             implementation(libs.androidx.paging.compose)
             implementation(libs.resources)
+            implementation(libs.kermit)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs.compose)
         }
         iosMain.dependencies {
 
@@ -63,9 +67,6 @@ kotlin {
             implementation(libs.assertk)
             implementation(libs.turbine)
             implementation(libs.koin.test)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
         }
     }
     sourceSets.named("commonMain").configure {

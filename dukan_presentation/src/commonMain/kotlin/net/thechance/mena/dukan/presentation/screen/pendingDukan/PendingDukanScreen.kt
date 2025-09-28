@@ -12,7 +12,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
-import mena.dukan_presentation.generated.resources.dukan_blur
 import mena.dukan_presentation.generated.resources.dukan_pending
 import mena.dukan_presentation.generated.resources.dukan_request_pending
 import mena.dukan_presentation.generated.resources.dukan_waiting_approval
@@ -58,7 +57,6 @@ fun PendingDukanScreen(
         )
 
         ImageWithTextContainer(
-            blurImageRes = Res.drawable.dukan_blur,
             foregroundImageRes = Res.drawable.dukan_pending,
             header = {
                 AnnotatedText(

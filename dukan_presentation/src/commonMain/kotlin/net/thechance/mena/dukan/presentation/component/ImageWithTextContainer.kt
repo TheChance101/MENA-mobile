@@ -25,14 +25,14 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ImageWithTextContainer(
-    blurImageRes: DrawableResource,
     foregroundImageRes: DrawableResource,
     header: @Composable () -> Unit,
     bodyText: String,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(Theme.spacing._24),
+        modifier = modifier
+            .padding(Theme.spacing._24),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(

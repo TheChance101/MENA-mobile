@@ -1,17 +1,13 @@
 package net.thechance.mena.dukan.presentation.screen.createShelf
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import mena.dukan_presentation.generated.resources.Res
@@ -24,6 +20,7 @@ import mena.dukan_presentation.generated.resources.title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -71,33 +68,41 @@ private fun CreateShelfContent(
     interactionListener: CreateShelfInteractionListener
 ) {
     OnSystemBackPressed(interactionListener::onBackButtonClicked)
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Theme.colorScheme.background.surface)
-            .systemBarsPadding()
+    Scaffold(
+        topBar = {
+            AppBar(
+                title = stringResource(Res.string.create_shelf),
+                onLeadingClick = interactionListener::onBackButtonClicked,
+                contentPadding = PaddingValues(
+                    horizontal = Theme.spacing._12,
+                    vertical = Theme.spacing._8
+                ),
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_arrow_left),
+                        contentDescription = stringResource(Res.string.back_arrow),
+                    )
+                }
+            )
+        },
+        bottomBar = {
+            PrimaryButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._16),
+                text = stringResource(Res.string.create),
+                onClick = interactionListener::onCreateButtonClicked,
+                isEnabled = state.isCreateButtonEnabled,
+                isLoading = state.isLoading,
+                contentPadding = PaddingValues(vertical = Theme.spacing._12)
+            )
+        }
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
             contentPadding = PaddingValues(bottom = Theme.spacing._16)
         ) {
-            item {
-                AppBar(
-                    title = stringResource(Res.string.create_shelf),
-                    onLeadingClick = interactionListener::onBackButtonClicked,
-                    contentPadding = PaddingValues(
-                        horizontal = Theme.spacing._12,
-                        vertical = Theme.spacing._8
-                    ),
-                    leadingContent = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_arrow_left),
-                            contentDescription = stringResource(Res.string.back_arrow),
-                        )
-                    }
-                )
-            }
             item {
                 Text(
                     text = stringResource(Res.string.title),
@@ -129,18 +134,6 @@ private fun CreateShelfContent(
                 onDismiss = interactionListener::onDismissSnackBar
             )
         }
-
-        PrimaryButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._16),
-            text = stringResource(Res.string.create),
-            onClick = interactionListener::onCreateButtonClicked,
-            isEnabled = state.isCreateButtonEnabled,
-            isLoading = state.isLoading,
-            contentPadding = PaddingValues(vertical = Theme.spacing._12)
-        )
     }
 }
 

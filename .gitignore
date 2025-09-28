@@ -19,3 +19,4 @@ captures
 .aider*
 iosApp/Pods
 *.podspec
+*/schemas

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="contacts_title">جهات الاتصال</string>
+    <string name="sync_contacts">مزامنة جهات الاتصال</string>
+    <string name="sync_contacts_title">مزامنة جهات اتصالك</string>
+    <string name="sync_contacts_desc">قم بمزامنة جهات اتصالك حتى تتمكن بسهولة من بدء المحادثات والتواصل مع أصدقائك</string>
+    <string name="syncing_contacts_message">جاري مزامنة جهات اتصالك، برجاء الانتظار حتى تكتمل المزامنة.</string>
+    <string name="no_contacts_message">!لا يوجد لديك أي جهة اتصال هنا</string>
+    <string name="refresh_contacts_message">انقر على زر التحديث لتحميل جهة الاتصال الجديدة الخاصة بك.</string>
+    <string name="go_to_setting">اذهب إلى الإعدادات</string>
+    <string name="message_holder">رسالة...</string>
+    <string name="to_sync_contacts_go_to_settings">لمزامنة جهات الاتصال الخاصة بك، يرجى الذهاب إلى الإعدادات ومنح تطبيق مينا الإذن للوصول إلى جهات الاتصال الخاصة بك.</string>
+    <string name="retry">اعادة المحاولة</string>
+    <string name="loading">جاري التحميل...</string>
+    <string name="something_went_wrong">حدث خطأ</string>
+    <string name="could_not_load_contacts">فشل تحميل جهات الاتصال، يرجى اعادة المحاولة</string>
+    <string name="error">خطأ</string>
+    <string name="actions">إجراءات</string>
+    <string name="re_send">إعاده الأرسال</string>
+    <string name="delete_message">حذف الرسالة</string>
+    <string name="could_not_load_the_contacts">تعذر تحميل جهات الاتصال</string>
+    <string name="permission_denied_title">تم رفض الإذن</string>
+    <string name="contacts_permission_required_message">إذن جهات الاتصال مطلوب لمزامنة جهات الاتصال</string>
+    <string name="could_not_sync_contacts_message">تعذر مزامنة جهات الاتصال</string>
+    <string name="delete">حذف</string>
+    <string name="delete_chat">حذف المحادثة</string>
+    <string name="confirm_delete_chat_message">هل أنت متأكد من حذف هذه المحادثة؟</string>
+    <string name="error_cant_subscribe_to_new_messages">غير متصل</string>
+    <string name="error_cant_get_messages">لم نتمكن من جلب الرسائل</string>
+    <string name="contact_not_mena_user">هذا الشخص لا يملك حساب مينا</string>
+</resources>

@@ -1,6 +1,6 @@
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import kotlin.jvm.java
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -18,6 +18,7 @@ kotlin {
         }
     }
     jvm()
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -31,6 +32,7 @@ kotlin {
             api(libs.koin.annotations)
             implementation(libs.kotlinx.datetime)
             implementation(libs.bundles.ktor)
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
