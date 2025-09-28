@@ -11,11 +11,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.add_shelf_successfully
+import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarMessage
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -165,7 +169,12 @@ class ApprovedDukanViewModelTest {
     fun `onDismissSnackBar SHOULD hide snackbar`() = runTest {
         // Given
         approvedDukanViewModel.updateState {
-            copy(snackBarMessage = SnackBarMessage.Success)
+            copy(
+                snackBarState = SnackBarUiState(
+                    SnackBarType.SUCCESS,
+                    Res.string.add_shelf_successfully
+                )
+            )
         }
 
         // When
@@ -173,14 +182,19 @@ class ApprovedDukanViewModelTest {
 
         // Then
         val state = approvedDukanViewModel.state.value
-        assertTrue(state.snackBarMessage == null)
+        assertTrue(state.snackBarState == null)
     }
 
     @Test
-    fun `onDismissSnackBar SHOULD reset snackbar message to null`() = runTest {
+    fun `onDismissSnackBar SHOULD reset snackbar state to null`() = runTest {
         // Given
         approvedDukanViewModel.updateState {
-            copy(snackBarMessage = SnackBarMessage.Error)
+            copy(
+                snackBarState = SnackBarUiState(
+                    SnackBarType.ERROR,
+                    Res.string.shelf_name_is_already_exist
+                )
+            )
         }
 
         // When
@@ -188,7 +202,7 @@ class ApprovedDukanViewModelTest {
 
         // Then
         val state = approvedDukanViewModel.state.value
-        assertTrue(state.snackBarMessage == null)
+        assertTrue(state.snackBarState == null)
     }
 
     @Test
@@ -391,6 +405,129 @@ class ApprovedDukanViewModelTest {
         // Then
         assertTrue(result)
     }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD show snackbar`() = runTest {
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertTrue(state.snackBarState != null)
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD show success snackbar type`() = runTest {
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertEquals(SnackBarType.SUCCESS, state.snackBarState?.snackBarType)
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD show correct success message`() = runTest {
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertEquals(Res.string.add_shelf_successfully, state.snackBarState?.message)
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD refresh shelves list`() = runTest {
+        // Given
+        val newShelves = fakeShelves() + Shelf("shelf_4", "New Shelf", "dukan_123")
+        everySuspend { shelfRepository.getMyDukanShelves() } returns newShelves
+
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertEquals(4, state.shelves.size)
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD include new shelf in refreshed list`() = runTest {
+        // Given
+        val newShelves = fakeShelves() + Shelf("shelf_4", "New Shelf", "dukan_123")
+        everySuspend { shelfRepository.getMyDukanShelves() } returns newShelves
+
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertTrue(state.shelves.any { it.id == "shelf_4" })
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD reload products for selected shelves`() = runTest {
+        // Given
+        val selectedShelf = fakeShelves().first()
+        val products = fakeProducts().filter { it.shelfId == selectedShelf.id }
+        approvedDukanViewModel.updateState { copy(selectedShelves = setOf(selectedShelf)) }
+        everySuspend { productRepository.getProductsByShelfId(selectedShelf.id) } returns products
+
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertEquals(products.size, state.products.size)
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD update total products count`() = runTest {
+        // Given
+        val selectedShelf = fakeShelves().first()
+        val products = fakeProducts().filter { it.shelfId == selectedShelf.id }
+        approvedDukanViewModel.updateState { copy(selectedShelves = setOf(selectedShelf)) }
+        everySuspend { productRepository.getProductsByShelfId(selectedShelf.id) } returns products
+
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertEquals(products.size, state.totalProducts)
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD clear products when no shelves selected`() = runTest {
+        // Given
+        approvedDukanViewModel.updateState { copy(selectedShelves = emptySet()) }
+
+        // When
+        approvedDukanViewModel.onShelfAddedSuccessfully()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val state = approvedDukanViewModel.state.value
+        assertTrue(state.products.isEmpty())
+    }
+
+    @Test
+    fun `onShelfAddedSuccessfully SHOULD reset product count to zero when no shelves selected`() =
+        runTest {
+            // Given
+            approvedDukanViewModel.updateState { copy(selectedShelves = emptySet()) }
+
+            // When
+            approvedDukanViewModel.onShelfAddedSuccessfully()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Then
+            val state = approvedDukanViewModel.state.value
+            assertEquals(0, state.totalProducts)
+        }
 
 
     @Test

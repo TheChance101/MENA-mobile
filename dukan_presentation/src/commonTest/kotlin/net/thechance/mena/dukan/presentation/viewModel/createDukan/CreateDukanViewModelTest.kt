@@ -16,12 +16,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarMessage
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -394,14 +397,21 @@ class CreateDukanViewModelTest {
     @Test
     fun `onNameChanged SHOULD hide snack bar when name is changed`() = runTest {
         // Given
-        createDukanViewModel.updateState { copy(snackBarMessage = SnackBarMessage.Error) }
+        createDukanViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    SnackBarType.ERROR,
+                    Res.string.shelf_name_is_already_exist
+                )
+            )
+        }
 
         // When
         createDukanViewModel.onNameChanged("New Dukan Name")
 
         // Then
-        val snackBarMessage = createDukanViewModel.state.value.snackBarMessage
-        assertNull(snackBarMessage)
+        val snackBarState = createDukanViewModel.state.value.snackBarState
+        assertNull(snackBarState)
     }
 
     @Test
@@ -578,7 +588,7 @@ class CreateDukanViewModelTest {
                 name = "",
                 selectedCategories = setOf(fakeCategories()[0].toUiState()),
                 currentStep = CreateDukanUiState.CreateDukanStep.BASIC_INFORMATION,
-                snackBarMessage = null
+                snackBarState = null
             )
         }
 
@@ -587,7 +597,7 @@ class CreateDukanViewModelTest {
 
         // Then
         val state = createDukanViewModel.state.value
-        assertNotNull(state.snackBarMessage)
+        assertNotNull(state.snackBarState)
         assertFalse(state.isNameUnique)
     }
 
@@ -709,14 +719,21 @@ class CreateDukanViewModelTest {
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar when called`() = runTest {
         // Given
-        createDukanViewModel.updateState { copy(snackBarMessage = SnackBarMessage.Error) }
+        createDukanViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    SnackBarType.ERROR,
+                    Res.string.shelf_name_is_already_exist
+                )
+            )
+        }
 
         // When
         createDukanViewModel.onDismissSnackBar()
 
         // Then
-        val snackBarMessage = createDukanViewModel.state.value.snackBarMessage
-        assertNull(snackBarMessage)
+        val snackBarState = createDukanViewModel.state.value.snackBarState
+        assertNull(snackBarState)
     }
 
     @Test
@@ -728,7 +745,10 @@ class CreateDukanViewModelTest {
             copy(
                 name = testName,
                 selectedCategories = testCategories,
-                snackBarMessage = SnackBarMessage.Error,
+                snackBarState = SnackBarUiState(
+                    SnackBarType.ERROR,
+                    Res.string.shelf_name_is_already_exist
+                ),
                 isNameUnique = false
             )
         }
@@ -738,7 +758,7 @@ class CreateDukanViewModelTest {
 
         // Then
         val state = createDukanViewModel.state.value
-        assertNull(state.snackBarMessage)
+        assertNull(state.snackBarState)
         assertEquals(testName, state.name)
         assertEquals(testCategories, state.selectedCategories)
         assertFalse(state.isNameUnique)
@@ -746,12 +766,12 @@ class CreateDukanViewModelTest {
 
     @Test
     fun `onDismissSnackBar SHOULD work when snack bar is already hidden`() = runTest {
-        createDukanViewModel.updateState { copy(snackBarMessage = null) }
+        createDukanViewModel.updateState { copy(snackBarState = null) }
 
         createDukanViewModel.onDismissSnackBar()
 
-        val snackBarMessage = createDukanViewModel.state.value.snackBarMessage
-        assertNull(snackBarMessage)
+        val snackBarState = createDukanViewModel.state.value.snackBarState
+        assertNull(snackBarState)
     }
 
     @Test
@@ -779,14 +799,21 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onDismissSnackBar SHOULD set snackBarMessage null`() = runTest {
-        createDukanViewModel.updateState { copy(snackBarMessage = SnackBarMessage.Error) }
+    fun `onDismissSnackBar SHOULD set snackBarState null`() = runTest {
+        createDukanViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    SnackBarType.ERROR,
+                    Res.string.shelf_name_is_already_exist
+                )
+            )
+        }
 
         createDukanViewModel.onDismissSnackBar()
 
         createDukanViewModel.state.test {
             val state = awaitItem()
-            assertNull(state.snackBarMessage)
+            assertNull(state.snackBarState)
             cancelAndIgnoreRemainingEvents()
         }
     }
