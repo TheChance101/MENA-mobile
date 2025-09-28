@@ -1,6 +1,5 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_details
 
-import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -26,13 +25,11 @@ import kotlin.uuid.Uuid
 class TransactionDetailsViewModel(
     @Provided val imageSharer: ImageSharer,
     @Provided val transactionRepository: TransactionRepository,
+    @Provided val transactionDetailsArgs: TransactionDetailsArgs,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    savedStateHandle: SavedStateHandle
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
     TransactionDetailsScreenState()
 ), TransactionDetailsInteractionListener {
-    val transactionId =
-        savedStateHandle.get<String>(TransactionDetailsScreenRoute.TRANSACTION_ID) ?: ""
 
     init {
         getTransactionDetails()
@@ -42,7 +39,7 @@ class TransactionDetailsViewModel(
         tryToExecute(
             callee = {
                 transactionRepository.getTransactionDetails(
-                    transactionId = Uuid.parse(transactionId)
+                    transactionId = Uuid.parse(transactionDetailsArgs.id)
                 )
             },
             onSuccess = ::onGetTransactionDetailsSuccess,
