@@ -4,8 +4,10 @@ import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.UiState
+import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
+@KoinViewModel
 class TransactionHistoryViewModel(
     @Provided private val transactionRepository: TransactionRepository
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
