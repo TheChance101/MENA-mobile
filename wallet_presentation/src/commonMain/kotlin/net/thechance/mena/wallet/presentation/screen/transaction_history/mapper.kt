@@ -7,13 +7,12 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState =
     TransactionHistoryScreenState.TransactionHistoryUiState(
-        senderId = senderId,
+        id = id,
         type = type,
         timeAndDate = formatTimeAndDate(createdAt),
         amount = amount.toString(),
         status = status,
-        sender = if (type == Transaction.Type.SENT) senderName else null,
-        receiver = if (type == Transaction.Type.RECEIVED) receiverName else null,
+       contactName = if (type == Transaction.Type.SENT) senderName else receiverName
     )
 
 private fun formatTimeAndDate(dateTime: LocalDateTime): String {

@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -23,13 +21,13 @@ import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.transaction_type_icon
 import mena.wallet_presentation.generated.resources.failed
 import mena.wallet_presentation.generated.resources.ic_failed
 import mena.wallet_presentation.generated.resources.ic_shopping_bag
 import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.money_icon
 import mena.wallet_presentation.generated.resources.transaction_pay
+import mena.wallet_presentation.generated.resources.transaction_type_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -48,8 +46,7 @@ fun TransactionHistoryCard(
     transactionStatus: Transaction.Status,
     onTransactionCardClicked: () -> Unit,
     modifier: Modifier = Modifier,
-    sender: String? = null,
-    receiver: String? = null
+    contactName: String? = null
 ) {
     Row(
         modifier = modifier
@@ -70,8 +67,7 @@ fun TransactionHistoryCard(
             transactionTimeAndDate = transactionTimeAndDate,
             amount = amount,
             transactionStatus = transactionStatus,
-            sender = sender,
-            receiver = receiver,
+            contactName = contactName
         )
     }
 }
@@ -115,8 +111,7 @@ private fun TransactionDataColumn(
     amount: String,
     transactionStatus: Transaction.Status,
     modifier: Modifier = Modifier,
-    sender: String? = null,
-    receiver: String? = null
+    contactName: String? = null
 ) {
     Column(
         modifier = modifier,
@@ -128,8 +123,7 @@ private fun TransactionDataColumn(
         TransactionTitleAndAmount(
             transactionTitle = transactionTitle,
             amount = amount,
-            sender = sender,
-            receiver = receiver
+            contactName = contactName
         )
         if (transactionStatus == Transaction.Status.FAIL) {
             Text(
@@ -152,9 +146,8 @@ private fun TransactionDataColumn(
 private fun TransactionTitleAndAmount(
     transactionTitle: String,
     amount: String,
-    sender: String?,
-    receiver: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contactName: String? = null
 ) {
     Row(
         modifier = modifier
@@ -175,17 +168,7 @@ private fun TransactionTitleAndAmount(
                 overflow = TextOverflow.Ellipsis
             )
 
-            sender?.let { name ->
-                Text(
-                    text = name,
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    fontWeight = SemiBold
-                )
-            }
-            receiver?.let { name ->
+            contactName?.let { name ->
                 Text(
                     text = name,
                     style = Theme.typography.body.small,
