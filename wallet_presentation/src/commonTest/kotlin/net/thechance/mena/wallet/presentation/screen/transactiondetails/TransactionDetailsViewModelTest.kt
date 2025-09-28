@@ -6,31 +6,22 @@ import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
-import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import io.github.suwasto.capturablecompose.CaptureController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.error
-import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
-import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
-import org.jetbrains.compose.resources.StringResource
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -107,7 +98,7 @@ class TransactionDetailsViewModelTest {
             skipItems(2)
             val errorState = awaitItem()
             assertTrue(errorState.transactionDetailsUiState is UiState.Error)
-            val error = (errorState.transactionDetailsUiState as UiState.Error).throwable
+            val error = errorState.transactionDetailsUiState.throwable
             assertEquals(expectedError, error)
         }
     }
@@ -127,30 +118,6 @@ class TransactionDetailsViewModelTest {
             assertEquals(TransactionDetailsEffect.NavigateBack, awaitItem())
         }
     }
-
-//    @Test
-//    fun `onShareReceiptButtonClicked should set loading state and capture screenshot`() = runTest {
-//        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
-//        everySuspend { mockCaptureController.capture() } returns Unit
-//
-//        val viewModel = TransactionDetailsViewModel(
-//            imageSharer = imageSharer,
-//            transactionRepository = transactionRepository,
-//            ioDispatcher = testDispatcher
-//        )
-//
-//        advanceUntilIdle()
-//
-//        viewModel.state.test {
-//            // Skip initial states
-//            skipItems(2)
-//
-//            viewModel.onShareReceiptButtonClicked()
-//
-//            val loadingState = awaitItem()
-//            assertTrue(loadingState.isShareReceiptBtnLoading)
-//        }
-//    }
 
     @Test
     fun `onScreenShotCaptured should share image and reset loading state to false when success`() = runTest {
@@ -216,63 +183,6 @@ class TransactionDetailsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-
-
-//    @Test
-//    fun `onShareReceiptError should show error snackbar and reset loading state`() = runTest {
-//        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
-//        everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
-//
-//        val viewModel = TransactionDetailsViewModel(
-//            imageSharer = imageSharer,
-//            transactionRepository = transactionRepository,
-//            ioDispatcher = testDispatcher
-//        )
-//
-//        advanceUntilIdle()
-//
-//        viewModel.state.test {
-//            // Skip initial states
-//            skipItems(2)
-//
-//            viewModel.onShareReceiptButtonClicked()
-//
-//            val loadingState = awaitItem()
-//            assertTrue(loadingState.isShareReceiptBtnLoading)
-//
-//            // After error handling
-//            val errorState = awaitItem()
-//            assertTrue(!errorState.isShareReceiptBtnLoading)
-//            assertTrue(errorState.snackBar.isVisible)
-//            assertEquals(Res.string.error, errorState.snackBar.titleRes)
-//            assertEquals(Res.string.share_transaction_details_error_msg, errorState.snackBar.messageRes)
-//            assertTrue(!errorState.snackBar.isSuccess)
-//        }
-//    }
-
-//    @Test
-//    fun `onRefresh should reload transaction details`() = runTest {
-//        var callCount = 0
-//        everySuspend { transactionRepository.getTransactionDetails(any()) } answers {
-//            callCount++
-//            transaction1
-//        }
-//
-//        val viewModel = TransactionDetailsViewModel(
-//            imageSharer = imageSharer,
-//            transactionRepository = transactionRepository,
-//            ioDispatcher = testDispatcher
-//        )
-//
-//        advanceUntilIdle()
-//
-//        assertEquals(1, callCount) // Initial call
-//
-//        viewModel.onRefresh()
-//        advanceUntilIdle()
-//
-//        assertEquals(2, callCount) // Refresh call
-//    }
 
     private companion object {
         val transaction1Id = Uuid.random()
