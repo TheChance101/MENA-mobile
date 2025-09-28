@@ -40,6 +40,7 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.assertk)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.mokkery.core)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

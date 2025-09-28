@@ -36,9 +36,12 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            // project
             implementation(projects.walletDomain)
             implementation(projects.designSystem)
             implementation(projects.walletApi)
+
+            // compose
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
@@ -54,6 +57,9 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.annotations)
             implementation(libs.kotlinx.serialization.json)
+
+            // navigation
+            implementation(libs.navigation.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

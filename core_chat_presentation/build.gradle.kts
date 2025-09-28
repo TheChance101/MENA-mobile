@@ -81,6 +81,7 @@ kotlin {
                 implementation(libs.assertk)
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.turbine)
+                implementation(libs.mokkery.core)
         }
     }
 }
@@ -110,6 +111,7 @@ kover.reports {
             classes(
                 "*SyncContactsViewModel*",
                 "*ContactsViewModel*",
+                "*ChatViewModel*"
             )
         }
     }

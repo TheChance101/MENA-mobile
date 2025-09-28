@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.foundation.layout.Arrangement
@@ -13,12 +15,14 @@ import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun ChatListItem(
     item: ChatListItem,
     chat: ChatUiState,
-    onMessageClick: (String) -> Unit,
+    onMessageClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
