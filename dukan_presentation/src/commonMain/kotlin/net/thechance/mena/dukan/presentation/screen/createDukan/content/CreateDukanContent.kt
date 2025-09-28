@@ -19,7 +19,6 @@ import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.create
 import mena.dukan_presentation.generated.resources.create_new_dukan
 import mena.dukan_presentation.generated.resources.dukan_image
-import mena.dukan_presentation.generated.resources.dukan_name_is_already_exist
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -27,8 +26,6 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
@@ -129,14 +126,11 @@ fun CreateDukanContent(
                 )
         }
 
-        state.snackBarMessage?.let { snackBarMessage ->
-                SnackBar(
-                    snackBarUiState = SnackBarUiState(
-                        snackBarType = SnackBarType.ERROR,
-                        message = stringResource(Res.string.dukan_name_is_already_exist)
-                    ),
-                    onDismiss = listener::onDismissSnackBar
-                )
+        state.snackBarState?.let { snackBarState ->
+            SnackBar(
+                snackBarUiState = snackBarState,
+                onDismiss = listener::onDismissSnackBar
+            )
         }
     }
 }
