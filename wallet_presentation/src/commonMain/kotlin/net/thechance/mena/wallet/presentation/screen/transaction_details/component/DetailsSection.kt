@@ -67,16 +67,18 @@ internal fun DetailsSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(shape = RoundedCornerShape(16.dp))
+            .padding(horizontal = Theme.spacing._16)
+            .clip(shape = RoundedCornerShape(Theme.spacing._16))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(Theme.spacing._16)
             )
-            .padding(16.dp)
+            .padding(Theme.spacing._16)
     ) {
         TextWithIcon(
-            modifier = Modifier.padding(top = 8.dp).align(Alignment.CenterHorizontally),
+            modifier = Modifier
+                .padding(top = Theme.spacing._8)
+                .align(Alignment.CenterHorizontally),
             text = when (transactionDetailsUiState.transactionType) {
                 Transaction.Type.ONLINE_PURCHASE -> stringResource(Res.string.pay)
                 Transaction.Type.SENT -> stringResource(Res.string.send)
@@ -96,21 +98,23 @@ internal fun DetailsSection(
             },
             iconTint = Theme.colorScheme.shadeSecondary,
             iconSize = when (transactionDetailsUiState.transactionType) {
-                Transaction.Type.ONLINE_PURCHASE -> 16.dp
+                Transaction.Type.ONLINE_PURCHASE -> Theme.spacing._16
                 Transaction.Type.SENT, Transaction.Type.RECEIVED -> 10.dp
             },
-            gap = 4.dp,
+            gap = Theme.spacing._4,
         )
 
         TextWithIcon(
-            modifier = Modifier.padding(vertical = 8.dp).align(Alignment.CenterHorizontally),
+            modifier = Modifier
+                .padding(vertical = Theme.spacing._8)
+                .align(Alignment.CenterHorizontally),
             text = transactionDetailsUiState.amount,
             textStyle = Theme.typography.headline.medium,
             textColor = Theme.colorScheme.shadePrimary,
             icon = painterResource(Res.drawable.img_silver),
             iconContentDescription = stringResource(Res.string.silver_coin),
-            iconSize = 24.dp,
-            gap = 8.dp,
+            iconSize = Theme.spacing._24,
+            gap = Theme.spacing._8,
         )
 
         if (isUserNameShown){
@@ -181,7 +185,7 @@ private fun TextWithIcon(
     iconSize: Dp,
     modifier: Modifier = Modifier,
     iconTint: Color = Color.Unspecified,
-    gap: Dp = 4.dp,
+    gap: Dp = Theme.spacing._4,
 ) {
     Row(
         modifier = modifier,
@@ -195,7 +199,9 @@ private fun TextWithIcon(
         Icon(
             painter = icon,
             contentDescription = iconContentDescription,
-            modifier = Modifier.padding(start = gap).size(iconSize),
+            modifier = Modifier
+                .padding(start = gap)
+                .size(iconSize),
             tint = iconTint
         )
     }
@@ -212,7 +218,7 @@ private fun ColumnScope.DetailsInfo(
 ) {
     Box(
         modifier = Modifier
-            .padding(vertical = 12.dp)
+            .padding(vertical = Theme.spacing._12)
             .height(1.dp)
             .fillMaxWidth()
             .background(color = Theme.colorScheme.stroke)
@@ -233,7 +239,9 @@ private fun ColumnScope.DetailsInfo(
                 Icon(
                     painter = icon,
                     contentDescription = iconContentDescription,
-                    modifier = Modifier.padding(end = 4.dp).size(20.dp),
+                    modifier = Modifier
+                        .padding(end = Theme.spacing._4)
+                        .size(20.dp),
                     tint = iconTint
                 )
             }

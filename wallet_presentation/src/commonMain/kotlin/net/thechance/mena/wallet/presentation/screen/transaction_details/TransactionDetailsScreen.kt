@@ -76,7 +76,10 @@ private fun TransactionDetailsScreenContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.transaction_details_header),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._8
+                ),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -113,16 +116,19 @@ private fun TransactionDetailsScreenContent(
                                 },
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
-                                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._24)
                                     .heightIn(min = 48.dp)
                                     .fillMaxWidth(),
                                 trailingIcon = painterResource(Res.drawable.ic_share),
                                 iconSize = 20.dp,
                                 contentDescription = stringResource(Res.string.share_button),
-                                iconStartPadding = 8.dp,
+                                iconStartPadding = Theme.spacing._8,
                                 isLoading = state.isShareReceiptBtnLoading,
                                 contentColor = Theme.colorScheme.primary.primary,
-                                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp),
+                                contentPadding = PaddingValues(
+                                    vertical = Theme.spacing._8,
+                                    horizontal = Theme.spacing._16
+                                ),
                                 shape = RoundedCornerShape(Theme.radius.md)
                             )
                             TransactionDetailsScreenShot(
