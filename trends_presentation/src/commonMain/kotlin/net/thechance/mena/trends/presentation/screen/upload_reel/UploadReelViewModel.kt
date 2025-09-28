@@ -32,30 +32,38 @@ internal class UploadReelViewModel(
         readBytes: suspend () -> ByteArray
     ) {
         tryToExecute(
-            block = { validateFile(file, readBytes) },
+            block = { createVideoFile(file, readBytes) },
             onError = ::onValidationError,
-            onSuccess = ::onValidationSuccess,
+            onSuccess = ::onCreateVideoFileSuccess,
             dispatcher = defaultDispatcher
         )
     }
 
-    private suspend fun validateFile(
+    private suspend fun createVideoFile(
         file: FileUiState,
         readBytes: suspend () -> ByteArray
     ): FileUiState {
-        videoValidator.validateSize(file.sizeInBytes)
+
         val bytes = readBytes()
-        videoDurationExtractor.getDuration(bytes)?.let { duration ->
-            videoValidator.validateDuration(duration)
-        }
+        validateFile(
+            file = file,
+            readBytes = bytes
+        )
+
         return file.copy(bytes = bytes)
     }
 
-    private fun onValidationError(errorState: ErrorState) {
-        updateState { copy(errorState = errorState) }
+    private suspend fun validateFile(
+        file: FileUiState,
+        readBytes: ByteArray
+    ) {
+        videoValidator.validateSize(file.sizeInBytes)
+        videoDurationExtractor.getDuration(readBytes)?.let { duration ->
+            videoValidator.validateDuration(duration)
+        }
     }
 
-    private fun onValidationSuccess(file: FileUiState) {
+    private fun onCreateVideoFileSuccess(file: FileUiState) {
         updateState {
             copy(
                 selectedFile = file.copy(sizeInMegaBytes = formatBytes(file.sizeInBytes)),
@@ -90,8 +98,8 @@ internal class UploadReelViewModel(
     private fun onCollectEachFlow(progress: UploadReelProgress) {
         updateState {
             copy(
-                uploadedMegaBytes = formatBytes(progress.numberOfUploadedBytes),
-                selectedFile = state.value.selectedFile.copy(id = progress.reelId)
+                uploadedBytes = progress.numberOfUploadedBytes,
+                trendId = progress.reelId
             )
         }
     }
@@ -109,9 +117,13 @@ internal class UploadReelViewModel(
         updateState {
             copy(
                 uploadingTrendState = UploadReelScreenState.UploadingTrendState.SUCCESS,
-                isNextButtonEnabled = true
+                isNextButtonEnabled = true,
             )
         }
+    }
+
+    private fun onValidationError(errorState: ErrorState) {
+        updateState { copy(errorState = errorState) }
     }
 
     override fun onBackClick() {
@@ -120,11 +132,16 @@ internal class UploadReelViewModel(
 
     override fun onEditVideoClick() {
         uploadingTrendJob?.cancel()
+        // TODO
     }
 
     override fun onCancelUploadClick() {
         uploadingTrendJob?.cancel()
-        updateState { UploadReelScreenState() }
+        updateState {
+            copy(
+                // TODO
+            )
+        }
     }
 
     override fun onDeleteVideoClick() {
@@ -138,6 +155,8 @@ internal class UploadReelViewModel(
     }
 
     override fun onNextClick() {
-        sendEffect(UploadReelScreenEffect.NavigateToAddDescription(state.value.selectedFile.id))
+        state.value.trendId?.let {
+            sendEffect(UploadReelScreenEffect.NavigateToAddDescription(it))
+        }
     }
 }

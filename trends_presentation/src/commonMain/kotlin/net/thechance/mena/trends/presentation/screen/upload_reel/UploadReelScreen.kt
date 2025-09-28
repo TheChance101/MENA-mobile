@@ -115,7 +115,7 @@ private fun UploadReelScreenContent(
                 title = state.selectedFile.name + "." + state.selectedFile.extension,
                 videoSize = state.selectedFile.sizeInMegaBytes,
                 videoState = state.uploadingTrendState,
-                progress = state.uploadedMegaBytes.toFloat() / state.selectedFile.sizeInMegaBytes.toFloat(),
+                progress = state.uploadedBytes.toFloat() / state.selectedFile.sizeInBytes.toFloat(),
                 modifier = Modifier.padding(bottom = Theme.spacing._16),
                 onAction = { action ->
                     when (action) {

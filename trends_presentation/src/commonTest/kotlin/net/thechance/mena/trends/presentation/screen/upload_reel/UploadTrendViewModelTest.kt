@@ -122,7 +122,7 @@ class UploadTrendViewModelTest: TestExtensions() {
             assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
             assertThat(state.isNextButtonEnabled).isFalse()
             assertThat(state.errorState).isNull()
-            assertThat(state.uploadedMegaBytes).isEmpty()
+            assertThat(state.uploadedBytes).isEmpty()
         }
     }
 
@@ -164,7 +164,7 @@ class UploadTrendViewModelTest: TestExtensions() {
             assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
             assertThat(state.isNextButtonEnabled).isFalse()
             assertThat(state.errorState).isNull()
-            assertThat(state.uploadedMegaBytes).isEmpty()
+            assertThat(state.uploadedBytes).isEmpty()
         }
     }
 
@@ -201,7 +201,7 @@ class UploadTrendViewModelTest: TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().uploadedMegaBytes).isEqualTo(formatBytes(uploadInProgress.numberOfUploadedBytes))
+            assertThat(awaitItem().uploadedBytes).isEqualTo(formatBytes(uploadInProgress.numberOfUploadedBytes))
         }
     }
 

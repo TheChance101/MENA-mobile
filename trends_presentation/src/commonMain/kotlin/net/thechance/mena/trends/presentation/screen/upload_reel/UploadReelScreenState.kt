@@ -8,7 +8,7 @@ data class UploadReelScreenState(
     val selectedFile: FileUiState = FileUiState(),
     val thumbnail: PlatformFile? = null,
     val uploadingTrendState: UploadingTrendState = UploadingTrendState.IDLE,
-    val uploadedMegaBytes: String = "",
+    val uploadedBytes: Long = 0,
     val isNextButtonEnabled: Boolean = false,
     val isNextButtonLoading: Boolean = false,
     val errorState: ErrorState? = null,
