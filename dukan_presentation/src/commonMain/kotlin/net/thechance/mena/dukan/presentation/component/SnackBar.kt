@@ -18,9 +18,9 @@ import mena.dukan_presentation.generated.resources.ic_success
 import mena.dukan_presentation.generated.resources.success
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.StringResource
 
 @Composable
 fun SnackBar(
@@ -33,6 +33,7 @@ fun SnackBar(
         top = Theme.spacing._12
     )
 ) {
+    val messageText = stringResource(snackBarUiState.message)
 
     LaunchedEffect(Unit) {
         delay(autoDismissMillis)
@@ -54,11 +55,7 @@ fun SnackBar(
             SnackBarType.SUCCESS -> {
                 SnackBar(
                     title = stringResource(Res.string.success),
-                    message = when (snackBarUiState.message) {
-                        is StringResource -> stringResource(snackBarUiState.message)
-                        is String -> snackBarUiState.message
-                        else -> snackBarUiState.message.toString()
-                    },
+                    message = messageText,
                     leadingIcon = painterResource(Res.drawable.ic_success),
                     contentDescription = stringResource(Res.string.success),
                     tint = Theme.colorScheme.success,
@@ -69,11 +66,7 @@ fun SnackBar(
             SnackBarType.ERROR -> {
                 SnackBar(
                     title = stringResource(Res.string.error),
-                    message = when (snackBarUiState.message) {
-                        is StringResource -> stringResource(snackBarUiState.message)
-                        is String -> snackBarUiState.message
-                        else -> snackBarUiState.message.toString()
-                    },
+                    message = messageText,
                     leadingIcon = painterResource(Res.drawable.ic_error),
                     contentDescription = stringResource(Res.string.error),
                     tint = Theme.colorScheme.error,
@@ -84,7 +77,7 @@ fun SnackBar(
     }
 }
 
-data class SnackBarUiState(val snackBarType: SnackBarType, val message: Any)
+data class SnackBarUiState(val snackBarType: SnackBarType, val message: StringResource)
 
 enum class SnackBarType {
     SUCCESS,
