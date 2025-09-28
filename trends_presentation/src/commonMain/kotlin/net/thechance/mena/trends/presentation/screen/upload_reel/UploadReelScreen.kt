@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.extension
@@ -26,6 +28,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -38,16 +41,28 @@ internal fun UploadReelScreen(
     viewModel: UploadReelViewModel = koinViewModel()
 ) {
 
+    val screenState by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
+
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is UploadReelScreenEffect.NavigateToAddDescription -> {} // TODO
-            UploadReelScreenEffect.NavigateBack -> {} // TODO()
+            UploadReelScreenEffect.NavigateBack -> navController.popBackStack()
         }
     }
 
-    val coroutineScope = rememberCoroutineScope()
+    UploadReelScreenContent(
+        state = screenState,
+        listener = viewModel
+    )
+}
 
-    // TODO/ launcher usage: onClick = { launcher.launch() }
+@Composable
+private fun UploadReelScreenContent(
+    state: UploadReelScreenState,
+    listener: UploadReelInteractionListener
+) {
+    val coroutineScope = rememberCoroutineScope()
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Video,
         onResult = { file ->
@@ -58,18 +73,12 @@ internal fun UploadReelScreen(
                         extension = file.extension,
                         sizeInBytes = file.size()
                     )
-                    viewModel.onRetrieveVideo(fileState) { file.readBytes() }
+                    listener.onRetrieveVideo(fileState) { file.readBytes() }
                 }
             }
         }
     )
-}
 
-@Composable
-private fun UploadReelScreenContent(
-    state: UploadReelScreenState,
-    listener: UploadReelInteractionListener
-) {
     Scaffold(
         topBar = { UploadReelScreenTopBar(onBackClick = listener::onBackClick) }
     ) {
@@ -87,7 +96,12 @@ private fun UploadReelScreenContent(
                     )
             )
 
-            UploadVideoCard() // TODO::::
+            UploadVideoCard(
+                thumbnail = state.thumbnail,
+                isEnabled = state.isUploadVideoCardEnabled,
+                onCardClick = launcher::launch,
+                onEditClick = listener::onEditVideoClick
+            )
         }
     }
 }

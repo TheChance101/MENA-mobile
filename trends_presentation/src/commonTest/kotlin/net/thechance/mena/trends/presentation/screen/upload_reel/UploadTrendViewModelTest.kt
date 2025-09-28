@@ -1,6 +1,5 @@
-package net.thechance.mena.trends.presentation.screen.upload_trend
+package net.thechance.mena.trends.presentation.screen.upload_reel
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEmpty
@@ -23,7 +22,7 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
-import net.thechance.mena.trends.presentation.screen.upload_trend.UploadTrendsScreenState.UploadingTrendState
+import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingTrendState
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.video_util.VideoDurationExtractor
@@ -42,7 +41,7 @@ class UploadTrendViewModelTest: TestExtensions() {
         everySuspend { getDuration(any()) } returns VALID_DURATION
     }
     private val viewModel by lazy {
-        UploadTrendViewModel(
+        UploadReelViewModel(
             reelsRepository = repository,
             videoValidator = validator,
             videoDurationExtractor = videoExtractor,
@@ -140,7 +139,7 @@ class UploadTrendViewModelTest: TestExtensions() {
         viewModel.onBackClick()
 
         viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(UploadTrendsScreenEffect.NavigateBack)
+            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateBack)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -150,7 +149,7 @@ class UploadTrendViewModelTest: TestExtensions() {
         viewModel.onNextClick()
 
         viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(UploadTrendsScreenEffect.NavigateToAddDescription(""))
+            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateToAddDescription(""))
             cancelAndIgnoreRemainingEvents()
         }
     }
