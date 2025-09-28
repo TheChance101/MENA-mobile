@@ -14,4 +14,5 @@ interface ApprovedDukanInteractionListener {
     fun onShelfSelected(shelf: Shelf): Boolean
     fun onShelfDeselected(shelf: Shelf): Boolean
     fun onShelfEnabled(shelf: Shelf): Boolean
+    suspend fun onShelfAddedSuccessfully()
 }

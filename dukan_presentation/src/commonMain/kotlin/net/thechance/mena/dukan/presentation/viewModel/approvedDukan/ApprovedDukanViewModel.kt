@@ -3,11 +3,16 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import org.jetbrains.compose.resources.getString
 
 class ApprovedDukanViewModel(
     private val shelfRepository: ShelfRepository,
@@ -28,7 +33,7 @@ class ApprovedDukanViewModel(
 
     override fun onDismissSnackBar() {
         updateState {
-            copy(snackBarMessage = null)
+            copy(snackBarState = null)
         }
     }
 
@@ -67,6 +72,19 @@ class ApprovedDukanViewModel(
     }
 
     override fun onShelfEnabled(shelf: Shelf): Boolean = true
+
+    override suspend fun onShelfAddedSuccessfully() {
+        val successMessage = getString(Res.string.add_shelf_successfully)
+        updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    snackBarType = SnackBarType.SUCCESS,
+                    message = successMessage
+                )
+            )
+        }
+        loadShelves()
+    }
 
     private fun loadShelves() {
         tryToExecute(

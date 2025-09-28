@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.ic_add_bold
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -23,8 +22,6 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewApprovedDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
@@ -88,14 +85,11 @@ fun ApprovedDukanContent(
         )
     }
 
-    state.snackBarMessage?.let { snackBarMessage ->
-            SnackBar(
-                snackBarUiState = SnackBarUiState(
-                    snackBarType = SnackBarType.SUCCESS,
-                    message = stringResource(Res.string.add_shelf_successfully)
-                ),
-                onDismiss = listener::onDismissSnackBar
-            )
+    state.snackBarState?.let { snackBarState ->
+        SnackBar(
+            snackBarUiState = snackBarState,
+            onDismiss = listener::onDismissSnackBar
+        )
     }
 }
 
