@@ -62,5 +62,5 @@
     <string name="edit_shelf">Edit shelf</string>"
     <string name="this_shelf_is_empty">This shelf is empty</string>"
     <string name="products">products</string>
-    <string name="products_count">%d products</string>
+    <string name="products_count">%1$d products</string>
 </resources>

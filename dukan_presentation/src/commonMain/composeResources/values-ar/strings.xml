@@ -46,5 +46,5 @@
     <string name="edit_shelf">تعديل الرف</string>
     <string name="this_shelf_is_empty">هذا الرف فارغ</string>
     <string name="products">المنتجات</string>
-    <string name="products_count">%d منتج</string>
+    <string name="products_count">%1$d منتج</string>
 </resources>
