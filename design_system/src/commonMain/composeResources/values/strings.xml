@@ -2,4 +2,11 @@
     <string name="app_name">MENA</string>
     <string name="app_coin_icon">App Coin Icon</string>
     <string name="cancel_dialog_icon">Cancel Dialog Icon</string>
+
+    <string name="home">Home</string>
+    <string name="dukan">Dukan</string>
+    <string name="faith">Faith</string>
+    <string name="trends">Trends</string>
+    <string name="profile">Profile</string>
+
 </resources>

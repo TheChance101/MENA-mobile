@@ -1,6 +1,6 @@
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import kotlin.jvm.java
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -17,6 +17,8 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+    jvm()
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -30,12 +32,16 @@ kotlin {
             api(libs.koin.annotations)
             implementation(libs.kotlinx.datetime)
             implementation(libs.bundles.ktor)
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+        }
+        commonTest.dependencies {
+            implementation(libs.bundles.test)
         }
     }
     sourceSets.named("commonMain").configure {

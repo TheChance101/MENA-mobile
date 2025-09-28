@@ -8,7 +8,7 @@ import org.koin.core.annotation.Single
 class TrendsApiImpl() : TrendsApi {
 
     @Composable
-    override fun Launch() {
+    override fun TabEntry() {
         TrendsNavHost()
     }
 }
