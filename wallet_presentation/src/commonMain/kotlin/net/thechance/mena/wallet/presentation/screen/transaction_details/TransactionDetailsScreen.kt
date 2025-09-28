@@ -116,7 +116,10 @@ private fun TransactionDetailsScreenContent(
                                 },
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
-                                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._24)
+                                    .padding(
+                                        horizontal = Theme.spacing._16,
+                                        vertical = Theme.spacing._24
+                                    )
                                     .heightIn(min = 48.dp)
                                     .fillMaxWidth(),
                                 trailingIcon = painterResource(Res.drawable.ic_share),
@@ -154,7 +157,9 @@ private fun onTransactionDetailsEffect(
     onNavigateBackClicked: () -> Unit,
 ) {
     when (effect) {
-        TransactionDetailsEffect.NavigateBack -> onNavigateBackClicked
+        TransactionDetailsEffect.NavigateBack -> {
+            onNavigateBackClicked()
+        }
     }
 }
 

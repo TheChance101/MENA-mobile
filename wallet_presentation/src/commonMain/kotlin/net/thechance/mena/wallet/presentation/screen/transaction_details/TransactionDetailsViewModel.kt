@@ -12,7 +12,6 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
-import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
@@ -33,32 +32,6 @@ class TransactionDetailsViewModel(
 
     init {
         getTransactionDetails()
-    }
-
-    private fun getTransactionDetails() {
-        tryToExecute(
-            callee = {
-                transactionRepository.getTransactionDetails(
-                    transactionId = Uuid.parse(transactionDetailsArgs.id)
-                )
-            },
-            onSuccess = ::onGetTransactionDetailsSuccess,
-            onError = ::onGetTransactionDetailsError,
-            onStart = ::onGetTransactionDetailsStart,
-            dispatcher = ioDispatcher
-        )
-    }
-
-    private fun onGetTransactionDetailsSuccess(transaction: Transaction) {
-        updateState { it.copy(transactionDetailsUiState = UiState.Success(transaction.toUi())) }
-    }
-
-    private fun onGetTransactionDetailsError(throwable: Throwable) {
-        updateState { it.copy(transactionDetailsUiState = UiState.Error(throwable)) }
-    }
-
-    private fun onGetTransactionDetailsStart() {
-        updateState { it.copy(transactionDetailsUiState = UiState.Loading) }
     }
 
     override fun onBackButtonClicked() {
@@ -85,11 +58,49 @@ class TransactionDetailsViewModel(
                     mimeType = IMAGE_TYPE
                 )
             },
-            onSuccess = { updateState { it.copy(isShareReceiptBtnLoading = false) } },
+            onSuccess = { onScreenShotCapturedSuccess() },
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
             dispatcher = ioDispatcher
         )
+    }
+
+    override fun onRefresh() {
+        getTransactionDetails()
+    }
+
+    private fun getTransactionDetails() {
+        tryToExecute(
+            callee = {
+                transactionRepository.getTransactionDetails(
+                    transactionId = Uuid.parse(transactionDetailsArgs.id)
+                )
+            },
+            onSuccess = ::onGetTransactionDetailsSuccess,
+            onError = ::onGetTransactionDetailsError,
+            onStart = ::onGetTransactionDetailsStart,
+            dispatcher = ioDispatcher
+        )
+    }
+
+    private fun onGetTransactionDetailsSuccess(transaction: Transaction) {
+        updateState {
+            it.copy(
+                transactionDetailsUiState = UiState.Success(transaction.toUi())
+            )
+        }
+    }
+
+    private fun onGetTransactionDetailsError(throwable: Throwable) {
+        updateState { it.copy(transactionDetailsUiState = UiState.Error(throwable)) }
+    }
+
+    private fun onGetTransactionDetailsStart() {
+        updateState { it.copy(transactionDetailsUiState = UiState.Loading) }
+    }
+
+    private fun onScreenShotCapturedSuccess() {
+        { updateState { it.copy(isShareReceiptBtnLoading = false) } }
     }
 
     private suspend fun onShareReceiptError(throwable: Throwable) {
@@ -133,10 +144,6 @@ class TransactionDetailsViewModel(
                 snackBar = oldState.snackBar.copy(isVisible = false)
             )
         }
-    }
-
-    override fun onRefresh() {
-        getTransactionDetails()
     }
 
     private companion object {
