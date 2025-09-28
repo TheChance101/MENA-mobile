@@ -4,59 +4,75 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import net.thechance.mena.wallet.data.dto.BalanceDto
-import net.thechance.mena.wallet.data.exceptions.ErrorDto
-import net.thechance.mena.wallet.data.extension.NetworkClientImpl
-import net.thechance.mena.wallet.data.repository.balance.BalanceRepositoryImpl
+import net.thechance.mena.wallet.data.network_client.NetworkClient
 
-
-val jsonSerialization = Json { ignoreUnknownKeys = true }
-val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-
-fun MockRequestHandleScope.defaultBalanceResponse(balance: Double = 150.75) = respond(
-    content = jsonSerialization.encodeToString(
-        BalanceDto.serializer(),
-        BalanceDto(balance)
-    ),
-    status = HttpStatusCode.OK,
-    headers = jsonHeaders
-)
-
-fun MockRequestHandleScope.errorResponse(
-    code: HttpStatusCode,
-    message: String
-) = respond(
-    content = jsonSerialization.encodeToString(
-        ErrorDto.serializer(),
-        ErrorDto(message)
-    ),
-    status = code
-)
-
-
-fun createBalanceRepository(
-    balanceResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
-): BalanceRepositoryImpl {
-    val client = HttpClient(MockEngine { request ->
-        when (request.url.encodedPath) {
-            "/wallet/balance" -> balanceResponse?.invoke(this) ?: defaultBalanceResponse()
-            else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
-        }
-    }) {
-        install(ContentNegotiation) { json(jsonSerialization) }
-        install(DefaultRequest) { contentType(ContentType.Application.Json) }
+fun createNetworkClient(
+    respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
+        respond(
+            content = """{}""",
+            status = HttpStatusCode.OK,
+            headers = headersOf(
+                HttpHeaders.ContentType,
+                ContentType.Application.Json.toString()
+            )
+        )
     }
+): NetworkClient {
+    val mockEngine = MockEngine { request ->
+        respond(request)
+    }
+    val client = HttpClient(mockEngine) {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }
+            )
+        }
+    }
+    return object : NetworkClient {
+        override suspend fun get(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.get(urlString, block)
+        }
 
-    return BalanceRepositoryImpl(NetworkClientImpl(client))
+        override suspend fun post(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.post(urlString, block)
+        }
+
+        override suspend fun put(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.put(urlString, block)
+        }
+
+        override suspend fun delete(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.delete(urlString, block)
+        }
+    }
 }
-
