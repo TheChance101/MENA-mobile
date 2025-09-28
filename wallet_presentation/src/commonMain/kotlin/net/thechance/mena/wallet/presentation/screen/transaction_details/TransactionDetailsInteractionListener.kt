@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.transactiondetails
+package net.thechance.mena.wallet.presentation.screen.transaction_details
 
 
 interface TransactionDetailsInteractionListener {

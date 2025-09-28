@@ -1,5 +1,6 @@
-package net.thechance.mena.wallet.presentation.screen.transactiondetails
+package net.thechance.mena.wallet.presentation.screen.transaction_details
 
+import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -12,6 +13,7 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
@@ -24,17 +26,25 @@ import kotlin.uuid.Uuid
 class TransactionDetailsViewModel(
     @Provided val imageSharer: ImageSharer,
     @Provided val transactionRepository: TransactionRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    savedStateHandle: SavedStateHandle
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
-        TransactionDetailsScreenState()
-    ), TransactionDetailsInteractionListener {
+    TransactionDetailsScreenState()
+), TransactionDetailsInteractionListener {
+    val transactionId =
+        savedStateHandle.get<String>(TransactionDetailsScreenRoute.TRANSACTION_ID) ?: ""
+
     init {
         getTransactionDetails()
     }
 
     private fun getTransactionDetails() {
         tryToExecute(
-            callee = { transactionRepository.getTransactionDetails(Uuid.random()) },
+            callee = {
+                transactionRepository.getTransactionDetails(
+                    transactionId = Uuid.parse(transactionId)
+                )
+            },
             onSuccess = ::onGetTransactionDetailsSuccess,
             onError = ::onGetTransactionDetailsError,
             onStart = ::onGetTransactionDetailsStart,
@@ -61,7 +71,7 @@ class TransactionDetailsViewModel(
     override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
         tryToExecute(
             callee = { capture() },
-            onSuccess = {updateState { it.copy(isShareReceiptBtnLoading = false) }},
+            onSuccess = { updateState { it.copy(isShareReceiptBtnLoading = false) } },
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,
             dispatcher = ioDispatcher

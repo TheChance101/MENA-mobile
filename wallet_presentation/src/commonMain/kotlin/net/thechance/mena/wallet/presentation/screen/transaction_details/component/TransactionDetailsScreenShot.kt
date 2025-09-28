@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.transactiondetails.component
+package net.thechance.mena.wallet.presentation.screen.transaction_details.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import io.github.suwasto.capturablecompose.Capturable
 import io.github.suwasto.capturablecompose.CaptureController
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.wallet.presentation.screen.transactiondetails.TransactionDetailsScreenState.TransactionDetailsUiState
+import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

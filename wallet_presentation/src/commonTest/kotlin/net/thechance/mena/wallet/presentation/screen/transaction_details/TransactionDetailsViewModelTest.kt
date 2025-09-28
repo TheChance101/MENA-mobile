@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class)
 
-package net.thechance.mena.wallet.presentation.screen.transactiondetails
+package net.thechance.mena.wallet.presentation.screen.transaction_details
 
 import app.cash.turbine.test
 import dev.mokkery.MockMode

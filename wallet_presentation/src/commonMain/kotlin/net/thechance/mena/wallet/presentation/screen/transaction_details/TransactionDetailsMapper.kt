@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package net.thechance.mena.wallet.presentation.screen.transactiondetails
+package net.thechance.mena.wallet.presentation.screen.transaction_details
 
 import androidx.compose.ui.graphics.ImageBitmap
 import io.github.suwasto.capturablecompose.CompressionFormat

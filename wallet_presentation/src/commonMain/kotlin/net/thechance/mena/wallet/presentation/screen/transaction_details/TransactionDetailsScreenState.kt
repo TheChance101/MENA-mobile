@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.transactiondetails
+package net.thechance.mena.wallet.presentation.screen.transaction_details
 
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.base.SnackBarState

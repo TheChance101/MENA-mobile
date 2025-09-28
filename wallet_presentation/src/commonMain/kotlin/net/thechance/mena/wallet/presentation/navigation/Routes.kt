@@ -21,6 +21,9 @@ data class TransactionDetailsScreenRoute(
     init {
         Uuid.parse(id)
     }
+    companion object{
+        const val TRANSACTION_ID = "id"
+    }
 }
 
 @Serializable
