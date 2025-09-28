@@ -9,6 +9,7 @@ import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -68,12 +69,10 @@ class OTPScreenViewModelTest {
 
     @Test
     fun `should show error message when otp is incorrect and user click on verify button`() = runTest {
-        val otp = "123456"
-        viewModel.onOTPChanged(otp)
-        everySuspend { forgetPasswordRepository.verifyOTPCode(otp , phoneNumber) } throws InvalidOTPException()
+        everySuspend { forgetPasswordRepository.verifyOTPCode(any() ,any()) } throws InvalidOTPException()
 
         viewModel.onVerifyClicked()
-        testDispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         viewModel.state.test {
             val state = awaitItem()

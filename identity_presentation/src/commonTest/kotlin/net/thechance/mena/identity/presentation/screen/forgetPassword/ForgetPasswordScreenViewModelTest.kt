@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.forgetPassword
 
 import app.cash.turbine.test
-import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
@@ -13,8 +13,10 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ForgetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
+import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.MobileNumberValidator
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -24,14 +26,17 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ForgetPasswordScreenViewModelTest {
     private val forgetPasswordRepository = mock<ForgetPasswordRepository>()
-    private val useCase: LoginUseCase  = mock(mode = MockMode.autofill)
+    private lateinit var useCase: LoginUseCase
     private val testDispatcher = StandardTestDispatcher()
     lateinit var viewModel: ForgetPasswordScreenViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        useCase
+        useCase = LoginUseCase(
+            authenticationRepository = mock<AuthenticationRepository>(),
+            mobileNumberValidator = MobileNumberValidator()
+        )
         viewModel = ForgetPasswordScreenViewModel(
             loginUseCase = useCase,
             forgetPasswordRepository = forgetPasswordRepository
@@ -60,6 +65,12 @@ class ForgetPasswordScreenViewModelTest {
             viewModel.onPhoneChanged(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
             viewModel.onClickConfirmButton()
+            everySuspend {
+                forgetPasswordRepository.requestOTP(
+                    phoneNumber,
+                    any()
+                )
+            } returns Unit
 
             viewModel.effect.test {
                 viewModel.onContinueClicked()
@@ -73,13 +84,12 @@ class ForgetPasswordScreenViewModelTest {
     @Test
     fun `on continue button clicked should show error message when user enter invalid phone number`() =
         runTest {
-            val phoneNumber = "0110066161"
+            val phoneNumber = "01100661617"
             everySuspend {
-                forgetPasswordRepository.requestOTP(
-                    phoneNumber,
-                    any()
-                )
-            } throws InvalidMobileNumberException("11006600171")
+                forgetPasswordRepository.requestOTP(any(), any())
+            } throws InvalidMobileNumberException("")
+            viewModel.onPhoneChanged(phoneNumber)
+            viewModel.onSelectCountryItem(MenaCountry.EGYPT)
 
             viewModel.onContinueClicked()
             testDispatcher.scheduler.advanceUntilIdle()
