@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.github.suwasto.capturablecompose.rememberCaptureController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
@@ -88,14 +89,19 @@ private fun TransactionDetailsScreenContent(
                 is UiState.Loading, UiState.Idle -> {}
                 is UiState.Success -> {
                     Box(modifier = Modifier.fillMaxSize()) {
+                        val captureController = rememberCaptureController()
                         DetailsSection(
                             modifier = Modifier.padding(bottom = 88.dp).align(Alignment.Center),
                             transactionDetailsUiState = transactionState.data
                         )
-                        if (transactionState.data.transactionStatus == Transaction.Status.SUCCESS){
+                        if (transactionState.data.transactionStatus == Transaction.Status.SUCCESS) {
                             OutlinedButton(
                                 text = stringResource(Res.string.share_receipt),
-                                onClick = interactionListener::onShareReceiptButtonClicked,
+                                onClick = {
+                                    interactionListener.onShareReceiptButtonClicked(
+                                        capture = captureController::capture
+                                    )
+                                },
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
                                     .padding(horizontal = 16.dp, vertical = 24.dp)
@@ -111,7 +117,7 @@ private fun TransactionDetailsScreenContent(
                                 shape = RoundedCornerShape(Theme.radius.md)
                             )
                             TransactionDetailsScreenShot(
-                                captureController = state.captureController,
+                                captureController = captureController,
                                 onScreenShotCapture = { imageBitmap ->
                                     interactionListener.onScreenShotCaptured(
                                         byteArray = imageBitmapToByteArray(imageBitmap),
@@ -146,7 +152,7 @@ private fun TransactionDetailsScreenPreview() {
             ),
             interactionListener = object : TransactionDetailsInteractionListener {
                 override fun onBackButtonClicked() {}
-                override fun onShareReceiptButtonClicked() {}
+                override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {}
                 override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {}
                 override fun onRefresh() {}
             }

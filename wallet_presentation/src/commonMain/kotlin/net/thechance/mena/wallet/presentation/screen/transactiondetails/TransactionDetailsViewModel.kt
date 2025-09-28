@@ -58,9 +58,9 @@ class TransactionDetailsViewModel(
         sendEffect(TransactionDetailsEffect.NavigateBack)
     }
 
-    override fun onShareReceiptButtonClicked() {
+    override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
         tryToExecute(
-            callee = { state.value.captureController.capture() },
+            callee = { capture() },
             onSuccess = {},
             onError = ::onShareReceiptError,
             onStart = ::onShareReceiptStart,

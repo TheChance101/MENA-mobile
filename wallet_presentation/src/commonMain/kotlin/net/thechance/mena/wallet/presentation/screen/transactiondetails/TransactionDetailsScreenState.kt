@@ -1,6 +1,5 @@
 package net.thechance.mena.wallet.presentation.screen.transactiondetails
 
-import io.github.suwasto.capturablecompose.CaptureController
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
@@ -11,7 +10,6 @@ data class TransactionDetailsScreenState(
     val transactionDetailsUiState: UiState<TransactionDetailsUiState> = UiState.Idle,
     val isShareReceiptBtnLoading: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
-    val captureController: CaptureController = CaptureController()
 ){
     data class TransactionDetailsUiState(
         val id: String = "",
