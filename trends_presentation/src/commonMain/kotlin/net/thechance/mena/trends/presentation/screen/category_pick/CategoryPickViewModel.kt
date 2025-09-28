@@ -1,5 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.category_pick
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -9,7 +12,8 @@ import org.koin.core.annotation.Provided
 
 @KoinViewModel
 internal class CategoryPickViewModel(
-    @Provided private val repository: CategoryRepository
+    @Provided private val repository: CategoryRepository,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CategoryPickScreenState, CategoryPickScreenEffect>(
     initialState = CategoryPickScreenState()
 ), CategoryPickInteractionListener {
@@ -24,7 +28,8 @@ internal class CategoryPickViewModel(
             onSuccess = ::handleLoadCategoriesSuccess,
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = ::startLoading,
-            onEnd = ::endLoading
+            onEnd = ::endLoading,
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -43,6 +48,7 @@ internal class CategoryPickViewModel(
             onStart = ::startSaving,
             onEnd = ::endSaving,
             onError = { errorState -> updateState { copy(error = errorState) } },
+            dispatcher = defaultDispatcher
         )
     }
 
