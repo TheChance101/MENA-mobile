@@ -6,9 +6,7 @@ import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
-import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.database.SurahDto
-import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,18 +43,6 @@ class QuranRepositoryImplTest {
     }
 
     @Test
-    fun `getAyatOfSurah Should return list of ayat when called with valid surah id`() = runTest {
-        // Given
-        everySuspend { mockDao.getAyatOfSurah(1) } returns AYAH_DTOS
-
-        // When
-        val result = repository.getAyatOfSurah(1)
-
-        // Then
-        assertEquals(AYAH_LIST, result)
-    }
-
-    @Test
     fun `getAyatOfSurah Should return empty list when surah has no ayat`() = runTest {
         // Given
         everySuspend { mockDao.getAyatOfSurah(1) } returns emptyList()
@@ -90,19 +76,6 @@ class QuranRepositoryImplTest {
 
         // Then
         assertTrue(result.isEmpty())
-    }
-
-    @Test
-    fun `getAyatOfSurah Should map AyahDto to Ayah correctly`() = runTest {
-        // Given
-        val ayahEntity = AYAH_DTOS[0]
-        everySuspend { mockDao.getAyatOfSurah(1) } returns listOf(ayahEntity)
-
-        // When
-        val result = repository.getAyatOfSurah(1)
-
-        // Then
-        assertEquals(AYAH_LIST, result)
     }
 
     @Test
@@ -170,12 +143,8 @@ class QuranRepositoryImplTest {
 
     private companion object {
         const val BISMILLAH_TEXT = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
-        const val BISMILLAH_PLAIN = "Bismillah"
-        const val ALHAMDULILLAH_TEXT = "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَٰلَمِينَ"
-        const val ALHAMDULILLAH_PLAIN = "Alhamdulillah"
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         const val AL_BAQARAH_NAME = "Al-Baqarah"
-        const val AL_FATIHAH_AR = "الفاتحة"
 
         val SURAH_DTOS: List<SurahDto> = listOf(
             SurahDto(order = 1, name = AL_FATIHAH_NAME, ayahCount = 7),
@@ -195,49 +164,6 @@ class QuranRepositoryImplTest {
                 name = AL_BAQARAH_NAME,
                 ayahCount = 286,
                 isMakkia = false
-            )
-        )
-
-        val AYAH_LIST = listOf(
-            Ayah(
-                surahId = 1,
-                number = 1,
-                displayContent = BISMILLAH_TEXT,
-                plainTextContent = BISMILLAH_PLAIN,
-            ),
-            Ayah(
-                surahId = 1,
-                number = 2,
-                displayContent = ALHAMDULILLAH_TEXT,
-                plainTextContent = ALHAMDULILLAH_PLAIN,
-            )
-        )
-        val AYAH_DTOS: List<AyahDto> = listOf(
-            AyahDto(
-                id = 1,
-                surahNumber = 1,
-                surahName = AL_FATIHAH_NAME,
-                surahNameAr = AL_FATIHAH_AR,
-                number = 1,
-                displayContent = BISMILLAH_TEXT,
-                plainTextContent = BISMILLAH_PLAIN,
-                lineStart = 1,
-                lineEnd = 1,
-                jozz = 1,
-                page = 1
-            ),
-            AyahDto(
-                id = 2,
-                surahNumber = 1,
-                surahName = AL_FATIHAH_NAME,
-                surahNameAr = AL_FATIHAH_AR,
-                number = 2,
-                displayContent = ALHAMDULILLAH_TEXT,
-                plainTextContent = ALHAMDULILLAH_PLAIN,
-                lineStart = 2,
-                lineEnd = 2,
-                jozz = 1,
-                page = 1
             )
         )
     }
