@@ -1,8 +1,10 @@
 package net.thechance.mena.wallet.presentation.screen.wallet
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
@@ -13,14 +15,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
+import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.my_wallet
+import mena.wallet_presentation.generated.resources.transaction_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
+import net.thechance.mena.wallet.presentation.screen.wallet.component.LabeledButtonWithCircularIcon
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -28,14 +34,22 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun WalletScreen(
-    viewModel: WalletViewModel = koinViewModel()
+fun WalletMainScreen(
+    onNavigateBackClicked: () -> Unit,
+    navigateToTransactionHistory: () -> Unit,
+    viewModel: WalletViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
-        onEffect = ::onWalletEffect
+        onEffect = { effect ->
+            onWalletEffect(
+                effect,
+                onNavigateBackClicked,
+                navigateToTransactionHistory
+            )
+        }
     )
 
     WalletContent(
@@ -50,7 +64,9 @@ private fun WalletContent(
     interactionListener: WalletInteractionListener
 ) {
     WalletScaffold(
-        modifier = Modifier.statusBarsPadding(),
+        modifier = Modifier
+            .background(Theme.colorScheme.background.surface)
+            .statusBarsPadding(),
         topBar = {
             AppBar(
                 title = stringResource(Res.string.my_wallet),
@@ -75,16 +91,30 @@ private fun WalletContent(
             BalanceCard(
                 balance = state.balance,
                 onRetry = interactionListener::onRetryLoadBalanceClicked,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier
+                    .padding(top = 16.dp)
+            )
+            LabeledButtonWithCircularIcon(
+                icon = painterResource(Res.drawable.ic_clock),
+                contentDescription = stringResource(Res.string.transaction_history),
+                label = stringResource(Res.string.transaction_history),
+                onClick = interactionListener::onTransactionHistoryClicked,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
             )
         }
     }
 }
 
-
-private fun onWalletEffect(effect: WalletEffect) {
+private fun onWalletEffect(
+    effect: WalletEffect,
+    onNavigateBackClicked: () -> Unit,
+    navigateToTransactionHistory: () -> Unit
+) {
     when (effect) {
-        is WalletEffect.NavigateBack -> { /* TODO("Handle navigation back") */ }
+        WalletEffect.NavigateBack -> onNavigateBackClicked()
+        WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
     }
 }
 
@@ -99,6 +129,7 @@ private fun WalletScreenPreview() {
             interactionListener = object : WalletInteractionListener {
                 override fun onBackClicked() {}
                 override fun onRetryLoadBalanceClicked() {}
+                override fun onTransactionHistoryClicked() {}
             }
         )
     }

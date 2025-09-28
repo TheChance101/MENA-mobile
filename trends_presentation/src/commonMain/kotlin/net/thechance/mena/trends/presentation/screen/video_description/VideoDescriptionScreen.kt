@@ -44,6 +44,7 @@ import net.thechance.mena.designsystem.presentation.component.textField.MultiLin
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -60,7 +61,9 @@ internal fun VideoDescriptionScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is VideoDescriptionEffect.NavigateBack -> navController.navigateUp()
-            is VideoDescriptionEffect.NavigateToSelectCategories -> {} ///TODO navigate to category screen
+            is VideoDescriptionEffect.NavigateToSelectCategories -> navController.navigate(
+                Route.CategoriesPublish(trendId = effect.trendId, description = effect.description)
+            )
         }
     }
 

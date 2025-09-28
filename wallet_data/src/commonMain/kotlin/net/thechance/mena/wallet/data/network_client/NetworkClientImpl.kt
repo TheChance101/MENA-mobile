@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.data.extension
+package net.thechance.mena.wallet.data.network_client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineConfig
@@ -19,14 +19,20 @@ import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import net.thechance.mena.identity.domain.service.AuthorizationService
+import org.koin.core.annotation.Named
+import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 expect val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
 
 @Single
 class NetworkClientImpl(
-    private val client: HttpClient = buildClient()
+    @Provided private val authorizationService: AuthorizationService,
+    @Provided @Named("baseUrl") private val baseUrl: String
 ): NetworkClient {
+
+    private val client: HttpClient = buildClient()
 
     override suspend fun get(
         urlString: String,
@@ -56,44 +62,49 @@ class NetworkClientImpl(
         return client.delete(urlString, block)
     }
 
-    companion object {
-        private fun buildClient(): HttpClient {
-            return HttpClient(platformHttpClientEngineFactory) {
-                defaultRequest { url(BASE_URL) }
+    private fun buildClient(): HttpClient {
+        return HttpClient(platformHttpClientEngineFactory) {
+            defaultRequest { url(baseUrl) }
 
-                install(Logging) { level = LogLevel.ALL }
+            install(Logging) { level = LogLevel.ALL }
 
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            prettyPrint = true
-                            isLenient = true
-                            ignoreUnknownKeys = true
-                            encodeDefaults = true
-                        }
-                    )
-                }
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        prettyPrint = true
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                        encodeDefaults = true
+                    }
+                )
+            }
 
-                install(plugin = Auth) {
-                    bearer {
-                        loadTokens {
-                            BearerTokens(
-                                //TODO: Add token
-                                accessToken = "",
-                                refreshToken = ""
-                            )
-                        }
+            install(plugin = Auth) {
+                bearer {
+                    loadTokens {
+                        BearerTokens(
+                            accessToken = authorizationService.getAccessToken(),
+                            refreshToken = ""
+                        )
+                    }
+                    refreshTokens {
+                        BearerTokens(
+                            accessToken = authorizationService.refreshToken(),
+                            refreshToken = ""
+                        )
                     }
                 }
+            }
 
-                install(HttpTimeout) {
-                    requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-                    connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-                    socketTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-                }
+            install(HttpTimeout) {
+                requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+                connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+                socketTimeoutMillis = TIME_OUT_INTERVAL_MILLI
             }
         }
-        private const val BASE_URL = "https://mena-dev.the-chance.net/"
+    }
+
+    companion object {
         private const val TIME_OUT_INTERVAL_MILLI = 15_000L
     }
 

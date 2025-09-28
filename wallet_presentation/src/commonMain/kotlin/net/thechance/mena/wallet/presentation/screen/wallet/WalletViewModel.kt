@@ -91,4 +91,8 @@ class WalletViewModel(
     override fun onRetryLoadBalanceClicked() {
         getBalance()
     }
+
+    override fun onTransactionHistoryClicked() {
+        sendEffect(WalletEffect.NavigateToTransactionHistory)
+    }
 }

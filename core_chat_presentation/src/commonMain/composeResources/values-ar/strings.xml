@@ -25,4 +25,7 @@
     <string name="delete">حذف</string>
     <string name="delete_chat">حذف المحادثة</string>
     <string name="confirm_delete_chat_message">هل أنت متأكد من حذف هذه المحادثة؟</string>
+    <string name="error_cant_subscribe_to_new_messages">غير متصل</string>
+    <string name="error_cant_get_messages">لم نتمكن من جلب الرسائل</string>
+    <string name="contact_not_mena_user">هذا الشخص لا يملك حساب مينا</string>
 </resources>

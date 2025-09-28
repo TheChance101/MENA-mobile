@@ -1,25 +1,26 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.presentation.screen.chat
+
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
 
 interface ChatInteractionListener : MessageListInteractionListener {
 
     fun onBackClicked()
-    fun onMenuClicked()
-
-    fun onChatActionsDialogDismissed()
 
     fun onInputMessageChanged(value: String)
     fun onSendMessageClicked()
-
-    fun onDeleteChatClicked()
-    fun onDeleteChatDialogDismissed()
-    fun onConfirmDeleteChat()
 }
 
 interface MessageListInteractionListener {
-    fun onMessageClicked(messageId: String)
+    fun onMessageClicked(messageId: Uuid)
 
-    fun onFailedMessageClicked(messageId: String)
+    fun onFailedMessageClicked(message: MessageUiState)
 
-    fun onResendMessageClicked(messageId: String)
+    fun onDeleteFailedMessageClicked()
+
+    fun onResendMessageClicked()
     fun onResendMessageDialogDismissed()
 }

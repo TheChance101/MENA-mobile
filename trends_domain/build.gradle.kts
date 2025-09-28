@@ -48,7 +48,19 @@ project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
+        }
+    }
+
+    filters {
+        excludes {
+            packages("mena.trends_domain.generated.resources*")
+            classes(
+                "**.di.**",
+                "**.entity.**",
+                "**.exception.**",
+                "**org.koin.ksp.generated**",
+            )
         }
     }
 }
