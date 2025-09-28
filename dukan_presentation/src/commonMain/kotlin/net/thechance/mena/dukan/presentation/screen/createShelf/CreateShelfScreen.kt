@@ -15,13 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.create
 import mena.dukan_presentation.generated.resources.create_shelf
-import mena.dukan_presentation.generated.resources.failed_to_create_shelf
 import mena.dukan_presentation.generated.resources.ic_arrow_left
-import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_title
 import mena.dukan_presentation.generated.resources.title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -32,7 +29,6 @@ import net.thechance.mena.designsystem.presentation.component.textField.TextFiel
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
-import net.thechance.mena.dukan.presentation.component.SnackBarMessage
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -128,21 +124,14 @@ private fun CreateShelfContent(
                 )
             }
         }
-        state.snackBarMessage?.let { snackBarMessage ->
+        
+        state.snackBarState?.let { snackBarState ->
             SnackBar(
-                snackBarUiState = SnackBarUiState(
-                    snackBarType = when (snackBarMessage) {
-                        is SnackBarMessage.Success -> SnackBarType.SUCCESS
-                        is SnackBarMessage.Error -> SnackBarType.ERROR
-                    },
-                    message = when (snackBarMessage) {
-                        is SnackBarMessage.Success -> stringResource(Res.string.add_shelf_successfully)
-                        is SnackBarMessage.Error -> stringResource(Res.string.shelf_name_is_already_exist)
-                    }
-                ),
+                snackBarUiState = snackBarState,
                 onDismiss = interactionListener::onDismissSnackBar
             )
         }
+
         PrimaryButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
