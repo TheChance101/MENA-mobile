@@ -29,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -46,7 +47,11 @@ internal fun UploadReelScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            is UploadReelScreenEffect.NavigateToAddDescription -> {} // TODO
+            is UploadReelScreenEffect.NavigateToAddDescription -> {
+                screenState.trendId?.let {
+                    navController.navigate(Route.VideoDescription(it))
+                }
+            }
             UploadReelScreenEffect.NavigateBack -> navController.popBackStack()
         }
     }
