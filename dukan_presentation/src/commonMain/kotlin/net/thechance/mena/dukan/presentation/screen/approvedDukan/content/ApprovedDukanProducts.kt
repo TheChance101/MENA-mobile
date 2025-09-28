@@ -45,7 +45,7 @@ private fun NoShelvesContent() {
         header = {
             Text(
                 text = stringResource(Res.string.dukan_approved_header),
-                style = Theme.typography.title.medium,
+                style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.Center
             )
@@ -61,7 +61,7 @@ private fun EmptyStateContent() {
         header = {
             Text(
                 text = stringResource(Res.string.shelf_empty_title),
-                style = Theme.typography.title.medium,
+                style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.Center
             )
