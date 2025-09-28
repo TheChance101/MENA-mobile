@@ -11,6 +11,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -109,7 +111,7 @@ class CreateShelfViewModelTest {
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
         createShelfViewModel.showSnackBar(
-            message = "Invalid shelf",
+            message = Res.string.shelf_name_is_invalid,
             type = SnackBarType.ERROR
         )
 
