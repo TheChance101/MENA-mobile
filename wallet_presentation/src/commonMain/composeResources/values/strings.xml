@@ -54,4 +54,5 @@
     <string name="pick_start_date">Pick the start date</string>
     <string name="pick_end_date">Pick the end date</string>
     <string name="pick">Pick</string>
+    <string name="transaction_history">Transaction History</string>
 </resources>

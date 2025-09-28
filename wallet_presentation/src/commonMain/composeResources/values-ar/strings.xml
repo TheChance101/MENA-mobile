@@ -54,4 +54,5 @@
     <string name="pick_start_date">اختر تاريخ البداية</string>
     <string name="pick_end_date">اختار تاريخ النهاية</string>
     <string name="pick">اختر</string>
+    <string name="transaction_history">سجل التحويلات المالية</string>
 </resources>

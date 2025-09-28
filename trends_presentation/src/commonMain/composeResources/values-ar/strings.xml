@@ -43,6 +43,12 @@
     <string name="page_number"> %1$d / %2$d </string>
     <string name="characters_color_animation_label">حركه لون الحروف</string>
 
+    <string name="upload_failed">فشل الرفع</string>
+    <string name="loading">جاري التحميل</string>
+    <string name="success">تم بنجاح</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="error">خطأ</string>
+    <string name="thumbnail">صورة مصغرة</string>
     <string name="max_file_size_exceeded">الحد الأقصى للحجم المسموح به هو 100 ميجا بايت</string>
     <string name="max_file_duration_exceeded">الحد الأقصى للمدة المسموح بها دقيقة واحدة</string>
 </resources>
