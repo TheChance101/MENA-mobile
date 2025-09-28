@@ -89,9 +89,13 @@ class CategoryPublishViewModelTest {
         everySuspend {
             reelsRepository.updateReelById(any(), any(), any())
         } returns Unit
+        testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.onCategoryClick(sampleCategory.id)
+        testDispatcher.scheduler.advanceUntilIdle()
+
         viewModel.onPublishClick()
+        testDispatcher.scheduler.advanceUntilIdle()
 
         verifySuspend {
             reelsRepository.updateReelById(
