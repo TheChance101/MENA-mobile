@@ -75,7 +75,19 @@ android {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
+        }
+    }
+
+    filters {
+        excludes {
+            packages("mena.trends_presentation.generated.resources*")
+            classes(
+                "**.di.**",
+                "**.dto.**",
+                "**.util.**",
+                "**org.koin.ksp.generated**",
+            )
         }
     }
 }

@@ -103,13 +103,23 @@ android {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
         }
     }
 
     filters {
+        includes {
+            classes("**.*ViewModel")
+        }
+
         excludes {
             packages("mena.trends_presentation.generated.resources*")
+            classes(
+                "**.di.**",
+                "**.navigation.**",
+                "**.shared.**",
+                "**org.koin.ksp.generated**",
+            )
         }
     }
 }
