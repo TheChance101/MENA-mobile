@@ -19,7 +19,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 fun Scaffold(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
-    snackBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     overlays: ScaffoldScope .() -> Unit = {},
     content: @Composable () -> Unit,
@@ -40,8 +39,9 @@ fun Scaffold(
             )
             .navigationBarsPadding()
             .systemBarsPadding(),
+        contentAlignment = Alignment.Center
     ) {
-        Column(Modifier.align(Alignment.Center)) {
+        Column {
             topBar()
             Box(
                 modifier = Modifier
@@ -52,7 +52,6 @@ fun Scaffold(
             }
             bottomBar()
         }
-        snackBar()
     }
 
     scope.items.forEach {

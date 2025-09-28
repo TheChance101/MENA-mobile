@@ -81,12 +81,6 @@ class LoginScreen(
                         onClickConfirm = listener::onClickConfirmButton
                     )
                 }
-            },
-            snackBar = {
-                ErrorSnackBar(
-                    errorMessage = state.errorMessage,
-                    onDismiss = listener::clearErrorMessage
-                )
             }
         ) {
             Box(
@@ -157,6 +151,10 @@ class LoginScreen(
                     )
                 }
             }
+            ErrorSnackBar(
+                errorMessage = state.errorMessage,
+                onDismiss = listener::clearErrorMessage
+            )
         }
     }
 
