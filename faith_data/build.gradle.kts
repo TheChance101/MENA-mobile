@@ -37,7 +37,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.mokkery.core)
             implementation(libs.kotlinx.coroutines.test)
-
+            implementation(libs.bundles.test)
         }
 
         iosMain.dependencies {
