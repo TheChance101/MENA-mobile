@@ -1,5 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -14,7 +17,8 @@ import org.koin.core.annotation.Provided
 internal class CategoryPublishViewModel(
     @Provided private val categoryPublishArgs: CategoryPublishArgs,
     @Provided private val categoryRepository: CategoryRepository,
-    @Provided private val reelsRepository: ReelsRepository
+    @Provided private val reelsRepository: ReelsRepository,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CategoryPublishState, CategoryPublishEffect>(
     initialState = CategoryPublishState()
 ), CategoryPublishInteractionListener {
@@ -29,7 +33,8 @@ internal class CategoryPublishViewModel(
             onSuccess = ::handleLoadCategoriesSuccess,
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
-            onEnd = { updateState { copy(isLoading = false) } }
+            onEnd = { updateState { copy(isLoading = false) } },
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -49,7 +54,8 @@ internal class CategoryPublishViewModel(
             onSuccess = { sendEffect(CategoryPublishEffect.NavigateToTrends) },
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isPublishButtonLoadingVisible = true) } },
-            onEnd = { updateState { copy(isPublishButtonLoadingVisible = false) } }
+            onEnd = { updateState { copy(isPublishButtonLoadingVisible = false) } },
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -66,5 +72,4 @@ internal class CategoryPublishViewModel(
             )
         }
     }
-
 }

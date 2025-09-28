@@ -43,9 +43,10 @@ class CategoryPublishViewModelTest {
         everySuspend { categoryRepository.getAllCategories() } returns listOf(sampleCategory)
         Dispatchers.setMain(testDispatcher)
         viewModel = CategoryPublishViewModel(
-           categoryPublishArgs = categoryPublishArgs,
+            categoryPublishArgs = categoryPublishArgs,
             categoryRepository = categoryRepository,
-            reelsRepository = reelsRepository
+            reelsRepository = reelsRepository,
+            defaultDispatcher = testDispatcher
         )
     }
 
