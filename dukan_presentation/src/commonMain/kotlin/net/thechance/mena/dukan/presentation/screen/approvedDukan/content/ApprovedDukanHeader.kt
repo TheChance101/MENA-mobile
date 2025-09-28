@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.approvedDukan.content
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,29 +30,31 @@ fun ApprovedDukanHeader(
     state: ApprovedDukanUiState,
     listener: ApprovedDukanInteractionListener
 ) {
-    Text(
-        text = stringResource(Res.string.shelves),
-        style = Theme.typography.title.small,
-        color = Theme.colorScheme.shadePrimary,
-        modifier = Modifier.padding(
-            horizontal = Theme.spacing._16,
-            vertical = Theme.spacing._8
+    Column {
+        Text(
+            text = stringResource(Res.string.shelves),
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(
+                horizontal = Theme.spacing._16,
+                vertical = Theme.spacing._8
+            )
         )
-    )
 
-    SelectionRow(
-        availableItems = state.availableShelves,
-        isItemSelected = listener.isShelfSelected(),
-        onItemSelected = listener::onShelfSelected,
-        onItemDeselected = listener::onShelfDeselected,
-        onItemEnabled = listener::onShelfEnabled,
-        getItemName = { it.name }
-    )
+        SelectionRow(
+            availableItems = state.availableShelves,
+            isItemSelected = listener.isShelfSelected(),
+            onItemSelected = listener::onShelfSelected,
+            onItemDeselected = listener::onShelfDeselected,
+            onItemEnabled = listener::onShelfEnabled,
+            getItemName = { it.name }
+        )
 
-    ProductCountRow(
-        productCount = state.totalProducts,
-        listener = listener
-    )
+        ProductCountRow(
+            productCount = state.totalProducts,
+            listener = listener
+        )
+    }
 }
 
 @Composable

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,10 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.this_shelf_is_empty
+import mena.dukan_presentation.generated.resources.approved_dukan
+import mena.dukan_presentation.generated.resources.dukan_approved_body
+import mena.dukan_presentation.generated.resources.dukan_approved_header
+import mena.dukan_presentation.generated.resources.empty_shelf
+import mena.dukan_presentation.generated.resources.shelf_empty_body
+import mena.dukan_presentation.generated.resources.shelf_empty_title
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanUiState
 import org.jetbrains.compose.resources.stringResource
 
@@ -42,47 +49,39 @@ fun ApprovedDukanProducts(
 
 @Composable
 private fun NoShelvesContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._24),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        // TODO: Replace with EmptyState component from design system when ready
-        Text(
-            text = "Create dukan request it approved now",
-            style = Theme.typography.title.medium,
-            color = Theme.colorScheme.shadePrimary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = Theme.spacing._8)
-        )
-        Text(
-            text = "Start create you shelf and products by click on create button below!",
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadeSecondary,
-            textAlign = TextAlign.Center
+        ImageWithTextContainer(
+            foregroundImageRes = Res.drawable.approved_dukan,
+            header = {
+                Text(
+                    text = stringResource(Res.string.dukan_approved_header),
+                    style = Theme.typography.title.medium,
+                    color = Theme.colorScheme.shadePrimary,
+                    textAlign = TextAlign.Center
+                )
+            },
+            bodyText = stringResource(Res.string.dukan_approved_body)
         )
     }
 }
 
 @Composable
 private fun EmptyStateContent() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._24),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // TODO: Replace with EmptyState component from design system when ready
-        Text(
-            text = stringResource(Res.string.this_shelf_is_empty),
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadeSecondary,
-            textAlign = TextAlign.Center
-        )
-    }
+    ImageWithTextContainer(
+        foregroundImageRes = Res.drawable.empty_shelf,
+        header = {
+            Text(
+                text = stringResource(Res.string.shelf_empty_title),
+                style = Theme.typography.title.medium,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center
+            )
+        },
+        bodyText = stringResource(Res.string.shelf_empty_body)
+    )
 }
 
 @Composable

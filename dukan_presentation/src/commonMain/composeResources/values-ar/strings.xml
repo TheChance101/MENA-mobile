@@ -47,4 +47,8 @@
     <string name="this_shelf_is_empty">هذا الرف فارغ</string>
     <string name="products">المنتجات</string>
     <string name="products_count">%1$d منتج</string>
+    <string name="dukan_approved_header">تم الموافقة على طلب إنشاء الدكان</string>
+    <string name="dukan_approved_body">ابدأ بإنشاء أرففك ومنتجاتك بالضغط على زر الإنشاء أدناه!</string>
+    <string name="shelf_empty_title">هذا الرف فارغ</string>
+    <string name="shelf_empty_body">ابدأ بإضافة منتجاتك إلى الرف بالضغط على زر الإضافة أعلاه!</string>
 </resources>

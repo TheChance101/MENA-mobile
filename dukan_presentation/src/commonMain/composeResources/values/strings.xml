@@ -63,4 +63,8 @@
     <string name="this_shelf_is_empty">This shelf is empty</string>"
     <string name="products">products</string>
     <string name="products_count">%1$d products</string>
+    <string name="dukan_approved_header">Create dukan request it approved now</string>
+    <string name="dukan_approved_body">Start create you shelf and products by click on create button below!</string>
+    <string name="shelf_empty_title">This shelf is empty</string>
+    <string name="shelf_empty_body">Start adding your products to shelf by click on add button above!</string>
 </resources>
