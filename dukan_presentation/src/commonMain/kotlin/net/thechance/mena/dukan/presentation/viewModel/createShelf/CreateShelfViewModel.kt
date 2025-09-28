@@ -3,11 +3,16 @@ package net.thechance.mena.dukan.presentation.viewModel.createShelf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.failed_to_create_shelf
+import mena.dukan_presentation.generated.resources.shelf_name_already_exists
+import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import org.jetbrains.compose.resources.StringResource
 
 class CreateShelfViewModel(
     private val shelfRepository: ShelfRepository,
@@ -36,7 +41,7 @@ class CreateShelfViewModel(
     override fun onCreateButtonClicked() {
         val title = state.value.shelfTitle
         if (!isTitleValid(title)) {
-            showSnackBar("Shelf name is invalid")
+            showSnackBar(Res.string.shelf_name_is_invalid)
             return
         }
 
@@ -74,13 +79,13 @@ class CreateShelfViewModel(
             updateState { copy(showShelfAddedSuccess = true) }
             emitEffect(CreateShelfEffect.NavigateToApprovedDukan)
         } else {
-            showSnackBar("Shelf name already exists")
+            showSnackBar(Res.string.shelf_name_already_exists)
         }
     }
 
     private fun onCreateClickedError() {
         updateState { copy(isLoading = false) }
-        showSnackBar("Failed to create shelf")
+        showSnackBar(Res.string.failed_to_create_shelf)
     }
 
     override fun onDismissSnackBar() {
@@ -93,7 +98,7 @@ class CreateShelfViewModel(
     }
 
     fun showSnackBar(
-        message: String,
+        message: StringResource,
         type: SnackBarType = SnackBarType.ERROR
     ) {
         updateState {

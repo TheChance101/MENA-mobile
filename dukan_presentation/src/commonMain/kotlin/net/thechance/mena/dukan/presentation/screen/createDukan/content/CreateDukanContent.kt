@@ -131,7 +131,7 @@ fun CreateDukanContent(
         SnackBar(
             snackBarUiState = SnackBarUiState(
                 snackBarType = SnackBarType.ERROR,
-                message = stringResource(Res.string.dukan_name_is_already_exist)
+                message = Res.string.dukan_name_is_already_exist
             ),
             isVisible = state.showSnackBar,
             onDismiss = listener::onDismissSnackBar
