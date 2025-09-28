@@ -21,7 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ErrorSnackBar(
     errorMessage: String?,
     onDismiss: () -> Unit,
-    modifier : Modifier = Modifier
+    modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = errorMessage != null,

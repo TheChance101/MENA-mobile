@@ -6,6 +6,6 @@ interface OTPScreenInteractionListener: BaseInteractionListener {
     fun onBackClicked()
     fun onVerifyClicked()
     fun onResendClicked()
-    fun onOtpChanged(otp: String)
+    fun onOTPChanged(otp: String)
     fun clearErrorMessage()
 }

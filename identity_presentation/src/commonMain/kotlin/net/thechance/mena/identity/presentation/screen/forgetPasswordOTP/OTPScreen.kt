@@ -80,7 +80,7 @@ class OTPScreen(
                 )
                 OtpInput(
                     otpValue = state.otpValue,
-                    onOtpChange = listener::onOtpChanged,
+                    onOtpChange = listener::onOTPChanged,
                     otpLength = 6,
                 )
 

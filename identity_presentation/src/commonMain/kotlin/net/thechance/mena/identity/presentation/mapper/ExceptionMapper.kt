@@ -15,5 +15,7 @@ internal fun mapErrorToMessage(error: ErrorState): String {
         ErrorState.Unauthorized -> "You don’t have permission to access the app."
         is ErrorState.SomethingWentWrong -> "Something went wrong"
         ErrorState.InvalidOTP -> "Invalid OTP"
+        ErrorState.TooManyRequests -> "Too many requests. Please try again later."
+        ErrorState.OTPExpired -> "OTP expired"
     }
 }

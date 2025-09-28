@@ -156,26 +156,6 @@ class LoginScreen(
                         onActionClick = listener::onRegisterClicked
                     )
                 }
-                AnimatedVisibility(
-                    visible = state.errorMessage != null,
-                    enter = slideInHorizontally(initialOffsetX = { it }),
-                    exit = slideOutHorizontally(targetOffsetX = { it })
-                ) {
-                    SnackBar(
-                        title = stringResource(Res.string.error),
-                        message = state.errorMessage ?: "",
-                        leadingIcon = painterResource(Res.drawable.ic_close_circle),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp)
-                            .padding(horizontal = 16.dp)
-                    )
-                }
-
-                LaunchedEffect(state.errorMessage) {
-                    delay(3000)
-                    listener.clearErrorMessage()
-                }
             }
         }
     }

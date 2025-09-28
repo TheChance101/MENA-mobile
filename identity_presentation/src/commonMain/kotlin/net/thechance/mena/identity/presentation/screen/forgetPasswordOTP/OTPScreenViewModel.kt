@@ -40,7 +40,7 @@ class OTPScreenViewModel(
         sendNewEffect(OTPScreenUIEffect.NavigateToResetPassword)
     }
 
-    override fun onOtpChanged(otp: String) {
+    override fun onOTPChanged(otp: String) {
         val filteredOtp = otp.filter { it.isDigit() }.take(OTP_LENGTH)
         if (filteredOtp == otp) {
             updateState { copy(otpValue = otp, isVerifyEnabled = filteredOtp.length == OTP_LENGTH) }
