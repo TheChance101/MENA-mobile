@@ -5,9 +5,11 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
+import org.koin.core.annotation.Single
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@Single
 class TransactionRepositoryImpl(): TransactionRepository {
         @OptIn(ExperimentalUuidApi::class)
         override suspend fun getTransactionHistory(): List<Transaction> {
