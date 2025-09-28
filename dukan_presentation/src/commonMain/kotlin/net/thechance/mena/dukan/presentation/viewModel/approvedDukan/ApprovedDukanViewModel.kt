@@ -1,13 +1,24 @@
 package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 
+import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.delete_shelf_description
+import mena.dukan_presentation.generated.resources.delete_shelf_success
+import mena.dukan_presentation.generated.resources.delete_shelf_title
+import mena.dukan_presentation.generated.resources.dismiss_description
+import mena.dukan_presentation.generated.resources.dismiss_title
+import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import org.jetbrains.compose.resources.StringResource
 
 class ApprovedDukanViewModel(
     private val shelfRepository: ShelfRepository,
@@ -26,12 +37,24 @@ class ApprovedDukanViewModel(
         emitEffect(ApprovedDukanEffect.NavigateBack)
     }
 
+    override fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                showSnackBar = true,
+                snackBarState = SnackBarUiState(
+                    snackBarType = type,
+                    message = message
+                )
+            )
+        }
+    }
+
     override fun onDismissSnackBar() {
-        updateState { 
+        updateState {
             copy(
                 showSnackBar = false,
-                showShelfAddedSuccess = false
-            ) 
+                snackBarState = SnackBarUiState()
+            )
         }
     }
 
@@ -87,7 +110,6 @@ class ApprovedDukanViewModel(
             copy(
                 isLoading = false,
                 showSnackBar = true,
-                showShelfAddedSuccess = false
             )
         }
     }
@@ -119,6 +141,48 @@ class ApprovedDukanViewModel(
             onSuccess = { products -> handleProductsLoaded(products) },
             onError = { updateState { copy(isLoadingProducts = false) } }
         )
+    }
+
+    override fun onDismissDeleteShelfConfirmationDialog() {
+        updateState {
+            copy(showDeleteConfirmationDialog = false)
+        }
+    }
+
+    override fun onShowDeleteShelfConfirmationDialog() {
+        val hasProduct = state.value.products.isNotEmpty()
+        updateState {
+            copy(
+                deleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(
+                    title = if (!hasProduct) Res.string.delete_shelf_title else Res.string.dismiss_title,
+                    description = if (!hasProduct) Res.string.delete_shelf_description else Res.string.dismiss_description,
+                    type = if (!hasProduct) ConfirmDialogType.DELETE else ConfirmDialogType.DISMISS
+                ),
+                showDeleteConfirmationDialog = true
+            )
+        }
+    }
+
+    override fun deleteShelf(shelfId: String) {
+        tryToExecute(
+            block = { shelfRepository.deleteShelf(shelfId) },
+            onSuccess = ::deleteShelfSuccess,
+            onError = ::deleteShelfFail
+        )
+    }
+
+    private fun deleteShelfSuccess(deleteShelf: Boolean) {
+        onDismissDeleteShelfConfirmationDialog()
+        if(deleteShelf) {
+            showSnackBar(type = SnackBarType.SUCCESS, message = Res.string.delete_shelf_success)
+        }
+        else{
+            showSnackBar(type = SnackBarType.ERROR, message = Res.string.error_for_delete_shelf)
+        }
+    }
+
+    private fun deleteShelfFail(error: Throwable) {
+        onDismissDeleteShelfConfirmationDialog()
     }
 
     private suspend fun getProductsForShelves(selectedShelves: Set<Shelf>): List<Product> {
