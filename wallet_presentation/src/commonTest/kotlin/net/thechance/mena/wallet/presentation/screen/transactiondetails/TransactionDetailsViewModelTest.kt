@@ -184,6 +184,25 @@ class TransactionDetailsViewModelTest {
         }
     }
 
+    @Test
+    fun `onRefresh should set transaction with loading when initially called`() = runTest {
+        everySuspend { transactionRepository.getTransactionDetails(any()) } returns transaction1
+
+        val viewModel = TransactionDetailsViewModel(
+            imageSharer = imageSharer,
+            transactionRepository = transactionRepository,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.state.test {
+            skipItems(3)
+            viewModel.onRefresh()
+            val initialState = awaitItem()
+            assertTrue(initialState.transactionDetailsUiState is UiState.Loading)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     private companion object {
         val transaction1Id = Uuid.random()
         val transaction1 = Transaction(
