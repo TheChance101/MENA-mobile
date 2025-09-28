@@ -2,8 +2,11 @@ package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -70,7 +73,7 @@ fun TransactionHistoryContent(
         modifier = Modifier.statusBarsPadding(),
         topBar = {
             AppBar(
-                title = Res.string.transactions_history.toString(),
+                title = stringResource(Res.string.transactions_history),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(
@@ -122,7 +125,7 @@ fun TransactionHistoryContent(
                     items(history.data) { transaction ->
                         TransactionHistoryCard(
                             transactionTypeIcon = getTransactionTypeIcon(transaction.type),
-                            transactionTitle = getTransactionTitle(transaction.type),
+                            transactionTitle = stringResource(getTransactionTitle(transaction.type)),
                             transactionTimeAndDate = transaction.timeAndDate,
                             amount = transaction.amount,
                             transactionStatus = transaction.status,
@@ -130,7 +133,11 @@ fun TransactionHistoryContent(
                             sender = transaction.sender,
                             receiver = transaction.receiver
                         )
-
+                        Box(
+                            modifier = Modifier
+                                .padding(top=4.dp).fillMaxWidth(1f).height(1.dp)
+                                .background(Theme.colorScheme.stroke)
+                        )
                     }
                 }
             }

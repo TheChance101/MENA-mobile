@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,14 +34,14 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.domain.entity.Transaction
 import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionHistoryCard(
     transactionTypeIcon: DrawableResource,
-    transactionTitle: StringResource,
+    transactionTitle: String,
     transactionTimeAndDate: String,
     amount: String,
     transactionStatus: Transaction.Status,
@@ -52,7 +51,8 @@ fun TransactionHistoryCard(
     receiver: String? = null
 ) {
     Row(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .padding(vertical = 16.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onTransactionCardClicked() },
@@ -72,11 +72,6 @@ fun TransactionHistoryCard(
             sender = sender,
             receiver = receiver,
         )
-        Box(
-            modifier = Modifier
-                .weight(1f).height(1.dp)
-                .background(Theme.colorScheme.stroke)
-        )
     }
 }
 
@@ -93,13 +88,13 @@ private fun TransactionIcon(
     ) {
         Icon(
             painter = painterResource(transactionTypeIcon),
-            contentDescription = Res.string.transaction_type_icon.toString(),
+            contentDescription = stringResource(Res.string.transaction_type_icon),
             modifier = Modifier.size(24.dp)
         )
         if (transactionStatus == Transaction.Status.FAIL) {
             Icon(
                 painter = painterResource(Res.drawable.ic_failed),
-                contentDescription = Res.string.failed.toString(),
+                contentDescription = stringResource(Res.string.failed),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .offset(y = 18.dp)
@@ -110,7 +105,7 @@ private fun TransactionIcon(
 
 @Composable
 private fun TransactionDataColumn(
-    transactionTitle: StringResource,
+    transactionTitle: String,
     transactionTimeAndDate: String,
     amount: String,
     transactionStatus: Transaction.Status,
@@ -150,7 +145,7 @@ private fun TransactionDataColumn(
 
 @Composable
 private fun TransactionTitleAndAmount(
-    transactionTitle: StringResource,
+    transactionTitle: String,
     amount: String,
     sender: String?,
     receiver: String?,
@@ -168,7 +163,7 @@ private fun TransactionTitleAndAmount(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = transactionTitle.toString(),
+                text = transactionTitle,
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = 1,
@@ -225,7 +220,7 @@ private fun TransactionAmountRow(
         Icon(
             modifier = Modifier.size(16.dp),
             painter = painterResource(Res.drawable.img_silver),
-            contentDescription = Res.string.money_icon.toString()
+            contentDescription = stringResource(Res.string.money_icon)
         )
     }
 }
@@ -235,7 +230,7 @@ private fun TransactionAmountRow(
 fun TransactionHistoryCardPreview() {
     TransactionHistoryCard(
         transactionTypeIcon = Res.drawable.ic_shopping_bag,
-        transactionTitle = Res.string.transaction_pay,
+        transactionTitle = stringResource(Res.string.transaction_pay),
         transactionTimeAndDate = "2025-09-27 14:45",
         amount = "120.55",
         transactionStatus = Transaction.Status.SUCCESS,
