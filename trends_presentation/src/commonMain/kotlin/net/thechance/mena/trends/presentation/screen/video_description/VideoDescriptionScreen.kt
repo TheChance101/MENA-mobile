@@ -62,7 +62,7 @@ internal fun VideoDescriptionScreen(
         when (effect) {
             is VideoDescriptionEffect.NavigateBack -> navController.navigateUp()
             is VideoDescriptionEffect.NavigateToSelectCategories -> navController.navigate(
-                Route.CategoriesPublish(effect.description, effect.trendId)
+                Route.CategoriesPublish(trendId = effect.trendId, description = effect.description)
             )
         }
     }
