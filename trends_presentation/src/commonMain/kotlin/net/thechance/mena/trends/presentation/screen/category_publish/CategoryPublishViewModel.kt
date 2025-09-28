@@ -15,7 +15,7 @@ internal class CategoryPublishViewModel(
     @Provided private val categoryPublishArgs: CategoryPublishArgs,
     @Provided private val categoryRepository: CategoryRepository,
     @Provided private val reelsRepository: ReelsRepository
-    ) : BaseViewModel<CategoryPublishState, CategoryPublishEffect>(
+) : BaseViewModel<CategoryPublishState, CategoryPublishEffect>(
     initialState = CategoryPublishState()
 ), CategoryPublishInteractionListener {
 
@@ -45,7 +45,7 @@ internal class CategoryPublishViewModel(
 
     override fun onPublishClick() {
         tryToExecute(
-            block = { saveSelectedCategories() },
+            block = { updateReelWithSelectedCategories() },
             onSuccess = { sendEffect(CategoryPublishEffect.NavigateToTrends) },
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isPublishButtonLoadingVisible = true) } },
@@ -53,10 +53,8 @@ internal class CategoryPublishViewModel(
         )
     }
 
-    private suspend fun saveSelectedCategories() {
-        val selectedIds = state.value.categories
-            .filter { it.isSelected }
-            .mapNotNull { it.value.id }
+    private suspend fun updateReelWithSelectedCategories() {
+        val selectedIds = getSelectedCategoriesIds()
 
         if (selectedIds.isNotEmpty()) {
             reelsRepository.updateReelById(
@@ -66,4 +64,9 @@ internal class CategoryPublishViewModel(
             )
         }
     }
+
+    private fun getSelectedCategoriesIds(): List<String> =
+        state.value.categories
+            .filter { it.isSelected }
+            .mapNotNull { it.value.id }
 }
