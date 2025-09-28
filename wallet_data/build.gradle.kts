@@ -27,7 +27,10 @@ kotlin {
 
         }
         commonMain.dependencies {
+            // project
             implementation(projects.walletDomain)
+            implementation(projects.identityDomain)
+
             //ktor
             implementation(libs.bundles.ktor)
 

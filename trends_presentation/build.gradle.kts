@@ -67,6 +67,8 @@ kotlin {
             implementation(libs.assertk)
             implementation(libs.turbine)
             implementation(libs.koin.test)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.paging.testing)
         }
     }
     sourceSets.named("commonMain").configure {

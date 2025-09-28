@@ -3,6 +3,9 @@ package net.thechance.mena.trends.presentation.screen.manage_my_trends
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
@@ -16,6 +19,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class ManageTrendsViewModel(
     @Provided private val repository: ReelsRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ManageTrendsScreenState,
         ManageTrendsUiEffect>(ManageTrendsScreenState()),
     ManageTrendsInteractionListener {
@@ -36,7 +40,8 @@ internal class ManageTrendsViewModel(
             onSuccess = ::onGetReelsSuccess,
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
-            onEnd = { updateState { copy(isLoading = false) } }
+            onEnd = { updateState { copy(isLoading = false) } },
+            dispatcher = ioDispatcher
         )
     }
 
