@@ -8,13 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
@@ -50,7 +53,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun TransactionHistoryScreen(
     viewModel: TransactionHistoryViewModel = koinViewModel()
-){
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEffect(
@@ -84,7 +87,9 @@ fun TransactionHistoryContent(
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
                     Icon(
-                        modifier = Modifier.clickable { interactionListener.onShareClicked() },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable { interactionListener.onShareClicked() },
                         painter = painterResource(Res.drawable.ic_share),
                         contentDescription = Res.string.share.toString()
                     )
@@ -110,6 +115,7 @@ fun TransactionHistoryContent(
                             shape = CircleShape,
                         ) {
                             Icon(
+                                modifier = Modifier.size(16.dp),
                                 painter = painterResource(Res.drawable.ic_filter),
                                 contentDescription = stringResource(Res.string.filter)
                             )
@@ -135,7 +141,7 @@ fun TransactionHistoryContent(
                         )
                         Box(
                             modifier = Modifier
-                                .padding(top=4.dp).fillMaxWidth(1f).height(1.dp)
+                                .padding(top = 4.dp).fillMaxWidth(1f).height(1.dp)
                                 .background(Theme.colorScheme.stroke)
                         )
                     }
@@ -158,8 +164,10 @@ private fun getTransactionTitle(transactionType: Transaction.Type): StringResour
         Transaction.Type.SENT -> Res.string.transaction_send
         Transaction.Type.RECEIVED -> Res.string.transaction_receive
     }
+
 private fun onTransactionHistoryEffect(effect: TransactionHistoryEffect) {
     when (effect) {
-        is TransactionHistoryEffect.NavigateBack -> { /* TODO("Handle navigation back") */ }
+        is TransactionHistoryEffect.NavigateBack -> { /* TODO("Handle navigation back") */
+        }
     }
 }
