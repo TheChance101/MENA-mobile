@@ -24,7 +24,7 @@ import mena.trends_presentation.generated.resources.add_categories_to_video
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.choose_categories
 import mena.trends_presentation.generated.resources.ic_arrow_left
-import mena.trends_presentation.generated.resources.ic_warring
+import mena.trends_presentation.generated.resources.ic_hint
 import mena.trends_presentation.generated.resources.new_trend
 import mena.trends_presentation.generated.resources.publish_categories_screen_count
 import mena.trends_presentation.generated.resources.publish_hint
@@ -107,8 +107,9 @@ private fun CategoryPublishContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(Res.drawable.ic_warring),
+                        painter = painterResource(Res.drawable.ic_hint),
                         contentDescription = stringResource(Res.string.publish_hint),
+                        tint  = Theme.colorScheme.shadeSecondary,
                         modifier = Modifier.padding(end = Theme.spacing._2)
                     )
 
