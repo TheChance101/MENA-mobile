@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.approvedDukan.content
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,7 +12,7 @@ import mena.dukan_presentation.generated.resources.add_product
 import mena.dukan_presentation.generated.resources.edit_shelf
 import mena.dukan_presentation.generated.resources.ic_package_add
 import mena.dukan_presentation.generated.resources.ic_pencil_edit
-import mena.dukan_presentation.generated.resources.products
+import mena.dukan_presentation.generated.resources.products_count
 import mena.dukan_presentation.generated.resources.shelves
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -68,7 +67,7 @@ private fun ProductCountRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$productCount ${stringResource(Res.string.products)}",
+            text = stringResource(Res.string.products_count, productCount),
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
@@ -78,7 +77,7 @@ private fun ProductCountRow(
             horizontalArrangement = Arrangement.End
         ) {
             AppBarOptionContainer(
-                containerContentPadding = PaddingValues(end = Theme.spacing._2),
+                modifier = Modifier.padding(end = Theme.spacing._4),
                 onClick = { listener.onAddProductClicked() }
             ) {
                 Icon(
@@ -89,7 +88,6 @@ private fun ProductCountRow(
             }
 
             AppBarOptionContainer(
-                containerContentPadding = PaddingValues(start = Theme.spacing._2),
                 onClick = { listener.onEditShelfClicked() }
             ) {
                 Icon(
