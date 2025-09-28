@@ -60,4 +60,12 @@
     <string name="this_shelf_is_empty">This shelf is empty</string>"
     <string name="products">products</string>
     <string name="delete_icon">Delete Icon</string>
+    <string name="delete_shelf_success">Delete shelf successfully.</string>
+    <string name="delete_shelf_title">Delete shelf</string>
+    <string name="delete_shelf_description">Are you sure you want to delete this shelf?</string>
+    <string name="dismiss_title">Unable to Delete Shelf</string>
+    <string name="dismiss_description">This shelf has a products inside it, you can’t delete it until remove products.</string>
+    <string name="error_for_delete_shelf">Error deleting shelf</string>
+    <string name="shelf_name_is_invalid">Shelf name is invalid</string>
+    <string name="shelf_name_already_exists">Shelf name already exists</string>
 </resources>

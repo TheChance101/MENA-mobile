@@ -18,6 +18,7 @@ import mena.dukan_presentation.generated.resources.ic_success
 import mena.dukan_presentation.generated.resources.success
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -56,7 +57,7 @@ fun SnackBar(
             SnackBarType.SUCCESS -> {
                 SnackBar(
                     title = stringResource(Res.string.success),
-                    message = snackBarUiState.message,
+                    message = snackBarUiState.message?.let { stringResource(it) } ?: "",
                     leadingIcon = painterResource(Res.drawable.ic_success),
                     contentDescription = stringResource(Res.string.success),
                     tint = Theme.colorScheme.success,
@@ -67,20 +68,22 @@ fun SnackBar(
             SnackBarType.ERROR -> {
                 SnackBar(
                     title = stringResource(Res.string.error),
-                    message = snackBarUiState.message,
+                    message = snackBarUiState.message?.let { stringResource(it) } ?: "",
                     leadingIcon = painterResource(Res.drawable.ic_error),
                     contentDescription = stringResource(Res.string.error),
                     tint = Theme.colorScheme.error,
                     modifier = modifier
                 )
             }
+            else -> {}
         }
     }
 }
 
-data class SnackBarUiState(val snackBarType: SnackBarType, val message: String)
+data class SnackBarUiState(val snackBarType: SnackBarType= SnackBarType.NONE, val message: StringResource?=null)
 
 enum class SnackBarType {
     SUCCESS,
-    ERROR
+    ERROR,
+    NONE
 }
