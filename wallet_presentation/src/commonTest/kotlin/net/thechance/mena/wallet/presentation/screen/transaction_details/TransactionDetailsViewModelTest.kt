@@ -20,7 +20,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -60,7 +59,7 @@ class TransactionDetailsViewModelTest {
         viewModel.state.test {
             skipItems(1)
             val initialState = awaitItem()
-            assertTrue(initialState.transactionDetailsUiState is UiState.Loading)
+            assertTrue(initialState.isLoading)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -79,9 +78,8 @@ class TransactionDetailsViewModelTest {
         viewModel.state.test {
             skipItems(2)
             val successState = awaitItem()
-            assertTrue(successState.transactionDetailsUiState is UiState.Success)
-            val transactionUiState = successState.transactionDetailsUiState.data
-            assertEquals(transaction1uiState, transactionUiState)
+            assertEquals(transaction1uiState, successState.transactionDetailsUiState)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -100,9 +98,8 @@ class TransactionDetailsViewModelTest {
         viewModel.state.test {
             skipItems(2)
             val errorState = awaitItem()
-            assertTrue(errorState.transactionDetailsUiState is UiState.Error)
-            val error = errorState.transactionDetailsUiState.throwable
-            assertEquals(expectedError, error)
+            assertEquals(expectedError, errorState.isError)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -227,7 +224,7 @@ class TransactionDetailsViewModelTest {
             skipItems(3)
             viewModel.onRefresh()
             val initialState = awaitItem()
-            assertTrue(initialState.transactionDetailsUiState is UiState.Loading)
+            assertTrue(initialState.isLoading)
             cancelAndIgnoreRemainingEvents()
         }
     }

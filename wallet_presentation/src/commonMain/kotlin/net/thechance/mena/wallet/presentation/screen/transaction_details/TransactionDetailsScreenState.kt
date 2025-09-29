@@ -2,12 +2,13 @@ package net.thechance.mena.wallet.presentation.screen.transaction_details
 
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.base.SnackBarState
-import net.thechance.mena.wallet.presentation.base.UiState
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 data class TransactionDetailsScreenState(
-    val transactionDetailsUiState: UiState<TransactionDetailsUiState> = UiState.Idle,
+    val transactionDetailsUiState: TransactionDetailsUiState = TransactionDetailsUiState(),
+    val isLoading: Boolean = false,
+    val isError: Throwable? = null,
     val isShareReceiptBtnLoading: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
 ){

@@ -11,7 +11,6 @@ import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.SnackBarState
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
@@ -66,6 +65,7 @@ class TransactionDetailsViewModel(
     }
 
     override fun onRefresh() {
+        updateState { it.copy(isLoading = true, isError = null) }
         getTransactionDetails()
     }
 
@@ -86,17 +86,18 @@ class TransactionDetailsViewModel(
     private fun onGetTransactionDetailsSuccess(transaction: Transaction) {
         updateState {
             it.copy(
-                transactionDetailsUiState = UiState.Success(transaction.toUi())
+                isLoading = false,
+                transactionDetailsUiState =transaction.toUi()
             )
         }
     }
 
     private fun onGetTransactionDetailsError(throwable: Throwable) {
-        updateState { it.copy(transactionDetailsUiState = UiState.Error(throwable)) }
+        updateState { it.copy(isLoading = false, isError = throwable) }
     }
 
     private fun onGetTransactionDetailsStart() {
-        updateState { it.copy(transactionDetailsUiState = UiState.Loading) }
+        updateState { it.copy(isLoading = true) }
     }
 
     private fun onScreenShotCapturedSuccess(x: Unit) {

@@ -17,7 +17,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
@@ -85,17 +84,17 @@ private fun TransactionDetailsScreenContent(
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
     ) {
         Crossfade(
-            targetState = state.transactionDetailsUiState,
+            targetState = state,
             modifier = Modifier.fillMaxSize()
-        ) { transactionState ->
-            when (transactionState) {
-                is UiState.Error -> {}
-                is UiState.Loading, UiState.Idle -> {}
-                is UiState.Success -> {
+        ) {
+            when {
+                (state.isError != null) -> {}
+                state.isLoading -> {}
+                else -> {
                     Box {
                         val captureController = rememberCaptureController()
                         DetailsContent(
-                            transactionDetailsUiState = transactionState.data,
+                            transactionDetailsUiState = state.transactionDetailsUiState,
                             onShareReceiptButtonClicked = interactionListener::onShareReceiptButtonClicked,
                             captureController = captureController,
                             isShareReceiptBtnLoading = state.isShareReceiptBtnLoading,
@@ -105,10 +104,10 @@ private fun TransactionDetailsScreenContent(
                             onScreenShotCapture = { imageBitmap ->
                                 interactionListener.onScreenShotCaptured(
                                     byteArray = imageBitmapToByteArray(imageBitmap),
-                                    fileName = transactionState.data.id
+                                    fileName = state.transactionDetailsUiState.id
                                 )
                             },
-                            transactionDetailsUiState = transactionState.data,
+                            transactionDetailsUiState = state.transactionDetailsUiState,
                         )
                     }
                 }
@@ -133,11 +132,7 @@ private fun onTransactionDetailsEffect(
 private fun TransactionDetailsScreenPreview() {
     MenaTheme {
         TransactionDetailsScreenContent(
-            state = TransactionDetailsScreenState(
-                transactionDetailsUiState = UiState.Success(
-                    TransactionDetailsUiState()
-                )
-            ),
+            state = TransactionDetailsScreenState(TransactionDetailsUiState()),
             interactionListener = object : TransactionDetailsInteractionListener {
                 override fun onBackButtonClicked() {}
                 override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {}
