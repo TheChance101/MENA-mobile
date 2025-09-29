@@ -33,42 +33,6 @@ class TransactionDetailsViewModel(
         getTransactionDetails()
     }
 
-    override fun onBackButtonClicked() {
-        sendEffect(TransactionDetailsEffect.NavigateBack)
-    }
-
-    override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
-        tryToExecute(
-            callee = { capture() },
-            onSuccess = ::onShareReceiptSuccess,
-            onError = ::onShareReceiptError,
-            onStart = ::onShareReceiptStart,
-            dispatcher = ioDispatcher
-        )
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {
-        tryToExecute(
-            callee = {
-                imageSharer.shareImage(
-                    imageBytes = byteArray,
-                    fileName = "$fileName.png",
-                    mimeType = IMAGE_TYPE
-                )
-            },
-            onSuccess = ::onScreenShotCapturedSuccess,
-            onError = ::onShareReceiptError,
-            onStart = ::onShareReceiptStart,
-            dispatcher = ioDispatcher
-        )
-    }
-
-    override fun onRefresh() {
-        updateState { it.copy(isLoading = true, isError = null) }
-        getTransactionDetails()
-    }
-
     private fun getTransactionDetails() {
         tryToExecute(
             callee = {
@@ -149,6 +113,42 @@ class TransactionDetailsViewModel(
                 snackBar = oldState.snackBar.copy(isVisible = false)
             )
         }
+    }
+
+    override fun onBackButtonClicked() {
+        sendEffect(TransactionDetailsEffect.NavigateBack)
+    }
+
+    override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
+        tryToExecute(
+            callee = { capture() },
+            onSuccess = ::onShareReceiptSuccess,
+            onError = ::onShareReceiptError,
+            onStart = ::onShareReceiptStart,
+            dispatcher = ioDispatcher
+        )
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {
+        tryToExecute(
+            callee = {
+                imageSharer.shareImage(
+                    imageBytes = byteArray,
+                    fileName = "$fileName.png",
+                    mimeType = IMAGE_TYPE
+                )
+            },
+            onSuccess = ::onScreenShotCapturedSuccess,
+            onError = ::onShareReceiptError,
+            onStart = ::onShareReceiptStart,
+            dispatcher = ioDispatcher
+        )
+    }
+
+    override fun onRefresh() {
+        updateState { it.copy(isLoading = true, isError = null) }
+        getTransactionDetails()
     }
 
     private companion object {

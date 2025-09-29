@@ -11,15 +11,15 @@ import mena.wallet_presentation.generated.resources.purchase
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.presentation.utils.formateTransactionDate
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
+import net.thechance.mena.wallet.presentation.utils.formatTransactionDate
 import kotlin.uuid.ExperimentalUuidApi
 
 fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState(
     id = id.toString(),
     amount = amount.toString(),
-    date = formateTransactionDate(createdAt),
+    date = formatTransactionDate(createdAt),
     userName = when (type) {
         Transaction.Type.SENT -> senderName
         Transaction.Type.RECEIVED -> receiverName

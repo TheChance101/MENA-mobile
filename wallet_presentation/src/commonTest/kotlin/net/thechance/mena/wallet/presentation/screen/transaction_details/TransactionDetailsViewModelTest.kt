@@ -256,7 +256,7 @@ class TransactionDetailsViewModelTest {
         val transaction1uiState = TransactionDetailsScreenState.TransactionDetailsUiState(
             id = transaction1Id.toString(),
             amount = "5000.0",
-            date = "20 Aug 2025, 12:00 PM",
+            date = "20 Aug 2025, 12:00 pm",
             userName = "Nour Elhoda",
             otherParty = "Nour Elhoda",
             transactionType = TransactionDetailsScreenState.TransactionTypeUiState.RECEIVED,
