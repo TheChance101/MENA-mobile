@@ -61,8 +61,11 @@ fun TransactionHistoryCard(
             transactionTypeIcon = transactionTypeIcon,
             transactionStatus = transactionStatus
         )
-        TransactionDataColumn(
-            modifier = Modifier.weight(1f).wrapContentHeight().align(Alignment.CenterVertically),
+        TransactionContent(
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentHeight()
+                .align(Alignment.CenterVertically),
             transactionTitle = transactionTitle,
             transactionTimeAndDate = transactionTimeAndDate,
             amount = amount,
@@ -83,7 +86,8 @@ private fun TransactionIcon(
         Box(
             modifier = Modifier
                 .background(Theme.colorScheme.primary.onPrimary, CircleShape)
-                .padding(12.dp).align(Alignment.Center)
+                .padding(12.dp)
+                .align(Alignment.Center)
         ) {
             Icon(
                 painter = painterResource(transactionTypeIcon),
@@ -105,7 +109,7 @@ private fun TransactionIcon(
 }
 
 @Composable
-private fun TransactionDataColumn(
+private fun TransactionContent(
     transactionTitle: String,
     transactionTimeAndDate: String,
     amount: String,
@@ -116,9 +120,7 @@ private fun TransactionDataColumn(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = if (transactionStatus == Transaction.Status.FAIL) Arrangement.spacedBy(
-            4.dp
-        ) else Arrangement.spacedBy(8.dp)
+        verticalArrangement = if (transactionStatus == Transaction.Status.FAIL) Arrangement.spacedBy(4.dp) else Arrangement.spacedBy(8.dp)
     ) {
         TransactionTitleAndAmount(
             transactionTitle = transactionTitle,

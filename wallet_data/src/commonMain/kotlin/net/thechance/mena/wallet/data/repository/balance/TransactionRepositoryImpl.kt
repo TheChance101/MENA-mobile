@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 @Single
 class TransactionRepositoryImpl(): TransactionRepository {
         @OptIn(ExperimentalUuidApi::class)
-        override suspend fun getTransactionHistory(): List<Transaction> {
+        override suspend fun getAll(): List<Transaction> {
 
             return listOf(
                 Transaction(

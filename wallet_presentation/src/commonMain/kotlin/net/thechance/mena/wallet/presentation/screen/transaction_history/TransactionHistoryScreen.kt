@@ -150,11 +150,18 @@ fun TransactionHistoryContent(
                             transactionTimeAndDate = transaction.timeAndDate,
                             amount = transaction.amount,
                             transactionStatus = transaction.status,
-                            onTransactionCardClicked = { interactionListener.onTransactionCardClicked(transaction.id) },
-                            contactName = transaction.contactName)
+                            onTransactionCardClicked = {
+                                interactionListener.onTransactionCardClicked(
+                                    transaction.id
+                                )
+                            },
+                            contactName = transaction.contactName
+                        )
                         Box(
                             modifier = Modifier
-                                .padding(top = 4.dp).fillMaxWidth(1f).height(1.dp)
+                                .padding(top = 4.dp)
+                                .fillMaxWidth(1f)
+                                .height(1.dp)
                                 .background(Theme.colorScheme.stroke)
                         )
                     }
@@ -188,7 +195,9 @@ private fun onTransactionHistoryEffect(
     when (effect) {
         TransactionHistoryEffect.NavigateBack -> onNavigateBackClicked()
         TransactionHistoryEffect.NavigateToExportTransaction -> navigateToExportTransaction()
-        TransactionHistoryEffect.NavigateToFilterBottomSheet -> {/*TODO: navigate to filter bottom sheet*/}
+        TransactionHistoryEffect.NavigateToFilterBottomSheet -> {/*TODO: navigate to filter bottom sheet*/
+        }
+
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
             navigateToTransactionDetails(effect.id)
         }
