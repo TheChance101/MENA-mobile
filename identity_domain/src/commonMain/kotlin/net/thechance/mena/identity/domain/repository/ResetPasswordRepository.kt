@@ -1,11 +1,13 @@
 package net.thechance.mena.identity.domain.repository
 
+import net.thechance.mena.identity.domain.entity.PhoneNumber
+
 interface ResetPasswordRepository {
-    suspend fun requestOTP(phoneNumber: String, countryCodeName: String)
-    suspend fun verifyOTPCode(otpCode: String, phoneNumber: String)
+    suspend fun requestOTP(phoneNumber: PhoneNumber, countryCodeName: String)
+    suspend fun verifyOTPCode(otpCode: String, phoneNumber: PhoneNumber)
     suspend fun resetPassword(
         newPassword: String,
         confirmPassword: String,
-        phoneNumber: String
+        phoneNumber: PhoneNumber
     )
 }

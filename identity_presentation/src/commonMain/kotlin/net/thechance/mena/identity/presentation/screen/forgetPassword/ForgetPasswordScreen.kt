@@ -105,7 +105,8 @@ class ForgetPasswordScreen : BaseScreen<
             is ForgetPasswordScreenUIEffect.NavigateToOTP -> navigator.push(
                 item = OTPScreen(
                     phoneNumber = effect.phoneNumber,
-                    countryCode = effect.countryCode
+                    countryCode = effect.countryCode,
+                    callingCode = effect.callingCode
                 )
             )
         }

@@ -10,6 +10,7 @@ import net.thechance.mena.identity.data.dto.resetPassword.VerifyOTPRequestDto
 import net.thechance.mena.identity.data.dto.resetPassword.VerifyOTPResponse
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.OTPExpiredException
@@ -20,27 +21,41 @@ class ResetPasswordRepositoryImpl(
 ) : ResetPasswordRepository {
     private var sessionId = ""
 
-    override suspend fun requestOTP(phoneNumber: String, countryCodeName: String) {
+    override suspend fun requestOTP(phoneNumber: PhoneNumber, countryCodeName: String) {
         forgetPasswordSafeWrapper {
             val response: OTPResponse =
-                client.postJson(OTPRequestDto(phoneNumber, countryCodeName), REQUEST_OTP)
+                client.postJson(
+                    OTPRequestDto(
+                        phoneNumber.getFormattedPhoneNumber(),
+                        countryCodeName
+                    ), REQUEST_OTP
+                )
             sessionId = response.sessionId
         }
     }
 
-    override suspend fun verifyOTPCode(otpCode: String , phoneNumber: String) {
+    override suspend fun verifyOTPCode(otpCode: String, phoneNumber: PhoneNumber) {
         forgetPasswordSafeWrapper<VerifyOTPResponse> {
-            client.postJson(VerifyOTPRequestDto(otpCode,phoneNumber ,sessionId), VERIFY_OTP)
+            client.postJson(
+                VerifyOTPRequestDto(
+                    otpCode,
+                    phoneNumber.getFormattedPhoneNumber(),
+                    sessionId
+                ), VERIFY_OTP
+            )
         }
     }
 
     override suspend fun resetPassword(
         newPassword: String,
         confirmPassword: String,
-        phoneNumber: String
+        phoneNumber: PhoneNumber
     ) {
         forgetPasswordSafeWrapper<String> {
-            client.postJson(ResetPasswordRequestDto(newPassword, confirmPassword, phoneNumber), RESET_PASSWORD)
+            client.postJson(
+                ResetPasswordRequestDto(newPassword, confirmPassword, phoneNumber.getFormattedPhoneNumber()),
+                RESET_PASSWORD
+            )
         }
     }
 

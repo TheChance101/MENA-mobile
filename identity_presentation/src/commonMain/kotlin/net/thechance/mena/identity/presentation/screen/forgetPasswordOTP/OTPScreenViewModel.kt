@@ -4,6 +4,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
@@ -13,6 +14,7 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 class OTPScreenViewModel(
     private val resetPasswordRepository: ResetPasswordRepository,
     private val phoneNumber: String,
+    private val callingCode: String,
     private val countryCode: String
 ) : BaseScreenModel<OTPScreenUIState, OTPScreenUIEffect>(OTPScreenUIState()),
     OTPScreenInteractionListener {
@@ -33,7 +35,10 @@ class OTPScreenViewModel(
             function = {
                 resetPasswordRepository.verifyOTPCode(
                     otpCode = state.value.otpValue,
-                    phoneNumber = phoneNumber
+                    phoneNumber = PhoneNumber(
+                        countryCode = callingCode,
+                        localNumber = phoneNumber
+                    )
                 )
             },
             onSuccess = ::verifySuccess,
@@ -42,7 +47,12 @@ class OTPScreenViewModel(
     }
 
     private fun verifySuccess() {
-        sendNewEffect(OTPScreenUIEffect.NavigateToResetPassword(phoneNumber))
+        sendNewEffect(
+            OTPScreenUIEffect.NavigateToResetPassword(
+                phoneNumber = phoneNumber,
+                callingCode = callingCode,
+            )
+        )
     }
 
     override fun onOTPChanged(otp: String) {
@@ -60,7 +70,10 @@ class OTPScreenViewModel(
         tryToExecute(
             function = {
                 resetPasswordRepository.requestOTP(
-                    phoneNumber = phoneNumber,
+                    phoneNumber = PhoneNumber(
+                        countryCode = callingCode,
+                        localNumber = phoneNumber
+                    ),
                     countryCodeName = countryCode
                 )
             },

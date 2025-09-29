@@ -34,7 +34,8 @@ import org.koin.core.parameter.parametersOf
 
 class OTPScreen(
     private val phoneNumber: String,
-    private val countryCode: String
+    private val countryCode: String,
+    private val callingCode: String
 ) : BaseScreen<
         OTPScreenViewModel,
         OTPScreenUIState,
@@ -42,9 +43,14 @@ class OTPScreen(
         OTPScreenInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(phoneNumber, countryCode) }))
+        InitScreen(getScreenModel(parameters = {
+            parametersOf(
+                phoneNumber,
+                callingCode,
+                countryCode
+            )
+        }))
     }
-
 
     @Composable
     override fun OnRender(

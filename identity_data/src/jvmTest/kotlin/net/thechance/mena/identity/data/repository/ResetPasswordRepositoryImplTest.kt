@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.data.dto.resetPassword.OTPResponse
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.OTPExpiredException
@@ -106,7 +107,7 @@ class ResetPasswordRepositoryImplTest {
         }
     }
 
-    private val phoneNumber = "07701231234"
+    private val phoneNumber = PhoneNumber("+964","07701231234")
     private val countryCode = "IQ"
 }
 

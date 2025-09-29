@@ -2,6 +2,7 @@ package net.thechance.mena.identity.presentation.screen.forgetPassword
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineScope
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -59,7 +60,10 @@ class ForgetPasswordScreenViewModel(
         tryToExecute(
             function = {
                 resetPasswordRepository.requestOTP(
-                    phoneNumber = state.value.phoneNumber,
+                    phoneNumber = PhoneNumber(
+                        countryCode = state.value.countryPickerUIState.currentCountry.callingCode,
+                        localNumber = state.value.phoneNumber
+                    ),
                     countryCodeName = state.value.countryPickerUIState.currentCountry.countryCodeName
                 )
             },
@@ -72,6 +76,7 @@ class ForgetPasswordScreenViewModel(
         sendNewEffect(
             ForgetPasswordScreenUIEffect.NavigateToOTP(
                 phoneNumber = state.value.phoneNumber,
+                callingCode = state.value.countryPickerUIState.currentCountry.callingCode,
                 countryCode = state.value.countryPickerUIState.currentCountry.countryCodeName
             )
         )
