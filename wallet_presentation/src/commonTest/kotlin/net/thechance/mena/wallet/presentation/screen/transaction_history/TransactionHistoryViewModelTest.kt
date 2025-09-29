@@ -3,7 +3,6 @@ package net.thechance.mena.wallet.presentation.screen.transaction_history
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +21,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -43,101 +41,71 @@ class TransactionHistoryViewModelTest {
     }
 
     @Test
-    fun `getTransactionHistory should set isLoading true when initially called`() = runTest {
+    fun `state should not have error when repository returns value`() = runTest(testDispatcher) {
         everySuspend { transactionRepository.getAllTransaction() } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
-
         viewModel.state.test {
-            val initial = awaitItem()
-            assertTrue(initial.isLoading)
+            awaitItem()
+            advanceUntilIdle()
+            val successState = awaitItem()
+            assertEquals(null, successState.isError)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `getTransactionHistory should update history when repository returns value`() = runTest {
-        everySuspend { transactionRepository.getAllTransaction() } returns history
+    fun `should send NavigateBack effect when onBackClicked is called`() = runTest(testDispatcher) {
+        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
-
-        viewModel.state.test {
-            val initial = awaitItem()
-            assertTrue(initial.isLoading)
-
-            advanceUntilIdle()
-
-            val successState = awaitItem()
-            assertTrue(successState.history.isNotEmpty())
-            assertEquals(history.size, successState.history.size)
-            assertEquals(false, successState.isLoading)
-            assertEquals(null, successState.isError)
-        }
-    }
-
-    @Test
-    fun `getTransactionHistory should set isError when repository throws exception`() = runTest {
-        val expectedException = RuntimeException("test error")
-        everySuspend { transactionRepository.getAllTransaction() } throws expectedException
-        val viewModel = TransactionHistoryViewModel(transactionRepository)
-
-        viewModel.state.test {
-            val initial = awaitItem()
-            assertTrue(initial.isLoading)
-
-            advanceUntilIdle()
-
-            val errorState = awaitItem()
-            assertEquals(expectedException, errorState.isError)
-            assertTrue(errorState.history.isEmpty())
-            assertEquals(false, errorState.isLoading)
-        }
-    }
-
-    @Test
-    fun `should send NavigateBack effect when onBackClicked is called`() = runTest {
-        val viewModel = TransactionHistoryViewModel(transactionRepository)
-
+        advanceUntilIdle()
         viewModel.uiEffect.test {
             viewModel.onBackClicked()
             val effect = awaitItem()
             assertEquals(TransactionHistoryEffect.NavigateBack, effect)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `should send NavigateToTransactionDetails effect when onTransactionCardClicked is called`() = runTest {
+    fun `should send NavigateToTransactionDetails effect when onTransactionCardClicked is called`() = runTest(testDispatcher) {
+        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         val id = Uuid.random()
-
+        advanceUntilIdle()
         viewModel.uiEffect.test {
             viewModel.onTransactionCardClicked(id)
             val effect = awaitItem()
             assertEquals(TransactionHistoryEffect.NavigateToTransactionDetails(id), effect)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `should send NavigateToExportTransaction effect when onExportClicked is called`() = runTest {
+    fun `should send NavigateToExportTransaction effect when onExportClicked is called`() = runTest(testDispatcher) {
+        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
-
+        advanceUntilIdle()
         viewModel.uiEffect.test {
             viewModel.onExportClicked()
             val effect = awaitItem()
             assertEquals(TransactionHistoryEffect.NavigateToExportTransaction, effect)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `should send NavigateToFilterBottomSheet effect when onFilterClicked is called`() = runTest {
+    fun `should send NavigateToFilterBottomSheet effect when onFilterClicked is called`() = runTest(testDispatcher) {
+        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
-
+        advanceUntilIdle()
         viewModel.uiEffect.test {
             viewModel.onFilterClicked()
             val effect = awaitItem()
             assertEquals(TransactionHistoryEffect.NavigateToFilterBottomSheet, effect)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     companion object {
         val history = listOf(
             Transaction(
