@@ -71,19 +71,19 @@ class ApprovedDukanViewModel(
     }
 
     override fun isShelfSelected(): (Shelf) -> Boolean = { shelf ->
-        state.value.selectedShelves.contains(shelf)
+        state.value.selectedShelf == shelf
     }
 
     override fun onShelfSelected(shelf: Shelf): Boolean {
-        if (state.value.selectedShelves.contains(shelf)) return true
-        updateState { copy(selectedShelves = setOf(shelf)) }
+        if (state.value.selectedShelf == shelf) return true
+        updateState { copy(selectedShelf = shelf) }
         loadProductsForSelectedShelves()
         return true
     }
 
     override fun onShelfDeselected(shelf: Shelf): Boolean {
-        if (!state.value.selectedShelves.contains(shelf)) return true
-        updateState { copy(selectedShelves = emptySet()) }
+        if (state.value.selectedShelf != shelf) return true
+        updateState { copy(selectedShelf = null) }
         loadProductsForSelectedShelves()
         return true
     }
@@ -115,7 +115,7 @@ class ApprovedDukanViewModel(
             copy(
                 shelves = shelves,
                 availableShelves = shelves,
-                selectedShelves = selectFirstShelfByDefault(shelves),
+                selectedShelf = selectFirstShelfByDefault(shelves),
                 isLoading = false
             )
         }
@@ -123,13 +123,9 @@ class ApprovedDukanViewModel(
     }
 
     private fun loadProductsForSelectedShelves() {
-        val selectedShelves = state.value.selectedShelves
+        val selectedShelf = state.value.selectedShelf
         when {
-            selectedShelves.isNotEmpty() -> {
-                val selectedShelf = selectedShelves.first()
-                loadProductsFromRepository(selectedShelf)
-            }
-
+            selectedShelf != null -> loadProductsFromRepository(selectedShelf)
             else -> clearProducts()
         }
     }
@@ -166,7 +162,7 @@ class ApprovedDukanViewModel(
     override fun deleteShelf(shelfId: String) {
         tryToExecute(
             block = { shelfRepository.deleteShelf(shelfId) },
-            onSuccess = {deleteShelfSuccess()},
+            onSuccess = { deleteShelfSuccess() },
             onError = ::deleteShelfFail
         )
     }
@@ -201,8 +197,8 @@ class ApprovedDukanViewModel(
         }
     }
 
-    private fun selectFirstShelfByDefault(shelves: List<Shelf>): Set<Shelf> {
-        return if (shelves.isNotEmpty()) setOf(shelves.first()) else emptySet()
+    private fun selectFirstShelfByDefault(shelves: List<Shelf>): Shelf? {
+        return shelves.firstOrNull()
     }
 
 }

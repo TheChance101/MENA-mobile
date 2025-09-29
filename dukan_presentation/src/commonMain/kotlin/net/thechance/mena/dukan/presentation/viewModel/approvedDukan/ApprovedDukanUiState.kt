@@ -11,7 +11,7 @@ import org.jetbrains.compose.resources.StringResource
 data class ApprovedDukanUiState(
     val shelves: List<Shelf> = emptyList(),
     val availableShelves: List<Shelf> = emptyList(),
-    val selectedShelves: Set<Shelf> = emptySet(),
+    val selectedShelf: Shelf? = null,
     val products: List<Product> = emptyList(),
     val totalProducts: Int = 0,
     val isLoading: Boolean = false,
