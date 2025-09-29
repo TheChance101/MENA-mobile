@@ -16,6 +16,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.TransactionStatus
+import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -42,7 +44,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `state should not have error when repository returns value`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getAllTransaction() } returns history
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         viewModel.state.test {
             awaitItem()
@@ -55,7 +57,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateBack effect when onBackClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -68,7 +70,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToTransactionDetails effect when onTransactionCardClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         val id = Uuid.random()
         advanceUntilIdle()
@@ -82,7 +84,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToExportTransaction effect when onExportClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -95,7 +97,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToFilterBottomSheet effect when onFilterClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getAllTransaction() } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -115,12 +117,10 @@ class TransactionHistoryViewModelTest {
                     time = LocalTime(12, 0)
                 ),
                 amount = 120.0,
-                status = Transaction.Status.SUCCESS,
-                senderId = Uuid.random(),
+                status = TransactionStatus.SUCCESS,
                 senderName = "Alice",
-                receiverId = Uuid.random(),
                 receiverName = "Bob",
-                type = Transaction.Type.SENT
+                type = TransactionType.SENT
             ),
             Transaction(
                 id = Uuid.random(),
@@ -129,12 +129,10 @@ class TransactionHistoryViewModelTest {
                     time = LocalTime(12, 0)
                 ),
                 amount = 75.5,
-                status = Transaction.Status.FAIL,
-                senderId = Uuid.random(),
+                status = TransactionStatus.FAIL,
                 senderName = "Charlie",
-                receiverId = Uuid.random(),
                 receiverName = "You",
-                type = Transaction.Type.RECEIVED
+                type = TransactionType.RECEIVED
             ),
             Transaction(
                 id = Uuid.random(),
@@ -143,12 +141,10 @@ class TransactionHistoryViewModelTest {
                     time = LocalTime(12, 0)
                 ),
                 amount = 200.0,
-                status = Transaction.Status.SUCCESS,
-                senderId = Uuid.random(),
+                status = TransactionStatus.SUCCESS,
                 senderName = "Online Shop",
-                receiverId = Uuid.random(),
                 receiverName = "You",
-                type = Transaction.Type.ONLINE_PURCHASE
+                type = TransactionType.ONLINE_PURCHASE
             )
         )
     }
