@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import net.thechance.mena.wallet.presentation.screen.export_transactions.ExportTransactionsScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
-import net.thechance.mena.wallet.presentation.screen.transactions_history.TransactionHistoryScreen
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
 import net.thechance.mena.wallet.presentation.screen.view_transactions_statement.ViewTransactionStatementScreen
 import net.thechance.mena.wallet.presentation.screen.wallet.WalletMainScreen
 import kotlin.uuid.ExperimentalUuidApi

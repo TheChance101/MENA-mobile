@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.data.extension
+package net.thechance.mena.wallet.data.network_client
 
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse

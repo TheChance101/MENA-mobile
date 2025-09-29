@@ -75,7 +75,7 @@ class CreateShelfViewModel(
         val nameExists = allShelves.any { it.name.equals(title, ignoreCase = true) }
 
         return if (!nameExists) {
-            shelfRepository.createShelf(Shelf(id = "", name = title, dukanId = ""))
+            shelfRepository.createShelf(Shelf(id = "", name = title))
             true
         } else {
             false

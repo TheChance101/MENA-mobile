@@ -20,6 +20,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.mokkery.core)
         }
     }
     sourceSets.named("commonMain").configure {

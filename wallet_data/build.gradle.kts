@@ -27,19 +27,25 @@ kotlin {
 
         }
         commonMain.dependencies {
+            // project
             implementation(projects.walletDomain)
+            implementation(projects.identityDomain)
+
             //ktor
             implementation(libs.bundles.ktor)
 
             //Koin
             implementation(libs.koin.core)
             api(libs.koin.annotations)
+
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
+            implementation(libs.mokkery.core)
         }
         iosMain.dependencies {
 

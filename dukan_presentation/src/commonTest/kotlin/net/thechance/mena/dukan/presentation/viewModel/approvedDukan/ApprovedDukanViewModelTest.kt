@@ -456,7 +456,7 @@ class ApprovedDukanViewModelTest {
     @Test
     fun `onShelfAddedSuccessfully SHOULD refresh shelves list`() = runTest {
         // Given
-        val newShelves = fakeShelves() + Shelf("shelf_4", "New Shelf", "dukan_123")
+        val newShelves = fakeShelves() + Shelf("shelf_4", "New Shelf")
         everySuspend { shelfRepository.getMyDukanShelves() } returns newShelves
 
         // When
@@ -471,7 +471,7 @@ class ApprovedDukanViewModelTest {
     @Test
     fun `onShelfAddedSuccessfully SHOULD include new shelf in refreshed list`() = runTest {
         // Given
-        val newShelves = fakeShelves() + Shelf("shelf_4", "New Shelf", "dukan_123")
+        val newShelves = fakeShelves() + Shelf("shelf_4", "New Shelf")
         everySuspend { shelfRepository.getMyDukanShelves() } returns newShelves
 
         // When
@@ -784,18 +784,15 @@ private fun fakeShelves(): List<Shelf> {
     return listOf(
         Shelf(
             id = "shelf_1",
-            name = "Electronics",
-            dukanId = "dukan_123"
+            name = "Electronics"
         ),
         Shelf(
             id = "shelf_2",
-            name = "Clothing",
-            dukanId = "dukan_123"
+            name = "Clothing"
         ),
         Shelf(
             id = "shelf_3",
-            name = "Books",
-            dukanId = "dukan_123"
+            name = "Books"
         )
     )
 }

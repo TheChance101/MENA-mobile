@@ -11,8 +11,7 @@ fun Shelf.toCreateShelfRequest(): CreateShelfRequest {
 fun ShelfResponse.toShelf(): Shelf {
     return Shelf(
         id = id,
-        name = title,
-        dukanId = dukanId
+        name = title
     )
 }
 

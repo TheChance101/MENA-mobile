@@ -5,7 +5,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Serializable
-open class WalletRoute
+sealed class WalletRoute
 
 @Serializable
 data object WalletMainScreenRoute: WalletRoute()

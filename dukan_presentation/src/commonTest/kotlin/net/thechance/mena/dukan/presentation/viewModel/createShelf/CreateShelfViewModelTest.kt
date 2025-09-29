@@ -85,7 +85,7 @@ class CreateShelfViewModelTest {
 
     @Test
     fun `onCreateButtonClicked SHOULD show snack bar when shelf name exists`() = runTest {
-        val existingShelf = Shelf(id = "1", name = "Existing", dukanId = "")
+        val existingShelf = Shelf(id = "1", name = "Existing")
         everySuspend { shelfRepository.getMyDukanShelves() } returns listOf(existingShelf)
 
         createShelfViewModel.onTitleChanged("Existing")
