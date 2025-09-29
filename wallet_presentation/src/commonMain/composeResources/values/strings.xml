@@ -68,4 +68,6 @@
     <string name="no_internet_content">Check your connection and try again</string>
     <string name="img_no_internet">image no internet</string>
     <string name="retry">Re-try</string>
+    <string name="filter_transaction_error_title">Filters give no matches</string>
+    <string name="filter_transaction_error_description">Change your filters or reset them to explore all transactions</string>
 </resources>
