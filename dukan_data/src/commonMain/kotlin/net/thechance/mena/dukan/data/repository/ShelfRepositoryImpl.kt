@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
-import io.ktor.client.statement.HttpResponse
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
