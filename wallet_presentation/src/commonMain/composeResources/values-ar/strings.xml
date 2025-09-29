@@ -7,7 +7,7 @@
     <string name="couldnt_load_tap_to_retry">فشل التحميل، اضغط لإعادة المحاولة</string>
     <string name="error">خطأ</string>
     <string name="balance_fetch_error_description">حدث خطأ أثناء تحميل رصيدك</string>
-  
+
     <string name="type">النوع</string>
     <string name="status">الحالة</string>
     <string name="from">من</string>
@@ -38,4 +38,10 @@
 
     <string name="transaction_history">سجل التحويلات المالية</string>
 
+    <string name="view_transactions">عرض المعاملات</string>
+    <string name="share">مشاركة</string>
+    <string name="page_text">الصفحة %1$s من %2$s </string>
+    <string name="file_shared_successfully">تم مشاركة الملف بنجاح</string>
+    <string name="error_no_data">لا يوجد بيانات لعرضها</string>
+    <string name="something_went_wrong">يوجد شيء خاطئ هنا!</string>
 </resources>
