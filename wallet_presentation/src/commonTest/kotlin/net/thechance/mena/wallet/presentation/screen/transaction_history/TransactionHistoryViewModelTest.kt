@@ -111,7 +111,7 @@ class TransactionHistoryViewModelTest {
     @Test
     fun `should send NavigateToExportTransaction effect when onShareClicked is called`() = runTest {
         val viewModel = TransactionHistoryViewModel(transactionRepository)
-        viewModel.onShareClicked()
+        viewModel.onExportClicked()
 
         viewModel.uiEffect.test {
             val effect = awaitItem()

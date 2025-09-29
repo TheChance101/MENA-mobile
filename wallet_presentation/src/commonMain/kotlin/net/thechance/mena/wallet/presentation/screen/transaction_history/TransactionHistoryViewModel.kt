@@ -54,7 +54,7 @@ class TransactionHistoryViewModel(
         sendEffect(TransactionHistoryEffect.NavigateToTransactionDetails(id))
     }
 
-    override fun onShareClicked() {
+    override fun onExportClicked() {
         sendEffect(TransactionHistoryEffect.NavigateToExportTransaction)
     }
 

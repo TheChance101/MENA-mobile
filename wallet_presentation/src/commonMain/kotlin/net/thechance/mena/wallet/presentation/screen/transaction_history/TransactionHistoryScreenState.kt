@@ -11,8 +11,8 @@ data class TransactionHistoryScreenState(
     data class TransactionHistoryUiState @OptIn(ExperimentalUuidApi::class) constructor(
         val id: Uuid,
         val type: Transaction.Type = Transaction.Type.ONLINE_PURCHASE,
-        val timeAndDate: String = "5:00 Sep 2025",
-        val amount: String = "22222.23",
+        val timeAndDate: String = "",
+        val amount: String = "",
         val status: Transaction.Status = Transaction.Status.SUCCESS,
         val contactName: String? = null
     )

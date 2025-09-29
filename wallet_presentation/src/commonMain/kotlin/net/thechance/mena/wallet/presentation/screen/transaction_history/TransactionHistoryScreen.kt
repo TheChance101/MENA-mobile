@@ -104,7 +104,7 @@ fun TransactionHistoryContent(
                     Icon(
                         modifier = Modifier
                             .clip(RoundedCornerShape(16.dp))
-                            .clickable { interactionListener.onShareClicked() },
+                            .clickable { interactionListener.onExportClicked() },
                         painter = painterResource(Res.drawable.ic_share),
                         contentDescription = Res.string.share.toString()
                     )
