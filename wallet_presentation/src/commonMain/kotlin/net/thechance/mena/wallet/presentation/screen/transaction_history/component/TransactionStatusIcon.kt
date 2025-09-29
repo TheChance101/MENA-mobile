@@ -13,10 +13,9 @@ import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.failed
 import mena.wallet_presentation.generated.resources.ic_failed
-import mena.wallet_presentation.generated.resources.transaction_type_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -24,7 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TransactionStatusIcon(
     transactionTypeIcon: DrawableResource,
-    transactionStatus: Transaction.Status,
+    transactionStatus: TransactionHistoryScreenState.TransactionStatusUiState,
 ) {
     Box(
         modifier = Modifier.height(64.dp)
@@ -37,12 +36,12 @@ fun TransactionStatusIcon(
         ) {
             Icon(
                 painter = painterResource(transactionTypeIcon),
-                contentDescription = stringResource(Res.string.transaction_type_icon),
+                contentDescription = stringResource(transactionStatus.iconContentDescriptionRes),
                 modifier = Modifier.size(24.dp)
             )
         }
 
-        if (transactionStatus == Transaction.Status.FAIL) {
+        if (transactionStatus.contentRes == Res.string.failed) {
             Icon(
                 painter = painterResource(Res.drawable.ic_failed),
                 contentDescription = stringResource(Res.string.failed),

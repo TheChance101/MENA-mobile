@@ -12,25 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.ic_shopping_bag
-import mena.wallet_presentation.generated.resources.transaction_pay
-import net.thechance.mena.wallet.domain.entity.Transaction
-import org.jetbrains.compose.resources.DrawableResource
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionHistoryCard(
-    transactionTypeIcon: DrawableResource,
-    transactionTitle: String,
-    transactionTimeAndDate: String,
-    amount: String,
-    transactionStatus: Transaction.Status,
+    transaction: TransactionHistoryScreenState.TransactionHistoryUiState,
     onTransactionCardClicked: () -> Unit,
-    modifier: Modifier = Modifier,
-    contactName: String? = null
-) {
+    modifier: Modifier = Modifier
+    ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -41,33 +31,19 @@ fun TransactionHistoryCard(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         TransactionStatusIcon(
-            transactionTypeIcon = transactionTypeIcon,
-            transactionStatus = transactionStatus
+            transactionTypeIcon = transaction.type.iconRes,
+            transactionStatus = transaction.status
         )
         TransactionContent(
             modifier = Modifier
                 .weight(1f)
                 .wrapContentHeight()
                 .align(Alignment.CenterVertically),
-            transactionTitle = transactionTitle,
-            transactionTimeAndDate = transactionTimeAndDate,
-            amount = amount,
-            transactionStatus = transactionStatus,
-            contactName = contactName
+            transactionTitle = stringResource(transaction.type.titleRes),
+            transactionTimeAndDate = transaction.timeAndDate,
+            amount = transaction.amount,
+            transactionStatus = transaction.status,
+            contactName = transaction.contactName
         )
     }
-}
-
-@Preview
-@Composable
-fun TransactionHistoryCardPreview() {
-    TransactionHistoryCard(
-        transactionTypeIcon = Res.drawable.ic_shopping_bag,
-        transactionTitle = stringResource(Res.string.transaction_pay),
-        transactionTimeAndDate = "2025-09-27 14:45",
-        amount = "120.55",
-        transactionStatus = Transaction.Status.SUCCESS,
-        onTransactionCardClicked = {},
-        modifier = Modifier.fillMaxWidth()
-    )
 }

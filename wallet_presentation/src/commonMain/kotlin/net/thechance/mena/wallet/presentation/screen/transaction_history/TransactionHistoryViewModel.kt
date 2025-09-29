@@ -5,7 +5,6 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
-import net.thechance.mena.wallet.presentation.base.UiState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -26,7 +25,7 @@ class TransactionHistoryViewModel(
     private fun getTransactionHistory() {
         tryToExecute(
             callee = { transactionRepository.getAll() },
-            onStart = ::onGetTransactionDetailsStart,
+            onStart = ::onGetTransactionHistoryStart,
             onSuccess = ::onGetTransactionHistorySuccess,
             onError = ::onGetTransactionHistoryError,
             dispatcher = Dispatchers.IO
@@ -34,16 +33,16 @@ class TransactionHistoryViewModel(
     }
 
     private fun onGetTransactionHistorySuccess(transactionHistory: List<Transaction>) {
-        updateState { it.copy(history = UiState.Success(transactionHistory.map { it -> it.toUi() })) }
+        updateState { it.copy(history = transactionHistory.map { it -> it.toUi() }) }
 
     }
 
-    private fun onGetTransactionDetailsStart() {
-        updateState { it.copy(history = UiState.Loading) }
+    private fun onGetTransactionHistoryStart() {
+        updateState { it.copy(isLoading = true) }
     }
 
     private fun onGetTransactionHistoryError(throwable: Throwable) {
-        updateState { it.copy(history = UiState.Error(throwable)) }
+        updateState { it.copy(isError = throwable) }
     }
 
     override fun onBackClicked() {

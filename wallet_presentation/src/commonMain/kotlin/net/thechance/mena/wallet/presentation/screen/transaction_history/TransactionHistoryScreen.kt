@@ -27,27 +27,17 @@ import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.filter
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_filter
-import mena.wallet_presentation.generated.resources.ic_receive
-import mena.wallet_presentation.generated.resources.ic_send
 import mena.wallet_presentation.generated.resources.ic_share
-import mena.wallet_presentation.generated.resources.ic_shopping_bag
 import mena.wallet_presentation.generated.resources.share
-import mena.wallet_presentation.generated.resources.transaction_pay
-import mena.wallet_presentation.generated.resources.transaction_receive
-import mena.wallet_presentation.generated.resources.transaction_send
 import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -112,78 +102,50 @@ fun TransactionHistoryContent(
             )
         }
     ) {
-        when (state.history) {
-            is UiState.Error -> {}
-            is UiState.Loading, UiState.Idle -> {}
-            is UiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Theme.colorScheme.background.surface)
-                        .padding(horizontal = 16.dp, vertical = 16.dp),
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Theme.colorScheme.background.surface)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+        ) {
+            item {
+                Button(
+                    contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
+                    onClick = interactionListener::onFilterClicked,
+                    containerColor = Theme.colorScheme.brand.brandVariant,
+                    shape = CircleShape,
                 ) {
-                    item {
-                        Button(
-                            contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
-                            onClick = interactionListener::onFilterClicked,
-                            containerColor = Theme.colorScheme.brand.brandVariant,
-                            shape = CircleShape,
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(16.dp),
-                                painter = painterResource(Res.drawable.ic_filter),
-                                contentDescription = stringResource(Res.string.filter)
-                            )
-                            Text(
-                                modifier = Modifier.padding(start = 4.dp),
-                                text = stringResource(Res.string.filter),
-                                style = Theme.typography.label.small,
-                                color = Theme.colorScheme.primary.primary
-                            )
-                        }
-                    }
-                    val history = state.history
-                    items(history.data) { transaction ->
-                        TransactionHistoryCard(
-                            transactionTypeIcon = getTransactionTypeIcon(transaction.type),
-                            transactionTitle = stringResource(getTransactionTitle(transaction.type)),
-                            transactionTimeAndDate = transaction.timeAndDate,
-                            amount = transaction.amount,
-                            transactionStatus = transaction.status,
-                            onTransactionCardClicked = {
-                                interactionListener.onTransactionCardClicked(
-                                    transaction.id
-                                )
-                            },
-                            contactName = transaction.contactName
-                        )
-                        Box(
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .fillMaxWidth(1f)
-                                .height(1.dp)
-                                .background(Theme.colorScheme.stroke)
-                        )
-                    }
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(Res.drawable.ic_filter),
+                        contentDescription = stringResource(Res.string.filter)
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 4.dp),
+                        text = stringResource(Res.string.filter),
+                        style = Theme.typography.label.small,
+                        color = Theme.colorScheme.primary.primary
+                    )
                 }
+            }
+            items(state.history) { transaction ->
+                TransactionHistoryCard(
+                    transaction = transaction,
+                    onTransactionCardClicked = {
+                        interactionListener.onTransactionCardClicked(transaction.id)
+                    }
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .fillMaxWidth(1f)
+                        .height(1.dp)
+                        .background(Theme.colorScheme.stroke)
+                )
             }
         }
     }
 }
-
-private fun getTransactionTypeIcon(type: Transaction.Type): DrawableResource =
-    when (type) {
-        Transaction.Type.ONLINE_PURCHASE -> Res.drawable.ic_shopping_bag
-        Transaction.Type.SENT -> Res.drawable.ic_send
-        Transaction.Type.RECEIVED -> Res.drawable.ic_receive
-    }
-
-private fun getTransactionTitle(transactionType: Transaction.Type): StringResource =
-    when (transactionType) {
-        Transaction.Type.ONLINE_PURCHASE -> Res.string.transaction_pay
-        Transaction.Type.SENT -> Res.string.transaction_send
-        Transaction.Type.RECEIVED -> Res.string.transaction_receive
-    }
 
 @OptIn(ExperimentalUuidApi::class)
 private fun onTransactionHistoryEffect(
