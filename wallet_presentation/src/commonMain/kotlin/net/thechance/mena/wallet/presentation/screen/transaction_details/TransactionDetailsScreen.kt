@@ -4,35 +4,24 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.suwasto.capturablecompose.rememberCaptureController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
-import mena.wallet_presentation.generated.resources.ic_share
-import mena.wallet_presentation.generated.resources.share_button
-import mena.wallet_presentation.generated.resources.share_receipt
 import mena.wallet_presentation.generated.resources.transaction_details_header
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
-import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsSection
+import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsContent
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.TransactionDetailsScreenShot
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -103,51 +92,24 @@ private fun TransactionDetailsScreenContent(
                 is UiState.Error -> {}
                 is UiState.Loading, UiState.Idle -> {}
                 is UiState.Success -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    Box {
                         val captureController = rememberCaptureController()
-                        DetailsSection(
-                            modifier = Modifier.padding(bottom = 88.dp).align(Alignment.Center),
-                            transactionDetailsUiState = transactionState.data
+                        DetailsContent(
+                            transactionDetailsUiState = transactionState.data,
+                            onShareReceiptButtonClicked = interactionListener::onShareReceiptButtonClicked,
+                            captureController = captureController,
+                            isShareReceiptBtnLoading = state.isShareReceiptBtnLoading,
                         )
-                        if (transactionState.data.transactionStatus == Transaction.Status.SUCCESS) {
-                            OutlinedButton(
-                                text = stringResource(Res.string.share_receipt),
-                                onClick = {
-                                    interactionListener.onShareReceiptButtonClicked(
-                                        capture = captureController::capture
-                                    )
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(
-                                        horizontal = Theme.spacing._16,
-                                        vertical = Theme.spacing._24
-                                    )
-                                    .heightIn(min = 48.dp)
-                                    .fillMaxWidth(),
-                                trailingIcon = painterResource(Res.drawable.ic_share),
-                                iconSize = 20.dp,
-                                contentDescription = stringResource(Res.string.share_button),
-                                iconStartPadding = Theme.spacing._8,
-                                isLoading = state.isShareReceiptBtnLoading,
-                                contentColor = Theme.colorScheme.primary.primary,
-                                contentPadding = PaddingValues(
-                                    vertical = Theme.spacing._8,
-                                    horizontal = Theme.spacing._16
-                                ),
-                                shape = RoundedCornerShape(Theme.radius.md)
-                            )
-                            TransactionDetailsScreenShot(
-                                captureController = captureController,
-                                onScreenShotCapture = { imageBitmap ->
-                                    interactionListener.onScreenShotCaptured(
-                                        byteArray = imageBitmapToByteArray(imageBitmap),
-                                        fileName = transactionState.data.id
-                                    )
-                                },
-                                transactionDetailsUiState = transactionState.data,
-                            )
-                        }
+                        TransactionDetailsScreenShot(
+                            captureController = captureController,
+                            onScreenShotCapture = { imageBitmap ->
+                                interactionListener.onScreenShotCaptured(
+                                    byteArray = imageBitmapToByteArray(imageBitmap),
+                                    fileName = transactionState.data.id
+                                )
+                            },
+                            transactionDetailsUiState = transactionState.data,
+                        )
                     }
                 }
             }

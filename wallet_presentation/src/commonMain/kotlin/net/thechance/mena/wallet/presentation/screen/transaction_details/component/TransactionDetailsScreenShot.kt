@@ -22,8 +22,7 @@ internal fun TransactionDetailsScreenShot(
         Capturable(
             captureController = captureController,
             onCaptured = { onScreenShotCapture(it) }
-        )
-        {
+        ) {
             DetailsSection(
                 modifier = modifier,
                 transactionDetailsUiState = transactionDetailsUiState,
