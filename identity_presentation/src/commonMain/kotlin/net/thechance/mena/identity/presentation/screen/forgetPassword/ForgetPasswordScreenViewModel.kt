@@ -12,8 +12,8 @@ import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.select
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class ForgetPasswordScreenViewModel(
-    val loginUseCase: LoginUseCase,
-    val resetPasswordRepository: ResetPasswordRepository
+    private val loginUseCase: LoginUseCase,
+    private val resetPasswordRepository: ResetPasswordRepository
 ) : BaseScreenModel<ForgetPasswordScreenUIState, ForgetPasswordScreenUIEffect>(
     ForgetPasswordScreenUIState()
 ), ForgetPasswordScreenInteractionListener {
