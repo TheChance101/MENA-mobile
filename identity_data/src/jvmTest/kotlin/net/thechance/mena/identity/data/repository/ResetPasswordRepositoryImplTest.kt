@@ -92,8 +92,18 @@ class ResetPasswordRepositoryImplTest {
     }
 
     @Test
-    fun `resetPassword() should throw  when server returns 401`(){
+    fun `resetPassword() should not throw exception when server returns 200`(){
+        val client = mockHttpClient(Unit)
 
+        forgetPasswordRepository = ResetPasswordRepositoryImpl(client)
+
+        runTest {
+            forgetPasswordRepository.resetPassword(
+                newPassword = "newPassword",
+                confirmPassword = "newPassword",
+                phoneNumber = phoneNumber
+            )
+        }
     }
 
     private val phoneNumber = "07701231234"
