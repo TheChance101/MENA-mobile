@@ -20,7 +20,7 @@ import mena.wallet_presentation.generated.resources.share_receipt
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -32,16 +32,16 @@ internal fun DetailsContent(
     onShareReceiptButtonClicked: (suspend () -> Unit) -> Unit,
     captureController: CaptureController,
     isShareReceiptBtnLoading: Boolean,
-){
-    Column (modifier = Modifier.fillMaxSize()) {
-        Column (
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DetailsSection(transactionDetailsUiState = transactionDetailsUiState)
         }
-        if (transactionDetailsUiState.transactionStatus == Transaction.Status.SUCCESS) {
+        if (transactionDetailsUiState.transactionStatus == TransactionStatusUiState.SUCCESS) {
             OutlinedButton(
                 text = stringResource(Res.string.share_receipt),
                 onClick = { onShareReceiptButtonClicked(captureController::capture) },

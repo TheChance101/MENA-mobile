@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.date
 import mena.wallet_presentation.generated.resources.img_silver
@@ -19,17 +20,8 @@ import mena.wallet_presentation.generated.resources.type
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getIconSize
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getIconTint
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getOtherPartyTitle
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getStatusContent
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getStatusIcon
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getStatusIconDescription
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getTransactionTypeIcon
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getTransactionTypeIconDescription
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getTransactionTypeText
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getTypeContent
-import net.thechance.mena.wallet.presentation.screen.transaction_details.getUserInfo
+import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
+import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -55,19 +47,18 @@ internal fun DetailsSection(
             modifier = Modifier
                 .padding(top = Theme.spacing._8)
                 .align(Alignment.CenterHorizontally),
-            text = stringResource(
-                resource = getTransactionTypeText(transactionDetailsUiState.transactionType)
-            ),
+            text = stringResource(transactionDetailsUiState.transactionType.titleRes),
             textStyle = Theme.typography.label.small,
             textColor = Theme.colorScheme.shadeSecondary,
-            icon = painterResource(
-                resource = getTransactionTypeIcon(transactionDetailsUiState.transactionType)
-            ),
+            icon = painterResource(transactionDetailsUiState.transactionType.iconRes),
             iconContentDescription = stringResource(
-                resource = getTransactionTypeIconDescription(transactionDetailsUiState.transactionType)
+                resource = transactionDetailsUiState.transactionType.iconContentDescriptionRes
             ),
             iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = getIconSize(transactionDetailsUiState.transactionType),
+            iconSize = when (transactionDetailsUiState.transactionType) {
+                TransactionTypeUiState.ONLINE_PURCHASE  -> Theme.spacing._16
+                TransactionTypeUiState.SENT, TransactionTypeUiState.RECEIVED -> 10.dp
+            },
             gap = Theme.spacing._4,
         )
 
@@ -86,38 +77,29 @@ internal fun DetailsSection(
 
         if (isUserNameShown) {
             DetailsInfo(
-                title = stringResource(
-                    resource = getUserInfo(transactionDetailsUiState.transactionType)
-                ),
+                title = stringResource(transactionDetailsUiState.userInfo),
                 content = transactionDetailsUiState.userName,
             )
         }
 
         DetailsInfo(
             title = stringResource(Res.string.status),
-            content = stringResource(
-                resource = getStatusContent(transactionDetailsUiState.transactionStatus)
-            ),
-            icon = painterResource(
-                resource = getStatusIcon(transactionDetailsUiState.transactionStatus)
-            ),
-            iconContentDescription = stringResource(
-                resource = getStatusIconDescription (transactionDetailsUiState.transactionStatus)
-            ),
-            iconTint = getIconTint(transactionDetailsUiState.transactionStatus)
+            content = stringResource(transactionDetailsUiState.transactionStatus.contentRes),
+            icon = painterResource(transactionDetailsUiState.transactionStatus.iconRes),
+            iconContentDescription = stringResource(transactionDetailsUiState.transactionStatus.iconContentDescriptionRes),
+            iconTint = when (transactionDetailsUiState.transactionStatus) {
+                TransactionStatusUiState.FAILED -> Theme.colorScheme.error
+                TransactionStatusUiState.SUCCESS -> Theme.colorScheme.success
+            }
         )
 
         DetailsInfo(
             title = stringResource(Res.string.type),
-            content =  stringResource(
-                resource = getTypeContent(transactionDetailsUiState.transactionType)
-            ),
+            content = stringResource(transactionDetailsUiState.typeContent),
         )
 
         DetailsInfo(
-            title = stringResource(
-                resource = getOtherPartyTitle (transactionDetailsUiState.transactionType)
-            ),
+            title = stringResource(transactionDetailsUiState.otherPartyTitle),
             content = transactionDetailsUiState.otherParty,
         )
 

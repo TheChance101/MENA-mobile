@@ -18,6 +18,10 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.from
+import mena.wallet_presentation.generated.resources.to
+import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
@@ -46,62 +50,65 @@ class TransactionDetailsViewModelTest {
     }
 
     @Test
-    fun `getTransactionDetails should set transaction with loading when initially called`() = runTest {
-        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+    fun `getTransactionDetails should set transaction with loading when initially called`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-        val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
-            transactionRepository = transactionRepository,
-            transactionId = transaction1Id.toString(),
-            ioDispatcher = testDispatcher
-        )
+            val viewModel = TransactionDetailsViewModel(
+                imageSharer = imageSharer,
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
 
-        viewModel.state.test {
-            skipItems(1)
-            val initialState = awaitItem()
-            assertTrue(initialState.isLoading)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                skipItems(1)
+                val initialState = awaitItem()
+                assertTrue(initialState.isLoading)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `getTransactionDetails should update transaction ui state with success when repository returns value`() = runTest {
-        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+    fun `getTransactionDetails should update transaction ui state with success when repository returns value`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-        val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
-            transactionRepository = transactionRepository,
-            transactionId = transaction1Id.toString(),
-            ioDispatcher = testDispatcher
-        )
+            val viewModel = TransactionDetailsViewModel(
+                imageSharer = imageSharer,
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
 
-        viewModel.state.test {
-            skipItems(2)
-            val successState = awaitItem()
-            assertEquals(transaction1uiState, successState.transactionDetailsUiState)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                skipItems(2)
+                val successState = awaitItem()
+                assertEquals(transaction1uiState, successState.transactionDetailsUiState)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `getTransactionDetails should update transaction ui state with error when repository fails`() = runTest {
-        val expectedError = Exception()
-        everySuspend { transactionRepository.getTransactionById(any()) } throws expectedError
+    fun `getTransactionDetails should update transaction ui state with error when repository fails`() =
+        runTest {
+            val expectedError = Exception()
+            everySuspend { transactionRepository.getTransactionById(any()) } throws expectedError
 
-        val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
-            transactionRepository = transactionRepository,
-            transactionId = transaction1Id.toString(),
-            ioDispatcher = testDispatcher
-        )
+            val viewModel = TransactionDetailsViewModel(
+                imageSharer = imageSharer,
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
 
-        viewModel.state.test {
-            skipItems(2)
-            val errorState = awaitItem()
-            assertEquals(expectedError, errorState.isError)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                skipItems(2)
+                val errorState = awaitItem()
+                assertEquals(expectedError, errorState.isError)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `onBackButtonClicked should send NavigateBack effect`() = runTest {
@@ -121,27 +128,28 @@ class TransactionDetailsViewModelTest {
     }
 
     @Test
-    fun `onScreenShotCaptured should share image and reset loading state to false when success`() = runTest {
-        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-        everySuspend { imageSharer.shareImage(any(), any(), any()) } returns Unit
+    fun `onScreenShotCaptured should share image and reset loading state to false when success`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+            everySuspend { imageSharer.shareImage(any(), any(), any()) } returns Unit
 
-        val byteArray = byteArrayOf()
-        val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
-            transactionRepository = transactionRepository,
-            transactionId = transaction1Id.toString(),
-            ioDispatcher = testDispatcher
-        )
+            val byteArray = byteArrayOf()
+            val viewModel = TransactionDetailsViewModel(
+                imageSharer = imageSharer,
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
 
-        viewModel.state.test {
-            skipItems(2)
+            viewModel.state.test {
+                skipItems(2)
 
-            viewModel.onScreenShotCaptured(byteArray, "test_file")
+                viewModel.onScreenShotCaptured(byteArray, "test_file")
 
-            val finalState = awaitItem()
-            assertTrue(!finalState.isShareReceiptBtnLoading)
+                val finalState = awaitItem()
+                assertTrue(!finalState.isShareReceiptBtnLoading)
+            }
         }
-    }
 
     @Test
     fun `onScreenShotCaptured should reset loading state to false when fail`() = runTest {
@@ -251,8 +259,11 @@ class TransactionDetailsViewModelTest {
             date = "20 Aug 2025, 12:00 PM",
             userName = "Nour Elhoda",
             otherParty = "Nour Elhoda",
-            transactionType = Transaction.Type.RECEIVED,
-            transactionStatus = Transaction.Status.SUCCESS
+            transactionType = TransactionDetailsScreenState.TransactionTypeUiState.RECEIVED,
+            transactionStatus = TransactionDetailsScreenState.TransactionStatusUiState.SUCCESS,
+            userInfo = Res.string.to,
+            typeContent = Res.string.transfer,
+            otherPartyTitle = Res.string.from
         )
     }
 }
