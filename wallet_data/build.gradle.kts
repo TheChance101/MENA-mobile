@@ -38,12 +38,14 @@ kotlin {
             implementation(libs.koin.core)
             api(libs.koin.annotations)
 
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
+            implementation(libs.mokkery.core)
         }
         iosMain.dependencies {
 

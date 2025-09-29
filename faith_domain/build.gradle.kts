@@ -22,7 +22,16 @@ kotlin {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
+        }
+    }
+
+    filters {
+        excludes {
+            packages(
+                "mena.faith_presentation.generated.resources*",
+                "*.entity"
+            )
         }
     }
 }

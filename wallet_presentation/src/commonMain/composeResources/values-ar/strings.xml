@@ -7,7 +7,6 @@
     <string name="couldnt_load_tap_to_retry">فشل التحميل، اضغط لإعادة المحاولة</string>
     <string name="error">خطأ</string>
     <string name="balance_fetch_error_description">حدث خطأ أثناء تحميل رصيدك</string>
-  
     <string name="type">النوع</string>
     <string name="status">الحالة</string>
     <string name="from">من</string>
@@ -19,7 +18,6 @@
     <string name="all">الكل</string>
     <string name="success">ناجح</string>
     <string name="failed">فشل</string>
-
     <string name="month_january">يناير</string>
     <string name="month_february">فبراير</string>
     <string name="month_march">مارس</string>
@@ -35,7 +33,13 @@
     <string name="pick_start_date">اختر تاريخ البداية</string>
     <string name="pick_end_date">اختار تاريخ النهاية</string>
     <string name="pick">اختر</string>
-
-    <string name="transaction_history">سجل المعاملات</string>
-
+    <string name="transactions_history">سجل المعاملات</string>
+    <string name="filter">الفلاتر</string>
+    <string name="transaction_pay">تسوق عبر الإنترنت</string>
+    <string name="transaction_send">إرسال إلى </string>
+    <string name="transaction_receive"> استلام من</string>
+    <string name="money_icon">أيقونة المال</string>
+    <string name="transaction_type_icon">أيقونة نوع المعاملة</string>
+    <string name="online_shopping">شراء علي الانترنت</string>
+    <string name="share">مشاركة</string>
 </resources>
