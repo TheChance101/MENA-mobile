@@ -24,7 +24,7 @@ class TransactionHistoryViewModel(
 
     private fun getTransactionHistory() {
         tryToExecute(
-            callee = { transactionRepository.getAll() },
+            callee = { transactionRepository.getAllTransaction() },
             onStart = ::onGetTransactionHistoryStart,
             onSuccess = ::onGetTransactionHistorySuccess,
             onError = ::onGetTransactionHistoryError,

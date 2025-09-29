@@ -44,7 +44,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `getTransactionHistory should set isLoading true when initially called`() = runTest {
-        everySuspend { transactionRepository.getAll() } returns history
+        everySuspend { transactionRepository.getAllTransaction() } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
 
         viewModel.state.test {
@@ -56,7 +56,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `getTransactionHistory should update history when repository returns value`() = runTest {
-        everySuspend { transactionRepository.getAll() } returns history
+        everySuspend { transactionRepository.getAllTransaction() } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
 
@@ -72,7 +72,7 @@ class TransactionHistoryViewModelTest {
     @Test
     fun `getTransactionHistory should set isError when repository throws exception`() = runTest {
         val expectedException = RuntimeException("test error")
-        everySuspend { transactionRepository.getAll() } throws expectedException
+        everySuspend { transactionRepository.getAllTransaction() } throws expectedException
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
 
