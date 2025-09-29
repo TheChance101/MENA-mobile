@@ -8,7 +8,10 @@ import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
@@ -17,6 +20,14 @@ class TransactionRepositoryImpl(
             networkClient.get("$TRANSACTION_PATH?${transactionFilterParams?.toParameters()}")
         }.transactions.orEmpty().map { it.toEntity() }
 
+    }
+
+    override suspend fun getAllTransaction(): List<Transaction> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTransactionById(transactionId: Uuid): Transaction {
+        TODO("Not yet implemented")
     }
 
     private companion object {

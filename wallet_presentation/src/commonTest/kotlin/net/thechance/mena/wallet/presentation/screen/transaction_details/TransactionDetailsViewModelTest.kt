@@ -23,6 +23,8 @@ import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.TransactionStatus
+import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import kotlin.test.AfterTest
@@ -257,12 +259,10 @@ class TransactionDetailsViewModelTest {
                 time = LocalTime(12, 0)
             ),
             amount = 5000.0,
-            status = Transaction.Status.SUCCESS,
-            senderId = Uuid.random(),
+            status = TransactionStatus.SUCCESS,
             senderName = "Nour Elhoda",
-            receiverId = Uuid.random(),
             receiverName = "Nour Elhoda",
-            type = Transaction.Type.RECEIVED
+            type = TransactionType.RECEIVED
         )
         val transaction1uiState = TransactionDetailsScreenState.TransactionDetailsUiState(
             id = transaction1Id.toString(),
