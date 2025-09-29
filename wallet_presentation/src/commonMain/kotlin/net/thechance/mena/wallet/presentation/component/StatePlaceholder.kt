@@ -2,7 +2,6 @@ package net.thechance.mena.wallet.presentation.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -28,7 +27,6 @@ fun StatePlaceholder(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize()
             .padding(horizontal = 16.dp),
         horizontalAlignment=Alignment.CenterHorizontally,
         verticalArrangement=Arrangement.Center,

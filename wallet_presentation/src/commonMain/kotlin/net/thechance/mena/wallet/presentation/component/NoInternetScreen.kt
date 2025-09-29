@@ -5,14 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.img_no_internet
@@ -20,8 +17,6 @@ import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.image.Image
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -39,30 +34,10 @@ internal fun NoInternetScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(Res.drawable.img_no_internet),
-            contentDescription = stringResource(Res.string.img_no_internet),
-            modifier = Modifier
-                .height(98.dp)
-                .width(128.dp)
-        )
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = Theme.spacing._12),
-            text = stringResource(Res.string.no_internet_title),
-            style = Theme.typography.title.small,
-            color = Theme.colorScheme.shadePrimary,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            modifier = Modifier
-                .padding(top = 2.dp)
-                .fillMaxWidth(),
-            text = stringResource(Res.string.no_internet_content),
-            style = Theme.typography.body.small,
-            color = Theme.colorScheme.shadeSecondary,
-            textAlign = TextAlign.Center,
+        StatePlaceholder(
+            image = painterResource(Res.drawable.img_no_internet),
+            title = stringResource(Res.string.no_internet_title),
+            description = stringResource(Res.string.no_internet_content),
         )
         PrimaryButton(
             modifier = Modifier
