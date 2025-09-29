@@ -9,7 +9,7 @@ import org.koin.core.annotation.Single
 @Single([WalletApi::class])
 class WalletApiImpl: WalletApi {
     @Composable
-    override fun WalletEntry(navigateBack: () -> Unit) {
+    override fun WalletEntryCore(navigateBack: () -> Unit) {
         NavigationHost(startDestination = WalletMainScreenRoute, navigateBack = navigateBack)
     }
 }
