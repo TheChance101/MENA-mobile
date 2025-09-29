@@ -21,7 +21,8 @@ const val TransitionDuration = 300
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun NavigationHost(
-    startDestination: WalletRoute = WalletMainScreenRoute
+    startDestination: WalletRoute = WalletMainScreenRoute,
+    navigateBack: () -> Unit = {}
 ) {
     val navController = rememberNavController()
 
@@ -49,7 +50,7 @@ fun NavigationHost(
     ) {
         composable<WalletMainScreenRoute> {
             WalletMainScreen(
-                onNavigateBackClicked = { navController.popBackStack() },
+                onNavigateBackClicked = navigateBack,
                 navigateToTransactionHistory = {
                     navController.navigate(TransactionsHistoryScreenRoute)
                 }
