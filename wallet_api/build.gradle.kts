@@ -52,4 +52,9 @@ kover.reports {
             minBound(80)
         }
     }
+    filters {
+        excludes {
+            classes("**.api.**")
+        }
+    }
 }
