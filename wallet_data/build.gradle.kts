@@ -40,6 +40,7 @@ kotlin {
             //data time
             implementation(libs.kotlinx.datetime)
 
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

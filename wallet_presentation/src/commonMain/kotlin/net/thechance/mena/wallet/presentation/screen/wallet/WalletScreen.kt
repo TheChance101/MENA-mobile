@@ -17,7 +17,7 @@ import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.my_wallet
-import mena.wallet_presentation.generated.resources.transaction_history
+import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -96,8 +96,8 @@ private fun WalletContent(
             )
             LabeledButtonWithCircularIcon(
                 icon = painterResource(Res.drawable.ic_clock),
-                contentDescription = stringResource(Res.string.transaction_history),
-                label = stringResource(Res.string.transaction_history),
+                contentDescription = stringResource(Res.string.transactions_history),
+                label = stringResource(Res.string.transactions_history),
                 onClick = interactionListener::onTransactionHistoryClicked,
                 modifier = Modifier
                     .fillMaxWidth()

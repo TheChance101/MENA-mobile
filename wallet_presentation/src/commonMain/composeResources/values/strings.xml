@@ -7,6 +7,7 @@
     <string name="couldnt_load_tap_to_retry">Couldn’t load, tap to retry</string>
     <string name="error">Error</string>
     <string name="balance_fetch_error_description">Something went wrong while fetching your balance</string>
+
     <string name="type">Type</string>
     <string name="status">Status</string>
     <string name="from">From</string>
@@ -54,7 +55,15 @@
     <string name="pick_start_date">Pick the start date</string>
     <string name="pick_end_date">Pick the end date</string>
     <string name="pick">Pick</string>
-    <string name="transaction_history">Transaction History</string>
+    <string name="transactions_history">Transactions History</string>
+    <string name="filter">Filters</string>
+    <string name="transaction_pay">Online shopping</string>
+    <string name="transaction_send">Send to </string>
+    <string name="transaction_receive">Receive from </string>
+    <string name="money_icon">money icon</string>
+    <string name="transaction_type_icon">Transactions Type Icon</string>
+    <string name="online_shopping">Online Shopping</string>
+    <string name="share">share</string>
     <string name="no_internet_title">Oops! It looks like you’re offline.</string>
     <string name="no_internet_content">Check your connection and try again</string>
     <string name="img_no_internet">image no internet</string>
