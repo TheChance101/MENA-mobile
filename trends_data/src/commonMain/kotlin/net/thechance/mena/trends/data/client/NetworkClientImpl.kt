@@ -27,7 +27,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [NetworkClient::class])
 class NetworkClientImpl(
     @Provided private val authorizationService: AuthorizationService,
-    @Provided @Named("baseUrl") private val baseUrl: String
+    @Provided @Named(BASE_URL) private val baseUrl: String
 ) : NetworkClient {
 
     private val client: HttpClient = provideHttpClient()
@@ -112,5 +112,6 @@ class NetworkClientImpl(
 
     private companion object {
         const val TIME_OUT_INTERVAL_MILLI = 15_000L
+        const val BASE_URL = "baseUrl"
     }
 }
