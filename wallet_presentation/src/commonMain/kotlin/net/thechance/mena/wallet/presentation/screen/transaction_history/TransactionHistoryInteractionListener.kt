@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 interface TransactionHistoryInteractionListener {
     fun onBackClicked()
     fun onTransactionCardClicked(id: Uuid)
-    fun onShareClicked()
+    fun onExportClicked()
     fun onFilterClicked()
 
 }
