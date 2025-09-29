@@ -1,0 +1,37 @@
+package net.thechance.mena.trends.presentation.screen.video_description
+
+import net.thechance.mena.trends.presentation.screen.video_description.args.VideoDescriptionArgs
+import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Provided
+
+@KoinViewModel
+internal class VideoDescriptionViewModel(
+    @Provided private val videoDescriptionArgs: VideoDescriptionArgs
+) : BaseViewModel<VideoDescriptionScreenState, VideoDescriptionEffect>(initialState = VideoDescriptionScreenState()),
+    VideoDescriptionInteractionListener {
+
+
+    override fun onBackClick() {
+        sendEffect(VideoDescriptionEffect.NavigateBack)
+    }
+
+    override fun onNextClick() {
+        sendEffect(
+            VideoDescriptionEffect.NavigateToSelectCategories(
+                state.value.description,
+                videoDescriptionArgs.trendId
+            )
+        )
+    }
+
+    override fun onDescriptionChanged(newValue: String) {
+        updateState {
+            copy(
+                description = newValue,
+                currentNumberOfCharacters = newValue.length,
+                isButtonEnabled = newValue.length <= maxNumberOfCharacters
+            )
+        }
+    }
+}

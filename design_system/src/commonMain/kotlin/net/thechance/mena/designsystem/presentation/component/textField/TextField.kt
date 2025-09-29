@@ -1,22 +1,34 @@
 package net.thechance.mena.designsystem.presentation.component.textField
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import mena.design_system.generated.resources.Res
+import mena.design_system.generated.resources.ic_profile
+import mena.design_system.generated.resources.silver_tc
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TextField(
     value: String,
-    onValueChanged: (String) -> Unit,
     hint: String,
+    onValueChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     leadingIcon: Painter? = null,
     trailingIcon: Painter? = null,
@@ -25,12 +37,14 @@ fun TextField(
     enabled: Boolean = true,
     readOnly: Boolean = false,
     isError: Boolean = false,
+    showTrailingDivider: Boolean = true,
     errorMessage: String? = null,
     shape: Shape = RoundedCornerShape(Theme.radius.md),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     focusRequester: FocusRequester = FocusRequester(),
     onFocusChanged: (Boolean) -> Unit = {},
+    onTrailingIconClick: (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     BasicTextField(
@@ -44,6 +58,7 @@ fun TextField(
         enabled = enabled,
         readOnly = readOnly,
         isError = isError,
+        showTrailingDivider = showTrailingDivider,
         errorMessage = errorMessage,
         shape = shape,
         keyboardOptions = keyboardOptions,
@@ -51,6 +66,53 @@ fun TextField(
         visualTransformation = visualTransformation,
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
-        modifier = modifier
+        modifier = modifier,
+        onTrailingIconClick = onTrailingIconClick
     )
+}
+
+
+@Preview
+@Composable
+private fun PreviewTextField() {
+    MenaTheme {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TextField(
+                    value = "adad",
+                    onValueChanged = {},
+                    hint = "Placeholder",
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = painterResource(Res.drawable.ic_profile)
+                )
+
+                TextField(
+                    value = "",
+                    onValueChanged = {},
+                    hint = "Placeholder",
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = painterResource(Res.drawable.ic_profile),
+                    trailingIcon = painterResource(Res.drawable.silver_tc)
+                )
+
+                TextField(
+                    value = "",
+                    onValueChanged = {},
+                    hint = "Placeholder",
+                    leadingIcon = painterResource(Res.drawable.ic_profile),
+                    isError = true,
+                    errorMessage = "error message",
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
 }

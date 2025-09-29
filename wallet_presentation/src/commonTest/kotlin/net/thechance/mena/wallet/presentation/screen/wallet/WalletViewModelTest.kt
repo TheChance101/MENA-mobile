@@ -113,6 +113,17 @@ class WalletViewModelTest {
     }
 
     @Test
+    fun `should send NavigateToTransactionHistory effect when onNavigateToTransactionHistoryClicked is called`() = runTest {
+        val viewModel = WalletViewModel(balanceRepository, testDispatcher)
+        viewModel.onTransactionHistoryClicked()
+
+        viewModel.uiEffect.test {
+            val effect = awaitItem()
+            assertTrue(effect is WalletEffect.NavigateToTransactionHistory)
+        }
+    }
+
+    @Test
     fun `should call getBalance when onRetryLoadBalanceClicked is called`() = runTest {
         val viewModel = WalletViewModel(balanceRepository, testDispatcher)
         viewModel.onRetryLoadBalanceClicked()

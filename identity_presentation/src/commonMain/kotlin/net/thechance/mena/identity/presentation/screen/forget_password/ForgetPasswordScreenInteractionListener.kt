@@ -1,0 +1,5 @@
+package net.thechance.mena.identity.presentation.screen.forget_password
+
+import net.thechance.mena.identity.presentation.base.BaseInteractionListener
+
+interface ForgetPasswordScreenInteractionListener : BaseInteractionListener

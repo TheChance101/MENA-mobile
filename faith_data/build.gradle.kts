@@ -6,12 +6,13 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.mockkery)
 }
 
 kotlin {
-    iosArm64()
     androidTarget()
     iosSimulatorArm64()
+    iosX64()
     iosArm64()
 
     sourceSets {
@@ -19,16 +20,18 @@ kotlin {
             implementation(libs.androidx.room.sqlite.wrapper)
         }
         commonMain.dependencies {
+            implementation(compose.runtime)
             implementation(projects.faithDomain)
             implementation(compose.components.resources)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.serialization.json)
             api(libs.koin.core)
-            implementation(compose.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.mokkery.core)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
@@ -36,7 +39,20 @@ kotlin {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
+        }
+    }
+
+    filters {
+        excludes {
+            packages(
+                "*.database",
+                "*.mapper",
+                "*.di",
+            )
+        }
+        includes {
+            packages("*.repository")
         }
     }
 }

@@ -5,9 +5,9 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 
 actual class QuranDatabaseBuilder {
     actual fun getBuilder() = Room.databaseBuilder<QuranDatabase>(
-        name = databaseUri.removePrefix(prefix),
+        name = databaseUri.removePrefix(pathPrefix),
     ).setDriver(BundledSQLiteDriver())
 
-    internal actual val prefix: String
+    internal actual val pathPrefix: String
         get() = "file://"
 }

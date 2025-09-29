@@ -6,7 +6,14 @@ import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -14,82 +21,116 @@ import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import net.thechance.mena.trends.data.repository.CategoryRepositoryImpl
-import net.thechance.mena.trends.data.repository.ReelsRepositoryImpl
-import net.thechance.mena.trends.data.util.NetworkConstants.CATEGORIES_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.INTERESTS_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
+import net.thechance.mena.trends.data.client.NetworkClient
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
 
-internal fun createReelsRepository(
-    getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
-): ReelsRepositoryImpl {
-    return ReelsRepositoryImpl(createReelsHttpClient(getReels, deleteReel))
-}
-
 internal fun createReelsHttpClient(
-    getReels: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    deleteReel: (suspend MockRequestHandleScope.(id: String) -> HttpResponseData)? = null,
-): HttpClient {
-    return HttpClient(MockEngine { request ->
-        when {
-            request.url.encodedPath== "/trends/reels" && request.method.value == "GET" -> {
-                getReels?.invoke(this) ?: getReelsResponse()
-            }
-            request.url.encodedPath == "/trends/reels/1" && request.method.value == "DELETE" -> {
-                deleteReel?.invoke(this, "1") ?: deleteReelResponse("1")
-            }
-
-            else -> respond("", HttpStatusCode.BadRequest,
-                jsonHeaders
+    respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
+        respond(
+            content = """{}""",
+            status = HttpStatusCode.OK,
+            headers = headersOf(
+                HttpHeaders.ContentType,
+                ContentType.Application.Json.toString()
             )
+        )
+    }
+): NetworkClient {
+
+    val mockEngine = MockEngine { request ->
+        respond(request)
+    }
+
+    val client = HttpClient(mockEngine) {
+        install(ContentNegotiation) {
+            json(Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
         }
-    }) {
-        install(ContentNegotiation) { json(jsonSerialization) }
-        install(DefaultRequest) { contentType(ContentType.Application.Json) }
+        install(DefaultRequest) {
+            contentType(ContentType.Application.Json)
+        }
+    }
+
+    return object : NetworkClient {
+        override suspend fun get(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.get(urlString, block)
+
+        override suspend fun post(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.post(urlString, block)
+
+        override suspend fun put(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.put(urlString, block)
+
+        override suspend fun delete(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.delete(urlString, block)
     }
 }
 
-internal fun createCategoryRepository(
-    getAllCategories: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    isCategoriesAlreadySelectedByUser: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    updateInterests: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): CategoryRepositoryImpl {
-    return CategoryRepositoryImpl(
-        createHttpClient(
-            getAllCategories,
-            isCategoriesAlreadySelectedByUser,
-            updateInterests
+internal fun createCategoryHttpClient(
+    respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
+        respond(
+            content = """{}""",
+            status = HttpStatusCode.OK,
+            headers = headersOf(
+                HttpHeaders.ContentType,
+                ContentType.Application.Json.toString()
+            )
         )
-    )
-}
+    }
+): NetworkClient {
 
-internal fun createHttpClient(
-    getAllCategories: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    isCategoriesAlreadySelectedByUser: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    updateInterests: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): HttpClient {
-    return HttpClient(
-        MockEngine { request ->
-            when (request.url.encodedPath) {
-                "/$TRENDS_PATH/$CATEGORIES_ENDPOINT", -> {
-                    getAllCategories?.invoke(this) ?: getAllCategoriesResponse()
-                }
+    val mockEngine = MockEngine { request ->
+        respond(request)
+    }
 
-                "/$TRENDS_PATH/user/categories/status" -> {
-                    isCategoriesAlreadySelectedByUser?.invoke(this) ?: isCategoriesAlreadySelectedByUser()
-                }
-
-                "/$TRENDS_PATH/$INTERESTS_ENDPOINT" -> updateInterests?.invoke(this) ?: updateInterestsResponse()
-
-                else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
-            }
+    val client = HttpClient(mockEngine) {
+        install(ContentNegotiation) {
+            json(Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
         }
-    ) {
-        install(ContentNegotiation) { json(jsonSerialization) }
-        install(DefaultRequest) { contentType(ContentType.Application.Json) }
+    }
+
+    return object : NetworkClient {
+        override suspend fun get(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.get(urlString, block)
+        }
+
+        override suspend fun post(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.post(urlString, block)
+        }
+
+        override suspend fun put(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.put(urlString, block)
+        }
+
+        override suspend fun delete(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.delete(urlString, block)
+        }
     }
 }

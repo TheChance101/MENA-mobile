@@ -19,6 +19,7 @@ kotlin {
         }
     }
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -53,6 +54,9 @@ kotlin {
             implementation(libs.androidx.paging.runtime)
             implementation(libs.androidx.paging.compose)
             implementation(libs.resources)
+            implementation(libs.kermit)
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs.compose)
         }
         iosMain.dependencies {
 
@@ -63,9 +67,8 @@ kotlin {
             implementation(libs.assertk)
             implementation(libs.turbine)
             implementation(libs.koin.test)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.paging.testing)
         }
     }
     sourceSets.named("commonMain").configure {
@@ -100,13 +103,23 @@ android {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(75) // This should be 80 later
         }
     }
 
     filters {
+        includes {
+            classes("**.*ViewModel")
+        }
+
         excludes {
             packages("mena.trends_presentation.generated.resources*")
+            classes(
+                "**.di.**",
+                "**.navigation.**",
+                "**.shared.**",
+                "**org.koin.ksp.generated**",
+            )
         }
     }
 }

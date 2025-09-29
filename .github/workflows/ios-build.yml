@@ -37,7 +37,7 @@ jobs:
         if: needs.detect.outputs.has_ios_changes == 'true'
         run: |
           xcodebuild \
-            -project iosApp/iosApp.xcodeproj \
+            -workspace iosApp/iosApp.xcworkspace \
             -scheme "iosApp" \
             -configuration Debug \
             -destination "platform=iOS Simulator,name=iPhone 16,OS=18.6" \

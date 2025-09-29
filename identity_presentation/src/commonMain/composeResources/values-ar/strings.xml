@@ -1,0 +1,25 @@
+<resources>
+    <string name="pick_your_country">اختر دولتك</string>
+    <string name="country_flag_image">صورة علم الدولة</string>
+    <string name="confirm">تأكيد</string>
+    <string name="algeria">الجزائر</string>
+    <string name="bahrain">البحرين</string>
+    <string name="egypt">مصر</string>
+    <string name="iran">إيران</string>
+    <string name="iraq">العراق</string>
+    <string name="jordan">الأردن</string>
+    <string name="kuwait">الكويت</string>
+    <string name="lebanon">لبنان</string>
+    <string name="libya">ليبيا</string>
+    <string name="morocco">المغرب</string>
+    <string name="oman">عمان</string>
+    <string name="palestine">فلسطين</string>
+    <string name="qatar">قطر</string>
+    <string name="saudi_arabia">المملكة العربية السعودية</string>
+    <string name="somalia">الصومال</string>
+    <string name="sudan">السودان</string>
+    <string name="syria">سوريا</string>
+    <string name="tunisia">تونس</string>
+    <string name="uae">الإمارات العربية المتحدة</string>
+    <string name="yemen">اليمن</string>
+</resources>
