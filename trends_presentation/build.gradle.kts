@@ -67,6 +67,8 @@ kotlin {
             implementation(libs.assertk)
             implementation(libs.turbine)
             implementation(libs.koin.test)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.paging.testing)
         }
     }
     sourceSets.named("commonMain").configure {
@@ -101,13 +103,23 @@ android {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(75) // This should be 80 later
         }
     }
 
     filters {
+        includes {
+            classes("**.*ViewModel")
+        }
+
         excludes {
             packages("mena.trends_presentation.generated.resources*")
+            classes(
+                "**.di.**",
+                "**.navigation.**",
+                "**.shared.**",
+                "**org.koin.ksp.generated**",
+            )
         }
     }
 }
