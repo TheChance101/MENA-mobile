@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -150,7 +151,7 @@ internal class UploadReelViewModel(
             copy(
                 selectedFile = FileUiState(),
                 thumbnail = null,
-                uploadingTrendState = UploadReelScreenState.UploadingTrendState.FAILED,
+                uploadingTrendState = UploadReelScreenState.UploadingTrendState.IDLE,
                 uploadedBytes = 0,
                 isNextButtonEnabled = false,
                 isNextButtonLoading = false

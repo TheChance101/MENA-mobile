@@ -30,8 +30,6 @@ fun NextButton(
             .fillMaxWidth()
             .background(Theme.colorScheme.background.surface)
             .padding(
-                start = Theme.spacing._16,
-                end = Theme.spacing._16,
                 bottom = Theme.spacing._24
             ),
         shape = RoundedCornerShape(Theme.radius.md),

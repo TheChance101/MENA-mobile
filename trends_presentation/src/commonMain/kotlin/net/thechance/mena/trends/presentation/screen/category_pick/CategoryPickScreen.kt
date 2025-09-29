@@ -62,6 +62,11 @@ private fun CategoryPickScreenContent(
                     onNextClick = listener::onNextClick,
                     isButtonEnabled = state.isNextButtonEnabled(),
                     isButtonLoading = state.isNextButtonLoading,
+                    modifier = Modifier
+                        .padding(
+                            start = Theme.spacing._16,
+                            end = Theme.spacing._16,
+                        )
                 )
             }
         ) {
