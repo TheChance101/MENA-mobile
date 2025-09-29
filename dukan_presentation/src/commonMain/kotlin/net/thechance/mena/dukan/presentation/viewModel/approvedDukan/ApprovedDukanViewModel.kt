@@ -77,14 +77,14 @@ class ApprovedDukanViewModel(
     override fun onShelfSelected(shelf: Shelf): Boolean {
         if (state.value.selectedShelf == shelf) return true
         updateState { copy(selectedShelf = shelf) }
-        loadProductsForSelectedShelves()
+        loadProductsForSelectedShelf()
         return true
     }
 
     override fun onShelfDeselected(shelf: Shelf): Boolean {
         if (state.value.selectedShelf != shelf) return true
         updateState { copy(selectedShelf = null) }
-        loadProductsForSelectedShelves()
+        loadProductsForSelectedShelf()
         return true
     }
 
@@ -119,15 +119,12 @@ class ApprovedDukanViewModel(
                 isLoading = false
             )
         }
-        loadProductsForSelectedShelves()
+        loadProductsForSelectedShelf()
     }
 
-    private fun loadProductsForSelectedShelves() {
+    private fun loadProductsForSelectedShelf() {
         val selectedShelf = state.value.selectedShelf
-        when {
-            selectedShelf != null -> loadProductsFromRepository(selectedShelf)
-            else -> clearProducts()
-        }
+        if (selectedShelf != null) loadProductsFromRepository(selectedShelf) else clearProducts()
     }
 
     private fun loadProductsFromRepository(selectedShelf: Shelf) {
