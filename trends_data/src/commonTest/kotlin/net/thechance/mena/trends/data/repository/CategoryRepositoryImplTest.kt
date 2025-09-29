@@ -3,6 +3,7 @@ package net.thechance.mena.trends.data.repository
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.mapper.toEntityList
@@ -48,8 +49,8 @@ internal class CategoryRepositoryImplTest {
         networkClient = createCategoryHttpClient { updateInterestsResponse() }
         repository = CategoryRepositoryImpl(networkClient)
 
-        repository.updateUserInterestedCategories(listOf("uuid 1"))
+        repository.updateUserInterestedCategories(listOf("uuid1"))
 
-        assertThat(true)
+        verifySuspend { networkClient = createCategoryHttpClient { updateInterestsResponse() } }
     }
 }
