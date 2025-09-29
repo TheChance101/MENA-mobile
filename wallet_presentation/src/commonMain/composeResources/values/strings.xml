@@ -7,6 +7,7 @@
     <string name="couldnt_load_tap_to_retry">Couldn’t load, tap to retry</string>
     <string name="error">Error</string>
     <string name="balance_fetch_error_description">Something went wrong while fetching your balance</string>
+
     <string name="type">Type</string>
     <string name="status">Status</string>
     <string name="from">From</string>
@@ -18,6 +19,27 @@
     <string name="all">All</string>
     <string name="success">Success</string>
     <string name="failed">Failed</string>
+    <string name="transaction_details_header">Transaction Details</string>
+    <string name="share_receipt">Share Receipt</string>
+    <string name="share_button">share button</string>
+    <string name="send">Send</string>
+    <string name="receive">Receive</string>
+    <string name="pay">Pay</string>
+    <string name="send_button">Send button</string>
+    <string name="receive_button">Receive button</string>
+    <string name="pay_button">Pay button</string>
+    <string name="receiver">Receiver</string>
+    <string name="date">Date</string>
+    <string name="transaction_id">Transaction ID</string>
+    <string name="purchase">Purchase</string>
+    <string name="transfer">Transfer</string>
+    <string name="failed_icon">failed icon</string>
+    <string name="success_icon">Success icon</string>
+    <string name="share_transaction_details_error_msg">Failed to share receipt</string>
+    <string name="share_transaction_details_bottom_sheet_header">Sharing transaction details</string>
+    <string name="send_to_your_device">Send to your device</string>
+    <string name="transaction_details_screenshot">transaction details screenshot</string>
+    <string name="computer_phone_sync_icon">computer phone sync icon</string>
     <string name="month_january">January</string>
     <string name="month_february">February</string>
     <string name="month_march">March</string>
@@ -42,4 +64,8 @@
     <string name="transaction_type_icon">Transactions Type Icon</string>
     <string name="online_shopping">Online Shopping</string>
     <string name="share">share</string>
+    <string name="no_internet_title">Oops! It looks like you’re offline.</string>
+    <string name="no_internet_content">Check your connection and try again</string>
+    <string name="img_no_internet">image no internet</string>
+    <string name="retry">Re-try</string>
 </resources>
