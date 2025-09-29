@@ -9,11 +9,6 @@ import org.jetbrains.compose.resources.StringResource
 object PreviewApprovedDukanInteractionListener : ApprovedDukanInteractionListener {
     override fun onBackButtonClicked() {}
     override fun onDismissSnackBar() {}
-    override fun showSnackBar(
-        message: StringResource,
-        type: SnackBarType
-    ) {}
-
     override fun onDismissDeleteShelfConfirmationDialog(){}
     override fun onShowDeleteShelfConfirmationDialog() {}
     override fun deleteShelf(shelfId: String) {}

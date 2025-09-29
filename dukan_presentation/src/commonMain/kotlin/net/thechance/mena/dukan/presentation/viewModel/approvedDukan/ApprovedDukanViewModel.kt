@@ -4,13 +4,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.dismiss_description
 import mena.dukan_presentation.generated.resources.dismiss_title
 import mena.dukan_presentation.generated.resources.error_for_delete_shelf
-import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -37,10 +37,9 @@ class ApprovedDukanViewModel(
         emitEffect(ApprovedDukanEffect.NavigateBack)
     }
 
-    override fun showSnackBar(message: StringResource, type: SnackBarType) {
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
         updateState {
             copy(
-                showSnackBar = true,
                 snackBarState = SnackBarUiState(
                     snackBarType = type,
                     message = message
@@ -92,14 +91,7 @@ class ApprovedDukanViewModel(
     override fun onShelfEnabled(shelf: Shelf): Boolean = true
 
     override fun onShelfAddedSuccessfully() {
-        updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    snackBarType = SnackBarType.SUCCESS,
-                    message = Res.string.add_shelf_successfully
-                )
-            )
-        }
+        showSnackBar(message = Res.string.add_shelf_successfully, type = SnackBarType.SUCCESS)
         loadShelves()
     }
 
@@ -181,22 +173,16 @@ class ApprovedDukanViewModel(
 
     private fun deleteShelfSuccess(deleteShelf: Boolean) {
         onDismissDeleteShelfConfirmationDialog()
-        if(deleteShelf) {
+        if (deleteShelf) {
             showSnackBar(type = SnackBarType.SUCCESS, message = Res.string.delete_shelf_success)
-        }
-        else{
+        } else {
             showSnackBar(type = SnackBarType.ERROR, message = Res.string.error_for_delete_shelf)
         }
     }
 
     private fun deleteShelfFail(error: Throwable) {
         onDismissDeleteShelfConfirmationDialog()
-    }
-
-    private suspend fun getProductsForShelves(selectedShelves: Set<Shelf>): List<Product> {
-        return selectedShelves.flatMap { shelf ->
-            productRepository.getProductsByShelfId(shelf.id)
-        }
+        showSnackBar(type = SnackBarType.ERROR, message = Res.string.error_for_delete_shelf)
     }
 
     private fun handleProductsLoaded(products: List<Product>) {

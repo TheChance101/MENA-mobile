@@ -10,13 +10,12 @@ import kotlin.test.assertTrue
 import kotlin.test.assertEquals
 
 class ShelfRepositoryImplTest {
-    private val repository = createShelfRepository()
 
     @Test
     fun `createShelf calls the correct endpoint`() = runTest {
         // Given
         var called = false
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             createResponse = {
                 called = true
                 defaultCreateResponse()
@@ -35,7 +34,7 @@ class ShelfRepositoryImplTest {
         // Given
         val testShelf = fakeShelf()
         var requestBody: String? = null
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             createResponse = {
                 requestBody = "Test Shelf"
                 defaultCreateResponse()
@@ -53,7 +52,7 @@ class ShelfRepositoryImplTest {
     fun `createShelf handles error response`() = runTest {
         // Given
         val testShelf = fakeShelf()
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             createResponse = {
                 respond("", HttpStatusCode.BadRequest, jsonHeaders)
             }
@@ -69,7 +68,7 @@ class ShelfRepositoryImplTest {
     fun `getMyDukanShelves calls the correct endpoint`() = runTest {
         // Given
         var called = false
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             shelvesResponse = {
                 called = true
                 defaultShelvesResponse()
@@ -86,7 +85,7 @@ class ShelfRepositoryImplTest {
     @Test
     fun `getMyDukanShelves returns correct data size`() = runTest {
         // Given
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             shelvesResponse = {
                 defaultShelvesResponse()
             }
@@ -102,7 +101,7 @@ class ShelfRepositoryImplTest {
     @Test
     fun `getMyDukanShelves returns correct first shelf id`() = runTest {
         // Given
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             shelvesResponse = {
                 defaultShelvesResponse()
             }
@@ -118,7 +117,7 @@ class ShelfRepositoryImplTest {
     @Test
     fun `getMyDukanShelves returns correct first shelf name`() = runTest {
         // Given
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             shelvesResponse = {
                 defaultShelvesResponse()
             }
@@ -134,7 +133,7 @@ class ShelfRepositoryImplTest {
     @Test
     fun `getMyDukanShelves returns correct first shelf dukanId`() = runTest {
         // Given
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             shelvesResponse = {
                 defaultShelvesResponse()
             }
@@ -150,7 +149,7 @@ class ShelfRepositoryImplTest {
     @Test
     fun `getMyDukanShelves handles empty response`() = runTest {
         // Given
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             shelvesResponse = {
                 respond("[]", HttpStatusCode.OK, jsonHeaders)
             }
@@ -166,7 +165,7 @@ class ShelfRepositoryImplTest {
     @Test
     fun `getMyDukanShelves handles error response`() = runTest {
         // Given
-        val repo = createShelfRepository(
+        val repo = shelfRepository(
             shelvesResponse = {
                 respond("", HttpStatusCode.BadRequest, jsonHeaders)
             }

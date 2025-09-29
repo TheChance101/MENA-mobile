@@ -36,9 +36,7 @@ class ShelfRepositoryImpl(
 
     override suspend fun deleteShelf(shelfId: String): Boolean {
         val response: HttpResponse = safeApiCall {
-            client.delete(
-                urlString = "$BASE_URL/shelf/$shelfId",
-            )
+            client.delete(urlString = "$BASE_URL/shelf/$shelfId")
         }
         return isSuccess(response.status.value)
     }

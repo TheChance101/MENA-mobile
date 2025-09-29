@@ -64,7 +64,6 @@
     <string name="edit_shelf">Edit shelf</string>"
     <string name="this_shelf_is_empty">This shelf is empty</string>"
     <string name="products">products</string>
-    <string name="delete_icon">Delete Icon</string>
     <string name="delete_shelf_success">Delete shelf successfully.</string>
     <string name="delete_shelf_title">Delete shelf</string>
     <string name="delete_shelf_description">Are you sure you want to delete this shelf?</string>

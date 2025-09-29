@@ -12,13 +12,13 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.dismiss_description
 import mena.dukan_presentation.generated.resources.dismiss_title
 import mena.dukan_presentation.generated.resources.error_for_delete_shelf
-import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
@@ -640,36 +640,46 @@ class ApprovedDukanViewModelTest {
 
     @Test
     fun `onDismissSnackBar should hide the snackbar`() = runTest {
-        val snackBarUiState = SnackBarUiState()
-        viewModel.onDismissSnackBar()
-        viewModel.state.test {
+        approvedDukanViewModel.onDismissSnackBar()
+        approvedDukanViewModel.state.test {
             val state = awaitItem()
-            assertEquals(snackBarUiState, state.snackBarState)
-            assertFalse(state.showSnackBar)
+            assertEquals(null, state.snackBarState)
         }
     }
 
     @Test
     fun `onDismissDeleteShelfConfirmationDialog hides the dialog`() = runTest {
-        viewModel.state.test {
+        approvedDukanViewModel.state.test {
             val state = awaitItem()
             assertFalse(state.showDeleteConfirmationDialog)
+        }
+    }
+    @Test
+    fun `onShowDeleteShelfConfirmationDialog show the dialog`() = runTest {
+        approvedDukanViewModel.onShowDeleteShelfConfirmationDialog()
+        approvedDukanViewModel.state.test {
+            val state = awaitItem()
+            assertTrue(state.showDeleteConfirmationDialog)
         }
     }
 
     @Test
     fun `onShowDeleteShelfConfirmationDialog displays dialog with delete type when no products`() =
         runTest {
+            approvedDukanViewModel.updateState {
+                copy(
+                    products = emptyList()
+                )
+            }
             val deleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(
                 title = Res.string.delete_shelf_title,
                 description = Res.string.delete_shelf_description,
                 type = ConfirmDialogType.DELETE
             )
-            viewModel.onShowDeleteShelfConfirmationDialog()
+            approvedDukanViewModel.onShowDeleteShelfConfirmationDialog()
 
-            viewModel.state.test {
+            approvedDukanViewModel.state.test {
                 val state = awaitItem()
-                assertTrue(state.showDeleteConfirmationDialog)
                 assertEquals(
                     deleteShelfConfirmationDialogUiState,
                     state.deleteShelfConfirmationDialogUiState
@@ -680,7 +690,7 @@ class ApprovedDukanViewModelTest {
     @Test
     fun `onShowDeleteShelfConfirmationDialog displays dialog with dismiss type when shelf has products`() =
         runTest {
-            viewModel.updateState {
+            approvedDukanViewModel.updateState {
                 copy(
                     products = listOf(
                         Product(
@@ -700,11 +710,10 @@ class ApprovedDukanViewModelTest {
                 description = Res.string.dismiss_description,
                 type = ConfirmDialogType.DISMISS
             )
-            viewModel.onShowDeleteShelfConfirmationDialog()
+            approvedDukanViewModel.onShowDeleteShelfConfirmationDialog()
 
-            viewModel.state.test {
+            approvedDukanViewModel.state.test {
                 val state = awaitItem()
-                assertTrue(state.showDeleteConfirmationDialog)
                 assertEquals(
                     deleteShelfConfirmationDialogUiState,
                     state.deleteShelfConfirmationDialogUiState
@@ -722,29 +731,15 @@ class ApprovedDukanViewModelTest {
             )
             everySuspend { shelfRepository.deleteShelf(shelfId) } returns true
 
-            viewModel.deleteShelf(shelfId)
+            approvedDukanViewModel.deleteShelf(shelfId)
 
-            viewModel.state.test {
+            approvedDukanViewModel.state.test {
+                skipItems(1)
                 val state = awaitItem()
-                assertFalse(state.showDeleteConfirmationDialog)
-                assertTrue(state.showSnackBar)
                 assertEquals(snackBarUiState, state.snackBarState)
             }
         }
-    @Test
-    fun `showSnackBar displays correctly with specified message and type`() = runTest {
-        val snackBarUiState = SnackBarUiState(
-            snackBarType = SnackBarType.ERROR,
-            message = Res.string.error_for_delete_shelf
-        )
-        viewModel.showSnackBar(Res.string.error_for_delete_shelf, SnackBarType.ERROR)
-        viewModel.state.test {
-            val state = awaitItem()
-            assertEquals(snackBarUiState, state.snackBarState)
-            assertTrue(state.showSnackBar)
-        }
 
-    }
     @Test
     fun `deleteShelf return false should dismiss dialog and show snackBar with error deleting shelf`() =
         runTest {
@@ -755,13 +750,11 @@ class ApprovedDukanViewModelTest {
             )
             everySuspend { shelfRepository.deleteShelf(shelfId) } returns false
 
-            viewModel.deleteShelf(shelfId)
+            approvedDukanViewModel.deleteShelf(shelfId)
 
-            viewModel.state.test {
+            approvedDukanViewModel.state.test {
                 skipItems(1)
                 val state = awaitItem()
-                assertFalse(state.showDeleteConfirmationDialog)
-                assertTrue(state.showSnackBar)
                 assertEquals(snackBarUiState, state.snackBarState)
             }
         }

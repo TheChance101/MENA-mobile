@@ -2,8 +2,6 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.delete
-import mena.dukan_presentation.generated.resources.delete_shelf_description
-import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.dismiss
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
@@ -19,13 +17,14 @@ data class ApprovedDukanUiState(
     val isLoading: Boolean = false,
     val isLoadingProducts: Boolean = false,
     val snackBarState: SnackBarUiState? = null,
-    val deleteShelfConfirmationDialogUiState: DeleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(),
+    val deleteShelfConfirmationDialogUiState: DeleteShelfConfirmationDialogUiState? = null,
     val showDeleteConfirmationDialog: Boolean = false,
 )
+
 data class DeleteShelfConfirmationDialogUiState(
-    val title: StringResource = Res.string.delete_shelf_title,
-    val description: StringResource = Res.string.delete_shelf_description,
-    val type: ConfirmDialogType = ConfirmDialogType.DELETE
+    val title: StringResource,
+    val description: StringResource,
+    val type: ConfirmDialogType
 )
 
 enum class ConfirmDialogType(val text: StringResource) {

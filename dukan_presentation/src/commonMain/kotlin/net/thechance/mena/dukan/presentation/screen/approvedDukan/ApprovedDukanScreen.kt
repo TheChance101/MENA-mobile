@@ -85,22 +85,24 @@ private fun ApprovedDukanDialog(
     Scaffold(
         overlays = {
             dialog(state.showDeleteConfirmationDialog) {
-                Dialog(
-                    title = stringResource(state.deleteShelfConfirmationDialogUiState.title),
-                    message = stringResource(state.deleteShelfConfirmationDialogUiState.description),
-                    buttonText = stringResource(state.deleteShelfConfirmationDialogUiState.type.text),
-                    onDismiss = { listener.onDismissDeleteShelfConfirmationDialog() },
-                    onActionClick = {
-                        if (state.deleteShelfConfirmationDialogUiState.type == ConfirmDialogType.DISMISS)
-                            listener.onDismissDeleteShelfConfirmationDialog()
-                        else {
-                            deletedShelfId?.let { shelfId ->
-                                listener.deleteShelf(shelfId = shelfId)
+                state.deleteShelfConfirmationDialogUiState?.let {
+                    Dialog(
+                        title = stringResource(state.deleteShelfConfirmationDialogUiState.title),
+                        message = stringResource(state.deleteShelfConfirmationDialogUiState.description),
+                        buttonText = stringResource(state.deleteShelfConfirmationDialogUiState.type.text),
+                        onDismiss = { listener.onDismissDeleteShelfConfirmationDialog() },
+                        onActionClick = {
+                            if (state.deleteShelfConfirmationDialogUiState.type == ConfirmDialogType.DISMISS)
+                                listener.onDismissDeleteShelfConfirmationDialog()
+                            else {
+                                deletedShelfId?.let { shelfId ->
+                                    listener.deleteShelf(shelfId = shelfId)
+                                }
                             }
-                        }
-                    },
-                    onCancelClick = { listener.onDismissDeleteShelfConfirmationDialog() }
-                )
+                        },
+                        onCancelClick = { listener.onDismissDeleteShelfConfirmationDialog() }
+                    )
+                }
             }
         }
     )

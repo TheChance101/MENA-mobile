@@ -89,7 +89,7 @@ fun ApprovedDukanContent(
     state.snackBarState?.let { snackBarState ->
         SnackBar(
             snackBarUiState = snackBarState,
-            onDismiss = listener::onDismissSnackBar
+            onDismiss = {listener.onDismissSnackBar()}
         )
     }
 }

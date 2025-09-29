@@ -5,11 +5,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
+import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import org.jetbrains.compose.resources.StringResource
 
 class CreateShelfViewModel(
     private val shelfRepository: ShelfRepository,
@@ -34,17 +36,21 @@ class CreateShelfViewModel(
         emitEffect(CreateShelfEffect.NavigateBack)
     }
 
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    snackBarType = type,
+                    message = message
+                )
+            )
+        }
+    }
+
     override fun onCreateButtonClicked() {
         val title = state.value.shelfTitle
         if (!isTitleValid(title)) {
-            updateState {
-                copy(
-                    snackBarState = SnackBarUiState(
-                        snackBarType = SnackBarType.ERROR,
-                        message = Res.string.shelf_name_is_already_exist
-                    )
-                )
-            }
+            showSnackBar(message = Res.string.shelf_name_is_invalid, type = SnackBarType.ERROR)
             return
         }
 
@@ -81,27 +87,13 @@ class CreateShelfViewModel(
         if (isCreated) {
             emitEffect(CreateShelfEffect.NavigateToApprovedDukan)
         } else {
-            updateState {
-                copy(
-                    snackBarState = SnackBarUiState(
-                        snackBarType = SnackBarType.ERROR,
-                        message = Res.string.shelf_name_is_already_exist
-                    )
-                )
-            }
+            showSnackBar(message = Res.string.shelf_name_is_already_exist, type = SnackBarType.ERROR)
         }
     }
 
     private fun onCreateClickedError() {
         updateState { copy(isLoading = false) }
-        updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    snackBarType = SnackBarType.ERROR,
-                    message = Res.string.shelf_name_is_already_exist
-                )
-            )
-        }
+        showSnackBar(message = Res.string.shelf_name_is_already_exist, type = SnackBarType.ERROR)
     }
 
     override fun onDismissSnackBar() {

@@ -17,6 +17,7 @@ import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
+import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -70,15 +71,14 @@ class CreateShelfViewModelTest {
 
     @Test
     fun `onCreateButtonClicked SHOULD show snack bar when title is blank`() = runTest {
-        createShelfViewModel.state.test {
-            createShelfViewModel.onCreateButtonClicked()
+        createShelfViewModel.onCreateButtonClicked()
 
-            skipItems(1)
+        createShelfViewModel.state.test {
             val state = awaitItem()
 
             assertTrue(state.snackBarState != null)
             assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
-            assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState.message)
+            assertEquals(Res.string.shelf_name_is_invalid, state.snackBarState.message)
             cancelAndIgnoreRemainingEvents()
         }
     }
