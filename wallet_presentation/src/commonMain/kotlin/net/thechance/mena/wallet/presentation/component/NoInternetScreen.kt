@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@Composable  
+@Composable
 internal fun NoInternetScreen(
     onRetry : () -> Unit,
 ) {
