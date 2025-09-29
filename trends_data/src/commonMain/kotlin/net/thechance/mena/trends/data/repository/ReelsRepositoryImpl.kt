@@ -76,7 +76,6 @@ internal class ReelsRepositoryImpl(
                     observeUploading { sent, total ->
                         send(
                             UploadReelProgress(
-                                reelId = "",
                                 numberOfUploadedBytes = sent,
                                 totalBytes = total
                             )
