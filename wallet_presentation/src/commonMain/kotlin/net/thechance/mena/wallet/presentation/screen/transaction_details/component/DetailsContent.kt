@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.suwasto.capturablecompose.CaptureController
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.ic_share
+import mena.wallet_presentation.generated.resources.ic_share_
 import mena.wallet_presentation.generated.resources.share_button
 import mena.wallet_presentation.generated.resources.share_receipt
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
@@ -52,7 +52,7 @@ internal fun DetailsContent(
                     )
                     .heightIn(min = 48.dp)
                     .fillMaxWidth(),
-                trailingIcon = painterResource(Res.drawable.ic_share),
+                trailingIcon = painterResource(Res.drawable.ic_share_),
                 iconSize = 20.dp,
                 contentDescription = stringResource(Res.string.share_button),
                 iconStartPadding = Theme.spacing._8,
