@@ -33,6 +33,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.bundles.ktor)
             implementation(libs.kermit)
+            implementation(projects.identityDomain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -86,6 +87,7 @@ kover.reports {
                 "**.di.**",
                 "**.dto.**",
                 "**.util.**",
+                "**.client.**",
                 "**org.koin.ksp.generated**",
             )
         }
