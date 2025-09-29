@@ -55,4 +55,8 @@
     <string name="pick_end_date">Pick the end date</string>
     <string name="pick">Pick</string>
     <string name="transaction_history">Transaction History</string>
+    <string name="no_internet_title">Oops! It looks like you’re offline.</string>
+    <string name="no_internet_content">Check your connection and try again</string>
+    <string name="img_no_internet">image no internet</string>
+    <string name="retry">Re-try</string>
 </resources>
