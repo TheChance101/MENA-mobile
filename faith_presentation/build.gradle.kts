@@ -43,6 +43,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs.androidx.paging.runtime)
+            implementation(libs.androidx.paging.compose)
         }
         iosMain.dependencies {
 
