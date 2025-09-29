@@ -21,6 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.bookmarks
 import mena.faith_presentation.generated.resources.empty_state_bookmark_description
@@ -37,6 +39,8 @@ import net.thechance.mena.faith.presentation.component.FaithSnackBar
 import net.thechance.mena.faith.presentation.component.LoadingIndicator
 import net.thechance.mena.faith.presentation.component.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.extensions.paging.isEmpty
+import net.thechance.mena.faith.presentation.extensions.paging.isNotEmpty
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.AyaBookmarkCard
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
 import org.jetbrains.compose.resources.painterResource
@@ -72,6 +76,8 @@ private fun Content(
     listener: BookmarkInteractionListener,
     snackBarState: SnackBarState
 ) {
+    val bookmarks = uiState.bookmarks.collectAsLazyPagingItems()
+
     QuranTheme {
         FaithScaffold(
             modifier = Modifier.statusBarsPadding().systemBarsPadding(),
@@ -108,7 +114,7 @@ private fun Content(
                 }
 
                 AnimatedVisibility(
-                    visible = uiState.bookmarks.isEmpty() && uiState.isLoading.not(),
+                    visible = bookmarks.isEmpty() && uiState.isLoading.not(),
                     enter = fadeIn(tween()),
                     exit = fadeOut(tween())
                 ) {
@@ -116,12 +122,12 @@ private fun Content(
                 }
 
                 AnimatedVisibility(
-                    visible = uiState.bookmarks.isNotEmpty(),
+                    visible = bookmarks.isNotEmpty(),
                     enter = fadeIn(tween()),
                     exit = fadeOut(tween())
                 ) {
                     BookmarkItems(
-                        uiState = uiState,
+                        bookmarks = bookmarks,
                         onRemoveBookmarkClick = listener::onDeleteBookmarkClick,
                     )
                 }
@@ -148,7 +154,7 @@ private fun EmptyBookmarkState() {
 
 @Composable
 private fun BookmarkItems(
-    uiState: BookmarksScreenState,
+    bookmarks: LazyPagingItems<BookmarksScreenState.BookmarkCardUiState>,
     onRemoveBookmarkClick: (Int) -> Unit,
 ) {
     LazyColumn(
@@ -156,26 +162,27 @@ private fun BookmarkItems(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
     ) {
         items(
-            items = uiState.bookmarks,
-            key = { it.bookmarkId }
+            items = bookmarks.itemSnapshotList
         ) { bookmark ->
-            SwappableCard(
-                id = bookmark.bookmarkId,
-                onClick = { onRemoveBookmarkClick(bookmark.bookmarkId) },
-                cardContent = { contentModifier ->
-                    AyaBookmarkCard(
-                        surahName = bookmark.surahName,
-                        ayaNumber = bookmark.ayaNumber,
-                        createdAt = bookmark.createdAt,
-                        ayaText = bookmark.ayaText,
-                        modifier = contentModifier
+            bookmark?.let {
+                SwappableCard(
+                    id = it.bookmarkId,
+                    onClick = { onRemoveBookmarkClick(it.bookmarkId) },
+                    cardContent = { contentModifier ->
+                        AyaBookmarkCard(
+                            surahName = it.surahName,
+                            ayaNumber = it.ayaNumber,
+                            createdAt = it.createdAt,
+                            ayaText = it.ayaText,
+                            modifier = contentModifier
+                        )
+                    },
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = tween(500),
+                        fadeOutSpec = tween(500)
                     )
-                },
-                modifier = Modifier.animateItem(
-                    fadeInSpec = tween(500),
-                    fadeOutSpec = tween(500)
                 )
-            )
+            }
         }
     }
 }

@@ -1,9 +1,12 @@
 package net.thechance.mena.faith.presentation.feature.quran.bookmark
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.TimeAgo
 
 data class BookmarksScreenState(
-    val bookmarks: List<BookmarkCardUiState> = emptyList(),
+    val bookmarks: Flow<PagingData<BookmarkCardUiState>> = flow {},
     val isLoading: Boolean = false,
     val error: String? = null
 ) {
