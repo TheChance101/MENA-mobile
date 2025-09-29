@@ -120,7 +120,7 @@ class OTPScreen(
     ) {
         when (effect) {
             OTPScreenUIEffect.NavigateBack -> navigator.pop()
-            OTPScreenUIEffect.NavigateToResetPassword -> TODO("add reset password screen")
+            is OTPScreenUIEffect.NavigateToResetPassword -> TODO("add reset password screen")
         }
     }
 }

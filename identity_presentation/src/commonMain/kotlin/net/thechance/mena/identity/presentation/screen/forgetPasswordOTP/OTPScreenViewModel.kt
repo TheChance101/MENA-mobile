@@ -4,14 +4,14 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import net.thechance.mena.identity.domain.repository.ForgetPasswordRepository
+import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 
 class OTPScreenViewModel(
-    private val forgetPasswordRepository: ForgetPasswordRepository,
+    private val resetPasswordRepository: ResetPasswordRepository,
     private val phoneNumber: String,
     private val countryCode: String
 ) : BaseScreenModel<OTPScreenUIState, OTPScreenUIEffect>(OTPScreenUIState()),
@@ -31,7 +31,7 @@ class OTPScreenViewModel(
     override fun onVerifyClicked() {
         tryToExecute(
             function = {
-                forgetPasswordRepository.verifyOTPCode(
+                resetPasswordRepository.verifyOTPCode(
                     otpCode = state.value.otpValue,
                     phoneNumber = phoneNumber
                 )
@@ -42,7 +42,7 @@ class OTPScreenViewModel(
     }
 
     private fun verifySuccess() {
-        sendNewEffect(OTPScreenUIEffect.NavigateToResetPassword)
+        sendNewEffect(OTPScreenUIEffect.NavigateToResetPassword(phoneNumber))
     }
 
     override fun onOTPChanged(otp: String) {
@@ -59,7 +59,7 @@ class OTPScreenViewModel(
     override fun onResendClicked() {
         tryToExecute(
             function = {
-                forgetPasswordRepository.requestOTP(
+                resetPasswordRepository.requestOTP(
                     phoneNumber = phoneNumber,
                     countryCodeName = countryCode
                 )

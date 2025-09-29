@@ -14,7 +14,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
-import net.thechance.mena.identity.domain.repository.ForgetPasswordRepository
+import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.MobileNumberValidator
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ForgetPasswordScreenViewModelTest {
-    private val forgetPasswordRepository = mock<ForgetPasswordRepository>()
+    private val resetPasswordRepository = mock<ResetPasswordRepository>()
     private lateinit var useCase: LoginUseCase
     private val testDispatcher = StandardTestDispatcher()
     lateinit var viewModel: ForgetPasswordScreenViewModel
@@ -39,7 +39,7 @@ class ForgetPasswordScreenViewModelTest {
         )
         viewModel = ForgetPasswordScreenViewModel(
             loginUseCase = useCase,
-            forgetPasswordRepository = forgetPasswordRepository
+            resetPasswordRepository = resetPasswordRepository
         )
     }
 
@@ -66,7 +66,7 @@ class ForgetPasswordScreenViewModelTest {
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
             viewModel.onClickConfirmButton()
             everySuspend {
-                forgetPasswordRepository.requestOTP(
+                resetPasswordRepository.requestOTP(
                     phoneNumber,
                     any()
                 )
@@ -86,7 +86,7 @@ class ForgetPasswordScreenViewModelTest {
         runTest {
             val phoneNumber = "01100661617"
             everySuspend {
-                forgetPasswordRepository.requestOTP(any(), any())
+                resetPasswordRepository.requestOTP(any(), any())
             } throws InvalidMobileNumberException("")
             viewModel.onPhoneChanged(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)

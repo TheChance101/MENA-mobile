@@ -1,7 +1,6 @@
-package net.thechance.mena.identity.data.dto.forgetPassword
+package net.thechance.mena.identity.data.dto.resetPassword
 
 import kotlinx.serialization.Serializable
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 
 @Serializable
 class VerifyOTPRequestDto (

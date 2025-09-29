@@ -14,7 +14,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
-import net.thechance.mena.identity.domain.repository.ForgetPasswordRepository
+import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -22,7 +22,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OTPScreenViewModelTest {
-    private val forgetPasswordRepository = mock<ForgetPasswordRepository>()
+    private val resetPasswordRepository = mock<ResetPasswordRepository>()
     private val phoneNumber = "01100661617"
     private val countryCode = "EG"
     private val testDispatcher = StandardTestDispatcher()
@@ -32,7 +32,7 @@ class OTPScreenViewModelTest {
     fun setUp(){
         Dispatchers.setMain(testDispatcher)
         viewModel = OTPScreenViewModel(
-            forgetPasswordRepository = forgetPasswordRepository,
+            resetPasswordRepository = resetPasswordRepository,
             phoneNumber = phoneNumber,
             countryCode = countryCode
         )
@@ -57,7 +57,7 @@ class OTPScreenViewModelTest {
     fun `should navigate to reset password screen when otp is correct and user click on verify button`() = runTest {
         val otp = "123456"
         viewModel.onOTPChanged(otp)
-        everySuspend { forgetPasswordRepository.verifyOTPCode(otp, phoneNumber) } returns Unit
+        everySuspend { resetPasswordRepository.verifyOTPCode(otp, phoneNumber) } returns Unit
 
         viewModel.effect.test {
             viewModel.onVerifyClicked()
@@ -69,7 +69,7 @@ class OTPScreenViewModelTest {
 
     @Test
     fun `should show error message when otp is incorrect and user click on verify button`() = runTest {
-        everySuspend { forgetPasswordRepository.verifyOTPCode(any() ,any()) } throws InvalidOTPException()
+        everySuspend { resetPasswordRepository.verifyOTPCode(any() ,any()) } throws InvalidOTPException()
 
         viewModel.onVerifyClicked()
         advanceUntilIdle()
@@ -83,7 +83,7 @@ class OTPScreenViewModelTest {
 
     @Test
     fun `on resend clicked should start timer and request otp again`() =runTest {
-        everySuspend { forgetPasswordRepository.requestOTP(any(), any()) } returns Unit
+        everySuspend { resetPasswordRepository.requestOTP(any(), any()) } returns Unit
         viewModel.state.test {
             viewModel.onResendClicked()
             val state = awaitItem()

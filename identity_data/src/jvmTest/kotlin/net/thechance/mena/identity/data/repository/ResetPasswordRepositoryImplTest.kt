@@ -6,7 +6,7 @@ import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.identity.data.dto.forgetPassword.OTPResponse
+import net.thechance.mena.identity.data.dto.resetPassword.OTPResponse
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
@@ -15,17 +15,17 @@ import net.thechance.mena.identity.domain.exception.OTPExpiredException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
 import kotlin.test.Test
 
-class ForgetPasswordRepositoryImplTest {
+class ResetPasswordRepositoryImplTest {
     private val client: HttpClient = mockk(relaxed = true)
-    private var forgetPasswordRepository: ForgetPasswordRepositoryImpl =
-        ForgetPasswordRepositoryImpl(client)
+    private var forgetPasswordRepository: ResetPasswordRepositoryImpl =
+        ResetPasswordRepositoryImpl(client)
 
     @Test
     fun `requestOTP() should throw InvalidMobileNumberException when server returns 404`() =
         runTest {
             val client = mockHttpClientError(HttpStatusCode.NotFound)
 
-            forgetPasswordRepository = ForgetPasswordRepositoryImpl(client)
+            forgetPasswordRepository = ResetPasswordRepositoryImpl(client)
 
             assertFailure {
                 forgetPasswordRepository.requestOTP(
@@ -40,7 +40,7 @@ class ForgetPasswordRepositoryImplTest {
     fun `requestOTP() should throw TooManyRequestsException when server returns 429`() = runTest {
         val client = mockHttpClientError(HttpStatusCode.TooManyRequests)
 
-        forgetPasswordRepository = ForgetPasswordRepositoryImpl(client)
+        forgetPasswordRepository = ResetPasswordRepositoryImpl(client)
 
         assertFailure {
             forgetPasswordRepository.requestOTP(
@@ -54,7 +54,7 @@ class ForgetPasswordRepositoryImplTest {
     fun `verifyOTPCode() should throw InvalidOTPException when server returns 401`() {
         val client = mockHttpClientError(HttpStatusCode.Unauthorized)
 
-        forgetPasswordRepository = ForgetPasswordRepositoryImpl(client)
+        forgetPasswordRepository = ResetPasswordRepositoryImpl(client)
 
         runTest {
             assertFailure {
@@ -70,7 +70,7 @@ class ForgetPasswordRepositoryImplTest {
     fun `verifyOTPCode() should throw OTPExpiredException when server returns 400`() {
         val client = mockHttpClientError(HttpStatusCode.BadRequest)
 
-        forgetPasswordRepository = ForgetPasswordRepositoryImpl(client)
+        forgetPasswordRepository = ResetPasswordRepositoryImpl(client)
 
         runTest {
             assertFailure {
@@ -86,9 +86,14 @@ class ForgetPasswordRepositoryImplTest {
     fun `requestOTP() should return session id when server returns 200`() = runTest {
         val client = mockHttpClient(OTPResponse("123"))
 
-        forgetPasswordRepository = ForgetPasswordRepositoryImpl(client)
+        forgetPasswordRepository = ResetPasswordRepositoryImpl(client)
 
         forgetPasswordRepository.requestOTP(phoneNumber, countryCode)
+    }
+
+    @Test
+    fun `resetPassword() should throw  when server returns 401`(){
+
     }
 
     private val phoneNumber = "07701231234"

@@ -3,21 +3,21 @@ package net.thechance.mena.identity.data.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.identity.data.dto.forgetPassword.OTPRequestDto
-import net.thechance.mena.identity.data.dto.forgetPassword.OTPResponse
-import net.thechance.mena.identity.data.dto.forgetPassword.VerifyOTPRequestDto
-import net.thechance.mena.identity.data.dto.forgetPassword.VerifyOTPResponse
+import net.thechance.mena.identity.data.dto.resetPassword.OTPRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.OTPResponse
+import net.thechance.mena.identity.data.dto.resetPassword.ResetPasswordRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.VerifyOTPRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.VerifyOTPResponse
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.OTPExpiredException
-import net.thechance.mena.identity.domain.repository.ForgetPasswordRepository
+import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 
-class ForgetPasswordRepositoryImpl(
+class ResetPasswordRepositoryImpl(
     private val client: HttpClient
-) : ForgetPasswordRepository {
+) : ResetPasswordRepository {
     private var sessionId = ""
 
     override suspend fun requestOTP(phoneNumber: String, countryCodeName: String) {
@@ -34,9 +34,14 @@ class ForgetPasswordRepositoryImpl(
         }
     }
 
-    companion object {
-        const val REQUEST_OTP = "identity/request-reset-password-otp"
-        const val VERIFY_OTP = "identity/verify-otp"
+    override suspend fun resetPassword(
+        newPassword: String,
+        confirmPassword: String,
+        phoneNumber: String
+    ) {
+        forgetPasswordSafeWrapper<String> {
+            client.postJson(ResetPasswordRequestDto(newPassword, confirmPassword, phoneNumber), RESET_PASSWORD)
+        }
     }
 
     private suspend fun <T> forgetPasswordSafeWrapper(block: suspend () -> T): T {
@@ -52,5 +57,11 @@ class ForgetPasswordRepositoryImpl(
                 }
             }
         }
+    }
+
+    private companion object {
+        const val REQUEST_OTP = "identity/request-reset-password-otp"
+        const val VERIFY_OTP = "identity/verify-otp"
+        const val RESET_PASSWORD = "identity/reset-password"
     }
 }

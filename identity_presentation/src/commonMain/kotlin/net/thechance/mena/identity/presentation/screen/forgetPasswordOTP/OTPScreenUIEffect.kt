@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
 
 sealed class OTPScreenUIEffect {
-    data object NavigateToResetPassword : OTPScreenUIEffect()
+    data class NavigateToResetPassword(
+        val phoneNumber: String,
+    ) : OTPScreenUIEffect()
     data object NavigateBack : OTPScreenUIEffect()
 }
