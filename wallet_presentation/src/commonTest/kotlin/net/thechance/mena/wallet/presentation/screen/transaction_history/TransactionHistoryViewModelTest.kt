@@ -1,6 +1,5 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
-
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -19,7 +18,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
-import net.thechance.mena.wallet.presentation.base.UiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -30,6 +28,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class TransactionHistoryViewModelTest {
+
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
@@ -44,44 +43,44 @@ class TransactionHistoryViewModelTest {
     }
 
     @Test
-    fun `getTransactionHistory should set history with loading when initially called`() = runTest {
+    fun `getTransactionHistory should set isLoading true when initially called`() = runTest {
         everySuspend { transactionRepository.getAll() } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
 
         viewModel.state.test {
-            skipItems(1)
-            val loadingState = awaitItem()
-            assertTrue(loadingState.history is UiState.Loading)
+            val initial = awaitItem()
+            assertTrue(initial.isLoading)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `getTransactionHistory should update history with success when repository returns value`() = runTest {
+    fun `getTransactionHistory should update history when repository returns value`() = runTest {
         everySuspend { transactionRepository.getAll() } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
 
         viewModel.state.test {
             val successState = awaitItem()
-            assertTrue(successState.history is UiState.Success)
-            val transactions = (successState.history as UiState.Success<List<*>>).data
-            assertEquals(history.size, transactions.size)
+            assertTrue(successState.history.isNotEmpty())
+            assertEquals(history.size, successState.history.size)
+            assertEquals(false, successState.isLoading)
+            assertEquals(null, successState.isError)
         }
     }
 
     @Test
-    fun `getTransactionHistory should update history with error when repository throws exception`() = runTest {
+    fun `getTransactionHistory should set isError when repository throws exception`() = runTest {
         val expectedException = RuntimeException("test error")
         everySuspend { transactionRepository.getAll() } throws expectedException
         val viewModel = TransactionHistoryViewModel(transactionRepository)
+        advanceUntilIdle()
 
         viewModel.state.test {
-            skipItems(2)
             val errorState = awaitItem()
-            assertTrue(errorState.history is UiState.Error)
-            assertEquals(expectedException, (errorState.history).throwable)
-            cancelAndIgnoreRemainingEvents()
+            assertEquals(expectedException, errorState.isError)
+            assertTrue(errorState.history.isEmpty())
+            assertEquals(false, errorState.isLoading)
         }
     }
 
@@ -109,7 +108,7 @@ class TransactionHistoryViewModelTest {
     }
 
     @Test
-    fun `should send NavigateToExportTransaction effect when onShareClicked is called`() = runTest {
+    fun `should send NavigateToExportTransaction effect when onExportClicked is called`() = runTest {
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         viewModel.onExportClicked()
 
@@ -130,9 +129,8 @@ class TransactionHistoryViewModelTest {
         }
     }
 
-
     @OptIn(ExperimentalUuidApi::class)
-    companion object{
+    companion object {
         val history = listOf(
             Transaction(
                 id = Uuid.random(),
