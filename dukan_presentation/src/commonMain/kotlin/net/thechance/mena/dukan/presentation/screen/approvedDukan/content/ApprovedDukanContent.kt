@@ -18,6 +18,7 @@ import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
@@ -26,6 +27,7 @@ import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewApprovedDu
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ApprovedDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.ConfirmDialogType
+import net.thechance.mena.dukan.presentation.viewModel.approvedDukan.DeleteShelfConfirmationDialogUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -42,21 +44,10 @@ fun ApprovedDukanContent(
         overlays = {
             dialog(state.showDeleteConfirmationDialog) {
                 state.deleteShelfConfirmationDialogUiState?.let {
-                    Dialog(
-                        title = stringResource(state.deleteShelfConfirmationDialogUiState.title),
-                        message = stringResource(state.deleteShelfConfirmationDialogUiState.description),
-                        buttonText = stringResource(state.deleteShelfConfirmationDialogUiState.type.text),
-                        onDismiss = { listener.onDismissDeleteShelfConfirmationDialog() },
-                        onActionClick = {
-                            if (state.deleteShelfConfirmationDialogUiState.type == ConfirmDialogType.DISMISS)
-                                listener.onDismissDeleteShelfConfirmationDialog()
-                            else {
-                                deletedShelfId?.let { shelfId ->
-                                    listener.deleteShelf(shelfId = shelfId)
-                                }
-                            }
-                        },
-                        onCancelClick = { listener.onDismissDeleteShelfConfirmationDialog() }
+                    DeleteShelfConfirmationDialog(
+                        state = it,
+                        deletedShelfId = deletedShelfId,
+                        listener = listener
                     )
                 }
             }
@@ -118,6 +109,31 @@ fun ApprovedDukanContent(
         )
     }
 }
+
+@Composable
+private fun ScaffoldScope.DeleteShelfConfirmationDialog(
+    state: DeleteShelfConfirmationDialogUiState,
+    deletedShelfId: String?,
+    listener: ApprovedDukanInteractionListener
+) {
+    Dialog(
+        title = stringResource(state.title),
+        message = stringResource(state.description),
+        buttonText = stringResource(state.type.text),
+        onDismiss = { listener.onDismissDeleteShelfConfirmationDialog() },
+        onActionClick = {
+            if (state.type == ConfirmDialogType.DISMISS) {
+                listener.onDismissDeleteShelfConfirmationDialog()
+            } else {
+                deletedShelfId?.let { shelfId ->
+                    listener.deleteShelf(shelfId = shelfId)
+                }
+            }
+        },
+        onCancelClick = { listener.onDismissDeleteShelfConfirmationDialog() }
+    )
+}
+
 
 @Preview
 @Composable

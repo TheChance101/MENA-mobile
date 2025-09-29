@@ -25,7 +25,6 @@ suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
         in 200..299 -> {
             try {
                 when {
-                    // success response with no content
                     response.status.value == 204 -> Unit as T
                     else -> response.body<T>()
                 }

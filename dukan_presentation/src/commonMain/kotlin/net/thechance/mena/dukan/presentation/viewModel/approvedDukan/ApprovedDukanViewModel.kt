@@ -143,19 +143,28 @@ class ApprovedDukanViewModel(
     }
 
     override fun onShowDeleteShelfConfirmationDialog() {
-        val hasProduct = state.value.products.isNotEmpty()
+        val hasProducts = state.value.products.isNotEmpty()
         updateState {
             copy(
                 deleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(
-                    title = if (!hasProduct) Res.string.delete_shelf_title else Res.string.dismiss_title,
-                    description = if (!hasProduct) Res.string.delete_shelf_description else Res.string.dismiss_description,
-                    type = if (!hasProduct) ConfirmDialogType.DELETE else ConfirmDialogType.DISMISS
+                    title = updateDialogTitle(hasProducts),
+                    description = updateDialogDescription(hasProducts) ,
+                    type = updateDialogType(hasProducts)
                 ),
                 showDeleteConfirmationDialog = true
             )
         }
     }
 
+    private fun updateDialogTitle(hasProducts: Boolean): StringResource{
+        return if (!hasProducts) Res.string.delete_shelf_title else Res.string.dismiss_title
+    }
+    private fun updateDialogDescription(hasProducts: Boolean): StringResource{
+        return if (!hasProducts) Res.string.delete_shelf_description else Res.string.dismiss_description
+    }
+    private fun updateDialogType(hasProducts: Boolean): ConfirmDialogType{
+        return if (!hasProducts) ConfirmDialogType.DELETE else ConfirmDialogType.DISMISS
+    }
     override fun deleteShelf(shelfId: String) {
         tryToExecute(
             block = { shelfRepository.deleteShelf(shelfId) },
