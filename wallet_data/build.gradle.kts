@@ -45,6 +45,7 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
+            implementation(libs.mokkery.core)
         }
         iosMain.dependencies {
 
