@@ -5,9 +5,9 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.dukan.domain.entity.Shelf
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
-import kotlin.test.assertEquals
 
 class ShelfRepositoryImplTest {
 
@@ -176,24 +176,41 @@ class ShelfRepositoryImplTest {
             repo.getMyDukanShelves()
         }
     }
+
     @Test
-    fun `deleteShelf call success when return status code between 200 to 299`() = runTest {
+    fun `deleteShelf call success`() = runTest {
         val shelfId = "1"
+        var called = false
         val repo = shelfRepository(
             deleteShelfResponse = {
+                called = true
                 defaultDeleteShelfResponse()
             }
         )
 
-        val result = repo.deleteShelf(shelfId)
+        repo.deleteShelf(shelfId)
 
-        assertEquals(
-            expected = true,
-            actual = result,
+        assertTrue(
+            called,
         )
     }
 
+    @Test
+    fun `deleteShelf handle error response`() = runTest {
+        val shelfId = "1"
+        val repo = shelfRepository(
+            deleteShelfResponse = {
+                respond("", HttpStatusCode.BadRequest, jsonHeaders)
+            }
+        )
+
+        assertFailsWith<Exception> {
+            repo.deleteShelf(shelfId)
+        }
+    }
+
 }
+
 private fun fakeShelf() = Shelf(
     id = "123",
     name = "Test Shelf",

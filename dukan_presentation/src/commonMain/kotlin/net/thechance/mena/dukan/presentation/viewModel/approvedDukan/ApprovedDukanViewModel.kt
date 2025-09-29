@@ -166,18 +166,14 @@ class ApprovedDukanViewModel(
     override fun deleteShelf(shelfId: String) {
         tryToExecute(
             block = { shelfRepository.deleteShelf(shelfId) },
-            onSuccess = ::deleteShelfSuccess,
+            onSuccess = {deleteShelfSuccess()},
             onError = ::deleteShelfFail
         )
     }
 
-    private fun deleteShelfSuccess(deleteShelf: Boolean) {
+    private fun deleteShelfSuccess() {
         onDismissDeleteShelfConfirmationDialog()
-        if (deleteShelf) {
-            showSnackBar(type = SnackBarType.SUCCESS, message = Res.string.delete_shelf_success)
-        } else {
-            showSnackBar(type = SnackBarType.ERROR, message = Res.string.error_for_delete_shelf)
-        }
+        showSnackBar(type = SnackBarType.SUCCESS, message = Res.string.delete_shelf_success)
     }
 
     private fun deleteShelfFail(error: Throwable) {

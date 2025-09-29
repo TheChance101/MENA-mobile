@@ -25,7 +25,11 @@ suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
     return when (response.status.value) {
         in 200..299 -> {
             try {
-                response.body<T>()
+                when {
+                    // success response with no content
+                    response.status.value == 204 -> Unit as T
+                    else -> response.body<T>()
+                }
             } catch (_: Exception) {
                 throw DukanException("Error parsing response")
             }

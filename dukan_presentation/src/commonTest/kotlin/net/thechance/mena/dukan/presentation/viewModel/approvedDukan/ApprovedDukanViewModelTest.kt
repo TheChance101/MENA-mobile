@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -22,6 +23,7 @@ import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -654,6 +656,7 @@ class ApprovedDukanViewModelTest {
             assertFalse(state.showDeleteConfirmationDialog)
         }
     }
+
     @Test
     fun `onShowDeleteShelfConfirmationDialog show the dialog`() = runTest {
         approvedDukanViewModel.onShowDeleteShelfConfirmationDialog()
@@ -729,7 +732,7 @@ class ApprovedDukanViewModelTest {
                 snackBarType = SnackBarType.SUCCESS,
                 message = Res.string.delete_shelf_success
             )
-            everySuspend { shelfRepository.deleteShelf(shelfId) } returns true
+            everySuspend { shelfRepository.deleteShelf(shelfId) }
 
             approvedDukanViewModel.deleteShelf(shelfId)
 
@@ -741,14 +744,14 @@ class ApprovedDukanViewModelTest {
         }
 
     @Test
-    fun `deleteShelf return false should dismiss dialog and show snackBar with error deleting shelf`() =
+    fun `deleteShelf throw exception should dismiss dialog and show snackBar with error deleting shelf`() =
         runTest {
             val shelfId = "1"
             val snackBarUiState = SnackBarUiState(
                 snackBarType = SnackBarType.ERROR,
                 message = Res.string.error_for_delete_shelf
             )
-            everySuspend { shelfRepository.deleteShelf(shelfId) } returns false
+            everySuspend { shelfRepository.deleteShelf(shelfId) } throws DukanException("")
 
             approvedDukanViewModel.deleteShelf(shelfId)
 
