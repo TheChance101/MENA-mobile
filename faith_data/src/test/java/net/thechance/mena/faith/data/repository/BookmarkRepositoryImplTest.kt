@@ -17,12 +17,15 @@ class BookmarkRepositoryImplTest {
     private var repository = bookmarkRepository()
 
     @Test
-    fun `getAllAyahBookmarks should return list of bookmarks when the user has already bookmarked Ayat`() =
+    fun `getAyahBookmarks should return a paged response of bookmarks when the user has already bookmarked Ayat`() =
         runTest {
             // Given
-            val bookmarks = repository.getAllAyahBookmarks()
-            // When & Then
-            assertThat(bookmarks).isEqualTo(AYAH_BOOKMARK_LIST)
+            val pageNumber = 1
+            // When
+            val response = repository.getAyahBookmarks(pageNumber)
+            // Then
+            assertThat(response.currentPage).isEqualTo(pageNumber)
+            assertThat(response.items).isEqualTo(AYAH_BOOKMARK_LIST)
         }
 
     @Test

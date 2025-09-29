@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import kotlinx.coroutines.async
@@ -11,12 +12,14 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import net.thechance.mena.faith.data.database.QuranDao
 import net.thechance.mena.faith.data.mapper.ayahBookmark.toAyah
+import net.thechance.mena.faith.data.mapper.ayahBookmark.toAyahBookmark
 import net.thechance.mena.faith.data.mapper.ayahBookmark.toSurah
+import net.thechance.mena.faith.data.remote.dto.PageResponse
 import net.thechance.mena.faith.data.remote.dto.bookmark.AddBookmarkRequest
 import net.thechance.mena.faith.data.remote.dto.bookmark.AyahBookmarkDto
-import net.thechance.mena.faith.data.remote.dto.bookmark.AyahBookmarkResponse
 import net.thechance.mena.faith.data.utils.safeApiCall
 import net.thechance.mena.faith.domain.entity.AyahBookmark
+import net.thechance.mena.faith.domain.entity.PagedFetchResponse
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -42,20 +45,21 @@ class BookmarkRepositoryImpl(
         }
     }
 
-    override suspend fun getAllAyahBookmarks(): List<AyahBookmark> {
+    override suspend fun getAyahBookmarks(pageNumber: Int): PagedFetchResponse<AyahBookmark> {
         return coroutineScope {
-            val response = httpClient.getBookmarks()
-            response.ayahBookmarks.mapAsync { bookmarkDto ->
-                val surah = async { quranDao.getSurah(bookmarkDto.surahId) }
-                val ayah = async { quranDao.getAyah(bookmarkDto.surahId, bookmarkDto.ayahNumber) }
+            val response = httpClient.getBookmarks(pageNumber)
 
-                AyahBookmark(
-                    id = bookmarkDto.id.toInt(),
-                    surah = surah.await().toSurah(),
-                    ayah = ayah.await().toAyah(),
-                    createdAt = Instant.parse(bookmarkDto.createdAt)
-                )
-            }
+            PagedFetchResponse(
+                currentPage = pageNumber,
+                items = response.items.mapAsync {
+                    it.toAyahBookmark(
+                        fetchSurah = quranDao::getSurah,
+                        fetchAyah = quranDao::getAyah
+                    )
+                },
+                totalPages = response.totalPages,
+                totalItems = response.totalItems
+            )
         }
     }
 
@@ -73,9 +77,11 @@ class BookmarkRepositoryImpl(
         }
     }
 
-    private suspend fun HttpClient.getBookmarks(): AyahBookmarkResponse {
+    private suspend fun HttpClient.getBookmarks(pageNumber: Int): PageResponse<AyahBookmarkDto> {
         return safeApiCall {
-            get(GET_AYAH_BOOKMARK_END_POINT).body()
+            get(GET_AYAH_BOOKMARK_END_POINT) {
+                parameter("page", pageNumber)
+            }.body()
         }
     }
 
