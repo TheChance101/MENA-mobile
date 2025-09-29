@@ -15,7 +15,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 @Composable
 fun WalletScaffold(
     modifier: Modifier = Modifier,
-    topBar: (@Composable () -> Unit) ? = null,
+    topBar: (@Composable () -> Unit)? = null,
+    bottomBar: (@Composable () -> Unit)? = null,
     snackBar: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     content: @Composable () -> Unit
@@ -28,6 +29,7 @@ fun WalletScaffold(
     ) {
         Scaffold(
             topBar = { topBar?.invoke() },
+            bottomBar = { bottomBar?.invoke() },
             content = content
         )
 
