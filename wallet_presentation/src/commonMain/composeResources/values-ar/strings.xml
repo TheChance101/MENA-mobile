@@ -36,7 +36,7 @@
     <string name="pick_end_date">اختار تاريخ النهاية</string>
     <string name="pick">اختر</string>
 
-    <string name="transaction_history">سجل التحويلات المالية</string>
+    <string name="transaction_history">سجل المعاملات</string>
 
     <string name="view_transactions">عرض المعاملات</string>
     <string name="share">مشاركة</string>
