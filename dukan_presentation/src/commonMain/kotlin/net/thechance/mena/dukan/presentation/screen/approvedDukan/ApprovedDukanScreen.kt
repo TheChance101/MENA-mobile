@@ -45,15 +45,12 @@ fun ApprovedDukanScreen(
             )
 
             ApprovedDukanEffect.NavigateToEditShelf -> {
-                // TODO: Navigate to edit and delete shelf screen
             }
 
             ApprovedDukanEffect.NavigateToAddProduct -> {
-                // TODO: Navigate to add product screen
             }
 
             ApprovedDukanEffect.NavigateToProductDetails -> {
-                // TODO: Navigate to product details screen
             }
         }
     }
@@ -63,5 +60,3 @@ fun ApprovedDukanScreen(
         deletedShelfId = deletedShelfId?.value
     )
 }
-
-

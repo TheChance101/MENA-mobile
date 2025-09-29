@@ -2,8 +2,6 @@ package net.thechance.mena.dukan.presentation.viewModel.approvedDukan
 
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import org.jetbrains.compose.resources.StringResource
 
 interface ApprovedDukanInteractionListener {
     fun onBackButtonClicked()
