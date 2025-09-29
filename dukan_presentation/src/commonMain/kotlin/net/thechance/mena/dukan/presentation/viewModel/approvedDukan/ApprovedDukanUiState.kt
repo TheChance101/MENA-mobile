@@ -15,11 +15,10 @@ data class ApprovedDukanUiState(
     val availableShelves: List<Shelf> = emptyList(),
     val selectedShelves: Set<Shelf> = emptySet(),
     val products: List<Product> = emptyList(),
-    val productCount: Int = 0,
+    val totalProducts: Int = 0,
     val isLoading: Boolean = false,
     val isLoadingProducts: Boolean = false,
-    val showSnackBar: Boolean = false,
-    val snackBarState: SnackBarUiState= SnackBarUiState(),
+    val snackBarState: SnackBarUiState? = null,
     val deleteShelfConfirmationDialogUiState: DeleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(),
     val showDeleteConfirmationDialog: Boolean = false,
 )

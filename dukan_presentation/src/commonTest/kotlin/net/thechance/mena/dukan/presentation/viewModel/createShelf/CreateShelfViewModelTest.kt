@@ -12,10 +12,11 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.component.SnackBarType
+import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -75,8 +76,9 @@ class CreateShelfViewModelTest {
             skipItems(1)
             val state = awaitItem()
 
-            assertTrue(state.showSnackBar)
-            assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+            assertTrue(state.snackBarState != null)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+            assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState.message)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -91,8 +93,9 @@ class CreateShelfViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = createShelfViewModel.state.value
-        assertTrue(state.showSnackBar)
-        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+        assertTrue(state.snackBarState != null)
+        assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+        assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState.message)
     }
 
     @Test
@@ -104,21 +107,20 @@ class CreateShelfViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = createShelfViewModel.state.value
-        assertTrue(state.showSnackBar)
-        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+        assertTrue(state.snackBarState != null)
+        assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+        assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState.message)
     }
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
-        createShelfViewModel.showSnackBar(
-            message = Res.string.shelf_name_is_invalid,
-            type = SnackBarType.ERROR
-        )
+        createShelfViewModel.updateState {
+            copy(snackBarState = SnackBarUiState(SnackBarType.ERROR, Res.string.shelf_name_is_already_exist))
+        }
 
         createShelfViewModel.onDismissSnackBar()
 
         val state = createShelfViewModel.state.value
-        assertFalse(state.showSnackBar)
-        assertEquals(null, state.snackBarState)
+        assertTrue(state.snackBarState == null)
     }
 }

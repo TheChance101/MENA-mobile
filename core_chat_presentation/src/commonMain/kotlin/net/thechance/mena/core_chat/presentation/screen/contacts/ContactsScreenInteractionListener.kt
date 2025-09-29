@@ -6,6 +6,6 @@ interface ContactsScreenInteractionListener : ContactListInteractionListener{
 }
 
 interface ContactListInteractionListener{
-    fun onContactClick(contactId: Int)
+    fun onContactClick(contactId: String)
     fun onRefreshContacts()
 }

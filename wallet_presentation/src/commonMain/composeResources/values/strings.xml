@@ -7,4 +7,36 @@
     <string name="couldnt_load_tap_to_retry">Couldn’t load, tap to retry</string>
     <string name="error">Error</string>
     <string name="balance_fetch_error_description">Something went wrong while fetching your balance</string>
+
+    <string name="type">Type</string>
+    <string name="status">Status</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="select_date">Select Date</string>
+    <string name="sent">Sent</string>
+    <string name="received">Received</string>
+    <string name="online_purchase">Online Purchase</string>
+    <string name="all">All</string>
+    <string name="success">Success</string>
+    <string name="failed">Failed</string>
+
+
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+    <string name="pick_start_date">Pick the start date</string>
+    <string name="pick_end_date">Pick the end date</string>
+    <string name="pick">Pick</string>
+
+    <string name="transaction_history">Transaction History</string>
+
 </resources>

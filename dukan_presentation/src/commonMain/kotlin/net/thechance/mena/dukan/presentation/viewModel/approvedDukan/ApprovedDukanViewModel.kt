@@ -10,6 +10,7 @@ import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.dismiss_description
 import mena.dukan_presentation.generated.resources.dismiss_title
 import mena.dukan_presentation.generated.resources.error_for_delete_shelf
+import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -50,10 +51,7 @@ class ApprovedDukanViewModel(
 
     override fun onDismissSnackBar() {
         updateState {
-            copy(
-                showSnackBar = false,
-                snackBarState = SnackBarUiState()
-            )
+            copy(snackBarState = null)
         }
     }
 
@@ -78,22 +76,32 @@ class ApprovedDukanViewModel(
     }
 
     override fun onShelfSelected(shelf: Shelf): Boolean {
-        val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
-        updatedSelectedShelves.add(shelf)
-        updateState { copy(selectedShelves = updatedSelectedShelves) }
+        if (state.value.selectedShelves.contains(shelf)) return true
+        updateState { copy(selectedShelves = setOf(shelf)) }
         loadProductsForSelectedShelves()
         return true
     }
 
     override fun onShelfDeselected(shelf: Shelf): Boolean {
-        val updatedSelectedShelves = state.value.selectedShelves.toMutableSet()
-        updatedSelectedShelves.remove(shelf)
-        updateState { copy(selectedShelves = updatedSelectedShelves) }
+        if (!state.value.selectedShelves.contains(shelf)) return true
+        updateState { copy(selectedShelves = emptySet()) }
         loadProductsForSelectedShelves()
         return true
     }
 
     override fun onShelfEnabled(shelf: Shelf): Boolean = true
+
+    override fun onShelfAddedSuccessfully() {
+        updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    snackBarType = SnackBarType.SUCCESS,
+                    message = Res.string.add_shelf_successfully
+                )
+            )
+        }
+        loadShelves()
+    }
 
     private fun loadShelves() {
         tryToExecute(
@@ -106,10 +114,7 @@ class ApprovedDukanViewModel(
 
     private fun handleLoadShelvesError() {
         updateState {
-            copy(
-                isLoading = false,
-                showSnackBar = true,
-            )
+            copy(isLoading = false)
         }
     }
 
@@ -128,15 +133,19 @@ class ApprovedDukanViewModel(
     private fun loadProductsForSelectedShelves() {
         val selectedShelves = state.value.selectedShelves
         when {
-            selectedShelves.isNotEmpty() -> loadProductsFromRepository(selectedShelves)
+            selectedShelves.isNotEmpty() -> {
+                val selectedShelf = selectedShelves.first()
+                loadProductsFromRepository(selectedShelf)
+            }
+
             else -> clearProducts()
         }
     }
 
-    private fun loadProductsFromRepository(selectedShelves: Set<Shelf>) {
+    private fun loadProductsFromRepository(selectedShelf: Shelf) {
         tryToExecute(
             onStart = { updateState { copy(isLoadingProducts = isLoading) } },
-            block = { getProductsForShelves(selectedShelves) },
+            block = { productRepository.getProductsByShelfId(selectedShelf.id) },
             onSuccess = { products -> handleProductsLoaded(products) },
             onError = { updateState { copy(isLoadingProducts = false) } }
         )
@@ -194,7 +203,7 @@ class ApprovedDukanViewModel(
         updateState {
             copy(
                 products = products,
-                productCount = products.size,
+                totalProducts = products.size,
                 isLoadingProducts = false
             )
         }
@@ -204,7 +213,7 @@ class ApprovedDukanViewModel(
         updateState {
             copy(
                 products = emptyList(),
-                productCount = 0,
+                totalProducts = 0,
                 isLoadingProducts = false
             )
         }

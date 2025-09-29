@@ -4,15 +4,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.failed_to_create_shelf
-import mena.dukan_presentation.generated.resources.shelf_name_already_exists
-import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
+import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
-import org.jetbrains.compose.resources.StringResource
 
 class CreateShelfViewModel(
     private val shelfRepository: ShelfRepository,
@@ -34,14 +31,20 @@ class CreateShelfViewModel(
     }
 
     override fun onBackButtonClicked() {
-        updateState { copy(showShelfAddedSuccess = false) }
         emitEffect(CreateShelfEffect.NavigateBack)
     }
 
     override fun onCreateButtonClicked() {
         val title = state.value.shelfTitle
         if (!isTitleValid(title)) {
-            showSnackBar(Res.string.shelf_name_is_invalid)
+            updateState {
+                copy(
+                    snackBarState = SnackBarUiState(
+                        snackBarType = SnackBarType.ERROR,
+                        message = Res.string.shelf_name_is_already_exist
+                    )
+                )
+            }
             return
         }
 
@@ -76,42 +79,36 @@ class CreateShelfViewModel(
     private fun onCreateClickedSuccess(isCreated: Boolean) {
         updateState { copy(isLoading = false) }
         if (isCreated) {
-            updateState { copy(showShelfAddedSuccess = true) }
             emitEffect(CreateShelfEffect.NavigateToApprovedDukan)
         } else {
-            showSnackBar(Res.string.shelf_name_already_exists)
+            updateState {
+                copy(
+                    snackBarState = SnackBarUiState(
+                        snackBarType = SnackBarType.ERROR,
+                        message = Res.string.shelf_name_is_already_exist
+                    )
+                )
+            }
         }
     }
 
     private fun onCreateClickedError() {
         updateState { copy(isLoading = false) }
-        showSnackBar(Res.string.failed_to_create_shelf)
-    }
-
-    override fun onDismissSnackBar() {
         updateState {
             copy(
-                showSnackBar = false,
-                snackBarState = null
-            )
-        }
-    }
-
-    fun showSnackBar(
-        message: StringResource,
-        type: SnackBarType = SnackBarType.ERROR
-    ) {
-        updateState {
-            copy(
-                showSnackBar = true,
                 snackBarState = SnackBarUiState(
-                    snackBarType = type,
-                    message = message
+                    snackBarType = SnackBarType.ERROR,
+                    message = Res.string.shelf_name_is_already_exist
                 )
             )
         }
     }
 
+    override fun onDismissSnackBar() {
+        updateState {
+            copy(snackBarState = null)
+        }
+    }
 
     companion object {
         private val validTitleRegex = Regex("^[\\p{L}\\s-]+$")

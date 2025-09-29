@@ -25,7 +25,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SnackBar(
     snackBarUiState: SnackBarUiState,
-    isVisible: Boolean,
     onDismiss: () -> Unit,
     autoDismissMillis: Long = 3000L,
     modifier: Modifier = Modifier.padding(
@@ -34,16 +33,15 @@ fun SnackBar(
         top = Theme.spacing._12
     )
 ) {
+    val messageText = stringResource(snackBarUiState.message)
 
-    LaunchedEffect(isVisible) {
-        if (isVisible) {
-            delay(autoDismissMillis)
-            onDismiss()
-        }
+    LaunchedEffect(Unit) {
+        delay(autoDismissMillis)
+        onDismiss()
     }
 
     AnimatedVisibility(
-        visible = isVisible,
+        visible = true,
         enter = slideInVertically(
             initialOffsetY = { -it },
             animationSpec = tween(400)
@@ -57,7 +55,7 @@ fun SnackBar(
             SnackBarType.SUCCESS -> {
                 SnackBar(
                     title = stringResource(Res.string.success),
-                    message = snackBarUiState.message?.let { stringResource(it) } ?: "",
+                    message = messageText,
                     leadingIcon = painterResource(Res.drawable.ic_success),
                     contentDescription = stringResource(Res.string.success),
                     tint = Theme.colorScheme.success,
@@ -68,22 +66,20 @@ fun SnackBar(
             SnackBarType.ERROR -> {
                 SnackBar(
                     title = stringResource(Res.string.error),
-                    message = snackBarUiState.message?.let { stringResource(it) } ?: "",
+                    message = messageText,
                     leadingIcon = painterResource(Res.drawable.ic_error),
                     contentDescription = stringResource(Res.string.error),
                     tint = Theme.colorScheme.error,
                     modifier = modifier
                 )
             }
-            else -> {}
         }
     }
 }
 
-data class SnackBarUiState(val snackBarType: SnackBarType= SnackBarType.NONE, val message: StringResource?=null)
+data class SnackBarUiState(val snackBarType: SnackBarType, val message: StringResource)
 
 enum class SnackBarType {
     SUCCESS,
-    ERROR,
-    NONE
+    ERROR
 }
