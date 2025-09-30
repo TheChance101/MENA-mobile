@@ -153,34 +153,34 @@ private fun BookmarkItems(
     deletedIds: Set<Int>,
     onRemoveBookmarkClick: (Int) -> Unit,
 ) {
+    val filteredBookmarks =
+        bookmarks.itemSnapshotList.items.filterNot { it.bookmarkId in deletedIds }
+
     LazyColumn(
         contentPadding = PaddingValues(bottom = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
     ) {
         items(
-            items = bookmarks.itemSnapshotList
+            items = filteredBookmarks,
+            key = { it.bookmarkId }
         ) { bookmark ->
-            bookmark?.let {
-                if (bookmark.bookmarkId !in deletedIds) {
-                    SwappableCard(
-                        id = it.bookmarkId,
-                        onClick = { onRemoveBookmarkClick(it.bookmarkId) },
-                        cardContent = { contentModifier ->
-                            AyaBookmarkCard(
-                                surahName = it.surahName,
-                                ayaNumber = it.ayaNumber,
-                                createdAt = it.createdAt,
-                                ayaText = it.ayaText,
-                                modifier = contentModifier
-                            )
-                        },
-                        modifier = Modifier.animateItem(
-                            fadeInSpec = tween(500),
-                            fadeOutSpec = tween(500)
-                        )
+            SwappableCard(
+                id = bookmark.bookmarkId,
+                onClick = { onRemoveBookmarkClick(bookmark.bookmarkId) },
+                cardContent = { contentModifier ->
+                    AyaBookmarkCard(
+                        surahName = bookmark.surahName,
+                        ayaNumber = bookmark.ayaNumber,
+                        createdAt = bookmark.createdAt,
+                        ayaText = bookmark.ayaText,
+                        modifier = contentModifier
                     )
-                }
-            }
+                },
+                modifier = Modifier.animateItem(
+                    fadeInSpec = tween(500),
+                    fadeOutSpec = tween(500)
+                )
+            )
         }
     }
 }
