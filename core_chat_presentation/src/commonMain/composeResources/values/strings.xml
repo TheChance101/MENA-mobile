@@ -6,6 +6,7 @@
     <string name="sync_contacts_desc">Sync your contacts so you can easily start conversations and connect with your friends</string>
     <string name="syncing_contacts_message">Your contact syncing now, please wait until syncing complete.</string>
     <string name="no_contacts_message">You don't have any contact here!</string>
+    <string name="message_holder">Message...</string>
     <string name="refresh_contacts_message">Click on refresh button to upload your new contact.</string>
     <string name="go_to_setting">Go to setting</string>
     <string name="to_sync_contacts_go_to_settings">To sync your contact, please go to setting, give a permission to MENA to access your contact.</string>
@@ -14,9 +15,18 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="could_not_load_contacts">Could not load contacts, please try again</string>
     <string name="error">Error</string>
+    <string name="actions">Actions</string>
+    <string name="re_send">Re-Send</string>
+    <string name="delete_message">Delete message</string>
     <string name="could_not_load_the_contacts">Couldn't load the contacts</string>
     <string name="permission_denied_title">Permission Denied</string>
     <string name="contacts_permission_required_message">Contacts permission is required to sync contacts</string>
     <string name="could_not_sync_contacts_message">Could not sync contacts</string>
+    <string name="delete">Delete</string>
+    <string name="delete_chat">Delete Chat</string>
+    <string name="confirm_delete_chat_message">Are you sure you want to delete this shelf?</string>
+    <string name="error_cant_subscribe_to_new_messages">Not Connected!</string>
+    <string name="error_cant_get_messages">Couldn't Get Messages!</string>
+    <string name="contact_not_mena_user">This Contact Is Not Mena User!</string>
 
 </resources>

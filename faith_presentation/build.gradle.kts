@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.kover)
     alias(libs.plugins.mockkery)
 }
@@ -17,6 +18,7 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -37,14 +39,16 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(projects.faithDomain)
             implementation(projects.designSystem)
+            implementation(projects.faithApi)
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.paging.runtime)
             implementation(libs.androidx.paging.compose)
+            implementation(libs.androidx.navigation.compose)
+            implementation(libs.kotlinx.serialization.json)
         }
         iosMain.dependencies {
 
@@ -76,7 +80,20 @@ kover.reports {
 
     filters {
         excludes {
-            packages("mena.faith_presentation.generated.resources*")
+            packages(
+                "*.base",
+                "*.component",
+                "*.di",
+                "*.feature.quran",
+                "*.navigation",
+                "*.utils"
+            )
+        }
+        includes {
+            classes(
+                "net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel",
+            )
         }
     }
 }

@@ -7,6 +7,7 @@ fun AyahDto.toAyah(): Ayah {
     return Ayah(
         number = number,
         surahId = surahNumber,
-        content = displayContent
+        content = content,
+        plainContent = plainContent
     )
 }

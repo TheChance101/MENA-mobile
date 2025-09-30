@@ -28,6 +28,12 @@
     <string name="error_generic">Something went wrong, please try again later</string>
     <string name="error_request_timeout">Request timed out, please try again later</string>
 
+<!--    Publish Trend-->
+    <string name="upload_your_video">Upload your video</string>
+    <string name="available_video_format">MP4, MOV up to 100MB</string>
+    <string name="thumbnail_description">Uploaded video thumbnail</string>
+    <string name="edit_button_description">Edit button icon</string>
+
     <!-- Video Description Screen  -->
     <string name="new_trend">New Trend</string>
     <string name="add_video_description_title">Add Video Description</string>
@@ -37,6 +43,19 @@
     <string name="page_number"> %1$d / %2$d </string>
     <string name="characters_color_animation_label">CharactersColorAnimation</string>
 
+    <string name="upload_failed">Upload failed</string>
+    <string name="loading">Loading</string>
+    <string name="success">Success</string>
+    <string name="retry">Retry</string>
+    <string name="error">Error</string>
+    <string name="thumbnail">Thumbnail</string>
+    <string name="max_file_size_exceeded">Maximum allowed size is 100 MB</string>
+    <string name="max_file_duration_exceeded">Maximum allowed duration is 1 minute</string>
 
+    <string name="add_categories_to_video">Add categories to video</string>
+    <string name="choose_categories">You can choose up to 3 categories</string>
+    <string name="publish_video">Publish Video</string>
+    <string name="publish_categories_screen_count">3/3</string>
+    <string name="publish_hint">hint</string>
 
 </resources>

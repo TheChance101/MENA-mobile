@@ -8,6 +8,7 @@ plugins {
 
 kotlin {
     jvm()
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -15,9 +16,11 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.koin.core)
             api(libs.koin.annotations)
+            implementation(libs.kotlinx.datetime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.mokkery.core)
         }
     }
     sourceSets.named("commonMain").configure {
@@ -47,7 +50,7 @@ kover.reports {
     }
     filters {
         excludes {
-            classes("**.di.**","**.exceptions.**", "**.repository.**", "**.generated.**")
+            classes("**.di.**","**.exceptions.**", "**.repository.**", "**.generated.**","**.entity.**","**.model.**")
         }
     }
 }

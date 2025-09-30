@@ -5,7 +5,6 @@ data class Surah(
     val order: SurahOrder,
     val name: String,
     val ayahCount: Int,
-    val isMakkia: Boolean = true,
 ) {
     enum class SurahOrder(val order: Int, val isMakkia: Boolean) {
         AlFatihah(order = 1, isMakkia = true),

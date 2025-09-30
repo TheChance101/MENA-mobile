@@ -11,6 +11,7 @@ class ContactsFetchFailedException(logMessage: String, cause: Throwable? = null)
 
 class ContactsPermissionDeniedException(logMessage: String, cause: Throwable? = null) :
         ChatException(logMessage, cause)
+
 class UnAuthorizedException(logMessage: String? = null) :
     ChatException(logMessage ?: "User is not authorized")
 
@@ -19,5 +20,8 @@ class UnknownException(logMessage: String? = null, cause: Throwable? = null) :
 
 class DataStoreException(logMessage: String, cause: Throwable? = null) :
     ChatException(logMessage, cause)
+
 class SendMessageFailedException(logMessage: String, cause: Throwable? = null) :
         ChatException(logMessage, cause)
+
+class NotMenaMemberException(logMessage: String, cause: Throwable? = null) : ChatException(logMessage, cause)

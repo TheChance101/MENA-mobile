@@ -19,6 +19,7 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -48,6 +49,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.dukanDomain)
             implementation(projects.designSystem)
+            implementation(projects.dukanApi)
             implementation(compose.runtime)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)

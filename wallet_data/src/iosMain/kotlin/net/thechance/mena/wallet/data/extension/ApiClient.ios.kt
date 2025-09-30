@@ -1,8 +1,0 @@
-package net.thechance.mena.wallet.data.extension
-
-import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
-import io.ktor.client.engine.darwin.Darwin
-
-actual val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
-    get() = Darwin

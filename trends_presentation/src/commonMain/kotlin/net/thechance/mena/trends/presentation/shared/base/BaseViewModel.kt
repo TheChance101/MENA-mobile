@@ -2,35 +2,39 @@ package net.thechance.mena.trends.presentation.shared.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
+import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import net.thechance.mena.trends.domain.exception.NoInternetException
-import net.thechance.mena.trends.domain.util.Logger
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
-import org.koin.core.annotation.InjectedParam
 
 internal abstract class BaseViewModel<State, Effect>(
-    initialState: State,
-    ) : ViewModel() {
+    initialState: State
+) : ViewModel() {
 
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<Effect>()
     val effect = _effect.throttleFirst(THROTTLE_WINDOW_DURATION)
-
-    @setparam:InjectedParam
-    lateinit var  logger: Logger
 
     protected fun updateState(updater: State.() -> State) {
         _state.update { updater(it) }
@@ -72,6 +76,33 @@ internal abstract class BaseViewModel<State, Effect>(
         }
     }
 
+    protected fun <T> tryToCollectFlow(
+        block: () -> Flow<T>,
+        onStart: () -> Unit = {},
+        onEach: (T) -> Unit,
+        onError: (ErrorState) -> Unit,
+        onEnd: () -> Unit = {},
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        scope: CoroutineScope = viewModelScope
+    ): Job {
+        val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+            onError(ErrorState.RequestFailed(exception.message))
+        }
+
+        return scope.launch(dispatcher + exceptionHandler) {
+            block()
+                .onStart { onStart() }
+                .onEach { onEach(it) }
+                .onCompletion { throwable ->
+                    throwable?.let {
+                        mapExceptionToErrorState(throwable, onError)
+                    } ?: onEnd()
+                }
+                .catch { throwable -> mapExceptionToErrorState(throwable, onError) }
+                .launchIn(scope)
+        }
+    }
+
     private suspend fun mapExceptionToErrorState(
         throwable: Throwable,
         onError: suspend (ErrorState) -> Unit,
@@ -80,14 +111,16 @@ internal abstract class BaseViewModel<State, Effect>(
         val message = throwable.message
         when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
+            is MaxFileSizeExceededException -> ErrorState.FileTooLarge
+            is MaxFileDurationExceededException -> ErrorState.DurationTooLarge
             else -> ErrorState.RequestFailed(message).also { logError(throwable) }
         }.also { errorState ->
-            logger.logError(LOG_TAG, "error state: $errorState")
+            Logger.e(LOG_TAG){errorState.toString()}
         }.let { onError(it) }
     }
 
     private fun logError(throwable: Throwable) {
-        logger.logError(LOG_TAG, "${throwable}: ${throwable.message}")
+        Logger.e(LOG_TAG){"${throwable}: ${throwable.message}"}
     }
 
     companion object {

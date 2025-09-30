@@ -8,6 +8,7 @@ plugins {
 
 kotlin {
     jvm()
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -16,9 +17,11 @@ kotlin {
             implementation(libs.koin.core)
             api(libs.koin.annotations)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.coroutines.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.assertk)
         }
     }
 
@@ -45,7 +48,19 @@ project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
+        }
+    }
+
+    filters {
+        excludes {
+            packages("mena.trends_domain.generated.resources*")
+            classes(
+                "**.di.**",
+                "**.entity.**",
+                "**.exception.**",
+                "**org.koin.ksp.generated**",
+            )
         }
     }
 }

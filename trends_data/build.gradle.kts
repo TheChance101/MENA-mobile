@@ -1,6 +1,6 @@
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import kotlin.jvm.java
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.mockkery)
 }
 
 kotlin {
@@ -18,6 +19,7 @@ kotlin {
         }
     }
     jvm()
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -31,6 +33,8 @@ kotlin {
             api(libs.koin.annotations)
             implementation(libs.kotlinx.datetime)
             implementation(libs.bundles.ktor)
+            implementation(libs.kermit)
+            implementation(projects.identityDomain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -73,7 +77,20 @@ android {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
+        }
+    }
+
+    filters {
+        excludes {
+            packages("mena.trends_data.generated.resources*")
+            classes(
+                "**.di.**",
+                "**.dto.**",
+                "**.util.**",
+                "**.client.**",
+                "**org.koin.ksp.generated**",
+            )
         }
     }
 }

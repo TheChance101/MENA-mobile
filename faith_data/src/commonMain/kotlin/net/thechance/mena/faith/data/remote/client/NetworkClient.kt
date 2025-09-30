@@ -13,8 +13,12 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import net.thechance.mena.identity.domain.service.AuthorizationService
 
-class NetworkClient {
+class NetworkClient(
+    private val authorizationService: AuthorizationService,
+    private val baseUrl: String
+) {
     fun provideHttpClient(): HttpClient {
         return configureBaseSettings()
     }
@@ -22,7 +26,7 @@ class NetworkClient {
     private fun configureBaseSettings(): HttpClient {
         return HttpClient {
             defaultRequest {
-                url(BASE_URL)
+                url(baseUrl)
                 contentType(io.ktor.http.ContentType.Application.Json)
             }
             install(ContentNegotiation) {
@@ -47,8 +51,13 @@ class NetworkClient {
                 bearer {
                     loadTokens {
                         BearerTokens(
-                            //TODO: Add token
-                            accessToken = ACCESS_TOKEN,
+                            accessToken = authorizationService.getAccessToken(),
+                            refreshToken = ""
+                        )
+                    }
+                    refreshTokens {
+                        BearerTokens(
+                            accessToken = authorizationService.refreshToken(),
                             refreshToken = ""
                         )
                     }
@@ -61,10 +70,5 @@ class NetworkClient {
                 socketTimeoutMillis = 20_000
             }
         }
-    }
-
-    private companion object {
-        const val BASE_URL = ""
-        const val ACCESS_TOKEN = ""
     }
 }

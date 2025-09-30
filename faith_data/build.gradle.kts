@@ -11,9 +11,9 @@ plugins {
 }
 
 kotlin {
-    iosArm64()
     androidTarget()
     iosSimulatorArm64()
+    iosX64()
     iosArm64()
 
     sourceSets {
@@ -29,6 +29,7 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.serialization.json)
+            implementation(projects.identityDomain)
             implementation(libs.bundles.ktor)
             api(libs.koin.core)
             implementation(libs.kotlinx.datetime)
@@ -49,7 +50,20 @@ kotlin {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
+        }
+    }
+
+    filters {
+        excludes {
+            packages(
+                "*.database",
+                "*.mapper",
+                "*.di",
+            )
+        }
+        includes {
+            packages("*.repository")
         }
 
     }

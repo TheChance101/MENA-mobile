@@ -23,6 +23,7 @@ import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
 import net.thechance.mena.core_chat.data.network.ApiConstants.CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.SYNC_CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(
@@ -76,6 +77,7 @@ fun MockRequestHandleScope.defaultSyncContactsResponse() = respond(
 fun createRepository(
     contactsProvider: ContactsProvider,
     contactsDataStore: DataStore<Preferences>,
+    authenticationRepository: AuthenticationRepository,
     contactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ContactsRepositoryImpl {
@@ -84,6 +86,7 @@ fun createRepository(
             contactsResponse = contactsResponse,
             syncContactsResponse = syncContactsResponse
         ),
+        authenticationRepository = authenticationRepository,
         contactsProvider = contactsProvider,
         dataStore = contactsDataStore
     )

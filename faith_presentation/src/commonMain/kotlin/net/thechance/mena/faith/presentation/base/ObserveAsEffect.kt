@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun <T> ObserveAsEffect(
     effect: Flow<T>,
-    onEvent: (T) -> Unit,
+    onEvent: suspend (T) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = lifecycleOwner.lifecycle) {

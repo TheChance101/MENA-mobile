@@ -5,10 +5,10 @@ import net.thechance.mena.trends.api.TrendsApi
 import org.koin.core.annotation.Single
 
 @Single(binds = [TrendsApi::class])
-internal class TrendsApiImpl() : TrendsApi {
+class TrendsApiImpl() : TrendsApi {
 
     @Composable
-    override fun Launch() {
+    override fun TabEntry() {
         TrendsNavHost()
     }
 }
