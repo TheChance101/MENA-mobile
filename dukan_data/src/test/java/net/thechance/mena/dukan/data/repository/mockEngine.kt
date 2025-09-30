@@ -150,12 +150,12 @@ fun createHttpClient(
 
 }
 
-fun shelfRepository(
+fun createShelfRepository(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     shelvesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): ShelfRepositoryImpl {
-    return ShelfRepositoryImpl(
+): CreateShelfRepositoryImpl {
+    return CreateShelfRepositoryImpl(
         client = createHttpClient(
             createResponse = createResponse,
             deleteResponse = deleteShelfResponse,

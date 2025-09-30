@@ -12,11 +12,11 @@ import net.thechance.mena.dukan.data.repository.mapper.toCreateShelfRequest
 import net.thechance.mena.dukan.data.repository.mapper.toShelfList
 import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.domain.repository.CreateShelfRepository
 
-class ShelfRepositoryImpl(
+class CreateShelfRepositoryImpl(
     private val client: HttpClient
-) : ShelfRepository {
+) : CreateShelfRepository {
 
     override suspend fun createShelf(shelf: Shelf) {
         safeApiCall<Unit> {

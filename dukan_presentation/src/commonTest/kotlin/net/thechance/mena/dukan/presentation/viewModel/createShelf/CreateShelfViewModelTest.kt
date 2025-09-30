@@ -13,7 +13,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.domain.repository.CreateShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateShelfViewModelTest {
 
-    private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
+    private val shelfRepository = mock<CreateShelfRepository>(mode = MockMode.autofill)
     private lateinit var createShelfViewModel: CreateShelfViewModel
     private val testDispatcher = StandardTestDispatcher()
 

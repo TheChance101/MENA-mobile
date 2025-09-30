@@ -14,14 +14,14 @@ import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.domain.repository.CreateShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import org.jetbrains.compose.resources.StringResource
 
 class ApprovedDukanViewModel(
-    private val shelfRepository: ShelfRepository,
+    private val shelfRepository: CreateShelfRepository,
     private val productRepository: ProductRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ApprovedDukanUiState, ApprovedDukanEffect>(

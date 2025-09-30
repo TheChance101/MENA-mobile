@@ -26,7 +26,7 @@ import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.domain.repository.CreateShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import kotlin.test.AfterTest
@@ -41,7 +41,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class ApprovedDukanViewModelTest {
 
-    private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
+    private val shelfRepository = mock<CreateShelfRepository>(mode = MockMode.autofill)
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private lateinit var approvedDukanViewModel: ApprovedDukanViewModel
     private val testDispatcher = StandardTestDispatcher()
@@ -602,8 +602,8 @@ class ApprovedDukanViewModelTest {
             val state = awaitItem()
             // Then
             assertNotNull(state.selectedShelf)
-            assertEquals("shelf_1", state.selectedShelf?.id)
-            assertEquals("Electronics", state.selectedShelf?.name)
+            assertEquals("shelf_1", state.selectedShelf.id)
+            assertEquals("Electronics", state.selectedShelf.name)
             cancelAndIgnoreRemainingEvents()
         }
     }
