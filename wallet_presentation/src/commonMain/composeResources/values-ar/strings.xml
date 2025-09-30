@@ -67,5 +67,7 @@
     <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
     <string name="img_no_internet">الصورة لا يوجد إنترنت</string>
     <string name="retry">أعد المحاولة</string>
+    <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للفلاتر</string>
+    <string name="filter_transaction_error_description">قم بتغيير الفلاتر أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
 
 </resources>

@@ -1,6 +1,11 @@
 package net.thechance.mena.designsystem.presentation.component.bottomSheet
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -13,10 +18,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -28,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -37,12 +46,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
@@ -74,21 +85,13 @@ fun ScaffoldScope.BottomSheet(
     stickyFooterContent: @Composable BoxScope.() -> Unit = {},
     sheetContent: @Composable ColumnScope.() -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val density = LocalDensity.current
+    var showScrim by remember { mutableStateOf(true) }
     var sheetSize by remember { mutableStateOf(IntSize.Zero) }
-
+    var referenceHeight by remember { mutableStateOf(0) }
     val sheetCollapsedHeightPx = with(density) { 340.dp.toPx() }
-
-    val dragState = remember {
-        AnchoredDraggableState(
-            initialValue = BottomSheetValue.HIDDEN,
-            anchors = DraggableAnchors {
-                BottomSheetValue.HIDDEN at Float.MAX_VALUE
-                BottomSheetValue.COLLAPSED at Float.MAX_VALUE
-                BottomSheetValue.EXPANDED at Float.MAX_VALUE
-            }
-        )
-    }
+    val dragState = rememberDragState()
 
     LaunchedEffect(sheetSize) {
         if (sheetSize != IntSize.Zero) {
@@ -99,13 +102,17 @@ fun ScaffoldScope.BottomSheet(
             dragState.updateAnchors(
                 DraggableAnchors {
                     BottomSheetValue.EXPANDED at 0f
-                    BottomSheetValue.COLLAPSED at collapsedOffset
+                    if (containerHeight >= sheetCollapsedHeightPx)
+                        BottomSheetValue.COLLAPSED at collapsedOffset
                     BottomSheetValue.HIDDEN at containerHeight
                 }
             )
 
             dragState.animateTo(
-                BottomSheetValue.COLLAPSED,
+                if (containerHeight >= sheetCollapsedHeightPx)
+                    BottomSheetValue.COLLAPSED
+                else
+                    BottomSheetValue.EXPANDED,
                 tween(500)
             )
         }
@@ -114,7 +121,11 @@ fun ScaffoldScope.BottomSheet(
     LaunchedEffect(dragState.targetValue) {
         if (dragState.targetValue == BottomSheetValue.HIDDEN) {
             try {
-                dragState.animateTo(BottomSheetValue.HIDDEN, tween(250))
+                showScrim = false
+                dragState.animateTo(
+                    BottomSheetValue.HIDDEN,
+                    tween(250)
+                )
             } finally {
                 onDismissRequest()
             }
@@ -126,20 +137,35 @@ fun ScaffoldScope.BottomSheet(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-
         BackHandler(dismissOnBackPress) { onDismissRequest() }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = scrimColor)
-                .clickable(
-                    enabled = dismissOnClickOutside,
-                    onClick = onDismissRequest,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
-        )
+        AnimatedVisibility(
+            visible = showScrim,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = scrimColor)
+                    .clickable(
+                        enabled = dismissOnClickOutside,
+                        onClick = {
+                            showScrim = false
+                            scope.launch {
+                                val durationMillis = 250
+                                dragState.animateTo(
+                                    BottomSheetValue.HIDDEN,
+                                    tween(durationMillis),
+                                )
+                                onDismissRequest()
+                            }
+                        },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -170,24 +196,59 @@ fun ScaffoldScope.BottomSheet(
                         )
                 )
                 sheetContent()
+                AnimatedVisibility(
+                    visible = dragState.currentValue != BottomSheetValue.HIDDEN && sheetSize != IntSize.Zero,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                    exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
+                ) {
+                    Box(
+                        modifier = Modifier.background(containerColor)
+                            .offset(
+                                y = WindowInsets.navigationBars
+                                    .asPaddingValues()
+                                    .calculateBottomPadding()
+                            )
+                            .height(with(LocalDensity.current) { referenceHeight.toDp() })
+                    )
+                }
             }
         }
 
-        if (dragState.currentValue != BottomSheetValue.HIDDEN && sheetSize != IntSize.Zero) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(
-                        y = WindowInsets.navigationBars
-                            .asPaddingValues()
-                            .calculateBottomPadding()
-                    )
-                    .clickable(false) {}
+        Box(
+            modifier = Modifier
+                .offset(
+                    y = WindowInsets.navigationBars
+                        .asPaddingValues()
+                        .calculateBottomPadding()
+                )
+                .background(containerColor)
+                .clickable(false) {}
+                .align(Alignment.BottomCenter)
+                .onGloballyPositioned { coordinates ->
+                    referenceHeight = coordinates.size.height
+                }
+        ) {
+            AnimatedVisibility(
+                visible = dragState.currentValue != BottomSheetValue.HIDDEN && sheetSize != IntSize.Zero,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { it }),
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { it })
             ) {
                 stickyFooterContent()
             }
         }
     }
+}
+
+@Composable
+private fun rememberDragState() = remember {
+    AnchoredDraggableState(
+        initialValue = BottomSheetValue.HIDDEN,
+        anchors = DraggableAnchors {
+            BottomSheetValue.HIDDEN at Float.MAX_VALUE
+            BottomSheetValue.COLLAPSED at Float.MAX_VALUE
+            BottomSheetValue.EXPANDED at Float.MAX_VALUE
+        }
+    )
 }
 
 @Preview
@@ -206,31 +267,24 @@ private fun SimpleBottomSheetPreview() {
                                 text = "Test",
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .fillMaxWidth()
-                                    .background(Theme.colorScheme.background.surface)
-                                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                                    .padding(bottom = 12.dp),
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
                                 onClick = {},
                             )
                         },
                         sheetContent = {
-                            LazyColumn {
-                                items(10) { index ->
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 10.dp, vertical = 5.dp)
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .background(Theme.colorScheme.background.surfaceLow)
-                                            .padding(10.dp),
-                                        text = "Test($index)",
-                                        style = Theme.typography.body.medium
-                                    )
-                                }
+                            Row(
+                                modifier = Modifier
+                                    .background(Theme.colorScheme.stroke)
+                                    .height(150.dp)
+                            ) {
+                                TestList()
+                                TestList()
+                                TestList()
                             }
                         })
                 }
-            }) {
+            }
+        ) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -245,6 +299,24 @@ private fun SimpleBottomSheetPreview() {
                     onClick = { visible = true },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun RowScope.TestList() {
+    LazyColumn(modifier = Modifier.weight(1f)) {
+        items(30) { index ->
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Theme.colorScheme.background.surfaceLow)
+                    .padding(10.dp),
+                text = "Test($index)",
+                style = Theme.typography.body.medium
+            )
         }
     }
 }
