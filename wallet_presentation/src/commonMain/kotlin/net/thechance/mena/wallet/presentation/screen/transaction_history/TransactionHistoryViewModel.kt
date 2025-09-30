@@ -1,8 +1,9 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import org.koin.android.annotation.KoinViewModel
@@ -18,30 +19,53 @@ class TransactionHistoryViewModel(
     TransactionHistoryScreenState()
 ),
     TransactionHistoryInteractionListener {
-    init {
-        getTransactionHistory()
-    }
-
-    private fun getTransactionHistory() {
-        tryToExecute(
-            callee = { transactionRepository.getTransactionHistory(null) },
-            onStart = ::onGetTransactionHistoryStart,
-            onSuccess = ::onGetTransactionHistorySuccess,
-            onError = ::onGetTransactionHistoryError,
-            dispatcher = Dispatchers.IO
+    private val paginator =
+        Paginator(
+            onLoadUpdated = ::onPaginationLoading,
+            onRequest = ::getPagedTransactions,
+            onSuccess = ::onPaginationSuccess,
+            onError = ::onPaginationError
         )
+
+    init {
+        loadNextTransactions()
     }
 
-    private fun onGetTransactionHistorySuccess(transactionHistory: List<Transaction>) {
-        updateState { it.copy(history = transactionHistory.map { it -> it.toUi() }) }
-
+    fun loadNextTransactions() {
+        viewModelScope.launch {
+            paginator.loadNextItems()
+        }
     }
 
-    private fun onGetTransactionHistoryStart() {
-        updateState { it.copy(isLoading = true) }
+    private fun onPaginationLoading(isLoading: Boolean) {
+        updateState {
+            if (it.history.isEmpty()) it.copy(isLoading = isLoading) else it.copy(
+                isPaginationLoading = isLoading
+            )
+        }
     }
 
-    private fun onGetTransactionHistoryError(throwable: Throwable) {
+    private suspend fun getPagedTransactions(page: Int): Result<List<Transaction>> {
+        return try {
+            val result = transactionRepository.getTransactionHistory(
+                TransactionFilterParams(page = page, pageSize = 20, null, null, null, null)
+            )
+            Result.success(result.transactions)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private fun onPaginationSuccess(items: List<Transaction>) {
+        updateState {
+            it.copy(
+                history = it.history + items.map { transaction -> transaction.toUi() },
+                endOfPages = items.isEmpty()
+            )
+        }
+    }
+
+    private fun onPaginationError(throwable: Throwable) {
         updateState { it.copy(isError = throwable) }
     }
 

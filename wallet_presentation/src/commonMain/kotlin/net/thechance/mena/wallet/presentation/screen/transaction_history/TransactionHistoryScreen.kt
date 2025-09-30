@@ -4,8 +4,11 @@ package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,11 +16,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -53,7 +62,7 @@ fun TransactionHistoryScreen(
     navigateToExportTransaction: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
+    val listState = rememberLazyListState()
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
@@ -68,15 +77,34 @@ fun TransactionHistoryScreen(
 
     TransactionHistoryContent(
         state = state,
-        interactionListener = viewModel
+        interactionListener = viewModel,
+        listState = listState,
+        onLoadMore = viewModel::loadNextTransactions /*TODO: Is that clean?*/
+
     )
 }
 
 @Composable
 fun TransactionHistoryContent(
     state: TransactionHistoryScreenState,
-    interactionListener: TransactionHistoryInteractionListener
+    interactionListener: TransactionHistoryInteractionListener,
+    listState: LazyListState,
+    onLoadMore: () -> Unit
 ) {
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+                ?: return@derivedStateOf false
+            lastVisibleItem.index >= state.history.size - 5 && !state.endOfPages && !state.isPaginationLoading
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore.value) {
+        if (shouldLoadMore.value) {
+            onLoadMore()
+        }
+    }
+
     WalletScaffold(
         modifier = Modifier.statusBarsPadding(),
         topBar = {
@@ -107,6 +135,7 @@ fun TransactionHistoryContent(
                 .fillMaxSize()
                 .background(Theme.colorScheme.background.surface)
                 .padding(horizontal = 16.dp, vertical = 16.dp),
+            state = listState
         ) {
             item {
                 Button(
@@ -142,6 +171,15 @@ fun TransactionHistoryContent(
                         .height(1.dp)
                         .background(Theme.colorScheme.stroke)
                 )
+            }
+            item {
+                if (state.isPaginationLoading) {
+                    TODO()
+                }
+
+                if (state.isError != null) {
+                    TODO()
+                }
             }
         }
     }

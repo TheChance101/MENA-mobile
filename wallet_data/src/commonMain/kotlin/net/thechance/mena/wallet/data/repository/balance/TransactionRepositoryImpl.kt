@@ -5,6 +5,7 @@ import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toParameters
 import net.thechance.mena.wallet.data.network_client.NetworkClient
+import net.thechance.mena.wallet.domain.entity.PagedTransactions
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -17,10 +18,10 @@ import kotlin.uuid.Uuid
 class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
-    override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): List<Transaction> {
+    override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): PagedTransactions {
         return safeApiCall<PagedTransactionResponseDto> {
             networkClient.get("$TRANSACTION_PATH?${transactionFilterParams?.toParameters()}")
-        }.transactions.orEmpty().map { it.toEntity() }
+        }.toEntity()
 
     }
 
