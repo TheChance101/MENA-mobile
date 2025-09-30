@@ -107,9 +107,9 @@ fun MockRequestHandleScope.defaultShelvesResponse() = respond(
     content = jsonSerialization.encodeToString(
         ListSerializer(ShelfDto.serializer()),
         listOf(
-            ShelfDto("1", "Shelf 1", "123"),
-            ShelfDto("2", "Shelf 2", "123"),
-            ShelfDto("3", "Shelf 3", "123")
+            ShelfDto("1", "Shelf 1"),
+            ShelfDto("2", "Shelf 2"),
+            ShelfDto("3", "Shelf 3")
         )
     ),
     status = HttpStatusCode.OK,
