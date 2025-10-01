@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 
 @OptIn(FlowPreview::class)
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
@@ -30,7 +30,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     val snackBarState = _snackBarState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<UI_EFFECT>()
-    val uiEffect = _uiEffect.asSharedFlow().debounce(1500L)
+    val uiEffect = _uiEffect.asSharedFlow()
 
     protected fun updateState(updater: (UI_STATE) -> UI_STATE) {
         _uiState.update(updater)
@@ -43,11 +43,11 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     }
 
     fun showSnackBar(
-        message: String,
+        message: StringResource,
         status: SnackBarState.Status,
         durationMillis: Long = 3000L,
     ) {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main.immediate) {
             if (snackBarState.value.isVisible) {
                 hideSnackBar()
                 delay(1000L)

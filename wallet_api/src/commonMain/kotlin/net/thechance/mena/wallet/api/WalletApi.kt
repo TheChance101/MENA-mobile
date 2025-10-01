@@ -4,5 +4,10 @@ import androidx.compose.runtime.Composable
 
 interface WalletApi {
     @Composable
-    fun WalletEntry()
+    fun WalletEntry(navigateBack: () -> Unit = {}) {
+        WalletEntryCore(navigateBack)
+    }
+
+    @Composable
+    fun WalletEntryCore(navigateBack: () -> Unit)
 }

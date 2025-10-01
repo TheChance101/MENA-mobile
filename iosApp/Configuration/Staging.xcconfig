@@ -2,3 +2,5 @@
 #include "../composeApp/build/generated/ios/environment.xcconfig"
 
 PRODUCT_BUNDLE_IDENTIFIER = net.thechance.mena.MENA.staging$(TEAM_ID)
+
+MARKETING_VERSION=$(CFBundleShortVersionString)-staging

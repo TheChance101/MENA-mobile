@@ -60,6 +60,9 @@ kotlin {
 
             // navigation
             implementation(libs.navigation.compose)
+
+            //Kmp capturable
+            implementation(libs.kmp.capturable.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
