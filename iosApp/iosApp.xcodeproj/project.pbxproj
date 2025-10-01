@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E71070392E898AEE00A45927 /* MapLibre.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E71070382E898AEE00A45927 /* MapLibre.xcframework */; };
+		389BEBEFE21A49A31BBCF6CA /* Pods_iosApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24175D2CF8C60CFFDB2F56E9 /* Pods_iosApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,7 +18,6 @@
 		B0E2F7373ACC1EE6651C4350 /* Pods-iosApp.debugproduction.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debugproduction.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debugproduction.xcconfig"; sourceTree = "<group>"; };
 		C2DDD26143EFF1E4591ACBBB /* Pods-iosApp.debugdevelopment.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debugdevelopment.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debugdevelopment.xcconfig"; sourceTree = "<group>"; };
 		CCD218F1746D7F5B96F574D4 /* Pods-iosApp.debugstaging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.debugstaging.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.debugstaging.xcconfig"; sourceTree = "<group>"; };
-		E71070382E898AEE00A45927 /* MapLibre.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MapLibre.xcframework; path = Pods/MapLibre/MapLibre.xcframework; sourceTree = "<group>"; };
 		F2A2D9007EC184837D541AE6 /* Pods-iosApp.releasestaging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosApp.releasestaging.xcconfig"; path = "Target Support Files/Pods-iosApp/Pods-iosApp.releasestaging.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -43,6 +42,8 @@
 		};
 		A9F46D1B423E4AC186F7D8FF /* Configuration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Configuration;
 			sourceTree = "<group>";
 		};
@@ -53,7 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E71070392E898AEE00A45927 /* MapLibre.xcframework in Frameworks */,
+				389BEBEFE21A49A31BBCF6CA /* Pods_iosApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,7 +77,6 @@
 		B28E0823253499C2EDB905A5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E71070382E898AEE00A45927 /* MapLibre.xcframework */,
 				24175D2CF8C60CFFDB2F56E9 /* Pods_iosApp.framework */,
 			);
 			name = Frameworks;
@@ -113,7 +113,7 @@
 				D21C05603AD67961BB6451F7 /* Sources */,
 				6365C4AF1AAD164DCCE558F9 /* Frameworks */,
 				D081E6A75F3CC26B3E25D43C /* Resources */,
-				A23154A0CEDA9301156D8F79 /* [CP] Embed Pods Frameworks */,
+				C2EBC9292D22C90630BD52E8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -213,7 +213,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A23154A0CEDA9301156D8F79 /* [CP] Embed Pods Frameworks */ = {
+		C2EBC9292D22C90630BD52E8 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -221,13 +221,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
