@@ -1,7 +1,10 @@
 package net.thechance.mena.identity.presentation.screen.forgetPassword
 
 import cafe.adriel.voyager.core.model.screenModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
@@ -13,12 +16,11 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class ForgetPasswordScreenViewModel(
     private val loginUseCase: LoginUseCase,
-    private val resetPasswordRepository: ResetPasswordRepository
+    private val resetPasswordRepository: ResetPasswordRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<ForgetPasswordScreenUIState, ForgetPasswordScreenUIEffect>(
     ForgetPasswordScreenUIState()
 ), ForgetPasswordScreenInteractionListener {
-    override val viewModelScope: CoroutineScope
-        get() = screenModelScope
 
     override fun onSelectCountryItem(country: MenaCountry) {
         updateState {
@@ -68,7 +70,8 @@ class ForgetPasswordScreenViewModel(
                 )
             },
             onSuccess = ::verifyPhoneNumberSuccess,
-            onError = ::onError
+            onError = ::onError,
+            dispatcher = dispatcher
         )
     }
 

@@ -6,6 +6,8 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -25,7 +27,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ForgetPasswordScreenViewModelTest {
-    private val resetPasswordRepository = mock<ResetPasswordRepository>()
+    private val resetPasswordRepository = mockk<ResetPasswordRepository>()
     private lateinit var useCase: LoginUseCase
     private val testDispatcher = StandardTestDispatcher()
     lateinit var viewModel: ForgetPasswordScreenViewModel
@@ -39,7 +41,8 @@ class ForgetPasswordScreenViewModelTest {
         )
         viewModel = ForgetPasswordScreenViewModel(
             loginUseCase = useCase,
-            resetPasswordRepository = resetPasswordRepository
+            resetPasswordRepository = resetPasswordRepository,
+            dispatcher = testDispatcher
         )
     }
 
@@ -65,9 +68,9 @@ class ForgetPasswordScreenViewModelTest {
             viewModel.onPhoneChanged(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
             viewModel.onClickConfirmButton()
-            everySuspend {
+            coEvery {
                 resetPasswordRepository.requestOTP(
-                    phoneNumber,
+                    any(),
                     any()
                 )
             } returns Unit
@@ -85,11 +88,12 @@ class ForgetPasswordScreenViewModelTest {
     fun `on continue button clicked should show error message when user enter invalid phone number`() =
         runTest {
             val phoneNumber = "01100661617"
-            everySuspend {
+            coEvery {
                 resetPasswordRepository.requestOTP(any(), any())
             } throws InvalidMobileNumberException("")
             viewModel.onPhoneChanged(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
+            viewModel.onDismissBottomSheet()
 
             viewModel.onContinueClicked()
             testDispatcher.scheduler.advanceUntilIdle()

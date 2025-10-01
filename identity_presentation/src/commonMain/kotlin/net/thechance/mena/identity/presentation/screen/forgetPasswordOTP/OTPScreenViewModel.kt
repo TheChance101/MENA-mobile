@@ -1,7 +1,9 @@
 package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
 
 import cafe.adriel.voyager.core.model.screenModelScope
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.thechance.mena.identity.domain.entity.PhoneNumber
@@ -15,12 +17,10 @@ class OTPScreenViewModel(
     private val resetPasswordRepository: ResetPasswordRepository,
     private val phoneNumber: String,
     private val callingCode: String,
-    private val countryCode: String
+    private val countryCode: String,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<OTPScreenUIState, OTPScreenUIEffect>(OTPScreenUIState()),
     OTPScreenInteractionListener {
-
-    override val viewModelScope: CoroutineScope
-        get() = screenModelScope
 
     init {
         startTimer()
@@ -42,7 +42,8 @@ class OTPScreenViewModel(
                 )
             },
             onSuccess = ::verifySuccess,
-            onError = ::onError
+            onError = ::onError,
+            dispatcher = dispatcher
         )
     }
 
@@ -78,12 +79,13 @@ class OTPScreenViewModel(
                 )
             },
             onSuccess = ::startTimer,
-            onError = ::onError
+            onError = ::onError,
+            dispatcher = dispatcher
         )
     }
 
     private fun startTimer() {
-        viewModelScope.launch {
+        screenModelScope.launch {
             updateState { copy(isResendEnabled = false) }
             for (time in OTP_RESEND_TIMER_SECONDS downTo 0) {
                 updateState { copy(timer = time.toString()) }
