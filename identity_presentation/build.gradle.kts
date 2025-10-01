@@ -11,6 +11,7 @@ plugins {
 }
 
 kotlin {
+    jvm()
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -32,8 +33,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
+
         }
         commonMain.dependencies {
             implementation(projects.identityApi)
@@ -48,10 +48,16 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.bundles.koin)
             implementation(libs.bundles.voyager)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
         }
-        commonTest.dependencies {
-            implementation(libs.bundles.common.test)
+        jvmTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.bundles.jvm.test)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
         }
+
     }
 }
 

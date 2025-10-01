@@ -1,15 +1,9 @@
 package net.thechance.mena.trends.data.repository
 
-import io.ktor.client.HttpClient
-import io.ktor.client.request.delete
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
-import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -18,6 +12,7 @@ import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.io.buffered
+import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
@@ -36,18 +31,18 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
-    @Provided private val httpClient: HttpClient
+    @Provided private val networkClient: NetworkClient
 ) : ReelsRepository {
 
     override suspend fun deleteReelById(id: String) {
         safeApiCall<Unit> {
-            httpClient.delete("$TRENDS_PATH/$REELS_ENDPOINT/$id")
+            networkClient.delete("$TRENDS_PATH/$REELS_ENDPOINT/$id")
         }
     }
 
     override suspend fun getAllReels(pageNumber: Int): List<Reel> {
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
-            httpClient.get("$TRENDS_PATH/$REELS_ENDPOINT") {
+            networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT") {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
         }.results?.map { it.toEntity() } ?: emptyList()
@@ -59,8 +54,8 @@ internal class ReelsRepositoryImpl(
         categoryIds: List<String>
     ) {
         val request = UpdateReelRequestDTO(description, categoryIds)
-         safeApiCall<Unit> {
-            httpClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
+        safeApiCall<Unit> {
+            networkClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
                 setBody(request)
             }
         }
@@ -74,7 +69,7 @@ internal class ReelsRepositoryImpl(
     ): Flow<UploadReelProgress> {
         return channelFlow {
             safeApiCall<Unit> {  // TODO: return UploadVideoDto
-                httpClient.post(urlString = "") {  // TODO: change to real endpoint
+                networkClient.post(urlString = "") {  // TODO: change to real endpoint
                     infiniteTimeOut()
                     setBody(createUploadReelBody(name, bytes, size, mimeType))
                     observeUploading { sent, total ->

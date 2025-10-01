@@ -1,8 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="sur">Sur</string>
+    <string name="quran">Quran</string>
+    <string name="makki">Makki</string>
+    <string name="madani">Madani</string>
+    <string name="ayat">Ayat</string>
+    <string name="back_icon">back icon</string>
+    <string name="bookmark_icon">bookmark icon</string>
+    <string name="surah_arabic_name_icon">surah arabic name icon</string>
+    <string name="surah_number_container_icon">surah number container</string>">
+    <string name="moshaf_icon">moshaf icon</string>
+    <string name="ayat_count_format">%1$d %2$s</string>
+    <string name="link_forward">Link forward</string>
+    <string name="send_to">Send to</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="copy">Copy</string>
+    <string name="bismillah">Bismillah</string>
+    <string name="arrow_left">Arrow left</string>
+    <string name="al_baqarah">Al-Baqarah</string>
+    <string name="snack_bar_title">Success</string>
     <string name="app_name">MENA</string>
     <string name="success">Success</string>
     <string name="error">Error</string>
     <string name="success_icon">Success Icon</string>
     <string name="error_icon">Error Icon</string>
+    <string name="navigate_to_sur_screen">Go to Sur Screen</string>"
+    <string name="copied_ayah_successfully">Copied ayah successfully</string>
+    <string name="default_snackbar_message">Bookmark added successfully</string>
+    <string name="copied_ayah_failed">Copied ayah failed</string>
 </resources>

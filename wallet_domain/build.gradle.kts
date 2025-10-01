@@ -20,6 +20,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.mokkery.core)
         }
     }
     sourceSets.named("commonMain").configure {
@@ -49,7 +50,7 @@ kover.reports {
     }
     filters {
         excludes {
-            classes("**.di.**","**.exceptions.**", "**.repository.**", "**.generated.**","**.entity.**")
+            classes("**.di.**","**.exceptions.**", "**.repository.**", "**.generated.**","**.entity.**","**.model.**")
         }
     }
 }
