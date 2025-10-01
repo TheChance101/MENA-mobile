@@ -50,7 +50,7 @@ class ForgetPasswordScreenViewModelTest {
     @Test
     fun `should navigate to login screen when user click on back button`() = runTest {
         viewModel.effect.test {
-            viewModel.onBackClicked()
+            viewModel.onClickBack()
             val effect = awaitItem()
             assertTrue { effect is ForgetPasswordScreenUIEffect.NavigateBack }
             cancelAndConsumeRemainingEvents()
@@ -61,7 +61,7 @@ class ForgetPasswordScreenViewModelTest {
     fun `on continue button clicked should navigate to otp screen when user enter valid phone number`() =
         runTest {
             val phoneNumber = "01100661617"
-            viewModel.onPhoneChanged(phoneNumber)
+            viewModel.onChangePhone(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
             viewModel.onClickConfirmButton()
             coEvery {
@@ -72,7 +72,7 @@ class ForgetPasswordScreenViewModelTest {
             } returns Unit
 
             viewModel.effect.test {
-                viewModel.onContinueClicked()
+                viewModel.onClickContinue()
 
                 val effect = awaitItem()
                 assertTrue { effect is ForgetPasswordScreenUIEffect.NavigateToOTP }
@@ -87,11 +87,11 @@ class ForgetPasswordScreenViewModelTest {
             coEvery {
                 resetPasswordRepository.requestOTP(any(), any())
             } throws InvalidMobileNumberException("")
-            viewModel.onPhoneChanged(phoneNumber)
+            viewModel.onChangePhone(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
             viewModel.onDismissBottomSheet()
 
-            viewModel.onContinueClicked()
+            viewModel.onClickContinue()
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.state.test {

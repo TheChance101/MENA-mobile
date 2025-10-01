@@ -45,7 +45,7 @@ class OtpScreenViewModelTest {
     @Test
     fun `should navigate to forget password screen when user click on back button`() = runTest {
         viewModel.effect.test {
-            viewModel.onBackClicked()
+            viewModel.onClickBack()
             val effect = awaitItem()
             assertTrue { effect is OtpScreenUIEffect.NavigateBack }
             cancelAndConsumeRemainingEvents()
@@ -56,11 +56,11 @@ class OtpScreenViewModelTest {
     fun `should navigate to reset password screen when otp is correct and user click on verify button`() =
         runTest {
             val otp = "123456"
-            viewModel.onOtpChanged(otp)
+            viewModel.onChangeOtp(otp)
             coEvery { resetPasswordRepository.verifyOTPCode(otp) } returns Unit
 
             viewModel.effect.test {
-                viewModel.onVerifyClicked()
+                viewModel.onClickVerify()
                 val effect = awaitItem()
                 assertTrue { effect is OtpScreenUIEffect.NavigateToResetPassword }
                 cancelAndConsumeRemainingEvents()
@@ -72,7 +72,7 @@ class OtpScreenViewModelTest {
         runTest {
             coEvery { resetPasswordRepository.verifyOTPCode(any(),) } throws InvalidOTPException()
 
-            viewModel.onVerifyClicked()
+            viewModel.onClickVerify()
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -86,7 +86,7 @@ class OtpScreenViewModelTest {
     fun `on resend clicked should start timer and request otp again`() = runTest {
         coEvery { resetPasswordRepository.requestOTP(any(), any()) } returns Unit
         viewModel.state.test {
-            viewModel.onResendClicked()
+            viewModel.onClickResend()
             val state = awaitItem()
             assertTrue { !state.isResendEnabled }
             cancelAndConsumeRemainingEvents()

@@ -57,7 +57,7 @@ class ForgetPasswordScreen : BaseScreen<
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.reset_password),
-                    onBackClicked = listener::onBackClicked
+                    onBackClicked = listener::onClickBack
                 )
             }
         ) {
@@ -69,17 +69,17 @@ class ForgetPasswordScreen : BaseScreen<
 
                 LabeledPhoneNumberInput(
                     phoneNumber = state.phoneNumber,
-                    onPhoneChange = listener::onPhoneChanged,
+                    onPhoneChange = listener::onChangePhone,
                     countryCode = state.countryPickerUIState.currentCountry.callingCode,
                     countryFlag = painterResource(state.countryPickerUIState.currentCountry.flagImage),
-                    onCountryClick = listener::onPhoneCodeClicked
+                    onCountryClick = listener::onClickPhoneCode
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 PrimaryButton(
                     text = stringResource(Res.string.`continue`),
-                    onClick = listener::onContinueClicked,
+                    onClick = listener::onClickContinue,
                     isEnabled = state.isContinueEnabled,
                     isLoading = state.isLoading,
                     contentPadding = PaddingValues(vertical = 13.dp),
@@ -91,7 +91,7 @@ class ForgetPasswordScreen : BaseScreen<
         }
         ErrorSnackBar(
             errorMessage = state.errorMessage,
-            onDismiss = listener::clearErrorMessage,
+            onDismiss = listener::onClearErrorMessage,
             modifier = Modifier.statusBarsPadding()
         )
     }

@@ -56,7 +56,7 @@ class ForgetPasswordScreenViewModel(
         }
     }
 
-    override fun onContinueClicked() {
+    override fun onClickContinue() {
         tryToExecute(
             function = {
                 resetPasswordRepository.requestOTP(
@@ -83,20 +83,20 @@ class ForgetPasswordScreenViewModel(
         )
     }
 
-    override fun onPhoneCodeClicked() {
+    override fun onClickPhoneCode() {
         updateState { copy(showCountryBottomSheet = true) }
     }
 
-    override fun onPhoneChanged(phone: String) {
+    override fun onChangePhone(phone: String) {
         updateState { copy(phoneNumber = phone) }
         changeIsContinueEnabled()
     }
 
-    override fun onBackClicked() {
+    override fun onClickBack() {
         sendNewEffect(ForgetPasswordScreenUIEffect.NavigateBack)
     }
 
-    override fun clearErrorMessage() {
+    override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }
 

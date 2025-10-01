@@ -61,7 +61,7 @@ class OtpScreen(
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.reset_password),
-                    onBackClicked = listener::onBackClicked
+                    onBackClicked = listener::onClickBack
                 )
             }
         ) {
@@ -81,7 +81,7 @@ class OtpScreen(
                 )
                 OtpInput(
                     otpValue = state.otpValue,
-                    onOtpChange = listener::onOtpChanged,
+                    onOtpChange = listener::onChangeOtp,
                     otpLength = 6,
                 )
 
@@ -89,7 +89,7 @@ class OtpScreen(
 
                 PrimaryButton(
                     text = stringResource(Res.string.verify),
-                    onClick = listener::onVerifyClicked,
+                    onClick = listener::onClickVerify,
                     isEnabled = state.isVerifyEnabled,
                     isLoading = state.isLoading,
                     contentPadding = PaddingValues(vertical = 13.dp),
@@ -108,14 +108,14 @@ class OtpScreen(
                         minutes,
                         seconds
                     ),
-                    onActionClick = listener::onResendClicked,
+                    onActionClick = listener::onClickResend,
                     isEnabled = state.isResendEnabled
                 )
             }
         }
         ErrorSnackBar(
             errorMessage = state.errorMessage,
-            onDismiss = listener::clearErrorMessage,
+            onDismiss = listener::onClearErrorMessage,
             modifier = Modifier.statusBarsPadding()
         )
     }

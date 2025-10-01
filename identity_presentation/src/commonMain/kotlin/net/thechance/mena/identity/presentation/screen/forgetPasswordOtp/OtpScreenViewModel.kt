@@ -26,11 +26,11 @@ class OtpScreenViewModel(
         startTimer()
     }
 
-    override fun onBackClicked() {
+    override fun onClickBack() {
         sendNewEffect(OtpScreenUIEffect.NavigateBack)
     }
 
-    override fun onVerifyClicked() {
+    override fun onClickVerify() {
         tryToExecute(
             function = {
                 resetPasswordRepository.verifyOTPCode(
@@ -52,18 +52,18 @@ class OtpScreenViewModel(
         )
     }
 
-    override fun onOtpChanged(otp: String) {
+    override fun onChangeOtp(otp: String) {
         val filteredOtp = otp.filter { it.isDigit() }.take(OTP_LENGTH)
         if (filteredOtp == otp) {
             updateState { copy(otpValue = otp, isVerifyEnabled = filteredOtp.length == OTP_LENGTH) }
         }
     }
 
-    override fun clearErrorMessage() {
+    override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }
 
-    override fun onResendClicked() {
+    override fun onClickResend() {
         tryToExecute(
             function = {
                 resetPasswordRepository.requestOTP(

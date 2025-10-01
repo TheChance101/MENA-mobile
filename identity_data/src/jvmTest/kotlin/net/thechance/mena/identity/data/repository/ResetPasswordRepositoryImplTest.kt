@@ -61,7 +61,6 @@ class ResetPasswordRepositoryImplTest {
             assertFailure {
                 forgetPasswordRepository.verifyOTPCode(
                     otpCode = "123456",
-                    phoneNumber = phoneNumber
                 )
             }.isInstanceOf<InvalidOTPException>()
         }
@@ -77,7 +76,6 @@ class ResetPasswordRepositoryImplTest {
             assertFailure {
                 forgetPasswordRepository.verifyOTPCode(
                     otpCode = "123456",
-                    phoneNumber = phoneNumber
                 )
             }.isInstanceOf<OtpExpiredException>()
         }
