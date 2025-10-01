@@ -42,10 +42,6 @@ class VideoUtilitiesImpl: VideoUtilities {
                         frameData
                     }
             }
-        }.onFailure{ throwable ->
-            Logger.e("extract"){
-                throwable.stackTraceToString()
-            }
         }.getOrNull()
     }
 
