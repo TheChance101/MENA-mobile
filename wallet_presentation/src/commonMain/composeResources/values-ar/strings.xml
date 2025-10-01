@@ -18,6 +18,27 @@
     <string name="all">الكل</string>
     <string name="success">ناجح</string>
     <string name="failed">فشل</string>
+    <string name="transaction_details_header">تفاصيل المعاملة</string>
+    <string name="share_receipt">مشاركة الإيصال</string>
+    <string name="share_button">زر المشاركة</string>
+    <string name="send">إرسال</string>
+    <string name="receive">إستلام</string>
+    <string name="pay">دفع</string>
+    <string name="send_button">زر الإرسال</string>
+    <string name="receive_button">زر الاستلام</string>
+    <string name="pay_button">زر الدفع</string>
+    <string name="receiver">المستلم</string>
+    <string name="date">التاريخ</string>
+    <string name="transaction_id">id المعاملة</string>
+    <string name="purchase">شراء</string>
+    <string name="transfer">تحويل</string>
+    <string name="failed_icon">أيقونة الفشل</string>
+    <string name="success_icon">أيقونة النجاح</string>
+    <string name="share_transaction_details_error_msg">فشل في مشاركة الإيصال</string>
+    <string name="share_transaction_details_bottom_sheet_header">مشاركة تفاصيل المعاملة</string>
+    <string name="send_to_your_device">أرسل إلى جهازك</string>
+    <string name="transaction_details_screenshot">لقطة شاشة لتفاصيل المعاملة</string>
+    <string name="computer_phone_sync_icon">أيقونة مزامنة الهاتف والكمبيوتر</string>
     <string name="month_january">يناير</string>
     <string name="month_february">فبراير</string>
     <string name="month_march">مارس</string>
@@ -33,6 +54,24 @@
     <string name="pick_start_date">اختر تاريخ البداية</string>
     <string name="pick_end_date">اختار تاريخ النهاية</string>
     <string name="pick">اختر</string>
+
+    <string name="error_no_transactions">لم يتم العثور على أي معاملات</string>
+    <string name="error_failed_view">فشل في عرض المعاملات</string>
+    <string name="download">تنزيل</string>
+    <string name="view_and_share">عرض ومشاركة</string>
+    <string name="custom_filtering">تصفية مخصصة</string>
+    <string name="all_transactions">جميع المعاملات</string>
+    <string name="export_transactions">تصدير المعاملات</string>
+    <string name="downloading_started">جارٍ بدء التنزيل...</string>
+    <string name="download_success">تم حفظ معاملاتك بنجاح.</string>
+    <string name="download_complete">اكتمل التنزيل</string>
+    <string name="download_failed">فشل التنزيل</string>
+    <string name="something_went_wrong">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>
+
+    <string name="filter_crossfade">تبديل الفلاتر</string>
+    <string name="transaction_history">سجل المعاملات</string>
+    <string name="background_color_animation">تحريك لون الخلفية</string>
+
     <string name="transactions_history">سجل المعاملات</string>
     <string name="filter">الفلاتر</string>
     <string name="transaction_pay">تسوق عبر الإنترنت</string>
@@ -42,4 +81,11 @@
     <string name="transaction_type_icon">أيقونة نوع المعاملة</string>
     <string name="online_shopping">شراء علي الانترنت</string>
     <string name="share">مشاركة</string>
+    <string name="no_internet_title">عفواً! يبدو أنك غير متصل بالإنترنت.</string>
+    <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
+    <string name="img_no_internet">الصورة لا يوجد إنترنت</string>
+    <string name="retry">أعد المحاولة</string>
+    <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للفلاتر</string>
+    <string name="filter_transaction_error_description">قم بتغيير الفلاتر أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
+
 </resources>

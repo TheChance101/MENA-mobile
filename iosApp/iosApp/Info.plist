@@ -6,5 +6,7 @@
 	<true/>
     <key>BASE_URL</key>
     <string>$(BASE_URL)</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(CFBundleShortVersionString)</string>
 </dict>
 </plist>

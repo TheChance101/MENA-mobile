@@ -8,20 +8,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import net.thechance.mena.wallet.presentation.screen.export_transactions.ExportTransactionsScreen
+import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
 import net.thechance.mena.wallet.presentation.screen.view_transactions_statement.ViewTransactionStatementScreen
 import net.thechance.mena.wallet.presentation.screen.wallet.WalletMainScreen
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 const val TransitionDuration = 300
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun NavigationHost(
-    startDestination: WalletRoute = WalletMainScreenRoute
+    startDestination: WalletRoute = WalletMainScreenRoute,
+    navigateBack: () -> Unit = {}
 ) {
     val navController = rememberNavController()
 
@@ -49,7 +49,7 @@ fun NavigationHost(
     ) {
         composable<WalletMainScreenRoute> {
             WalletMainScreen(
-                onNavigateBackClicked = { navController.popBackStack() },
+                onNavigateBackClicked = navigateBack,
                 navigateToTransactionHistory = {
                     navController.navigate(TransactionsHistoryScreenRoute)
                 }
@@ -69,11 +69,11 @@ fun NavigationHost(
         composable<TransactionDetailsScreenRoute> { backStackEntry ->
             TransactionDetailsScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
-                id = backStackEntry.toRoute<TransactionDetailsScreenRoute>().id.let(Uuid::parse)
+                id = backStackEntry.toRoute<TransactionDetailsScreenRoute>().id
             )
         }
         composable<ExportTransactionsScreenRoute> {
-            ExportTransactionsScreen(
+            ExportTransactionScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
                 navigateToVewTransactionStatement = {
                     navController.navigate(ViewTransactionsStatementScreenRoute)

@@ -5,6 +5,8 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.to
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.TransactionStatus
+import net.thechance.mena.wallet.domain.model.TransactionType
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -14,20 +16,20 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
         timeAndDate = formatTimeAndDate(createdAt),
         amount = amount.toString(),
         type = when (type) {
-            Transaction.Type.SENT -> TransactionHistoryScreenState.TransactionTypeUiState.SENT
-            Transaction.Type.RECEIVED -> TransactionHistoryScreenState.TransactionTypeUiState.RECEIVED
-            Transaction.Type.ONLINE_PURCHASE -> TransactionHistoryScreenState.TransactionTypeUiState.ONLINE_SHOPPING
+            TransactionType.SENT -> TransactionHistoryScreenState.TransactionTypeUiState.SENT
+            TransactionType.RECEIVED -> TransactionHistoryScreenState.TransactionTypeUiState.RECEIVED
+            TransactionType.ONLINE_PURCHASE -> TransactionHistoryScreenState.TransactionTypeUiState.ONLINE_SHOPPING
         },
         status = when (status) {
-            Transaction.Status.SUCCESS -> TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
-            Transaction.Status.FAIL -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
+            TransactionStatus.SUCCESS -> TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
+            TransactionStatus.FAIL -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
         },
         userInfo = when (type) {
-            Transaction.Type.SENT-> Res.string.from
-            Transaction.Type.RECEIVED -> Res.string.to
-            Transaction.Type.ONLINE_PURCHASE -> Res.string.from
+            TransactionType.SENT-> Res.string.from
+            TransactionType.RECEIVED -> Res.string.to
+            TransactionType.ONLINE_PURCHASE -> Res.string.from
         },
-        contactName = if (type == Transaction.Type.SENT) senderName else receiverName
+        contactName = if (type == TransactionType.SENT) senderName else receiverName
     )
 
 private fun formatTimeAndDate(dateTime: LocalDateTime): String {

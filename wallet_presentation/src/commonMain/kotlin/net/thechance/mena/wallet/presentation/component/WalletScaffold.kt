@@ -15,8 +15,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 @Composable
 fun WalletScaffold(
     modifier: Modifier = Modifier,
-    topBar: (@Composable () -> Unit) ? = null,
+    topBar: (@Composable () -> Unit)? = null,
     snackBar: (@Composable () -> Unit)? = null,
+    toast: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     content: @Composable () -> Unit
 ) {
@@ -38,6 +39,14 @@ fun WalletScaffold(
                     .padding(start = 16.dp, end = 16.dp, top = 68.dp)
             ) {
                 snackBarContent()
+            }
+        }
+        toast?.let { toast ->
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+            ) {
+                toast()
             }
         }
     }

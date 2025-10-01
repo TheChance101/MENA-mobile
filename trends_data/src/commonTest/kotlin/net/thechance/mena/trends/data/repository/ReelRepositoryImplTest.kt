@@ -2,27 +2,31 @@ package net.thechance.mena.trends.data.repository
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isSuccess
-import io.ktor.client.request.forms.MultiPartFormDataContent
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.repository.util.createReelsRepository
+import net.thechance.mena.trends.data.client.NetworkClient
+import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
-import net.thechance.mena.trends.data.repository.util.updateReelResponse
+import net.thechance.mena.trends.data.repository.util.getReelsResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
+import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.Test
 
 internal class ReelRepositoryImplTest {
 
-    private var repository = createReelsRepository()
+    private lateinit var repository: ReelsRepository
+    private lateinit var networkClient: NetworkClient
+
 
     @Test
     fun `should return list of reels mapped to entity successfully when the user has already reels`() =
         runTest {
+
+            networkClient = createReelsHttpClient { getReelsResponse() }
+            repository = ReelsRepositoryImpl(networkClient)
 
             val reels = repository.getAllReels(pageNumber = 1)
 
@@ -32,10 +36,8 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should delete reel successfully when valid id provided`() = runTest {
 
-        repository = createReelsRepository(
-            deleteReel = { id -> deleteReelResponse(id, HttpStatusCode.Companion.OK) }
-        )
-
+        networkClient = createReelsHttpClient { deleteReelResponse() }
+        repository = ReelsRepositoryImpl(networkClient)
         val result = runCatching { repository.deleteReelById("1") }
 
         assertThat(result).isSuccess()
@@ -43,9 +45,9 @@ internal class ReelRepositoryImplTest {
 
     @Test
     fun `should update reel successfully`() = runTest {
-        repository = createReelsRepository { id, description, categoryIds ->
-            updateReelResponse(id, description, categoryIds, HttpStatusCode.NoContent)
-        }
+
+        networkClient = createReelsHttpClient { uploadReelResponse() }
+        repository = ReelsRepositoryImpl(networkClient)
 
         val result = runCatching {
             repository.updateReelById(
@@ -59,16 +61,16 @@ internal class ReelRepositoryImplTest {
     }
 
     @Test
-    fun `should Upload reel successfully` () {
-        repository = createReelsRepository(
-            uploadReel = { uploadReelResponse(HttpStatusCode.OK) }
-        )
+    fun `should Upload reel successfully`() {
+
+        networkClient = createReelsHttpClient { uploadReelResponse() }
+        repository = ReelsRepositoryImpl(networkClient)
 
         val result = runCatching {
             repository.uploadReel(
-                name = fakeName,
-                mimeType = fakeMimeType,
-                size = fakeSize,
+                name = FAKE_NAME,
+                mimeType = FAKE_MIME_TYPE,
+                size = FAKE_SIZE,
                 bytes = fakeBytes
             )
         }
@@ -77,28 +79,28 @@ internal class ReelRepositoryImplTest {
 
     @Test
     fun `should upload reel and emit correct progress updates`() = runTest {
-        repository = createReelsRepository(
-            uploadReel = { uploadReelResponse(HttpStatusCode.OK) }
-        )
+
+        networkClient = createReelsHttpClient { uploadReelResponse() }
+        repository = ReelsRepositoryImpl(networkClient)
 
         val progressUpdates = repository.uploadReel(
-            name = fakeName,
-            mimeType = fakeMimeType,
-            size = fakeSize,
+            name = FAKE_NAME,
+            mimeType = FAKE_MIME_TYPE,
+            size = FAKE_SIZE,
             bytes = fakeBytes
         ).toList()
 
         assertThat(progressUpdates).isNotEmpty()
         val lastProgress = progressUpdates.last()
 
-        assertThat(lastProgress.numberOfUploadedBytes).isEqualTo(fakeSize)
-        assertThat(lastProgress.totalBytes).isEqualTo(fakeSize)
+        assertThat(lastProgress.numberOfUploadedBytes).isEqualTo(FAKE_SIZE)
+        assertThat(lastProgress.totalBytes).isEqualTo(FAKE_SIZE)
     }
 
-    companion object {
-        val fakeSize = 1000L
-        val fakeBytes = ByteArray(fakeSize.toInt()) { 1 }
-        val fakeMimeType = "mp4"
-        val fakeName = "test_video"
+    private companion object {
+        const val FAKE_SIZE = 1000L
+        val fakeBytes = ByteArray(FAKE_SIZE.toInt()) { 1 }
+        const val FAKE_MIME_TYPE = "mp4"
+        const val FAKE_NAME = "test_video"
     }
 }
