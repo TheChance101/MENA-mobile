@@ -49,7 +49,7 @@ class TransactionHistoryViewModel(
     private suspend fun getPagedTransactions(page: Int): Result<List<Transaction>> {
         return try {
             val result = transactionRepository.getTransactionHistory(
-                TransactionFilterParams(page = page, pageSize = 20, null, null, null, null)
+                TransactionFilterParams(page = page, pageSize = 20)
             )
             Result.success(result.transactions)
         } catch (e: Exception) {
