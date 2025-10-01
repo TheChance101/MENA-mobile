@@ -8,6 +8,8 @@ data class UploadTrendsScreenState(
     val uploadingTrendState: UploadingTrendState = UploadingTrendState.IDLE,
     val uploadedMegaBytes: String = "",
     val isNextButtonEnabled: Boolean = false,
+    val isNextButtonLoading: Boolean = false,
+    val thumbnail: ByteArray? = null,
     val errorState: ErrorState? = null
 ) {
     enum class UploadingTrendState {

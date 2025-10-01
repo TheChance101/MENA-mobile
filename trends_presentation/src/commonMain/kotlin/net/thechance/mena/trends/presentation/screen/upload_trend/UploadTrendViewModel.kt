@@ -10,7 +10,7 @@ import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
-import net.thechance.mena.trends.presentation.shared.util.video_util.VideoDurationExtractor
+import net.thechance.mena.trends.presentation.shared.util.video_util.VideoUtilities
 import net.thechance.mena.trends.presentation.shared.util.video_util.formatBytes
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -19,7 +19,7 @@ import org.koin.core.annotation.Provided
 internal class UploadTrendViewModel(
     @Provided private val reelsRepository: ReelsRepository,
     @Provided private val videoValidator: VideoMetaDataValidator,
-    @Provided private val videoDurationExtractor: VideoDurationExtractor,
+    @Provided private val videoUtilities: VideoUtilities,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UploadTrendsScreenState, UploadTrendsScreenEffect>(
     UploadTrendsScreenState()
@@ -45,7 +45,7 @@ internal class UploadTrendViewModel(
     ): FileUiState {
         videoValidator.validateSize(file.sizeInBytes)
         val bytes = readBytes()
-        videoDurationExtractor.getDuration(bytes)?.let { duration ->
+        videoUtilities.getDuration(bytes)?.let { duration ->
             videoValidator.validateDuration(duration)
         }
         return file.copy(bytes = bytes)
@@ -83,6 +83,7 @@ internal class UploadTrendViewModel(
         )
     }
 
+
     private fun onUploadStarted() {
         updateState { copy(uploadingTrendState = UploadTrendsScreenState.UploadingTrendState.UPLOADING) }
     }
@@ -112,6 +113,73 @@ internal class UploadTrendViewModel(
                 isNextButtonEnabled = true
             )
         }
+        extractFrame(state.value.selectedFile)
+    }
+
+    private fun extractFrame(file: FileUiState) {
+        tryToExecute(
+            block = {
+                videoUtilities.extractVideoFrame(
+                    videoData = file.bytes,
+                    percent = 0.5f
+                )
+            },
+            onSuccess = ::onExtractFrameSuccess,
+            onError = ::onExtractFrameError
+        )
+    }
+
+    private fun onExtractFrameSuccess(thumbnail: ByteArray?){
+        updateState {
+            copy(
+                thumbnail = thumbnail
+            )
+        }
+    }
+
+    private fun onExtractFrameError(errorState: ErrorState){
+        updateState {
+            copy(errorState = errorState)
+        }
+    }
+
+    private fun uploadThumbnail(){
+        tryToExecute(
+            block = {
+                reelsRepository.uploadReelThumbnail(
+                    thumbnail = state.value.thumbnail ?: ByteArray(0),
+                    size = state.value.thumbnail?.size?.toLong() ?: 0L,
+                    name = state.value.selectedFile.name + "_thumbnail",
+                    mimeType = "image/jpeg"
+                )
+            },
+            onStart = ::onUploadThumbnailStarted,
+            onEnd = ::onUploadThumbnailFinished,
+            onSuccess = { onUploadThumbnailSuccess() },
+            onError = ::onUploadThumbnailError
+        )
+    }
+
+    private fun onUploadThumbnailStarted(){
+        updateState {
+            copy(isNextButtonLoading = true)
+        }
+    }
+
+    private fun onUploadThumbnailFinished(){
+        updateState {
+            copy(isNextButtonLoading = false)
+        }
+    }
+
+    private fun onUploadThumbnailSuccess(){
+        sendEffect(UploadTrendsScreenEffect.NavigateToAddDescription(state.value.selectedFile.id))
+    }
+
+    private fun onUploadThumbnailError(errorState: ErrorState){
+        updateState {
+            copy(errorState = errorState)
+        }
     }
 
     override fun onBackClick() {
@@ -138,6 +206,6 @@ internal class UploadTrendViewModel(
     }
 
     override fun onNextClick() {
-        sendEffect(UploadTrendsScreenEffect.NavigateToAddDescription(state.value.selectedFile.id))
+        uploadThumbnail()
     }
 }
