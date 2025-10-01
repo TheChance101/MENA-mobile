@@ -2,13 +2,19 @@ package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.balance_fetch_error_description
+import mena.wallet_presentation.generated.resources.error
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
+import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
+import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -138,14 +144,49 @@ class TransactionHistoryViewModel(
                 (if (state.fromDate != null || state.toDate != null) 1 else 0)
     }
 
-    private fun onGetTransactionFilterError(throwable: Throwable) {
-        throwable.printStackTrace()
+    private suspend fun onGetTransactionFilterError(throwable: Throwable) {
         updateState {
             it.copy(
                 filterState = it.filterState.copy(
                     isLoading = false,
                     isError = throwable
                 )
+            )
+        }
+
+        showSnackBar(
+            titleRes = Res.string.error,
+            messageRes = Res.string.balance_fetch_error_description,
+            isSuccess = false
+        )
+    }
+
+    private suspend fun showSnackBar(
+        titleRes: StringResource,
+        messageRes: StringResource,
+        isSuccess: Boolean,
+        durationMillis: Long = 3000L
+    ) {
+        updateState { oldState ->
+            oldState.copy(
+                snackBar = SnackBarState(
+                    isVisible = true,
+                    titleRes = titleRes,
+                    messageRes = messageRes,
+                    isSuccess = isSuccess
+                )
+            )
+        }
+
+        delay(durationMillis)
+
+        hideSnackBar()
+    }
+
+    private fun hideSnackBar() {
+        updateState { oldState ->
+            oldState.copy(
+                snackBar = oldState.snackBar.copy(isVisible = false)
             )
         }
     }

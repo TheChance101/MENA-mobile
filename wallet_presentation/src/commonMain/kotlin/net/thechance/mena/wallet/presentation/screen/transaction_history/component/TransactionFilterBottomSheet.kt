@@ -48,6 +48,7 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
 ) {
     BottomSheet(
         onDismissRequest = onDismiss,
+        skipPartiallyExpanded = true,
         modifier = modifier
             .navigationBarsPadding(),
         stickyFooterContent = {
