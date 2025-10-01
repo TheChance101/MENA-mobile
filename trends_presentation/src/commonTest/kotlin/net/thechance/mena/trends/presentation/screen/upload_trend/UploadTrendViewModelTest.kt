@@ -35,6 +35,7 @@ class UploadTrendViewModelTest: TestExtensions() {
 
     private val repository:ReelsRepository = mock {
         everySuspend { uploadReel(any(), any(), any(), any()) } returns emptyFlow()
+        everySuspend { uploadReelThumbnail(any(), any(), any(), any()) } returns Unit
     }
     private val validator: VideoMetaDataValidator = VideoMetaDataValidator()
     private val videoExtractor: VideoUtilities = mock {
@@ -145,7 +146,7 @@ class UploadTrendViewModelTest: TestExtensions() {
     }
 
     @Test
-    fun `onNextClick should send NavigateToAddDescription effect`() = runTest(testDispatcher) {
+    fun `onNextClickDone should send NavigateToAddDescription effect`() = runTest(testDispatcher) {
         viewModel.onNextClick()
 
         viewModel.effect.test {
