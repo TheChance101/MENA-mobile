@@ -5,6 +5,7 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
+import net.thechance.mena.wallet.domain.exceptions.NoTransactionsFoundException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 
 suspend inline fun <reified T> safeApiCall(
@@ -18,7 +19,7 @@ suspend inline fun <reified T> safeApiCall(
         throw UnknownException(e.message ?: "")
     }
     if (response.status.value == 204) {
-        return EmptyResponse() as T
+        throw NoTransactionsFoundException("No Transactions Found: " + parseErrorMessage(response))
     }
     return when (response.status.value) {
         in 200..299 -> parseBody<T>(response)

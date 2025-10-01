@@ -54,6 +54,24 @@
     <string name="pick_start_date">اختر تاريخ البداية</string>
     <string name="pick_end_date">اختار تاريخ النهاية</string>
     <string name="pick">اختر</string>
+
+    <string name="error_no_transactions">لم يتم العثور على أي معاملات</string>
+    <string name="error_failed_view">فشل في عرض المعاملات</string>
+    <string name="download">تنزيل</string>
+    <string name="view_and_share">عرض ومشاركة</string>
+    <string name="custom_filtering">تصفية مخصصة</string>
+    <string name="all_transactions">جميع المعاملات</string>
+    <string name="export_transactions">تصدير المعاملات</string>
+    <string name="downloading_started">جارٍ بدء التنزيل...</string>
+    <string name="download_success">تم حفظ معاملاتك بنجاح.</string>
+    <string name="download_complete">اكتمل التنزيل</string>
+    <string name="download_failed">فشل التنزيل</string>
+    <string name="something_went_wrong">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>
+
+    <string name="filter_crossfade">تبديل الفلاتر</string>
+    <string name="transaction_history">سجل المعاملات</string>
+    <string name="background_color_animation">تحريك لون الخلفية</string>
+
     <string name="transactions_history">سجل المعاملات</string>
     <string name="filter">الفلاتر</string>
     <string name="transaction_pay">تسوق عبر الإنترنت</string>

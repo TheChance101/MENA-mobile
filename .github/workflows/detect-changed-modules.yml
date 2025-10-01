@@ -15,6 +15,9 @@ on:
       has_ios_changes:
         description: "If there are iOS app changes"
         value: ${{ jobs.detect.outputs.has_ios_changes }}
+      test_modules:
+        description: "Modules for testing (composeApp excluded)"
+        value: ${{ jobs.detect.outputs.test_modules }}
 
 jobs:
   detect:
@@ -24,6 +27,7 @@ jobs:
       has_changes: ${{ steps.changes.outputs.has_changes }}
       ios_modules: ${{ steps.changes.outputs.ios_modules }}
       has_ios_changes: ${{ steps.changes.outputs.has_ios_changes }}
+      test_modules: ${{ steps.changes.outputs.test_modules }}
 
     steps:
       - uses: actions/checkout@v4
@@ -47,35 +51,44 @@ jobs:
         run: |
           ALL_MODULES_JSON=$(./gradlew exportModuleDeps --no-configuration-cache | grep -o '{.*}')
           echo "All modules JSON: $ALL_MODULES_JSON"
-          
+
           CHANGED_FILES="${{ steps.changed-files-git.outputs.changed_files }}"
-          ALL_MODULES='core_chat_api core_chat_data core_chat_domain core_chat_presentation dukan_api dukan_data dukan_domain dukan_presentation faith_api faith_data faith_domain faith_presentation identity_api identity_data identity_domain identity_presentation trends_api trends_data trends_domain trends_presentation wallet_api wallet_data wallet_domain wallet_presentation'
-          IOS_MODULES='core_chat_presentation dukan_presentation faith_presentation identity_presentation trends_presentation wallet_presentation'
-          
+          ALL_MODULES='core_chat_api core_chat_data core_chat_domain core_chat_presentation dukan_api dukan_data dukan_domain dukan_presentation faith_api faith_data faith_domain faith_presentation identity_api identity_data identity_domain identity_presentation trends_api trends_data trends_domain trends_presentation wallet_api wallet_data wallet_domain wallet_presentation composeApp'
+          IOS_MODULES='core_chat_presentation dukan_presentation faith_presentation identity_presentation trends_presentation wallet_presentation composeApp'
+
           UNIQUE_MODULE_LIST=$(echo "$CHANGED_FILES" | awk -F/ '{print $1}' | sort -u)
           FINAL_MODULES=""
-          
+
           for module in $UNIQUE_MODULE_LIST; do
             if [[ " $ALL_MODULES " =~ " $module " ]]; then
               FINAL_MODULES="$FINAL_MODULES $module"
               # Add dependent modules
-              DEPS=$(echo $ALL_MODULES_JSON | jq -r --arg module "$module" '.[$module][]')
+              DEPS=$(echo "$ALL_MODULES_JSON" | jq -r --arg module "$module" '.[$module][]?' 2>/dev/null || true)
               for dep in $DEPS; do
                 FINAL_MODULES="$FINAL_MODULES $dep"
               done
             fi
           done
-          
+
           FINAL_MODULES=$(echo $FINAL_MODULES | tr ' ' '\n' | sort -u | tr '\n' ' ')
           JSON_ARRAY=$(echo "$FINAL_MODULES" | jq -R 'split(" ") | map(select(length > 0))' | jq -c '.')
           IOS_JSON_ARRAY=$(echo "$FINAL_MODULES" | tr ' ' '\n' | grep -F -x -f <(echo "$IOS_MODULES" | tr ' ' '\n') | jq -R -s -c 'split("\n")[:-1]')
-          
-          if [ "$(echo $JSON_ARRAY | jq 'length')" -gt 0 ]; then
+          TEST_JSON_ARRAY=$(echo "$JSON_ARRAY" | jq '[.[] | select(. != "composeApp")]')
+
+          if [ "$(echo "$JSON_ARRAY" | jq 'length')" -gt 0 ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "modules=$JSON_ARRAY" >> $GITHUB_OUTPUT
+            echo "modules<<EOF" >> $GITHUB_OUTPUT
+            echo "$JSON_ARRAY" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "modules=[]" >> $GITHUB_OUTPUT
           fi
-          
-          echo "ios_modules=$IOS_JSON_ARRAY" >> $GITHUB_OUTPUT
+
+          echo "ios_modules<<EOF" >> $GITHUB_OUTPUT
+          echo "$IOS_JSON_ARRAY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "test_modules<<EOF" >> $GITHUB_OUTPUT
+          echo "$TEST_JSON_ARRAY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
