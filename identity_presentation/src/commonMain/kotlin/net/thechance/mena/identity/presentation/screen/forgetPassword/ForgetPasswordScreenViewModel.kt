@@ -1,8 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.forgetPassword
 
-import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.PhoneNumber
