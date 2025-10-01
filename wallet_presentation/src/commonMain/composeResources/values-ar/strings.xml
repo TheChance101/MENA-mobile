@@ -38,10 +38,4 @@
 
     <string name="transaction_history">سجل المعاملات</string>
 
-    <string name="view_transactions">عرض المعاملات</string>
-    <string name="share">مشاركة</string>
-    <string name="page_text">الصفحة %1$s من %2$s </string>
-    <string name="file_shared_successfully">تم مشاركة الملف بنجاح</string>
-    <string name="error_no_data">لا يوجد بيانات لعرضها</string>
-    <string name="something_went_wrong">يوجد شيء خاطئ هنا!</string>
 </resources>

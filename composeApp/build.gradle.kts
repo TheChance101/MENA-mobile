@@ -79,15 +79,6 @@ kotlin {
             implementation(projects.trendsPresentation)
             implementation(projects.trendsDomain)
             implementation(projects.trendsData)
-            // koin
-            api(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-
-            // wallet
-            implementation(projects.walletPresentation)
-            implementation(projects.walletDomain)
-            implementation(projects.walletData)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -15,9 +15,6 @@ androidx-testExt = "1.3.0"
 coil = "3.3.0"
 composeMultiplatform = "1.8.2"
 junit = "4.13.2"
-kamelImage = "1.0.8"
-mockk = "1.14.0"
-turbine = "1.2.1"
 kermit = "2.0.8"
 kotlin = "2.2.10"
 koverVersion = "0.9.1"
@@ -36,6 +33,8 @@ coroutines = "1.10.2"
 kotlinx-coroutines-test = "1.10.2"
 assertk = "0.28.1"
 mockkery = "2.10.0"
+turbine = "1.2.1"
+mockk = "1.14.0"
 filekit = "0.11.0"
 krop = "0.2.0"
 pagingTesting = "3.3.6"
@@ -51,10 +50,8 @@ moko = "0.18.0"
 voyager = "1.1.0-beta03"
 koin = "4.0.0"
 multiplatformSettings = "1.3.0"
-pdfViewer = "1.0.0-alpha10"
 
 [libraries]
-kamel-image = { module = "media.kamel:kamel-image", version.ref = "kamelImage" }
 androidx-paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref = "paging-compose-version" }
 androidx-paging-runtime = { module = "app.cash.paging:paging-common", version.ref = "paging-compose-version" }
 androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "pagingTesting" }
@@ -156,7 +153,6 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }
 contacts-provider = { module = "io.github.dev-bilal-azzam:contacts-provider", version.ref = "contacts-provider" }
-androidx-pdf-viewer = { group = "androidx.pdf", name = "pdf-viewer", version.ref = "pdfViewer" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

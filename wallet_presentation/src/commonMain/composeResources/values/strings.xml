@@ -38,12 +38,4 @@
     <string name="pick">Pick</string>
 
     <string name="transaction_history">Transaction History</string>
-
-    <string name="view_transactions">View Transactions</string>
-    <string name="share">Share</string>
-    <string name="page_text">Page %1$s of %2$s</string>
-    <string name="file_shared_successfully">File shared successfully</string>
-    <string name="error_no_data">No data available</string>
-    <string name="something_went_wrong">Something went wrong</string>
-
 </resources>
