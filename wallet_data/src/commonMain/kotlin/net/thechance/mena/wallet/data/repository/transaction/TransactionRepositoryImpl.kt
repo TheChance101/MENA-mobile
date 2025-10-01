@@ -1,7 +1,6 @@
 package net.thechance.mena.wallet.data.repository.transaction
 
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.Month
+import io.ktor.client.request.parameter
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
@@ -9,11 +8,8 @@ import net.thechance.mena.wallet.data.mapper.toParameters
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.koin.core.annotation.Single
-import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -24,12 +20,14 @@ class TransactionRepositoryImpl(
 ) : TransactionRepository {
     override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
-            print("Trans ${transactionFilterParams?.toParameters()}")
             networkClient.get(TRANSACTION_PATH) {
-                transactionFilterParams?.toParameters()
+                transactionFilterParams?.toParameters()?.forEach { key, values ->
+                    values.forEach { value ->
+                        parameter(key, value)
+                    }
+                }
             }
         }.transactions.orEmpty().map { it.toEntity() }
-
     }
 
     override suspend fun getTransactionById(transactionId: Uuid): Transaction {

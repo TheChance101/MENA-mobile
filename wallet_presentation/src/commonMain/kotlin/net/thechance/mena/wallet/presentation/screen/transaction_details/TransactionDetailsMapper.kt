@@ -39,7 +39,7 @@ fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState
     },
     transactionStatus = when (status) {
         TransactionStatus.SUCCESS -> TransactionStatusUiState.SUCCESS
-        TransactionStatus.FAIL -> TransactionStatusUiState.FAILED
+        TransactionStatus.FAILED -> TransactionStatusUiState.FAILED
     },
     userInfo = when (type) {
         TransactionType.SENT, TransactionType.ONLINE_PURCHASE -> Res.string.from

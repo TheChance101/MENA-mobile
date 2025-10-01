@@ -25,7 +25,7 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
         },
         status = when (status) {
             TransactionStatus.SUCCESS -> TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
-            TransactionStatus.FAIL -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
+            TransactionStatus.FAILED -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
         },
         userInfo = when (type) {
             TransactionType.SENT -> Res.string.to
@@ -66,6 +66,6 @@ fun FilterType.toDomainType(): TransactionType = when (this) {
 
 fun FilterStatus.toDomainStatus(): TransactionStatus? = when (this) {
     FilterStatus.SUCCESS -> TransactionStatus.SUCCESS
-    FilterStatus.FAILED -> TransactionStatus.FAIL
+    FilterStatus.FAILED -> TransactionStatus.FAILED
     FilterStatus.ALL -> null
 }
