@@ -11,7 +11,11 @@ class SurahTest {
     @Test
     fun `verify that Surah data class has not been modified`() {
         val actualHash = calculateFileMd5Hash(File(SURAH_FILE_PATH))
-        assertEquals(FILE_HASH, actualHash, "Surah.kt file has been modified!")
+        assertEquals(
+            FILE_HASH,
+            actualHash,
+            message = "Surah.kt file has been modified!${actualHash}\n Please check the changes."
+        )
     }
 
     private companion object {
