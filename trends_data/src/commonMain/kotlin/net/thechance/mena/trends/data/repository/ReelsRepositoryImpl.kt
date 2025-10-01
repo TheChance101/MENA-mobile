@@ -7,9 +7,8 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -59,7 +58,7 @@ internal class ReelsRepositoryImpl(
         categoryIds: List<String>
     ) {
         val request = UpdateReelRequestDTO(description, categoryIds)
-         safeApiCall<Unit> {
+        safeApiCall<Unit> {
             httpClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
                 setBody(request)
             }
@@ -96,6 +95,48 @@ internal class ReelsRepositoryImpl(
                 )
             )
         }
+    }
+
+    override suspend fun uploadReelThumbnail(
+        thumbnail: ByteArray,
+        size: Long,
+        mimeType: String,
+        name: String
+    ) {
+        safeApiCall<Unit> {
+            httpClient.post(urlString = "") {
+                setBody(
+                    createUploadThumbnailBody(
+                        thumbnail = thumbnail,
+                        size = size,
+                        mimeType = mimeType,
+                        name = name
+                    )
+                )
+            }
+        }
+    }
+
+    private fun createUploadThumbnailBody(
+        thumbnail: ByteArray,
+        size: Long,
+        mimeType: String,
+        name: String
+    ): MultiPartFormDataContent {
+        return MultiPartFormDataContent(
+            formData {
+                append(
+                    key = "thumbnail",
+                    value = InputProvider(size) {
+                        ByteReadChannel(thumbnail).asSource().buffered()
+                    },
+                    headers = Headers.build {
+                        append(HttpHeaders.ContentType, "image/*")
+                        append(HttpHeaders.ContentDisposition, "filename=\"$name.$mimeType\"")
+                    }
+                )
+            }
+        )
     }
 
     private fun createUploadReelBody(
