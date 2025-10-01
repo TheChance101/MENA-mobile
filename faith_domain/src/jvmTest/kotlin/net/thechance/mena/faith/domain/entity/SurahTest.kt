@@ -14,12 +14,12 @@ class SurahTest {
         assertEquals(
             FILE_HASH,
             actualHash,
-            message = "Surah.kt file has been modified!${actualHash}\n Please check the changes."
+            message = "Surah.kt file has been modified! new hash:${actualHash}\n Please check the changes."
         )
     }
 
     private companion object {
-        const val FILE_HASH = "9d8cb4694b0e7e74899c8d62a5cedc97"
+        const val FILE_HASH = "3ee45be83f266197549c3a15534bfe18"
         const val SURAH_FILE_PATH =
             "src/commonMain/kotlin/net/thechance/mena/faith/domain/entity/Surah.kt"
     }
