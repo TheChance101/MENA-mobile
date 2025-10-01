@@ -1,16 +1,16 @@
 package net.thechance.mena.wallet.data.repository.statement
 
-import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readRawBytes
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
+import net.thechance.mena.wallet.data.mapper.toStatementRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
+import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import org.koin.core.annotation.Single
 import kotlin.concurrent.Volatile
@@ -23,12 +23,17 @@ class StatementRepositoryImpl(
 
     @Volatile
     private var lastStatement: ByteArray? = null
+    @Volatile
+    private var deleteStatementJob: Job? = null
 
-    override suspend fun getStatement(): ByteArray {
+    override suspend fun getStatement(
+        filterRequestParams: TransactionFilterParams?
+    ): ByteArray {
         return safeApiCall<HttpResponse>{
-            networkClient.get(STATEMENT_PATH) {
-                header(HttpHeaders.Accept, ContentType.Application.Pdf)
-            }
+            networkClient.get(
+                urlString = STATEMENT_PATH,
+                block = filterRequestParams?.toStatementRequest() ?: {}
+            )
         }.readRawBytes().also { statement ->
             lastStatement = statement
             deleteStatementInAnHour()
@@ -40,7 +45,8 @@ class StatementRepositoryImpl(
     }
 
     private fun deleteStatementInAnHour() {
-        coroutineScope.launch {
+        deleteStatementJob?.cancel()
+        deleteStatementJob = coroutineScope.launch {
             delay(HOUR_IN_MILLIS)
             lastStatement = null
         }

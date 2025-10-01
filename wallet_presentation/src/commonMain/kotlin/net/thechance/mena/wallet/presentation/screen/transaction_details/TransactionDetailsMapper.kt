@@ -13,8 +13,8 @@ import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
-import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
+import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
 import net.thechance.mena.wallet.presentation.utils.formatTransactionDate
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -39,7 +39,7 @@ fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState
     },
     transactionStatus = when (status) {
         TransactionStatus.SUCCESS -> TransactionStatusUiState.SUCCESS
-        TransactionStatus.FAIL -> TransactionStatusUiState.FAILED
+        TransactionStatus.FAILED -> TransactionStatusUiState.FAILED
     },
     userInfo = when (type) {
         TransactionType.SENT, TransactionType.ONLINE_PURCHASE -> Res.string.from

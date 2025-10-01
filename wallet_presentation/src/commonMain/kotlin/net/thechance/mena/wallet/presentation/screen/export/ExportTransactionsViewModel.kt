@@ -19,7 +19,7 @@ import mena.wallet_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.NoTransactionsFoundException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
-import net.thechance.mena.wallet.domain.repository.ExportTransactionsRepository
+import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.CustomToastState
 import net.thechance.mena.wallet.presentation.base.SnackBarState
@@ -33,7 +33,7 @@ import kotlin.time.ExperimentalTime
 
 @KoinViewModel
 class ExportTransactionsViewModel(
-    @Provided private val exportTransactionsRepository: ExportTransactionsRepository,
+    @Provided private val statementRepository: StatementRepository,
     @Provided private val fileSaver: FileSaver,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
@@ -141,7 +141,7 @@ class ExportTransactionsViewModel(
             val endDateTime: LocalDate? = currentState.endDate
                 .toStartOfDayLocalDateTime(formatter)
 
-            exportTransactionsRepository.getFilteredTransactionsFile(
+            statementRepository.getStatement(
                 TransactionFilterParams(
                     types = currentState.selectedTransactionsTypes?.map { it.toDomain() },
                     status = currentState.selectedTransactionsStatus.toDomain(),
@@ -150,7 +150,7 @@ class ExportTransactionsViewModel(
                 )
             )
         } else {
-            exportTransactionsRepository.getFilteredTransactionsFile()
+            statementRepository.getStatement()
         }
     }
 
