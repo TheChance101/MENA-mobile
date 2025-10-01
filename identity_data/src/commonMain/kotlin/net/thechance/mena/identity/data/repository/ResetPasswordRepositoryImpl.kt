@@ -33,12 +33,11 @@ class ResetPasswordRepositoryImpl(
         }
     }
 
-    override suspend fun verifyOTPCode(otpCode: String, phoneNumber: PhoneNumber) {
+    override suspend fun verifyOTPCode(otpCode: String) {
         forgetPasswordSafeWrapper<String> {
             client.postJson(
                 VerifyOtpRequestDto(
                     otpCode,
-                    phoneNumber.getFormattedPhoneNumber(),
                     sessionId
                 ), VERIFY_OTP
             )

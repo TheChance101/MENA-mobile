@@ -35,10 +35,6 @@ class OtpScreenViewModel(
             function = {
                 resetPasswordRepository.verifyOTPCode(
                     otpCode = state.value.otpValue,
-                    phoneNumber = PhoneNumber(
-                        countryCode = callingCode,
-                        localNumber = phoneNumber
-                    )
                 )
             },
             onSuccess = ::verifySuccess,

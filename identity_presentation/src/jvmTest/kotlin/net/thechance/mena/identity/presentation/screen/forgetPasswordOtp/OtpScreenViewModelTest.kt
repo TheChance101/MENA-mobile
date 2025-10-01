@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
 
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -12,8 +12,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
-import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -59,7 +57,7 @@ class OtpScreenViewModelTest {
         runTest {
             val otp = "123456"
             viewModel.onOtpChanged(otp)
-            coEvery { resetPasswordRepository.verifyOTPCode(otp, any()) } returns Unit
+            coEvery { resetPasswordRepository.verifyOTPCode(otp) } returns Unit
 
             viewModel.effect.test {
                 viewModel.onVerifyClicked()
@@ -72,12 +70,7 @@ class OtpScreenViewModelTest {
     @Test
     fun `should show error message when otp is incorrect and user click on verify button`() =
         runTest {
-            coEvery {
-                resetPasswordRepository.verifyOTPCode(
-                    any(),
-                    any()
-                )
-            } throws InvalidOTPException()
+            coEvery { resetPasswordRepository.verifyOTPCode(any(),) } throws InvalidOTPException()
 
             viewModel.onVerifyClicked()
             advanceUntilIdle()
