@@ -5,3 +5,5 @@ open class WalletException(message: String = "Wallet Exception") : Exception(mes
 class NoInternetException(message:  String = "No Internet") : WalletException(message)
 
 class UnknownException(message:  String = "Unknown") : WalletException(message)
+
+class NoTransactionsFoundException(message:  String = "No Transactions Found") : WalletException(message)

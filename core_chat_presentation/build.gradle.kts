@@ -36,6 +36,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.coreChatApi)
+            implementation(projects.walletApi)
             implementation(projects.coreChatDomain)
             implementation(projects.designSystem)
 

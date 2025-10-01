@@ -1,7 +1,9 @@
 package net.thechance.mena.core_chat.presentation.screen.chats
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,16 +14,25 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ChatsScreen(
-    viewModel: ChatsViewModel = koinViewModel<ChatsViewModel>()
+    viewModel: ChatsViewModel = koinViewModel<ChatsViewModel>(),
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = Theme.spacing._16),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._32, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
         Button(onClick = viewModel::onNewChatClicked) {
             Text(
-                text = "Show contacts",
+                text = "Chat",
+                style = Theme.typography.title.medium
+            )
+        }
+        Button(onClick = viewModel::onWalletClicked) {
+            Text(
+                text = "Wallet",
                 style = Theme.typography.title.medium
             )
         }

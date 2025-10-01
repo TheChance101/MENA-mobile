@@ -9,13 +9,17 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.balance_fetch_error_description
+import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.ic_check_circle
 import mena.wallet_presentation.generated.resources.ic_close_circle
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private const val ANIMATION_DURATION = 500
 
@@ -51,6 +55,36 @@ fun SnackBarContainer(
             leadingIcon = painterResource(leadingIcon),
             modifier = modifier,
             tint = tint
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SnackBarContainerFailPreview() {
+    MenaTheme {
+        SnackBarContainer(
+            snackBarState = SnackBarState(
+                isVisible = true,
+                titleRes = Res.string.error,
+                messageRes = Res.string.balance_fetch_error_description,
+                isSuccess = false
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SnackBarContainerSuccessPreview() {
+    MenaTheme {
+        SnackBarContainer(
+            snackBarState = SnackBarState(
+                isVisible = true,
+                titleRes = Res.string.error,
+                messageRes = Res.string.balance_fetch_error_description,
+                isSuccess =  true
+            )
         )
     }
 }

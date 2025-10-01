@@ -44,13 +44,12 @@ private fun authInterceptor(
 ) = createClientPlugin("AuthInterceptor") {
 
     onRequest { request, _ ->
-        if (request.url.toString().contains("login")) return@onRequest
-        if (request.url.toString().contains("refresh")) return@onRequest
-
-        settings.accessToken.let { token ->
-            request.headers.append(HttpHeaders.Authorization, "Bearer $token")
+        //TODO refactore hardcoded string to whitelist endpoints doesn't require token like register and reset password
+        if (!request.url.toString().contains("login")) {
+            settings.accessToken.let { token ->
+                request.headers.append(HttpHeaders.Authorization, "Bearer $token")
+            }
         }
-
     }
 }
 
