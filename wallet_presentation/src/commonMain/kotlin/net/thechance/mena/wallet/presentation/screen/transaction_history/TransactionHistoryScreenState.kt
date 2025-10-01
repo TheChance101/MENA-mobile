@@ -32,7 +32,6 @@ data class TransactionHistoryScreenState(
         val amount: String = "",
         val type: TransactionTypeUiState = TransactionTypeUiState.ONLINE_SHOPPING,
         val status: TransactionStatusUiState = TransactionStatusUiState.FAILED,
-        val userInfo: StringResource = Res.string.from,
         val contactName: String? = null
     )
     enum class TransactionTypeUiState(
