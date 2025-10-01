@@ -39,7 +39,6 @@ actual class PdfHandler {
     actual suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
         val pages = mutableListOf<ByteArray>()
 
-        // Convert ByteArray to NSData
         val data = pdfData.toNSData()
         val provider = CGDataProviderCreateWithCFData(data)
         val document = CGPDFDocumentCreateWithProvider(provider) ?: return emptyList()
@@ -47,25 +46,20 @@ actual class PdfHandler {
         try {
             val pageCount = CGPDFDocumentGetNumberOfPages(document)
             for (pageNumber in 1..pageCount) {
-                // Create a new PDF context for each page
                 val outputData = NSMutableData()
                 val dataConsumer = CGDataConsumerCreateWithCFData(outputData)
                 val pdfContext = CGPDFContextCreate(dataConsumer, null, null)
 
-                // Get the page
                 val page = CGPDFDocumentGetPage(document, pageNumber)
                 if (page != null) {
-                    // Begin a new page in the context
                     CGPDFContextBeginPage(pdfContext, null)
                     CGContextDrawPDFPage(pdfContext, page)
                     CGPDFContextEndPage(pdfContext)
                 }
 
-                // Close the context and get the data
                 CGPDFContextClose(pdfContext)
                 pages.add(outputData.toByteArray())
 
-                // Clean up
                 CGDataConsumerRelease(dataConsumer)
             }
         } finally {
