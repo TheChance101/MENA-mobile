@@ -70,4 +70,7 @@
     <string name="retry">Re-try</string>
     <string name="filter_transaction_error_title">Filters give no matches</string>
     <string name="filter_transaction_error_description">Change your filters or reset them to explore all transactions</string>
+    <string name="apply_filters">Apply Filters</string>
+    <string name="filter_transactions">Filter transactions</string>
+    <string name="reset">Reset</string>
 </resources>

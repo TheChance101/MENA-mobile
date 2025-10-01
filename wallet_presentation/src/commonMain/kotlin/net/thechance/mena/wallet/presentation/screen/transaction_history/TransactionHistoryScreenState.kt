@@ -22,7 +22,9 @@ import kotlin.uuid.Uuid
 data class TransactionHistoryScreenState(
     val history: List<TransactionHistoryUiState> = emptyList(),
     val isLoading: Boolean = false,
-    val isError: Throwable? = null
+    val isError: Throwable? = null,
+    val filterState: TransactionFilterState = TransactionFilterState(),
+    val isFilterVisible: Boolean = false
 ){
     data class TransactionHistoryUiState @OptIn(ExperimentalUuidApi::class) constructor(
         val id: Uuid,

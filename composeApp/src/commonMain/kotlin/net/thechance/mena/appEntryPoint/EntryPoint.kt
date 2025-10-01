@@ -44,7 +44,7 @@ fun EntryPoint(){
 
 @Composable
 private fun LoggedInContainer(){
-    var activeFeature: Feature by remember { mutableStateOf(Feature.CHAT) }
+    var activeFeature: Feature by remember { mutableStateOf(Feature.WALLET) }
     Column(
         Modifier
             .fillMaxSize()

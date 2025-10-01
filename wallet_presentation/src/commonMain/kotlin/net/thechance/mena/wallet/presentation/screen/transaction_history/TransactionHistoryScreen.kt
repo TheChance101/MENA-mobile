@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -98,8 +100,26 @@ fun TransactionHistoryContent(
                         painter = painterResource(Res.drawable.ic_share),
                         contentDescription = Res.string.share.toString()
                     )
-                },
+                }
             )
+        },
+        overlays = {
+            bottomSheet(state.isFilterVisible) {
+                TransactionFilterBottomSheet(
+                    uiState = state.filterState,
+                    onDismiss = interactionListener::onDismissFilter,
+                    onClickAddFilter = interactionListener::onApplyFilterClicked,
+                    onResetClicked = interactionListener::onResetFilterClicked,
+                    onTypeToggled = interactionListener::selectFilterType,
+                    onStatusSelected = interactionListener::selectFilterStatus,
+                    onFromClick = {
+                        // TODO: Show date picker
+                    },
+                    onToClick = {
+                        // TODO: Show date picker
+                    }
+                )
+            }
         }
     ) {
         LazyColumn(
@@ -126,6 +146,11 @@ fun TransactionHistoryContent(
                         style = Theme.typography.label.small,
                         color = Theme.colorScheme.primary.primary
                     )
+
+                    ShowFilterCount(
+                        state = state
+                    )
+
                 }
             }
             items(state.history) { transaction ->
@@ -147,6 +172,29 @@ fun TransactionHistoryContent(
     }
 }
 
+@Composable
+fun ShowFilterCount(
+    state: TransactionHistoryScreenState
+) {
+    val filterCount = state.filterState.activeFilterCount
+    if (state.filterState.hasActiveFilters && filterCount != 0) {
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .padding(start = 4.dp)
+                .clip(CircleShape)
+                .background(Theme.colorScheme.brand.brand),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "$filterCount",
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.primary.onPrimary
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalUuidApi::class)
 private fun onTransactionHistoryEffect(
     effect: TransactionHistoryEffect,
@@ -157,9 +205,6 @@ private fun onTransactionHistoryEffect(
     when (effect) {
         TransactionHistoryEffect.NavigateBack -> onNavigateBackClicked()
         TransactionHistoryEffect.NavigateToExportTransaction -> navigateToExportTransaction()
-        TransactionHistoryEffect.NavigateToFilterBottomSheet -> {/*TODO: navigate to filter bottom sheet*/
-        }
-
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
             navigateToTransactionDetails(effect.id)
         }
