@@ -51,7 +51,7 @@ class TransactionHistoryViewModel(
             val result = transactionRepository.getTransactionHistory(
                 TransactionFilterParams(page = page, pageSize = 20)
             )
-            Result.success(result.transactions)
+            Result.success(result)
         } catch (e: Exception) {
             Result.failure(e)
         }

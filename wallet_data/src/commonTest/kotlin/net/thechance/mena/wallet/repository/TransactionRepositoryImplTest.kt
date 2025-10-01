@@ -33,11 +33,12 @@ class TransactionRepositoryImplTest {
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
         val result = transactionRepository.getTransactionHistory(null)
-        assertEquals(1, result.transactions.size)
-        val transaction: Transaction = result.transactions.first()
+        assertEquals(1, result.size)
+        val transaction: Transaction = result.first()
         assertEquals(EXPECTED_AMOUNT, transaction.amount)
         assertEquals(TransactionStatus.SUCCESS, transaction.status)
         assertEquals(TransactionType.SENT, transaction.type)
+
     }
 
     @Test

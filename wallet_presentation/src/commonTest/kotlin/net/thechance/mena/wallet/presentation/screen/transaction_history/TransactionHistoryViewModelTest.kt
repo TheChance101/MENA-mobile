@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import net.thechance.mena.wallet.domain.entity.PagedTransactions
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
@@ -45,7 +44,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `state should not have error when repository returns value`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns pagedTransactions
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         viewModel.state.test {
             awaitItem()
@@ -58,12 +57,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateBack effect when onBackClicked is called`() = runTest(testDispatcher) {
-        val emptyPagedHistory = PagedTransactions(
-            transactions = emptyList(),
-            currentPage = 1,
-            totalPages = 1
-        )
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyPagedHistory
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -76,12 +70,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToTransactionDetails effect when onTransactionCardClicked is called`() = runTest(testDispatcher) {
-        val emptyPagedHistory = PagedTransactions(
-            transactions = emptyList(),
-            currentPage = 1,
-            totalPages = 1
-        )
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyPagedHistory
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         val id = Uuid.random()
         advanceUntilIdle()
@@ -95,12 +84,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToExportTransaction effect when onExportClicked is called`() = runTest(testDispatcher) {
-        val emptyPagedHistory = PagedTransactions(
-            transactions = emptyList(),
-            currentPage = 1,
-            totalPages = 1
-        )
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyPagedHistory
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -113,12 +97,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToFilterBottomSheet effect when onFilterClicked is called`() = runTest(testDispatcher) {
-        val emptyPagedHistory = PagedTransactions(
-            transactions = emptyList(),
-            currentPage = 1,
-            totalPages = 1
-        )
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyPagedHistory
+        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -169,9 +148,4 @@ class TransactionHistoryViewModelTest {
             )
         )
     }
-    val pagedTransactions = PagedTransactions(
-        transactions = history,
-        currentPage = 1,
-        totalPages = 1
-    )
 }
