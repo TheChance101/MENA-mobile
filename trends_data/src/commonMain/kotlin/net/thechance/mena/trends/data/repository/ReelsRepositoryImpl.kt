@@ -57,8 +57,6 @@ internal class ReelsRepositoryImpl(
         val request = UpdateReelRequestDTO(description, categoryIds)
         safeApiCall<Unit> {
             networkClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
-        safeApiCall<Unit> {
-            httpClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
                 setBody(request)
             }
         }
@@ -103,7 +101,7 @@ internal class ReelsRepositoryImpl(
         name: String
     ) {
         safeApiCall<Unit> {
-            httpClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT") {
+            networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT") {
                 setBody(
                     createUploadThumbnailBody(
                         thumbnail = thumbnail,
