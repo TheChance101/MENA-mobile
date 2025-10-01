@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.upload_trend
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEmpty
@@ -26,7 +25,7 @@ import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
 import net.thechance.mena.trends.presentation.screen.upload_trend.UploadTrendsScreenState.UploadingTrendState
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
-import net.thechance.mena.trends.presentation.shared.util.video_util.VideoDurationExtractor
+import net.thechance.mena.trends.presentation.shared.util.video_util.VideoUtilities
 import net.thechance.mena.trends.presentation.shared.util.video_util.formatBytes
 import net.thechance.mena.trends.presentation.utils.TestExtensions
 import kotlin.test.Test
@@ -38,14 +37,14 @@ class UploadTrendViewModelTest: TestExtensions() {
         everySuspend { uploadReel(any(), any(), any(), any()) } returns emptyFlow()
     }
     private val validator: VideoMetaDataValidator = VideoMetaDataValidator()
-    private val videoExtractor: VideoDurationExtractor = mock {
+    private val videoExtractor: VideoUtilities = mock {
         everySuspend { getDuration(any()) } returns VALID_DURATION
     }
     private val viewModel by lazy {
         UploadTrendViewModel(
             reelsRepository = repository,
             videoValidator = validator,
-            videoDurationExtractor = videoExtractor,
+            videoUtilities = videoExtractor,
             defaultDispatcher = testDispatcher
         )
     }
