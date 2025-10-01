@@ -23,6 +23,7 @@ import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
 import net.thechance.mena.trends.data.util.infiniteTimeOut
 import net.thechance.mena.trends.data.util.observeUploading
@@ -104,7 +105,7 @@ internal class ReelsRepositoryImpl(
         name: String
     ) {
         safeApiCall<Unit> {
-            httpClient.post(urlString = "") {
+            httpClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT") {
                 setBody(
                     createUploadThumbnailBody(
                         thumbnail = thumbnail,
@@ -126,7 +127,7 @@ internal class ReelsRepositoryImpl(
         return MultiPartFormDataContent(
             formData {
                 append(
-                    key = "thumbnail",
+                    key = "image",
                     value = InputProvider(size) {
                         ByteReadChannel(thumbnail).asSource().buffered()
                     },
