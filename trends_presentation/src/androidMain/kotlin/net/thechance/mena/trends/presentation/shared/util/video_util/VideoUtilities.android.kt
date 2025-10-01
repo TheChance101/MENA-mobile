@@ -49,11 +49,9 @@ class VideoUtilitiesImpl: VideoUtilities {
     override suspend fun extractVideoFrame(
         videoData: ByteArray, percent: Float
     ): ByteArray? = withContext(Dispatchers.IO) {
-
         val duration = getDuration(videoData) ?: 1L
         val clamped = percent.coerceIn(0f, 1f)
         val targetTimeUs = (duration * clamped * 1000).toLong()
-
         return@withContext runCatching {
             extractVideoFrame(
                 videoData,
