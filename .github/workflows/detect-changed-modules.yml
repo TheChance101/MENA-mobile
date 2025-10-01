@@ -63,7 +63,7 @@ jobs:
             if [[ " $ALL_MODULES " =~ " $module " ]]; then
               FINAL_MODULES="$FINAL_MODULES $module"
               # Add dependent modules
-              DEPS=$(echo $ALL_MODULES_JSON | jq -r --arg module "$module" '.[$module][]')
+              DEPS=$(echo "$ALL_MODULES_JSON" | jq -r --arg module "$module" '.[$module][]?' 2>/dev/null || true)
               for dep in $DEPS; do
                 FINAL_MODULES="$FINAL_MODULES $dep"
               done
@@ -73,17 +73,22 @@ jobs:
           FINAL_MODULES=$(echo $FINAL_MODULES | tr ' ' '\n' | sort -u | tr '\n' ' ')
           JSON_ARRAY=$(echo "$FINAL_MODULES" | jq -R 'split(" ") | map(select(length > 0))' | jq -c '.')
           IOS_JSON_ARRAY=$(echo "$FINAL_MODULES" | tr ' ' '\n' | grep -F -x -f <(echo "$IOS_MODULES" | tr ' ' '\n') | jq -R -s -c 'split("\n")[:-1]')
-
-          # Filter out composeApp for testing
           TEST_JSON_ARRAY=$(echo "$JSON_ARRAY" | jq '[.[] | select(. != "composeApp")]')
 
-          if [ "$(echo $JSON_ARRAY | jq 'length')" -gt 0 ]; then
+          if [ "$(echo "$JSON_ARRAY" | jq 'length')" -gt 0 ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "modules=$JSON_ARRAY" >> $GITHUB_OUTPUT
+            echo "modules<<EOF" >> $GITHUB_OUTPUT
+            echo "$JSON_ARRAY" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "modules=[]" >> $GITHUB_OUTPUT
           fi
 
-          echo "ios_modules=$IOS_JSON_ARRAY" >> $GITHUB_OUTPUT
-          echo "test_modules=$TEST_JSON_ARRAY" >> $GITHUB_OUTPUT
+          echo "ios_modules<<EOF" >> $GITHUB_OUTPUT
+          echo "$IOS_JSON_ARRAY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "test_modules<<EOF" >> $GITHUB_OUTPUT
+          echo "$TEST_JSON_ARRAY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT

@@ -22,11 +22,13 @@ import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
 
 @Composable
 fun ChatNavHost(
     chatEffector: ChatEffector = koinInject(),
+    walletApi: WalletApi = koinInject()
 ) {
 
     val navController = rememberNavController()
@@ -79,6 +81,11 @@ fun ChatNavHost(
             composable<ContactsRoute> { ContactsScreen() }
             composable<SyncContactsRoute> { SyncContactsScreen() }
             composable<ChatDetailsRoute> { ChatScreen() }
+            composable<WalletRoute>{
+                walletApi.WalletEntry(navigateBack = {
+                    navController.popBackStack()
+                })
+            }
         }
 
 

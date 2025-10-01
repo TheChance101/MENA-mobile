@@ -8,6 +8,9 @@ interface ChatRoute
 data object ChatsRoute : ChatRoute
 
 @Serializable
+data object WalletRoute : ChatRoute
+
+@Serializable
 data object ContactsRoute : ChatRoute
 
 @Serializable
