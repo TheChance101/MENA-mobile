@@ -18,6 +18,7 @@ fun WalletScaffold(
     topBar: (@Composable () -> Unit)? = null,
     snackBar: (@Composable () -> Unit)? = null,
     toast: (@Composable () -> Unit)? = null,
+    bottomContent: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     content: @Composable () -> Unit
 ) {
@@ -47,6 +48,13 @@ fun WalletScaffold(
                     .align(Alignment.Center)
             ) {
                 toast()
+            }
+        }
+        bottomContent?.let {
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                it()
             }
         }
     }

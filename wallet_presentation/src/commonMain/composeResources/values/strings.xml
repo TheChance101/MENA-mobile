@@ -90,4 +90,6 @@
     <string name="transaction_history">Transaction History</string>
     <string name="background_color_animation">Background Color Animation</string>
 
+    <string name="share_button_title">Share</string>">
+    <string name="view_transactions">View Transactions</string>">
 </resources>

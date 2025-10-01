@@ -88,5 +88,6 @@
     <string name="retry">أعد المحاولة</string>
     <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للفلاتر</string>
     <string name="filter_transaction_error_description">قم بتغيير الفلاتر أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
-
+    <string name="share_button_title">مشاركة</string>">
+    <string name="view_transactions">اظهار المعاملات</string>">
 </resources>
