@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,21 +13,21 @@ import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 
-class OTPScreenViewModel(
+class OtpScreenViewModel(
     private val resetPasswordRepository: ResetPasswordRepository,
     private val phoneNumber: String,
     private val callingCode: String,
     private val countryCode: String,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<OTPScreenUIState, OTPScreenUIEffect>(OTPScreenUIState()),
-    OTPScreenInteractionListener {
+) : BaseScreenModel<OtpScreenUIState, OtpScreenUIEffect>(OtpScreenUIState()),
+    OtpScreenInteractionListener {
 
     init {
         startTimer()
     }
 
     override fun onBackClicked() {
-        sendNewEffect(OTPScreenUIEffect.NavigateBack)
+        sendNewEffect(OtpScreenUIEffect.NavigateBack)
     }
 
     override fun onVerifyClicked() {
@@ -49,14 +49,14 @@ class OTPScreenViewModel(
 
     private fun verifySuccess() {
         sendNewEffect(
-            OTPScreenUIEffect.NavigateToResetPassword(
+            OtpScreenUIEffect.NavigateToResetPassword(
                 phoneNumber = phoneNumber,
                 callingCode = callingCode,
             )
         )
     }
 
-    override fun onOTPChanged(otp: String) {
+    override fun onOtpChanged(otp: String) {
         val filteredOtp = otp.filter { it.isDigit() }.take(OTP_LENGTH)
         if (filteredOtp == otp) {
             updateState { copy(otpValue = otp, isVerifyEnabled = filteredOtp.length == OTP_LENGTH) }

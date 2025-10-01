@@ -1,6 +1,6 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
 
-data class OTPScreenUIState (
+data class OtpScreenUIState (
     val otpValue: String = "",
     val isVerifyEnabled: Boolean = false,
     val isLoading: Boolean = false,

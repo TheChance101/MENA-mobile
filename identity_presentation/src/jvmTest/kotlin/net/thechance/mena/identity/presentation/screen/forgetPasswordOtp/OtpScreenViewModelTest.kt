@@ -12,23 +12,25 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
+import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OTPScreenViewModelTest {
+class OtpScreenViewModelTest {
     private val resetPasswordRepository = mockk<ResetPasswordRepository>()
     private val phoneNumber = "01100661617"
     private val countryCode = "EG"
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel: OTPScreenViewModel
+    private lateinit var viewModel: OtpScreenViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = OTPScreenViewModel(
+        viewModel = OtpScreenViewModel(
             resetPasswordRepository = resetPasswordRepository,
             phoneNumber = phoneNumber,
             countryCode = countryCode,
@@ -47,7 +49,7 @@ class OTPScreenViewModelTest {
         viewModel.effect.test {
             viewModel.onBackClicked()
             val effect = awaitItem()
-            assertTrue { effect is OTPScreenUIEffect.NavigateBack }
+            assertTrue { effect is OtpScreenUIEffect.NavigateBack }
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -56,13 +58,13 @@ class OTPScreenViewModelTest {
     fun `should navigate to reset password screen when otp is correct and user click on verify button`() =
         runTest {
             val otp = "123456"
-            viewModel.onOTPChanged(otp)
+            viewModel.onOtpChanged(otp)
             coEvery { resetPasswordRepository.verifyOTPCode(otp, any()) } returns Unit
 
             viewModel.effect.test {
                 viewModel.onVerifyClicked()
                 val effect = awaitItem()
-                assertTrue { effect is OTPScreenUIEffect.NavigateToResetPassword }
+                assertTrue { effect is OtpScreenUIEffect.NavigateToResetPassword }
                 cancelAndConsumeRemainingEvents()
             }
         }

@@ -25,5 +25,5 @@ class InvalidCredentialsException : AuthenticationException(
 class UnknownException : AuthenticationException("Unknown Exception")
 class UnAuthorizedException : AuthenticationException("user has no access to application")
 class InvalidOTPException : AuthenticationException("Invalid OTP")
-class OTPExpiredException : AuthenticationException("OTP code expired")
+class OtpExpiredException : AuthenticationException("OTP code expired")
 class TooManyRequestsException : AuthenticationException("Too many requests")

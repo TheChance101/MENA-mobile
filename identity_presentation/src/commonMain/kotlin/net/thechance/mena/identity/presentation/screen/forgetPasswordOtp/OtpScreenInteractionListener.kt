@@ -1,11 +1,11 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
 
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
-interface OTPScreenInteractionListener: BaseInteractionListener {
+interface OtpScreenInteractionListener: BaseInteractionListener {
     fun onBackClicked()
     fun onVerifyClicked()
     fun onResendClicked()
-    fun onOTPChanged(otp: String)
+    fun onOtpChanged(otp: String)
     fun clearErrorMessage()
 }

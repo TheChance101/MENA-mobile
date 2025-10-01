@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOTP
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -32,15 +32,15 @@ import net.thechance.mena.identity.presentation.components.PageDescription
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
-class OTPScreen(
+class OtpScreen(
     private val phoneNumber: String,
     private val countryCode: String,
     private val callingCode: String
 ) : BaseScreen<
-        OTPScreenViewModel,
-        OTPScreenUIState,
-        OTPScreenUIEffect,
-        OTPScreenInteractionListener>() {
+        OtpScreenViewModel,
+        OtpScreenUIState,
+        OtpScreenUIEffect,
+        OtpScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel(parameters = {
@@ -54,8 +54,8 @@ class OTPScreen(
 
     @Composable
     override fun OnRender(
-        state: OTPScreenUIState,
-        listener: OTPScreenInteractionListener
+        state: OtpScreenUIState,
+        listener: OtpScreenInteractionListener
     ) {
         Scaffold(
             topBar = {
@@ -81,7 +81,7 @@ class OTPScreen(
                 )
                 OtpInput(
                     otpValue = state.otpValue,
-                    onOtpChange = listener::onOTPChanged,
+                    onOtpChange = listener::onOtpChanged,
                     otpLength = 6,
                 )
 
@@ -121,12 +121,12 @@ class OTPScreen(
     }
 
     override fun onEffect(
-        effect: OTPScreenUIEffect,
+        effect: OtpScreenUIEffect,
         navigator: Navigator
     ) {
         when (effect) {
-            OTPScreenUIEffect.NavigateBack -> navigator.pop()
-            is OTPScreenUIEffect.NavigateToResetPassword -> TODO("add reset password screen")
+            OtpScreenUIEffect.NavigateBack -> navigator.pop()
+            is OtpScreenUIEffect.NavigateToResetPassword -> TODO("add reset password screen")
         }
     }
 }

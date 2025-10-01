@@ -6,7 +6,7 @@ import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.InvalidPasswordException
-import net.thechance.mena.identity.domain.exception.OTPExpiredException
+import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 
@@ -40,7 +40,7 @@ fun handelAuthorizationException(
         is InvalidCredentialsException -> onError(ErrorState.WrongPassword(exception.message ?: ""))
         is InvalidOTPException -> onError(ErrorState.InvalidOTP)
         is TooManyRequestsException -> onError(ErrorState.TooManyRequests)
-        is OTPExpiredException -> onError(ErrorState.OTPExpired)
+        is OtpExpiredException -> onError(ErrorState.OTPExpired)
         else -> onError(ErrorState.SomethingWentWrong(exception.message))
     }
 }

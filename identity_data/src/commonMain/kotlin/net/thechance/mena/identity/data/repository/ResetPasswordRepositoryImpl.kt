@@ -3,17 +3,16 @@ package net.thechance.mena.identity.data.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.identity.data.dto.resetPassword.OTPRequestDto
-import net.thechance.mena.identity.data.dto.resetPassword.OTPResponse
+import net.thechance.mena.identity.data.dto.resetPassword.OtpRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.OtpResponse
 import net.thechance.mena.identity.data.dto.resetPassword.ResetPasswordRequestDto
-import net.thechance.mena.identity.data.dto.resetPassword.VerifyOTPRequestDto
-import net.thechance.mena.identity.data.dto.resetPassword.VerifyOTPResponse
+import net.thechance.mena.identity.data.dto.resetPassword.VerifyOtpRequestDto
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
-import net.thechance.mena.identity.domain.exception.OTPExpiredException
+import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 
 class ResetPasswordRepositoryImpl(
@@ -23,9 +22,9 @@ class ResetPasswordRepositoryImpl(
 
     override suspend fun requestOTP(phoneNumber: PhoneNumber, countryCodeName: String) {
         forgetPasswordSafeWrapper {
-            val response: OTPResponse =
+            val response: OtpResponse =
                 client.postJson(
-                    OTPRequestDto(
+                    OtpRequestDto(
                         phoneNumber.getFormattedPhoneNumber(),
                         countryCodeName
                     ), REQUEST_OTP
@@ -35,9 +34,9 @@ class ResetPasswordRepositoryImpl(
     }
 
     override suspend fun verifyOTPCode(otpCode: String, phoneNumber: PhoneNumber) {
-        forgetPasswordSafeWrapper<VerifyOTPResponse> {
+        forgetPasswordSafeWrapper<String> {
             client.postJson(
-                VerifyOTPRequestDto(
+                VerifyOtpRequestDto(
                     otpCode,
                     phoneNumber.getFormattedPhoneNumber(),
                     sessionId
@@ -67,7 +66,7 @@ class ResetPasswordRepositoryImpl(
                 when (e.response.status) {
                     HttpStatusCode.Unauthorized -> throw InvalidOTPException()
                     HttpStatusCode.NotFound -> throw InvalidMobileNumberException("")
-                    HttpStatusCode.BadRequest -> throw OTPExpiredException()
+                    HttpStatusCode.BadRequest -> throw OtpExpiredException()
                     else -> throw e
                 }
             }

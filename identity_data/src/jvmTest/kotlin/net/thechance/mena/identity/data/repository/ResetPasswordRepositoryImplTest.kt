@@ -6,13 +6,13 @@ import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.identity.data.dto.resetPassword.OTPResponse
+import net.thechance.mena.identity.data.dto.resetPassword.OtpResponse
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
-import net.thechance.mena.identity.domain.exception.OTPExpiredException
+import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
 import kotlin.test.Test
 
@@ -79,13 +79,13 @@ class ResetPasswordRepositoryImplTest {
                     otpCode = "123456",
                     phoneNumber = phoneNumber
                 )
-            }.isInstanceOf<OTPExpiredException>()
+            }.isInstanceOf<OtpExpiredException>()
         }
     }
 
     @Test
     fun `requestOTP() should return session id when server returns 200`() = runTest {
-        val client = mockHttpClient(OTPResponse("123"))
+        val client = mockHttpClient(OtpResponse("123"))
 
         forgetPasswordRepository = ResetPasswordRepositoryImpl(client)
 
