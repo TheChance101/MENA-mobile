@@ -17,7 +17,7 @@ import kotlin.uuid.Uuid
 class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
-    override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): List<Transaction> {
+    override suspend fun getTransactionHistory(page:Int,pageSize:Int,transactionFilterParams: TransactionFilterParams?): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
             networkClient.get("$TRANSACTION_PATH?${transactionFilterParams?.toParameters()}")
         }.transactions.orEmpty().map { it.toEntity() }
