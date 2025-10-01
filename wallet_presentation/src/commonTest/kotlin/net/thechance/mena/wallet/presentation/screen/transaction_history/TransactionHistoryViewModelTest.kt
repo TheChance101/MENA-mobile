@@ -44,7 +44,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `state should not have error when repository returns value`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns history
+        everySuspend { transactionRepository.getTransactionHistory(1,20,null) } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         viewModel.state.test {
             awaitItem()
@@ -57,7 +57,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateBack effect when onBackClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -70,7 +70,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToTransactionDetails effect when onTransactionCardClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         val id = Uuid.random()
         advanceUntilIdle()
@@ -84,7 +84,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToExportTransaction effect when onExportClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -97,7 +97,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToFilterBottomSheet effect when onFilterClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -145,7 +145,9 @@ class TransactionHistoryViewModelTest {
                 senderName = "Online Shop",
                 receiverName = "You",
                 type = TransactionType.ONLINE_PURCHASE
-            )
+            ),
         )
+        const val PAGE_SIZE = 20
+        const val PAGE = 1
     }
 }
