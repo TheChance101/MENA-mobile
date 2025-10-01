@@ -91,4 +91,8 @@
     <string name="transaction_history">Transaction History</string>
     <string name="background_color_animation">Background Color Animation</string>
 
+    <string name="no_transactions_yet">No transactions yet</string>
+    <string name="no_transactions_yet_description">Once you start using your wallet, your transactions will appear here.</string>
+
+
 </resources>

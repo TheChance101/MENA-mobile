@@ -90,4 +90,8 @@
     <string name="apply_filters">تطبيق التصفية</string>
     <string name="filter_transactions">تصفية المعاملات</string>
     <string name="reset">إعادة تعيين</string>
+
+    <string name="no_transactions_yet">لا توجد معاملات حتى الآن</string>
+    <string name="no_transactions_yet_description">بمجرد أن تبدأ في استخدام محفظتك، ستظهر معاملاتك هنا.</string>
+
 </resources>

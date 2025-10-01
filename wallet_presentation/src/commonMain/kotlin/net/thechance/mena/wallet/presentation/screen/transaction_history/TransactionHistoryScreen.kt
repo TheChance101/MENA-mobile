@@ -37,6 +37,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.screen.FilterTransactionEmpty
+import net.thechance.mena.wallet.presentation.screen.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -57,20 +59,17 @@ fun TransactionHistoryScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEffect(
-        effect = viewModel.uiEffect,
-        onEffect = { effect ->
+        effect = viewModel.uiEffect, onEffect = { effect ->
             onTransactionHistoryEffect(
                 effect = effect,
                 onNavigateBackClicked = onNavigateBackClicked,
                 navigateToTransactionDetails = navigateToTransactionDetails,
                 navigateToExportTransaction = navigateToExportTransaction
             )
-        }
-    )
+        })
 
     TransactionHistoryContent(
-        state = state,
-        interactionListener = viewModel
+        state = state, interactionListener = viewModel
     )
 }
 
@@ -79,55 +78,60 @@ fun TransactionHistoryContent(
     state: TransactionHistoryScreenState,
     interactionListener: TransactionHistoryInteractionListener
 ) {
-    WalletScaffold(
-        modifier = Modifier.statusBarsPadding(),
-        topBar = {
-            AppBar(
-                title = stringResource(Res.string.transactions_history),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_button)
-                    )
+    WalletScaffold(modifier = Modifier.statusBarsPadding(), topBar = {
+        AppBar(
+            title = stringResource(Res.string.transactions_history),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_arrow_left),
+                    contentDescription = stringResource(Res.string.back_button)
+                )
+            },
+            onLeadingClick = interactionListener::onBackClicked,
+            trailingContent = {
+                Icon(
+                    modifier = Modifier.clip(RoundedCornerShape(16.dp))
+                        .clickable { interactionListener.onExportClicked() },
+                    painter = painterResource(Res.drawable.ic_share),
+                    contentDescription = Res.string.share.toString()
+                )
+            })
+    }, overlays = {
+        bottomSheet(state.isFilterVisible) {
+            TransactionFilterBottomSheet(
+                uiState = state.filterState,
+                onDismiss = interactionListener::onDismissFilter,
+                onClickAddFilter = interactionListener::onApplyFilterClicked,
+                onResetClicked = interactionListener::onResetFilterClicked,
+                onTypeToggled = interactionListener::selectFilterType,
+                onStatusSelected = interactionListener::selectFilterStatus,
+                onFromClick = {
+                    // TODO: Show date picker
                 },
-                onLeadingClick = interactionListener::onBackClicked,
-                trailingContent = {
-                    Icon(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable { interactionListener.onExportClicked() },
-                        painter = painterResource(Res.drawable.ic_share),
-                        contentDescription = Res.string.share.toString()
-                    )
+                onToClick = {
+                    // TODO: Show date picker
                 }
             )
-        },
-        overlays = {
-            bottomSheet(state.isFilterVisible) {
-                TransactionFilterBottomSheet(
-                    uiState = state.filterState,
-                    onDismiss = interactionListener::onDismissFilter,
-                    onClickAddFilter = interactionListener::onApplyFilterClicked,
-                    onResetClicked = interactionListener::onResetFilterClicked,
-                    onTypeToggled = interactionListener::selectFilterType,
-                    onStatusSelected = interactionListener::selectFilterStatus,
-                    onFromClick = {
-                        // TODO: Show date picker
-                    },
-                    onToClick = {
-                        // TODO: Show date picker
-                    }
-                )
-            }
         }
-    ) {
+    }) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Theme.colorScheme.background.surface)
                 .padding(horizontal = 16.dp, vertical = 16.dp),
         ) {
+            item {
+                if (state.history.isEmpty() && state.filterState.activeFilterCount == 0) {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        TransactionHistoryEmpty()
+                    }
+                }
+            }
             item {
                 Button(
                     contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
@@ -153,6 +157,17 @@ fun TransactionHistoryContent(
 
                 }
             }
+            item {
+                if (state.history.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        FilterTransactionEmpty()
+                    }
+                }
+            }
             items(state.history) { transaction ->
                 TransactionHistoryCard(
                     transaction = transaction,
@@ -163,7 +178,7 @@ fun TransactionHistoryContent(
                 Box(
                     modifier = Modifier
                         .padding(top = 4.dp)
-                        .fillMaxWidth(1f)
+                        .fillMaxWidth()
                         .height(1.dp)
                         .background(Theme.colorScheme.stroke)
                 )
@@ -179,12 +194,8 @@ fun ShowFilterCount(
     val filterCount = state.filterState.activeFilterCount
     if (state.filterState.hasActiveFilters && filterCount != 0) {
         Box(
-            modifier = Modifier
-                .size(20.dp)
-                .padding(start = 4.dp)
-                .clip(CircleShape)
-                .background(Theme.colorScheme.brand.brand),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.size(20.dp).padding(start = 4.dp).clip(CircleShape)
+                .background(Theme.colorScheme.brand.brand), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "$filterCount",
