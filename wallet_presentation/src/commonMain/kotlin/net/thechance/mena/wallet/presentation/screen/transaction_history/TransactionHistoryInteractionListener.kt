@@ -9,4 +9,5 @@ interface TransactionHistoryInteractionListener {
     fun onTransactionCardClicked(id: Uuid)
     fun onExportClicked()
     fun onFilterClicked()
+    fun onNextPageRequested()
 }

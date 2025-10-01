@@ -6,6 +6,7 @@ import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
+import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -83,5 +84,9 @@ class TransactionHistoryViewModel(
 
     override fun onFilterClicked() {
         sendEffect(TransactionHistoryEffect.NavigateToFilterBottomSheet)
+    }
+
+    override fun onNextPageRequested(){
+        loadNextTransactions()
     }
 }

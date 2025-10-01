@@ -19,10 +19,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -43,6 +40,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import net.thechance.mena.wallet.presentation.utils.ScrollingDetecting
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -75,8 +73,6 @@ fun TransactionHistoryScreen(
         state = state,
         interactionListener = viewModel,
         listState = listState,
-        onLoadMore = viewModel::loadNextTransactions /*TODO: Is that clean?*/
-
     )
 }
 
@@ -85,12 +81,11 @@ fun TransactionHistoryContent(
     state: TransactionHistoryScreenState,
     interactionListener: TransactionHistoryInteractionListener,
     listState: LazyListState,
-    onLoadMore: () -> Unit
 ) {
     ScrollingDetecting(
         state = state,
         listState = listState,
-        onLoadMore = onLoadMore
+        onLoadMore = interactionListener::onNextPageRequested
     )
     WalletScaffold(
         modifier = Modifier.statusBarsPadding(),
@@ -191,27 +186,3 @@ private fun onTransactionHistoryEffect(
     }
 }
 
-@Composable
-private fun ScrollingDetecting(
-    state: TransactionHistoryScreenState,
-    listState: LazyListState,
-    buffer: Int = 5,
-    onLoadMore: () -> Unit
-) {
-    val shouldLoadMore = remember {
-        derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-                ?: return@derivedStateOf false
-
-            lastVisibleItem.index >= state.history.size - buffer
-                    && !state.endOfPages
-                    && !state.isPaginationLoading
-        }
-    }
-
-    LaunchedEffect(shouldLoadMore.value) {
-        if (shouldLoadMore.value) {
-            onLoadMore()
-        }
-    }
-}
