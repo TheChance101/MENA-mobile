@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.transaction_history
+package net.thechance.mena.wallet.presentation.utils
 
 class Paginator<Item>(
     private val onRequest: suspend (nextKey: Int) -> Result<List<Item>>,
@@ -35,4 +35,3 @@ class Paginator<Item>(
         }
     }
 }
-
