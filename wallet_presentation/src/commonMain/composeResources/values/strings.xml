@@ -94,5 +94,6 @@
     <string name="no_transactions_yet">No transactions yet</string>
     <string name="no_transactions_yet_description">Once you start using your wallet, your transactions will appear here.</string>
 
+    <string name="failed_to_apply_filters">Failed to apply filters</string>
 
 </resources>

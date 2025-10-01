@@ -5,8 +5,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.balance_fetch_error_description
 import mena.wallet_presentation.generated.resources.error
+import mena.wallet_presentation.generated.resources.failed_to_apply_filters
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -156,7 +156,7 @@ class TransactionHistoryViewModel(
 
         showSnackBar(
             titleRes = Res.string.error,
-            messageRes = Res.string.balance_fetch_error_description,
+            messageRes = Res.string.failed_to_apply_filters,
             isSuccess = false
         )
     }

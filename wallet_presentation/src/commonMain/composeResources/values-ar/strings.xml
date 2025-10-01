@@ -94,4 +94,6 @@
     <string name="no_transactions_yet">لا توجد معاملات حتى الآن</string>
     <string name="no_transactions_yet_description">بمجرد أن تبدأ في استخدام محفظتك، ستظهر معاملاتك هنا.</string>
 
+    <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
+
 </resources>

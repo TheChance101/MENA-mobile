@@ -36,6 +36,7 @@ import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.FilterTransactionEmpty
 import net.thechance.mena.wallet.presentation.screen.TransactionHistoryEmpty
@@ -75,8 +76,7 @@ fun TransactionHistoryScreen(
 
 @Composable
 fun TransactionHistoryContent(
-    state: TransactionHistoryScreenState,
-    interactionListener: TransactionHistoryInteractionListener
+    state: TransactionHistoryScreenState, interactionListener: TransactionHistoryInteractionListener
 ) {
     WalletScaffold(modifier = Modifier.statusBarsPadding(), topBar = {
         AppBar(
@@ -111,22 +111,19 @@ fun TransactionHistoryContent(
                 },
                 onToClick = {
                     // TODO: Show date picker
-                }
-            )
+                })
         }
+    }, snackBar = {
+        SnackBarContainer(snackBarState = state.snackBar)
     }) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Theme.colorScheme.background.surface)
+            modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
                 .padding(horizontal = 16.dp, vertical = 16.dp),
         ) {
             item {
                 if (state.history.isEmpty() && state.filterState.activeFilterCount == 0) {
                     Box(
-                        modifier = Modifier
-                            .fillParentMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         TransactionHistoryEmpty()
                     }
@@ -160,9 +157,7 @@ fun TransactionHistoryContent(
             item {
                 if (state.history.isEmpty()) {
                     Box(
-                        modifier = Modifier
-                            .fillParentMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         FilterTransactionEmpty()
                     }
@@ -170,16 +165,11 @@ fun TransactionHistoryContent(
             }
             items(state.history) { transaction ->
                 TransactionHistoryCard(
-                    transaction = transaction,
-                    onTransactionCardClicked = {
+                    transaction = transaction, onTransactionCardClicked = {
                         interactionListener.onTransactionCardClicked(transaction.id)
-                    }
-                )
+                    })
                 Box(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .fillMaxWidth()
-                        .height(1.dp)
+                    modifier = Modifier.padding(top = 4.dp).fillMaxWidth().height(1.dp)
                         .background(Theme.colorScheme.stroke)
                 )
             }
