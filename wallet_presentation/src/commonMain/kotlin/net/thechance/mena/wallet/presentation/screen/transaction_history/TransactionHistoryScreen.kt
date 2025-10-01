@@ -4,11 +4,8 @@ package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +18,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -91,20 +87,11 @@ fun TransactionHistoryContent(
     listState: LazyListState,
     onLoadMore: () -> Unit
 ) {
-    val shouldLoadMore = remember {
-        derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-                ?: return@derivedStateOf false
-            lastVisibleItem.index >= state.history.size - 5 && !state.endOfPages && !state.isPaginationLoading
-        }
-    }
-
-    LaunchedEffect(shouldLoadMore.value) {
-        if (shouldLoadMore.value) {
-            onLoadMore()
-        }
-    }
-
+    ScrollingDetecting(
+        state = state,
+        listState = listState,
+        onLoadMore = onLoadMore
+    )
     WalletScaffold(
         modifier = Modifier.statusBarsPadding(),
         topBar = {
@@ -200,6 +187,31 @@ private fun onTransactionHistoryEffect(
 
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
             navigateToTransactionDetails(effect.id)
+        }
+    }
+}
+
+@Composable
+private fun ScrollingDetecting(
+    state: TransactionHistoryScreenState,
+    listState: LazyListState,
+    buffer: Int = 5,
+    onLoadMore: () -> Unit
+) {
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+                ?: return@derivedStateOf false
+
+            lastVisibleItem.index >= state.history.size - buffer
+                    && !state.endOfPages
+                    && !state.isPaginationLoading
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore.value) {
+        if (shouldLoadMore.value) {
+            onLoadMore()
         }
     }
 }
