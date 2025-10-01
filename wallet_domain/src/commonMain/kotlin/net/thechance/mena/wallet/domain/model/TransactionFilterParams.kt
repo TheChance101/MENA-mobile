@@ -5,8 +5,8 @@ import kotlinx.datetime.LocalDate
 data class TransactionFilterParams(
     val page: Int?,
     val pageSize: Int?,
-    val types: List<TransactionType>?,
-    val status: TransactionStatus?,
-    val startDate: LocalDate?,
-    val endDate :LocalDate?,
+    val types: List<TransactionType>? = null,
+    val status: TransactionStatus? = null,
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
 )

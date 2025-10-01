@@ -70,4 +70,22 @@
     <string name="retry">Re-try</string>
     <string name="filter_transaction_error_title">Filters give no matches</string>
     <string name="filter_transaction_error_description">Change your filters or reset them to explore all transactions</string>
+
+    <string name="error_no_transactions">No transactions found</string>
+    <string name="error_failed_view">Failed to view transactions</string>
+    <string name="download">Download</string>
+    <string name="view_and_share">View &amp; Share</string>
+    <string name="custom_filtering">Custom Filtering</string>
+    <string name="all_transactions">All Transactions</string>
+    <string name="export_transactions">Export Transactions</string>
+    <string name="downloading_started">Downloading Started...</string>
+    <string name="download_success">Your transactions have been saved successfully.</string>
+    <string name="download_complete">Download complete</string>
+    <string name="download_failed">Download failed</string>
+    <string name="something_went_wrong">Something went wrong. Please try again.</string>
+
+    <string name="filter_crossfade">FilterCrossfade</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="background_color_animation">Background Color Animation</string>
+
 </resources>
