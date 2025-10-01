@@ -8,17 +8,31 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class StatementRepositoryImplTest {
 
-    lateinit var statementRepository: StatementRepositoryImpl
-    lateinit var networkClient: NetworkClient
+    private lateinit var statementRepository: StatementRepositoryImpl
+    private lateinit var networkClient: NetworkClient
+    private val testDispatcher = StandardTestDispatcher()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @BeforeTest
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+    }
 
     @Test
     fun `getStatement should return statement when API call is successful`() = runTest {
@@ -49,6 +63,19 @@ class StatementRepositoryImplTest {
         val result = statementRepository.getLastStatement()
 
         assertEquals(result.contentEquals(statement), true)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `statement should return to null after an hour`() = runTest {
+        networkClient = createNetworkClient(statementResonance)
+        statementRepository = StatementRepositoryImpl(networkClient, CoroutineScope(testDispatcher))
+
+        statementRepository.getStatement()
+        advanceUntilIdle()
+        val result = statementRepository.getLastStatement()
+
+        assertEquals(null, result)
     }
 
     private companion object {

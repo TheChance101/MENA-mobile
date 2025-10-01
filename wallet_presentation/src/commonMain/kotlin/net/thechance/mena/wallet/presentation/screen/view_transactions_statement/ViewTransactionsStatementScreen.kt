@@ -77,7 +77,7 @@ private suspend fun handleEffects(
     shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
 ) {
     when (effect) {
-        ViewTransactionStatementEffect.NavigatedBack -> onNavigateBackClicked()
+        ViewTransactionStatementEffect.NavigateBack -> onNavigateBackClicked()
         is ViewTransactionStatementEffect.ShareStatement -> {
             shareStatement(effect.statement, "statement.pdf")
         }

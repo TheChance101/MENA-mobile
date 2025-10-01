@@ -1,5 +1,8 @@
 package net.thechance.mena.wallet.presentation.screen.view_transactions_statement
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.UiState
@@ -8,7 +11,8 @@ import org.koin.core.annotation.Provided
 
 @KoinViewModel
 class ViewTransactionStatementViewModel(
-    @Provided private val statementRepository: StatementRepository
+    @Provided private val statementRepository: StatementRepository,
+    private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ):
     BaseViewModel<
             ViewTransactionStatementScreenState,
@@ -30,6 +34,7 @@ class ViewTransactionStatementViewModel(
                 e.printStackTrace()
                 updateState { it.copy(statement = UiState.Error(e)) }
             },
+            dispatcher = dispatcherIO
         )
     }
 
@@ -42,7 +47,7 @@ class ViewTransactionStatementViewModel(
     }
 
     override fun onNavigateBackClicked() {
-        sendEffect(ViewTransactionStatementEffect.NavigatedBack)
+        sendEffect(ViewTransactionStatementEffect.NavigateBack)
     }
 
     override fun onShareClicked() {
