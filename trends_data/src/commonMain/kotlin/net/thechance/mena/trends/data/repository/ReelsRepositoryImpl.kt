@@ -101,7 +101,7 @@ internal class ReelsRepositoryImpl(
         name: String
     ) {
         safeApiCall<Unit> {
-            networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT") {
+            networkClient.put(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT") {
                 setBody(
                     createUploadThumbnailBody(
                         thumbnail = thumbnail,
