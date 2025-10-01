@@ -89,4 +89,8 @@ class TransactionHistoryViewModel(
     override fun onNextPageRequested(){
         loadNextTransactions()
     }
+
+    override fun onRetry() {
+        loadNextTransactions()
+    }
 }

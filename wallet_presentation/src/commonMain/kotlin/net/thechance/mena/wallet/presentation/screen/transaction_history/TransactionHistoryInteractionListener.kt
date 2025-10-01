@@ -10,4 +10,5 @@ interface TransactionHistoryInteractionListener {
     fun onExportClicked()
     fun onFilterClicked()
     fun onNextPageRequested()
+    fun onRetry()
 }
