@@ -88,6 +88,7 @@ private fun UserReelScreenContent(
                     buttonText = stringResource(Res.string.delete),
                     dismissOnBackPress = true,
                     dismissOnClickOutside = true,
+                    isVisible = state.isConfirmationDialogVisible,
                     onDismiss = { listener.onDismissConfirmationDialog() },
                     onActionClick = { listener.onConfirmDeleteClick() },
                     onCancelClick = { listener.onDismissConfirmationDialog() },
