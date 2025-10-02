@@ -9,6 +9,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.balance.TransactionRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Transaction
@@ -20,7 +23,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class TransactionRepositoryImplTest {
     lateinit var transactionRepository: TransactionRepositoryImpl
     lateinit var networkClient: NetworkClient
@@ -49,6 +54,28 @@ class TransactionRepositoryImplTest {
 
         assertFailsWith<UnknownException> {
             transactionRepository.getTransactionHistory(null)
+        }
+    }
+
+    @Test
+    fun `getTransactionById returns transaction when API call is successful`() = runTest()
+    {
+        networkClient = createNetworkClient(transactionResponse)
+        transactionRepository = TransactionRepositoryImpl(networkClient)
+
+        val result = transactionRepository.getTransactionById(transaction1Id)
+
+        assertEquals(transaction1, result)
+    }
+
+    @Test
+    fun `getTransactionById returns throw exception when API call is fails`() = runTest()
+    {
+        networkClient = createNetworkClient(transactionErrorResponse)
+        transactionRepository = TransactionRepositoryImpl(networkClient)
+
+        assertFailsWith<Exception> {
+            transactionRepository.getTransactionById(transaction1Id)
         }
     }
 
@@ -91,6 +118,53 @@ class TransactionRepositoryImplTest {
             }
 
         val errorResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
+            respond(
+                content = """{"message": "Server error occurred"}""",
+                status = HttpStatusCode.InternalServerError,
+                headers = headersOf(
+                    HttpHeaders.ContentType,
+                    ContentType.Application.Json.toString()
+                )
+            )
+        }
+
+        val transaction1Id = Uuid.random()
+        val transaction1 = Transaction(
+            id = transaction1Id,
+            createdAt = LocalDateTime(
+                date = LocalDate(2025, 8, 20),
+                time = LocalTime(12, 0)
+            ),
+            amount = 5000.0,
+            status = TransactionStatus.SUCCESS,
+            senderName = "Nour Elhoda",
+            receiverName = "Nour Elhoda",
+            type = TransactionType.RECEIVED
+        )
+
+        val transactionResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
+            {
+                respond(
+                    content = """
+                    {
+                        "id": "$transaction1Id",
+                        "senderName": "${transaction1.senderName}",
+                        "receiverName": "${transaction1.receiverName}",
+                        "status": "SUCCESS",
+                        "type": "RECEIVED",
+                        "createdAt": "2025-08-20T12:00",
+                        "amount": ${transaction1.amount}
+                    }
+                    """,
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.toString()
+                    )
+                )
+            }
+
+        val transactionErrorResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
             respond(
                 content = """{"message": "Server error occurred"}""",
                 status = HttpStatusCode.InternalServerError,

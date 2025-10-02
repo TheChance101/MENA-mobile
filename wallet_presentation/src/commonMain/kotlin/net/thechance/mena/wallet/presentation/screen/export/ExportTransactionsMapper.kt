@@ -16,7 +16,7 @@ fun FilterType.toDomain(): TransactionType {
 fun FilterStatus.toDomain(): TransactionStatus? {
     return when (this) {
         FilterStatus.ALL -> null
-        FilterStatus.FAILED -> TransactionStatus.FAIL
+        FilterStatus.FAILED -> TransactionStatus.FAILED
         FilterStatus.SUCCESS -> TransactionStatus.SUCCESS
     }
 }

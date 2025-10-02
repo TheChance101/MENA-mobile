@@ -22,4 +22,12 @@
     <string name="tunisia">تونس</string>
     <string name="uae">الإمارات العربية المتحدة</string>
     <string name="yemen">اليمن</string>
+
+    <string name="reset_password">إعادة تعيين كلمة المرور</string>
+    <string name="new_password_title">كلمة المرور الجديدة</string>
+    <string name="reset_password_description">يرجى إدخال كلمة المرور الجديدة والتأكد من تذكرها في المرة القادمة</string>
+    <string name="new_password_label">كلمة المرور الجديدة</string>
+    <string name="confirm_password_label">تأكيد كلمة المرور</string>
+    <string name="reset">إعادة تعيين</string>
+    <string name="error">خطأ</string>
 </resources>

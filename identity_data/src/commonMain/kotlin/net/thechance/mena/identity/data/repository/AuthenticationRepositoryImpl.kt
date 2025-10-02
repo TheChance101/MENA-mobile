@@ -4,8 +4,8 @@ import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import net.thechance.mena.identity.data.dto.auth.LoginRequestDto
 import net.thechance.mena.identity.data.dto.auth.AuthenticationResponse
+import net.thechance.mena.identity.data.dto.auth.LoginRequestDto
 import net.thechance.mena.identity.data.dto.auth.RefreshRequestDto
 import net.thechance.mena.identity.data.utils.accessToken
 import net.thechance.mena.identity.data.utils.postJson
@@ -23,14 +23,17 @@ class AuthenticationRepositoryImpl(
 
     override suspend fun login(phoneNumber: PhoneNumber, password: String) {
         return safeWrapper {
-            val loginResponse: AuthenticationResponse = client.postJson(LoginRequestDto(phoneNumber.getFormattedPhoneNumber(), password), LOGIN)
+            val loginResponse: AuthenticationResponse = client.postJson(
+                LoginRequestDto(phoneNumber.getFormattedPhoneNumber(), password),
+                LOGIN_ENDPOINT
+            )
             saveAuthTokens(loginResponse)
         }
     }
 
     override suspend fun refreshAccessToken(): String {
         val refreshResponse: AuthenticationResponse = safeWrapper {
-            client.postJson(RefreshRequestDto(settings.refreshToken), REFRESH)
+            client.postJson(RefreshRequestDto(settings.refreshToken), REFRESH_ENDPOINT)
         }
         saveAuthTokens(refreshResponse)
 
@@ -52,8 +55,7 @@ class AuthenticationRepositoryImpl(
     }
 
     companion object {
-        const val LOGIN = "identity/login"
-        const val REFRESH = "identity/refresh"
-
+        const val LOGIN_ENDPOINT = "identity/authentication/login"
+        const val REFRESH_ENDPOINT = "identity/authentication/refresh"
     }
 }

@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.domain.repository
 
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 

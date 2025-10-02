@@ -114,7 +114,6 @@ private fun ExportTransactionScreenPreview() {
                 override fun onAllTransactionsClicked() {}
                 override fun onCustomFilteringClicked() {}
                 override fun onTypeSelected(type: FilterType) {}
-                override fun onStatusSelected(status: FilterStatus) {}
                 override fun onFromDateClicked() {}
                 override fun onToDateClicked() {}
                 override fun onViewAndShareClicked() {}

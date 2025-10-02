@@ -1,0 +1,133 @@
+package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
+
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.Navigator
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.did_not_receive_code
+import mena.identity_presentation.generated.resources.otp_code
+import mena.identity_presentation.generated.resources.otp_prompt
+import mena.identity_presentation.generated.resources.otp_prompt_title
+import mena.identity_presentation.generated.resources.resend
+import mena.identity_presentation.generated.resources.resend_timer
+import mena.identity_presentation.generated.resources.reset_password
+import mena.identity_presentation.generated.resources.verify
+import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.AuthAppBar
+import net.thechance.mena.identity.presentation.components.AuthPrompt
+import net.thechance.mena.identity.presentation.components.AuthScreenContainer
+import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.OtpInput
+import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreen
+import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
+
+class OtpScreen(
+    private val phoneNumber: String,
+    private val countryCode: String,
+    private val callingCode: String
+) : BaseScreen<
+        OtpScreenViewModel,
+        OtpScreenUIState,
+        OtpScreenUIEffect,
+        OtpScreenInteractionListener>() {
+    @Composable
+    override fun Content() {
+        InitScreen(getScreenModel(parameters = {
+            parametersOf(
+                phoneNumber,
+                callingCode,
+                countryCode
+            )
+        }))
+    }
+
+    @Composable
+    override fun OnRender(
+        state: OtpScreenUIState,
+        listener: OtpScreenInteractionListener
+    ) {
+        Scaffold(
+            topBar = {
+                AuthAppBar(
+                    title = stringResource(Res.string.reset_password),
+                    onBackClicked = listener::onClickBack
+                )
+            }
+        ) {
+            AuthScreenContainer {
+                PageDescription(
+                    title = stringResource(Res.string.otp_prompt_title),
+                    subtitle = stringResource(Res.string.otp_prompt, phoneNumber.takeLast(2))
+                )
+
+                Text(
+                    text = stringResource(Res.string.otp_code),
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 4.dp)
+                )
+                OtpInput(
+                    otpValue = state.otpValue,
+                    onOtpChange = listener::onChangeOtp,
+                    otpLength = 6,
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                PrimaryButton(
+                    text = stringResource(Res.string.verify),
+                    onClick = listener::onClickVerify,
+                    isEnabled = state.isVerifyEnabled,
+                    isLoading = state.isLoading,
+                    contentPadding = PaddingValues(vertical = 13.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp, top = 24.dp)
+                )
+
+                val minutes = state.timer.toInt() / 60
+                val seconds = (state.timer.toInt() % 60).toString().padStart(2, '0')
+
+                AuthPrompt(
+                    message = stringResource(Res.string.did_not_receive_code),
+                    actionLabel = if (state.isResendEnabled) stringResource(Res.string.resend) else stringResource(
+                        Res.string.resend_timer,
+                        minutes,
+                        seconds
+                    ),
+                    onActionClick = listener::onClickResend,
+                    isEnabled = state.isResendEnabled
+                )
+            }
+        }
+        ErrorSnackBar(
+            errorMessage = state.errorMessage,
+            onDismiss = listener::onClearErrorMessage,
+            modifier = Modifier.statusBarsPadding()
+        )
+    }
+
+    override fun onEffect(
+        effect: OtpScreenUIEffect,
+        navigator: Navigator
+    ) {
+        when (effect) {
+            OtpScreenUIEffect.NavigateBack -> navigator.pop()
+            is OtpScreenUIEffect.NavigateToResetPassword -> navigator.push(ResetPasswordScreen( effect.phoneNumber, effect.callingCode))
+        }
+    }
+}

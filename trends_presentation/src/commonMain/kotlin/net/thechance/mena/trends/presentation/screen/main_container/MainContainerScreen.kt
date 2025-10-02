@@ -41,13 +41,18 @@ internal fun MainContainerScreen(
             MainContainerEffect.NavigateToManageTrends -> {
                 navController.navigate(Route.ManageReels)
             }
+
+            MainContainerEffect.NavigateToUploadReel -> {
+                navController.navigate(Route.UploadReel)
+            }
         }
     }
 
     MainContainerScreenContent(
         state = state,
         onClickCategory = viewModel::navigateToCategories,
-        onClickManageTrends = viewModel::navigateToManageTrends
+        onClickManageTrends = viewModel::navigateToManageTrends,
+        onClickUploadReel = viewModel::navigateToUploadReel
     )
 }
 
@@ -55,10 +60,9 @@ internal fun MainContainerScreen(
 private fun MainContainerScreenContent(
     state: MainContainerState,
     onClickCategory: () -> Unit, // TODO: REMOVE CALLBACK IN FUTURE
-    onClickManageTrends: () -> Unit // TODO: REMOVE CALLBACK IN FUTURE
+    onClickManageTrends: () -> Unit, // TODO: REMOVE CALLBACK IN FUTURE
+    onClickUploadReel: () -> Unit, // TODO: REMOVE CALLBACK IN FUTURE
 ) {
-
-
     if (state.isCategoriesAlreadySelectedByUser != null) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -79,6 +83,12 @@ private fun MainContainerScreenContent(
                     onClick = onClickManageTrends,
                 ) {
                     Text("Mange Reels", style = Theme.typography.title.medium)
+                }
+
+                Button(
+                    onClick = onClickUploadReel,
+                ) {
+                    Text("Upload Reel", style = Theme.typography.title.medium)
                 }
             }
         }

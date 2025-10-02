@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.upload_trend
+package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import app.cash.turbine.test
 import assertk.assertThat
@@ -15,14 +15,16 @@ import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode.Companion.exactly
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
+import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
-import net.thechance.mena.trends.presentation.screen.upload_trend.UploadTrendsScreenState.UploadingTrendState
+import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingTrendState
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.video_util.VideoUtilities
@@ -42,7 +44,7 @@ class UploadTrendViewModelTest: TestExtensions() {
         everySuspend { getDuration(any()) } returns VALID_DURATION
     }
     private val viewModel by lazy {
-        UploadTrendViewModel(
+        UploadReelViewModel(
             reelsRepository = repository,
             videoValidator = validator,
             videoUtilities = videoExtractor,
@@ -95,17 +97,6 @@ class UploadTrendViewModelTest: TestExtensions() {
     }
 
     @Test
-    fun `onRetrieveVideo should update state with valid selected file info`() = runTest(testDispatcher) {
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
-
-        viewModel.state.test {
-            assertThat(awaitItem().selectedFile).isEqualTo(fileWithValidInfo)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `onRetrieveVideo should call uploadTrend from repository when file is valid`() = runTest(testDispatcher) {
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -123,8 +114,7 @@ class UploadTrendViewModelTest: TestExtensions() {
             assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
             assertThat(state.isNextButtonEnabled).isFalse()
             assertThat(state.errorState).isNull()
-            assertThat(state.uploadedMegaBytes).isEmpty()
-        }
+            assertThat(state.uploadedBytes).isEqualTo(0L)        }
     }
 
     @Test
@@ -140,6 +130,7 @@ class UploadTrendViewModelTest: TestExtensions() {
         viewModel.onBackClick()
 
         viewModel.effect.test {
+            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateBack)
             assertThat(awaitItem()).isEqualTo(UploadTrendsScreenEffect.NavigateBack)
             cancelAndIgnoreRemainingEvents()
         }
@@ -165,8 +156,7 @@ class UploadTrendViewModelTest: TestExtensions() {
             assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
             assertThat(state.isNextButtonEnabled).isFalse()
             assertThat(state.errorState).isNull()
-            assertThat(state.uploadedMegaBytes).isEmpty()
-        }
+            assertThat(state.uploadedBytes).isEqualTo(0L)        }
     }
 
     @Test
@@ -195,18 +185,6 @@ class UploadTrendViewModelTest: TestExtensions() {
     }
 
     @Test
-    fun `should update state with progress of uploaded bytes when uploading`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadInProgress)
-
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
-
-        viewModel.state.test {
-            assertThat(awaitItem().uploadedMegaBytes).isEqualTo(formatBytes(uploadInProgress.numberOfUploadedBytes))
-        }
-    }
-
-    @Test
     fun `should update uploading state to SUCCESS video uploaded successfully`() = runTest {
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -219,6 +197,32 @@ class UploadTrendViewModelTest: TestExtensions() {
     }
 
     @Test
+    fun `onRetrieveVideo should update state with valid selected file info`() = runTest(testDispatcher) {
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+        viewModel.state.test {
+            val state: UploadReelScreenState = awaitItem()
+            assertThat(state.selectedFile.name).isEqualTo(fileWithValidInfo.name)
+            assertThat(state.selectedFile.extension).isEqualTo(fileWithValidInfo.extension)
+            assertThat(state.selectedFile.sizeInBytes).isEqualTo(fileWithValidInfo.sizeInBytes)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should update state with progress of uploaded bytes when uploading`() = runTest {
+        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadInProgress)
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            assertThat(awaitItem().uploadedBytes).isEqualTo(uploadInProgress.numberOfUploadedBytes)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `should update state with reelId when uploaded successfully`() = runTest {
         every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
 
@@ -226,7 +230,50 @@ class UploadTrendViewModelTest: TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().selectedFile.id).isEqualTo(uploadDone.reelId)
+            assertThat(awaitItem().trendId).isEqualTo(uploadDone.reelId)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onNextClick should send NavigateToAddDescription effect`() = runTest(testDispatcher) {
+        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
+        viewModel.onNextClick()
+
+        viewModel.effect.test {
+            val trendId = viewModel.state.value.trendId
+            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateToAddDescription(trendId ?: ""))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onEditVideoClick should reset thumbnail and state`() = runTest {
+        viewModel.onEditVideoClick()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.thumbnail).isNull()
+            assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onCancelUploadClick should reset thumbnail and state`() = runTest {
+        viewModel.onCancelUploadClick()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.thumbnail).isNull()
+            assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -241,7 +288,6 @@ class UploadTrendViewModelTest: TestExtensions() {
         val defaultFile = FileUiState()
         val fileWithInvalidSize = defaultFile.copy(sizeInBytes = INVALID_SIZE)
         val fileWithValidInfo = FileUiState(
-            id = "id1",
             name = "name1",
             extension = "mp4",
             sizeInBytes = VALID_SIZE,

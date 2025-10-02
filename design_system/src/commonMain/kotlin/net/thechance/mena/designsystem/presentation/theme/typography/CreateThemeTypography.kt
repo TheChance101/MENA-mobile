@@ -6,9 +6,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import mena.design_system.generated.resources.Res
+import mena.design_system.generated.resources.madimi_one_regular
 import mena.design_system.generated.resources.poppins_medium
 import mena.design_system.generated.resources.poppins_regular
 import mena.design_system.generated.resources.poppins_semi_bold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.Font
 
 @Composable
@@ -19,7 +21,19 @@ fun createThemeTypography(): Typography {
         Font(resource = Res.font.poppins_semi_bold, FontWeight.SemiBold)
     )
 
+    val madimiOneFontFamily = FontFamily(
+        Font(
+            resource = Res.font.madimi_one_regular,
+            FontWeight.Normal
+        )
+    )
+
     return Typography(
+        appName = TextStyle.Default.copy(
+            fontSize = 28.sp,
+            fontFamily = madimiOneFontFamily,
+            color = Theme.colorScheme.brand.brand
+        ),
         headline = Typography.Headline(
             large = TextStyle(
                 fontFamily = poppinsFontFamily,

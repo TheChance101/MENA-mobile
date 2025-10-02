@@ -4,4 +4,5 @@ interface MainContainerEffect {
     data object NavigateToTrends: MainContainerEffect
     data object NavigateToCategoryPick: MainContainerEffect
     data object NavigateToManageTrends: MainContainerEffect
+    data object NavigateToUploadReel: MainContainerEffect
 }

@@ -29,8 +29,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
-import net.thechance.mena.trends.presentation.shared.model.VideoUploadingState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -38,75 +38,79 @@ import org.jetbrains.compose.resources.stringResource
 fun VideoLoadingCardItem(
     title: String,
     videoSize: String,
-    videoState: VideoUploadingState,
+    videoState: UploadReelScreenState.UploadingTrendState,
     progress: Float,
     modifier: Modifier = Modifier,
     onAction: (VideoAction) -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(Theme.spacing._12))
-            .background(Theme.colorScheme.primary.onPrimary)
-            .padding(horizontal = Theme.spacing._12),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        VideoInfoSection(
-            title = title,
-            videoSize = videoSize,
-            videoState = videoState,
-            progress = progress,
-            modifier = Modifier.weight(1f)
-        )
+    if (videoState != UploadReelScreenState.UploadingTrendState.IDLE) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(Theme.spacing._12))
+                .background(Theme.colorScheme.primary.onPrimary)
+                .padding(horizontal = Theme.spacing._12),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            VideoInfoSection(
+                title = title,
+                videoSize = videoSize,
+                videoState = videoState,
+                progress = progress,
+                modifier = Modifier.weight(1f)
+            )
 
-        when (videoState) {
-            VideoUploadingState.Loading -> {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_cancel),
-                    contentDescription = stringResource(Res.string.loading),
-                    tint = Theme.colorScheme.shadeSecondary,
-                    modifier = Modifier
-                        .padding(top = Theme.spacing._12)
-                        .size(Theme.spacing._16)
-                        .clickable { onAction(VideoAction.Cancel) }
-                )
-            }
-
-            VideoUploadingState.Error -> {
-                Row(
-                    modifier = Modifier.padding(top = Theme.spacing._24),
-                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+            when (videoState) {
+                UploadReelScreenState.UploadingTrendState.UPLOADING -> {
                     Icon(
-                        painter = painterResource(Res.drawable.ic_delete),
-                        contentDescription = stringResource(Res.string.error),
+                        painter = painterResource(Res.drawable.ic_cancel),
+                        contentDescription = stringResource(Res.string.loading),
                         tint = Theme.colorScheme.shadeSecondary,
                         modifier = Modifier
+                            .padding(top = Theme.spacing._12)
+                            .size(Theme.spacing._16)
+                            .clickable { onAction(VideoAction.Cancel) }
+                    )
+                }
+
+                UploadReelScreenState.UploadingTrendState.FAILED -> {
+                    Row(
+                        modifier = Modifier.padding(top = Theme.spacing._24),
+                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_delete),
+                            contentDescription = stringResource(Res.string.error),
+                            tint = Theme.colorScheme.shadeSecondary,
+                            modifier = Modifier
+                                .size(Theme.spacing._16)
+                                .clickable { onAction(VideoAction.Delete) }
+                        )
+                        Icon(
+                            painter = painterResource(Res.drawable.arrow_reload_horizontal),
+                            contentDescription = stringResource(Res.string.retry),
+                            tint = Theme.colorScheme.shadeSecondary,
+                            modifier = Modifier
+                                .size(Theme.spacing._16)
+                                .clickable { onAction(VideoAction.Retry) }
+                        )
+                    }
+                }
+
+                UploadReelScreenState.UploadingTrendState.SUCCESS -> {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_delete),
+                        contentDescription = stringResource(Res.string.success),
+                        tint = Theme.colorScheme.shadeSecondary,
+                        modifier = Modifier
+                            .padding(top = Theme.spacing._24)
                             .size(Theme.spacing._16)
                             .clickable { onAction(VideoAction.Delete) }
                     )
-                    Icon(
-                        painter = painterResource(Res.drawable.arrow_reload_horizontal),
-                        contentDescription = stringResource(Res.string.retry),
-                        tint = Theme.colorScheme.shadeSecondary,
-                        modifier = Modifier
-                            .size(Theme.spacing._16)
-                            .clickable { onAction(VideoAction.Retry) }
-                    )
                 }
-            }
 
-            VideoUploadingState.Success -> {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_delete),
-                    contentDescription = stringResource(Res.string.success),
-                    tint = Theme.colorScheme.shadeSecondary,
-                    modifier = Modifier
-                        .padding(top = Theme.spacing._24)
-                        .size(Theme.spacing._16)
-                        .clickable { onAction(VideoAction.Delete) }
-                )
+                UploadReelScreenState.UploadingTrendState.IDLE -> {}
             }
         }
     }
@@ -116,7 +120,7 @@ fun VideoLoadingCardItem(
 private fun VideoInfoSection(
     title: String,
     videoSize: String,
-    videoState: VideoUploadingState,
+    videoState: UploadReelScreenState.UploadingTrendState,
     progress: Float,
     modifier: Modifier = Modifier,
 ) {
@@ -150,7 +154,7 @@ private fun VideoInfoSection(
             )
 
             when (videoState) {
-                VideoUploadingState.Loading -> {
+                UploadReelScreenState.UploadingTrendState.UPLOADING -> {
                     Text(
                         text = videoSize,
                         color = Theme.colorScheme.shadeSecondary,
@@ -171,7 +175,7 @@ private fun VideoInfoSection(
                     )
                 }
 
-                VideoUploadingState.Success -> {
+                UploadReelScreenState.UploadingTrendState.SUCCESS -> {
                     Text(
                         text = videoSize,
                         color = Theme.colorScheme.shadeSecondary,
@@ -180,7 +184,7 @@ private fun VideoInfoSection(
                     )
                 }
 
-                VideoUploadingState.Error -> {
+                UploadReelScreenState.UploadingTrendState.FAILED -> {
                     Text(
                         text = stringResource(Res.string.upload_failed),
                         color = Theme.colorScheme.border.error,
@@ -191,6 +195,8 @@ private fun VideoInfoSection(
                         )
                     )
                 }
+
+                UploadReelScreenState.UploadingTrendState.IDLE -> {}
             }
         }
     }
