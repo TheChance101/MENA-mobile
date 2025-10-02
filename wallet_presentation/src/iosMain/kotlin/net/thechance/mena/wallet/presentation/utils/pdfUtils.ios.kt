@@ -21,9 +21,7 @@ import platform.CoreGraphics.CGColorSpaceRelease
 import platform.CoreGraphics.CGContextDrawPDFPage
 import platform.CoreGraphics.CGContextFillRect
 import platform.CoreGraphics.CGContextRelease
-import platform.CoreGraphics.CGContextScaleCTM
 import platform.CoreGraphics.CGContextSetRGBFillColor
-import platform.CoreGraphics.CGContextTranslateCTM
 import platform.CoreGraphics.CGDataProviderCreateWithCFData
 import platform.CoreGraphics.CGDataProviderRelease
 import platform.CoreGraphics.CGImageAlphaInfo.kCGImageAlphaPremultipliedLast
@@ -82,9 +80,6 @@ actual class PdfHandler {
 
                 CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
                 CGContextFillRect(context, pageRect)
-
-                CGContextTranslateCTM(context, 0.0, height)
-                CGContextScaleCTM(context, 1.0, 1.0)
 
                 CGContextDrawPDFPage(context, page)
 
