@@ -30,9 +30,6 @@ class TransactionHistoryViewModel(
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
     TransactionHistoryScreenState()
 ), TransactionHistoryInteractionListener {
-
-),
-    TransactionHistoryInteractionListener {
     companion object {
         const val PAGE_SIZE = 20
     }
@@ -55,15 +52,6 @@ class TransactionHistoryViewModel(
             paginator.loadNextItems()
         }
     }
-
-    private fun getTransactionHistory(filters: TransactionFilterParams? = null) {
-        tryToExecute(
-            callee = { transactionRepository.getTransactionHistory(filters) },
-            onStart = ::onGetTransactionHistoryStart,
-            onSuccess = ::onGetTransactionHistorySuccess,
-            onError = ::onGetTransactionHistoryError,
-            dispatcher = Dispatchers.IO
-        )
     private fun onPaginationLoading(isLoading: Boolean) {
         updateState {
             if (isLoading) {
@@ -82,24 +70,6 @@ class TransactionHistoryViewModel(
         }
     }
 
-    private fun onGetTransactionHistoryStart() {
-        updateState {
-            it.copy(
-                isLoading = true,
-                isError = null
-            )
-        }
-    }
-
-    private fun onGetTransactionHistorySuccess(transactionHistory: List<Transaction>) {
-        updateState {
-            it.copy(
-                history = transactionHistory.map { it -> it.toUi() },
-                isLoading = false,
-                isError = null
-            )
-        }
-
     private suspend fun getPagedTransactions(
         page: Int,
         pageSize: Int = PAGE_SIZE
@@ -108,7 +78,6 @@ class TransactionHistoryViewModel(
         pageSize = pageSize,
         TransactionFilterParams()
     )
-
 
     private fun onPaginationSuccess(items: List<Transaction>) {
         updateState {
