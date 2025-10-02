@@ -49,50 +49,19 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
     BottomSheet(
         onDismissRequest = onDismiss,
         skipPartiallyExpanded = true,
-        modifier = modifier
-            .navigationBarsPadding(),
+        modifier = modifier.navigationBarsPadding(),
         stickyFooterContent = {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Theme.colorScheme.background.surface)
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp, bottom = 24.dp)
-                    .padding(
-                        bottom = WindowInsets.navigationBars.asPaddingValues()
-                            .calculateBottomPadding()
-                    )
-            ) {
-                PrimaryButton(
-                    text = stringResource(Res.string.apply_filters),
-                    isEnabled = uiState.hasActiveFilters,
-                    isLoading = uiState.isLoading,
-                    onClick = onClickAddFilter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                )
-            }
+            StickyFooterContent(
+                hasActiveFilters = uiState.hasActiveFilters,
+                isLoading = uiState.isLoading,
+                onClickAddFilter = onClickAddFilter
+            )
         },
         sheetContent = {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(Res.string.filter_transactions),
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary
-                )
-                TextButton(
-                    text = stringResource(Res.string.reset),
-                    onClick = onResetClicked
-                )
-            }
+            HeaderFilterContent(
+                onResetClicked = onResetClicked
+            )
 
             FilterContent(
                 selectedTypes = uiState.selectedTypes,
@@ -104,9 +73,60 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
                 onFromClick = onFromClick,
                 onToClick = onToClick
             )
-
         }
     )
+}
+
+@Composable
+private fun StickyFooterContent(
+    hasActiveFilters: Boolean,
+    isLoading: Boolean,
+    onClickAddFilter: () -> Unit
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Theme.colorScheme.background.surface)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 24.dp)
+            .padding(
+                bottom = WindowInsets.navigationBars.asPaddingValues()
+                    .calculateBottomPadding()
+            )
+    ) {
+        PrimaryButton(
+            text = stringResource(Res.string.apply_filters),
+            isEnabled = hasActiveFilters,
+            isLoading = isLoading,
+            onClick = onClickAddFilter,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        )
+    }
+}
+
+@Composable
+private fun HeaderFilterContent(
+    onResetClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(Res.string.filter_transactions),
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary
+        )
+        TextButton(
+            text = stringResource(Res.string.reset),
+            onClick = onResetClicked
+        )
+    }
 }
 
 @Preview

@@ -1,6 +1,5 @@
 package net.thechance.mena.wallet.data.repository.transaction
 
-import io.ktor.client.request.parameter
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.TransactionDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
@@ -19,15 +18,14 @@ import kotlin.uuid.Uuid
 class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
-    override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): List<Transaction> {
+    override suspend fun getTransactionHistory(
+        transactionFilterParams: TransactionFilterParams?
+    ): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
-            networkClient.get("$TRANSACTION_PATH?") {
-                transactionFilterParams?.toParameters()?.forEach { key, values ->
-                    values.forEach { value ->
-                        parameter(key, value)
-                    }
-                }
-            }
+            networkClient.get(
+                urlString = TRANSACTION_PATH,
+                block = transactionFilterParams?.toParameters() ?: {}
+            )
         }.transactions.orEmpty().map { it.toEntity() }
     }
 
