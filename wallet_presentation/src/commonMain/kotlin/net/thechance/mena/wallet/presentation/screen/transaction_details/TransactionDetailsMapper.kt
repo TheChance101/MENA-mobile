@@ -19,7 +19,7 @@ import net.thechance.mena.wallet.presentation.utils.formatTransactionDate
 import kotlin.uuid.ExperimentalUuidApi
 
 fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState(
-    id = id.toString(),
+    id = "TX-"+ id.toString().substring(0,6),
     amount = amount.toString(),
     date = formatTransactionDate(createdAt),
     userName = when (type) {
@@ -39,7 +39,7 @@ fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState
     },
     transactionStatus = when (status) {
         TransactionStatus.SUCCESS -> TransactionStatusUiState.SUCCESS
-        TransactionStatus.FAIL -> TransactionStatusUiState.FAILED
+        TransactionStatus.FAILED -> TransactionStatusUiState.FAILED
     },
     userInfo = when (type) {
         TransactionType.SENT, TransactionType.ONLINE_PURCHASE -> Res.string.from
