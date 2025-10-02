@@ -432,7 +432,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue_andToastShown() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } throws NoDataFoundException()
+        everySuspend { repository.getTransactionsPdf(any()) } throws NoDataFoundException()
         initViewModel()
 
         viewModel.state.test {
@@ -447,7 +447,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadFails_thenIsDownloadLoadingResetsToFalse() = runTest(testDispatcher) {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } throws RuntimeException("error")
+        everySuspend { repository.getTransactionsPdf(any()) } throws RuntimeException("error")
         initViewModel()
 
         val state = viewModel.state.first()
@@ -458,7 +458,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun whenViewAndShareFails_thenIsViewAndShareLoadingResetsToFalse() = runTest {
         everySuspend {
-            repository.getFilteredTransactionsFile(any())
+            repository.getTransactionsPdf(any())
         } throws RuntimeException("error")
         initViewModel()
 
@@ -478,7 +478,7 @@ class ExportTransactionsViewModelTest {
     fun whenViewAndShareThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue() =
         runTest {
             everySuspend {
-                repository.getFilteredTransactionsFile(any())
+                repository.getTransactionsPdf(any())
             } throws NoDataFoundException()
 
             initViewModel()
@@ -512,7 +512,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenViewAndShareSuccess_thenIsViewAndShareLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
         viewModel.state.test {
@@ -528,7 +528,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
         viewModel.state.test {
