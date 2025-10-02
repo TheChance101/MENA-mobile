@@ -120,7 +120,9 @@ class LoginScreenModel(
             copy(
                 showCountryBottomSheet = false,
                 countryPickerUIState = countryPickerUIState.copy(
-                    selectedCountry = countryPickerUIState.currentCountry
+                    selectedCountry = countryPickerUIState.currentCountry,
+                    countries =  countryPickerUIState.countries.selectByCountry(countryPickerUIState.currentCountry),
+                    isEnabled = false
                 )
             )
         }
