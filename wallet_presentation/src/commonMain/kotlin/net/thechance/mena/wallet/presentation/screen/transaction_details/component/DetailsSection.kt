@@ -21,7 +21,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
-import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -55,10 +54,7 @@ internal fun DetailsSection(
                 resource = transactionDetailsUiState.transactionType.iconContentDescriptionRes
             ),
             iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = when (transactionDetailsUiState.transactionType) {
-                TransactionTypeUiState.ONLINE_PURCHASE  -> Theme.spacing._16
-                TransactionTypeUiState.SENT, TransactionTypeUiState.RECEIVED -> 10.dp
-            },
+            iconSize = 16.dp,
             gap = Theme.spacing._4,
         )
 

@@ -1,8 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.login
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -22,25 +19,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error
 import mena.identity_presentation.generated.resources.forget_password
-import mena.identity_presentation.generated.resources.ic_close_circle
 import mena.identity_presentation.generated.resources.ic_close_eye
 import mena.identity_presentation.generated.resources.ic_lock
 import mena.identity_presentation.generated.resources.ic_open_eye
 import mena.identity_presentation.generated.resources.login
 import mena.identity_presentation.generated.resources.login_prompt
 import mena.identity_presentation.generated.resources.password
-import mena.identity_presentation.generated.resources.phone_number
 import mena.identity_presentation.generated.resources.register_now
 import mena.identity_presentation.generated.resources.register_prompt
 import mena.identity_presentation.generated.resources.welcome_back
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -48,9 +40,10 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
+import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.LabeledPhoneNumberInput
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.components.PhoneNumberInput
-import net.thechance.mena.identity.presentation.screen.forget_password.ForgetPasswordScreen
+import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreen
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -100,21 +93,15 @@ class LoginScreen(
                         title = stringResource(Res.string.welcome_back),
                         subtitle = stringResource(Res.string.login_prompt),
                     )
-                    Text(
-                        text = stringResource(Res.string.phone_number),
-                        style = Theme.typography.title.small,
-                        color = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 4.dp)
-                    )
-                    PhoneNumberInput(
-                        state.countryPickerUIState.currentCountry.callingCode,
-                        painterResource(state.countryPickerUIState.currentCountry.flagImage),
-                        onCountryClick = listener::onPhoneCodeClicked,
+
+                    LabeledPhoneNumberInput(
                         phoneNumber = state.phoneNumber,
-                        onPhoneChange = listener::onPhoneChanged
+                        onPhoneChange = listener::onPhoneChanged,
+                        countryCode = state.countryPickerUIState.currentCountry.callingCode,
+                        countryFlag = painterResource(state.countryPickerUIState.currentCountry.flagImage),
+                        onCountryClick = listener::onPhoneCodeClicked
                     )
+
                     Text(
                         text = stringResource(Res.string.password),
                         style = Theme.typography.title.small,
@@ -163,31 +150,12 @@ class LoginScreen(
                         onActionClick = listener::onRegisterClicked
                     )
                 }
-                AnimatedVisibility(
-                    visible = state.errorMessage != null,
-                    enter = slideInHorizontally(initialOffsetX = { it }),
-                    exit = slideOutHorizontally(targetOffsetX = { it })
-                ) {
-                    SnackBar(
-                        title = stringResource(Res.string.error),
-                        message = state.errorMessage ?: "",
-                        leadingIcon = painterResource(Res.drawable.ic_close_circle),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 12.dp)
-                            .padding(horizontal = 16.dp)
-                    )
-                }
-
-                LaunchedEffect(state.errorMessage) {
-                    delay(3000)
-                    listener.clearErrorMessage()
-                }
             }
-
-
+            ErrorSnackBar(
+                errorMessage = state.errorMessage,
+                onDismiss = listener::clearErrorMessage
+            )
         }
-
     }
 
     override fun onEffect(
@@ -222,5 +190,3 @@ fun ForgetPasswordText(
             )
     }
 }
-
-

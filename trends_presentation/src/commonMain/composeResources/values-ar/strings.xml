@@ -52,6 +52,9 @@
     <string name="max_file_size_exceeded">الحد الأقصى للحجم المسموح به هو 100 ميجا بايت</string>
     <string name="max_file_duration_exceeded">الحد الأقصى للمدة المسموح بها دقيقة واحدة</string>
 
+    <string name="upload_video">ارفع مقطع فيديو</string>
+    <string name="upload_video_description">ارفع الفيديو الخاص بك لمشاركته مع الآخرين. تأكد أن الملف واضح ولا يتخطى الحجم المسموح به</string>
+
     <string name="add_categories_to_video">أضف تصنيفات للفيديو</string>
     <string name="choose_categories">يمكنك اختيار حتى ٣ تصنيفات</string>
     <string name="publish_video">نشر الفيديو</string>

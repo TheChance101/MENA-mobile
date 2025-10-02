@@ -16,6 +16,7 @@ import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
+import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
@@ -68,14 +69,13 @@ internal class ReelsRepositoryImpl(
         bytes: ByteArray
     ): Flow<UploadReelProgress> {
         return channelFlow {
-            safeApiCall<Unit> {  // TODO: return UploadVideoDto
-                networkClient.post(urlString = "") {  // TODO: change to real endpoint
+            val response = safeApiCall<UploadReelResponse> {
+                networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT") {
                     infiniteTimeOut()
                     setBody(createUploadReelBody(name, bytes, size, mimeType))
                     observeUploading { sent, total ->
                         send(
                             UploadReelProgress(
-                                reelId = "",
                                 numberOfUploadedBytes = sent,
                                 totalBytes = total
                             )
@@ -85,7 +85,7 @@ internal class ReelsRepositoryImpl(
             }
             send(
                 UploadReelProgress(
-                    reelId = "", // TODO: id of uploaded reel
+                    reelId = response.reelId.orEmpty(),
                     numberOfUploadedBytes = size,
                     totalBytes = size
                 )
@@ -102,7 +102,7 @@ internal class ReelsRepositoryImpl(
         return MultiPartFormDataContent(
             formData {
                 append(
-                    key = "video", // TODO:
+                    key = "video",
                     value = InputProvider(size) {
                         ByteReadChannel(reelBytes).asSource().buffered()
                     },

@@ -11,6 +11,7 @@ import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
 import net.thechance.mena.trends.data.repository.util.getReelsResponse
+import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.Test
@@ -46,7 +47,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should update reel successfully`() = runTest {
 
-        networkClient = createReelsHttpClient { uploadReelResponse() }
+        networkClient = createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
         repository = ReelsRepositoryImpl(networkClient)
 
         val result = runCatching {
@@ -71,7 +72,7 @@ internal class ReelRepositoryImplTest {
                 name = FAKE_NAME,
                 mimeType = FAKE_MIME_TYPE,
                 size = FAKE_SIZE,
-                bytes = fakeBytes
+                bytes = FAKE_BYTES
             )
         }
         assertThat(result).isSuccess()
@@ -87,7 +88,7 @@ internal class ReelRepositoryImplTest {
             name = FAKE_NAME,
             mimeType = FAKE_MIME_TYPE,
             size = FAKE_SIZE,
-            bytes = fakeBytes
+            bytes = FAKE_BYTES
         ).toList()
 
         assertThat(progressUpdates).isNotEmpty()
@@ -99,7 +100,7 @@ internal class ReelRepositoryImplTest {
 
     private companion object {
         const val FAKE_SIZE = 1000L
-        val fakeBytes = ByteArray(FAKE_SIZE.toInt()) { 1 }
+        val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
         const val FAKE_MIME_TYPE = "mp4"
         const val FAKE_NAME = "test_video"
     }

@@ -8,7 +8,6 @@ interface ExportTransactionsListener {
     fun onAllTransactionsClicked()
     fun onCustomFilteringClicked()
     fun onTypeSelected(type: FilterType)
-    fun onStatusSelected(status: FilterStatus)
     fun onFromDateClicked()
     fun onToDateClicked()
     fun onViewAndShareClicked()

@@ -47,29 +47,30 @@ import org.jetbrains.compose.resources.StringResource
 enum class MenaCountry(
     val countryNameRes: StringResource,
     val callingCode: String,
+    val countryCodeName: String,
     val flagImage: DrawableResource
 ) {
 
-    ALGERIA(Res.string.algeria, "+213", Res.drawable.dz_flag),
-    BAHRAIN(Res.string.bahrain, "+973", Res.drawable.bh_flag),
-    EGYPT(Res.string.egypt, "+20", Res.drawable.eg_flag),
-    IRAN(Res.string.iran, "+98", Res.drawable.ir_flag),
-    IRAQ(Res.string.iraq, "+964", Res.drawable.iq_flag),
-    JORDAN(Res.string.jordan, "+962", Res.drawable.jo_flag),
-    KUWAIT(Res.string.kuwait, "+965", Res.drawable.kw_flag),
-    LEBANON(Res.string.lebanon, "+961", Res.drawable.lb_flag),
-    LIBYA(Res.string.libya, "+218", Res.drawable.ly_flag),
-    MOROCCO(Res.string.morocco, "+212", Res.drawable.ma_flag),
-    OMAN(Res.string.oman, "+968", Res.drawable.om_flag),
-    PALESTINE(Res.string.palestine, "+970", Res.drawable.ps_flag),
-    QATAR(Res.string.qatar, "+974", Res.drawable.qa_flag),
-    SAUDI_ARABIA(Res.string.saudi_arabia, "+966", Res.drawable.sa_flag),
-    SOMALIA(Res.string.somalia, "+252", Res.drawable.so_flag),
-    SUDAN(Res.string.sudan, "+249", Res.drawable.sd_flag),
-    SYRIA(Res.string.syria, "+963", Res.drawable.sy_flag),
-    TUNISIA(Res.string.tunisia, "+216", Res.drawable.tn_flag),
-    UAE(Res.string.uae, "+971", Res.drawable.ae_flag),
-    YEMEN(Res.string.yemen, "+967", Res.drawable.ye_flag);
+    ALGERIA(Res.string.algeria, "+213", "DZ", Res.drawable.dz_flag),
+    BAHRAIN(Res.string.bahrain, "+973", "BH", Res.drawable.bh_flag),
+    EGYPT(Res.string.egypt, "+20", "EG", Res.drawable.eg_flag),
+    IRAN(Res.string.iran, "+98", "IR", Res.drawable.ir_flag),
+    IRAQ(Res.string.iraq, "+964", "IQ", Res.drawable.iq_flag),
+    JORDAN(Res.string.jordan, "+962", "JO", Res.drawable.jo_flag),
+    KUWAIT(Res.string.kuwait, "+965", "KW", Res.drawable.kw_flag),
+    LEBANON(Res.string.lebanon, "+961", "LB", Res.drawable.lb_flag),
+    LIBYA(Res.string.libya, "+218", "LY", Res.drawable.ly_flag),
+    MOROCCO(Res.string.morocco, "+212", "MA", Res.drawable.ma_flag),
+    OMAN(Res.string.oman, "+968", "OM", Res.drawable.om_flag),
+    PALESTINE(Res.string.palestine, "+970", "PS", Res.drawable.ps_flag),
+    QATAR(Res.string.qatar, "+974", "QA", Res.drawable.qa_flag),
+    SAUDI_ARABIA(Res.string.saudi_arabia, "+966", "SA", Res.drawable.sa_flag),
+    SOMALIA(Res.string.somalia, "+252", "SO", Res.drawable.so_flag),
+    SUDAN(Res.string.sudan, "+249", "SD", Res.drawable.sd_flag),
+    SYRIA(Res.string.syria, "+963", "SY", Res.drawable.sy_flag),
+    TUNISIA(Res.string.tunisia, "+216", "TN", Res.drawable.tn_flag),
+    UAE(Res.string.uae, "+971", "AE", Res.drawable.ae_flag),
+    YEMEN(Res.string.yemen, "+967", "YE", Res.drawable.ye_flag);
 
 
     fun getFormatedCountryCode(isRtl: Boolean) =

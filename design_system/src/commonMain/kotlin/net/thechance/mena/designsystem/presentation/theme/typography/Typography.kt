@@ -9,8 +9,10 @@ data class Typography(
     val headline: Headline,
     val title: Title,
     val body: Body,
+    val appName: TextStyle,
     val label: Label
 ) {
+
     data class Headline(
         val large: TextStyle,
         val medium: TextStyle,

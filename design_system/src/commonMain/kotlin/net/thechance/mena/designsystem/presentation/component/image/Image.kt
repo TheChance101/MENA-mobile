@@ -6,6 +6,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 
+@Deprecated(
+    message = "Use foundation image instead",
+    replaceWith = ReplaceWith("Replace with androidx.compose.foundation.Image")
+)
 @Composable
 fun Image(
     painter: Painter,

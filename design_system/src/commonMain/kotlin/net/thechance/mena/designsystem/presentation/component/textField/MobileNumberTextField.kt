@@ -1,5 +1,6 @@
 package net.thechance.mena.designsystem.presentation.component.textField
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -24,7 +25,6 @@ import mena.design_system.generated.resources.ic_arrow_down
 import mena.design_system.generated.resources.ic_iraq
 import mena.design_system.generated.resources.ic_profile
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme

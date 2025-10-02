@@ -18,7 +18,7 @@ import net.thechance.mena.identity.presentation.components.util.LengthBasedPhone
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun PhoneNumberInput(
+internal fun PhoneNumberInput(
     countryCode: String,
     countryFlag: Painter,
     onCountryClick: () -> Unit,

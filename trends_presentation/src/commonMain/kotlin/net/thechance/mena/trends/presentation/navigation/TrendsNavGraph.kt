@@ -18,6 +18,7 @@ import net.thechance.mena.trends.presentation.screen.category_pick.CategoryPickS
 import net.thechance.mena.trends.presentation.screen.category_publish.CategoryPublishScreen
 import net.thechance.mena.trends.presentation.screen.main_container.MainContainerScreen
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsScreen
+import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreen
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelScreen
 import net.thechance.mena.trends.presentation.screen.video_description.VideoDescriptionScreen
 
@@ -62,6 +63,10 @@ fun TrendsNavHost() {
                         .fillMaxSize()
                         .padding(top = 100.dp)
                 )
+            }
+
+            composable<Route.UploadReel> {
+                UploadReelScreen()
             }
 
             composable<Route.VideoDescription> {

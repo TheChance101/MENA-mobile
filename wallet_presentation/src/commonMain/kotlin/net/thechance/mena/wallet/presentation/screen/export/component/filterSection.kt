@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.filter.FilterContent
-import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsListener
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsState
@@ -28,12 +27,11 @@ fun FilterSection(
     Column {
         HorizontalDivider()
         FilterContent(
+            showStatusFilter = false,
             selectedTypes = state.selectedTransactionsTypes,
-            selectedStatus = state.selectedTransactionsStatus,
             fromDate = state.startDate,
             toDate = state.endDate,
             onTypeSelected = interactionListener::onTypeSelected,
-            onStatusSelected = interactionListener::onStatusSelected,
             onFromClick = interactionListener::onFromDateClicked,
             onToClick = interactionListener::onToDateClicked
         )
@@ -61,7 +59,6 @@ private fun HorizontalDivider() {
 fun FilterSectionPreview() {
     val mockState = ExportTransactionsState(
         selectedTransactionsTypes = setOf(FilterType.SENT, FilterType.ONLINE_PURCHASE),
-        selectedTransactionsStatus = FilterStatus.ALL,
         startDate = "2023/01/01",
         endDate = "2023/12/31"
     )
@@ -71,7 +68,6 @@ fun FilterSectionPreview() {
         override fun onAllTransactionsClicked() {}
         override fun onCustomFilteringClicked() {}
         override fun onTypeSelected(type: FilterType) {}
-        override fun onStatusSelected(status: FilterStatus) {}
         override fun onFromDateClicked() {}
         override fun onToDateClicked() {}
         override fun onViewAndShareClicked() {}
