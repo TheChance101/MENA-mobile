@@ -20,12 +20,17 @@ class TransactionHistoryViewModel(
     TransactionHistoryScreenState()
 ),
     TransactionHistoryInteractionListener {
+    companion object {
+        const val PAGE_SIZE = 20
+    }
+
     private val paginator =
         Paginator(
             onLoadUpdated = ::onPaginationLoading,
             onRequest = ::getPagedTransactions,
             onSuccess = ::onPaginationSuccess,
-            onError = ::onPaginationError
+            onError = ::onPaginationError,
+            pageSize = PAGE_SIZE
         )
 
     init {
@@ -57,13 +62,15 @@ class TransactionHistoryViewModel(
     }
 
 
-    private suspend fun getPagedTransactions(page: Int): Result<List<Transaction>> =  runCatching {
-        transactionRepository.getTransactionHistory(
-            page = page,
-            pageSize = 20,
-            TransactionFilterParams()
-        )
-    }
+    private suspend fun getPagedTransactions(
+        page: Int,
+        pageSize: Int = PAGE_SIZE
+    ): List<Transaction> = transactionRepository.getTransactionHistory(
+        page = page,
+        pageSize = pageSize,
+        TransactionFilterParams()
+    )
+
 
     private fun onPaginationSuccess(items: List<Transaction>) {
         updateState {
@@ -94,7 +101,7 @@ class TransactionHistoryViewModel(
         sendEffect(TransactionHistoryEffect.NavigateToFilterBottomSheet)
     }
 
-    override fun onNextPageRequested(){
+    override fun onNextPageRequested() {
         loadNextTransactions()
     }
 

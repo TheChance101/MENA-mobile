@@ -1,12 +1,12 @@
 package net.thechance.mena.wallet.presentation.utils
 
-import kotlinx.coroutines.delay
 class Paginator<Item>(
-    private val onRequest: suspend (nextKey: Int) -> Result<List<Item>>,
+    private val onRequest: suspend (nextKey: Int, pageSize: Int) -> List<Item>,
     private val onError: (Throwable) -> Unit,
     private val onSuccess: (items: List<Item>) -> Unit,
-    private val onLoadUpdated: (Boolean) -> Unit
-    ) {
+    private val onLoadUpdated: (Boolean) -> Unit,
+    private val pageSize: Int
+) {
     private var currentPage = 1
     private var isRequest = false
     private var endPages = false
@@ -17,21 +17,18 @@ class Paginator<Item>(
         try {
             isRequest = true
             onLoadUpdated(true)
-            val items = onRequest(currentPage)
-            delay(200)
-            items.onSuccess { items ->
-                if (items.isEmpty() || items.size < 20) {
-                    endPages = true
-                }
-                val nextPage = currentPage + 1
-                onSuccess(items)
-                currentPage = nextPage
-            }.onFailure { error ->
-                onError(error)
+            val items = onRequest(currentPage, pageSize)
+            if (items.isEmpty() || items.size < pageSize) {
+                endPages = true
             }
-
-        } finally {
+            val nextPage = currentPage + 1
+            onSuccess(items)
+            currentPage = nextPage
             onLoadUpdated(false)
+        } catch (error: Throwable) {
+            onError(error)
+            onLoadUpdated(false)
+        } finally {
             isRequest = false
         }
     }
