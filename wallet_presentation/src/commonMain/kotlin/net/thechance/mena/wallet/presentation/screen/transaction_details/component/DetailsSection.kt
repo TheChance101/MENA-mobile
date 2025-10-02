@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.date
 import mena.wallet_presentation.generated.resources.img_silver
@@ -53,7 +54,7 @@ internal fun DetailsSection(
                 resource = transactionDetailsUiState.transactionType.iconContentDescriptionRes
             ),
             iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = Theme.spacing._16,
+            iconSize = 16.dp,
             gap = Theme.spacing._4,
         )
 

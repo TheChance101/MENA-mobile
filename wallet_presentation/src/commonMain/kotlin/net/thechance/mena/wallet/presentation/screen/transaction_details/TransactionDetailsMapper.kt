@@ -20,7 +20,7 @@ import net.thechance.mena.wallet.presentation.utils.formatTransactionDate
 import kotlin.uuid.ExperimentalUuidApi
 
 fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState(
-    id = "TX-"+ id.toString().substring(0,6),
+    id = Constants.ID_PREFIX + id.toString().substring(0,6),
     amount = amount.toString().replace(".",","),
     date = formatTransactionDate(createdAt),
     userName = when (type) {
@@ -59,3 +59,7 @@ fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState
 
 fun imageBitmapToByteArray(imageBitmap: ImageBitmap) =
     imageBitmap.toByteArray(CompressionFormat.PNG, 100)
+
+private object Constants{
+    const val ID_PREFIX = "TX-"
+}
