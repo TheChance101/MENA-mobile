@@ -74,7 +74,6 @@ internal fun UserReelScreen(
     )
 }
 
-// TODO: That Screen Should be improved later when implementing video player
 @Composable
 private fun UserReelScreenContent(
     state: UserReelState,
@@ -105,6 +104,7 @@ private fun UserReelScreenContent(
                     buttonText = "",
                     dismissOnBackPress = true,
                     dismissOnClickOutside = true,
+                    isVisible = state.isReelDeleted == true && state.error == null,
                     onDismiss = {
                         listener.onDismissSuccessDialog()
                         listener.onBackClick()
@@ -126,6 +126,7 @@ private fun UserReelScreenContent(
                     buttonText = "",
                     dismissOnBackPress = true,
                     dismissOnClickOutside = true,
+                    isVisible = state.error != null,
                     onDismiss = { listener.onDismissErrorDialog() },
                     onCancelClick = { listener.onDismissErrorDialog() },
                     dialogCornerShape = RoundedCornerShape(12.dp),
