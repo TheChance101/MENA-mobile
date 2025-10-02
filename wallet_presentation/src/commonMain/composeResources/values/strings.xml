@@ -91,4 +91,8 @@
 
     <string name="share_button_title">Share</string>">
     <string name="view_transactions">View Transactions</string>">
+
+    <string name="view_transactions_statement_error_message">an error happened while loading the statement file</string>">
+    <string name="loading_pdf_message">Loading PDF...</string>">
+    <string name="rendering_pdf_message">Rendering PDF...</string>">
 </resources>
