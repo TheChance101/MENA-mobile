@@ -87,5 +87,13 @@
     <string name="retry">أعد المحاولة</string>
     <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للفلاتر</string>
     <string name="filter_transaction_error_description">قم بتغيير الفلاتر أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
+    <string name="apply_filters">تطبيق التصفية</string>
+    <string name="filter_transactions">تصفية المعاملات</string>
+    <string name="reset">إعادة تعيين</string>
+
+    <string name="no_transactions_yet">لا توجد معاملات حتى الآن</string>
+    <string name="no_transactions_yet_description">بمجرد أن تبدأ في استخدام محفظتك، ستظهر معاملاتك هنا.</string>
+
+    <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
 
 </resources>

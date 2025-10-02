@@ -1,5 +1,6 @@
-package net.thechance.mena.wallet.data.repository.balance
+package net.thechance.mena.wallet.data.repository.transaction
 
+import io.ktor.client.request.parameter
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.TransactionDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
@@ -20,13 +21,14 @@ class TransactionRepositoryImpl(
 ) : TransactionRepository {
     override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
-            networkClient.get("$TRANSACTION_PATH?${transactionFilterParams?.toParameters()}")
+            networkClient.get("$TRANSACTION_PATH?") {
+                transactionFilterParams?.toParameters()?.forEach { key, values ->
+                    values.forEach { value ->
+                        parameter(key, value)
+                    }
+                }
+            }
         }.transactions.orEmpty().map { it.toEntity() }
-
-    }
-
-    override suspend fun getAllTransaction(): List<Transaction> {
-        TODO("Not yet implemented")
     }
 
     override suspend fun getTransactionById(transactionId: Uuid): Transaction {

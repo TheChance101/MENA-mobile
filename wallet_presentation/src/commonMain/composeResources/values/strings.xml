@@ -70,6 +70,9 @@
     <string name="retry">Re-try</string>
     <string name="filter_transaction_error_title">Filters give no matches</string>
     <string name="filter_transaction_error_description">Change your filters or reset them to explore all transactions</string>
+    <string name="apply_filters">Apply Filters</string>
+    <string name="filter_transactions">Filter transactions</string>
+    <string name="reset">Reset</string>
 
     <string name="error_no_transactions">No transactions found</string>
     <string name="error_failed_view">Failed to view transactions</string>
@@ -87,5 +90,10 @@
     <string name="filter_crossfade">FilterCrossfade</string>
     <string name="transaction_history">Transaction History</string>
     <string name="background_color_animation">Background Color Animation</string>
+
+    <string name="no_transactions_yet">No transactions yet</string>
+    <string name="no_transactions_yet_description">Once you start using your wallet, your transactions will appear here.</string>
+
+    <string name="failed_to_apply_filters">Failed to apply filters</string>
 
 </resources>
