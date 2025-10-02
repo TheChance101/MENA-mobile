@@ -91,7 +91,7 @@
     <string name="filter_transaction_error_description">قم بتغيير التصفية أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
     <string name="apply_filters">تطبيق التصفية</string>
     <string name="filter_transactions">تصفية المعاملات</string>
-    <string name="reset">إعادة تعيين</string
+    <string name="reset">إعادة تعيين</string>
     <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
 
 </resources>
