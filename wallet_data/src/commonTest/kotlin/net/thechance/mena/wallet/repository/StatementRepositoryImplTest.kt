@@ -88,6 +88,36 @@ class StatementRepositoryImplTest {
         verifySuspend(exactly(2)) { networkClient.get(any(), any()) }
     }
 
+    @Test
+    fun `getCachedTransactionsPdf should return null when there is no cached statement`() = runTest(testDispatcher) {
+
+        val result = statementRepository.getCachedTransactionsPdf()
+
+        assertContentEquals(null, result)
+    }
+
+    @Test
+    fun `getCachedTransactionsPdf should return cached statement`() = runTest(testDispatcher) {
+        everySuspend { networkClient.get(any(), any()) } returns statementResonance
+
+        statementRepository.getTransactionsPdf()
+        val result = statementRepository.getCachedTransactionsPdf()
+
+        assertContentEquals(statement, result)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `getCachedTransactionsPdf should return null after expiration time`() = runTest(testDispatcher) {
+        everySuspend { networkClient.get(any(), any()) } returns statementResonance
+
+        statementRepository.getTransactionsPdf()
+        val result = statementRepository.getCachedTransactionsPdf()
+        advanceUntilIdle()
+
+        assertContentEquals(statement, result)
+    }
+
     private val statementResonance = object : HttpResponse() {
         @InternalAPI
         override val rawContent: ByteReadChannel = ByteReadChannel(statement)

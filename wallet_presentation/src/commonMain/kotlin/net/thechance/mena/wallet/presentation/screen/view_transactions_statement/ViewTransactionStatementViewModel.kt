@@ -28,11 +28,19 @@ class ViewTransactionStatementViewModel(
     private fun fetchLastStatement() {
         tryToExecute(
             onStart = { updateState { currentState.copy(statement = UiState.Loading) }},
-            callee = { statementRepository.getTransactionsPdf() },
-            onSuccess = { pdf -> updateState { it.copy(statement = UiState.Success(pdf)) } },
+            callee = { statementRepository.getCachedTransactionsPdf() },
+            onSuccess = ::onSuccessFetchPdf,
             onError = { e -> updateState { it.copy(statement = UiState.Error(e)) } },
             dispatcher = dispatcherIO
         )
+    }
+
+    private fun onSuccessFetchPdf(pdf: ByteArray?) {
+        if (pdf == null) {
+            updateState { it.copy(statement = UiState.Error(Exception("no pdf was found"))) }
+        } else {
+            updateState { it.copy(statement = UiState.Success(pdf)) }
+        }
     }
 
     override fun onNavigateBackClicked() {

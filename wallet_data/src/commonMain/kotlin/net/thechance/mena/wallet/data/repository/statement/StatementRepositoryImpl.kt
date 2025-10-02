@@ -32,10 +32,20 @@ class StatementRepositoryImpl(
     private var clearCacheJob: Job? = null
 
     override suspend fun getTransactionsPdf(
-        filterRequestParams: TransactionFilterParams?
+        filterRequestParams: TransactionFilterParams?,
     ): ByteArray {
         return getCachedPdf(filterRequestParams)
-            ?: fetchTransactionPdf(filterRequestParams).also { pdf -> cacheRequest(pdf, filterRequestParams) }
+            ?: fetchTransactionPdf(filterRequestParams)
+                .also { pdf -> cacheRequest(pdf, filterRequestParams) }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    override suspend fun getCachedTransactionsPdf(): ByteArray? {
+        return cachedRequest
+            ?.takeIf {
+                it.timestamp.plus(EXPIRATION_TIME_INTERVAL_IN_MILLIS.milliseconds) > Clock.System.now()
+            }
+            ?.pdf
     }
 
     private suspend fun fetchTransactionPdf(filterRequestParams: TransactionFilterParams?): ByteArray {
@@ -48,11 +58,11 @@ class StatementRepositoryImpl(
     }
 
     @OptIn(ExperimentalTime::class)
-    private fun getCachedPdf(filterRequestParams: TransactionFilterParams?): ByteArray? {
+    private fun getCachedPdf(filterRequestParams: TransactionFilterParams? = null): ByteArray? {
         return cachedRequest
             ?.takeIf {
                 it.filterRequestParams == filterRequestParams
-                        || it.timestamp.plus(EXPIRATION_TIME_INTERVAL_IN_MILLIS.milliseconds) > Clock.System.now()
+                        && it.timestamp.plus(EXPIRATION_TIME_INTERVAL_IN_MILLIS.milliseconds) > Clock.System.now()
 
             }?.pdf
     }

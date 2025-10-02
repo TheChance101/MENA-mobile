@@ -32,7 +32,7 @@ class ViewTransactionStatementViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = ViewTransactionStatementViewModel(repository)
+        viewModel = ViewTransactionStatementViewModel(repository, testDispatcher)
     }
 
     @AfterTest
@@ -52,12 +52,22 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `initialization should fetch statement`() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf() } returns statement
+        everySuspend { repository.getCachedTransactionsPdf() } returns statement
         initViewModel()
 
         val state = viewModel.state.first()
 
         assertContentEquals((state.statement as UiState.Success).data, statement)
+    }
+
+    @Test
+    fun `initialization should save as error in the state when there is not statement`() = runTest(testDispatcher) {
+        everySuspend { repository.getCachedTransactionsPdf() } returns null
+        initViewModel()
+
+        val state = viewModel.state.first()
+
+        assertTrue(state.statement is UiState.Error)
     }
 
     @Test
@@ -71,8 +81,8 @@ class ViewTransactionStatementViewModelTest {
     }
 
     @Test
-    fun `onShareClicked should send ShareStatement with statement effect when called`() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf() } returns statement
+    fun `onShareClicked should send ShareStatement effect with statement when called`() = runTest(testDispatcher) {
+        everySuspend { repository.getCachedTransactionsPdf() } returns statement
         initViewModel()
 
         viewModel.onShareClicked()
@@ -86,7 +96,7 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `initialization should save the error in the state when an error occurs while fetching the statement`() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf() } throws Exception()
+        everySuspend { repository.getCachedTransactionsPdf() } throws Exception()
         initViewModel()
 
         val state = viewModel.state.first()
@@ -95,7 +105,7 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `onShareClicked should not send ShareStatement effect when statement is not available`() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf() } throws Exception()
+        everySuspend { repository.getCachedTransactionsPdf() } throws Exception()
         initViewModel()
         viewModel.onShareClicked()
         viewModel.uiEffect.test {
