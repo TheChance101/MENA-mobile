@@ -155,8 +155,3 @@ private fun onTransactionHistoryEffect(
         }
     }
 }
-
-
-
-
-
