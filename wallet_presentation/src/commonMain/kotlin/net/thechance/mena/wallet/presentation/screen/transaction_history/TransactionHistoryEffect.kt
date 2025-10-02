@@ -8,6 +8,6 @@ import kotlin.uuid.Uuid
 sealed class TransactionHistoryEffect {
     data object NavigateBack : TransactionHistoryEffect()
     data object NavigateToExportTransaction : TransactionHistoryEffect()
-    data object NavigateToFilterBottomSheet: TransactionHistoryEffect()
+    data object NavigateToFilterBottomSheet : TransactionHistoryEffect()
     data class NavigateToTransactionDetails(val id: Uuid) : TransactionHistoryEffect()
 }

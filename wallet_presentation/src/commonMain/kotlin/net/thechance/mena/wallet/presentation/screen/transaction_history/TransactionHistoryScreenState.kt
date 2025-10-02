@@ -25,7 +25,7 @@ data class TransactionHistoryScreenState(
     val isError: Throwable? = null,
     val isPaginationLoading: Boolean = false,
     val endOfPages: Boolean = false,
-){
+) {
     data class TransactionHistoryUiState @OptIn(ExperimentalUuidApi::class) constructor(
         val id: Uuid,
         val timeAndDate: String = "",
@@ -35,6 +35,7 @@ data class TransactionHistoryScreenState(
         val userInfo: StringResource = Res.string.from,
         val contactName: String? = null
     )
+
     enum class TransactionTypeUiState(
         val titleRes: StringResource,
         val iconRes: DrawableResource,

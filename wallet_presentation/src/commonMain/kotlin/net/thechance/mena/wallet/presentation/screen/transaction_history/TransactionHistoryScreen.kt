@@ -136,7 +136,6 @@ fun TransactionHistoryContent(
     }
 }
 
-
 @OptIn(ExperimentalUuidApi::class)
 private fun onTransactionHistoryEffect(
     effect: TransactionHistoryEffect,

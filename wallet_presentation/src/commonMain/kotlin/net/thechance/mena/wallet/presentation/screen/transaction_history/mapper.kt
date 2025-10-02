@@ -25,7 +25,7 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
             TransactionStatus.FAILED -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
         },
         userInfo = when (type) {
-            TransactionType.SENT-> Res.string.from
+            TransactionType.SENT -> Res.string.from
             TransactionType.RECEIVED -> Res.string.to
             TransactionType.ONLINE_PURCHASE -> Res.string.from
         },
