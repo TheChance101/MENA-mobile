@@ -87,5 +87,7 @@
     <string name="retry">أعد المحاولة</string>
     <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للفلاتر</string>
     <string name="filter_transaction_error_description">قم بتغيير الفلاتر أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
+    <string name="empty_transaction_history_desc">بمجرد أن تبدأ باستخدام محفظتك، ستظهر معاملاتك هنا.</string>
+    <string name="no_transactions_yet">لا توجد معاملات بعد</string>
 
 </resources>
