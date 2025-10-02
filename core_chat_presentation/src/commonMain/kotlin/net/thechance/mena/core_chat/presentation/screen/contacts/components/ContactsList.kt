@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.itemKey
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_warning
 import mena.core_chat_presentation.generated.resources.no_contacts_message
@@ -53,7 +52,7 @@ fun ContactsList(
             ) {
                 items(
                     count = contacts.itemCount,
-                    key = contacts.itemKey { it.phoneNumber + it.displayName }
+                    key = { index -> index }
                 ) { index ->
                     val contact = contacts[index]
 
