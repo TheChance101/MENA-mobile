@@ -89,30 +89,30 @@ class StatementRepositoryImplTest {
     }
 
     @Test
-    fun `getCachedTransactionsPdf should return null when there is no cached statement`() = runTest(testDispatcher) {
+    fun `getStoredTransactionsPdf should return null when there is no cached statement`() = runTest(testDispatcher) {
 
-        val result = statementRepository.getCachedTransactionsPdf()
+        val result = statementRepository.getStoredTransactionsPdf()
 
         assertContentEquals(null, result)
     }
 
     @Test
-    fun `getCachedTransactionsPdf should return cached statement`() = runTest(testDispatcher) {
+    fun `getStoredTransactionsPdf should return cached statement`() = runTest(testDispatcher) {
         everySuspend { networkClient.get(any(), any()) } returns statementResonance
 
         statementRepository.getTransactionsPdf()
-        val result = statementRepository.getCachedTransactionsPdf()
+        val result = statementRepository.getStoredTransactionsPdf()
 
         assertContentEquals(statement, result)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `getCachedTransactionsPdf should return null after expiration time`() = runTest(testDispatcher) {
+    fun `getStoredTransactionsPdf should return null after expiration time`() = runTest(testDispatcher) {
         everySuspend { networkClient.get(any(), any()) } returns statementResonance
 
         statementRepository.getTransactionsPdf()
-        val result = statementRepository.getCachedTransactionsPdf()
+        val result = statementRepository.getStoredTransactionsPdf()
         advanceUntilIdle()
 
         assertContentEquals(statement, result)

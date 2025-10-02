@@ -40,7 +40,7 @@ class StatementRepositoryImpl(
     }
 
     @OptIn(ExperimentalTime::class)
-    override suspend fun getCachedTransactionsPdf(): ByteArray? {
+    override suspend fun getStoredTransactionsPdf(): ByteArray? {
         return cachedRequest
             ?.takeIf {
                 it.timestamp.plus(EXPIRATION_TIME_INTERVAL_IN_MILLIS.milliseconds) > Clock.System.now()

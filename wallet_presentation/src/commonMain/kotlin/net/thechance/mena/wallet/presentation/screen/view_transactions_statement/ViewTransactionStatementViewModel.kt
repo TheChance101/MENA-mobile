@@ -28,7 +28,7 @@ class ViewTransactionStatementViewModel(
     private fun fetchLastStatement() {
         tryToExecute(
             onStart = { updateState { currentState.copy(statement = UiState.Loading) }},
-            callee = { statementRepository.getCachedTransactionsPdf() },
+            callee = { statementRepository.getStoredTransactionsPdf() },
             onSuccess = ::onSuccessFetchPdf,
             onError = { e -> updateState { it.copy(statement = UiState.Error(e)) } },
             dispatcher = dispatcherIO
