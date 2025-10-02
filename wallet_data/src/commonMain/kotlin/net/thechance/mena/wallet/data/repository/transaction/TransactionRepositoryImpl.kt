@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
-    override suspend fun getTransactionHistory(
+  override suspend fun getTransactionHistory(
         page:Int,pageSize:Int,transactionFilterParams: TransactionFilterParams?
     ): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
@@ -28,7 +28,6 @@ class TransactionRepositoryImpl(
             )
         }.transactions.orEmpty().map { it.toEntity() }
     }
-
     override suspend fun getTransactionById(transactionId: Uuid): Transaction {
         return safeApiCall<TransactionDto> {
             networkClient.get("$TRANSACTION_PATH/$transactionId")

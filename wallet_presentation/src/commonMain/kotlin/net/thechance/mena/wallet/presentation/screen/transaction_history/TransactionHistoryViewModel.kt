@@ -116,7 +116,6 @@ class TransactionHistoryViewModel(
                 filterState = TransactionFilterState()
             )
         }
-        getTransactionHistory(filters = null)
     }
 
     override fun onApplyFilterClicked() {
@@ -125,7 +124,9 @@ class TransactionHistoryViewModel(
         tryToExecute(
             callee = {
                 transactionRepository.getTransactionHistory(
-                    filters.toParams()
+                    page = 1,
+                    pageSize = PAGE_SIZE,
+                    transactionFilterParams = filters.toParams()
                 )
             },
             onStart = ::onGetTransactionFilterStart,
