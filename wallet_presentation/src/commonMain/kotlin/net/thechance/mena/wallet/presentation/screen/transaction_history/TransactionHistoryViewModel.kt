@@ -40,21 +40,29 @@ class TransactionHistoryViewModel(
 
     private fun onPaginationLoading(isLoading: Boolean) {
         updateState {
-            if (it.history.isEmpty()) it.copy(isLoading = isLoading) else it.copy(
-                isPaginationLoading = isLoading
-            )
+            if (isLoading) {
+                if (it.history.isEmpty()) {
+                    it.copy(isLoading = true, isError = null)
+                } else {
+                    it.copy(isPaginationLoading = true, isError = null)
+                }
+            } else {
+                if (it.history.isEmpty()) {
+                    it.copy(isLoading = false)
+                } else {
+                    it.copy(isPaginationLoading = false)
+                }
+            }
         }
     }
 
-    private suspend fun getPagedTransactions(page: Int): Result<List<Transaction>> {
-        return try {
-            val result = transactionRepository.getTransactionHistory(
-                page = page, pageSize = 20,TransactionFilterParams()
-            )
-            Result.success(result)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+
+    private suspend fun getPagedTransactions(page: Int): Result<List<Transaction>> =  runCatching {
+        transactionRepository.getTransactionHistory(
+            page = page,
+            pageSize = 20,
+            TransactionFilterParams()
+        )
     }
 
     private fun onPaginationSuccess(items: List<Transaction>) {
