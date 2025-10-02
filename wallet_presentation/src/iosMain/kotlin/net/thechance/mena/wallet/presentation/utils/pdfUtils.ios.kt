@@ -10,21 +10,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Single
+import platform.CoreGraphics.CGBitmapContextCreate
+import platform.CoreGraphics.CGColorSpaceCreateDeviceRGB
+import platform.CoreGraphics.CGColorSpaceRelease
 import platform.CoreGraphics.CGContextDrawPDFPage
-import platform.CoreGraphics.CGDataConsumerCreateWithCFData
-import platform.CoreGraphics.CGDataConsumerRelease
+import platform.CoreGraphics.CGContextFillRect
+import platform.CoreGraphics.CGContextRelease
+import platform.CoreGraphics.CGContextScaleCTM
+import platform.CoreGraphics.CGContextSetRGBFillColor
+import platform.CoreGraphics.CGContextTranslateCTM
 import platform.CoreGraphics.CGDataProviderCreateWithCFData
 import platform.CoreGraphics.CGDataProviderRelease
-import platform.CoreGraphics.CGPDFContextBeginPage
-import platform.CoreGraphics.CGPDFContextClose
-import platform.CoreGraphics.CGPDFContextCreate
-import platform.CoreGraphics.CGPDFContextEndPage
+import platform.CoreGraphics.CGImageAlphaInfo
+import platform.CoreGraphics.CGImageRelease
 import platform.CoreGraphics.CGPDFDocumentCreateWithProvider
 import platform.CoreGraphics.CGPDFDocumentGetNumberOfPages
 import platform.CoreGraphics.CGPDFDocumentGetPage
 import platform.CoreGraphics.CGPDFDocumentRelease
+import platform.CoreGraphics.CGPDFPageGetBoxRect
+import platform.CoreGraphics.kCGBitmapByteOrder32Big
+import platform.CoreGraphics.kCGPDFMediaBox
 import platform.Foundation.NSData
-import platform.Foundation.NSMutableData
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.create
@@ -32,47 +38,66 @@ import platform.Foundation.dataWithBytes
 import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
+import platform.posix.memcpy
 
 @Single
 actual class PdfHandler {
-    @Suppress("CAST_NEVER_SUCCEEDS")
-    actual suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
+    @OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+    actual suspend fun splitToPagesOfPng(pdfData: ByteArray): List<ByteArray> {
         val pages = mutableListOf<ByteArray>()
-
         val data = pdfData.toNSData()
         val provider = CGDataProviderCreateWithCFData(data)
         val document = CGPDFDocumentCreateWithProvider(provider) ?: return emptyList()
-
         try {
             val pageCount = CGPDFDocumentGetNumberOfPages(document)
             for (pageNumber in 1..pageCount) {
-                val outputData = NSMutableData()
-                val dataConsumer = CGDataConsumerCreateWithCFData(outputData)
-                val pdfContext = CGPDFContextCreate(dataConsumer, null, null)
+                val page = CGPDFDocumentGetPage(document, pageNumber) ?: continue
+                val pageRect = CGPDFPageGetBoxRect(page, kCGPDFMediaBox)
+                val width = pageRect.width.toInt()
+                val height = pageRect.height.toInt()
+                val colorSpace = CGColorSpaceCreateDeviceRGB()
+                val bitmapInfo = kCGBitmapByteOrder32Big or CGImageAlphaInfo.kCGImageAlphaPremultipliedLast
+                val context = CGBitmapContextCreate(
+                    null,
+                    width.toULong(),
+                    height.toULong(),
+                    8uL,
+                    0uL,
+                    colorSpace,
+                    bitmapInfo
+                ) ?: continue
 
-                val page = CGPDFDocumentGetPage(document, pageNumber)
-                if (page != null) {
-                    CGPDFContextBeginPage(pdfContext, null)
-                    CGContextDrawPDFPage(pdfContext, page)
-                    CGPDFContextEndPage(pdfContext)
-                }
+                CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
+                CGContextFillRect(context, pageRect)
 
-                CGPDFContextClose(pdfContext)
-                pages.add(outputData.toByteArray())
+                CGContextTranslateCTM(context, 0.0, pageRect.size.height)
+                CGContextScaleCTM(context, 1.0, -1.0)
 
-                CGDataConsumerRelease(dataConsumer)
+                CGContextDrawPDFPage(context, page)
+
+                val cgImage = CGBitmapContextCreateImage(context) ?: continue
+                val uiImage = UIImage(cgImage)
+
+                val pngData = UIImagePNGRepresentation(uiImage) ?: continue
+                pages.add(pngData.toByteArray())
+
+                CGImageRelease(cgImage)
+                CGContextRelease(context)
+                CGColorSpaceRelease(colorSpace)
             }
         } finally {
             CGPDFDocumentRelease(document)
             CGDataProviderRelease(provider)
         }
-
         return pages
     }
 
     @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
     fun ByteArray.toNSData(): NSData = usePinned { pinned ->
-        NSData.create(bytes = pinned.addressOf(0), length = size.toULong())
+        NSData.create(
+            bytes = pinned.addressOf(0),
+            length = size.toInt()
+        )
     }
 
     @OptIn(ExperimentalForeignApi::class)

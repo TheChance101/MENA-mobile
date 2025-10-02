@@ -3,11 +3,14 @@ package net.thechance.mena.wallet.presentation.screen.view_transactions_statemen
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -38,7 +41,7 @@ class ViewTransactionStatementViewModelTest {
     }
 
     @Test
-    fun `onNavigateBackClicked should send NavigateBack effect when called`() = runTest {
+    fun `onNavigateBackClicked should send NavigateBack effect when called`() = runTest(testDispatcher) {
         viewModel.onNavigateBackClicked()
 
         viewModel.uiEffect.test {
@@ -48,19 +51,17 @@ class ViewTransactionStatementViewModelTest {
     }
 
     @Test
-    fun `should fetch statement when initialized`() = runTest {
-        everySuspend { repository.getLastStatement() } returns statement
-        viewModel = ViewTransactionStatementViewModel(repository, testDispatcher)
+    fun `initialization should fetch statement`() = runTest(testDispatcher) {
+        everySuspend { repository.getTransactionsPdf() } returns statement
+        initViewModel()
 
-        viewModel.state.test {
-            skipItems(1)
-            val state = awaitItem()
-            assertContentEquals((state.statement as UiState.Success).data, statement)
-        }
+        val state = viewModel.state.first()
+
+        assertContentEquals((state.statement as UiState.Success).data, statement)
     }
 
     @Test
-    fun `onShareClicked should send ShareStatement effect when called`() = runTest {
+    fun `onShareClicked should send ShareStatement effect when called`() = runTest(testDispatcher) {
         viewModel.onShareClicked()
 
         viewModel.uiEffect.test {
@@ -70,10 +71,9 @@ class ViewTransactionStatementViewModelTest {
     }
 
     @Test
-    fun `onShareClicked should send ShareStatement with statement effect when called`() = runTest {
-        everySuspend { repository.getLastStatement() } returns statement
-        viewModel = ViewTransactionStatementViewModel(repository, testDispatcher)
-        advanceUntilIdle()
+    fun `onShareClicked should send ShareStatement with statement effect when called`() = runTest(testDispatcher) {
+        everySuspend { repository.getTransactionsPdf() } returns statement
+        initViewModel()
 
         viewModel.onShareClicked()
 
@@ -82,6 +82,31 @@ class ViewTransactionStatementViewModelTest {
             val effectStatement = (effect as ViewTransactionStatementEffect.ShareStatement).statement
             assertContentEquals(statement, effectStatement)
         }
+    }
+
+    @Test
+    fun `initialization should save the error in the state when an error occurs while fetching the statement`() = runTest(testDispatcher) {
+        everySuspend { repository.getTransactionsPdf() } throws Exception()
+        initViewModel()
+
+        val state = viewModel.state.first()
+        assertTrue(state.statement is UiState.Error)
+    }
+
+    @Test
+    fun `onShareClicked should not send ShareStatement effect when statement is not available`() = runTest(testDispatcher) {
+        everySuspend { repository.getTransactionsPdf() } throws Exception()
+        initViewModel()
+        viewModel.onShareClicked()
+        viewModel.uiEffect.test {
+            expectNoEvents()
+        }
+    }
+
+
+    private fun TestScope.initViewModel() {
+        viewModel = ViewTransactionStatementViewModel(repository, testDispatcher)
+        advanceUntilIdle()
     }
 
     private companion object {

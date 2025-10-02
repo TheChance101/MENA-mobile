@@ -29,7 +29,7 @@ class TransactionRepositoryImplTest {
     @Test
     fun `getTransactionsHistory returns transactions when API call is successful`() = runTest()
     {
-        networkClient = createNetworkClient(successResponse)
+        networkClient = createNetworkClient(getRespond = successResponse)
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
         val result = transactionRepository.getTransactionHistory(null)
@@ -44,7 +44,7 @@ class TransactionRepositoryImplTest {
     @Test
     fun `getTransactionHistory throws exception when API call fails`() = runTest {
 
-        networkClient = createNetworkClient(errorResponse)
+        networkClient = createNetworkClient(getRespond = errorResponse)
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
         assertFailsWith<UnknownException> {

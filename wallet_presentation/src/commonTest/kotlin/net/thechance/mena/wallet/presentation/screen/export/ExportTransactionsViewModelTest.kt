@@ -153,7 +153,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked with non-empty pdf should navigate`() = runTest {
-        everySuspend { repository.getStatement(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         val viewModel =
             ExportTransactionsViewModel(
@@ -173,7 +173,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked should fetch statement with custom filter when custom filter is selected`() = runTest {
-        everySuspend { repository.getStatement(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         val viewModel =
             ExportTransactionsViewModel(
@@ -186,7 +186,7 @@ class ExportTransactionsViewModelTest {
         viewModel.onViewAndShareClicked()
         advanceUntilIdle()
 
-        verifySuspend { repository.getStatement(TransactionFilterParams(null, null, null, null)) }
+        verifySuspend { repository.getTransactionsPdf(TransactionFilterParams(null, null, null, null)) }
     }
 
     @Test
@@ -226,7 +226,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with empty pdf should show toast`() = runTest {
-        everySuspend { repository.getStatement(any()) } returns byteArrayOf()
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf()
 
         val viewModel =
             ExportTransactionsViewModel(
@@ -249,7 +249,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked with generic error should show error snackBar`() = runTest {
         everySuspend {
-            repository.getStatement(any())
+            repository.getTransactionsPdf(any())
         } throws Exception("Unknown")
         val viewModel =
             ExportTransactionsViewModel(
@@ -273,7 +273,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
-        everySuspend { repository.getStatement(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         val viewModel =
             ExportTransactionsViewModel(
@@ -299,7 +299,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with NoInternetException should update noInternetConnection state`() =
         runTest {
             everySuspend {
-                repository.getStatement(any())
+                repository.getTransactionsPdf(any())
             } throws NoInternetException()
 
             val viewModel =
@@ -324,7 +324,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onDownloadClicked with generic error should show failure snackBar`() = runTest {
         everySuspend {
-            repository.getStatement(any())
+            repository.getTransactionsPdf(any())
         } throws Exception("Unknown")
 
         val viewModel =
@@ -353,7 +353,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with non-empty pdf and file saved should show success snackBar`() =
         runTest {
             everySuspend {
-                repository.getStatement(any())
+                repository.getTransactionsPdf(any())
             } returns byteArrayOf(1, 2, 3)
             everySuspend {
                 fileSaver.saveFile(any(), any(), any())
@@ -383,7 +383,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with non-empty pdf but file not saved should show failure snackBar`() =
         runTest {
             everySuspend {
-                repository.getStatement(any())
+                repository.getTransactionsPdf(any())
             } returns byteArrayOf(1, 2, 3)
             everySuspend {
                 fileSaver.saveFile(any(), any(), any())
@@ -413,7 +413,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with saveFile throwing exception should show failure snackBar`() =
         runTest {
             everySuspend {
-                repository.getStatement(any())
+                repository.getTransactionsPdf(any())
             } returns byteArrayOf(1, 2, 3)
             everySuspend {
                 fileSaver.saveFile(any(), any(), any())
@@ -467,7 +467,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `snackBar should disappear after duration`() = runTest {
         everySuspend {
-            repository.getStatement(any())
+            repository.getTransactionsPdf(any())
         } returns byteArrayOf(1, 2, 3)
         everySuspend {
             fileSaver.saveFile(any(), any(), any())
@@ -499,7 +499,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked with NoInternetException should update noInternetConnection`() =
         runTest {
-            everySuspend { repository.getStatement(any()) } throws NoInternetException()
+            everySuspend { repository.getTransactionsPdf(any()) } throws NoInternetException()
 
             val viewModel = ExportTransactionsViewModel(repository, fileSaver, testDispatcher)
 

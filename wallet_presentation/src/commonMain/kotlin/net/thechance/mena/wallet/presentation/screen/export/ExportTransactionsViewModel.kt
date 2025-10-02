@@ -141,7 +141,7 @@ class ExportTransactionsViewModel(
             val endDateTime: LocalDate? = currentState.endDate
                 .toStartOfDayLocalDateTime(formatter)
 
-            statementRepository.getStatement(
+            statementRepository.getTransactionsPdf(
                 TransactionFilterParams(
                     types = currentState.selectedTransactionsTypes?.map { it.toDomain() },
                     status = currentState.selectedTransactionsStatus.toDomain(),
@@ -150,7 +150,7 @@ class ExportTransactionsViewModel(
                 )
             )
         } else {
-            statementRepository.getStatement()
+            statementRepository.getTransactionsPdf()
         }
     }
 

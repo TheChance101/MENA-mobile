@@ -28,22 +28,11 @@ class ViewTransactionStatementViewModel(
     private fun fetchLastStatement() {
         tryToExecute(
             onStart = { updateState { currentState.copy(statement = UiState.Loading) }},
-            callee = { statementRepository.getLastStatement() },
-            onSuccess = ::onSuccessFetchLastStatement,
-            onError = { e ->
-                e.printStackTrace()
-                updateState { it.copy(statement = UiState.Error(e)) }
-            },
+            callee = { statementRepository.getTransactionsPdf() },
+            onSuccess = { pdf -> updateState { it.copy(statement = UiState.Success(pdf)) } },
+            onError = { e -> updateState { it.copy(statement = UiState.Error(e)) } },
             dispatcher = dispatcherIO
         )
-    }
-
-    private fun onSuccessFetchLastStatement(statement: ByteArray?) {
-        if (statement == null) {
-            updateState { it.copy(statement = UiState.Error(Exception("No statement found"))) }
-        } else {
-            updateState { it.copy(statement = UiState.Success(statement)) }
-        }
     }
 
     override fun onNavigateBackClicked() {

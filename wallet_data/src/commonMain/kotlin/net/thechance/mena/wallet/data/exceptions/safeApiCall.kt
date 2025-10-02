@@ -2,6 +2,8 @@ package net.thechance.mena.wallet.data.exceptions
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
@@ -32,6 +34,9 @@ suspend inline fun <reified T> safeApiCall(
 }
 
 suspend inline fun <reified T> parseBody(response: HttpResponse): T {
+    if (response.headers[HttpHeaders.ContentType] == ContentType.Application.Pdf.toString()) {
+        return response as T
+    }
     return try {
         response.body()
     } catch (e: SerializationException) {
