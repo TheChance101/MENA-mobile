@@ -21,6 +21,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
@@ -28,6 +30,7 @@ import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -49,14 +52,10 @@ fun BaseMessageLayout(
     else
         Theme.colorScheme.brand.brandVariant
 
-    val showSenderAvatar = chatAvatarUrl != null
-
     val messagePaddingStart = if (message.isMine)
         Theme.spacing._24
-    else if (showSenderAvatar)
-        Theme.spacing._8
     else
-        Theme.spacing._32
+        Theme.spacing._8
 
     val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
 
@@ -81,22 +80,28 @@ fun BaseMessageLayout(
         Alignment.Start
     else
         Alignment.End
+    val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+        horizontalAlignment = messageAlignment
     ) {
         Row(
-            verticalAlignment = Alignment.Bottom
+            verticalAlignment = Alignment.Bottom,
         ) {
-            if (!message.isMine && showSenderAvatar) {
+            if (!message.isMine && isMarkedLastInSeries) {
                 AsyncImage(
                     modifier = Modifier
-                        .size(Theme.spacing._24)
-                        .clip(CircleShape),
+                        .clip(CircleShape)
+                        .background(color = Theme.colorScheme.background.surfaceLow)
+                        .padding(Theme.spacing._4)
+                        .size(24.dp),
                     model = chatAvatarUrl,
+                    placeholder = painterResource(Res.drawable.ic_profile_placeholder),
+                    error = painterResource(Res.drawable.ic_profile_placeholder),
                     contentScale = ContentScale.Crop,
-                    contentDescription = "Sender Avatar",
+                    contentDescription = "Contact photo",
                 )
             }
 

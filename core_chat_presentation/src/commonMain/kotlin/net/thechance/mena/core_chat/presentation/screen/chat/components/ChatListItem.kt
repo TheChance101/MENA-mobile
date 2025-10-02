@@ -47,7 +47,7 @@ fun ChatListItem(
             ) {
                 TextMessageItem(
                     message = markedMessage.message as TextMessageUiState, // temporal casting until more MessageTypes involved
-                    chatAvatarUrl = if (markedMessage.isMarkedLastInSeries) chat.avatarUrl else null,
+                    chatAvatarUrl = chat.avatarUrl,
                     showMessageInfo = markedMessage.showMessageInfo,
                     isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
                     onClick = { onMessageClick(markedMessage.message.id) },
