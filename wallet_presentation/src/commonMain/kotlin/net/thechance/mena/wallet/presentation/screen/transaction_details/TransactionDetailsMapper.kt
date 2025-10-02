@@ -8,6 +8,7 @@ import io.github.suwasto.capturablecompose.toByteArray
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.purchase
+import mena.wallet_presentation.generated.resources.receiver
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
@@ -20,7 +21,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState(
     id = "TX-"+ id.toString().substring(0,6),
-    amount = amount.toString(),
+    amount = amount.toString().replace(".",","),
     date = formatTransactionDate(createdAt),
     userName = when (type) {
         TransactionType.SENT -> senderName
@@ -50,8 +51,9 @@ fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState
         TransactionType.ONLINE_PURCHASE -> Res.string.purchase
     },
     otherPartyTitle = when (type) {
-        TransactionType.SENT, TransactionType.ONLINE_PURCHASE -> Res.string.to
+        TransactionType.SENT -> Res.string.to
         TransactionType.RECEIVED -> Res.string.from
+        TransactionType.ONLINE_PURCHASE -> Res.string.receiver
     }
 )
 

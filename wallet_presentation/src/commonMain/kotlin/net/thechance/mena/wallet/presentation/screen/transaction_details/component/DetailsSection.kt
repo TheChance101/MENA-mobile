@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.date
 import mena.wallet_presentation.generated.resources.img_silver
@@ -21,7 +20,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
-import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -55,10 +53,7 @@ internal fun DetailsSection(
                 resource = transactionDetailsUiState.transactionType.iconContentDescriptionRes
             ),
             iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = when (transactionDetailsUiState.transactionType) {
-                TransactionTypeUiState.ONLINE_PURCHASE  -> Theme.spacing._16
-                TransactionTypeUiState.SENT, TransactionTypeUiState.RECEIVED -> 10.dp
-            },
+            iconSize = Theme.spacing._16,
             gap = Theme.spacing._4,
         )
 
