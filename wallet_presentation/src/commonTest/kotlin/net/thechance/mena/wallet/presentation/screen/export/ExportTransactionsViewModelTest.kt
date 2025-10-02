@@ -532,6 +532,21 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
+    fun `onViewAndShareClicked should reset view model`() = runTest {
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        initViewModel()
+        viewModel.onCustomFilteringClicked()
+        viewModel.onViewAndShareClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.first()
+
+        assertFalse(state.isViewAndShareLoading)
+        assertTrue(state.isDownloadButtonEnabled)
+
+    }
+
+    @Test
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
         everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
