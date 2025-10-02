@@ -1,10 +1,10 @@
-package net.thechance.mena.wallet.data.repository.balance
+package net.thechance.mena.wallet.data.repository.transaction
 
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.TransactionDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
-import net.thechance.mena.wallet.data.mapper.toParameters
+import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
@@ -18,15 +18,15 @@ import kotlin.uuid.Uuid
 class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
-    override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): List<Transaction> {
+    override suspend fun getTransactionHistory(
+        transactionFilterParams: TransactionFilterParams?
+    ): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
-            networkClient.get("$TRANSACTION_PATH?${transactionFilterParams?.toParameters()}")
+            networkClient.get(
+                urlString = TRANSACTION_PATH,
+                block = transactionFilterParams?.toRequest() ?: {}
+            )
         }.transactions.orEmpty().map { it.toEntity() }
-
-    }
-
-    override suspend fun getAllTransaction(): List<Transaction> {
-        TODO("Not yet implemented")
     }
 
     override suspend fun getTransactionById(transactionId: Uuid): Transaction {

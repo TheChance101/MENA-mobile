@@ -5,8 +5,8 @@ import net.thechance.mena.dukan.data.repository.dto.DukanCategoryDto
 import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
 import net.thechance.mena.dukan.domain.entity.Category
-import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Color
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 
 fun Dukan.toCreateDukanRequest(): CreateDukanRequest {

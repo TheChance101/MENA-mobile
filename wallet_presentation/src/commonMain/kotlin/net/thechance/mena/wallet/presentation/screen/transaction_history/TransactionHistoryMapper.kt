@@ -1,12 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import kotlinx.datetime.LocalDateTime
-import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.from
-import mena.wallet_presentation.generated.resources.to
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.presentation.model.FilterStatus
+import net.thechance.mena.wallet.presentation.model.FilterType
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -24,12 +24,11 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
             TransactionStatus.SUCCESS -> TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
             TransactionStatus.FAILED -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
         },
-        userInfo = when (type) {
-            TransactionType.SENT-> Res.string.from
-            TransactionType.RECEIVED -> Res.string.to
-            TransactionType.ONLINE_PURCHASE -> Res.string.from
-        },
-        contactName = if (type == TransactionType.SENT) senderName else receiverName
+        contactName = when (type) {
+            TransactionType.SENT -> receiverName
+            TransactionType.RECEIVED -> senderName
+            else -> null
+        }
     )
 
 private fun formatTimeAndDate(dateTime: LocalDateTime): String {
@@ -44,4 +43,25 @@ private fun formatTimeAndDate(dateTime: LocalDateTime): String {
     val month = dateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
     val day = dateTime.day
     return "$day $month, $hour12:$minute $amPm"
+}
+
+fun TransactionFilterState.toParams(): TransactionFilterParams {
+    return TransactionFilterParams(
+        types = selectedTypes.map { it.toDomainType() }.takeIf { it.isNotEmpty() },
+        status = selectedStatus.toDomainStatus(),
+        startDate = fromDate,
+        endDate = toDate
+    )
+}
+
+fun FilterType.toDomainType(): TransactionType = when (this) {
+    FilterType.SENT -> TransactionType.SENT
+    FilterType.RECEIVED -> TransactionType.RECEIVED
+    FilterType.ONLINE_PURCHASE -> TransactionType.ONLINE_PURCHASE
+}
+
+fun FilterStatus.toDomainStatus(): TransactionStatus? = when (this) {
+    FilterStatus.SUCCESS -> TransactionStatus.SUCCESS
+    FilterStatus.FAILED -> TransactionStatus.FAILED
+    FilterStatus.ALL -> null
 }

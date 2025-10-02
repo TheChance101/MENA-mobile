@@ -4,11 +4,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +19,7 @@ import mena.dukan_presentation.generated.resources.ic_remove
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.VerticalDivider
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -69,8 +67,9 @@ fun ZoomControls(
             isEnabled = isZoomInEnabled,
             iconTint = zoomInButtonIconTint
         )
+
         VerticalDivider(
-            modifier = Modifier.height(20.dp).width(1.dp),
+            thickness = 1.dp,
             color = Theme.colorScheme.stroke
         )
 

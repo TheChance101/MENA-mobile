@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.data.repository
+package net.thechance.mena.dukan.data.repository.mockEngine.dukan
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -16,12 +16,17 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
+import net.thechance.mena.dukan.data.repository.DukanRepositoryImpl
 import net.thechance.mena.dukan.data.repository.dto.DukanCategoryDto
 import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
 import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
+import net.thechance.mena.dukan.data.repository.dto.ShelfDto
+import net.thechance.mena.dukan.data.repository.mockEngine.jsonHeaders
+import net.thechance.mena.dukan.data.repository.mockEngine.jsonSerialization
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -96,8 +101,26 @@ fun MockRequestHandleScope.defaultNameAvailableResponse(isTaken: Boolean) = resp
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultDeleteShelfResponse() = respond(
+    content = "",
+    status = HttpStatusCode.NoContent,
+    headers = jsonHeaders
+)
 
-fun createHttpClient(
+fun MockRequestHandleScope.defaultShelvesResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        ListSerializer(ShelfDto.serializer()),
+        listOf(
+            ShelfDto("1", "Shelf 1"),
+            ShelfDto("2", "Shelf 2"),
+            ShelfDto("3", "Shelf 3")
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun createDukanHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     stylesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     categoriesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -105,24 +128,45 @@ fun createHttpClient(
     statusResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    shelvesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
+    val shelfId = "1"
+
     return HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
             "/dukan/create" -> createResponse?.invoke(this) ?: defaultCreateResponse()
+            "/dukan/shelf/create" -> createResponse?.invoke(this) ?: defaultCreateResponse()
+            "/dukan/shelf" -> shelvesResponse?.invoke(this) ?: defaultShelvesResponse()
             "/dukan/styles" -> stylesResponse?.invoke(this) ?: defaultStylesResponse()
             "/dukan/categories" -> categoriesResponse?.invoke(this) ?: defaultCategoriesResponse()
             "/dukan/colors" -> colorsResponse?.invoke(this) ?: defaultColorsResponse()
             "/dukan/statues" -> statusResponse?.invoke(this) ?: defaultStatusResponse()
             "/dukan/image" -> uploadResponse?.invoke(this) ?: defaultUploadResponse()
             "/dukan/available" -> nameResponse?.invoke(this) ?: defaultNameAvailableResponse(false)
+            "/dukan/shelf/$shelfId" -> deleteResponse?.invoke(this) ?: defaultDeleteShelfResponse()
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
     }) {
         install(ContentNegotiation) { json(jsonSerialization) }
         install(DefaultRequest) { contentType(ContentType.Application.Json) }
     }
+
 }
 
+fun createShelfRepository(
+    createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    shelvesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+): ShelfRepositoryImpl {
+    return ShelfRepositoryImpl(
+        client = createDukanHttpClient(
+            createResponse = createResponse,
+            deleteResponse = deleteShelfResponse,
+            shelvesResponse = shelvesResponse
+        )
+    )
+}
 
 fun createDukanRepository(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -134,7 +178,7 @@ fun createDukanRepository(
     nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): DukanRepositoryImpl {
     return DukanRepositoryImpl(
-        client = createHttpClient(
+        client = createDukanHttpClient(
             createResponse,
             stylesResponse,
             categoriesResponse,
@@ -145,3 +189,4 @@ fun createDukanRepository(
         )
     )
 }
+

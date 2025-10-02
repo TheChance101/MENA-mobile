@@ -27,7 +27,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.CategorySelectionRow
+import net.thechance.mena.dukan.presentation.component.SelectionRow
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
@@ -69,12 +69,14 @@ fun CreateDukanContentBasicInformation(
 
         item {
             CategoryHeaderSection()
-            CategorySelectionRow(
-                availableCategories = state.dukanCategories,
-                isCategorySelected = interactionListener.isCategorySelected(),
-                onCategorySelected = interactionListener::onCategorySelected,
-                onCategoryDeselected = interactionListener::onCategoryDeselected,
-                onCategoryEnabled = interactionListener::onCategoryEnabled
+            SelectionRow(
+                availableItems = state.dukanCategories,
+                isItemSelected = interactionListener.isCategorySelected(),
+                onItemSelected = interactionListener::onCategorySelected,
+                onItemDeselected = interactionListener::onCategoryDeselected,
+                onItemEnabled = interactionListener::onCategoryEnabled,
+                getItemName = { it.name },
+                getItemImageUrl = { it.imageUrl }
             )
         }
     }
