@@ -84,7 +84,7 @@ actual class PdfHandler {
                 CGContextFillRect(context, pageRect)
 
                 CGContextTranslateCTM(context, 0.0, height)
-                CGContextScaleCTM(context, 1.0, -1.0)
+                CGContextScaleCTM(context, 1.0, 1.0)
 
                 CGContextDrawPDFPage(context, page)
 
