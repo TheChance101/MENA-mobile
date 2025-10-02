@@ -4,7 +4,7 @@ import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.TransactionDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
-import net.thechance.mena.wallet.data.mapper.toParameters
+import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
@@ -24,7 +24,7 @@ class TransactionRepositoryImpl(
         return safeApiCall<PagedTransactionResponseDto> {
             networkClient.get(
                 urlString = TRANSACTION_PATH,
-                block = transactionFilterParams?.toParameters() ?: {}
+                block = transactionFilterParams?.toRequest() ?: {}
             )
         }.transactions.orEmpty().map { it.toEntity() }
     }

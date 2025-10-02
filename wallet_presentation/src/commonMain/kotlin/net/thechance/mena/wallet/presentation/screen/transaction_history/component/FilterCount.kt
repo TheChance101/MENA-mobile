@@ -12,14 +12,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ShowFilterCount(
-    filterState: TransactionFilterState
+fun FilterCount(
+    activeFilterCount: Int,
+    hasActiveFilters: Boolean
 ) {
-    val filterCount = filterState.activeFilterCount
-    if (filterState.hasActiveFilters && filterCount != 0) {
+    if (hasActiveFilters && activeFilterCount != 0) {
         Box(
             modifier = Modifier
                 .padding(start = 4.dp)
@@ -29,10 +29,19 @@ fun ShowFilterCount(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "$filterCount",
+                text = "$activeFilterCount",
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.primary.onPrimary
             )
         }
     }
+}
+
+@Composable
+@Preview
+private fun FilterCountPreview(){
+    FilterCount(
+        activeFilterCount = 1,
+        hasActiveFilters = true
+    )
 }

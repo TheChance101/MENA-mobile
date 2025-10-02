@@ -14,13 +14,14 @@ import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FilterButton(
-    filterState: TransactionFilterState,
+    activeFilterCount: Int,
+    hasActiveFilters: Boolean,
     onClick: () -> Unit
 ) {
     Button(
@@ -40,9 +41,19 @@ fun FilterButton(
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.primary
         )
-
-        ShowFilterCount(
-            filterState = filterState
+        FilterCount(
+            activeFilterCount = activeFilterCount,
+            hasActiveFilters = hasActiveFilters
         )
     }
+}
+
+@Composable
+@Preview
+private fun FilterButtonPreview(){
+    FilterButton(
+        activeFilterCount = 1,
+        hasActiveFilters = true,
+        onClick = {}
+    )
 }

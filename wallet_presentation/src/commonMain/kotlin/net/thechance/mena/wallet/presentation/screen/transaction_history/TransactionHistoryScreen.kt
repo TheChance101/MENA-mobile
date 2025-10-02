@@ -131,7 +131,8 @@ fun TransactionHistoryContent(
             item {
                 if (state.history.isNotEmpty() || state.filterState.activeFilterCount != 0) {
                     FilterButton(
-                        filterState = state.filterState,
+                        activeFilterCount = state.filterState.activeFilterCount,
+                        hasActiveFilters = state.filterState.hasActiveFilters,
                         onClick = interactionListener::onFilterClicked
                     )
                 }
