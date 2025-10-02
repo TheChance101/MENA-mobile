@@ -20,9 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import mena.dukan_presentation.generated.resources.Dukan
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_dukan_icon
+import mena.dukan_presentation.generated.resources.dukan
 import mena.dukan_presentation.generated.resources.dukan_button
 import mena.dukan_presentation.generated.resources.dukan_icon
 import mena.dukan_presentation.generated.resources.ic_add_dukan
@@ -43,10 +43,13 @@ fun TopAppBar(
     dukanButtonStatus: MainScreenUiState.DukanStatusUi,
 ) {
     AppBar(
-        title = stringResource(resource = Res.string.Dukan),
+        title = stringResource(resource = Res.string.dukan),
         modifier = modifier,
         titleColor = Theme.colorScheme.shadePrimary,
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+        contentPadding = PaddingValues(
+            horizontal = Theme.spacing._12,
+            vertical = Theme.spacing._8
+        ),
         trailingContent = {
             DukanIconButton(
                 dukanButtonStatus = dukanButtonStatus,
@@ -87,6 +90,13 @@ private fun DukanIconButton(
                 }
 
                 MainScreenUiState.DukanStatusUi.Pending -> {
+                    Icon(
+                        painter = painterResource(resource = Res.drawable.ic_dukan),
+                        contentDescription = stringResource(resource = Res.string.dukan_icon)
+                    )
+                }
+
+                MainScreenUiState.DukanStatusUi.Approved -> {
                     Icon(
                         painter = painterResource(resource = Res.drawable.ic_dukan),
                         contentDescription = stringResource(resource = Res.string.dukan_icon)

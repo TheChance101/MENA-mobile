@@ -11,6 +11,7 @@ import mena.wallet_presentation.generated.resources.no_transactions_yet
 import net.thechance.mena.wallet.presentation.component.StatePlaceholder
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionHistoryEmpty(modifier: Modifier = Modifier) {
@@ -25,4 +26,10 @@ fun TransactionHistoryEmpty(modifier: Modifier = Modifier) {
             modifier = Modifier.align(Alignment.Center)
         )
     }
+}
+
+@Preview
+@Composable
+private fun FilterTransactionErrorPreview() {
+    FilterTransactionEmpty()
 }

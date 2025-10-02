@@ -85,9 +85,13 @@
     <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
     <string name="img_no_internet">الصورة لا يوجد إنترنت</string>
     <string name="retry">أعد المحاولة</string>
-    <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للفلاتر</string>
-    <string name="filter_transaction_error_description">قم بتغيير الفلاتر أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
     <string name="empty_transaction_history_desc">بمجرد أن تبدأ باستخدام محفظتك، ستظهر معاملاتك هنا.</string>
     <string name="no_transactions_yet">لا توجد معاملات بعد</string>
+    <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للتصفيات</string>
+    <string name="filter_transaction_error_description">قم بتغيير التصفية أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
+    <string name="apply_filters">تطبيق التصفية</string>
+    <string name="filter_transactions">تصفية المعاملات</string>
+    <string name="reset">إعادة تعيين</string
+    <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
 
 </resources>

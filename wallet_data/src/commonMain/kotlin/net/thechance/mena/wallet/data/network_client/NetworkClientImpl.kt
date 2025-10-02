@@ -10,7 +10,9 @@ import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -66,7 +68,10 @@ class NetworkClientImpl(
         return HttpClient(platformHttpClientEngineFactory) {
             defaultRequest { url(baseUrl) }
 
-            install(Logging) { level = LogLevel.ALL }
+            install(Logging) {
+                logger = Logger.SIMPLE
+                level = LogLevel.ALL
+            }
 
             install(ContentNegotiation) {
                 json(

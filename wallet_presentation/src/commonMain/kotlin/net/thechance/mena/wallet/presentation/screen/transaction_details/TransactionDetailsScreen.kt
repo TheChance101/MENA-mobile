@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.suwasto.capturablecompose.rememberCaptureController
@@ -23,6 +24,7 @@ import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsContent
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.TransactionDetailsScreenShot
+import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -92,7 +94,11 @@ private fun TransactionDetailsScreenContent(
                 (state.isError != null) -> {
                     NoInternetScreen(onRetry = interactionListener::onRefresh)
                 }
-                state.isLoading -> {}
+                state.isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize()){
+                        ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
                 else -> {
                     Box {
                         val captureController = rememberCaptureController()

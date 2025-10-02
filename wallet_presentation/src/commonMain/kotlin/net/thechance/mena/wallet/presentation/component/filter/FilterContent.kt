@@ -32,6 +32,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FilterContent(
+    showStatusFilter: Boolean = true,
     selectedTypes: Set<FilterType>? = null,
     selectedStatus: FilterStatus = FilterStatus.ALL,
     fromDate: String,
@@ -57,17 +58,18 @@ fun FilterContent(
             selectedTypes = selectedTypes,
             onTypeSelected = onTypeSelected
         )
+        if (showStatusFilter) {
+            Text(
+                text = stringResource(Res.string.status),
+                style = Theme.typography.body.small,
+                color = Theme.colorScheme.shadePrimary
+            )
 
-        Text(
-            text = stringResource(Res.string.status),
-            style = Theme.typography.body.small,
-            color = Theme.colorScheme.shadePrimary
-        )
-
-        TransactionStatusRow(
-            selectedStatus = selectedStatus,
-            onStatusSelected = onStatusSelected
-        )
+            TransactionStatusRow(
+                selectedStatus = selectedStatus,
+                onStatusSelected = onStatusSelected
+            )
+        }
 
         DateRangePicker(
             fromDate = fromDate,

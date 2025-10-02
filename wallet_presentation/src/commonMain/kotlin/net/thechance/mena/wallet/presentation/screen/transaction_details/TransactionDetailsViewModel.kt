@@ -64,8 +64,39 @@ class TransactionDetailsViewModel(
         updateState { it.copy(isLoading = true) }
     }
 
+    override fun onBackButtonClicked() {
+        sendEffect(TransactionDetailsEffect.NavigateBack)
+    }
+
+    override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
+        tryToExecute(
+            callee = { capture() },
+            onSuccess = ::onShareReceiptSuccess,
+            onError = ::onShareReceiptError,
+            onStart = ::onShareReceiptStart,
+            dispatcher = ioDispatcher
+        )
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {
+        tryToExecute(
+            callee = {
+                imageSharer.shareImage(
+                    imageBytes = byteArray,
+                    fileName = "$fileName.png",
+                    mimeType = IMAGE_TYPE
+                )
+            },
+            onSuccess = ::onScreenShotCapturedSuccess,
+            onError = ::onShareReceiptError,
+            onStart = ::onShareReceiptStart,
+            dispatcher = ioDispatcher
+        )
+    }
+
     private fun onScreenShotCapturedSuccess(x: Unit) {
-        { updateState { it.copy(isShareReceiptBtnLoading = false) } }
+        updateState { it.copy(isShareReceiptBtnLoading = false) }
     }
 
     private fun onShareReceiptSuccess(x: Unit) {
@@ -113,36 +144,6 @@ class TransactionDetailsViewModel(
                 snackBar = oldState.snackBar.copy(isVisible = false)
             )
         }
-    }
-
-    override fun onBackButtonClicked() {
-        sendEffect(TransactionDetailsEffect.NavigateBack)
-    }
-
-    override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
-        tryToExecute(
-            callee = { capture() },
-            onSuccess = ::onShareReceiptSuccess,
-            onError = ::onShareReceiptError,
-            onStart = ::onShareReceiptStart,
-            dispatcher = ioDispatcher
-        )
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {
-        tryToExecute(
-            callee = {
-                imageSharer.shareImage(
-                    imageBytes = byteArray,
-                    fileName = "$fileName.png",
-                    mimeType = IMAGE_TYPE
-                )
-            },
-            onSuccess = ::onScreenShotCapturedSuccess,
-            onError = ::onShareReceiptError,
-            dispatcher = ioDispatcher
-        )
     }
 
     override fun onRefresh() {

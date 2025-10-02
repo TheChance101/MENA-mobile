@@ -19,6 +19,7 @@ import net.thechance.mena.dukan.data.repository.mapper.toCategoryList
 import net.thechance.mena.dukan.data.repository.mapper.toColorsList
 import net.thechance.mena.dukan.data.repository.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.repository.mapper.toMyDukanStatus
+import net.thechance.mena.dukan.data.repository.util.buildSinglePartFormData
 import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
@@ -78,7 +79,7 @@ class DukanRepositoryImpl(
         return safeApiCall {
             client.post("$BASE_URL/image") {
                 setBody(
-                    buildMultiPartFormData(fileName, fileBytes)
+                    buildSinglePartFormData(fileName, fileBytes,"file")
                 )
             }
         }
@@ -90,22 +91,7 @@ class DukanRepositoryImpl(
         }.available.not()
     }
 
-    private fun buildMultiPartFormData(
-        fileName: String, fileBytes: ByteArray
-    ): MultiPartFormDataContent {
-        return MultiPartFormDataContent(
-            formData {
-                append(
-                    key = "file",
-                    value = fileBytes,
-                    headers = Headers.build {
-                        append(HttpHeaders.ContentType, "multipart/form-data")
-                        append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
-                    }
-                )
-            }
-        )
-    }
+
 
     companion object {
         private const val BASE_URL = "/dukan"

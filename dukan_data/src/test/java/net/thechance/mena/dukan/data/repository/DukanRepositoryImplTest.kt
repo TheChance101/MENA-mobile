@@ -1,6 +1,10 @@
 package net.thechance.mena.dukan.data.repository
 
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanRepository
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultCreateResponse
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultNameAvailableResponse
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultStatusResponse
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -11,7 +15,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DukanRepositoryImplTest {
-    private val repository = createDukanRepository()
+    private val repository: DukanRepositoryImpl = createDukanRepository()
 
     @Test
     fun `createDukan calls the correct endpoint`() = runTest {

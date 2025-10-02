@@ -13,7 +13,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.data.network_client.NetworkClient
-import net.thechance.mena.wallet.data.repository.balance.TransactionRepositoryImpl
+import net.thechance.mena.wallet.data.repository.transaction.TransactionRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.model.TransactionStatus

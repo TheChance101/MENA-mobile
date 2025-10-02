@@ -25,11 +25,15 @@ import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionErrorState
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionLoadingState
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.FilterButton
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.ScrollingDetecting
 import org.jetbrains.compose.resources.painterResource
@@ -95,14 +99,34 @@ fun TransactionHistoryContent(
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
                     Icon(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
                             .clickable { interactionListener.onExportClicked() },
                         painter = painterResource(Res.drawable.ic_share),
                         contentDescription = Res.string.share.toString()
                     )
-                },
+                }
             )
+        },
+        overlays = {
+            bottomSheet(state.isFilterVisible) {
+                TransactionFilterBottomSheet(
+                    uiState = state.filterState,
+                    onDismiss = interactionListener::onDismissFilter,
+                    onClickAddFilter = interactionListener::onApplyFilterClicked,
+                    onResetClicked = interactionListener::onResetFilterClicked,
+                    onTypeToggled = interactionListener::selectFilterType,
+                    onStatusSelected = interactionListener::selectFilterStatus,
+                    onFromClick = {
+                        // TODO: Show date picker
+                    },
+                    onToClick = {
+                        // TODO: Show date picker
+                    }
+                )
+            }
+        },
+        snackBar = {
+            SnackBarContainer(snackBarState = state.snackBar)
         }
     ) {
         when {
@@ -146,9 +170,6 @@ private fun onTransactionHistoryEffect(
     when (effect) {
         TransactionHistoryEffect.NavigateBack -> onNavigateBackClicked()
         TransactionHistoryEffect.NavigateToExportTransaction -> navigateToExportTransaction()
-        TransactionHistoryEffect.NavigateToFilterBottomSheet -> {/*TODO: navigate to filter bottom sheet*/
-        }
-
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
             navigateToTransactionDetails(effect.id)
         }
