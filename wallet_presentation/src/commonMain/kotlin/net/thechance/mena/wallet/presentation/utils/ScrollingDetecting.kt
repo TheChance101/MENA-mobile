@@ -5,11 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
-import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState
 
 @Composable
 fun ScrollingDetecting(
-    state: TransactionHistoryScreenState,
+    listSize: Int,
+    endOfPages: Boolean,
+    isLoading: Boolean,
     listState: LazyListState,
     buffer: Int = 5,
     onLoadMore: () -> Unit
@@ -19,9 +20,9 @@ fun ScrollingDetecting(
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
                 ?: return@derivedStateOf false
 
-            lastVisibleItem.index >= state.history.size - buffer
-                    && !state.endOfPages
-                    && !state.isPaginationLoading
+            lastVisibleItem.index >= listSize - buffer
+                    && !endOfPages
+                    && !isLoading
         }
     }
 

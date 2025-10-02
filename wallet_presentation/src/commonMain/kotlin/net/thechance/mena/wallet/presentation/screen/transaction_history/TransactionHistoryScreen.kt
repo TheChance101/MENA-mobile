@@ -74,9 +74,11 @@ fun TransactionHistoryContent(
     listState: LazyListState,
 ) {
     ScrollingDetecting(
-        state = state,
         listState = listState,
-        onLoadMore = interactionListener::onNextPageRequested
+        onLoadMore = interactionListener::onNextPageRequested,
+        listSize = state.history.size,
+        endOfPages = state.endOfPages,
+        isLoading = state.isPaginationLoading
     )
     WalletScaffold(
         modifier = Modifier.statusBarsPadding(),
