@@ -17,8 +17,8 @@ import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.error_failed_view
 import mena.wallet_presentation.generated.resources.error_no_transactions
 import mena.wallet_presentation.generated.resources.something_went_wrong
-import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
@@ -178,7 +178,7 @@ class ExportTransactionsViewModel(
 
             statementRepository.getTransactionsPdf(
                 TransactionFilterParams(
-                    types = currentState.selectedTransactionsTypes?.map { it.toDomain() },
+                    types = currentState.selectedTransactionsTypes.map { it.toDomain() },
                     startDate = startDateTime,
                     endDate = endDateTime
                 )
