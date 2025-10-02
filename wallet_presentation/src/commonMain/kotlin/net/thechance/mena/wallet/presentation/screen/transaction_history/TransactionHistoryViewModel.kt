@@ -1,6 +1,8 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
@@ -38,7 +40,7 @@ class TransactionHistoryViewModel(
     }
 
     fun loadNextTransactions() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             paginator.loadNextItems()
         }
     }
