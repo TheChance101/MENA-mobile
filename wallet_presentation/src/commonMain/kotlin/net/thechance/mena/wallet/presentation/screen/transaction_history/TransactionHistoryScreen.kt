@@ -38,8 +38,8 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.screen.FilterTransactionEmpty
-import net.thechance.mena.wallet.presentation.screen.TransactionHistoryEmpty
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.FilterTransactionEmpty
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -149,7 +149,7 @@ fun TransactionHistoryContent(
                     )
 
                     ShowFilterCount(
-                        state = state
+                        filterState = state.filterState
                     )
 
                 }
@@ -179,13 +179,17 @@ fun TransactionHistoryContent(
 
 @Composable
 fun ShowFilterCount(
-    state: TransactionHistoryScreenState
+    filterState: TransactionFilterState
 ) {
-    val filterCount = state.filterState.activeFilterCount
-    if (state.filterState.hasActiveFilters && filterCount != 0) {
+    val filterCount = filterState.activeFilterCount
+    if (filterState.hasActiveFilters && filterCount != 0) {
         Box(
-            modifier = Modifier.size(20.dp).padding(start = 4.dp).clip(CircleShape)
-                .background(Theme.colorScheme.brand.brand), contentAlignment = Alignment.Center
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(Theme.colorScheme.brand.brand),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "$filterCount",

@@ -1,9 +1,9 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -80,14 +80,14 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = stringResource(Res.string.filter_transactions),
                     style = Theme.typography.title.small,
                     color = Theme.colorScheme.shadePrimary
                 )
-                Spacer(modifier = Modifier.weight(1f))
                 TextButton(
                     text = stringResource(Res.string.reset),
                     onClick = onResetClicked

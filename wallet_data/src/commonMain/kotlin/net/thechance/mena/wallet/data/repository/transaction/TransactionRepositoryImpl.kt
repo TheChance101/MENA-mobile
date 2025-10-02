@@ -20,7 +20,7 @@ class TransactionRepositoryImpl(
 ) : TransactionRepository {
     override suspend fun getTransactionHistory(transactionFilterParams: TransactionFilterParams?): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
-            networkClient.get(TRANSACTION_PATH) {
+            networkClient.get("$TRANSACTION_PATH?") {
                 transactionFilterParams?.toParameters()?.forEach { key, values ->
                     values.forEach { value ->
                         parameter(key, value)
@@ -35,7 +35,7 @@ class TransactionRepositoryImpl(
     }
 
     private companion object {
-        const val TRANSACTION_PATH = "wallet/transactions?"
+        const val TRANSACTION_PATH = "wallet/transactions"
     }
 
 }

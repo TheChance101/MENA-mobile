@@ -62,7 +62,6 @@ class TransactionHistoryViewModel(
     }
 
     private fun onGetTransactionHistoryError(throwable: Throwable) {
-        throwable.printStackTrace()
         updateState { it.copy(isError = throwable) }
     }
 
