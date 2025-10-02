@@ -130,7 +130,7 @@ class TransactionHistoryViewModelTest {
                     time = LocalTime(12, 0)
                 ),
                 amount = 75.5,
-                status = TransactionStatus.FAIL,
+                status = TransactionStatus.FAILED,
                 senderName = "Charlie",
                 receiverName = "You",
                 type = TransactionType.RECEIVED

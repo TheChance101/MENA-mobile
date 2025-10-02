@@ -4,7 +4,10 @@ import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.InvalidCountryCodeException
 import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
+import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.InvalidPasswordException
+import net.thechance.mena.identity.domain.exception.OtpExpiredException
+import net.thechance.mena.identity.domain.exception.TooManyRequestsException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 
 sealed interface ErrorState {
@@ -18,6 +21,9 @@ sealed interface ErrorState {
     data object Unauthorized : ErrorState
     data object Unknown : ErrorState
     data object LocationPermissionDenied : ErrorState
+    data object InvalidOTP : ErrorState
+    data object TooManyRequests : ErrorState
+    data object OTPExpired : ErrorState
     // endregion
     data class SomethingWentWrong(val message: String?) : ErrorState
 }
@@ -32,6 +38,9 @@ fun handelAuthorizationException(
         is InvalidPasswordException -> onError(ErrorState.InvalidPassword)
         is UserIsBlockedException -> onError(ErrorState.UserIsBlockedException)
         is InvalidCredentialsException -> onError(ErrorState.WrongPassword(exception.message ?: ""))
+        is InvalidOTPException -> onError(ErrorState.InvalidOTP)
+        is TooManyRequestsException -> onError(ErrorState.TooManyRequests)
+        is OtpExpiredException -> onError(ErrorState.OTPExpired)
         else -> onError(ErrorState.SomethingWentWrong(exception.message))
     }
 }

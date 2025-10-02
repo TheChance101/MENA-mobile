@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.data.repository.balance
 
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
+import net.thechance.mena.wallet.data.dto.TransactionDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toParameters
@@ -29,7 +30,9 @@ class TransactionRepositoryImpl(
     }
 
     override suspend fun getTransactionById(transactionId: Uuid): Transaction {
-        TODO("Not yet implemented")
+        return safeApiCall<TransactionDto> {
+            networkClient.get("$TRANSACTION_PATH/$transactionId")
+        }.toEntity()
     }
 
     private companion object {

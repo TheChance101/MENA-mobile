@@ -141,7 +141,6 @@ class TransactionDetailsViewModel(
             },
             onSuccess = ::onScreenShotCapturedSuccess,
             onError = ::onShareReceiptError,
-            onStart = ::onShareReceiptStart,
             dispatcher = ioDispatcher
         )
     }

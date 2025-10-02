@@ -22,7 +22,7 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
         },
         status = when (status) {
             TransactionStatus.SUCCESS -> TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
-            TransactionStatus.FAIL -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
+            TransactionStatus.FAILED -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
         },
         userInfo = when (type) {
             TransactionType.SENT-> Res.string.from
