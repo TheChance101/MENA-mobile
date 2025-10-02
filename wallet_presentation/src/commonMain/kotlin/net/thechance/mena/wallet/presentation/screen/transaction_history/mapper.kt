@@ -29,7 +29,11 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
             TransactionType.RECEIVED -> Res.string.to
             TransactionType.ONLINE_PURCHASE -> Res.string.from
         },
-        contactName = if (type == TransactionType.SENT) senderName else receiverName
+        contactName = when (type) {
+            TransactionType.SENT -> receiverName
+            TransactionType.RECEIVED -> senderName
+            else -> null
+        }
     )
 
 private fun formatTimeAndDate(dateTime: LocalDateTime): String {
