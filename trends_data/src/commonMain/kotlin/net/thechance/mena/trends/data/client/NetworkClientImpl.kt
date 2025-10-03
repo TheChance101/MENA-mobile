@@ -19,6 +19,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
+import net.thechance.mena.trends.data.util.getHttpEngine
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
@@ -61,7 +62,7 @@ class NetworkClientImpl(
     }
 
     fun provideHttpClient(): HttpClient {
-        return HttpClient {
+        return HttpClient(engine = getHttpEngine()) {
             defaultRequest {
                 url(baseUrl)
             }
