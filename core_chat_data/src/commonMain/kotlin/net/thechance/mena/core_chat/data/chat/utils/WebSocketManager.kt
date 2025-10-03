@@ -15,9 +15,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import net.thechance.mena.core_chat.data.network.ApiConstants.WEB_SOCKETS_ENDPOINT
 
 
 class WebSocketManager(
+    private val baseUrl: String,
     private val client: HttpClient,
 ) {
 
@@ -35,7 +37,6 @@ class WebSocketManager(
     }
 
     fun connect(
-        url: String,
         token: String,
         onConnected: suspend () -> Unit = {}
     ) {
@@ -44,7 +45,10 @@ class WebSocketManager(
         scope.launch(exceptionHandler) {
             while (shouldReconnect) {
                 try {
-                    client.webSocket(urlString = url, request = { bearerAuth(token) }) {
+                    client.webSocket(
+                        urlString = getConstructWebSocketUrl(baseUrl),
+                        request = { bearerAuth(token) }
+                    ) {
                         session = this
                         isActiveSession = true
                         sendConnectFrame()
@@ -65,7 +69,7 @@ class WebSocketManager(
                     println("WebSocket reconnect error: ${e.message}")
                     isActiveSession = false
                     session = null
-                    delay(5000) // wait 5s before retry
+                    delay(RECONNECT_DELAY)
                 }
             }
         }
@@ -74,7 +78,6 @@ class WebSocketManager(
     suspend fun disconnect() {
         try {
             if (isActiveSession) {
-
                 sendFrame("DISCONNECT\n\n\u0000")
                 println("STOMP DISCONNECT sent")
             }
@@ -88,23 +91,33 @@ class WebSocketManager(
         }
     }
 
-    suspend fun sendFrame(raw: String) {
+    private suspend fun sendFrame(raw: String) {
         session?.send(Frame.Text(raw))
     }
 
-    suspend fun sendConnectFrame() {
+    private suspend fun sendConnectFrame() {
         sendFrame("CONNECT\naccept-version:1.2\nheart-beat:10000,10000\n\n\u0000")
     }
 
     suspend fun subscribe(destination: String, subscriptionId: String = "sub-0") {
-        val frame = "SUBSCRIBE\nid:$subscriptionId\ndestination:$destination\n\n\u0000"
-        sendFrame(frame)
+        sendFrame("SUBSCRIBE\nid:$subscriptionId\ndestination:$destination\n\n\u0000")
     }
 
     suspend fun sendTextFrame(destination: String, payload: String) {
-        val frameText = "SEND\ndestination:$destination\n\n$payload\n\n\u0000"
-        sendFrame(frameText)
+        sendFrame("SEND\ndestination:$destination\n\n$payload\n\n\u0000")
     }
 
     fun isConnected(): Boolean = isActiveSession
+
+    private fun getConstructWebSocketUrl(baseUrl: String): String {
+        return "${
+            baseUrl
+                .replace("https", "wss")
+                .replace("http", "ws")
+        }$WEB_SOCKETS_ENDPOINT"
+    }
+
+    private companion object {
+        const val RECONNECT_DELAY = 5000L
+    }
 }

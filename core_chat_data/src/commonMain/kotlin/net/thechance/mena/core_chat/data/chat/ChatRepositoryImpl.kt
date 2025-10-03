@@ -20,7 +20,6 @@ import net.thechance.mena.core_chat.data.chat.utils.MessageEvent
 import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_HISTORY_ENDPOINT
-import net.thechance.mena.core_chat.data.network.ApiConstants.WEB_SOCKETS_ENDPOINT
 import net.thechance.mena.core_chat.data.shared.BaseRepository
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
 import net.thechance.mena.core_chat.domain.entity.Chat
@@ -38,8 +37,8 @@ class ChatRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val authenticationRepository: AuthenticationRepository,
     private val json: Json,
-    private val baseUrl: String,
 ) : ChatRepository, BaseRepository {
+
     private val messageFlows = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<String>()
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -99,7 +98,6 @@ class ChatRepositoryImpl(
         val bearerToken = authenticationRepository.getAccessToken()
 
         webSocketManager.connect(
-            url = getConstructWebSocketUrl(baseUrl = baseUrl),
             token = bearerToken,
             onConnected = { onConnectedWebSocket(chatId) }
         )
@@ -142,13 +140,6 @@ class ChatRepositoryImpl(
         webSocketManager.disconnect()
     }
 
-    private fun getConstructWebSocketUrl(baseUrl: String): String {
-        return "${baseUrl
-                .replace("https", "wss")
-                .replace("http", "ws")
-        }$WEB_SOCKETS_ENDPOINT"
-    }
-
     private companion object{
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
@@ -160,6 +151,5 @@ class ChatRepositoryImpl(
         const val SEND_MESSAGE_DESTINATION = "/app/chat.privateMessage"
         const val WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
-
     }
 }

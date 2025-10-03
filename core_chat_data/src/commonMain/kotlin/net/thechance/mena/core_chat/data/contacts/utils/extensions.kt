@@ -5,9 +5,9 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 fun getUuidOrNull(input: String?): Uuid? {
-    return if (input.isNullOrBlank() || input == "null") {
+    return try {
+        Uuid.parse(input.orEmpty())
+    } catch (_: Exception) {
         null
-    } else {
-        Uuid.parse(input)
     }
 }
