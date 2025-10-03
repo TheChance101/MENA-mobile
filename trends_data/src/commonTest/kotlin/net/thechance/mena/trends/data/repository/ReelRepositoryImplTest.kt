@@ -72,7 +72,8 @@ internal class ReelRepositoryImplTest {
                 name = FAKE_NAME,
                 mimeType = FAKE_MIME_TYPE,
                 size = FAKE_SIZE,
-                bytes = FAKE_BYTES
+                bytes = FAKE_BYTES,
+                extension = FAKE_EXTENSION
             )
         }
         assertThat(result).isSuccess()
@@ -88,7 +89,8 @@ internal class ReelRepositoryImplTest {
             name = FAKE_NAME,
             mimeType = FAKE_MIME_TYPE,
             size = FAKE_SIZE,
-            bytes = FAKE_BYTES
+            bytes = FAKE_BYTES,
+            extension = FAKE_EXTENSION
         ).toList()
 
         assertThat(progressUpdates).isNotEmpty()
@@ -101,7 +103,8 @@ internal class ReelRepositoryImplTest {
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
-        const val FAKE_MIME_TYPE = "mp4"
+        const val FAKE_MIME_TYPE = "video/mp4"
+        const val FAKE_EXTENSION = "mp4"
         const val FAKE_NAME = "test_video"
     }
 }
