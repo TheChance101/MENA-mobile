@@ -127,7 +127,10 @@ data class OtpScreen(
     ) {
         when (effect) {
             OtpScreenUIEffect.NavigateBack -> navigator.pop()
-            is OtpScreenUIEffect.NavigateToResetPassword -> navigator.push(ResetPasswordScreen())
+            is OtpScreenUIEffect.NavigateToResetPassword -> {
+                navigator.popUntilRoot()
+                navigator.push(ResetPasswordScreen())
+            }
         }
     }
 }
