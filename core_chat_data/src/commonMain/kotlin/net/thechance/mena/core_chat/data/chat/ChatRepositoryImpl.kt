@@ -16,8 +16,8 @@ import net.thechance.mena.core_chat.data.chat.dto.ChatDto
 import net.thechance.mena.core_chat.data.chat.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.chat.dto.MessageDto
 import net.thechance.mena.core_chat.data.chat.dto.SendMessageDto
-import net.thechance.mena.core_chat.data.chat.utils.MessageEvent
 import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
+import net.thechance.mena.core_chat.data.chat.dto.MessageEvent
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_HISTORY_ENDPOINT
 import net.thechance.mena.core_chat.data.shared.BaseRepository
