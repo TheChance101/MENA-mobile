@@ -1,7 +1,6 @@
 package net.thechance.mena.core_chat.data.chat.utils
 
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
@@ -24,9 +23,16 @@ object MessageEventSerializer : KSerializer<MessageEvent> {
 
         return when {
             "readBy" in element ->
-                MessageEvent.MarkAsRead(Json.decodeFromJsonElement(MarkAsReadResponse.serializer(), element))
+                MessageEvent.MarkAsRead(
+                    Json.decodeFromJsonElement(
+                        MarkAsReadResponse.serializer(),
+                        element
+                    )
+                )
+
             "id" in element && "senderId" in element && "chatId" in element && "sendAt" in element && "isRead" in element ->
                 MessageEvent.Message(Json.decodeFromJsonElement(MessageDto.serializer(), element))
+
             else -> throw SerializationException("Unknown payload: $element")
         }
     }
@@ -35,6 +41,7 @@ object MessageEventSerializer : KSerializer<MessageEvent> {
         when (value) {
             is MessageEvent.Message ->
                 encoder.encodeSerializableValue(MessageDto.serializer(), value.dto)
+
             is MessageEvent.MarkAsRead ->
                 encoder.encodeSerializableValue(MarkAsReadResponse.serializer(), value.dto)
         }
