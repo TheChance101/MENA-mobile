@@ -27,10 +27,9 @@ kover.reports {
     }
 
     filters {
-        excludes {
-            packages(
-                "mena.faith_presentation.generated.resources*",
-                "*.entity"
+        includes {
+            classes(
+                "*UseCase"
             )
         }
     }

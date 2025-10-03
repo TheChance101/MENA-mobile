@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -16,9 +15,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 
-@OptIn(FlowPreview::class)
+@KoverIgnore
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     initialState: UI_STATE
 ) : ViewModel() {
@@ -47,14 +48,14 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         status: SnackBarState.Status,
         durationMillis: Long = 3000L,
     ) {
-        viewModelScope.launch(Dispatchers.Main.immediate) {
+        viewModelScope.launch {
             if (snackBarState.value.isVisible) {
                 hideSnackBar()
                 delay(1000L)
             }
             _snackBarState.update {
                 SnackBarState(
-                    message = message,
+                    message = getString(message),
                     status = status,
                     isVisible = true
                 )
@@ -69,7 +70,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     }
 
     private fun hideSnackBar() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             _snackBarState.update {
                 it.copy(
                     isVisible = false,

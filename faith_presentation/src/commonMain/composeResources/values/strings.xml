@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="sur">Sur</string>
     <string name="quran">Quran</string>
     <string name="makki">Makki</string>
     <string name="madani">Madani</string>
     <string name="ayat">Ayat</string>
-    <string name="back_icon">back icon</string>
     <string name="bookmark_icon">bookmark icon</string>
     <string name="surah_arabic_name_icon">surah arabic name icon</string>
     <string name="surah_number_container_icon">surah number container</string>">
@@ -20,6 +18,52 @@
     <string name="al_baqarah">Al-Baqarah</string>
     <string name="snack_bar_title">Success</string>
     <string name="app_name">MENA</string>
+    <string name="back_icon">Back Icon</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="remove_bookmark_icon">Remove Bookmark Icon</string>
+    <string name="time_icon">Time Icon</string>
+    <string name="swipe_animation">SwipeAnimation</string>
+    <string name="aya">Aya %1$d</string>
+    <string name="start_tilawah">Start Tilawah</string>
+    <string name="empty_state_bookmark_image">Empty Bookmark Image</string>
+    <string name="empty_state_bookmark_title">No ayah saved yet!</string>
+    <string name="empty_state_bookmark_description">Start your tilawah and bookmark the ayah you want to return to later.</string>
+    <string name="bookmark_removed_successfully">Bookmark removed successfully</string>
+    <string name="bookmark_added_successfully">Bookmark added successfully</string>
+    <plurals name="time_seconds_ago">
+        <item quantity="one">%1$d second ago</item>
+        <item quantity="other">%1$d seconds ago</item>
+    </plurals>
+
+    <plurals name="time_minutes_ago">
+        <item quantity="one">%1$d minute ago</item>
+        <item quantity="other">%1$d minutes ago</item>
+    </plurals>
+
+    <plurals name="time_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+
+    <plurals name="time_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+
+    <plurals name="time_weeks_ago">
+        <item quantity="one">%1$d week ago</item>
+        <item quantity="other">%1$d weeks ago</item>
+    </plurals>
+
+    <plurals name="time_months_ago">
+        <item quantity="one">%1$d month ago</item>
+        <item quantity="other">%1$d months ago</item>
+    </plurals>
+
+    <plurals name="time_years_ago">
+        <item quantity="one">%1$d year ago</item>
+        <item quantity="other">%1$d years ago</item>
+    </plurals>
     <string name="success">Success</string>
     <string name="error">Error</string>
     <string name="success_icon">Success Icon</string>

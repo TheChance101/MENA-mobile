@@ -9,6 +9,6 @@ fun SurahDto.toSurah(): Surah {
         id = number,
         order = surahOrder,
         name = name,
-        ayahCount = ayahCount,
+        ayahCount = ayahCount ?: 0
     )
 }

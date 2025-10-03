@@ -2,7 +2,6 @@ package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import app.cash.turbine.test
 import assertk.assertThat
-import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
@@ -15,13 +14,11 @@ import dev.mokkery.mock
 import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode.Companion.exactly
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
-import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingTrendState
@@ -33,9 +30,9 @@ import net.thechance.mena.trends.presentation.utils.TestExtensions
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UploadTrendViewModelTest: TestExtensions() {
+class UploadTrendViewModelTest : TestExtensions() {
 
-    private val repository:ReelsRepository = mock {
+    private val repository: ReelsRepository = mock {
         everySuspend { uploadReel(any(), any(), any(), any()) } returns emptyFlow()
     }
     private val validator: VideoMetaDataValidator = VideoMetaDataValidator()
@@ -61,60 +58,67 @@ class UploadTrendViewModelTest: TestExtensions() {
     }
 
     @Test
-    fun `onRetrieveVideo should call validateDuration if size is valid`() = runTest(testDispatcher) {
-        viewModel.onRetrieveVideo(defaultFile, ::defaultReadBytes)
+    fun `onRetrieveVideo should call validateDuration if size is valid`() =
+        runTest(testDispatcher) {
+            viewModel.onRetrieveVideo(defaultFile, ::defaultReadBytes)
 
-        verify(exactly(1)) { validator.validateDuration(any()) }
-    }
-
-    @Test
-    fun `onRetrieveVideo should not call validateDuration if validation size throws exception`() = runTest(testDispatcher) {
-        viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
-
-        verify(exactly(0)) { validator.validateDuration(any()) }
-    }
-
-    @Test
-    fun `onRetrieveVideo should not call validateDuration if duration is null`() = runTest(testDispatcher) {
-        everySuspend { videoExtractor.getDuration(any()) } returns null
-
-        viewModel
-        viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
-
-        verify(exactly(0)) { validator.validateDuration(any()) }
-    }
-
-    @Test
-    fun `onRetrieveVideo should update error state with FileTooLarge if size is not valid`() = runTest(testDispatcher) {
-        viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
-        advanceUntilIdle()
-
-        viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(ErrorState.FileTooLarge)
-            cancelAndIgnoreRemainingEvents()
+            verify(exactly(1)) { validator.validateDuration(any()) }
         }
-    }
 
     @Test
-    fun `onRetrieveVideo should call uploadTrend from repository when file is valid`() = runTest(testDispatcher) {
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
+    fun `onRetrieveVideo should not call validateDuration if validation size throws exception`() =
+        runTest(testDispatcher) {
+            viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
 
-        verify(exactly(1)) { repository.uploadReel(any(), any(), any(), any()) }
-    }
+            verify(exactly(0)) { validator.validateDuration(any()) }
+        }
 
     @Test
-    fun `onCancelUploadClick should cancel the job and update state to IDLE`() = runTest(testDispatcher) {
-        viewModel.onCancelUploadClick()
-        advanceUntilIdle()
+    fun `onRetrieveVideo should not call validateDuration if duration is null`() =
+        runTest(testDispatcher) {
+            everySuspend { videoExtractor.getDuration(any()) } returns null
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
-            assertThat(state.isNextButtonEnabled).isFalse()
-            assertThat(state.errorState).isNull()
-            assertThat(state.uploadedBytes).isEqualTo(0L)        }
-    }
+            viewModel
+            viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
+
+            verify(exactly(0)) { validator.validateDuration(any()) }
+        }
+
+    @Test
+    fun `onRetrieveVideo should update error state with FileTooLarge when file's size exceed the max limit`() =
+        runTest(testDispatcher) {
+            viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
+            advanceUntilIdle()
+
+            viewModel.state.test {
+                assertThat(awaitItem().errorState).isEqualTo(ErrorState.FileTooLarge)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `onRetrieveVideo should call uploadTrend from repository when file is valid`() =
+        runTest(testDispatcher) {
+            viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+            advanceUntilIdle()
+
+            verify(exactly(1)) { repository.uploadReel(any(), any(), any(), any()) }
+        }
+
+    @Test
+    fun `onCancelUploadClick should cancel the job and update state to IDLE`() =
+        runTest(testDispatcher) {
+            viewModel.onCancelUploadClick()
+            advanceUntilIdle()
+
+            viewModel.state.test {
+                val state = awaitItem()
+                assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
+                assertThat(state.isNextButtonEnabled).isFalse()
+                assertThat(state.errorState).isNull()
+                assertThat(state.uploadedBytes).isEqualTo(0L)
+            }
+        }
 
     @Test
     fun `onRetryUploadClick should call uploadTrend from repository`() = runTest(testDispatcher) {
@@ -144,7 +148,8 @@ class UploadTrendViewModelTest: TestExtensions() {
             assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
             assertThat(state.isNextButtonEnabled).isFalse()
             assertThat(state.errorState).isNull()
-            assertThat(state.uploadedBytes).isEqualTo(0L)        }
+            assertThat(state.uploadedBytes).isEqualTo(0L)
+        }
     }
 
     @Test
@@ -185,17 +190,18 @@ class UploadTrendViewModelTest: TestExtensions() {
     }
 
     @Test
-    fun `onRetrieveVideo should update state with valid selected file info`() = runTest(testDispatcher) {
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
-        viewModel.state.test {
-            val state: UploadReelScreenState = awaitItem()
-            assertThat(state.selectedFile.name).isEqualTo(fileWithValidInfo.name)
-            assertThat(state.selectedFile.extension).isEqualTo(fileWithValidInfo.extension)
-            assertThat(state.selectedFile.sizeInBytes).isEqualTo(fileWithValidInfo.sizeInBytes)
-            cancelAndIgnoreRemainingEvents()
+    fun `onRetrieveVideo should update state with valid selected file info`() =
+        runTest(testDispatcher) {
+            viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+            advanceUntilIdle()
+            viewModel.state.test {
+                val state: UploadReelScreenState = awaitItem()
+                assertThat(state.selectedFile.name).isEqualTo(fileWithValidInfo.name)
+                assertThat(state.selectedFile.extension).isEqualTo(fileWithValidInfo.extension)
+                assertThat(state.selectedFile.sizeInBytes).isEqualTo(fileWithValidInfo.sizeInBytes)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `should update state with progress of uploaded bytes when uploading`() = runTest {
@@ -234,7 +240,11 @@ class UploadTrendViewModelTest: TestExtensions() {
 
         viewModel.effect.test {
             val trendId = viewModel.state.value.trendId
-            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateToAddDescription(trendId ?: ""))
+            assertThat(awaitItem()).isEqualTo(
+                UploadReelScreenEffect.NavigateToAddDescription(
+                    trendId ?: ""
+                )
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -264,6 +274,45 @@ class UploadTrendViewModelTest: TestExtensions() {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `onDeleteVideoClick should call deleteReelById and reset state`() = runTest {
+        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
+        everySuspend { repository.deleteReelById(any()) } returns Unit
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
+        viewModel.onDeleteVideoClick()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.trendId).isNull()
+            assertThat(state.uploadingTrendState).isEqualTo(UploadingTrendState.IDLE)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onDeleteVideoClick should update errorState when repository throws exception`() = runTest {
+        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
+        everySuspend { repository.deleteReelById(any()) } throws Exception("Delete failed")
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
+        viewModel.onDeleteVideoClick()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.errorState).isEqualTo(ErrorState.RequestFailed("Delete failed"))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+
 
     private companion object {
         const val INVALID_SIZE = 200 * 1024 * 1024 + 1L
