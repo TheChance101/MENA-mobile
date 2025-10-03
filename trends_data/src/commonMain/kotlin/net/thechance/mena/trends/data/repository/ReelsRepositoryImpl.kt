@@ -5,6 +5,7 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
@@ -59,7 +60,7 @@ internal class ReelsRepositoryImpl(
         val request = UpdateReelRequestDTO(description, categoryIds)
         safeApiCall<Unit> {
             networkClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
-                contentType(io.ktor.http.ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
                 setBody(request)
             }
         }
@@ -69,13 +70,22 @@ internal class ReelsRepositoryImpl(
         name: String,
         mimeType: String,
         size: Long,
-        bytes: ByteArray
+        bytes: ByteArray,
+        extension: String
     ): Flow<UploadReelProgress> {
         return channelFlow {
             val response = safeApiCall<UploadReelResponse> {
                 networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT") {
                     infiniteTimeOut()
-                    setBody(createUploadReelBody(name, bytes, size, mimeType))
+                    setBody(
+                        createUploadReelBody(
+                            name = name,
+                            reelBytes = bytes,
+                            size = size,
+                            mimeType = mimeType,
+                            extension = extension
+                        )
+                    )
                     observeUploading { sent, total ->
                         send(
                             UploadReelProgress(
@@ -100,16 +110,19 @@ internal class ReelsRepositoryImpl(
         thumbnail: ByteArray,
         size: Long,
         mimeType: String,
-        name: String
+        name: String,
+        extension: String,
+        id: String
     ) {
         safeApiCall<Unit> {
-            networkClient.put(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT") {
+            networkClient.put(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT/$id") {
                 setBody(
                     createUploadThumbnailBody(
                         thumbnail = thumbnail,
                         size = size,
                         mimeType = mimeType,
-                        name = name
+                        name = name,
+                        extension = extension
                     )
                 )
             }
@@ -120,18 +133,19 @@ internal class ReelsRepositoryImpl(
         thumbnail: ByteArray,
         size: Long,
         mimeType: String,
-        name: String
+        name: String,
+        extension: String
     ): MultiPartFormDataContent {
         return MultiPartFormDataContent(
             formData {
                 append(
-                    key = "image",
+                    key = "thumbnail",
                     value = InputProvider(size) {
                         ByteReadChannel(thumbnail).asSource().buffered()
                     },
                     headers = Headers.build {
-                        append(HttpHeaders.ContentType, "image/*")
-                        append(HttpHeaders.ContentDisposition, "filename=\"$name.$mimeType\"")
+                        append(HttpHeaders.ContentType, mimeType)
+                        append(HttpHeaders.ContentDisposition, "filename=\"$name.$extension\"")
                     }
                 )
             }
@@ -142,7 +156,8 @@ internal class ReelsRepositoryImpl(
         name: String,
         reelBytes: ByteArray,
         size: Long,
-        mimeType: String
+        mimeType: String,
+        extension: String
     ): MultiPartFormDataContent {
         return MultiPartFormDataContent(
             formData {
@@ -152,8 +167,8 @@ internal class ReelsRepositoryImpl(
                         ByteReadChannel(reelBytes).asSource().buffered()
                     },
                     headers = Headers.build {
-                        append(HttpHeaders.ContentType, "video/$mimeType")
-                        append(HttpHeaders.ContentDisposition, "filename=\"$name.$mimeType\"")
+                        append(HttpHeaders.ContentType, mimeType)
+                        append(HttpHeaders.ContentDisposition, "filename=\"$name.$extension\"")
                     }
                 )
             }
