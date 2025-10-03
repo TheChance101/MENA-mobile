@@ -7,7 +7,7 @@ class Paginator<Item>(
     private val onLoadUpdated: (Boolean) -> Unit,
     private val pageSize: Int
 ) {
-    private var currentPage = 1
+    private var currentPage = INITIAL_PAGE
     private var isRequest = false
     private var endPages = false
 
@@ -31,5 +31,8 @@ class Paginator<Item>(
         } finally {
             isRequest = false
         }
+    }
+    companion object {
+        const val INITIAL_PAGE = 0
     }
 }

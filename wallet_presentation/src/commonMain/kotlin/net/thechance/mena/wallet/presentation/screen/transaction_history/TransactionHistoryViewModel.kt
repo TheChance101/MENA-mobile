@@ -22,6 +22,7 @@ import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.time.Clock
@@ -333,6 +334,7 @@ class TransactionHistoryViewModel(
 
     private fun showInvalidDatesSnackBar() {
         viewModelScope.launch {
+            val x = getString(Res.string.start_date_must_be_before_end_date)
             showSnackBar(
                 titleRes = Res.string.error,
                 messageRes = Res.string.start_date_must_be_before_end_date,

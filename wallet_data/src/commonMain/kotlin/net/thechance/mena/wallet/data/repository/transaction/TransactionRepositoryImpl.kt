@@ -21,12 +21,14 @@ class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
   override suspend fun getTransactionHistory(
-        page:Int,pageSize:Int,transactionFilterParams: TransactionFilterParams?
+        page: Int,
+        pageSize: Int,
+        transactionFilterParams: TransactionFilterParams?
     ): List<Transaction> {
         return safeApiCall<PagedTransactionResponseDto> {
             networkClient.get(
                 urlString = TRANSACTION_PATH,
-                block = transactionFilterParams?.toRequest() ?: {}
+                block = transactionFilterParams?.toRequest(page = page, pageSize = pageSize) ?: {}
             )
         }.transactions.orEmpty().map { it.toEntity() }
     }
