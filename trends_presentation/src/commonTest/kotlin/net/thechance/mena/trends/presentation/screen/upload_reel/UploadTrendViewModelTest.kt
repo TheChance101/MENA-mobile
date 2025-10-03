@@ -41,8 +41,8 @@ class UploadTrendViewModelTest : TestExtensions() {
     private val validator: VideoMetaDataValidator = VideoMetaDataValidator()
     private val videoExtractor: VideoUtilities = mock {
         everySuspend { getDuration(any()) } returns VALID_DURATION
-        everySuspend { extractVideoFrame(byteArray, 1000L) } returns byteArray
-        everySuspend { extractVideoFrame(byteArray, 0.5f) } returns byteArray
+        everySuspend { extractVideoFrame(byteArray, any<Long>()) } returns byteArray
+        everySuspend { extractVideoFrame(byteArray, any<Float>()) } returns byteArray
     }
     private val viewModel by lazy {
         UploadReelViewModel(
