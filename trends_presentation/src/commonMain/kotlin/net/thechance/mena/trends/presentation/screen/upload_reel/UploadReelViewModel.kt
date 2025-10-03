@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -231,7 +230,16 @@ internal class UploadReelViewModel(
 
     override fun onDeleteVideoClick() {
         uploadingTrendJob?.cancel()
-        updateState { UploadReelScreenState() }
+        deleteVideo()
+    }
+
+    private fun deleteVideo(){
+        tryToExecute(
+            block = { state.value.trendId?.let { reelsRepository.deleteReelById(id = it) } },
+            onSuccess = { updateState { UploadReelScreenState() } },
+            onError = { errorState -> updateState { copy(errorState = errorState) } },
+            dispatcher = defaultDispatcher
+        )
     }
 
     override fun onRetryUploadClick() {
