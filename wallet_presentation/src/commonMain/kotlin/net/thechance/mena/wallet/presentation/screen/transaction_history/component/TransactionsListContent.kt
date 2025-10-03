@@ -3,24 +3,19 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryInteractionListener
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState
@@ -61,58 +56,29 @@ fun TransactionsListContent(
                         interactionListener.onTransactionCardClicked(transaction.id)
                     }
                 )
-                Box(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .fillMaxWidth(1f)
-                        .height(1.dp)
-                        .background(Theme.colorScheme.stroke)
-                )
+                TransactionHistoryDivider()
             }
             item {
                 if (state.isPaginationLoading) {
-                    Box(
+                    TransactionLoadingState(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator(
-                            colors = listOf(
-                                Theme.colorScheme.stroke,
-                                Theme.colorScheme.shadeTertiary,
-                                Theme.colorScheme.primary.primary
-                            ),
-                            modifier = Modifier.padding(10.dp)
-                        )
-                    }
+                            .padding(vertical = 16.dp)
+                    )
                 }
-                if (state.isError != null && state.history.isNotEmpty()) {
-                    Box(
+            if (state.isError != null && state.history.isNotEmpty()) {
+                    PrimaryButton(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = Theme.spacing._16),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = state.isError.message
-                                ?: stringResource(Res.string.error),
-                            style = Theme.typography.body.small,
-                            color = Theme.colorScheme.error
+                            .padding(top = Theme.spacing._12)
+                            .wrapContentSize(),
+                        text = stringResource(Res.string.retry),
+                        onClick = interactionListener::onRetry,
+                        contentPadding = PaddingValues(
+                            vertical = Theme.spacing._8,
+                            horizontal = Theme.spacing._16
                         )
-                        PrimaryButton(
-                            modifier = Modifier
-                                .padding(top = Theme.spacing._12)
-                                .wrapContentSize(),
-                            text = stringResource(Res.string.retry),
-                            onClick = interactionListener::onRetry,
-                            contentPadding = PaddingValues(
-                                vertical = Theme.spacing._8,
-                                horizontal = Theme.spacing._16
-                            )
-                        )
-                    } //TODO: Replace with correct error view
-                }
+                    )
+                } //TODO: Replace with correct error view
             }
         }
     }
