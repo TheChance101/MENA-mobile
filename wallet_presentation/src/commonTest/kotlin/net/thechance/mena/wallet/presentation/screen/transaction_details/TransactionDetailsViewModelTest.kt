@@ -26,6 +26,7 @@ import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
+import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -122,7 +123,7 @@ class TransactionDetailsViewModelTest {
             viewModel.state.test {
                 skipItems(2)
                 val errorState = awaitItem()
-                assertEquals(expectedError, errorState.isError)
+                assertEquals(ErrorState.Unknown, errorState.errorState)
                 cancelAndIgnoreRemainingEvents()
             }
         }

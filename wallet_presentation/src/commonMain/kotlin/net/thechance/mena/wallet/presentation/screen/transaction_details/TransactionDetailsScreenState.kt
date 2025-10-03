@@ -19,7 +19,8 @@ import mena.wallet_presentation.generated.resources.success
 import mena.wallet_presentation.generated.resources.success_icon
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
-import net.thechance.mena.wallet.presentation.base.SnackBarState
+import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -28,7 +29,7 @@ import kotlin.uuid.ExperimentalUuidApi
 data class TransactionDetailsScreenState(
     val transactionDetailsUiState: TransactionDetailsUiState = TransactionDetailsUiState(),
     val isLoading: Boolean = false,
-    val isError: Throwable? = null,
+    val errorState: ErrorState? = null,
     val isShareReceiptBtnLoading: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
 ){
