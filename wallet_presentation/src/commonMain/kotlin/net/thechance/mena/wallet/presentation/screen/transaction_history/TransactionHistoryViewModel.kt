@@ -30,66 +30,9 @@ class TransactionHistoryViewModel(
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
     TransactionHistoryScreenState()
 ), TransactionHistoryInteractionListener {
-    companion object {
-        const val PAGE_SIZE = 20
-    }
-
-    private val paginator =
-        Paginator(
-            onLoadUpdated = ::onPaginationLoading,
-            onRequest = ::getPagedTransactions,
-            onSuccess = ::onPaginationSuccess,
-            onError = ::onPaginationError,
-            pageSize = PAGE_SIZE
-        )
 
     init {
         loadNextTransactions()
-    }
-
-    fun loadNextTransactions() {
-        viewModelScope.launch(Dispatchers.IO) {
-            paginator.loadNextItems()
-        }
-    }
-    private fun onPaginationLoading(isLoading: Boolean) {
-        updateState {
-            if (isLoading) {
-                if (it.history.isEmpty()) {
-                    it.copy(isLoading = true, isError = null)
-                } else {
-                    it.copy(isPaginationLoading = true, isError = null)
-                }
-            } else {
-                if (it.history.isEmpty()) {
-                    it.copy(isLoading = false)
-                } else {
-                    it.copy(isPaginationLoading = false)
-                }
-            }
-        }
-    }
-
-    private suspend fun getPagedTransactions(
-        page: Int,
-        pageSize: Int = PAGE_SIZE
-    ): List<Transaction> = transactionRepository.getTransactionHistory(
-        page = page,
-        pageSize = pageSize,
-        TransactionFilterParams()
-    )
-
-    private fun onPaginationSuccess(items: List<Transaction>) {
-        updateState {
-            it.copy(
-                history = it.history + items.map { transaction -> transaction.toUi() },
-                endOfPages = items.isEmpty()
-            )
-        }
-    }
-
-    private fun onPaginationError(throwable: Throwable) {
-        updateState { it.copy(isError = throwable) }
     }
 
     override fun onBackClicked() {
@@ -141,54 +84,112 @@ class TransactionHistoryViewModel(
         )
     }
 
-    private fun onGetTransactionFilterStart() {
+    override fun selectFilterType(type: FilterType) {
         updateState {
+            val currentTypes = it.filterState.selectedTypes.toMutableSet()
+            if (currentTypes.contains(type)) {
+                currentTypes.remove(type)
+            } else {
+                currentTypes.add(type)
+            }
             it.copy(
                 filterState = it.filterState.copy(
-                    isLoading = true,
-                    isError = null
+                    selectedTypes = currentTypes
                 )
             )
         }
     }
 
-    private fun onGetTransactionFilterSuccess(transactionHistory: List<Transaction>) {
-        updateState {
-            it.copy(
-                history = transactionHistory.map { tx -> tx.toUi() },
-                filterState = it.filterState.copy(
-                    isLoading = false,
-                    activeFilterCount = getActiveFilterCount()
-                ),
-                isError = null,
-                endOfPages = transactionHistory.isEmpty(),
-                isLoading = false
-            )
-        }
-    }
-
-    private fun getActiveFilterCount(): Int {
-        val state = state.value.filterState
-        return (if(state.selectedTypes.isNotEmpty()) 1 else 0) +
-                (if (state.selectedStatus != FilterStatus.ALL) 1 else 0) +
-                (if (state.fromDate != null || state.toDate != null) 1 else 0)
-    }
-
-    private suspend fun onGetTransactionFilterError(throwable: Throwable) {
+    override fun selectFilterStatus(status: FilterStatus) {
         updateState {
             it.copy(
                 filterState = it.filterState.copy(
-                    isLoading = false,
-                    isError = throwable
+                    selectedStatus = status
                 )
             )
         }
+    }
 
-        showSnackBar(
-            titleRes = Res.string.error,
-            messageRes = Res.string.failed_to_apply_filters,
-            isSuccess = false
-        )
+    override fun onDismissFilter() {
+        updateState {
+            it.copy(
+                isFilterVisible = false
+            )
+        }
+    }
+
+    override fun onNextPageRequested() {
+        loadNextTransactions()
+    }
+
+    override fun onRetry() {
+        loadNextTransactions()
+    }
+
+    fun updateFromDate(date: LocalDate?) {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    fromDate = date
+                )
+            )
+        }
+    }
+
+    fun updateToDate(date: LocalDate?) {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    toDate = date
+                )
+            )
+        }
+    }
+
+    private fun loadNextTransactions() {
+        viewModelScope.launch(Dispatchers.IO) {
+            paginator.loadNextItems()
+        }
+    }
+
+    private fun onPaginationLoading(isLoading: Boolean) {
+        updateState {
+            if (isLoading) {
+                if (it.history.isEmpty()) {
+                    it.copy(isLoading = true, isError = null)
+                } else {
+                    it.copy(isPaginationLoading = true, isError = null)
+                }
+            } else {
+                if (it.history.isEmpty()) {
+                    it.copy(isLoading = false)
+                } else {
+                    it.copy(isPaginationLoading = false)
+                }
+            }
+        }
+    }
+
+    private suspend fun getPagedTransactions(
+        page: Int,
+        pageSize: Int = PAGE_SIZE
+    ): List<Transaction> = transactionRepository.getTransactionHistory(
+        page = page,
+        pageSize = pageSize,
+        TransactionFilterParams()
+    )
+
+    private fun onPaginationSuccess(items: List<Transaction>) {
+        updateState {
+            it.copy(
+                history = it.history + items.map { transaction -> transaction.toUi() },
+                endOfPages = items.isEmpty()
+            )
+        }
+    }
+
+    private fun onPaginationError(throwable: Throwable) {
+        updateState { it.copy(isError = throwable) }
     }
 
     private suspend fun showSnackBar(
@@ -221,65 +222,65 @@ class TransactionHistoryViewModel(
         }
     }
 
-    override fun selectFilterType(type: FilterType) {
+    private fun onGetTransactionFilterStart() {
         updateState {
-            val currentTypes = it.filterState.selectedTypes.toMutableSet()
-            if (currentTypes.contains(type)) {
-                currentTypes.remove(type)
-            } else {
-                currentTypes.add(type)
-            }
             it.copy(
                 filterState = it.filterState.copy(
-                    selectedTypes = currentTypes
+                    isLoading = true,
+                    isError = null
                 )
             )
         }
     }
 
-    override fun selectFilterStatus(status: FilterStatus) {
+    private fun onGetTransactionFilterSuccess(transactionHistory: List<Transaction>) {
+        updateState {
+            it.copy(
+                history = transactionHistory.map { tx -> tx.toUi() },
+                filterState = it.filterState.copy(
+                    isLoading = false,
+                    activeFilterCount = getActiveFilterCount()
+                ),
+                isError = null,
+                endOfPages = transactionHistory.isEmpty(),
+                isLoading = false
+            )
+        }
+    }
+
+    private fun getActiveFilterCount(): Int {
+        val state = state.value.filterState
+        return (if (state.selectedTypes.isNotEmpty()) 1 else 0) +
+                (if (state.selectedStatus != FilterStatus.ALL) 1 else 0) +
+                (if (state.fromDate != null || state.toDate != null) 1 else 0)
+    }
+
+    private suspend fun onGetTransactionFilterError(throwable: Throwable) {
         updateState {
             it.copy(
                 filterState = it.filterState.copy(
-                    selectedStatus = status
+                    isLoading = false,
+                    isError = throwable
                 )
             )
         }
+
+        showSnackBar(
+            titleRes = Res.string.error,
+            messageRes = Res.string.failed_to_apply_filters,
+            isSuccess = false
+        )
     }
 
-    fun updateFromDate(date: LocalDate?) {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    fromDate = date
-                )
-            )
-        }
-    }
+    private val paginator = Paginator(
+        onLoadUpdated = ::onPaginationLoading,
+        onRequest = ::getPagedTransactions,
+        onSuccess = ::onPaginationSuccess,
+        onError = ::onPaginationError,
+        pageSize = PAGE_SIZE
+    )
 
-    fun updateToDate(date: LocalDate?) {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    toDate = date
-                )
-            )
-        }
-    }
-
-    override fun onDismissFilter() {
-        updateState {
-            it.copy(
-                isFilterVisible = false
-            )
-        }
-    }
-
-    override fun onNextPageRequested() {
-        loadNextTransactions()
-    }
-
-    override fun onRetry() {
-        loadNextTransactions()
+    companion object {
+        const val PAGE_SIZE = 20
     }
 }
