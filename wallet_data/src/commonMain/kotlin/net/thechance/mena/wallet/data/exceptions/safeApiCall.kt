@@ -2,10 +2,12 @@ package net.thechance.mena.wallet.data.exceptions
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
-import net.thechance.mena.wallet.domain.exceptions.NoTransactionsFoundException
+import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 
 suspend inline fun <reified T> safeApiCall(
@@ -18,20 +20,23 @@ suspend inline fun <reified T> safeApiCall(
     } catch (e: Exception) {
         throw UnknownException(e.message ?: "")
     }
-    if (response.status.value == 204) {
-        throw NoTransactionsFoundException("No Transactions Found: " + parseErrorMessage(response))
+    if (response.status.value == StatusCodes.NO_CONTENT) {
+        throw NoDataFoundException("No Data Found: " + parseErrorMessage(response))
     }
     return when (response.status.value) {
-        in 200..299 -> parseBody<T>(response)
-        401 -> throw UnknownException("Unauthorized: " + parseErrorMessage(response))
-        408 -> throw UnknownException("Request timeout: " + parseErrorMessage(response))
-        429 -> throw UnknownException("Too many requests: " + parseErrorMessage(response))
-        in 500..599 -> throw UnknownException("Server error: " + parseErrorMessage(response))
+        in StatusCodes.SUCCESS_START..StatusCodes.SUCCESS_END -> parseBody<T>(response)
+        StatusCodes.UNAUTHORIZED -> throw UnknownException("Unauthorized: " + parseErrorMessage(response))
+        StatusCodes.REQUEST_TIMEOUT -> throw UnknownException("Request timeout: " + parseErrorMessage(response))
+        StatusCodes.TOO_MANY_REQUESTS -> throw UnknownException("Too many requests: " + parseErrorMessage(response))
+        in StatusCodes.SERVER_ERROR_START..StatusCodes.SERVER_ERROR_END -> throw UnknownException("Server error: " + parseErrorMessage(response))
         else -> throw UnknownException(parseErrorMessage(response))
     }
 }
 
 suspend inline fun <reified T> parseBody(response: HttpResponse): T {
+    if (response.headers[HttpHeaders.ContentType] == ContentType.Application.Pdf.toString()) {
+        return response as T
+    }
     return try {
         response.body()
     } catch (e: SerializationException) {
@@ -47,4 +52,15 @@ suspend fun parseErrorMessage(response: HttpResponse): String {
     } catch (e: Exception) {
         "Unexpected error"
     }
+}
+
+object StatusCodes {
+    const val NO_CONTENT = 204
+    const val UNAUTHORIZED = 401
+    const val REQUEST_TIMEOUT = 408
+    const val TOO_MANY_REQUESTS = 429
+    const val SERVER_ERROR_START = 500
+    const val SERVER_ERROR_END = 599
+    const val SUCCESS_START = 200
+    const val SUCCESS_END = 299
 }

@@ -30,7 +30,26 @@ fun ProgressBar(
         trackColor = trackColor,
         color = color,
         strokeCap = strokeCap,
-        gapSize = gapSize
+        gapSize = gapSize,
+    )
+}
+
+@Composable
+fun ProgressBar(
+    progress: () -> Float,
+    modifier: Modifier = Modifier,
+    color: Color = Theme.colorScheme.primary.primary,
+    trackColor: Color = Theme.colorScheme.background.surfaceHigh,
+    strokeCap: StrokeCap = StrokeCap.Round,
+    gapSize: Dp = 4.dp,
+) {
+    LinearProgressIndicator(
+        modifier = modifier,
+        trackColor = trackColor,
+        color = color,
+        strokeCap = strokeCap,
+        gapSize = gapSize,
+        progress = progress
     )
 }
 

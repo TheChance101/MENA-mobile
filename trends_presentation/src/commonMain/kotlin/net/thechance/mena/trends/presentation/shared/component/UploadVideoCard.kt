@@ -15,16 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import io.github.vinceglb.filekit.PlatformFile
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.available_video_format
 import mena.trends_presentation.generated.resources.ic_trend_upload
 import mena.trends_presentation.generated.resources.thumbnail_description
 import mena.trends_presentation.generated.resources.upload_your_video
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -37,7 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun UploadVideoCard(
     modifier: Modifier = Modifier,
-    thumbnail: Painter? = null,
+    thumbnail: PlatformFile? = null,
     isEnabled: Boolean = true,
     onCardClick: () -> Unit = {},
     onEditClick: () -> Unit = {}
@@ -89,8 +89,8 @@ internal fun UploadVideoCard(
                 )
             }
             thumbnail?.let{
-                Image(
-                    painter = thumbnail,
+                AsyncImage(
+                    model = thumbnail,
                     contentDescription = stringResource(Res.string.thumbnail_description),
                     modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.Crop

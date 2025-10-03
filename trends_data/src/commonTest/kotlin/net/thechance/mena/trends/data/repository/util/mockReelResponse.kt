@@ -6,6 +6,7 @@ import io.ktor.http.HttpStatusCode
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
+import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
 
 internal val fakeReelDtoList = RemotePaginationResponse(
@@ -67,7 +68,7 @@ internal fun MockRequestHandleScope.updateReelResponse(
 internal fun MockRequestHandleScope.uploadReelResponse(
     status: HttpStatusCode = HttpStatusCode.OK
 ) = respond(
-    content = "",
+    content = jsonSerialization.encodeToString(UploadReelResponse.serializer(), UploadReelResponse("1")),
     status = status,
     headers = jsonHeaders
 )

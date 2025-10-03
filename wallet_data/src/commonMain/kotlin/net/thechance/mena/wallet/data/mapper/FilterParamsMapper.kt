@@ -1,14 +1,12 @@
 package net.thechance.mena.wallet.data.mapper
 
-import io.ktor.http.Parameters
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.parameter
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 
-fun TransactionFilterParams.toParameters(): Parameters =
-    Parameters.build {
-        types?.forEach {
-            append("type", it.name)
-        }
-        status?.let { append("status", it.name) }
-        startDate?.let { append("startDate", it.toString()) }
-        endDate?.let { append("endDate", it.toString()) }
-    }
+fun TransactionFilterParams.toRequest(): HttpRequestBuilder.() -> Unit = {
+    types?.forEach { parameter("type", it.name) }
+    status?.let { parameter("status", it.name) }
+    startDate?.let { parameter("startDate", it.toString()) }
+    endDate?.let { parameter("endDate", it.toString()) }
+}

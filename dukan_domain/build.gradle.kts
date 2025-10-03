@@ -27,7 +27,13 @@ kover.reports {
     }
     filters {
         excludes {
-            classes("**.di.**", "**.entity.**","**.exceptions.**", "**.repository.**")
+            classes(
+                "**.di.**",
+                "**.entity.**",
+                "**.exceptions.**",
+                "**.repository.**",
+                "**.util.**"
+            )
         }
     }
 }

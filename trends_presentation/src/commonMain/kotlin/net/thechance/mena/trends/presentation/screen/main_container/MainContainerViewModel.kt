@@ -37,4 +37,8 @@ internal class MainContainerViewModel(
     fun navigateToManageTrends(){
         sendEffect(MainContainerEffect.NavigateToManageTrends)
     }
+
+    fun navigateToUploadReel() {
+        sendEffect(MainContainerEffect.NavigateToUploadReel)
+    }
 }

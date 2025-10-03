@@ -6,6 +6,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.download_complete
@@ -16,14 +17,13 @@ import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.error_failed_view
 import mena.wallet_presentation.generated.resources.error_no_transactions
 import mena.wallet_presentation.generated.resources.something_went_wrong
+import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
-import net.thechance.mena.wallet.domain.exceptions.NoTransactionsFoundException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
-import net.thechance.mena.wallet.domain.repository.ExportTransactionsRepository
+import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.CustomToastState
 import net.thechance.mena.wallet.presentation.base.SnackBarState
-import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.export.file_saver.FileSaver
 import org.jetbrains.compose.resources.StringResource
@@ -33,7 +33,7 @@ import kotlin.time.ExperimentalTime
 
 @KoinViewModel
 class ExportTransactionsViewModel(
-    @Provided private val exportTransactionsRepository: ExportTransactionsRepository,
+    @Provided private val statementRepository: StatementRepository,
     @Provided private val fileSaver: FileSaver,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
@@ -45,23 +45,48 @@ class ExportTransactionsViewModel(
     }
 
     override fun onAllTransactionsClicked() {
-        updateState { oldState -> oldState.copy(isCustomFilterCardSelected = false) }
-    }
-
-    override fun onCustomFilteringClicked() {
-        updateState { oldState -> oldState.copy(isCustomFilterCardSelected = true) }
-    }
-
-    override fun onTypeSelected(type: FilterType) {
         updateState { oldState ->
-            val current = oldState.selectedTransactionsTypes ?: emptySet()
-            val newSet = if (current.contains(type)) current - type else current + type
-            oldState.copy(selectedTransactionsTypes = newSet)
+            oldState.copy(
+                isCustomFilterCardSelected = false,
+                isDownloadButtonEnabled = true,
+                isViewAndShareButtonEnabled = true
+            )
         }
     }
 
-    override fun onStatusSelected(status: FilterStatus) {
-        updateState { oldState -> oldState.copy(selectedTransactionsStatus = status) }
+    override fun onCustomFilteringClicked() {
+        updateState { oldState ->
+            oldState.copy(
+                isCustomFilterCardSelected = true,
+                isDownloadButtonEnabled = oldState.hasActiveFilters,
+                isViewAndShareButtonEnabled = oldState.hasActiveFilters
+            )
+        }
+    }
+
+    override fun onTypeSelected(type: FilterType) {
+        val current = currentState.selectedTransactionsTypes
+        val newSet = if (current.contains(type)) current - type else current + type
+
+        val newState = currentState.copy(selectedTransactionsTypes = newSet)
+
+        updateState {
+            newState.copy(
+                isDownloadButtonEnabled =
+                    if (newState.isCustomFilterCardSelected) {
+                        newState.hasActiveFilters
+                    } else {
+                        true
+                    },
+                isViewAndShareButtonEnabled =
+                    if (newState.isCustomFilterCardSelected) {
+                        newState.hasActiveFilters
+                    } else {
+                        true
+                    },
+                hasNoTransactionsError = false
+            )
+        }
     }
 
     override fun onFromDateClicked() {
@@ -95,7 +120,11 @@ class ExportTransactionsViewModel(
         )
     }
 
-    private fun onViewAndShareStart() {
+    private suspend fun onViewAndShareStart() {
+        if (currentState.hasNoTransactionsError) {
+            showToast(messageRes = Res.string.error_no_transactions)
+            return
+        }
         updateState { oldState ->
             oldState.copy(
                 isViewAndShareLoading = true,
@@ -120,6 +149,11 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun onDownloadStart() {
+        if (currentState.hasNoTransactionsError) {
+            showToast(messageRes = Res.string.error_no_transactions)
+            return
+        }
+
         updateState { oldState ->
             oldState.copy(
                 isDownloadLoading = true,
@@ -133,7 +167,8 @@ class ExportTransactionsViewModel(
     private suspend fun generateTransactionsFile(): ByteArray {
         return if (currentState.isCustomFilterCardSelected) {
             val formatter = LocalDate.Format {
-                year(); char('-'); monthNumber(); char('-'); dayOfMonth()
+                year(); char('-'); monthNumber(); char('-');
+                day(padding = Padding.ZERO)
             }
             val startDateTime: LocalDate? =
                 currentState.startDate.toStartOfDayLocalDateTime(formatter)
@@ -141,16 +176,15 @@ class ExportTransactionsViewModel(
             val endDateTime: LocalDate? = currentState.endDate
                 .toStartOfDayLocalDateTime(formatter)
 
-            exportTransactionsRepository.getFilteredTransactionsFile(
+            statementRepository.getTransactionsPdf(
                 TransactionFilterParams(
-                    types = currentState.selectedTransactionsTypes?.map { it.toDomain() },
-                    status = currentState.selectedTransactionsStatus.toDomain(),
+                    types = currentState.selectedTransactionsTypes.map { it.toDomain() },
                     startDate = startDateTime,
                     endDate = endDateTime
                 )
             )
         } else {
-            exportTransactionsRepository.getFilteredTransactionsFile()
+            statementRepository.getTransactionsPdf()
         }
     }
 
@@ -218,11 +252,12 @@ class ExportTransactionsViewModel(
                 )
             }
 
-            is NoTransactionsFoundException -> {
+            is NoDataFoundException -> {
                 updateState { oldState ->
                     oldState.copy(
                         isDownloadLoading = false,
-                        isViewAndShareLoading = false
+                        isViewAndShareLoading = false,
+                        hasNoTransactionsError = true
                     )
                 }
                 showToast(messageRes = Res.string.error_no_transactions)

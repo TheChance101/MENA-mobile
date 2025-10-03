@@ -2,17 +2,18 @@ package net.thechance.mena.dukan.presentation.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanScreenRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -33,10 +34,12 @@ fun MainScreen(
         when (effect) {
             MainEffect.NavigateToAddDukanScreen -> navController.navigate(DukanRoute.CreateDukanScreenRoute)
             MainEffect.NavigateToPendingDukanScreen -> navController.navigate(
-                DukanRoute.PendingScreenRoute(
-                    state.value.dukanState.name
+                PendingScreenRoute(
+                    state.value.dukanState.name,
                 )
             )
+
+            MainEffect.NavigateToManageDukanScreen -> navController.navigate(ManageDukanScreenRoute)
         }
     }
 
@@ -52,16 +55,15 @@ private fun MainContent(
     listener: MainInteractionListener,
     state: MainScreenUiState
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Theme.colorScheme.background.surface)
-            .statusBarsPadding(),
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.statusBarsPadding(),
+                onAddDukanIconClicked = listener::onDukanButtonClicked,
+                dukanButtonStatus = state.dukanState.status
+            )
+        },
     ) {
-        TopAppBar(
-            dukanButtonStatus = state.dukanState.status,
-            onAddDukanIconClicked = listener::onDukanButtonClicked,
-        )
 
     }
 }

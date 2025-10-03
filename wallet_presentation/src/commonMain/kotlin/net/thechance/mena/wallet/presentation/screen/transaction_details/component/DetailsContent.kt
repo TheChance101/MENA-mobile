@@ -35,7 +35,9 @@ internal fun DetailsContent(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

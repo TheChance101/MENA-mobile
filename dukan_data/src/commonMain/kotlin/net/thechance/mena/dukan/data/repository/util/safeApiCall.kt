@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.data.repository.util
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import kotlinx.io.IOException
-import kotlinx.serialization.SerializationException
 import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
