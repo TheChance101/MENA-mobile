@@ -3,7 +3,6 @@
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,6 +19,7 @@ import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
 import net.thechance.mena.core_chat.presentation.utils.formatAsTime
+import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
@@ -93,7 +93,7 @@ fun MessageInfo(
                         tint = messageInfoColor,
                         modifier = Modifier
                             .size(16.dp)
-                            .clickable(onClick = onFailClick)
+                            .noHoverClickable(onClick = onFailClick)
                     )
                 }
             }

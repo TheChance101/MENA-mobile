@@ -4,7 +4,6 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +25,7 @@ import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -113,7 +113,7 @@ fun BaseMessageLayout(
                         color = messageBackground,
                         shape = messageShape
                     )
-                    .clickable(enabled = isMarkedLastInSeries, onClick = onMessageClick)
+                    .noHoverClickable(onClick = onMessageClick)
                     .padding(
                         horizontal = Theme.spacing._8,
                         vertical = Theme.spacing._4
