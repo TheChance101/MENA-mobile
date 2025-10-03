@@ -41,7 +41,7 @@ import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.Countr
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.components.LabeledPhoneNumberInput
+import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreen
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
@@ -94,12 +94,12 @@ class LoginScreen(
                         subtitle = stringResource(Res.string.login_prompt),
                     )
 
-                    LabeledPhoneNumberInput(
+                    LabeledInputPhoneNumber(
                         phoneNumber = state.phoneNumber,
                         onPhoneChange = listener::onPhoneChanged,
                         countryCode = state.countryPickerUIState.currentCountry.callingCode,
                         countryFlag = painterResource(state.countryPickerUIState.currentCountry.flagImage),
-                        onCountryClick = listener::onPhoneCodeClicked
+                        onClickCountry = listener::onPhoneCodeClicked
                     )
 
                     Text(

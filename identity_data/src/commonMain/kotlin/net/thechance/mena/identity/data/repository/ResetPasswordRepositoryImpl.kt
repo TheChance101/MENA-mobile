@@ -44,14 +44,10 @@ class ResetPasswordRepositoryImpl(
         }
     }
 
-    override suspend fun resetPassword(
-        newPassword: String,
-        confirmPassword: String,
-        phoneNumber: PhoneNumber
-    ) {
+    override suspend fun resetPassword(newPassword: String, confirmPassword: String) {
         forgetPasswordSafeWrapper<String> {
             client.postJson(
-                ResetPasswordRequestDto(newPassword, confirmPassword, phoneNumber.getFormattedPhoneNumber()),
+                ResetPasswordRequestDto(newPassword, confirmPassword, sessionId),
                 RESET_PASSWORD
             )
         }

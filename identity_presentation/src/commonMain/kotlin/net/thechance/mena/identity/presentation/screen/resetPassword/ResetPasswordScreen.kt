@@ -30,21 +30,16 @@ import net.thechance.mena.identity.presentation.components.LabelInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-data class ResetPasswordScreen(
-    private val phoneNumber: String,
-    private val callingCode: String
-) :
+class ResetPasswordScreen() :
     BaseScreen<ResetPasswordScreenViewModel,
             ResetPasswordScreenUIState,
             ResetPasswordScreenUIEffect,
-            ResetPasswordScreenInteractionListener>()
-    {
+            ResetPasswordScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(phoneNumber, callingCode) }))
+        InitScreen(getScreenModel())
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

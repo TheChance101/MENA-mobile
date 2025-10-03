@@ -83,7 +83,7 @@ class ForgetPasswordScreenViewModel(
         )
     }
 
-    override fun onClickPhoneCode() {
+    override fun onClickCountry() {
         updateState { copy(showCountryBottomSheet = true) }
     }
 

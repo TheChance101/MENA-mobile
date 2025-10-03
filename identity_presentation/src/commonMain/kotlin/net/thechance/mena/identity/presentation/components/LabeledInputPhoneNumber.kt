@@ -14,12 +14,12 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun LabeledPhoneNumberInput(
+internal fun LabeledInputPhoneNumber(
     phoneNumber: String,
     onPhoneChange: (String) -> Unit,
     countryCode: String,
     countryFlag: Painter,
-    onCountryClick: () -> Unit,
+    onClickCountry: () -> Unit,
     modifier: Modifier = Modifier,
     label: String = stringResource(Res.string.phone_number)
 ) {
@@ -35,7 +35,7 @@ internal fun LabeledPhoneNumberInput(
         PhoneNumberInput(
             countryCode = countryCode,
             countryFlag = countryFlag,
-            onCountryClick = onCountryClick,
+            onCountryClick = onClickCountry,
             phoneNumber = phoneNumber,
             onPhoneChange = onPhoneChange
         )
