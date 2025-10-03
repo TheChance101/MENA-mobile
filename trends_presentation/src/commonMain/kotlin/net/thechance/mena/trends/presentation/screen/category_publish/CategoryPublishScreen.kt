@@ -55,7 +55,11 @@ internal fun CategoryPublishScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            is CategoryPublishEffect.NavigateBack -> navController.popBackStack()
+            is CategoryPublishEffect.NavigateBack -> navController.navigate(Route.MainContainer){
+                popUpTo(Route.MainContainer){
+                    inclusive = true
+                }
+            }
             is CategoryPublishEffect.NavigateToTrends -> navController.navigate(
                 route = Route.Trends
             )
