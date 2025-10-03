@@ -4,6 +4,7 @@ import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.allocPointerTo
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
@@ -12,15 +13,14 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import platform.AVFoundation.AVAssetImageGenerator
 import platform.AVFoundation.AVURLAsset
-import platform.CoreGraphics.CGImageRelease
 import platform.CoreMedia.CMTime
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMake
 import platform.Foundation.NSData
+import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
-import platform.Foundation.NSUUID
 import platform.Foundation.create
 import platform.Foundation.writeToURL
 import platform.UIKit.UIImage
@@ -60,12 +60,15 @@ class VideoUtilitiesImpl : VideoUtilities {
     override suspend fun extractVideoFrame(
         videoData: ByteArray,
         timeMs: Long
-    ): ByteArray? = withContext(Dispatchers.IO) {
-        runCatching {
-            useTempFile { tempFileUrl, filePath ->
-                videoData.toNSData().writeToURL(tempFileUrl, atomically = true)
+    ): ByteArray? {
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val nsData = videoData.toNSData()
+                val tempURL = NSURL.fileURLWithPath(NSTemporaryDirectory() + "temp_video_frame.mp4")
 
-                val asset = AVURLAsset(uRL = tempFileUrl)
+                nsData.writeToURL(tempURL, true)
+                val asset = AVURLAsset.URLAssetWithURL(tempURL, null)
+
                 val imageGenerator = AVAssetImageGenerator(asset).apply {
                     appliesPreferredTrackTransform = true
                     requestedTimeToleranceBefore = CMTimeMake(0, 1)
@@ -76,25 +79,36 @@ class VideoUtilitiesImpl : VideoUtilities {
 
                 memScoped {
                     val actualTimePtr = alloc<CMTime>()
-                    val errorPtr = alloc<ObjCObjectVar<NSError?>>()
+                    val errorPtr = allocPointerTo<ObjCObjectVar<NSError?>>()
 
                     val cgImage = imageGenerator.copyCGImageAtTime(
                         time,
                         actualTimePtr.ptr,
                         errorPtr.ptr
-                    )!!
+                    )
 
-                    try {
+                    NSFileManager.defaultManager.removeItemAtURL(tempURL, null)
+
+                    if (cgImage != null) {
                         val uiImage = UIImage.imageWithCGImage(cgImage)
-                        val imageData = UIImageJPEGRepresentation(uiImage, 0.9)!!
-                        imageData.toByteArray()
-                    } finally {
-                        CGImageRelease(cgImage)
+                        val imageData = UIImageJPEGRepresentation(uiImage, 0.9)
+
+                        if (imageData != null) {
+                            val byteArray = imageData.toByteArray()
+                            continuation.resume(byteArray)
+                        } else {
+                            continuation.resume(null)
+                        }
+                    } else {
+                        continuation.resume(null)
                     }
                 }
+            } catch (e: Exception) {
+                continuation.resume(null)
             }
-        }.getOrNull()
+        }
     }
+}
 
     override suspend fun extractVideoFrame(
         videoData: ByteArray, percent: Float
@@ -130,30 +144,6 @@ class VideoUtilitiesImpl : VideoUtilities {
                 bytes = pinned.addressOf(0),
                 length = this.size.toULong()
             )
-        }
-    }
-}
-
-private inline fun <R> useTempFile(
-    prefix: String = "video_",
-    suffix: String = ".tmp",
-    block: (NSURL, String) -> R
-): R {
-    val tempDir = NSTemporaryDirectory()
-    val fileName = "$prefix${NSUUID.UUID().UUIDString()}$suffix"
-    val filePath = "$tempDir$fileName"
-    val tempFileUrl = NSURL.fileURLWithPath(filePath)
-
-    try {
-        return block(tempFileUrl, filePath)
-    } finally {
-        try {
-            val fileManager = NSFileManager.defaultManager
-            if (fileManager.fileExistsAtPath(filePath)) {
-                fileManager.removeItemAtPath(filePath, null)
-            }
-        } catch (e: Exception) {
-            println("Warning: Failed to delete temp file - ${e.message}")
         }
     }
 }
