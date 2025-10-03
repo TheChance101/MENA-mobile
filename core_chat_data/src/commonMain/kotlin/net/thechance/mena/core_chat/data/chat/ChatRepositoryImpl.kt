@@ -83,7 +83,7 @@ class ChatRepositoryImpl(
     override suspend fun sendMessage(message: Message) {
         if (webSocketManager.isConnected()) {
             webSocketManager.sendTextFrame(
-                destination = MARK_AS_READ_DESTINATION,
+                destination = SEND_MESSAGE_DESTINATION,
                 payload = json.encodeToString<SendMessageDto>(message.toSendMessageRequestDto())
             )
         } else {
@@ -157,6 +157,7 @@ class ChatRepositoryImpl(
         const val PAGE_SIZE = 1000
         const val PAGE_NUMBER = 0
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
+        const val SEND_MESSAGE_DESTINATION = "/app/chat.privateMessage"
         const val WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
 
