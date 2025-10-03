@@ -16,4 +16,5 @@ interface TransactionHistoryInteractionListener {
     fun selectFilterStatus(status: FilterStatus)
     fun onResetFilterClicked()
     fun onApplyFilterClicked()
+    fun onRetryLoadTransactionHistoryClicked()
 }

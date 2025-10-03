@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import kotlinx.datetime.LocalDate
+import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 
@@ -11,7 +12,7 @@ data class TransactionFilterState(
     val toDate: LocalDate? = null,
     val activeFilterCount: Int = 0,
     val isLoading: Boolean = false,
-    val isError: Throwable? = null
+    val errorState: ErrorState? = null
 ) {
     val hasActiveFilters: Boolean
         get() = selectedTypes.isNotEmpty() || selectedStatus != FilterStatus.ALL
