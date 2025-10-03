@@ -113,7 +113,7 @@ fun BaseMessageLayout(
                         color = messageBackground,
                         shape = messageShape
                     )
-                    .clickable(onClick = onMessageClick)
+                    .clickable(enabled = isMarkedLastInSeries, onClick = onMessageClick)
                     .padding(
                         horizontal = Theme.spacing._8,
                         vertical = Theme.spacing._4
