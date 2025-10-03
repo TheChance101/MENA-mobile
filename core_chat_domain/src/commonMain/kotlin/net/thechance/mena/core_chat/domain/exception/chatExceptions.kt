@@ -24,7 +24,7 @@ class DataStoreException(logMessage: String, cause: Throwable? = null) :
 class SendMessageFailedException(logMessage: String, cause: Throwable? = null) :
         ChatException(logMessage, cause)
 
-class ChatNotFoundException(logMessage: String, cause: Throwable? = null) : ChatException(logMessage, cause)
+class NotFoundException(logMessage: String, cause: Throwable? = null) : ChatException(logMessage, cause)
 
 class NotMenaMemberException(logMessage: String, cause: Throwable? = null) : ChatException(logMessage, cause)
 

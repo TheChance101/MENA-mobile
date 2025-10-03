@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.data.contacts
 
 import androidx.datastore.core.DataStore
@@ -18,12 +20,21 @@ import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import net.thechance.mena.core_chat.data.chat.ChatRepositoryImpl
+import net.thechance.mena.core_chat.data.chat.dto.ChatDto
+import net.thechance.mena.core_chat.data.chat.dto.MessageDto
+import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
 import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
+import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
+import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
+import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_ENDPOINT
+import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_HISTORY_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.SYNC_CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(
@@ -74,6 +85,33 @@ fun MockRequestHandleScope.defaultSyncContactsResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PagedDataDto.serializer(MessageDto.serializer()),
+        PagedDataDto(
+            data = listOf(
+                createMessageDto()
+            ),
+            pageNumber = 0,
+            pageSize = 20,
+            totalItems = 1,
+            totalPages = 1
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun MockRequestHandleScope.defaultChatResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        ChatDto.serializer(),
+        createChatDto()
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+
 fun createRepository(
     contactsProvider: ContactsProvider,
     contactsDataStore: DataStore<Preferences>,
@@ -92,21 +130,43 @@ fun createRepository(
     )
 }
 
+fun createChatRepository(
+    httpClient: HttpClient? = null,
+    webSocketManager: WebSocketManager,
+    authenticationRepository: AuthenticationRepository,
+    chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+): ChatRepositoryImpl {
+    val defaultClient = createHttpClient(
+        chatHistoryResponse = chatHistoryResponse,
+        chatResponse = chatResponse
+    )
+    return ChatRepositoryImpl(
+        client = httpClient ?: defaultClient,
+        webSocketManager = webSocketManager,
+        authenticationRepository = authenticationRepository,
+        json = jsonSerialization,
+    )
+}
+
+
 fun createHttpClient(
     contactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
         when (request.url.encodedPath) {
-            CONTACTS_ENDPOINT -> if (contactsResponse == null)
-                defaultContactsResponse()
-            else
-                contactsResponse()
+            CONTACTS_ENDPOINT -> contactsResponse?.invoke(this) ?: defaultContactsResponse()
 
-            SYNC_CONTACTS_ENDPOINT -> if (syncContactsResponse == null)
-                defaultSyncContactsResponse()
-            else
-                syncContactsResponse()
+            SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
+                ?: defaultSyncContactsResponse()
+
+            CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
+                ?: defaultChatHistoryResponse()
+
+            CHAT_ENDPOINT -> chatResponse?.invoke(this) ?: defaultChatResponse()
 
             else -> respond(
                 content = "",

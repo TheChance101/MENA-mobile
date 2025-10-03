@@ -181,7 +181,8 @@ class ContactsViewModelTest {
         val expectedChat = Chat(
             id = Uuid.random(),
             imageUrl = null,
-            name = "John Doe"
+            name = "John Doe",
+            requesterId = Uuid.random()
         )
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
         everySuspend { chatRepository.getChatByContactUserId(any()) } returns expectedChat
@@ -251,8 +252,8 @@ class ContactsViewModelTest {
             firstName = "John",
             lastName = "Doe",
             phone = "123456789",
-            isMenaUser = true,
-            imageUrl = null
+            imageUrl = null,
+            menaUserId = Uuid.random()
         )
     }
 }

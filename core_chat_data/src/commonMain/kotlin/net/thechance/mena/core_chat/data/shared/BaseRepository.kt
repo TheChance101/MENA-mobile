@@ -7,6 +7,7 @@ import io.ktor.http.isSuccess
 import io.ktor.util.reflect.TypeInfo
 import net.thechance.mena.core_chat.domain.exception.ChatException
 import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException
+import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.UnAuthorizedException
 import net.thechance.mena.core_chat.domain.exception.UnknownException
 import com.bilalazzam.contacts_provider.ContactsPermissionDeniedException as ContactsProviderPermissionDeniedException
@@ -63,6 +64,7 @@ interface BaseRepository {
         return when {
             this.status.isSuccess() -> this.body(bodyType)
             this.status == HttpStatusCode.Unauthorized -> throw UnAuthorizedException()
+            this.status == HttpStatusCode.NotFound -> throw NotFoundException("Chat Not Found")
             //TODO: handle more cases like 500, 404
             else -> throw UnknownException(this.status.description)
         }

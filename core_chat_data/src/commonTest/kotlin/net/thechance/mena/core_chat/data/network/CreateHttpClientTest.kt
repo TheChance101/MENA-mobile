@@ -14,9 +14,11 @@ import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.config
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondOk
+import io.ktor.client.plugins.HttpTimeoutCapability
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
+import io.ktor.client.plugins.websocket.WebSocketCapability
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -43,8 +45,12 @@ class CreateHttpClientTest {
         every { mockEngine.dispatcher } returns Dispatchers.IO
         every { mockEngine.close() } returns Unit
         every { mockEngine.config } returns HttpClientEngineConfig()
-
         every { mockEngine.install(any()) } returns Unit
+
+        every { mockEngine.supportedCapabilities } returns setOf(
+            HttpTimeoutCapability,
+            WebSocketCapability
+        )
 
         mockFactory = mock {
             every { create(any()) } returns mockEngine
