@@ -1,38 +1,45 @@
 package net.thechance.mena.wallet.presentation.utils
 
-class Paginator<Item>(
-    private val onRequest: suspend (nextKey: Int, pageSize: Int) -> List<Item>,
-    private val onError: (Throwable) -> Unit,
-    private val onSuccess: (items: List<Item>) -> Unit,
+class Paginator<Key, Items>(
+    private val initialKey: Key,
     private val onLoadUpdated: (Boolean) -> Unit,
-    private val pageSize: Int
+    private val onRequest: suspend (nextKey: Key) -> Items,
+    private val getNextKey: suspend (currentKey: Key, result: Items) -> Key,
+    private val onError: suspend (Throwable?) -> Unit,
+    private val onSuccess: suspend (result: Items, newKey: Key) -> Unit,
+    private val endReached: (currentKey: Key, result: Items) -> Boolean
 ) {
-    private var currentPage = INITIAL_PAGE
-    private var isRequest = false
-    private var endPages = false
+
+    private var currentKey = initialKey
+    private var isMakingRequest = false
+    private var isEndReached = false
 
     suspend fun loadNextItems() {
-        if (isRequest || endPages) return
+        if(isMakingRequest || isEndReached) {
+            return
+        }
 
-        try {
-            isRequest = true
-            onLoadUpdated(true)
-            val items = onRequest(currentPage, pageSize)
-            if (items.isEmpty() || items.size < pageSize) {
-                endPages = true
-            }
-            val nextPage = currentPage + 1
-            onSuccess(items)
-            currentPage = nextPage
+        isMakingRequest = true
+        onLoadUpdated(true)
+
+        runCatching {
+            onRequest(currentKey)
+        }.also {
+            isMakingRequest = false
+        }.onSuccess { items ->
+            currentKey = getNextKey(currentKey, items)
+            onSuccess(items, currentKey)
             onLoadUpdated(false)
-        } catch (error: Throwable) {
+            isEndReached = endReached(currentKey, items)
+        }.onFailure {
+            onError(it)
             onLoadUpdated(false)
-            throw error
-        } finally {
-            isRequest = false
+            return
         }
     }
-    companion object {
-        const val INITIAL_PAGE = 0
+
+    fun reset() {
+        currentKey = initialKey
+        isEndReached = false
     }
 }

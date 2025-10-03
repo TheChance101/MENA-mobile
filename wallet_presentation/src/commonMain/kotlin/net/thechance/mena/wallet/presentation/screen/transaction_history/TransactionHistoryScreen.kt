@@ -6,8 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +34,6 @@ import net.thechance.mena.wallet.presentation.screen.transaction_history.compone
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import net.thechance.mena.wallet.presentation.utils.ScrollingDetecting
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -51,7 +48,6 @@ fun TransactionHistoryScreen(
     navigateToExportTransaction: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val listState = rememberLazyListState()
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
@@ -66,8 +62,7 @@ fun TransactionHistoryScreen(
 
     TransactionHistoryContent(
         state = state,
-        interactionListener = viewModel,
-        listState = listState,
+        interactionListener = viewModel
     )
 }
 
@@ -75,15 +70,7 @@ fun TransactionHistoryScreen(
 fun TransactionHistoryContent(
     state: TransactionHistoryScreenState,
     interactionListener: TransactionHistoryInteractionListener,
-    listState: LazyListState,
 ) {
-    ScrollingDetecting(
-        listState = listState,
-        onLoadMore = interactionListener::onNextPageRequested,
-        listSize = state.history.size,
-        endOfPages = state.endOfPages,
-        isLoading = state.isPaginationLoading
-    )
     WalletScaffold(
         topBar = {
             AppBar(
@@ -159,7 +146,6 @@ fun TransactionHistoryContent(
                     modifier = Modifier.fillMaxSize(),
                     interactionListener = interactionListener,
                     state = state,
-                    listState = listState
                 )
             }
         }
