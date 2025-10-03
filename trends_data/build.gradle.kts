@@ -45,6 +45,9 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.bundles.test)
         }
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.cio)
+        }
     }
     sourceSets.named("commonMain").configure {
         kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

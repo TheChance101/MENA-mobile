@@ -11,7 +11,9 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import platform.AVFoundation.AVAssetImageGenerator
 import platform.AVFoundation.AVAssetImageGeneratorApertureModeEncodedPixels
+import platform.AVFoundation.AVAssetImageGeneratorSucceeded
 import platform.AVFoundation.AVURLAsset
+import platform.AVFoundation.valueWithCMTime
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMake
 import platform.CoreMedia.kCMTimeZero
@@ -19,6 +21,7 @@ import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
+import platform.Foundation.NSValue
 import platform.Foundation.create
 import platform.Foundation.writeToURL
 import platform.UIKit.UIImage
@@ -60,31 +63,54 @@ class VideoUtilitiesImpl : VideoUtilities {
         timeMs: Long
     ): ByteArray? {
         return suspendCancellableCoroutine { continuation ->
+            val tempURL =
+                NSURL.fileURLWithPath(NSTemporaryDirectory() + "temp_video_frame_${timeMs}.mp4")
+
             try {
                 val nsData = videoData.toNSData()
-                val tempURL = NSURL.fileURLWithPath(NSTemporaryDirectory() + "temp_video_frame.mp4")
-
-                nsData.writeToURL(tempURL, true)
-                val asset = AVURLAsset.URLAssetWithURL(tempURL, null)
-
-                val time = CMTimeMake(timeMs, 1000)
-
-                val imageGenerator = AVAssetImageGenerator.Companion.assetImageGeneratorWithAsset(asset)
-                imageGenerator.requestedTimeToleranceAfter = kCMTimeZero.readValue()
-                imageGenerator.appliesPreferredTrackTransform = true
-                imageGenerator.apertureMode = AVAssetImageGeneratorApertureModeEncodedPixels
-                imageGenerator.requestedTimeToleranceBefore = kCMTimeZero.readValue()
-
-                imageGenerator.generateCGImageAsynchronouslyForTime(requestedTime = time){ image, time, error ->
-                    val uiImage = UIImage(image)
-                    UIImageJPEGRepresentation(uiImage, 0.9)
+                if (!nsData.writeToURL(tempURL, atomically = true)) {
+                    continuation.resumeWith(Result.success(null))
+                    return@suspendCancellableCoroutine
                 }
 
-                NSFileManager.defaultManager.removeItemAtURL(tempURL, null)
+                val asset = AVURLAsset.URLAssetWithURL(URL = tempURL, options = null)
+                val time = CMTimeMake(value = timeMs, timescale = 1000)
+                val imageGenerator = AVAssetImageGenerator.assetImageGeneratorWithAsset(asset)
 
+                imageGenerator.requestedTimeToleranceAfter = kCMTimeZero.readValue()
+                imageGenerator.requestedTimeToleranceBefore = kCMTimeZero.readValue()
+                imageGenerator.appliesPreferredTrackTransform = true
+                imageGenerator.apertureMode = AVAssetImageGeneratorApertureModeEncodedPixels
+
+                imageGenerator.generateCGImagesAsynchronouslyForTimes(
+                    requestedTimes = listOf(NSValue.valueWithCMTime(time))
+                ) { _, imageRef, _, result, error ->
+                    NSFileManager.defaultManager.removeItemAtURL(tempURL, error = null)
+
+                    if (continuation.isCompleted) return@generateCGImagesAsynchronouslyForTimes
+
+                    val byteArray = when {
+                        error != null || imageRef == null || result != AVAssetImageGeneratorSucceeded -> null
+                        else -> {
+                            val uiImage = UIImage.imageWithCGImage(imageRef)
+                            UIImageJPEGRepresentation(
+                                uiImage,
+                                compressionQuality = 0.9
+                            )?.toByteArray()
+                        }
+                    }
+
+                    continuation.resume(byteArray)
+                }
+
+                continuation.invokeOnCancellation {
+                    imageGenerator.cancelAllCGImageGeneration()
+                    NSFileManager.defaultManager.removeItemAtURL(tempURL, error = null)
+                }
 
             } catch (e: Exception) {
-                continuation.resume(null)
+                NSFileManager.defaultManager.removeItemAtURL(tempURL, error = null)
+                continuation.resumeWith(Result.success(null))
             }
         }
     }
