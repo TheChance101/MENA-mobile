@@ -142,6 +142,7 @@ private fun ScaffoldScope.ResetPasswordDialog(
         title = stringResource(Res.string.reset_password_dialog_title),
         message = stringResource(Res.string.reset_password_dialog_message),
         hasDismissButton = true,
+        dismissOnClickOutside = false,
         isVisible = isVisible,
         onDismiss = {},
         onCancelClick = onClick::invoke,
