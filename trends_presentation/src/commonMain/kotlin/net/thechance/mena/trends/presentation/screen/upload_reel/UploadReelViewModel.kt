@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -44,29 +45,33 @@ internal class UploadReelViewModel(
         readBytes: suspend () -> ByteArray
     ): FileUiState {
 
-        val bytes = readBytes()
-        validateFile(
+        val validatedFile = validateFile(
             file = file,
-            readBytes = bytes
+            readBytes = readBytes
         )
 
-        return file.copy(bytes = bytes)
+        return validatedFile
     }
 
     private suspend fun validateFile(
         file: FileUiState,
-        readBytes: ByteArray
-    ) {
+        readBytes: suspend () -> ByteArray
+    ): FileUiState {
         videoValidator.validateSize(file.sizeInBytes)
-        videoUtilities.getDuration(readBytes)?.let { duration ->
+        val bytes = readBytes()
+        videoUtilities.getDuration(bytes)?.let { duration ->
             videoValidator.validateDuration(duration)
         }
+        return file.copy(bytes = bytes)
     }
 
     private fun onCreateVideoFileSuccess(file: FileUiState) {
         updateState {
             copy(
-                selectedFile = file.copy(sizeInMegaBytes = formatBytes(file.sizeInBytes)),
+                selectedFile = file.copy(
+                    bytes = file.bytes,
+                    sizeInMegaBytes = formatBytes(file.sizeInBytes)
+                ),
                 errorState = null
             )
         }
@@ -78,9 +83,10 @@ internal class UploadReelViewModel(
             block = {
                 reelsRepository.uploadReel(
                     name = trendFile.name,
-                    mimeType = trendFile.extension,
+                    mimeType = trendFile.mimeType,
                     size = trendFile.sizeInBytes,
-                    bytes = trendFile.bytes
+                    bytes = trendFile.bytes,
+                    extension = trendFile.extension
                 )
             },
             onStart = ::onUploadStarted,
@@ -137,7 +143,7 @@ internal class UploadReelViewModel(
         )
     }
 
-    private fun onExtractFrameSuccess(thumbnail: ByteArray?){
+    private fun onExtractFrameSuccess(thumbnail: ByteArray?) {
         updateState {
             copy(
                 thumbnail = thumbnail
@@ -145,7 +151,7 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onExtractFrameError(errorState: ErrorState){
+    private fun onExtractFrameError(errorState: ErrorState) {
         updateState {
             copy(errorState = errorState)
         }
@@ -154,12 +160,16 @@ internal class UploadReelViewModel(
     private fun uploadThumbnail(){
         tryToExecute(
             block = {
-                reelsRepository.uploadReelThumbnail(
-                    thumbnail = state.value.thumbnail ?: ByteArray(0),
-                    size = state.value.thumbnail?.size?.toLong() ?: 0L,
-                    name = state.value.selectedFile.name + "_thumbnail",
-                    mimeType = "image/jpeg"
-                )
+                state.value.trendId?.let {
+                    reelsRepository.uploadReelThumbnail(
+                        thumbnail = state.value.thumbnail ?: ByteArray(0),
+                        size = state.value.thumbnail?.size?.toLong() ?: 0L,
+                        name = state.value.selectedFile.name + "_thumbnail",
+                        mimeType = "image/jpeg",
+                        extension = "jpg",
+                        id = it
+                    )
+                }
             },
             onStart = ::onUploadThumbnailStarted,
             onEnd = ::onUploadThumbnailFinished,
@@ -168,13 +178,13 @@ internal class UploadReelViewModel(
         )
     }
 
-    private fun onUploadThumbnailStarted(){
+    private fun onUploadThumbnailStarted() {
         updateState {
             copy(isNextButtonLoading = true)
         }
     }
 
-    private fun onUploadThumbnailFinished(){
+    private fun onUploadThumbnailFinished() {
         updateState {
             copy(isNextButtonLoading = false)
         }
@@ -186,7 +196,7 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onUploadThumbnailError(errorState: ErrorState){
+    private fun onUploadThumbnailError(errorState: ErrorState) {
         updateState {
             copy(errorState = errorState)
         }
@@ -202,6 +212,7 @@ internal class UploadReelViewModel(
 
     override fun onEditVideoClick() {
         uploadingTrendJob?.cancel()
+        deleteVideo()
         updateState {
             copy(
                 selectedFile = FileUiState(),
