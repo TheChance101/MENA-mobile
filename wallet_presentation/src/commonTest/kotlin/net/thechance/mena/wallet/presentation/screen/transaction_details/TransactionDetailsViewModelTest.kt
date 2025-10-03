@@ -19,14 +19,17 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.from
+import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
-import net.thechance.mena.wallet.presentation.utils.ImageSharer
+import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.base.ErrorState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -38,7 +41,6 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class)
 class TransactionDetailsViewModelTest {
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
-    private val imageSharer = mock<ImageSharer>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -57,7 +59,6 @@ class TransactionDetailsViewModelTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
             val viewModel = TransactionDetailsViewModel(
-                imageSharer = imageSharer,
                 transactionRepository = transactionRepository,
                 transactionId = transaction1Id.toString(),
                 ioDispatcher = testDispatcher
@@ -77,7 +78,6 @@ class TransactionDetailsViewModelTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
             val viewModel = TransactionDetailsViewModel(
-                imageSharer = imageSharer,
                 transactionRepository = transactionRepository,
                 transactionId = transaction1Id.toString(),
                 ioDispatcher = testDispatcher
@@ -113,7 +113,6 @@ class TransactionDetailsViewModelTest {
             everySuspend { transactionRepository.getTransactionById(any()) } throws expectedError
 
             val viewModel = TransactionDetailsViewModel(
-                imageSharer = imageSharer,
                 transactionRepository = transactionRepository,
                 transactionId = transaction1Id.toString(),
                 ioDispatcher = testDispatcher
@@ -122,7 +121,7 @@ class TransactionDetailsViewModelTest {
             viewModel.state.test {
                 skipItems(2)
                 val errorState = awaitItem()
-                assertEquals(expectedError, errorState.isError)
+                assertEquals(ErrorState.Unknown, errorState.errorState)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -132,7 +131,6 @@ class TransactionDetailsViewModelTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
             transactionRepository = transactionRepository,
             transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
@@ -145,14 +143,46 @@ class TransactionDetailsViewModelTest {
     }
 
     @Test
-    fun `onScreenShotCaptured should share image and reset loading state to false when success`() =
+    fun `onShareReceiptButtonClicked should set loading state to true when success`() =
         runTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-            everySuspend { imageSharer.shareImage(any(), any(), any()) } returns Unit
+
+            val viewModel = TransactionDetailsViewModel(
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
+            viewModel.state.test {
+                skipItems(1)
+                viewModel.onShareReceiptButtonClicked()
+                val finalState = awaitItem()
+                assertTrue(finalState.isShareReceiptBtnLoading)
+            }
+        }
+
+    @Test
+    fun `onShareReceiptButtonClicked should send CaptureImage effect`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+
+            val viewModel = TransactionDetailsViewModel(
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
+            viewModel.uiEffect.test {
+                viewModel.onShareReceiptButtonClicked()
+                assertEquals(TransactionDetailsEffect.CaptureImage, awaitItem())
+            }
+        }
+
+    @Test
+    fun `onScreenShotCaptured should reset loading state to false when success`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
             val byteArray = byteArrayOf()
             val viewModel = TransactionDetailsViewModel(
-                imageSharer = imageSharer,
                 transactionRepository = transactionRepository,
                 transactionId = transaction1Id.toString(),
                 ioDispatcher = testDispatcher
@@ -169,36 +199,57 @@ class TransactionDetailsViewModelTest {
         }
 
     @Test
-    fun `onScreenShotCaptured should reset loading state to false when fail`() = runTest {
+    fun `onScreenShotCaptured should send ShareImage effect`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+
+            val byteArray = byteArrayOf()
+            val viewModel = TransactionDetailsViewModel(
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
+            viewModel.uiEffect.test {
+                viewModel.onScreenShotCaptured(byteArray, "test_file")
+                assertEquals(
+                    TransactionDetailsEffect.ShareImage(
+                        byteArray,
+                        "test_file.png",
+                        "image/png"
+                    ),
+                    awaitItem()
+                )
+            }
+        }
+
+    @Test
+    fun `onScreenShotCaptured should reset loading state to false when called`() = runTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-        everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
 
         val byteArray = byteArrayOf()
         val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
             transactionRepository = transactionRepository,
             transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
         )
 
         viewModel.state.test {
-            skipItems(2)
+            skipItems(1)
 
             viewModel.onScreenShotCaptured(byteArray, "test_file")
 
             val finalState = awaitItem()
             assertTrue(!finalState.isShareReceiptBtnLoading)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `onScreenShotCaptured should show error snack bar when fail`() = runTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-        everySuspend { imageSharer.shareImage(any(), any(), any()) } throws Exception()
 
         val byteArray = byteArrayOf()
         val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
             transactionRepository = transactionRepository,
             transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
@@ -214,32 +265,10 @@ class TransactionDetailsViewModelTest {
     }
 
     @Test
-    fun `onShareReceiptButtonClicked should reset loading state to false when success`() = runTest {
-        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-
-        val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
-            transactionRepository = transactionRepository,
-            transactionId = transaction1Id.toString(),
-            ioDispatcher = testDispatcher
-        )
-
-        viewModel.state.test {
-            skipItems(2)
-
-            viewModel.onShareReceiptButtonClicked({})
-
-            val finalState = awaitItem()
-            assertTrue(!finalState.isShareReceiptBtnLoading)
-        }
-    }
-
-    @Test
     fun `onRefresh should set transaction with loading when initially called`() = runTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val viewModel = TransactionDetailsViewModel(
-            imageSharer = imageSharer,
             transactionRepository = transactionRepository,
             transactionId = transaction1Id.toString(),
             ioDispatcher = testDispatcher
@@ -252,6 +281,50 @@ class TransactionDetailsViewModelTest {
             assertTrue(initialState.isLoading)
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `onCaptureError should send showErrorSnackBar effect`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+
+            val viewModel = TransactionDetailsViewModel(
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
+            viewModel.uiEffect.test {
+                viewModel.onCaptureError()
+                assertEquals(TransactionDetailsEffect.showErrorSnackBar, awaitItem())
+            }
+        }
+
+    @Test
+    fun `showSnackBar should show snack bar`() =
+        runTest {
+            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+
+            val viewModel = TransactionDetailsViewModel(
+                transactionRepository = transactionRepository,
+                transactionId = transaction1Id.toString(),
+                ioDispatcher = testDispatcher
+            )
+            viewModel.state.test {
+                skipItems(1)
+                viewModel.showSnackBar(Res.string.error,Res.string.share_transaction_details_error_msg,false)
+                val snackBarState = awaitItem()
+                assertSnackBarState(isVisible = true, isSuccess = false, snackBarState = snackBarState.snackBar)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    private fun assertSnackBarState(
+        isVisible: Boolean,
+        isSuccess: Boolean,
+        snackBarState: SnackBarState
+    ) {
+        assertEquals(isVisible, snackBarState.isVisible)
+        assertEquals(isSuccess, snackBarState.isSuccess)
     }
 
     private companion object {
@@ -269,7 +342,7 @@ class TransactionDetailsViewModelTest {
             type = TransactionType.RECEIVED
         )
         val transaction1uiState = TransactionDetailsScreenState.TransactionDetailsUiState(
-            id = "TX-${transaction1Id.toString().substring(0,6)}",
+            id = "TX-${transaction1Id.toString().substring(0, 6)}",
             amount = "5000.0",
             date = "20 Aug 2025, 12:00 pm",
             userName = "Nour Elhoda",

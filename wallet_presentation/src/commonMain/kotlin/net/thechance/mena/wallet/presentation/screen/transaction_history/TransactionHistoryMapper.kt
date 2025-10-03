@@ -49,8 +49,8 @@ fun TransactionFilterState.toParams(): TransactionFilterParams {
     return TransactionFilterParams(
         types = selectedTypes.map { it.toDomainType() }.takeIf { it.isNotEmpty() },
         status = selectedStatus.toDomainStatus(),
-        startDate = fromDate,
-        endDate = toDate
+        startDate = startDate,
+        endDate = endDate
     )
 }
 

@@ -7,18 +7,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.export_transactions
 import mena.wallet_presentation.generated.resources.ic_arrow_left
+import mena.wallet_presentation.generated.resources.pick_end_date
+import mena.wallet_presentation.generated.resources.pick_start_date
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.wallet.presentation.component.CustomToast
+import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
-import net.thechance.mena.wallet.presentation.component.CustomToast
 import net.thechance.mena.wallet.presentation.screen.export.component.ExportTransactionContentBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -79,6 +82,25 @@ private fun ExportTransactionScreenContent(
             CustomToast(
                 toastState = state.toast,
             )
+        },
+        overlays = {
+            bottomSheet(isVisible = state.isDateBottomSheetVisible) {
+                DatePickerBottomSheet(
+                    defaultSelectedDate = when (state.datePickerMode) {
+                        ExportTransactionsState.DatePickerMode.START_DATE -> state.defaultStartDate
+                        ExportTransactionsState.DatePickerMode.END_DATE -> state.defaultEndDate
+                    },
+                    title = when (state.datePickerMode) {
+                        ExportTransactionsState.DatePickerMode.START_DATE -> stringResource(Res.string.pick_start_date)
+                        ExportTransactionsState.DatePickerMode.END_DATE -> stringResource(Res.string.pick_end_date)
+                    },
+                    onPickClick = { day, month, year ->
+                        val pickedDate = LocalDate(year, month, day)
+                        interactionListener.onPickDateClicked(pickedDate)
+                    },
+                    onDismiss = interactionListener::onDismissDatePicker
+                )
+            }
         }
     ) {
         ExportTransactionContentBody(
@@ -114,8 +136,10 @@ private fun ExportTransactionScreenPreview() {
                 override fun onAllTransactionsClicked() {}
                 override fun onCustomFilteringClicked() {}
                 override fun onTypeSelected(type: FilterType) {}
-                override fun onFromDateClicked() {}
-                override fun onToDateClicked() {}
+                override fun onStartDateClicked() {}
+                override fun onEndDateClicked() {}
+                override fun onDismissDatePicker() {}
+                override fun onPickDateClicked(date: LocalDate) {}
                 override fun onViewAndShareClicked() {}
                 override fun onDownloadClicked() {}
             }

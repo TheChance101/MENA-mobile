@@ -8,5 +8,5 @@ expect class QuranDatabaseBuilder {
     fun getBuilder(): RoomDatabase.Builder<QuranDatabase>
 }
 
-internal val databaseUri = Res.getUri("files/$DATABASE_NAME")
 internal const val DATABASE_NAME = "hafs_smart_v8.db"
+internal val databaseUri = Res.getUri("files/$DATABASE_NAME")

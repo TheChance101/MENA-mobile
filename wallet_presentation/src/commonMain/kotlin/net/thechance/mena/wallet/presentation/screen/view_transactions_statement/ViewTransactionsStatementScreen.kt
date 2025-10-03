@@ -1,33 +1,38 @@
 package net.thechance.mena.wallet.presentation.screen.view_transactions_statement
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share_
-import mena.wallet_presentation.generated.resources.loading_pdf_message
+import mena.wallet_presentation.generated.resources.img_no_internet
+import mena.wallet_presentation.generated.resources.no_internet_content
+import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.share_button_title
 import mena.wallet_presentation.generated.resources.view_transactions
-import mena.wallet_presentation.generated.resources.view_transactions_statement_error_message
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.PdfViewer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import org.jetbrains.compose.resources.painterResource
@@ -95,42 +100,39 @@ private fun ViewTransactionsStatementContent(
                 iconSize = 20.dp,
                 isLoading = state.statement is UiState.Loading,
             )
-        }
+        },
     ) {
-        StatementViewer(statement = state.statement)
+        StatementViewer(statement = state.statement) {
+            listener.onRetryClicked()
+        }
     }
 }
 
 @Composable
 fun StatementViewer(
     statement: UiState<ByteArray>,
+    onRetry: () -> Unit
 ) {
     when (statement) {
         is UiState.Error -> {
-            Text(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-                text = stringResource(Res.string.view_transactions_statement_error_message),
-                style = Theme.typography.body.medium,
-                textAlign = TextAlign.Center,
-            )
+            if (statement.error is ErrorState.NoInternet)
+                ErrorView(
+                    image = painterResource(Res.drawable.img_no_internet),
+                    title = stringResource(Res.string.no_internet_title),
+                    description = stringResource(Res.string.no_internet_content),
+                    onRetry = onRetry
+                )
+            else
+                ErrorView(onRetry = onRetry)
         }
 
-        UiState.Loading, UiState.Idle -> {
-            Text(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-                text = stringResource(Res.string.loading_pdf_message),
-                style = Theme.typography.body.medium,
-                textAlign = TextAlign.Center,
-            )
-        }
+        UiState.Loading ->
+            Box(modifier = Modifier.fillMaxSize()) {
+                ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+            }
 
-        is UiState.Success<ByteArray> -> {
-            PdfViewer(pdf = statement.data)
-        }
+        is UiState.Success<ByteArray> -> PdfViewer(pdf = statement.data)
+        UiState.Idle -> Unit
     }
 }
 

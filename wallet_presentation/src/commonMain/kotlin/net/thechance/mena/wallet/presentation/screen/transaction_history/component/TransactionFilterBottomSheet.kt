@@ -27,7 +27,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.component.filter.FilterContent
+import net.thechance.mena.wallet.presentation.component.FilterContent
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
@@ -40,16 +40,17 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
     onDismiss: () -> Unit,
     onClickAddFilter: () -> Unit,
     onResetClicked: () -> Unit,
+    onStartDateClicked: () -> Unit,
+    onEndDateClicked: () -> Unit,
     onTypeToggled: (FilterType) -> Unit,
     onStatusSelected: (FilterStatus) -> Unit,
-    onFromClick: () -> Unit,
-    onToClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     BottomSheet(
         onDismissRequest = onDismiss,
         skipPartiallyExpanded = true,
-        modifier = modifier.navigationBarsPadding(),
+        modifier = modifier
+            .navigationBarsPadding(),
         stickyFooterContent = {
             StickyFooterContent(
                 hasActiveFilters = uiState.hasActiveFilters,
@@ -66,12 +67,12 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
             FilterContent(
                 selectedTypes = uiState.selectedTypes,
                 selectedStatus = uiState.selectedStatus,
-                fromDate = uiState.fromDate?.toString() ?: "",
-                toDate = uiState.toDate?.toString() ?: "",
+                startDate = uiState.startDate?.toString() ?: "",
+                endDate = uiState.endDate?.toString() ?: "",
                 onTypeSelected = onTypeToggled,
                 onStatusSelected = onStatusSelected,
-                onFromClick = onFromClick,
-                onToClick = onToClick
+                onStartDateClicked = onStartDateClicked,
+                onEndDateClicked = onEndDateClicked
             )
         }
     )
@@ -89,7 +90,7 @@ private fun StickyFooterContent(
             .fillMaxWidth()
             .background(Theme.colorScheme.background.surface)
             .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 24.dp)
+            .padding(bottom = 24.dp)
             .padding(
                 bottom = WindowInsets.navigationBars.asPaddingValues()
                     .calculateBottomPadding()
@@ -141,10 +142,10 @@ private fun TransactionFilterBottomSheetPreview() {
                         onDismiss = {},
                         onResetClicked = {},
                         onClickAddFilter = {},
-                        onToClick = {},
-                        onFromClick = {},
                         onTypeToggled = {},
-                        onStatusSelected = {}
+                        onStatusSelected = {},
+                        onStartDateClicked = {},
+                        onEndDateClicked = {}
                     )
                 }
             }

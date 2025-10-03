@@ -50,7 +50,7 @@ class TransactionHistoryViewModelTest {
             awaitItem()
             advanceUntilIdle()
             val successState = awaitItem()
-            assertEquals(null, successState.isError)
+            assertEquals(null, successState.errorState)
             cancelAndIgnoreRemainingEvents()
         }
     }

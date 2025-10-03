@@ -59,7 +59,7 @@ private fun MainContent(
         topBar = {
             TopAppBar(
                 modifier = Modifier.statusBarsPadding(),
-                onAddDukanIconClicked = listener::onDukanButtonClicked,
+                onDukanIconClicked = listener::onDukanButtonClicked,
                 dukanButtonStatus = state.dukanState.status
             )
         },

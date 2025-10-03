@@ -1,7 +1,6 @@
-package net.thechance.mena.wallet.presentation.component.filter
+package net.thechance.mena.wallet.presentation.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.from
@@ -26,6 +27,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.utils.pointerClick
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -35,12 +37,12 @@ fun FilterContent(
     showStatusFilter: Boolean = true,
     selectedTypes: Set<FilterType>? = null,
     selectedStatus: FilterStatus = FilterStatus.ALL,
-    fromDate: String,
-    toDate: String,
+    startDate: String,
+    endDate: String,
     onTypeSelected: (FilterType) -> Unit = {},
     onStatusSelected: (FilterStatus) -> Unit = {},
-    onFromClick: () -> Unit,
-    onToClick: () -> Unit
+    onStartDateClicked: () -> Unit = {},
+    onEndDateClicked: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -72,10 +74,10 @@ fun FilterContent(
         }
 
         DateRangePicker(
-            fromDate = fromDate,
-            toDate = toDate,
-            onFromClick = onFromClick,
-            onToClick = onToClick
+            startDate = startDate,
+            endDate = endDate,
+            onStartDateClicked = onStartDateClicked,
+            onEndDateClicked = onEndDateClicked
         )
     }
 }
@@ -122,11 +124,11 @@ private fun TransactionStatusRow(
 }
 
 @Composable
-fun DateRangePicker(
-    fromDate: String,
-    toDate: String,
-    onFromClick: () -> Unit,
-    onToClick: () -> Unit
+private fun DateRangePicker(
+    startDate: String,
+    endDate: String,
+    onStartDateClicked: () -> Unit,
+    onEndDateClicked: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -134,15 +136,15 @@ fun DateRangePicker(
     ) {
         DatePickerField(
             label = stringResource(Res.string.from),
-            value = fromDate,
-            onClick = onFromClick,
+            value = startDate,
+            onClick = onStartDateClicked,
             modifier = Modifier.weight(1f)
         )
 
         DatePickerField(
             label = stringResource(Res.string.to),
-            value = toDate,
-            onClick = onToClick,
+            value = endDate,
+            onClick = onEndDateClicked,
             modifier = Modifier.weight(1f)
         )
     }
@@ -172,7 +174,8 @@ private fun DatePickerField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
-                .clickable { onClick() },
+                .clip(shape = RoundedCornerShape(Theme.radius.md))
+                .pointerClick(key = value) { onClick() },
             trailingIcon = painterResource(Res.drawable.ic_calendar)
         )
     }
@@ -189,10 +192,12 @@ private fun FilterContentPreview() {
             FilterContent(
                 selectedTypes = setOf(FilterType.SENT, FilterType.ONLINE_PURCHASE),
                 selectedStatus = FilterStatus.ALL,
-                fromDate = "2025/09/01",
-                toDate = "2025/09/30",
-                onFromClick = { },
-                onToClick = { }
+                startDate = "2025/09/01",
+                endDate = "2025/09/30",
+                onTypeSelected = {},
+                onStatusSelected = {},
+                onStartDateClicked = {},
+                onEndDateClicked = {}
             )
         }
     }

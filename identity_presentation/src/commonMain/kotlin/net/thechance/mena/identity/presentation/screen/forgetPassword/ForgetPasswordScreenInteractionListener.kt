@@ -8,7 +8,7 @@ interface ForgetPasswordScreenInteractionListener : BaseInteractionListener{
     fun onClickConfirmButton()
     fun onDismissBottomSheet()
     fun onClickContinue()
-    fun onClickPhoneCode()
+    fun onClickCountry()
     fun onChangePhone(phone: String)
     fun onClickBack()
     fun onClearErrorMessage()

@@ -44,18 +44,11 @@ fun WalletMainScreen(
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onWalletEffect(
-                effect,
-                onNavigateBackClicked,
-                navigateToTransactionHistory
-            )
+            onWalletEffect(effect, onNavigateBackClicked, navigateToTransactionHistory)
         }
     )
 
-    WalletContent(
-        state = state,
-        interactionListener = viewModel
-    )
+    WalletContent(state = state, interactionListener = viewModel)
 }
 
 @Composable

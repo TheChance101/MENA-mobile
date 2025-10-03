@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.manageDukan.compnent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,7 +34,8 @@ fun ProductsList(
     lazyListState.LoadMoreOnScroll(pager)
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
+            .padding(top = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._16,
@@ -43,6 +45,7 @@ fun ProductsList(
     ) {
         items(products) { product ->
             ProductCard(
+                modifier = Modifier.animateItem(),
                 productUiState = product,
                 productAction = {
                     EditProductIcon(onClick = {

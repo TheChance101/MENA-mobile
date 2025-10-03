@@ -33,7 +33,7 @@ import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswo
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
-class OtpScreen(
+data class OtpScreen(
     private val phoneNumber: String,
     private val countryCode: String,
     private val callingCode: String
@@ -127,7 +127,10 @@ class OtpScreen(
     ) {
         when (effect) {
             OtpScreenUIEffect.NavigateBack -> navigator.pop()
-            is OtpScreenUIEffect.NavigateToResetPassword -> navigator.push(ResetPasswordScreen( effect.phoneNumber, effect.callingCode))
+            is OtpScreenUIEffect.NavigateToResetPassword -> {
+                navigator.popUntilRoot()
+                navigator.push(ResetPasswordScreen())
+            }
         }
     }
 }

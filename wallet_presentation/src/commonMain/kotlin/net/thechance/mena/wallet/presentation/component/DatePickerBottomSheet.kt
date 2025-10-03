@@ -1,8 +1,7 @@
-package net.thechance.mena.wallet.presentation.component.filter.datePicker
+package net.thechance.mena.wallet.presentation.component
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +26,6 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,20 +33,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.pick
 import mena.wallet_presentation.generated.resources.pick_start_date
+import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -58,44 +60,70 @@ import net.thechance.mena.wallet.presentation.utils.getNumberOfDaysInMonth
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.math.abs
 import kotlin.math.absoluteValue
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+
 @OptIn(ExperimentalTime::class)
 @Composable
-fun DatePickerBottomSheet(
+fun ScaffoldScope.DatePickerBottomSheet(
+    title: String = stringResource(Res.string.pick_start_date),
+    minYear: Int = 2000,
+    maxYear: Int = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()).year,
+    defaultSelectedDate: LocalDate? = null,
+    onPickClick: (day: Int, month: Int, year: Int) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BottomSheet(
+        skipPartiallyExpanded = true,
+        onDismissRequest = onDismiss,
+        modifier = modifier.navigationBarsPadding(),
+        sheetContent = {
+            DatePickerBottomSheetContent(
+                title = title,
+                minYear = minYear,
+                maxYear = maxYear,
+                onPickClick = onPickClick,
+                selectedDate = defaultSelectedDate,
+                onDismiss = onDismiss
+            )
+        }
+    )
+}
+
+
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun DatePickerBottomSheetContent(
     title: String = stringResource(Res.string.pick_start_date),
     minYear: Int = 2000,
     maxYear: Int = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year,
-    onPickClick: (Int, Int, Int) -> Unit,
+    onPickClick: (day: Int, month: Int, year: Int) -> Unit,
+    selectedDate: LocalDate?,
     onDismiss: () -> Unit,
 ) {
-    val monthPagerState = rememberPagerState(initialPage = 0, pageCount = { 12 })
+    val monthPagerState = rememberPagerState(
+        initialPage = (selectedDate?.month?.number ?: 1) - 1,
+        pageCount = { 12 }
+    )
     val yearPagerState = rememberPagerState(
-        initialPage = maxYear - minYear,
+        initialPage = (selectedDate?.year ?: minYear) - minYear,
         pageCount = { maxYear - minYear + 1 }
     )
 
     val currentMonth = monthPagerState.currentPage + 1
-    val currentYear = yearPagerState.currentPage + minYear
+    val currentYear = minYear + yearPagerState.currentPage
     val daysInMonth = remember(currentMonth, currentYear) {
         getNumberOfDaysInMonth(currentYear, currentMonth)
     }
 
     val dayPagerState = rememberPagerState(
-        initialPage = 0,
+        initialPage = (selectedDate?.day ?: 1) - 1,
         pageCount = { daysInMonth }
     )
-
-    LaunchedEffect(daysInMonth) {
-        if (dayPagerState.currentPage >= daysInMonth) {
-            dayPagerState.scrollToPage(daysInMonth - 1)
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -116,6 +144,7 @@ fun DatePickerBottomSheet(
             yearPagerState = yearPagerState,
             minYear = minYear,
             maxYear = maxYear,
+            daysInMonth = daysInMonth,
             modifier = Modifier.fillMaxWidth()
                 .padding(vertical = Theme.spacing._16)
                 .align(Alignment.CenterHorizontally)
@@ -134,7 +163,6 @@ fun DatePickerBottomSheet(
                 .padding(bottom = Theme.spacing._8)
                 .fillMaxWidth()
         )
-
     }
 }
 
@@ -163,7 +191,7 @@ private fun BottomSheetTopBar(
                         RoundedCornerShape(Theme.radius.md)
                     )
                     .clip(RoundedCornerShape(Theme.radius.md))
-                    .clickable { onDismiss }
+                    .clickable { onDismiss() }
                     .padding(10.dp)
             ) {
                 Icon(
@@ -188,96 +216,73 @@ private fun WheelDatePicker(
     dayPagerState: PagerState,
     monthPagerState: PagerState,
     yearPagerState: PagerState,
+    daysInMonth: Int,
     modifier: Modifier = Modifier
 ) {
-    val days = remember(monthPagerState.currentPage, yearPagerState.currentPage) {
-        val month = monthPagerState.currentPage + 1
-        val year = yearPagerState.currentPage + minYear
-        (1..getNumberOfDaysInMonth(year, month))
-            .map { number -> number.toString().padStart(2, '0') }
-    }
-
-    LaunchedEffect(days.size) {
-        if (dayPagerState.currentPage >= days.size) {
-            dayPagerState.scrollToPage(days.lastIndex)
-        }
+    val days = remember(daysInMonth) {
+        (1..daysInMonth).map { it.toString().padStart(2, '0') }
     }
 
     var rowWidth by remember { mutableStateOf(0) }
 
-
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(244.dp),
         contentAlignment = Alignment.Center
     ) {
-
         ChoiceIndicator(
             modifier = Modifier
-                .width(with(LocalDensity.current) { rowWidth.toDp() })
-                .fillMaxHeight()
+                .width(with(LocalDensity.current) { rowWidth.toDp() + 20.dp })
+                .align(Alignment.Center)
         )
 
         Row(
             modifier = Modifier
                 .onSizeChanged { rowWidth = it.width }
                 .align(Alignment.Center),
-            horizontalArrangement = Arrangement.spacedBy(27.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             VerticalPicker(
-                state = dayPagerState,
-                options = days
+                state = monthPagerState,
+                options = AppMonth.entries.map { stringResource(it.res) },
+                modifier = Modifier.padding(end = 32.dp)
             )
 
             VerticalPicker(
-                state = monthPagerState,
-                options = AppMonth.entries.map { stringResource(it.res) }
+                state = dayPagerState,
+                options = days,
+                modifier = Modifier.padding(end = 52.dp)
             )
 
             VerticalPicker(
                 state = yearPagerState,
-                options = (minYear..maxYear).map { it.toString() }
+                options = (minYear..maxYear).map { it.toString() },
+                isYearPicker = true
             )
-
         }
     }
 }
 
+
 @Composable
-private fun ChoiceIndicator(modifier: Modifier = Modifier) {
-    val borderColor = Theme.colorScheme.stroke
-    Canvas(
+private fun ChoiceIndicator(
+    modifier: Modifier = Modifier
+) {
+    Box(
         modifier = modifier
-    ) {
-        val centerY = size.height / 2f
-        val itemHeight = 40.dp.toPx()
-        val topBorderY = centerY - (itemHeight / 2f)
-        val bottomBorderY = centerY + (itemHeight / 2f)
-
-        val strokeWidth = 1.dp.toPx()
-
-        drawLine(
-            color = borderColor,
-            start = Offset(0f, topBorderY),
-            end = Offset(size.width, topBorderY),
-            strokeWidth = strokeWidth
-        )
-
-        drawLine(
-            color = borderColor,
-            start = Offset(0f, bottomBorderY),
-            end = Offset(size.width, bottomBorderY),
-            strokeWidth = strokeWidth
-        )
-    }
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .height(28.dp)
+            .background(Theme.colorScheme.background.surfaceHigh)
+    )
 }
 
 @Composable
 private fun VerticalPicker(
     state: PagerState,
     options: List<String>,
+    isYearPicker: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -303,37 +308,38 @@ private fun VerticalPicker(
             beyondViewportPageCount = 5,
             horizontalAlignment = Alignment.CenterHorizontally,
             pageSpacing = 4.dp,
-            contentPadding = PaddingValues(vertical = 80.dp),
-            pageSize = PageSize.Fixed(40.dp),
+            contentPadding = PaddingValues(vertical = 108.dp),
+            pageSize = PageSize.Fixed(28.dp),
             flingBehavior = PagerDefaults.flingBehavior(
                 state = state,
                 pagerSnapDistance = PagerSnapDistance.atMost(1),
                 snapAnimationSpec = tween(durationMillis = 200, easing = LinearOutSlowInEasing)
             )
         ) { page ->
-            val pageOffset by remember {
-                derivedStateOf {
-                    ((state.currentPage - page) + state.currentPageOffsetFraction).absoluteValue
-                }
-            }
-            val alpha = (1f - (pageOffset * 0.5f)).coerceAtLeast(0.1f)
+            val distance = (page - state.currentPage).absoluteValue
 
-            val baseStyle = Theme.typography.body.large
-            val distance = abs(state.currentPage - page)
-            val fontSize = (baseStyle.fontSize.value - distance).coerceAtLeast(14f).sp
+            val alpha = when (distance) {
+                0 -> 1f
+                1 -> 0.9f
+                2 -> 0.5f
+                else -> 0.2f
+            }
 
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .wrapContentWidth(),
+                    .wrapContentWidth()
+                    .graphicsLayer {
+                        this.alpha = alpha
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = options.getOrNull(page) ?: "",
-                    style = baseStyle.copy(fontSize = fontSize),
+                    text = options[page],
+                    style = Theme.typography.label.medium,
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start,
-                    color = Theme.colorScheme.shadePrimary.copy(alpha = alpha)
+                    textAlign = if (isYearPicker) TextAlign.End else TextAlign.Start,
+                    color = Theme.colorScheme.shadePrimary
                 )
             }
         }
@@ -345,11 +351,12 @@ private fun VerticalPicker(
 private fun DatePickerBottomSheetContentPreview() {
 
     MenaTheme {
-        DatePickerBottomSheet(
+        DatePickerBottomSheetContent(
             onPickClick = { _, _, _ -> },
             onDismiss = {},
             minYear = 2021,
-            maxYear = 2025
+            maxYear = 2025,
+            selectedDate = LocalDate(2023, 1, 1)
         )
     }
 }
