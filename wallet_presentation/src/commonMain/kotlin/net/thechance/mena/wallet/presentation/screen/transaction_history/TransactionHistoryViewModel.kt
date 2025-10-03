@@ -159,7 +159,10 @@ class TransactionHistoryViewModel(
                 filterState = it.filterState.copy(
                     isLoading = false,
                     activeFilterCount = getActiveFilterCount()
-                )
+                ),
+                isError = null,
+                endOfPages = transactionHistory.isEmpty(),
+                isLoading = false
             )
         }
     }

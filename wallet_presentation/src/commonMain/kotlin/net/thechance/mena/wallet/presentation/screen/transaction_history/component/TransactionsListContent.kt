@@ -48,25 +48,11 @@ fun TransactionsListContent(
         state = listState
     ) {
         item {
-            Button(
-                contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
-                onClick = interactionListener::onFilterClicked,
-                containerColor = Theme.colorScheme.brand.brandVariant,
-                shape = CircleShape,
-            ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(Res.drawable.ic_filter),
-                    contentDescription = stringResource(Res.string.filter)
-                )
-                Text(
-                    modifier = Modifier.padding(start = 4.dp),
-                    text = stringResource(Res.string.filter),
-                    style = Theme.typography.label.small,
-                    color = Theme.colorScheme.primary.primary
-                )
-            }
+            FilterButton(
+                onFilterClicked = interactionListener::onFilterClicked,
+            )
         }
+
         items(state.history) { transaction ->
             TransactionHistoryCard(
                 transaction = transaction,
@@ -127,5 +113,30 @@ fun TransactionsListContent(
                 } //TODO: Replace with correct error view
             }
         }
+    }
+}
+@Composable
+fun FilterButton(
+    onFilterClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        modifier = modifier,
+        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
+        onClick = onFilterClicked,
+        containerColor = Theme.colorScheme.brand.brandVariant,
+        shape = CircleShape,
+    ) {
+        Icon(
+            modifier = Modifier.size(16.dp),
+            painter = painterResource(Res.drawable.ic_filter),
+            contentDescription = stringResource(Res.string.filter)
+        )
+        Text(
+            modifier = Modifier.padding(start = 4.dp),
+            text = stringResource(Res.string.filter),
+            style = Theme.typography.label.small,
+            color = Theme.colorScheme.primary.primary
+        )
     }
 }

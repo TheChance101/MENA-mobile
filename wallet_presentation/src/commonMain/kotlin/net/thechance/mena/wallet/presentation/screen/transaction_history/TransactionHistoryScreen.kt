@@ -27,13 +27,12 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.FilterTransactionEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionErrorState
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionLoadingState
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
-import net.thechance.mena.wallet.presentation.screen.transaction_history.component.FilterButton
-import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
-import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.ScrollingDetecting
 import org.jetbrains.compose.resources.painterResource
@@ -108,21 +107,23 @@ fun TransactionHistoryContent(
             )
         },
         overlays = {
-            bottomSheet(state.isFilterVisible) {
-                TransactionFilterBottomSheet(
-                    uiState = state.filterState,
-                    onDismiss = interactionListener::onDismissFilter,
-                    onClickAddFilter = interactionListener::onApplyFilterClicked,
-                    onResetClicked = interactionListener::onResetFilterClicked,
-                    onTypeToggled = interactionListener::selectFilterType,
-                    onStatusSelected = interactionListener::selectFilterStatus,
-                    onFromClick = {
-                        // TODO: Show date picker
-                    },
-                    onToClick = {
-                        // TODO: Show date picker
-                    }
-                )
+            if (state.isFilterVisible) {
+                bottomSheet(true) {
+                    TransactionFilterBottomSheet(
+                        uiState = state.filterState,
+                        onDismiss = interactionListener::onDismissFilter,
+                        onClickAddFilter = interactionListener::onApplyFilterClicked,
+                        onResetClicked = interactionListener::onResetFilterClicked,
+                        onTypeToggled = interactionListener::selectFilterType,
+                        onStatusSelected = interactionListener::selectFilterStatus,
+                        onFromClick = {
+                            // TODO: Show date picker
+                        },
+                        onToClick = {
+                            // TODO: Show date picker
+                        }
+                    )
+                }
             }
         },
         snackBar = {
@@ -130,7 +131,7 @@ fun TransactionHistoryContent(
         }
     ) {
         when {
-            state.isLoading && state.history.isEmpty() -> {
+            (state.isLoading || state.filterState.isLoading) && state.history.isEmpty()-> {
                 TransactionLoadingState(
                     modifier = Modifier
                         .fillMaxSize()
@@ -146,7 +147,11 @@ fun TransactionHistoryContent(
             }
 
             state.history.isEmpty() -> {
-                TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
+                if (state.history.isEmpty() && state.filterState.activeFilterCount > 0) {
+                    FilterTransactionEmpty()
+                } else {
+                    TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
+                }
             }
 
             else -> {
