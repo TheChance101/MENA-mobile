@@ -16,18 +16,15 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.chat.dto.MessageDto
 import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
-import net.thechance.mena.core_chat.data.chat.utils.now
 import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
+import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
-import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
@@ -37,7 +34,6 @@ import kotlin.test.assertFailsWith
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
 
 
 class ChatRepositoryImplTest {
@@ -59,8 +55,7 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             authenticationRepository = authRepository,
-            webSocketManager = webSocketManager,
-            baseUrl = "http://localhost:8081"
+            webSocketManager = webSocketManager
         )
     }
 
@@ -132,13 +127,9 @@ class ChatRepositoryImplTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
 
-        val message = Message(
-            id = Uuid.random(),
+        val message = createMessage(
             senderId = userId,
             chatId = chatId,
-            text = "test",
-            sendAt = LocalDateTime.now(),
-            status = MessageStatus.SENT
         )
 
         repository.sendMessage(message)
@@ -155,13 +146,9 @@ class ChatRepositoryImplTest {
     fun `should throw SendMessageFailedException when websocket is not connected`() = runTest {
         every { webSocketManager.isConnected() } returns false
 
-        val message = Message(
-            id = Uuid.random(),
+        val message = createMessage(
             senderId = userId,
             chatId = chatId,
-            text = "fail",
-            sendAt = LocalDateTime.now(),
-            status = MessageStatus.SENT
         )
 
         assertFailsWith<SendMessageFailedException> {

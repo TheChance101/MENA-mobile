@@ -26,6 +26,8 @@ import net.thechance.mena.core_chat.data.chat.dto.ChatDto
 import net.thechance.mena.core_chat.data.chat.dto.MessageDto
 import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
 import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
+import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
+import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_HISTORY_ENDPOINT
@@ -89,14 +91,7 @@ fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
         PagedDataDto.serializer(MessageDto.serializer()),
         PagedDataDto(
             data = listOf(
-                MessageDto(
-                    id = "9a629aaa-8907-4dc6-ac33-f79fef7b4251",
-                    senderId = "9a629aaa-8907-4dc6-ac33-f79fef7b4251",
-                    chatId = "9a629aaa-8907-4dc6-ac33-f79fef7b4251",
-                    text = "Hello from history",
-                    sendAt = "2025-10-01T12:00:00Z",
-                    isRead = false
-                )
+                createMessageDto()
             ),
             pageNumber = 0,
             pageSize = 20,
@@ -111,17 +106,11 @@ fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
 fun MockRequestHandleScope.defaultChatResponse() = respond(
     content = jsonSerialization.encodeToString(
         ChatDto.serializer(),
-        ChatDto(
-            id = "9a629aaa-8907-4dc6-ac33-f79fef7b4251",
-            name = "Test Chat",
-            imageUrl = null,
-            requesterId = "9a629aaa-8907-4dc6-ac33-f79fef7b4251"
-        )
+        createChatDto()
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
-
 
 
 fun createRepository(
@@ -147,8 +136,7 @@ fun createChatRepository(
     webSocketManager: WebSocketManager = mock(),
     authenticationRepository: AuthenticationRepository = mock<AuthenticationRepository>(),
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    baseUrl: String = ""
+    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
@@ -159,7 +147,6 @@ fun createChatRepository(
         webSocketManager = webSocketManager,
         authenticationRepository = authenticationRepository,
         json = jsonSerialization,
-        baseUrl = baseUrl,
     )
 }
 
@@ -174,9 +161,11 @@ fun createHttpClient(
         when (request.url.encodedPath) {
             CONTACTS_ENDPOINT -> contactsResponse?.invoke(this) ?: defaultContactsResponse()
 
-            SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this) ?: defaultSyncContactsResponse()
+            SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
+                ?: defaultSyncContactsResponse()
 
-            CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this) ?: defaultChatHistoryResponse()
+            CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
+                ?: defaultChatHistoryResponse()
 
             CHAT_ENDPOINT -> chatResponse?.invoke(this) ?: defaultChatResponse()
 
