@@ -12,6 +12,7 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
@@ -68,7 +69,10 @@ class NetworkClientImpl(
             }
 
             install(Logging) {
-                level = LogLevel.ALL
+                level = LogLevel.HEADERS
+                filter { request ->
+                    request.body !is MultiPartFormDataContent
+                }
                 logger = object : Logger {
                     override fun log(message: String) {
                         println("Http client: $message")
