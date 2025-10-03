@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import io.github.vinceglb.filekit.PlatformFile
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.available_video_format
 import mena.trends_presentation.generated.resources.ic_trend_upload

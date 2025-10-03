@@ -2,7 +2,6 @@ package net.thechance.mena.trends.presentation.shared.util.video_util
 
 import android.media.MediaMetadataRetriever
 import androidx.compose.ui.graphics.asImageBitmap
-import co.touchlab.kermit.Logger
 import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

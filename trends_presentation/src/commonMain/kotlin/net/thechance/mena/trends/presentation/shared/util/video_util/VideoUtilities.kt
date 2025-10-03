@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.shared.util.video_util
 
-import co.touchlab.kermit.Logger
 import kotlin.math.roundToInt
 
 expect fun getVideoUtilities(): VideoUtilities
