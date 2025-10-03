@@ -3,23 +3,30 @@ package net.thechance.mena.wallet.presentation.screen.transaction_history
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.failed_to_apply_filters
+import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
+import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
-import net.thechance.mena.wallet.presentation.utils.Paginator
+import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -48,22 +55,20 @@ class TransactionHistoryViewModel(
     }
 
     override fun onFilterClicked() {
-        updateState {
-            it.copy(isFilterVisible = true)
-        }
+        updateState { it.copy(isFilterVisible = true) }
     }
 
     override fun onResetFilterClicked() {
-        updateState {
-            it.copy(
-                filterState = TransactionFilterState()
-            )
-        }
+        updateState { it.copy(filterState = TransactionFilterState()) }
+        getTransactionHistory(filters = null)
     }
 
     override fun onApplyFilterClicked() {
-
         val filters = state.value.filterState
+        if (areDatesValid().not()) {
+            showInvalidDatesSnackBar()
+            return
+        }
         tryToExecute(
             callee = {
                 transactionRepository.getTransactionHistory(
@@ -73,15 +78,65 @@ class TransactionHistoryViewModel(
                 )
             },
             onStart = ::onGetTransactionFilterStart,
-            onSuccess = { it ->
-                onGetTransactionFilterSuccess(it)
-                updateState {
-                    it.copy(isFilterVisible = false)
-                }
-            },
+            onSuccess = ::onGetTransactionFilterSuccess,
             onError = ::onGetTransactionFilterError,
             dispatcher = Dispatchers.IO
         )
+    }
+
+
+    private fun areDatesValid(): Boolean {
+        val startDate = currentState.filterState.startDate
+        val endDate = currentState.filterState.endDate
+        return (startDate != null && endDate != null && startDate > endDate).not()
+    }
+
+    override fun onRetryLoadTransactionHistoryClicked() {
+        getTransactionHistory()
+    }
+
+    override fun onStartDateClicked() {
+        val currentStartDate = currentState.filterState.startDate
+        if (currentStartDate != null) {
+            openStartDatePickerWithExistingDate(currentStartDate)
+        } else {
+            fetchFirstTransactionDate()
+        }
+    }
+
+
+
+    @OptIn(ExperimentalTime::class)
+    override fun onEndDateClicked() {
+        val currentEndDate = currentState.filterState.endDate
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = TransactionFilterState.DatePickerMode.END_DATE,
+                    defaultEndDate = currentEndDate ?: Clock.System.now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                )
+            )
+        }
+    }
+
+    override fun onDismissDatePicker() {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    isDateBottomSheetVisible = false
+                )
+            )
+        }
+    }
+
+    override fun onPickDateClicked(date: LocalDate) {
+        when (currentState.filterState.datePickerMode) {
+            TransactionFilterState.DatePickerMode.START_DATE -> updateStartDate(date)
+            TransactionFilterState.DatePickerMode.END_DATE -> updateEndDate(date)
+        }
+        onDismissDatePicker()
     }
 
     override fun selectFilterType(type: FilterType) {
@@ -92,30 +147,123 @@ class TransactionHistoryViewModel(
             } else {
                 currentTypes.add(type)
             }
-            it.copy(
-                filterState = it.filterState.copy(
-                    selectedTypes = currentTypes
-                )
-            )
+            it.copy(filterState = it.filterState.copy(selectedTypes = currentTypes))
         }
     }
 
+
     override fun selectFilterStatus(status: FilterStatus) {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    selectedStatus = status
-                )
-            )
-        }
+        updateState { it.copy(filterState = it.filterState.copy(selectedStatus = status)) }
     }
+
 
     override fun onDismissFilter() {
         updateState {
+            it.copy(isFilterVisible = false)
+        }
+    }
+
+    private fun openStartDatePickerWithExistingDate(currentStartDate: LocalDate) {
+        updateState {
             it.copy(
-                isFilterVisible = false
+                filterState = it.filterState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
+                    defaultStartDate = currentStartDate
+                )
             )
         }
+    }
+
+    private fun fetchFirstTransactionDate() {
+        tryToExecute(
+            callee = { transactionRepository.getFirstTransactionDate() },
+            onSuccess = ::onGetFirstTransactionDateSuccess,
+            onError = ::onGetFirstTransactionDateError,
+            dispatcher = Dispatchers.IO
+        )
+    }
+
+    private suspend fun onGetFirstTransactionDateError(throwable: ErrorState) {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(errorState = throwable)
+            )
+        }
+
+        showSnackBar(
+            titleRes = Res.string.error,
+            messageRes = Res.string.failed_to_load_date_picker,
+            isSuccess = false
+        )
+    }
+
+    private fun onGetFirstTransactionDateSuccess(date: LocalDate?) {
+        updateState {
+            val currentStartDate = it.filterState.startDate ?: date
+            it.copy(
+                filterState = it.filterState.copy(
+                    defaultStartDate = currentStartDate,
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
+                    errorState = null
+                )
+            )
+        }
+    }
+
+    private fun updateStartDate(date: LocalDate) {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    startDate = date,
+                    defaultStartDate = date
+                )
+            )
+        }
+    }
+
+    private fun updateEndDate(date: LocalDate) {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    endDate = date,
+                    defaultEndDate = date
+                )
+            )
+        }
+    }
+
+    private fun onGetTransactionFilterStart() {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    isLoading = true,
+                    errorState = null
+                )
+            )
+        }
+    }
+
+    private fun onGetTransactionFilterSuccess(transactionHistory: List<Transaction>) {
+        updateState {
+            it.copy(
+                isFilterVisible = false,
+                history = transactionHistory.map { tx -> tx.toUi() },
+                filterState = it.filterState.copy(
+                    isLoading = false,
+                    activeFilterCount = getActiveFilterCount()
+                )
+            )
+        }
+    }
+
+
+    private fun getActiveFilterCount(): Int {
+        val state = currentState.filterState
+        return (if (state.selectedTypes.isNotEmpty()) 1 else 0) +
+                (if (state.selectedStatus != FilterStatus.ALL) 1 else 0) +
+                (if (state.startDate != null || state.endDate != null) 1 else 0)
     }
 
     override fun onNextPageRequested() {
@@ -126,24 +274,21 @@ class TransactionHistoryViewModel(
         loadNextTransactions()
     }
 
-    fun updateFromDate(date: LocalDate?) {
+    private suspend fun onGetTransactionFilterError(errorState: ErrorState) {
         updateState {
             it.copy(
                 filterState = it.filterState.copy(
-                    fromDate = date
+                    isLoading = false,
+                    errorState = errorState
                 )
             )
         }
-    }
 
-    fun updateToDate(date: LocalDate?) {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    toDate = date
-                )
-            )
-        }
+        showSnackBar(
+            titleRes = Res.string.error,
+            messageRes = Res.string.failed_to_apply_filters,
+            isSuccess = false
+        )
     }
 
     private fun loadNextTransactions() {
@@ -192,6 +337,17 @@ class TransactionHistoryViewModel(
         updateState { it.copy(isError = throwable) }
     }
 
+
+    private fun showInvalidDatesSnackBar() {
+        viewModelScope.launch {
+            showSnackBar(
+                titleRes = Res.string.error,
+                messageRes = Res.string.start_date_must_be_before_end_date,
+                isSuccess = false
+            )
+        }
+    }
+
     private suspend fun showSnackBar(
         titleRes: StringResource,
         messageRes: StringResource,
@@ -215,61 +371,7 @@ class TransactionHistoryViewModel(
     }
 
     private fun hideSnackBar() {
-        updateState { oldState ->
-            oldState.copy(
-                snackBar = oldState.snackBar.copy(isVisible = false)
-            )
-        }
-    }
-
-    private fun onGetTransactionFilterStart() {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    isLoading = true,
-                    isError = null
-                )
-            )
-        }
-    }
-
-    private fun onGetTransactionFilterSuccess(transactionHistory: List<Transaction>) {
-        updateState {
-            it.copy(
-                history = transactionHistory.map { tx -> tx.toUi() },
-                filterState = it.filterState.copy(
-                    isLoading = false,
-                    activeFilterCount = getActiveFilterCount()
-                ),
-                isError = null,
-                endOfPages = transactionHistory.isEmpty(),
-                isLoading = false
-            )
-        }
-    }
-
-    private fun getActiveFilterCount(): Int {
-        val state = state.value.filterState
-        return (if (state.selectedTypes.isNotEmpty()) 1 else 0) +
-                (if (state.selectedStatus != FilterStatus.ALL) 1 else 0) +
-                (if (state.fromDate != null || state.toDate != null) 1 else 0)
-    }
-
-    private suspend fun onGetTransactionFilterError(throwable: Throwable) {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    isLoading = false,
-                    isError = throwable
-                )
-            )
-        }
-
-        showSnackBar(
-            titleRes = Res.string.error,
-            messageRes = Res.string.failed_to_apply_filters,
-            isSuccess = false
-        )
+        updateState { oldState -> oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false)) }
     }
 
     private val paginator = Paginator(

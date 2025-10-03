@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.productCard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.silver_tc
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.DrawableResource

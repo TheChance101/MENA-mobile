@@ -4,19 +4,22 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.bookmark_added_successfully
 import mena.faith_presentation.generated.resources.copied_ayah_failed
 import mena.faith_presentation.generated.resources.copied_ayah_successfully
+import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.SnackBarState
 import net.thechance.mena.faith.presentation.util.ClipboardManager
 
 class SurahViewModel(
-    surahId: Int,
     surahName: String,
+    private val surahId: Int,
     private val quranRepository: QuranRepository,
     private val clipboardManager: ClipboardManager,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val bookmarkRepository: BookmarkRepository,
 ) : BaseViewModel<SurahScreenState, SurahScreenEffect>(
     initialState = SurahScreenState(surahId = surahId, surahName = surahName)
 ), SurahInteractionListener {
@@ -71,12 +74,29 @@ class SurahViewModel(
     override fun onBackClick() = sendEffect(SurahScreenEffect.NavigateBack)
 
     override fun onBookmarkClick(ayahNumber: Int) {
+        tryToExecute(
+            execute = {
+                bookmarkRepository.addAyahBookmark(
+                    surahId = surahId,
+                    ayahNumber = ayahNumber
+                )
+            },
+            onSuccess = { onAddBookmarkSuccess() },
+            dispatcher = dispatcher
+        )
         updateState {
             it.copy(
                 isAyahActionButtonsVisible = false,
                 selectedAyahIndex = null
             )
         }
+    }
+
+    private fun onAddBookmarkSuccess() {
+        showSnackBar(
+            message = Res.string.bookmark_added_successfully,
+            status = SnackBarState.Status.Success
+        )
     }
 
     override fun onShareClick(ayahContent: String) {

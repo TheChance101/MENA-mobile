@@ -55,5 +55,7 @@
     <string name="reset_password_description">Please enter your new password and make sure you remember it in the next time</string>
     <string name="new_password_label">New password</string>
     <string name="confirm_password_label">Confirm password</string>
+    <string name="reset_password_dialog_title">Success!</string>
+    <string name="reset_password_dialog_message">Your password has been successfully reset.</string>
 
 </resources>

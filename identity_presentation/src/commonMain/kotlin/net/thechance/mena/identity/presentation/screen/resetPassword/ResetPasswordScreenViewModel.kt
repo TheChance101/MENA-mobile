@@ -3,7 +3,6 @@ package net.thechance.mena.identity.presentation.screen.resetPassword
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -13,8 +12,6 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 class ResetPasswordScreenViewModel(
     private val passwordValidator: PasswordValidator,
     private val resetPasswordRepository: ResetPasswordRepository,
-    private val phoneNumber: String,
-    private val callingCode: String,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<ResetPasswordScreenUIState, ResetPasswordScreenUIEffect>(
     ResetPasswordScreenUIState()
@@ -46,6 +43,11 @@ class ResetPasswordScreenViewModel(
         updateState { copy(errorMessage = null) }
     }
 
+    override fun onClickOk() {
+        sendNewEffect(ResetPasswordScreenUIEffect.NavigateBackToLogin)
+        updateState { copy(isDialogVisible = false) }
+    }
+
     override fun onClickResetPassword() {
         if (state.value.newPassword != state.value.confirmPassword) {
             updateState { copy(errorMessage = "New password and confirm password do not match.") }
@@ -66,13 +68,11 @@ class ResetPasswordScreenViewModel(
         resetPasswordRepository.resetPassword(
             state.value.confirmPassword,
             state.value.newPassword,
-            phoneNumber = PhoneNumber(callingCode,phoneNumber)
         )
     }
 
     private fun onResetPasswordSuccess() {
-        updateState { copy(isLoading = false) }
-        sendNewEffect(ResetPasswordScreenUIEffect.NavigateBackToLogin)
+        updateState { copy(isLoading = false, isDialogVisible = true) }
     }
 
     private fun onErrorAccrue(errorState: ErrorState) {

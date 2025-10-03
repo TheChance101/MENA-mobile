@@ -14,8 +14,8 @@ import mena.dukan_presentation.generated.resources.dismiss_description
 import mena.dukan_presentation.generated.resources.dismiss_title
 import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
@@ -49,6 +49,7 @@ class ManageDukanViewModel(
                 )
             )
         }
+        loadShelves()
     }
 
     override fun onDismissSnackBar() {
@@ -84,7 +85,13 @@ class ManageDukanViewModel(
 
     override fun onShelfSelected(shelf: ShelfUiState) {
         if (state.value.selectedShelf != shelf) {
-            updateState { copy(selectedShelf = shelf) }
+            updateState {
+                copy(
+                    selectedShelf = shelf,
+                    productState = ProductsState.LOADING,
+                    products = PagingData()
+                )
+            }
             loadProductsForSelectedShelf()
         }
     }
@@ -96,25 +103,38 @@ class ManageDukanViewModel(
 
     private fun loadShelves() {
         tryToExecute(
-            onStart = { updateState { copy(isLoading = true) } },
-            block = { shelfRepository.getMyDukanShelves() },
-            onSuccess = { shelves -> handleShelvesLoaded(shelves) },
+            onStart = {
+                updateState {
+                    copy(
+                        shelvesState = ShelvesState.LOADING,
+                        productState = ProductsState.LOADING,
+                        products = PagingData()
+                    )
+                }
+            },
+            block = shelfRepository::getMyDukanShelves,
+            onSuccess = ::handleShelvesLoaded,
             onError = { handleLoadShelvesError() }
         )
     }
 
     private fun handleLoadShelvesError() {
         updateState {
-            copy(isLoading = false)
+            copy(
+                shelvesState = ShelvesState.EMPTY,
+                productState = ProductsState.EMPTY,
+                products = PagingData()
+            )
         }
     }
 
     private fun handleShelvesLoaded(shelves: List<Shelf>) {
+        val shelvesState = if (shelves.isEmpty()) ShelvesState.EMPTY else ShelvesState.LOADED
         updateState {
             copy(
                 shelves = shelves.map(Shelf::toUiState),
                 selectedShelf = shelves.firstOrNull()?.toUiState(),
-                isLoading = false
+                shelvesState = shelvesState
             )
         }
         loadProductsForSelectedShelf()
@@ -124,13 +144,24 @@ class ManageDukanViewModel(
         val selectedShelf = state.value.selectedShelf
         selectedShelf?.let { shelf ->
             loadProductsFromRepository()
+            viewModelScope.launch {
+                pager.refresh()
+            }
         }
     }
 
     private fun loadProductsFromRepository() {
         tryToCollect(
+            onStart = {
+                updateState {
+                    copy(
+                        productState = ProductsState.LOADING,
+                        products = PagingData()
+                    )
+                }
+            },
             block = { pager.flow },
-            onCollect = { products -> onProductsLoaded(products) },
+            onCollect = ::onProductsLoaded,
         )
         viewModelScope.launch {
             pager.load()
@@ -138,8 +169,12 @@ class ManageDukanViewModel(
     }
 
     override fun onDismissDeleteShelfConfirmationDialog() {
+        val dialogState = state.value.deleteShelfConfirmationDialogUiState
         updateState {
-            copy(showDeleteConfirmationDialog = false)
+            copy(
+                showDeleteConfirmationDialog = false,
+                deleteShelfConfirmationDialogUiState = dialogState?.copy(isDialogVisible = false)
+            )
         }
     }
 
@@ -153,9 +188,10 @@ class ManageDukanViewModel(
                     title = updateDialogTitle(hasProducts),
                     description = updateDialogDescription(hasProducts),
                     type = updateDialogType(hasProducts),
-                    shelfId = shelfId
+                    shelfId = shelfId,
+                    isDialogVisible = true
                 ),
-                showDeleteConfirmationDialog = true
+                showDeleteConfirmationDialog = true,
             )
         }
     }
@@ -175,13 +211,14 @@ class ManageDukanViewModel(
     override fun onDeleteConfirmed(shelfId: String) {
         tryToExecute(
             block = { shelfRepository.deleteShelf(shelfId) },
-            onSuccess = { onDeleteShelfSuccess() },
+            onSuccess = ::onDeleteShelfSuccess,
             onError = ::onDeleteShelfError
         )
     }
 
-    private fun onDeleteShelfSuccess() {
+    private fun onDeleteShelfSuccess(unit: Unit) {
         onDismissDeleteShelfConfirmationDialog()
+        loadShelves()
         onShowSnackBar(type = SnackBarType.SUCCESS, message = Res.string.delete_shelf_success)
     }
 
@@ -191,9 +228,15 @@ class ManageDukanViewModel(
     }
 
     private fun onProductsLoaded(products: PagingData<ProductUiState>) {
+        val productState = when {
+            products.isLoading -> ProductsState.LOADING
+            products.items.isEmpty() -> ProductsState.EMPTY
+            else -> ProductsState.LOADED
+        }
         updateState {
             copy(
-                products = products,
+                productState = productState,
+                products = products
             )
         }
     }
@@ -204,7 +247,7 @@ class ManageDukanViewModel(
         productRepository.getProductsByShelfId(
             shelfId = state.value.selectedShelf?.id.orEmpty(),
             page = it,
-            size = 10
+            size = 20
         ).also { result ->
             updateState {
                 copy(

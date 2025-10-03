@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,7 +48,7 @@ fun FaithSnackBar(
             message = message,
             leadingIcon = getSnackBarIcon(status),
             tint = getSnackBarIconTint(status),
-            modifier = modifier
+            modifier = modifier.fillMaxWidth()
         )
     }
 }

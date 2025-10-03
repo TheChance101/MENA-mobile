@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.main
+package net.thechance.mena.dukan.presentation.viewModel.main
 
 import app.cash.turbine.test
 import dev.mokkery.MockMode
@@ -16,7 +16,6 @@ import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
-import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -38,13 +37,14 @@ class MainViewModelTest {
             )
 
             mainViewModel.state.test {
-                val init = awaitItem()
+                awaitItem() // initial Loading state
+                val updated = awaitItem() // state after repository returns null
                 assertEquals(
                     expected = MainScreenUiState.DukanState(
                         name = "",
-                        status = DukanStatusUi.None
+                        status = MainScreenUiState.DukanStatusUi.None
                     ),
-                    actual = init.dukanState
+                    actual = updated.dukanState
                 )
                 cancelAndIgnoreRemainingEvents()
             }
@@ -69,7 +69,7 @@ class MainViewModelTest {
                 assertEquals(
                     expected = MainScreenUiState.DukanState(
                         name = "Dukan El Sa3ada",
-                        status = DukanStatusUi.Pending
+                        status = MainScreenUiState.DukanStatusUi.Pending
                     ),
                     actual = secondEmit.dukanState
                 )

@@ -3,4 +3,5 @@ package net.thechance.mena.wallet.presentation.screen.view_transactions_statemen
 interface ViewTransactionStatementInteractionListener {
     fun onNavigateBackClicked()
     fun onShareClicked()
+    fun onRetryClicked()
 }

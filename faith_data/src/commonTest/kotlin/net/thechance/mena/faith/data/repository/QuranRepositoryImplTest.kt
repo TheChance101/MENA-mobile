@@ -67,7 +67,7 @@ class QuranRepositoryImplTest {
     }
 
     @Test
-    fun `getAyatOfSurah Should return empty list when surah id is zero()`() = runTest {
+    fun `getAyatOfSurah Should return empty list when surah id is zero`() = runTest {
         // Given
         everySuspend { mockDao.getAyatOfSurah(0) } returns emptyList()
 

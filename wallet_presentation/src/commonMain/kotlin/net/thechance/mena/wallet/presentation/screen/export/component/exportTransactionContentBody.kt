@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.all_transactions
 import mena.wallet_presentation.generated.resources.custom_filtering
@@ -117,8 +118,8 @@ fun ExportTransactionContentBodyPreview() {
     val mockState = ExportTransactionsState(
         isCustomFilterCardSelected = true,
         selectedTransactionsTypes = setOf(FilterType.SENT),
-        startDate = "2023/01/01",
-        endDate = "2023/12/31",
+        startDate = LocalDate(2023, 4, 4),
+        endDate = LocalDate(2023, 4, 4),
         isViewAndShareLoading = false,
         isViewAndShareButtonEnabled = true,
         isDownloadLoading = false,
@@ -130,8 +131,10 @@ fun ExportTransactionContentBodyPreview() {
         override fun onAllTransactionsClicked() {}
         override fun onCustomFilteringClicked() {}
         override fun onTypeSelected(type: FilterType) {}
-        override fun onFromDateClicked() {}
-        override fun onToDateClicked() {}
+        override fun onStartDateClicked() {}
+        override fun onEndDateClicked() {}
+        override fun onDismissDatePicker() {}
+        override fun onPickDateClicked(date: LocalDate) {}
         override fun onViewAndShareClicked() {}
         override fun onDownloadClicked() {}
     }

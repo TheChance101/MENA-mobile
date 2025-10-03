@@ -100,7 +100,6 @@ class ResetPasswordRepositoryImplTest {
             forgetPasswordRepository.resetPassword(
                 newPassword = "newPassword",
                 confirmPassword = "newPassword",
-                phoneNumber = phoneNumber
             )
         }
     }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
@@ -19,8 +20,13 @@ import mena.identity_presentation.generated.resources.new_password_title
 import mena.identity_presentation.generated.resources.reset
 import mena.identity_presentation.generated.resources.reset_password
 import mena.identity_presentation.generated.resources.reset_password_description
+import mena.identity_presentation.generated.resources.reset_password_dialog_message
+import mena.identity_presentation.generated.resources.reset_password_dialog_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.component.button.TextButton
+import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
@@ -30,21 +36,16 @@ import net.thechance.mena.identity.presentation.components.LabelInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 
-data class ResetPasswordScreen(
-    private val phoneNumber: String,
-    private val callingCode: String
-) :
+class ResetPasswordScreen() :
     BaseScreen<ResetPasswordScreenViewModel,
             ResetPasswordScreenUIState,
             ResetPasswordScreenUIEffect,
-            ResetPasswordScreenInteractionListener>()
-    {
+            ResetPasswordScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(phoneNumber, callingCode) }))
+        InitScreen(getScreenModel())
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +59,18 @@ data class ResetPasswordScreen(
                     title = stringResource(Res.string.reset_password),
                     onBackClicked = listener::onClickBack
                 )
-            })
+            },
+            overlays = {
+                dialog(
+                    isVisible = state.isDialogVisible,
+                ) {
+                    ResetPasswordDialog(
+                        isVisible = state.isDialogVisible,
+                        onClick = listener::onClickOk,
+                    )
+                }
+            }
+        )
         {
             Box(
                 modifier = Modifier
@@ -102,6 +114,7 @@ data class ResetPasswordScreen(
                             .padding(bottom = Theme.spacing._24)
                     )
                 }
+
             }
         }
         ErrorSnackBar(
@@ -118,4 +131,29 @@ data class ResetPasswordScreen(
             ResetPasswordScreenUIEffect.NavigateBackToLogin -> navigator.push(LoginScreen())
         }
     }
+}
+
+@Composable
+private fun ScaffoldScope.ResetPasswordDialog(
+    isVisible: Boolean,
+    onClick: () -> Unit,
+) {
+    Dialog(
+        title = stringResource(Res.string.reset_password_dialog_title),
+        message = stringResource(Res.string.reset_password_dialog_message),
+        hasDismissButton = true,
+        dismissOnClickOutside = false,
+        isVisible = isVisible,
+        onDismiss = {},
+        onCancelClick = onClick::invoke,
+        actionButtons = {
+            TextButton(
+                text = "Ok",
+                onClick = onClick::invoke,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(top = 24.dp, end = 12.dp, bottom = 12.dp)
+            )
+        }
+    )
 }

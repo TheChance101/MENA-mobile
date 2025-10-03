@@ -1,12 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,10 +14,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.base.FaithScaffold
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.SnackBarState
+import net.thechance.mena.faith.presentation.component.FaithScaffold
 import net.thechance.mena.faith.presentation.component.FaithSnackBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatContent
@@ -28,7 +26,6 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.component.Basma
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.createClickableAyahText
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -66,16 +63,14 @@ private fun Content(
 ) {
     val lazyListState = rememberLazyListState()
 
-    FaithScaffold(
-        backgroundColor = Theme.colorScheme.background.surface,
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
+    Scaffold(
         topBar = {
             SurahAppBar(
                 surahName = state.surahName, onBackClick = { listener.onBackClick() })
         },
-        snackBar = {
+        snakeBar = {
             FaithSnackBar(
-                message = stringResource(snackBarState.message),
+                message = snackBarState.message,
                 isVisible = snackBarState.isVisible,
                 status = snackBarState.status,
                 modifier = Modifier.fillMaxWidth()

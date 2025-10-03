@@ -1,5 +1,6 @@
 package net.thechance.mena.wallet.domain.repository
 
+import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.uuid.ExperimentalUuidApi
@@ -14,4 +15,5 @@ interface TransactionRepository {
     ): List<Transaction>
 
     suspend fun getTransactionById(transactionId: Uuid): Transaction
+    suspend fun getFirstTransactionDate(): LocalDate?
 }

@@ -3,24 +3,26 @@ package net.thechance.mena.identity.data.di
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.plugins.api.createClientPlugin
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.http.HttpHeaders
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl.Companion.LOGIN_ENDPOINT
+import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl.Companion.REFRESH_ENDPOINT
 import net.thechance.mena.identity.data.utils.accessToken
+import net.thechance.mena.identity.data.utils.refreshToken
 
 internal fun provideHttpClient(
-    engine: HttpClientEngine,
-    settings: Settings,
-    baseUrl: String,
+    engine: HttpClientEngine, settings: Settings, baseUrl: String, refreshToken: suspend () -> Unit
 ): HttpClient {
-
     return HttpClient(engine) {
         defaultRequest {
             url(baseUrl)
@@ -31,26 +33,39 @@ internal fun provideHttpClient(
                     ignoreUnknownKeys = true
                 })
         }
-        install(authInterceptor(settings))
         install(Logging) {
-            logger = Logger.SIMPLE
             level = LogLevel.ALL
-        }
-    }
-}
-
-private fun authInterceptor(
-    settings: Settings
-) = createClientPlugin("AuthInterceptor") {
-
-    onRequest { request, _ ->
-        //TODO refactore hardcoded string to whitelist endpoints doesn't require token like register and reset password
-        if (!request.url.toString().contains("login")) {
-            settings.accessToken.let { token ->
-                request.headers.append(HttpHeaders.Authorization, "Bearer $token")
+            logger = object : Logger {
+                override fun log(message: String) {
+                    println("Identity Client: $message")
+                }
             }
         }
+        install(Auth) {
+            bearer {
+                loadTokens {
+                    BearerTokens(settings.accessToken, settings.refreshToken)
+                }
+                refreshTokens {
+                    refreshToken()
+                    BearerTokens(settings.accessToken, settings.refreshToken)
+                }
+                sendWithoutRequest { request ->
+                    request.url.encodedPath !in whiteListEndPoints
+                }
+            }
+        }
+        install(HttpTimeout) {
+            connectTimeoutMillis = NETWORK_TIMEOUT_MS
+            requestTimeoutMillis = NETWORK_TIMEOUT_MS
+        }
     }
 }
+
+const val NETWORK_TIMEOUT_MS = 15_000L
+private val whiteListEndPoints = listOf(
+    LOGIN_ENDPOINT, REFRESH_ENDPOINT
+)
+
 
 
