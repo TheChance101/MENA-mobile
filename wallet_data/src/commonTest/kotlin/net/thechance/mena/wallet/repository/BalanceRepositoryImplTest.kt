@@ -24,7 +24,7 @@ class BalanceRepositoryImplTest {
 
     @Test
     fun `getBalance returns balance when API call is successful`() = runTest {
-        networkClient = createNetworkClient(balanceResonance)
+        networkClient = createNetworkClient(getRespond = balanceResonance)
         balanceRepository = BalanceRepositoryImpl(networkClient)
 
         val result = balanceRepository.getBalance()
@@ -34,7 +34,7 @@ class BalanceRepositoryImplTest {
 
     @Test
     fun `getBalance throws exception when API call fails`() = runTest {
-        networkClient = createNetworkClient(errorResonance)
+        networkClient = createNetworkClient(getRespond = errorResonance)
         balanceRepository = BalanceRepositoryImpl(networkClient)
 
         assertFailsWith<UnknownException> {

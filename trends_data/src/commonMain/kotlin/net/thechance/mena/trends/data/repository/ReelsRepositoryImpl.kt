@@ -7,6 +7,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.Flow
@@ -57,6 +58,7 @@ internal class ReelsRepositoryImpl(
         val request = UpdateReelRequestDTO(description, categoryIds)
         safeApiCall<Unit> {
             networkClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
+                contentType(io.ktor.http.ContentType.Application.Json)
                 setBody(request)
             }
         }
@@ -107,7 +109,7 @@ internal class ReelsRepositoryImpl(
                         ByteReadChannel(reelBytes).asSource().buffered()
                     },
                     headers = Headers.build {
-                        append(HttpHeaders.ContentType, "video/*")
+                        append(HttpHeaders.ContentType, "video/$mimeType")
                         append(HttpHeaders.ContentDisposition, "filename=\"$name.$mimeType\"")
                     }
                 )
