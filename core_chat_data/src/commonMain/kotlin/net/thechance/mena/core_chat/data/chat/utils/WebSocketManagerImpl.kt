@@ -15,11 +15,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import net.thechance.mena.core_chat.data.network.ApiConstants.WEB_SOCKETS_ENDPOINT
 
 
 class WebSocketManagerImpl(
+    private val baseUrl: String,
     private val client: HttpClient,
-): WebSocketManager {
+) : WebSocketManager {
 
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var session: DefaultClientWebSocketSession? = null
@@ -35,7 +37,6 @@ class WebSocketManagerImpl(
     }
 
     override fun connect(
-        url: String,
         token: String,
         onConnected: suspend () -> Unit
     ) {
@@ -44,7 +45,10 @@ class WebSocketManagerImpl(
         scope.launch(exceptionHandler) {
             while (shouldReconnect) {
                 try {
-                    client.webSocket(urlString = url, request = { bearerAuth(token) }) {
+                    client.webSocket(
+                        urlString = getConstructWebSocketUrl(baseUrl),
+                        request = { bearerAuth(token) }
+                    ) {
                         session = this
                         isActiveSession = true
                         sendConnectFrame()
@@ -65,7 +69,7 @@ class WebSocketManagerImpl(
                     println("WebSocket reconnect error: ${e.message}")
                     isActiveSession = false
                     session = null
-                    delay(5000) // wait 5s before retry
+                    delay(RECONNECT_DELAY)
                 }
             }
         }
@@ -74,7 +78,6 @@ class WebSocketManagerImpl(
     override suspend fun disconnect() {
         try {
             if (isActiveSession) {
-
                 sendFrame("DISCONNECT\n\n\u0000")
                 println("STOMP DISCONNECT sent")
             }
@@ -107,4 +110,16 @@ class WebSocketManagerImpl(
     }
 
     override fun isConnected(): Boolean = isActiveSession
+
+    private fun getConstructWebSocketUrl(baseUrl: String): String {
+        return "${
+            baseUrl
+                .replace("https", "wss")
+                .replace("http", "ws")
+        }$WEB_SOCKETS_ENDPOINT"
+    }
+
+    private companion object {
+        const val RECONNECT_DELAY = 5000L
+    }
 }

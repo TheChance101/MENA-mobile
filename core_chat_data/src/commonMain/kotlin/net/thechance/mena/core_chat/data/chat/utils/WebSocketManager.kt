@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.SharedFlow
 interface WebSocketManager {
     val incomingMessages: SharedFlow<String>
     fun connect(
-        url: String,
         token: String,
         onConnected: suspend () -> Unit
     )
