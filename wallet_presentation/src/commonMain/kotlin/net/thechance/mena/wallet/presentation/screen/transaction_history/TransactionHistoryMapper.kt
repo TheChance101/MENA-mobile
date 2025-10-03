@@ -1,19 +1,19 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
-import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.utils.formatTransactionDate
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState =
     TransactionHistoryScreenState.TransactionHistoryUiState(
         id = id,
-        timeAndDate = formatTimeAndDate(createdAt),
+        timeAndDate = formatTransactionDate(date = createdAt, outputFormat = "dd MMM, h:mm a"),
         amount = amount.toString(),
         type = when (type) {
             TransactionType.SENT -> TransactionHistoryScreenState.TransactionTypeUiState.SENT
@@ -30,20 +30,6 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
             else -> null
         }
     )
-
-private fun formatTimeAndDate(dateTime: LocalDateTime): String {
-    val hour24 = dateTime.hour
-    val minute = dateTime.minute.toString().padStart(2, '0')
-    val amPm = if (hour24 < 12) "AM" else "PM"
-    val hour12 = when {
-        (hour24 == 0) -> 12
-        hour24 > 12 -> hour24 - 12
-        else -> hour24
-    }.toString()
-    val month = dateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
-    val day = dateTime.day
-    return "$day $month, $hour12:$minute $amPm"
-}
 
 fun TransactionFilterState.toParams(): TransactionFilterParams {
     return TransactionFilterParams(
