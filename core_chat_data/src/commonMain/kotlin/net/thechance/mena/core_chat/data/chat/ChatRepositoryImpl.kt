@@ -16,8 +16,8 @@ import net.thechance.mena.core_chat.data.chat.dto.ChatDto
 import net.thechance.mena.core_chat.data.chat.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.chat.dto.MessageDto
 import net.thechance.mena.core_chat.data.chat.dto.SendMessageDto
-import net.thechance.mena.core_chat.data.chat.utils.MessageEvent
 import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
+import net.thechance.mena.core_chat.data.chat.dto.MessageEvent
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_HISTORY_ENDPOINT
 import net.thechance.mena.core_chat.data.network.ApiConstants.WEB_SOCKETS_ENDPOINT
@@ -25,7 +25,7 @@ import net.thechance.mena.core_chat.data.shared.BaseRepository
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.exception.ChatNotFoundException
+import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
@@ -69,7 +69,7 @@ class ChatRepositoryImpl(
                 parameter("receiverId", userId)
                 bearerAuth(token)
             }
-        }?.toDomain() ?: throw ChatNotFoundException("Chat not found")
+        }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
     override fun subscribeToMessages(chatId: Uuid): Flow<Message> {

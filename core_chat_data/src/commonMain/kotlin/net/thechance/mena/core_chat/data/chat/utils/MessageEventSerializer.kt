@@ -12,12 +12,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import net.thechance.mena.core_chat.data.chat.dto.MarkAsReadResponse
 import net.thechance.mena.core_chat.data.chat.dto.MessageDto
+import net.thechance.mena.core_chat.data.chat.dto.MessageEvent
 
-@Serializable(with = MessageEventSerializer::class)
-sealed class MessageEvent {
-    data class Message(val dto: MessageDto) : MessageEvent()
-    data class MarkAsRead(val dto: MarkAsReadResponse) : MessageEvent()
-}
 
 object MessageEventSerializer : KSerializer<MessageEvent> {
     override val descriptor: SerialDescriptor =
