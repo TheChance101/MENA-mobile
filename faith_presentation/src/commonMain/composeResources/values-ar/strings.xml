@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="time_seconds_ago">
+        <item quantity="zero">منذ أقل من ثانية</item>
+        <item quantity="one">منذ ثانية واحدة</item>
+        <item quantity="two">منذ ثانيتين</item>
+        <item quantity="few">منذ %1$d ثوان</item>
+        <item quantity="many">منذ %1$d ثانية</item>
+        <item quantity="other">منذ %1$d ثانية</item>
+    </plurals>
+
+    <plurals name="time_minutes_ago">
+        <item quantity="zero">منذ أقل من دقيقة</item>
+        <item quantity="one">منذ دقيقة واحدة</item>
+        <item quantity="two">منذ دقيقتين</item>
+        <item quantity="few">منذ %1$d دقائق</item>
+        <item quantity="many">منذ %1$d دقيقة</item>
+        <item quantity="other">منذ %1$d دقيقة</item>
+    </plurals>
+
+    <plurals name="time_hours_ago">
+        <item quantity="zero">منذ أقل من ساعة</item>
+        <item quantity="one">منذ ساعة واحدة</item>
+        <item quantity="two">منذ ساعتين</item>
+        <item quantity="few">منذ %1$d ساعات</item>
+        <item quantity="many">منذ %1$d ساعة</item>
+        <item quantity="other">منذ %1$d ساعة</item>
+    </plurals>
+
+    <plurals name="time_days_ago">
+        <item quantity="zero">اليوم</item>
+        <item quantity="one">منذ يوم واحد</item>
+        <item quantity="two">منذ يومين</item>
+        <item quantity="few">منذ %1$d أيام</item>
+        <item quantity="many">منذ %1$d يوماً</item>
+        <item quantity="other">منذ %1$d يوم</item>
+    </plurals>
+
+    <plurals name="time_weeks_ago">
+        <item quantity="zero">هذا الأسبوع</item>
+        <item quantity="one">منذ أسبوع واحد</item>
+        <item quantity="two">منذ أسبوعين</item>
+        <item quantity="few">منذ %1$d أسابيع</item>
+        <item quantity="many">منذ %1$d أسبوعاً</item>
+        <item quantity="other">منذ %1$d أسبوع</item>
+    </plurals>
+
+    <plurals name="time_months_ago">
+        <item quantity="zero">هذا الشهر</item>
+        <item quantity="one">منذ شهر واحد</item>
+        <item quantity="two">منذ شهرين</item>
+        <item quantity="few">منذ %1$d أشهر</item>
+        <item quantity="many">منذ %1$d شهراً</item>
+        <item quantity="other">منذ %1$d شهر</item>
+    </plurals>
+
+    <plurals name="time_years_ago">
+        <item quantity="zero">هذا العام</item>
+        <item quantity="one">منذ عام واحد</item>
+        <item quantity="two">منذ عامين</item>
+        <item quantity="few">منذ %1$d أعوام</item>
+        <item quantity="many">منذ %1$d عاماً</item>
+        <item quantity="other">منذ %1$d عام</item>
+    </plurals>
+</resources>

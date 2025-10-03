@@ -34,6 +34,9 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(projects.faithDomain)
             implementation(projects.designSystem)
             implementation(projects.faithApi)
@@ -42,9 +45,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.androidx.paging.runtime)
+            implementation(libs.androidx.paging.compose)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
         }
@@ -56,6 +58,7 @@ kotlin {
             implementation(libs.turbine)
             implementation(libs.mokkery.core)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.androidx.paging.testing)
         }
     }
 }
@@ -72,26 +75,20 @@ android {
 kover.reports {
     verify {
         rule {
-            minBound(0)
+            minBound(80)
         }
     }
 
     filters {
-            excludes {
-                packages(
-                    "*.base",
-                    "*.component",
-                    "*.di",
-                    "*.feature.quran",
-                    "*.navigation",
-                    "*.utils"
-                )
-            }
-            includes {
-                classes(
-                    "net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel",
-                    "net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel",
-                )
-            }
+        includes {
+            classes(
+                "*ViewModel",
+                "*MapperKt",
+            )
+        }
+
+        excludes {
+            annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
+        }
     }
 }

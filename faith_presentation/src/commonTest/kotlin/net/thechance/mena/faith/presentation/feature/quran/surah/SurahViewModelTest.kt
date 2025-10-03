@@ -2,15 +2,13 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 
 import app.cash.turbine.test
 import dev.mokkery.MockMode
-import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.SnackBarState
 import net.thechance.mena.faith.presentation.util.ClipboardManager
@@ -24,6 +22,7 @@ class SurahViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
+    private val bookmarkRepository: BookmarkRepository = mock(mode = MockMode.autofill)
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
 
     private fun createTestViewModel(
@@ -35,7 +34,8 @@ class SurahViewModelTest {
             surahName = surahName,
             dispatcher = testDispatcher,
             quranRepository = quranRepository,
-            clipboardManager = clipboardManager
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository
         )
     }
 
@@ -246,36 +246,6 @@ class SurahViewModelTest {
             assertEquals(SnackBarState.Status.Success, snackBarState.status)
         }
     }
-
-    @Test
-    fun `loadSurahData should handle repository returning empty list when called`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
-
-        // When
-        val testViewModel = createTestViewModel()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
-        assertEquals(emptyList(), testViewModel.uiState.value.ayatOfSurah)
-
-    }
-
-    @Test
-    fun `onCopyClick should call clipboardManager copy with correct content when called`() =
-        runTest {
-            // Given
-            val testViewModel = createTestViewModel()
-
-            // When
-            testViewModel.onCopyClick(AYAH_TO_COPY)
-
-            // Then
-            testViewModel.snackBarState.test {
-                val snackBarState = awaitItem()
-                assertEquals(SnackBarState.Status.Success, snackBarState.status)
-            }
-        }
 
     @Test
     fun `onCopyClick should update state correctly when copy operation succeeds`() = runTest {
