@@ -7,7 +7,6 @@ import io.ktor.client.request.HttpRequestBuilder
 
 fun HttpRequestBuilder.infiniteTimeOut() {
     timeout {
-        connectTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
         requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
         socketTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
     }

@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.shared.util.video_util
 
+import co.touchlab.kermit.Logger
 import kotlin.math.roundToInt
 
 expect fun getVideoUtilities(): VideoUtilities
@@ -18,7 +19,7 @@ interface VideoUtilities {
     ): ByteArray?
 }
 
-fun formatBytes(bytes: Long): String {
+internal fun formatBytes(bytes: Long): String {
     val kb = 1024.0
     val mb = kb * 1024
 
@@ -28,3 +29,13 @@ fun formatBytes(bytes: Long): String {
         else -> "$bytes B"
     }
 }
+
+internal fun getMimeTypeFromExtension(extension: String): String?{
+    return mimeTypes[extension]
+}
+
+private val mimeTypes = mapOf(
+    "mp4" to "video/mp4",
+    "mov" to "video/quicktime",
+    "mkv" to "video/x-matroska"
+)
