@@ -4,7 +4,9 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -33,12 +35,14 @@ import kotlin.test.Test
 class UploadTrendViewModelTest : TestExtensions() {
 
     private val repository: ReelsRepository = mock {
-        everySuspend { uploadReel(any(), any(), any(), any()) } returns emptyFlow()
-        everySuspend { uploadReelThumbnail(any(), any(), any(), any()) } returns Unit
+        everySuspend { uploadReel(any(), any(), any(), any(), any()) } returns emptyFlow()
+        everySuspend { uploadReelThumbnail(any(), any(), any(), any(), any(), any()) } returns Unit
     }
     private val validator: VideoMetaDataValidator = VideoMetaDataValidator()
     private val videoExtractor: VideoUtilities = mock {
         everySuspend { getDuration(any()) } returns VALID_DURATION
+        everySuspend { extractVideoFrame(byteArray, 1000L) } returns byteArray
+        everySuspend { extractVideoFrame(byteArray, 0.5f) } returns byteArray
     }
     private val viewModel by lazy {
         UploadReelViewModel(
@@ -103,7 +107,7 @@ class UploadTrendViewModelTest : TestExtensions() {
             viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
             advanceUntilIdle()
 
-            verify(exactly(1)) { repository.uploadReel(any(), any(), any(), any()) }
+            verify(exactly(1)) { repository.uploadReel(any(), any(), any(), any(), any()) }
         }
 
     @Test
@@ -126,7 +130,7 @@ class UploadTrendViewModelTest : TestExtensions() {
         viewModel.onRetryUploadClick()
         advanceUntilIdle()
 
-        verify(exactly(1)) { repository.uploadReel(any(), any(), any(), any()) }
+        verify(exactly(1)) { repository.uploadReel(any(), any(), any(), any(), any()) }
     }
 
     @Test
@@ -135,17 +139,72 @@ class UploadTrendViewModelTest : TestExtensions() {
 
         viewModel.effect.test {
             assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateBack)
-            assertThat(awaitItem()).isEqualTo(UploadTrendsScreenEffect.NavigateBack)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onNextClickDone should send NavigateToAddDescription effect`() = runTest(testDispatcher) {
+    fun `onNextClick should update isNextButtonLoading to true`() = runTest(testDispatcher) {
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.onNextClick()
+            advanceUntilIdle()
+
+            assertThat(awaitItem().isNextButtonLoading).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onNextClick should send NavigateToAddDescription effect if upload thumbnail success`() = runTest(testDispatcher) {
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
         viewModel.onNextClick()
 
         viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(UploadTrendsScreenEffect.NavigateToAddDescription(""))
+            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateToAddDescription("id1"))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onNextClick should update thumbnail in state if upload thumbnail success`() = runTest(testDispatcher) {
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
+        viewModel.onNextClick()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            assertThat(awaitItem().thumbnail).isNotNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onNextClick should update state with error if upload thumbnail failed`() = runTest(testDispatcher) {
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+        everySuspend { repository.uploadReelThumbnail(any(), any(), any(), any(), any(), any()) } throws Exception("Failed")
+
+        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+        advanceUntilIdle()
+
+        viewModel.onNextClick()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            assertThat(awaitItem().errorState).isEqualTo(ErrorState.RequestFailed("Failed"))
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -177,7 +236,7 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `should update uploading state to FAILED if repository throws exception`() = runTest {
-        everySuspend { repository.uploadReel(any(), any(), any(), any()) } throws Exception()
+        everySuspend { repository.uploadReel(any(), any(), any(), any(), any()) } throws Exception()
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -217,7 +276,7 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `should update state with progress of uploaded bytes when uploading`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadInProgress)
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadInProgress)
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -230,7 +289,7 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `should update state with reelId when uploaded successfully`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -243,7 +302,7 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `onNextClick should send NavigateToAddDescription effect`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -289,7 +348,7 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `onDeleteVideoClick should call deleteReelById and reset state`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
         everySuspend { repository.deleteReelById(any()) } returns Unit
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
@@ -308,7 +367,7 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `onDeleteVideoClick should update errorState when repository throws exception`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any()) } returns flowOf(uploadDone)
+        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
         everySuspend { repository.deleteReelById(any()) } throws Exception("Delete failed")
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
