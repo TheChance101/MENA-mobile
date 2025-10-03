@@ -86,7 +86,15 @@ private fun CategoryPublishContent(
                     onBackClick = listener::onBackClick,
                     currentStepNumber = stringResource(Res.string.publish_categories_screen_count)
                 )
-            }
+            },
+            bottomBar = {
+                PublishButton(
+                    onPublishClick = { listener.onPublishClick() },
+                    isButtonEnabled = state.isPublishButtonEnabled(),
+                    isButtonLoading = state.isPublishButtonLoadingVisible,
+                )
+            },
+            modifier = Modifier.padding(bottom = Theme.spacing._24)
         ) {
             Column(
                 modifier = Modifier
@@ -109,7 +117,8 @@ private fun CategoryPublishContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16),
+                        .padding(horizontal = Theme.spacing._16)
+                        .padding(bottom = Theme.spacing._24),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -143,13 +152,8 @@ private fun CategoryPublishContent(
                 }
 
                 Spacer(Modifier.weight(1f))
-
-                PublishButton(
-                    onPublishClick = { listener.onPublishClick() },
-                    isButtonEnabled = state.isPublishButtonEnabled(),
-                    isButtonLoading = state.isPublishButtonLoadingVisible,
-                )
             }
+
         }
     } else {
         LoadingProgressBar()
