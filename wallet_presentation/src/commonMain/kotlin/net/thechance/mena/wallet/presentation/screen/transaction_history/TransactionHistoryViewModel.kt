@@ -14,13 +14,12 @@ import mena.wallet_presentation.generated.resources.failed_to_apply_filters
 import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
@@ -60,7 +59,9 @@ class TransactionHistoryViewModel(
 
     override fun onResetFilterClicked() {
         updateState { it.copy(filterState = TransactionFilterState()) }
-        getTransactionHistory(filters = null)
+        /*
+        TODO: Invalidate paginator and re-fetch data with the new filter.
+         */
     }
 
     override fun onApplyFilterClicked() {
@@ -89,10 +90,6 @@ class TransactionHistoryViewModel(
         val startDate = currentState.filterState.startDate
         val endDate = currentState.filterState.endDate
         return (startDate != null && endDate != null && startDate > endDate).not()
-    }
-
-    override fun onRetryLoadTransactionHistoryClicked() {
-        getTransactionHistory()
     }
 
     override fun onStartDateClicked() {
@@ -270,7 +267,7 @@ class TransactionHistoryViewModel(
         loadNextTransactions()
     }
 
-    override fun onRetry() {
+    override fun onRetryLoadTransactionHistoryClicked() {
         loadNextTransactions()
     }
 
@@ -301,16 +298,12 @@ class TransactionHistoryViewModel(
         updateState {
             if (isLoading) {
                 if (it.history.isEmpty()) {
-                    it.copy(isLoading = true, isError = null)
+                    it.copy(isLoading = true, errorState = null)
                 } else {
-                    it.copy(isPaginationLoading = true, isError = null)
+                    it.copy(isPaginationLoading = true, errorState = null)
                 }
             } else {
-                if (it.history.isEmpty()) {
-                    it.copy(isLoading = false)
-                } else {
-                    it.copy(isPaginationLoading = false)
-                }
+                it.copy(isLoading = false, isPaginationLoading = false)
             }
         }
     }
@@ -321,7 +314,7 @@ class TransactionHistoryViewModel(
     ): List<Transaction> = transactionRepository.getTransactionHistory(
         page = page,
         pageSize = pageSize,
-        TransactionFilterParams()
+        transactionFilterParams = currentState.filterState.toParams()
     )
 
     private fun onPaginationSuccess(items: List<Transaction>) {
@@ -334,7 +327,7 @@ class TransactionHistoryViewModel(
     }
 
     private fun onPaginationError(throwable: Throwable) {
-        updateState { it.copy(isError = throwable) }
+        updateState { it.copy(errorState = ErrorState.Unknown) }
     }
 
 
@@ -374,13 +367,15 @@ class TransactionHistoryViewModel(
         updateState { oldState -> oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false)) }
     }
 
-    private val paginator = Paginator(
-        onLoadUpdated = ::onPaginationLoading,
-        onRequest = ::getPagedTransactions,
-        onSuccess = ::onPaginationSuccess,
-        onError = ::onPaginationError,
-        pageSize = PAGE_SIZE
-    )
+    private val paginator by lazy {
+        Paginator(
+            onLoadUpdated = ::onPaginationLoading,
+            onRequest = ::getPagedTransactions,
+            onSuccess = ::onPaginationSuccess,
+            onError = ::onPaginationError,
+            pageSize = PAGE_SIZE
+        )
+    }
 
     companion object {
         const val PAGE_SIZE = 20

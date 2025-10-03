@@ -3,8 +3,10 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,15 +34,18 @@ fun TransactionsListContent(
     LazyColumn(
         modifier = modifier
             .background(Theme.colorScheme.background.surface)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp),
         state = listState
     ) {
         item {
-            FilterButton(
-                activeFilterCount = state.filterState.activeFilterCount,
-                hasActiveFilters = state.filterState.hasActiveFilters,
-                onClick = interactionListener::onFilterClicked
-            )
+            if (state.history.isNotEmpty() || state.filterState.activeFilterCount != 0) {
+                FilterButton(
+                    activeFilterCount = state.filterState.activeFilterCount,
+                    hasActiveFilters = state.filterState.hasActiveFilters,
+                    onClick = interactionListener::onFilterClicked
+                )
+            }
         }
         if (state.history.isEmpty() && state.filterState.activeFilterCount > 0) {
             item {
@@ -56,7 +61,15 @@ fun TransactionsListContent(
                         interactionListener.onTransactionCardClicked(transaction.id)
                     }
                 )
-                TransactionHistoryDivider()
+                if (state.history.last() != transaction) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(Theme.colorScheme.stroke)
+                    )
+                }
             }
             item {
                 if (state.isPaginationLoading) {
@@ -66,13 +79,13 @@ fun TransactionsListContent(
                             .padding(vertical = 16.dp)
                     )
                 }
-            if (state.isError != null && state.history.isNotEmpty()) {
+                if (state.errorState != null && state.history.isNotEmpty()) {
                     PrimaryButton(
                         modifier = Modifier
                             .padding(top = Theme.spacing._12)
                             .wrapContentSize(),
                         text = stringResource(Res.string.retry),
-                        onClick = interactionListener::onRetry,
+                        onClick = interactionListener::onRetryLoadTransactionHistoryClicked,
                         contentPadding = PaddingValues(
                             vertical = Theme.spacing._8,
                             horizontal = Theme.spacing._16

@@ -26,8 +26,8 @@ class Paginator<Item>(
             currentPage = nextPage
             onLoadUpdated(false)
         } catch (error: Throwable) {
-            onError(error)
             onLoadUpdated(false)
+            throw error
         } finally {
             isRequest = false
         }
