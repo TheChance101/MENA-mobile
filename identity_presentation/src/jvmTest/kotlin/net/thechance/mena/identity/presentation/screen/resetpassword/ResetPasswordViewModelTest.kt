@@ -10,7 +10,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenUIEffect
@@ -32,7 +31,6 @@ class ResetPasswordScreenViewModelTest {
 
     private val validPassword = "Password123"
     private val invalidPassword = "short"
-    private val mockkPhoneNumber = "01123456789"
 
     @BeforeTest
     fun setUp() {
@@ -43,8 +41,6 @@ class ResetPasswordScreenViewModelTest {
         viewModel = ResetPasswordScreenViewModel(
             passwordValidator = passwordValidator,
             resetPasswordRepository = resetPasswordRepository,
-            phoneNumber = mockkPhoneNumber,
-            callingCode = mockkPhoneNumber,
             dispatcher = testDispatcher
         )
 
@@ -85,13 +81,14 @@ class ResetPasswordScreenViewModelTest {
     }
 
     @Test
-    fun `onToggleConfirmPasswordVisibility should toggle isConfirmPasswordVisible state`() = runTest {
-        viewModel.onToggleConfirmPasswordVisibility()
+    fun `onToggleConfirmPasswordVisibility should toggle isConfirmPasswordVisible state`() =
+        runTest {
+            viewModel.onToggleConfirmPasswordVisibility()
 
-        viewModel.state.test {
-            assertTrue(awaitItem().isConfirmPasswordVisible)
+            viewModel.state.test {
+                assertTrue(awaitItem().isConfirmPasswordVisible)
+            }
         }
-    }
 
     @Test
     fun `checkResetButtonEnabled should be disabled when passwords do not match`() = runTest {
@@ -114,13 +111,14 @@ class ResetPasswordScreenViewModelTest {
     }
 
     @Test
-    fun `checkResetButtonEnabled should be enabled when both passwords match and are secure`() = runTest {
-        setupValidPasswords()
+    fun `checkResetButtonEnabled should be enabled when both passwords match and are secure`() =
+        runTest {
+            setupValidPasswords()
 
-        viewModel.state.test {
-            assertTrue(awaitItem().isResetEnabled)
+            viewModel.state.test {
+                assertTrue(awaitItem().isResetEnabled)
+            }
         }
-    }
 
     @Test
     fun `onClickResetPassword should call Repository and navigate on success`() = runTest {
@@ -129,8 +127,7 @@ class ResetPasswordScreenViewModelTest {
         coEvery {
             resetPasswordRepository.resetPassword(
                 validPassword,
-                validPassword,
-                PhoneNumber(countryCode = mockkPhoneNumber, localNumber = mockkPhoneNumber)
+                validPassword
             )
         } returns Unit
 
