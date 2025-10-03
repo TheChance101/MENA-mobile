@@ -20,3 +20,5 @@ captures
 iosApp/Pods
 *.podspec
 */schemas
+*.xcworkspace
+*.lock

@@ -14,7 +14,7 @@ fun MyDukanStatus.toUiState(): MainScreenUiState.DukanState{
 fun Dukan.Status.toUiState():DukanStatusUi{
     return when(this){
         Dukan.Status.PENDING -> DukanStatusUi.Pending
-        Dukan.Status.APPROVED -> TODO()
+        Dukan.Status.APPROVED -> DukanStatusUi.Approved
         Dukan.Status.REJECTED -> TODO()
     }
 }

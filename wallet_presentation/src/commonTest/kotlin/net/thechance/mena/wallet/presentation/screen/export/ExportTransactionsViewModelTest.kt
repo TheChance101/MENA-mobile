@@ -7,6 +7,7 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -26,7 +27,8 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
-import net.thechance.mena.wallet.domain.repository.ExportTransactionsRepository
+import net.thechance.mena.wallet.domain.model.TransactionFilterParams
+import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.CustomToastState
 import net.thechance.mena.wallet.presentation.base.SnackBarState
 import net.thechance.mena.wallet.presentation.model.FilterType
@@ -42,7 +44,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalCoroutinesApi::class)
 
 class ExportTransactionsViewModelTest {
-    private val repository = mock<ExportTransactionsRepository>(mode = MockMode.autofill)
+    private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val fileSaver = mock<FileSaver>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ExportTransactionsViewModel
@@ -115,7 +117,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked with non-empty pdf should navigate`() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
 
@@ -127,6 +129,29 @@ class ExportTransactionsViewModelTest {
             assertTrue(effect is ExportTransactionsEffect.NavigateToViewFileScreen)
         }
     }
+
+    @Test
+    fun `onViewAndShareClicked should fetch statement with custom filter when custom filter is selected`() =
+        runTest {
+            everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+
+            initViewModel()
+
+            viewModel.onCustomFilteringClicked()
+            viewModel.onViewAndShareClicked()
+            advanceUntilIdle()
+
+            verifySuspend {
+                repository.getTransactionsPdf(
+                    TransactionFilterParams(
+                        emptyList(),
+                        null,
+                        null,
+                        null
+                    )
+                )
+            }
+        }
 
     @Test
     fun `should update startDate when onFromDateClicked is called`() = runTest {
@@ -155,7 +180,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with empty pdf should show toast`() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } returns byteArrayOf()
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf()
 
         initViewModel()
 
@@ -173,7 +198,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked with generic error should show error snackBar`() = runTest {
         everySuspend {
-            repository.getFilteredTransactionsFile(any())
+            repository.getTransactionsPdf(any())
         } throws Exception("Unknown")
         initViewModel()
 
@@ -192,7 +217,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
 
@@ -213,7 +238,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with NoInternetException should update noInternetConnection state`() =
         runTest {
             everySuspend {
-                repository.getFilteredTransactionsFile(any())
+                repository.getTransactionsPdf(any())
             } throws NoInternetException()
 
             initViewModel()
@@ -233,7 +258,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onDownloadClicked with generic error should show failure snackBar`() = runTest {
         everySuspend {
-            repository.getFilteredTransactionsFile(any())
+            repository.getTransactionsPdf(any())
         } throws Exception("Unknown")
 
         initViewModel()
@@ -257,7 +282,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with non-empty pdf and file saved should show success snackBar`() =
         runTest {
             everySuspend {
-                repository.getFilteredTransactionsFile(any())
+                repository.getTransactionsPdf(any())
             } returns byteArrayOf(1, 2, 3)
             everySuspend {
                 fileSaver.saveFile(any(), any(), any())
@@ -282,7 +307,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with non-empty pdf but file not saved should show failure snackBar`() =
         runTest {
             everySuspend {
-                repository.getFilteredTransactionsFile(any())
+                repository.getTransactionsPdf(any())
             } returns byteArrayOf(1, 2, 3)
             everySuspend {
                 fileSaver.saveFile(any(), any(), any())
@@ -307,7 +332,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with saveFile throwing exception should show failure snackBar`() =
         runTest {
             everySuspend {
-                repository.getFilteredTransactionsFile(any())
+                repository.getTransactionsPdf(any())
             } returns byteArrayOf(1, 2, 3)
             everySuspend {
                 fileSaver.saveFile(any(), any(), any())
@@ -351,7 +376,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `snackBar should disappear after duration`() = runTest {
         everySuspend {
-            repository.getFilteredTransactionsFile(any())
+            repository.getTransactionsPdf(any())
         } returns byteArrayOf(1, 2, 3)
         everySuspend {
             fileSaver.saveFile(any(), any(), any())
@@ -378,7 +403,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked with NoInternetException should update noInternetConnection`() =
         runTest {
-            everySuspend { repository.getFilteredTransactionsFile(any()) } throws NoInternetException()
+            everySuspend { repository.getTransactionsPdf(any()) } throws NoInternetException()
 
             initViewModel()
             viewModel.state.test {
@@ -412,7 +437,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue_andToastShown() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } throws NoDataFoundException()
+        everySuspend { repository.getTransactionsPdf(any()) } throws NoDataFoundException()
         initViewModel()
 
         viewModel.state.test {
@@ -427,18 +452,18 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadFails_thenIsDownloadLoadingResetsToFalse() = runTest(testDispatcher) {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } throws RuntimeException("error")
+        everySuspend { repository.getTransactionsPdf(any()) } throws RuntimeException("error")
         initViewModel()
 
         val state = viewModel.state.first()
 
         assertFalse(state.isDownloadLoading)
     }
-    
+
     @Test
     fun whenViewAndShareFails_thenIsViewAndShareLoadingResetsToFalse() = runTest {
         everySuspend {
-            repository.getFilteredTransactionsFile(any())
+            repository.getTransactionsPdf(any())
         } throws RuntimeException("error")
         initViewModel()
 
@@ -458,7 +483,7 @@ class ExportTransactionsViewModelTest {
     fun whenViewAndShareThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue() =
         runTest {
             everySuspend {
-                repository.getFilteredTransactionsFile(any())
+                repository.getTransactionsPdf(any())
             } throws NoDataFoundException()
 
             initViewModel()
@@ -492,7 +517,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenViewAndShareSuccess_thenIsViewAndShareLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
         viewModel.state.test {
@@ -507,8 +532,23 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
+    fun `onViewAndShareClicked should reset view model`() = runTest {
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        initViewModel()
+        advanceUntilIdle()
+
+        viewModel.onCustomFilteringClicked()
+        viewModel.onViewAndShareClicked()
+
+        viewModel.uiEffect.test {
+            val effect = awaitItem()
+            assertTrue(effect is ExportTransactionsEffect.NavigateToViewFileScreen)
+        }
+    }
+
+    @Test
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getFilteredTransactionsFile(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
         viewModel.state.test {
@@ -533,7 +573,7 @@ class ExportTransactionsViewModelTest {
 
     private fun TestScope.initViewModel() {
         viewModel = ExportTransactionsViewModel(
-            exportTransactionsRepository = repository,
+            statementRepository = repository,
             fileSaver = fileSaver,
             ioDispatcher = testDispatcher
         )

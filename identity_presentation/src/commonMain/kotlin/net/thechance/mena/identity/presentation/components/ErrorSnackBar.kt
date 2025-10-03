@@ -7,6 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -23,11 +27,21 @@ internal fun ErrorSnackBar(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var isVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            isVisible = true
+            delay(3000)
+            isVisible = false
+            delay(200)
+            onDismiss()
+        }
+    }
     AnimatedVisibility(
-        visible = errorMessage != null,
+        visible = isVisible,
         enter = slideInHorizontally(initialOffsetX = { it }),
         exit = slideOutHorizontally(targetOffsetX = { it }),
-        modifier = modifier
+        modifier = modifier,
     ) {
         SnackBar(
             title = stringResource(Res.string.error),
@@ -40,10 +54,4 @@ internal fun ErrorSnackBar(
         )
     }
 
-    LaunchedEffect(errorMessage) {
-        if (errorMessage != null) {
-            delay(3000)
-            onDismiss()
-        }
-    }
 }

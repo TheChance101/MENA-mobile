@@ -7,6 +7,7 @@
     <string name="couldnt_load_tap_to_retry">فشل التحميل، اضغط لإعادة المحاولة</string>
     <string name="error">خطأ</string>
     <string name="balance_fetch_error_description">حدث خطأ أثناء تحميل رصيدك</string>
+
     <string name="type">النوع</string>
     <string name="status">الحالة</string>
     <string name="from">من</string>
@@ -85,7 +86,22 @@
     <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
     <string name="img_no_internet">الصورة لا يوجد إنترنت</string>
     <string name="retry">أعد المحاولة</string>
+
+    <string name="apply_filters">تطبيق التصفية</string>
+    <string name="filter_transactions">تصفية المعاملات</string>
+    <string name="reset">إعادة تعيين</string>
+
+    <string name="no_transactions_yet">لا توجد معاملات حتى الآن</string>
+    <string name="no_transactions_yet_description">بمجرد أن تبدأ في استخدام محفظتك، ستظهر معاملاتك هنا.</string>
+
+    <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
     <string name="filter_transaction_error_title">لا توجد نتائج مطابقة للفلاتر</string>
     <string name="filter_transaction_error_description">قم بتغيير الفلاتر أو إعادة تعيينها لاستكشاف جميع المعاملات</string>
+    <string name="share_button_title">مشاركة</string>">
+    <string name="view_transactions">اظهار المعاملات</string>">
+
+    <string name="view_transactions_statement_error_message">حدث خطأ اثناء تحميل لملف</string>">
+    <string name="loading_pdf_message">جارٍ تحميل الملف ...</string>">
+    <string name="rendering_pdf_message">اظهار الملف ...</string>">
 
 </resources>

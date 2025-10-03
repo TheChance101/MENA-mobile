@@ -10,14 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
 fun WalletScaffold(
     modifier: Modifier = Modifier,
-    topBar: (@Composable () -> Unit)? = null,
+    topBar: (@Composable () -> Unit) ? = null,
     snackBar: (@Composable () -> Unit)? = null,
+    overlays: (ScaffoldScope.() -> Unit)? = null,
     toast: (@Composable () -> Unit)? = null,
+    bottomContent: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     content: @Composable () -> Unit
 ) {
@@ -29,6 +32,7 @@ fun WalletScaffold(
     ) {
         Scaffold(
             topBar = { topBar?.invoke() },
+            overlays = overlays ?: {},
             content = content
         )
 
@@ -47,6 +51,13 @@ fun WalletScaffold(
                     .align(Alignment.Center)
             ) {
                 toast()
+            }
+        }
+        bottomContent?.let {
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                it()
             }
         }
     }
