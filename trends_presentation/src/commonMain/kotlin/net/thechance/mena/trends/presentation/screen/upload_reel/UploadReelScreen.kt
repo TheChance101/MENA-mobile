@@ -115,7 +115,7 @@ private fun UploadReelScreenContent(
             )
 
             VideoLoadingCardItem(
-                title = state.selectedFile.name,
+                title = "${state.selectedFile.name}.${state.selectedFile.extension}",
                 videoSize = state.selectedFile.sizeInMegaBytes,
                 videoState = state.uploadingTrendState,
                 progress = state.uploadedBytes.toFloat() / state.selectedFile.sizeInBytes.toFloat(),
