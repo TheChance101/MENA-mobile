@@ -38,7 +38,7 @@ class ChatRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val authenticationRepository: AuthenticationRepository,
     private val json: Json,
-    baseUrl: String,
+    private val baseUrl: String,
 ) : ChatRepository, BaseRepository {
     private val messageFlows = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<String>()
@@ -52,8 +52,9 @@ class ChatRepositoryImpl(
             val token = authenticationRepository.getAccessToken()
 
             client.get(CHAT_HISTORY_ENDPOINT) {
-                parameter("chatId", chatId)
-                parameter("page", 0)
+                parameter(CHAT_ID_PARAMETER, chatId)
+                parameter(PAGE_NUMBER_PARAMETER, PAGE_NUMBER)
+                parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
                 bearerAuth(token)
             }
         }?.data?.map { it.toDomain() } ?: emptyList()
@@ -66,7 +67,7 @@ class ChatRepositoryImpl(
             val token = authenticationRepository.getAccessToken()
 
             client.get(CHAT_ENDPOINT) {
-                parameter("receiverId", userId)
+                parameter(RECEIVER_ID_PARAMETER, userId)
                 bearerAuth(token)
             }
         }?.toDomain() ?: throw ChatNotFoundException("Chat not found")
@@ -82,7 +83,7 @@ class ChatRepositoryImpl(
     override suspend fun sendMessage(message: Message) {
         if (webSocketManager.isConnected()) {
             webSocketManager.sendTextFrame(
-                destination = "/app/chat.privateMessage",
+                destination = MARK_AS_READ_DESTINATION,
                 payload = json.encodeToString<SendMessageDto>(message.toSendMessageRequestDto())
             )
         } else {
@@ -98,7 +99,7 @@ class ChatRepositoryImpl(
         val bearerToken = authenticationRepository.getAccessToken()
 
         webSocketManager.connect(
-            url = constructWebSocketUrl,
+            url = getConstructWebSocketUrl(baseUrl = baseUrl),
             token = bearerToken,
             onConnected = { onConnectedWebSocket(chatId) }
         )
@@ -107,15 +108,8 @@ class ChatRepositoryImpl(
     }
 
     private suspend fun onConnectedWebSocket(chatId: String) {
-        // subscribe
-        webSocketManager.subscribe("/user/$chatId/queue/messages")
-        // mark as read
-        webSocketManager.sendTextFrame(
-            destination = "/app/chat.markAsRead",
-            payload = json.encodeToString<MarkAsReadRequest>(
-                MarkAsReadRequest(chatId = chatId)
-            )
-        )
+        webSocketManager.subscribe("$WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX/$chatId$QUEUE_MESSAGES")
+        markMessageAsRead(chatId)
     }
 
     private suspend fun handleIncomingAsEvent(
@@ -132,22 +126,39 @@ class ChatRepositoryImpl(
 
             is MessageEvent.Message -> {
                 messageFlows.emit(event.dto.toDomain())
-                // mark as read
-                webSocketManager.sendTextFrame(
-                    destination = "/app/chat.markAsRead",
-                    payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId))
-                )
+                markMessageAsRead(chatId)
             }
         }
+    }
+
+    private suspend fun markMessageAsRead(chatId: String) {
+        webSocketManager.sendTextFrame(
+            destination = MARK_AS_READ_DESTINATION,
+            payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId))
+        )
     }
 
     override suspend fun disconnect() {
         webSocketManager.disconnect()
     }
 
-    private val constructWebSocketUrl =
-        "${baseUrl
+    private fun getConstructWebSocketUrl(baseUrl: String): String {
+        return "${baseUrl
                 .replace("https", "wss")
                 .replace("http", "ws")
         }$WEB_SOCKETS_ENDPOINT"
+    }
+
+    private companion object{
+        const val PAGE_NUMBER_PARAMETER = "page"
+        const val PAGE_SIZE_PARAMETER = "size"
+        const val CHAT_ID_PARAMETER = "chatId"
+        const val RECEIVER_ID_PARAMETER = "receiverId"
+        const val PAGE_SIZE = 1000
+        const val PAGE_NUMBER = 0
+        const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
+        const val WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX = "/user"
+        const val QUEUE_MESSAGES = "/queue/messages"
+
+    }
 }
