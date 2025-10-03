@@ -147,7 +147,7 @@ class ChatRepositoryImpl(
 
     private val constructWebSocketUrl =
         "${baseUrl
-                .replace("https", "ws")
+                .replace("https", "wss")
                 .replace("http", "ws")
         }$WEB_SOCKETS_ENDPOINT"
 }
