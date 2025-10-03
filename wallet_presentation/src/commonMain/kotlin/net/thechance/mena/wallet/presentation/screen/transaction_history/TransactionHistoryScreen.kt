@@ -27,7 +27,6 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.screen.transaction_history.component.FilterTransactionEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionErrorState
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
@@ -131,7 +130,7 @@ fun TransactionHistoryContent(
         }
     ) {
         when {
-            (state.isLoading || state.filterState.isLoading) && state.history.isEmpty()-> {
+            (state.isLoading || state.filterState.isLoading) && state.history.isEmpty() -> {
                 TransactionLoadingState(
                     modifier = Modifier
                         .fillMaxSize()
@@ -146,16 +145,13 @@ fun TransactionHistoryContent(
                 )
             }
 
-            state.history.isEmpty() -> {
-                if (state.history.isEmpty() && state.filterState.activeFilterCount > 0) {
-                    FilterTransactionEmpty()
-                } else {
-                    TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
-                }
+            state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
+                TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
             }
 
             else -> {
                 TransactionsListContent(
+                    modifier = Modifier.fillMaxSize(),
                     interactionListener = interactionListener,
                     state = state,
                     listState = listState
