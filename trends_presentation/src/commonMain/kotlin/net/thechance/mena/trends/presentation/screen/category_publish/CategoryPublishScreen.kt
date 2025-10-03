@@ -60,9 +60,11 @@ internal fun CategoryPublishScreen(
                     inclusive = true
                 }
             }
-            is CategoryPublishEffect.NavigateToTrends -> navController.navigate(
-                route = Route.Trends
-            )
+            is CategoryPublishEffect.NavigateToTrends -> navController.navigate(route = Route.Trends){
+                popUpTo(Route.Trends) {
+                    inclusive = true
+                }
+            }
         }
     }
 
