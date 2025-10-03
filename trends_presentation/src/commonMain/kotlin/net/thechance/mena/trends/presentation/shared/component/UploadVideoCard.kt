@@ -37,7 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun UploadVideoCard(
     modifier: Modifier = Modifier,
-    thumbnail: PlatformFile? = null,
+    thumbnail: ByteArray? = null,
     isEnabled: Boolean = true,
     onCardClick: () -> Unit = {},
     onEditClick: () -> Unit = {}
@@ -102,7 +102,6 @@ internal fun UploadVideoCard(
                 modifier = Modifier
                     .offset(y = 16.dp)
                     .align(Alignment.BottomCenter),
-                isClickEnabled =  thumbnail != null,
                 onClick = onEditClick
             )
         }
