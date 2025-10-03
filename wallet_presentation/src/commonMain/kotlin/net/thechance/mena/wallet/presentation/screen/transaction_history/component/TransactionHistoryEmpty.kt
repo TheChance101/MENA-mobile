@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.empty_transaction_history
 import mena.wallet_presentation.generated.resources.empty_transaction_history_desc
+import mena.wallet_presentation.generated.resources.img_filter_error
 import mena.wallet_presentation.generated.resources.no_transactions_yet
 import net.thechance.mena.wallet.presentation.component.StatePlaceholder
 import org.jetbrains.compose.resources.painterResource
@@ -20,7 +20,7 @@ fun TransactionHistoryEmpty(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         StatePlaceholder(
-            image = painterResource(Res.drawable.empty_transaction_history),
+            image = painterResource(Res.drawable.img_filter_error),
             title = stringResource(Res.string.no_transactions_yet),
             description = stringResource(Res.string.empty_transaction_history_desc),
             modifier = Modifier.align(Alignment.Center)
