@@ -2,22 +2,20 @@ package net.thechance.mena.trends.presentation.shared.util.video_util
 
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.allocPointerTo
-import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.readValue
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import platform.AVFoundation.AVAssetImageGenerator
+import platform.AVFoundation.AVAssetImageGeneratorApertureModeEncodedPixels
 import platform.AVFoundation.AVURLAsset
-import platform.CoreMedia.CMTime
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMake
+import platform.CoreMedia.kCMTimeZero
 import platform.Foundation.NSData
-import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
@@ -58,7 +56,8 @@ class VideoUtilitiesImpl : VideoUtilities {
     }
 
     override suspend fun extractVideoFrame(
-        videoData: ByteArray, timeMs: Long
+        videoData: ByteArray,
+        timeMs: Long
     ): ByteArray? {
         return suspendCancellableCoroutine { continuation ->
             try {
@@ -68,38 +67,22 @@ class VideoUtilitiesImpl : VideoUtilities {
                 nsData.writeToURL(tempURL, true)
                 val asset = AVURLAsset.URLAssetWithURL(tempURL, null)
 
-                val imageGenerator = AVAssetImageGenerator(asset).apply {
-                    appliesPreferredTrackTransform = true
-                    requestedTimeToleranceBefore = CMTimeMake(0, 1)
-                    requestedTimeToleranceAfter = CMTimeMake(0, 1)
-                }
-
                 val time = CMTimeMake(timeMs, 1000)
 
-                memScoped {
-                    val actualTimePtr = alloc<CMTime>()
-                    val errorPtr = allocPointerTo<ObjCObjectVar<NSError?>>()
+                val imageGenerator = AVAssetImageGenerator.Companion.assetImageGeneratorWithAsset(asset)
+                imageGenerator.requestedTimeToleranceAfter = kCMTimeZero.readValue()
+                imageGenerator.appliesPreferredTrackTransform = true
+                imageGenerator.apertureMode = AVAssetImageGeneratorApertureModeEncodedPixels
+                imageGenerator.requestedTimeToleranceBefore = kCMTimeZero.readValue()
 
-                    val cgImage = imageGenerator.copyCGImageAtTime(
-                        time, actualTimePtr.ptr, errorPtr.ptr
-                    )
-
-                    NSFileManager.defaultManager.removeItemAtURL(tempURL, null)
-
-                    if (cgImage != null) {
-                        val uiImage = UIImage.imageWithCGImage(cgImage)
-                        val imageData = UIImageJPEGRepresentation(uiImage, 0.9)
-
-                        if (imageData != null) {
-                            val byteArray = imageData.toByteArray()
-                            continuation.resume(byteArray)
-                        } else {
-                            continuation.resume(null)
-                        }
-                    } else {
-                        continuation.resume(null)
-                    }
+                imageGenerator.generateCGImageAsynchronouslyForTime(requestedTime = time){ image, time, error ->
+                    val uiImage = UIImage(image)
+                    UIImageJPEGRepresentation(uiImage, 0.9)
                 }
+
+                NSFileManager.defaultManager.removeItemAtURL(tempURL, null)
+
+
             } catch (e: Exception) {
                 continuation.resume(null)
             }
