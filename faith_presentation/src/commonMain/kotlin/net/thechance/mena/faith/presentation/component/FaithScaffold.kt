@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.base
+package net.thechance.mena.faith.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,7 +37,7 @@ fun FaithScaffold(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(start = 16.dp, end = 16.dp, top = 68.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp)
             ) {
                 snackBarContent()
             }

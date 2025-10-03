@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
+import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
 
@@ -31,6 +32,9 @@ fun FaithNavigation() {
                 }
                 composable<SurRoute> {
                     SurScreen()
+                }
+                composable<BookmarksRoute> {
+                    BookmarkScreen()
                 }
 
                 composable<SurahDetailsRoute> { backStackEntry ->

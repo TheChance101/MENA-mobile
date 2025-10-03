@@ -7,14 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,11 +42,13 @@ import mena.faith_presentation.generated.resources.surah_number_container_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.base.FaithScaffold
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.component.FaithScaffold
+import net.thechance.mena.faith.presentation.navigation.BookmarksRoute
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.SurahDetailsRoute
 import org.jetbrains.compose.resources.painterResource
@@ -68,7 +67,7 @@ fun SurScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is SurEffect.NavigateBack -> navController.navigateUp()
-            is SurEffect.NavigateToBookmark -> {}
+            is SurEffect.NavigateToBookmark -> navController.navigate(BookmarksRoute)
             is SurEffect.NavigateToSurahDetails -> navController.navigate(
                 SurahDetailsRoute(
                     surahId = effect.surahId,
@@ -89,9 +88,7 @@ private fun Content(
     uiState: SurScreenState,
     interactionListener: SurInteractionListener,
 ) {
-    FaithScaffold(
-        backgroundColor = Theme.colorScheme.background.surface,
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
+    Scaffold(
         topBar = {
             Topbar(
                 modifier = Modifier.padding(horizontal = Theme.spacing._16),
