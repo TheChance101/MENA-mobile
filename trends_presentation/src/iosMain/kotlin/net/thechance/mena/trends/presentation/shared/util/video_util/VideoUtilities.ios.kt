@@ -58,8 +58,7 @@ class VideoUtilitiesImpl : VideoUtilities {
     }
 
     override suspend fun extractVideoFrame(
-        videoData: ByteArray,
-        timeMs: Long
+        videoData: ByteArray, timeMs: Long
     ): ByteArray? {
         return suspendCancellableCoroutine { continuation ->
             try {
@@ -82,9 +81,7 @@ class VideoUtilitiesImpl : VideoUtilities {
                     val errorPtr = allocPointerTo<ObjCObjectVar<NSError?>>()
 
                     val cgImage = imageGenerator.copyCGImageAtTime(
-                        time,
-                        actualTimePtr.ptr,
-                        errorPtr.ptr
+                        time, actualTimePtr.ptr, errorPtr.ptr
                     )
 
                     NSFileManager.defaultManager.removeItemAtURL(tempURL, null)
@@ -108,7 +105,6 @@ class VideoUtilitiesImpl : VideoUtilities {
             }
         }
     }
-}
 
     override suspend fun extractVideoFrame(
         videoData: ByteArray, percent: Float
@@ -120,8 +116,7 @@ class VideoUtilitiesImpl : VideoUtilities {
 
         return@withContext runCatching {
             extractVideoFrame(
-                videoData,
-                targetTimeUs
+                videoData, targetTimeUs
             )
         }.getOrNull()
     }
@@ -130,9 +125,7 @@ class VideoUtilitiesImpl : VideoUtilities {
         return ByteArray(this.length.toInt()).apply {
             usePinned { pinned ->
                 memcpy(
-                    pinned.addressOf(0),
-                    this@toByteArray.bytes,
-                    this@toByteArray.length
+                    pinned.addressOf(0), this@toByteArray.bytes, this@toByteArray.length
                 )
             }
         }
@@ -141,8 +134,7 @@ class VideoUtilitiesImpl : VideoUtilities {
     private fun ByteArray.toNSData(): NSData {
         return this.usePinned { pinned ->
             NSData.create(
-                bytes = pinned.addressOf(0),
-                length = this.size.toULong()
+                bytes = pinned.addressOf(0), length = this.size.toULong()
             )
         }
     }
