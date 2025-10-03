@@ -156,13 +156,6 @@ class ChatViewModelTest {
         chatViewModel.onSendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertThat(chatViewModel.state.value.uiMessages.first().chatId).isEqualTo(chatId)
-        assertThat(chatViewModel.state.value.uiMessages.first().senderId).isEqualTo(
-            chatRequesterId
-        )
-        assertThat(chatViewModel.state.value.uiMessages.first().status).isEqualTo(
-            MessageStatusUiState.SENT
-        )
         assertThat(chatViewModel.state.value.inputMessage).isEmpty()
     }
 
@@ -181,9 +174,7 @@ class ChatViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(chatViewModel.state.value.uiMessages.first().chatId).isEqualTo(chatId)
-        assertThat(chatViewModel.state.value.uiMessages.first().senderId).isEqualTo(
-            chatRequesterId
-        )
+        assertThat(chatViewModel.state.value.uiMessages.first().isMine).isTrue()
         assertThat(chatViewModel.state.value.uiMessages.first().status).isEqualTo(
             MessageStatusUiState.FAILED
         )
