@@ -85,7 +85,7 @@ class UploadTrendViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onRetrieveVideo should update error state with FileTooLarge if size is not valid`() =
+    fun `onRetrieveVideo should update error state with FileTooLarge when file's size exceed the max limit`() =
         runTest(testDispatcher) {
             viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
             advanceUntilIdle()
