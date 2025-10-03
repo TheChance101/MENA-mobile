@@ -91,11 +91,11 @@ class WebSocketManagerImpl(
         }
     }
 
-    suspend fun sendFrame(raw: String) {
+    private suspend fun sendFrame(raw: String) {
         session?.send(Frame.Text(raw))
     }
 
-    suspend fun sendConnectFrame() {
+    private suspend fun sendConnectFrame() {
         sendFrame("CONNECT\naccept-version:1.2\nheart-beat:10000,10000\n\n\u0000")
     }
 

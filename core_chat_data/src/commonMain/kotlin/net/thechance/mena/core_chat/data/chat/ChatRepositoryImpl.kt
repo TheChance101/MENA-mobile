@@ -56,7 +56,7 @@ class ChatRepositoryImpl(
                 parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
                 bearerAuth(token)
             }
-        }?.data?.map { it.toDomain() } ?: emptyList()
+        }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
     }
 
     override suspend fun getChatByContactUserId(userId: Uuid): Chat {
@@ -123,7 +123,7 @@ class ChatRepositoryImpl(
             }
 
             is MessageEvent.Message -> {
-                messageFlows.emit(event.dto.toDomain())
+                event.dto.toDomain()?.let { messageFlows.emit(it) }
                 markMessageAsRead(chatId)
             }
         }
