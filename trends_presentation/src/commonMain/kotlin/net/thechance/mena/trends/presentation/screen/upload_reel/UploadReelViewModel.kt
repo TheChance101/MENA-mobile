@@ -134,7 +134,7 @@ internal class UploadReelViewModel(
             block = {
                 videoUtilities.extractVideoFrame(
                     videoData = file.bytes,
-                    percent = 0.5f
+                    timeMs = 1L
                 )
             },
             onSuccess = ::onExtractFrameSuccess,
