@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.component.filter
+package net.thechance.mena.wallet.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
