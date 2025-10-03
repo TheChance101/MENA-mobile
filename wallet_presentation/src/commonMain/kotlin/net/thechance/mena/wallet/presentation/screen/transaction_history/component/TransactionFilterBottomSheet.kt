@@ -27,7 +27,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.component.filter.FilterContent
+import net.thechance.mena.wallet.presentation.component.FilterContent
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
