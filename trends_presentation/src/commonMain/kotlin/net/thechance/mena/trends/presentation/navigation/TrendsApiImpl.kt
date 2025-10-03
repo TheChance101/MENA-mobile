@@ -12,18 +12,6 @@ class TrendsApiImpl() : TrendsApi {
 
     @Composable
     override fun TabEntry() {
-        SetupFileKitWithCoil()
         TrendsNavHost()
-    }
-
-    @Composable
-    private fun SetupFileKitWithCoil() {
-        setSingletonImageLoaderFactory { context ->
-            ImageLoader.Builder(context)
-                .components {
-                    addPlatformFileSupport()
-                }
-                .build()
-        }
     }
 }
