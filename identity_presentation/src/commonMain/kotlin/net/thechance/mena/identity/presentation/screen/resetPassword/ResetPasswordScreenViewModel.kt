@@ -43,6 +43,11 @@ class ResetPasswordScreenViewModel(
         updateState { copy(errorMessage = null) }
     }
 
+    override fun onClickOk() {
+        sendNewEffect(ResetPasswordScreenUIEffect.NavigateBackToLogin)
+        updateState { copy(isDialogVisible = false) }
+    }
+
     override fun onClickResetPassword() {
         if (state.value.newPassword != state.value.confirmPassword) {
             updateState { copy(errorMessage = "New password and confirm password do not match.") }
@@ -67,8 +72,7 @@ class ResetPasswordScreenViewModel(
     }
 
     private fun onResetPasswordSuccess() {
-        updateState { copy(isLoading = false) }
-        sendNewEffect(ResetPasswordScreenUIEffect.NavigateBackToLogin)
+        updateState { copy(isLoading = false, isDialogVisible = true) }
     }
 
     private fun onErrorAccrue(errorState: ErrorState) {

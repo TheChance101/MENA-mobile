@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.identity.domain.exception.InvalidPasswordException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenUIEffect
@@ -121,32 +122,59 @@ class ResetPasswordScreenViewModelTest {
         }
 
     @Test
-    fun `onClickResetPassword should call Repository and navigate on success`() = runTest {
+    fun `onClickResetPassword should show dialog when passwords match and are secure`() = runTest {
         setupValidPasswords()
+        coEvery { resetPasswordRepository.resetPassword(any(), any()) } returns Unit
 
-        coEvery {
-            resetPasswordRepository.resetPassword(
-                validPassword,
-                validPassword
-            )
-        } returns Unit
+        viewModel.onClickResetPassword()
+        testDispatcher.scheduler.advanceUntilIdle()
 
+        viewModel.state.test {
+            assertTrue(awaitItem().isDialogVisible)
+        }
+
+    }
+
+    @Test
+    fun `onClickResetPassword should show error message when passwords do not match`() = runTest {
+        viewModel.onChangeNewPassword(validPassword)
+        viewModel.onChangeConfirmPassword("DifferentPass123")
+
+        viewModel.onClickResetPassword()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            assertTrue(awaitItem().errorMessage != null)
+        }
+    }
+
+    @Test
+    fun `onClickOk should send NavigateBackToLogin effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onClickResetPassword()
-
-            viewModel.state.test {
-                val loadingState = awaitItem()
-                assertTrue(loadingState.isLoading)
-
-                val finishedState = awaitItem()
-                assertFalse(finishedState.isLoading)
-            }
-
-            testDispatcher.scheduler.advanceUntilIdle()
-
+            viewModel.onClickOk()
             assertTrue(awaitItem() is ResetPasswordScreenUIEffect.NavigateBackToLogin)
         }
     }
+
+    @Test
+    fun `onClearErrorMessage should clear errorMessage in state when reset password throw exception`() =
+        runTest {
+            coEvery {
+                resetPasswordRepository.resetPassword(
+                    any(),
+                    any()
+                )
+            } throws InvalidPasswordException()
+
+            viewModel.onClickResetPassword()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+
+            viewModel.onClearErrorMessage()
+            viewModel.state.test {
+                assertTrue(awaitItem().errorMessage == null)
+            }
+        }
 
     @Test
     fun `onClickBack should send NavigateBackToLogin effect`() = runTest {
