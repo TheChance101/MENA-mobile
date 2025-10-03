@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.component.filter.datePicker
+package net.thechance.mena.wallet.presentation.component
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
