@@ -5,11 +5,15 @@ import androidx.navigation.toRoute
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 
 interface ChatArgs {
-
     val chatId: String
+    val chatName: String
+    val chatImageUrl: String
+    val chatRequesterId: String
 }
 
 class ChatArgsImpl(savedStateHandle: SavedStateHandle) : ChatArgs {
-
     override val chatId: String = savedStateHandle.toRoute<ChatDetailsRoute>().chatId
+    override val chatName: String = savedStateHandle.toRoute<ChatDetailsRoute>().chatName
+    override val chatImageUrl: String = savedStateHandle.toRoute<ChatDetailsRoute>().chatImageUrl
+    override val chatRequesterId: String = savedStateHandle.toRoute<ChatDetailsRoute>().chatRequesterId
 }

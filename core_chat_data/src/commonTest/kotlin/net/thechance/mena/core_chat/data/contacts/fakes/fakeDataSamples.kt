@@ -1,8 +1,11 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.data.contacts.fakes
 
 import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
 import net.thechance.mena.core_chat.data.contacts.toDomain
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
+import kotlin.uuid.ExperimentalUuidApi
 import com.bilalazzam.contacts_provider.Contact as DeviceContact
 
 
@@ -17,7 +20,7 @@ val sampleContactDto = createContactDto(
     firstName = "Bilal",
     lastName = "Azzam",
     phone = "01026388780",
-    isMenaUser = true,
+    menaUserId = "9a629aaa-8907-4dc6-ac33-f79fef7b4251",
     imageUrl = "http://example.com/image.jpg"
 )
 
@@ -41,9 +44,9 @@ fun createPagedDataDto(
         firstName: String? = null,
         lastName: String? = null,
         phone: String? = null,
-        isMenaUser: Boolean? = null,
+        menaUserId: String? = null,
         imageUrl: String? = null
-    ) = ContactDto(firstName, lastName, phone, isMenaUser, imageUrl)
+    ) = ContactDto(firstName, lastName, phone, menaUserId, imageUrl)
 
     fun createDeviceContact(
         id: String = "1",

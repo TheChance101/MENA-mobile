@@ -86,19 +86,28 @@ class ContactsViewModel(
         navigate(SyncContactsRoute(forceSync = true))
     }
 
-    override fun onContactClick(contactId: String) {
+    override fun onContactClick(contactId: String?) {
+        if (contactId.isNullOrBlank()) return
         tryToExecute(
+            execute = { chatRepository.getChatByContactUserId(Uuid.parse(contactId)) },
             onSuccess = ::onContactClickSuccess,
             onError = ::onContactClickError,
-            execute = { chatRepository.getChatByContactUserId(Uuid.parse(contactId)) }
         )
     }
 
-    private fun onContactClickSuccess(chat: Chat) {
-        navigate(ChatDetailsRoute(chatId = chat.id.toString()))
+    private fun onContactClickSuccess(chat: Chat?) {
+        navigate(
+            ChatDetailsRoute(
+                chatId = chat?.id.toString(),
+                chatName = chat?.name.orEmpty(),
+                chatImageUrl = chat?.imageUrl.orEmpty(),
+                chatRequesterId = chat?.requesterId.toString()
+            )
+        )
     }
 
     private fun onContactClickError(throwable: Throwable) { // uncovered
+        println(throwable.stackTraceToString())
         showSnackBar(
             SnackBarData(
                 title = UiText.StringRes(Res.string.something_went_wrong),

@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.core_chat.domain.entity.Contact
+import kotlin.uuid.ExperimentalUuidApi
 
 data class ContactsScreenState(
     val contacts: Flow<PagingData<ContactUiState>> = flowOf(PagingData.empty())
@@ -14,6 +15,7 @@ data class ContactUiState(
     val lastName: String,
     val phoneNumber: String,
     val isMenaUser: Boolean,
+    val menaUserId: String?,
     val imageUri: String? = null
 ) {
     val displayName: String
@@ -26,12 +28,14 @@ data class ContactUiState(
 }
 
 
+@OptIn(ExperimentalUuidApi::class)
 fun Contact.toUiModel(): ContactUiState {
     return ContactUiState(
         firstName = this.firstName,
         lastName = this.lastName,
         phoneNumber = this.phone,
-        isMenaUser = this.isMenaUser,
+        isMenaUser = menaUserId != null,
+        menaUserId = this.menaUserId?.toString(),
         imageUri = this.imageUrl
     )
 }

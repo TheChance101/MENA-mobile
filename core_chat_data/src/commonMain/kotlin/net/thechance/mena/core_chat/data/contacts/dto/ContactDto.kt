@@ -11,8 +11,8 @@ data class ContactDto (
     val lastName: String? = null,
     @SerialName("phoneNumber")
     val phoneNumber: String? = null,
-    @SerialName("isMenaUser")
-    val isMenaUser: Boolean? = null,
+    @SerialName("menaUserId")
+    val menaUserId: String? = null,
     @SerialName("imageUrl")
     val imageUrl: String? = null,
 )

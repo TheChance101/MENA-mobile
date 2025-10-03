@@ -2,12 +2,15 @@ package net.thechance.mena.core_chat.data.contacts
 
 import net.thechance.mena.core_chat.data.contacts.dto.ContactCreationRequestDto
 import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
+import net.thechance.mena.core_chat.data.contacts.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
+import kotlin.uuid.ExperimentalUuidApi
 import com.bilalazzam.contacts_provider.Contact as DeviceContact
 
+@OptIn(ExperimentalUuidApi::class)
 fun PagedDataDto<ContactDto>?.toPagedListOfContacts(): PagedData<Contact> {
     val pagedData = this ?: throw ContactsFetchFailedException("Response body is null")
     return PagedData(
@@ -17,16 +20,18 @@ fun PagedDataDto<ContactDto>?.toPagedListOfContacts(): PagedData<Contact> {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private fun List<ContactDto>.toListOfContact(): List<Contact> {
     return map { it.toDomain() }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 fun ContactDto.toDomain(): Contact {
     return Contact(
         firstName = firstName.orEmpty(),
         lastName = lastName.orEmpty(),
         phone = phoneNumber.orEmpty(),
-        isMenaUser = isMenaUser == true,
+        menaUserId = getUuidOrNull(menaUserId),
         imageUrl = imageUrl
     )
 }

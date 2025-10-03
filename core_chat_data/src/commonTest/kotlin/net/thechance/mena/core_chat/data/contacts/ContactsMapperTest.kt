@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.data.contacts
 
 import kotlin.test.Test
@@ -10,6 +12,8 @@ import net.thechance.mena.core_chat.data.contacts.fakes.createDeviceContact
 import net.thechance.mena.core_chat.data.contacts.fakes.createPagedDataDto
 import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 class ContactMappersTest {
@@ -111,7 +115,7 @@ class ContactMappersTest {
         assertThat(contact.firstName).isEqualTo("")
         assertThat(contact.lastName).isEqualTo("")
         assertThat(contact.phone).isEqualTo("")
-        assertThat(contact.isMenaUser).isFalse()
+        assertThat(contact.menaUserId).isEqualTo(null)
         assertThat(contact.imageUrl).isNull()
     }
 
@@ -121,7 +125,7 @@ class ContactMappersTest {
             firstName = "Bilal",
             lastName = "Azzam",
             phone = "456",
-            isMenaUser = true,
+            menaUserId = Uuid.random().toString(),
             imageUrl = "url"
         )
 
@@ -130,7 +134,7 @@ class ContactMappersTest {
         assertThat(contact.firstName).isEqualTo("Bilal")
         assertThat(contact.lastName).isEqualTo("Azzam")
         assertThat(contact.phone).isEqualTo("456")
-        assertThat(contact.isMenaUser).isTrue()
+        assertThat(contact.menaUserId).isNotNull()
         assertThat(contact.imageUrl).isEqualTo("url")
     }
 

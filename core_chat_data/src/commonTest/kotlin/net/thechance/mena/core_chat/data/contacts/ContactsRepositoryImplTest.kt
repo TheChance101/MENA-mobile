@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.data.contacts
 
 import assertk.assertThat
@@ -6,7 +8,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
-import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
@@ -30,6 +31,7 @@ import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
+import kotlin.uuid.ExperimentalUuidApi
 
 
 class ContactsRepositoryImplTest {
@@ -353,7 +355,7 @@ class ContactsRepositoryImplTest {
                         firstName = "Page1",
                         lastName = "User$i",
                         phoneNumber = "010000000$i",
-                        isMenaUser = false,
+                        menaUserId = null,
                         imageUrl = null
                     )
                 },

@@ -30,6 +30,7 @@ import net.thechance.mena.core_chat.domain.exception.DataStoreException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import kotlin.uuid.ExperimentalUuidApi
 import com.bilalazzam.contacts_provider.Contact as DeviceContact
 
 class ContactsRepositoryImpl(
@@ -39,6 +40,7 @@ class ContactsRepositoryImpl(
     private val dataStore: DataStore<Preferences>
 ) : ContactsRepository, BaseRepository {
 
+    @OptIn(ExperimentalUuidApi::class)
     override suspend fun getUserContacts(pageNumber: Int): PagedData<Contact> {
         return tryNetworkCall<PagedDataDto<ContactDto>>(
             defaultException = { ContactsFetchFailedException("Couldn't get user contacts", it) },

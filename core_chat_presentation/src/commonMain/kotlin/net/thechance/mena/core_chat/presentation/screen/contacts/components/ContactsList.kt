@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ContactsList(
     contacts: LazyPagingItems<ContactUiState>,
-    onContactClick: (String) -> Unit,
+    onContactClick: (String?) -> Unit,
 ) {
     AnimatedContent(
         targetState = Pair((contacts.itemCount == 0), contacts.loadState.refresh),
@@ -57,7 +57,7 @@ fun ContactsList(
                     val contact = contacts[index]
 
                     contact?.let {
-                        ContactItem(contact = it, onContactClick = { onContactClick("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") }) // temp userId
+                        ContactItem(contact = it, onContactClick = { onContactClick(contact.menaUserId) })
                     }
                 }
             }

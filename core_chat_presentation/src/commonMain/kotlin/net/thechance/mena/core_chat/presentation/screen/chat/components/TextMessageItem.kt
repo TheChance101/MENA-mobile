@@ -64,7 +64,6 @@ private fun PreviewTextMessageItem() {
                 modifier = Modifier,
                 message = TextMessageUiState(
                     id = Uuid.random(),
-                    senderId = Uuid.random(),
                     sendTime = LocalDateTime.now(),
                     status = MessageStatusUiState.READ,
                     isMine = false,

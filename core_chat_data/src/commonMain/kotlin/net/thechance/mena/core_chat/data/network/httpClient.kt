@@ -8,6 +8,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -20,6 +21,9 @@ fun createHttpClient(
 ): HttpClient {
     val timeOutIntervalMilliSeconds = 30_000L
     return HttpClient(httpClientEngineFactory) {
+
+        install(WebSockets)
+
         defaultRequest {
             url(baseUrl)
             contentType(ContentType.Application.Json)

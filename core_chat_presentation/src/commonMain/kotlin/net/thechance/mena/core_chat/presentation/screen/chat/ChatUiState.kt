@@ -9,7 +9,8 @@ import kotlin.uuid.Uuid
 data class ChatUiState(
     val id: Uuid = Uuid.random(),
     val name: String = "",
-    val avatarUrl: String = ""
+    val avatarUrl: String = "",
+    val requesterId: Uuid = Uuid.random()
 )
 
 sealed interface ChatListItem {
@@ -20,11 +21,6 @@ sealed interface ChatListItem {
 fun Chat.toUi() = ChatUiState(
     id = id,
     name = name,
-    avatarUrl = imageUrl.orEmpty()
-)
-
-fun ChatUiState.toEntity() = Chat(
-    id = id,
-    imageUrl = avatarUrl,
-    name = name
+    avatarUrl = imageUrl.orEmpty(),
+    requesterId = requesterId
 )
