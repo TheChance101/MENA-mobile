@@ -5,7 +5,6 @@ package net.thechance.mena.core_chat.data.contacts
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.bilalazzam.contacts_provider.ContactsProvider
-import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
@@ -133,8 +132,8 @@ fun createRepository(
 
 fun createChatRepository(
     httpClient: HttpClient? = null,
-    webSocketManager: WebSocketManager = mock(),
-    authenticationRepository: AuthenticationRepository = mock<AuthenticationRepository>(),
+    webSocketManager: WebSocketManager,
+    authenticationRepository: AuthenticationRepository,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {

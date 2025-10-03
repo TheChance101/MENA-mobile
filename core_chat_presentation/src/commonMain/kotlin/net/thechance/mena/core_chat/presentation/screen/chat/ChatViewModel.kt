@@ -115,7 +115,9 @@ class ChatViewModel(
     }
 
     private fun onSendMessageError(message: MessageUiState) {
-        updateStateWithNewMessage((message as TextMessageUiState).copy(status = MessageStatusUiState.FAILED))
+        when (message) {
+            is TextMessageUiState -> updateStateWithNewMessage(message.copy(status = MessageStatusUiState.FAILED))
+        }
     }
 
     override fun onMessageClicked(messageId: Uuid) {
@@ -165,23 +167,33 @@ class ChatViewModel(
     override fun onResendMessageClicked() {
         updateState { it.copy(isResendMessageDialogVisible = false) }
         state.value.failedMessageToReSend?.let { message ->
-            updateStateWithNewMessage((message as TextMessageUiState).copy(status = MessageStatusUiState.SENDING))
-
-            tryToExecute(
-                execute = { chatRepository.sendMessage((message).toEntity()) },
-                onSuccess = { onResendMessageSuccess(message) },
-                onError = { onResendMessageError(message) },
-            )
+            when (message) {
+                is TextMessageUiState -> {
+                    updateStateWithNewMessage((message).copy(status = MessageStatusUiState.SENDING))
+                    tryToExecute(
+                        execute = { chatRepository.sendMessage((message).toEntity()) },
+                        onSuccess = { onResendMessageSuccess(message) },
+                        onError = { onResendMessageError(message) },
+                    )
+                }
+            }
         }
     }
 
     fun onResendMessageSuccess(message: MessageUiState) {
-        updateStateWithNewMessage((message as TextMessageUiState).copy(status = MessageStatusUiState.SENT))
+        when (message) {
+            is TextMessageUiState -> {
+                updateStateWithNewMessage((message).copy(status = MessageStatusUiState.SENT))
+            }
+        }
     }
 
     fun onResendMessageError(message: MessageUiState) {
-        updateStateWithNewMessage((message as TextMessageUiState).copy(status = MessageStatusUiState.FAILED))
-
+        when (message) {
+            is TextMessageUiState -> {
+                updateStateWithNewMessage((message).copy(status = MessageStatusUiState.FAILED))
+            }
+        }
     }
 
     override fun onResendMessageDialogDismissed() {
@@ -251,8 +263,8 @@ class ChatViewModel(
         readerId?.let { readerId ->
             updateState {
                 val updatedMessages = it.uiMessages.toMutableList().map { message ->
-                    if (message.senderId.toString() != readerId) {
-                        (message as TextMessageUiState).copy(status = MessageStatusUiState.READ)
+                    if (message.senderId.toString() != readerId && message is TextMessageUiState) {
+                        message.copy(status = MessageStatusUiState.READ)
                     } else {
                         message
                     }
