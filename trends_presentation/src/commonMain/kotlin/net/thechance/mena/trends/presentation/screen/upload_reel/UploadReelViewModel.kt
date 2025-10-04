@@ -144,17 +144,11 @@ internal class UploadReelViewModel(
     }
 
     private fun onExtractFrameSuccess(thumbnail: ByteArray?) {
-        updateState {
-            copy(
-                thumbnail = thumbnail
-            )
-        }
+        updateState { copy( thumbnail = thumbnail ) }
     }
 
     private fun onExtractFrameError(errorState: ErrorState) {
-        updateState {
-            copy(errorState = errorState)
-        }
+        updateState { copy(errorState = errorState) }
     }
 
     private fun uploadThumbnail(){
@@ -180,15 +174,11 @@ internal class UploadReelViewModel(
     }
 
     private fun onUploadThumbnailStarted() {
-        updateState {
-            copy(isNextButtonLoading = true)
-        }
+        updateState { copy(isNextButtonLoading = true) }
     }
 
     private fun onUploadThumbnailFinished() {
-        updateState {
-            copy(isNextButtonLoading = false)
-        }
+        updateState { copy(isNextButtonLoading = false) }
     }
 
     private fun onUploadThumbnailSuccess(){
@@ -198,9 +188,7 @@ internal class UploadReelViewModel(
     }
 
     private fun onUploadThumbnailError(errorState: ErrorState) {
-        updateState {
-            copy(errorState = errorState)
-        }
+        updateState { copy(errorState = errorState) }
     }
 
     private fun onValidationError(errorState: ErrorState) {
