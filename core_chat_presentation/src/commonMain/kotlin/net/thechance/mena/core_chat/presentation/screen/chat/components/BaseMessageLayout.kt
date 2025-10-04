@@ -151,7 +151,6 @@ private fun PreviewBaseMessageLayout() {
     MenaTheme {
         Box(
             modifier = Modifier.fillMaxWidth()
-//                .background(Color.Red)
         ) {
             BaseMessageLayout(
                 message = TextMessageUiState(

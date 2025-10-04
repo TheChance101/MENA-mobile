@@ -47,7 +47,10 @@ fun MessageInfo(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-        modifier = modifier.noHoverClickable(onClick = onFailClick, enabled = messageIsMine && messageStatus == MessageStatusUiState.FAILED),
+        modifier = modifier.noHoverClickable(
+            onClick = onFailClick,
+            enabled = messageIsMine && messageStatus == MessageStatusUiState.FAILED
+        ),
     ) {
         Text(
             text = messageTime.formatAsTime(),
