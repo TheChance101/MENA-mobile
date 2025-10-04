@@ -22,8 +22,10 @@ import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
+import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
 import net.thechance.mena.trends.data.util.infiniteTimeOut
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
@@ -139,7 +141,7 @@ internal class ReelsRepositoryImpl(
         return MultiPartFormDataContent(
             formData {
                 append(
-                    key = "thumbnail",
+                    key = THUMBNAIL,
                     value = InputProvider(size) {
                         ByteReadChannel(thumbnail).asSource().buffered()
                     },
@@ -162,7 +164,7 @@ internal class ReelsRepositoryImpl(
         return MultiPartFormDataContent(
             formData {
                 append(
-                    key = "video",
+                    key = VIDEO,
                     value = InputProvider(size) {
                         ByteReadChannel(reelBytes).asSource().buffered()
                     },

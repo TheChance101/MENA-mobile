@@ -11,4 +11,8 @@ internal object NetworkConstants {
 
     // Parameters
     const val PAGE_PARAMETER = "page"
+
+    //keys
+    const val VIDEO = "video"
+    const val THUMBNAIL = "thumbnail"
 }
