@@ -4,8 +4,6 @@ import org.jetbrains.compose.resources.DrawableResource
 
 data class SurScreenState(
     val sur: List<SurahUiState> = emptyList(),
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
 ) {
     data class SurahUiState(
         val id: Int,

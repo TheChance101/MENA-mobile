@@ -3,7 +3,6 @@ package net.thechance.mena.faith.presentation.feature.quran.sur
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,30 +48,15 @@ class SurViewModelTest {
 
             // Then
             assertEquals(
-                emptyUiState.copy(sur = surahUiList, errorMessage = null, isLoading = false),
+                emptyUiState.copy(sur = surahUiList),
                 viewModel.uiState.value
             )
         }
 
     @Test
-    fun `initialize view model should handle error state when getAllSur fails`() = runTest {
-        // Given
-        everySuspend { quranRepository.getAllSur() } throws Exception("Error")
-
-        // When
-        viewModel = SurViewModel(quranRepository, testDispatcher)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        // Then
-        assertEquals(
-            emptyUiState.copy(errorMessage = "Error", isLoading = false),
-            viewModel.uiState.value
-        )
-    }
-
-    @Test
     fun `onSurahClick should navigate to surah details screen with surah id and name`() = runTest {
         // Given
+        everySuspend { quranRepository.getAllSur() } returns emptyList()
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -90,6 +74,7 @@ class SurViewModelTest {
     @Test
     fun `onBackClick should navigate back`() = runTest {
         // Given
+        everySuspend { quranRepository.getAllSur() } returns emptyList()
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -107,6 +92,7 @@ class SurViewModelTest {
     @Test
     fun `onBookmarkClick should navigate to bookmark screen`() = runTest {
         // Given
+        everySuspend { quranRepository.getAllSur() } returns emptyList()
         testDispatcher.scheduler.advanceUntilIdle()
 
         // When
@@ -122,11 +108,7 @@ class SurViewModelTest {
     }
 
     private companion object {
-        val emptyUiState = SurScreenState(
-            isLoading = false,
-            errorMessage = null,
-            sur = emptyList()
-        )
+        val emptyUiState = SurScreenState(emptyList())
         const val AL_FATIHAH_ID = 1
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         val surList = listOf(

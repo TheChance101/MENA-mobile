@@ -15,7 +15,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.error_network
+import mena.faith_presentation.generated.resources.error_no_internet
+import mena.faith_presentation.generated.resources.error_unauthorized
+import mena.faith_presentation.generated.resources.error_unknown
 import net.thechance.mena.faith.domain.annotation.KoverIgnore
+import net.thechance.mena.faith.domain.exception.FaithException
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 
@@ -82,7 +88,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     protected fun <T> tryToExecute(
         execute: suspend () -> T,
         onSuccess: ((T) -> Unit)? = null,
-        onError: (Throwable) -> Unit = {},
+        onError: (Throwable) -> Unit = ::handleError,
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -99,5 +105,19 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
                 .onFailure { throwable -> onError(throwable) }
             onFinally()
         }
+    }
+
+    private fun handleError(error: Throwable) {
+        showSnackBar(
+            (error as FaithException).toStringResource(),
+            SnackBarState.Status.Error
+        )
+    }
+
+    private fun FaithException.toStringResource() = when (this) {
+        FaithException.NetworkException -> Res.string.error_network
+        FaithException.NoInternetException -> Res.string.error_no_internet
+        FaithException.UnauthorizedException -> Res.string.error_unauthorized
+        FaithException.UnknownException -> Res.string.error_unknown
     }
 }
