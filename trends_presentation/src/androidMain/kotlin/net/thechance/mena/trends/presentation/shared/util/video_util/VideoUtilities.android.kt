@@ -34,10 +34,10 @@ class VideoUtilitiesImpl: VideoUtilities {
         return@withContext runCatching {
             retriever.use {
                 it.setDataSource(ByteArrayMediaSource(videoData))
-                it.getFrameAtTime(timeMs * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                    ?.let { bmp ->
-                        val frameData = bmp.asImageBitmap().encodeToByteArray()
-                        bmp.recycle()
+                it.getFrameAtTime(timeMs * MILLISECOND_SECOND_CONVERSION, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    ?.let { bitmap ->
+                        val frameData = bitmap.asImageBitmap().encodeToByteArray()
+                        bitmap.recycle()
                         frameData
                     }
             }
@@ -50,7 +50,7 @@ class VideoUtilitiesImpl: VideoUtilities {
     ): ByteArray? = withContext(Dispatchers.IO) {
         val duration = getDuration(videoData) ?: 1L
         val clamped = percent.coerceIn(0f, 1f)
-        val targetTimeUs = (duration * clamped * 1000).toLong()
+        val targetTimeUs = (duration * clamped * MILLISECOND_SECOND_CONVERSION).toLong()
         return@withContext runCatching {
             extractVideoFrame(
                 videoData,
@@ -59,6 +59,9 @@ class VideoUtilitiesImpl: VideoUtilities {
         }.getOrNull()
     }
 
+    private companion object{
+        private const val MILLISECOND_SECOND_CONVERSION = 1000
+    }
 }
 
 private inline fun <R> MediaMetadataRetriever.use(block: (MediaMetadataRetriever) -> R): R {
