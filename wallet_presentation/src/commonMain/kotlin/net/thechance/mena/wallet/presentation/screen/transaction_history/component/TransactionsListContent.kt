@@ -80,7 +80,6 @@ fun TransactionsListContent(
                     if (state.history.last() != transaction) {
                         Box(
                             modifier = Modifier
-                                .padding(top = 4.dp)
                                 .fillMaxWidth()
                                 .height(1.dp)
                                 .background(Theme.colorScheme.stroke)
