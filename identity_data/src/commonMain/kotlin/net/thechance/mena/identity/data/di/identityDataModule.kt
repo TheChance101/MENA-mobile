@@ -38,16 +38,11 @@ val identityDataModule = module {
             refreshToken = { get<AuthorizationService>().refreshToken() }
         )
     }
-
     single { provideDatabaseBuilder() }
     single<IdentityDatabase> { getRoomDatabase(builder = get()) }
-
     single<UserDao> { get<IdentityDatabase>().getUserDao() }
-
-    singleOf(::AuthenticationRepositoryImpl) bind AuthenticationRepository::class
     singleOf(::ResetPasswordRepositoryImpl) bind ResetPasswordRepository::class
 }
-
 fun getRoomDatabase(builder: RoomDatabase.Builder<IdentityDatabase>): IdentityDatabase {
     return builder
         .fallbackToDestructiveMigration(dropAllTables = true)

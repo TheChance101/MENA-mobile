@@ -75,14 +75,16 @@ fun NavigationHost(
         composable<ExportTransactionsScreenRoute> {
             ExportTransactionScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
-                navigateToVewTransactionStatement = {
-                    navController.navigate(ViewTransactionsStatementScreenRoute)
+                navigateToVewTransactionStatement = { filterParams ->
+                    navController.navigate(filterParams.toRoute())
                 }
             )
         }
-        composable<ViewTransactionsStatementScreenRoute> {
+        composable<ViewTransactionsStatementScreenRoute> { backStackEntry ->
+            val filterParams = backStackEntry.toRoute<ViewTransactionsStatementScreenRoute>().toFilterParams()
             ViewTransactionStatementScreen(
-                onNavigateBackClicked = { navController.popBackStack() }
+                onNavigateBackClicked = { navController.popBackStack() },
+                filterParams = filterParams
             )
         }
     }
