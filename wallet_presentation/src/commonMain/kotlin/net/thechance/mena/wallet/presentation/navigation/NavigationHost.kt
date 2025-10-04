@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
@@ -77,13 +76,12 @@ fun NavigationHost(
             ExportTransactionScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
                 navigateToVewTransactionStatement = { filterParams ->
-                    navController.navigate(ViewTransactionsStatementScreenRoute)
-                    navController.saveInSavedState(filterParams)
+                    navController.navigate(filterParams.toRoute())
                 }
             )
         }
-        composable<ViewTransactionsStatementScreenRoute> {
-            val filterParams = navController.getFromSavedState<TransactionFilterParams>()
+        composable<ViewTransactionsStatementScreenRoute> { backStackEntry ->
+            val filterParams = backStackEntry.toRoute<ViewTransactionsStatementScreenRoute>().toFilterParams()
             ViewTransactionStatementScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
                 filterParams = filterParams

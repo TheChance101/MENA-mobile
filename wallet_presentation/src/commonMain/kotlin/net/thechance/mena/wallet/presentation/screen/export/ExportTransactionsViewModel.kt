@@ -297,11 +297,9 @@ class ExportTransactionsViewModel(
             year(); char('-'); monthNumber(); char('-');
             day(padding = Padding.ZERO)
         }
-        val startDateTime: LocalDate? =
-            currentState.startDate.toString().toStartOfDayLocalDateTime(formatter)
+        val startDateTime = currentState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
 
-        val endDateTime: LocalDate? = currentState.endDate.toString()
-            .toStartOfDayLocalDateTime(formatter)
+        val endDateTime = currentState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
 
         return TransactionFilterParams(
             types = currentState.selectedTransactionsTypes.map { it.toDomain() },
