@@ -20,7 +20,6 @@ import mena.wallet_presentation.generated.resources.select_date
 import mena.wallet_presentation.generated.resources.status
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.type
-import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -93,7 +92,7 @@ private fun TransactionTypesRow(
         modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
     ) {
         items(FilterType.entries) { type ->
-            Chip(
+            WalletChip(
                 text = stringResource(type.labelRes),
                 isSelected = selectedTypes?.contains(type) == true,
                 onClick = { onTypeSelected(type) }
@@ -112,7 +111,7 @@ private fun TransactionStatusRow(
         modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
     ) {
         items(FilterStatus.entries) { status ->
-            Chip(
+            WalletChip(
                 text = stringResource(status.labelRes),
                 isSelected = selectedStatus == status,
                 onClick = {
