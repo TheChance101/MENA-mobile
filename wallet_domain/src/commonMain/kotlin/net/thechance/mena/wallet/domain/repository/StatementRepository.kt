@@ -6,5 +6,4 @@ interface StatementRepository {
     suspend fun getTransactionsPdf(
         filterRequestParams: TransactionFilterParams? = null
     ): ByteArray
-    suspend fun getStoredTransactionsPdf(): ByteArray?
 }
