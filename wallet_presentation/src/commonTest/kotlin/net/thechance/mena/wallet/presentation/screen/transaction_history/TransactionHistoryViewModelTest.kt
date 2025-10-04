@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,7 +45,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `state should not have error when repository returns value`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns history
+        everySuspend { transactionRepository.getTransactionHistory(1,20,any()) } returns history
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         viewModel.state.test {
             awaitItem()
@@ -57,7 +58,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateBack effect when onBackClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,any()) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -70,7 +71,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToTransactionDetails effect when onTransactionCardClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,any()) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         val id = Uuid.random()
         advanceUntilIdle()
@@ -84,7 +85,7 @@ class TransactionHistoryViewModelTest {
 
     @Test
     fun `should send NavigateToExportTransaction effect when onExportClicked is called`() = runTest(testDispatcher) {
-        everySuspend { transactionRepository.getTransactionHistory(null) } returns emptyList()
+        everySuspend { transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,any()) } returns emptyList()
         val viewModel = TransactionHistoryViewModel(transactionRepository)
         advanceUntilIdle()
         viewModel.uiEffect.test {
@@ -132,7 +133,9 @@ class TransactionHistoryViewModelTest {
                 senderName = "Online Shop",
                 receiverName = "You",
                 type = TransactionType.ONLINE_PURCHASE
-            )
+            ),
         )
+        const val PAGE_SIZE = 20
+        const val PAGE = 1
     }
 }

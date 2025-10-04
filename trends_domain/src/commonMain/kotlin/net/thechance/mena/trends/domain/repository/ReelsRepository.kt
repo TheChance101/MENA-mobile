@@ -12,6 +12,15 @@ interface ReelsRepository {
         name: String,
         mimeType: String,
         size: Long,
-        bytes: ByteArray
+        bytes: ByteArray,
+        extension: String
     ): Flow <UploadReelProgress>
+    suspend fun uploadReelThumbnail(
+        thumbnail: ByteArray,
+        size: Long,
+        mimeType: String,
+        name: String,
+        extension: String,
+        id: String
+    )
 }

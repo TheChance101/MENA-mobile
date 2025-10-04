@@ -26,8 +26,11 @@ data class TransactionHistoryScreenState(
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val filterState: TransactionFilterState = TransactionFilterState(),
-    val isFilterVisible: Boolean = false
+    val isFilterVisible: Boolean = false,
+    val isPaginationLoading: Boolean = false,
+    val endOfPages: Boolean = false
 ) {
+
     data class TransactionHistoryUiState @OptIn(ExperimentalUuidApi::class) constructor(
         val id: Uuid,
         val timeAndDate: String = "",

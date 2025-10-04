@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -84,10 +83,12 @@ dependencies {
     add("kspCommonMainMetadata", libs.koin.ksp.compiler)
 }
 
-project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-    if(name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
+tasks.matching {
+    it.name.contains("compile") &&
+            it.name.contains("Kotlin") &&
+            !it.name.contains("ksp")
+}.configureEach {
+    dependsOn("kspCommonMainKotlinMetadata")
 }
 
 android {

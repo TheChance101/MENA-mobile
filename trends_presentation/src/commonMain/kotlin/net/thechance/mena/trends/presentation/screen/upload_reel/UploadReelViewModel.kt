@@ -10,7 +10,7 @@ import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
-import net.thechance.mena.trends.presentation.shared.util.video_util.VideoDurationExtractor
+import net.thechance.mena.trends.presentation.shared.util.video_util.VideoUtilities
 import net.thechance.mena.trends.presentation.shared.util.video_util.formatBytes
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -19,7 +19,7 @@ import org.koin.core.annotation.Provided
 internal class UploadReelViewModel(
     @Provided private val reelsRepository: ReelsRepository,
     @Provided private val videoValidator: VideoMetaDataValidator,
-    @Provided private val videoDurationExtractor: VideoDurationExtractor,
+    @Provided private val videoUtilities: VideoUtilities,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UploadReelScreenState, UploadReelScreenEffect>(
     UploadReelScreenState()
@@ -44,29 +44,33 @@ internal class UploadReelViewModel(
         readBytes: suspend () -> ByteArray
     ): FileUiState {
 
-        val bytes = readBytes()
-        validateFile(
+        val validatedFile = validateFile(
             file = file,
-            readBytes = bytes
+            readBytes = readBytes
         )
 
-        return file.copy(bytes = bytes)
+        return validatedFile
     }
 
     private suspend fun validateFile(
         file: FileUiState,
-        readBytes: ByteArray
-    ) {
+        readBytes: suspend () -> ByteArray
+    ): FileUiState {
         videoValidator.validateSize(file.sizeInBytes)
-        videoDurationExtractor.getDuration(readBytes)?.let { duration ->
+        val bytes = readBytes()
+        videoUtilities.getDuration(bytes)?.let { duration ->
             videoValidator.validateDuration(duration)
         }
+        return file.copy(bytes = bytes)
     }
 
     private fun onCreateVideoFileSuccess(file: FileUiState) {
         updateState {
             copy(
-                selectedFile = file.copy(sizeInMegaBytes = formatBytes(file.sizeInBytes)),
+                selectedFile = file.copy(
+                    bytes = file.bytes,
+                    sizeInMegaBytes = formatBytes(file.sizeInBytes)
+                ),
                 errorState = null
             )
         }
@@ -78,9 +82,10 @@ internal class UploadReelViewModel(
             block = {
                 reelsRepository.uploadReel(
                     name = trendFile.name,
-                    mimeType = trendFile.extension,
+                    mimeType = trendFile.mimeType,
                     size = trendFile.sizeInBytes,
-                    bytes = trendFile.bytes
+                    bytes = trendFile.bytes,
+                    extension = trendFile.extension
                 )
             },
             onStart = ::onUploadStarted,
@@ -90,6 +95,7 @@ internal class UploadReelViewModel(
             dispatcher = defaultDispatcher
         )
     }
+
 
     private fun onUploadStarted() {
         updateState { copy(uploadingTrendState = UploadReelScreenState.UploadingTrendState.UPLOADING) }
@@ -120,6 +126,69 @@ internal class UploadReelViewModel(
                 isNextButtonEnabled = true,
             )
         }
+        extractFrame(state.value.selectedFile)
+    }
+
+    private fun extractFrame(file: FileUiState) {
+        tryToExecute(
+            block = {
+                videoUtilities.extractVideoFrame(
+                    videoData = file.bytes,
+                    timeMs = 1L
+                )
+            },
+            onSuccess = ::onExtractFrameSuccess,
+            onError = ::onExtractFrameError,
+            dispatcher = defaultDispatcher
+        )
+    }
+
+    private fun onExtractFrameSuccess(thumbnail: ByteArray?) {
+        updateState { copy( thumbnail = thumbnail ) }
+    }
+
+    private fun onExtractFrameError(errorState: ErrorState) {
+        updateState { copy(errorState = errorState) }
+    }
+
+    private fun uploadThumbnail(){
+        tryToExecute(
+            block = {
+                state.value.trendId?.let {
+                    reelsRepository.uploadReelThumbnail(
+                        thumbnail = state.value.thumbnail ?: ByteArray(0),
+                        size = state.value.thumbnail?.size?.toLong() ?: 0L,
+                        name = state.value.selectedFile.name + "_thumbnail",
+                        mimeType = "image/jpeg",
+                        extension = "jpg",
+                        id = it
+                    )
+                }
+            },
+            onStart = ::onUploadThumbnailStarted,
+            onEnd = ::onUploadThumbnailFinished,
+            onSuccess = { onUploadThumbnailSuccess() },
+            onError = ::onUploadThumbnailError,
+            dispatcher = defaultDispatcher
+        )
+    }
+
+    private fun onUploadThumbnailStarted() {
+        updateState { copy(isNextButtonLoading = true) }
+    }
+
+    private fun onUploadThumbnailFinished() {
+        updateState { copy(isNextButtonLoading = false) }
+    }
+
+    private fun onUploadThumbnailSuccess(){
+        state.value.trendId?.let {
+            sendEffect(UploadReelScreenEffect.NavigateToAddDescription(it))
+        }
+    }
+
+    private fun onUploadThumbnailError(errorState: ErrorState) {
+        updateState { copy(errorState = errorState) }
     }
 
     private fun onValidationError(errorState: ErrorState) {
@@ -132,6 +201,7 @@ internal class UploadReelViewModel(
 
     override fun onEditVideoClick() {
         uploadingTrendJob?.cancel()
+        deleteVideo()
         updateState {
             copy(
                 selectedFile = FileUiState(),
@@ -178,8 +248,6 @@ internal class UploadReelViewModel(
     }
 
     override fun onNextClick() {
-        state.value.trendId?.let {
-            sendEffect(UploadReelScreenEffect.NavigateToAddDescription(it))
-        }
+        uploadThumbnail()
     }
 }

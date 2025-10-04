@@ -72,4 +72,8 @@
     <string name="copied_ayah_successfully">Copied message successfully</string>
     <string name="default_snackbar_message">Bookmark added successfully</string>
     <string name="copied_ayah_failed">Copied ayah failed</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_unauthorized">You’re not authorized to perform this action.</string>
+    <string name="error_network">Network error. Please try again later.</string>
 </resources>

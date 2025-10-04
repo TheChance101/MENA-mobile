@@ -57,18 +57,19 @@ kover.reports {
         }
     }
 
+
+
     filters {
-        excludes {
-            packages(
-                "*.database",
-                "*.mapper",
-                "*.di",
+        includes {
+            classes(
+                "*RepositoryImpl",
+                "*MapperKt",
             )
         }
-        includes {
-            packages("*.repository")
-        }
 
+        excludes {
+            annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
+        }
     }
 }
 

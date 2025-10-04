@@ -255,7 +255,7 @@ class ExportTransactionsViewModel(
 
     private suspend fun onViewAndShareSuccess(pdfBytes: ByteArray) {
         resetViewAndShareState()
-        sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen)
+        sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(getTransactionFilterParams()))
     }
 
     private suspend fun onViewAndShareError(error: ErrorState) {
@@ -283,26 +283,29 @@ class ExportTransactionsViewModel(
     @OptIn(ExperimentalTime::class)
     private suspend fun generateTransactionsFile(): ByteArray {
         return if (currentState.isCustomFilterCardSelected) {
-            val formatter = LocalDate.Format {
-                year(); char('-'); monthNumber(); char('-');
-                day(padding = Padding.ZERO)
-            }
-            val startDateTime: LocalDate? =
-                currentState.startDate.toString().toStartOfDayLocalDateTime(formatter)
-
-            val endDateTime: LocalDate? = currentState.endDate.toString()
-                .toStartOfDayLocalDateTime(formatter)
 
             statementRepository.getTransactionsPdf(
-                TransactionFilterParams(
-                    types = currentState.selectedTransactionsTypes.map { it.toDomain() },
-                    startDate = startDateTime,
-                    endDate = endDateTime
-                )
+                getTransactionFilterParams()
             )
         } else {
             statementRepository.getTransactionsPdf()
         }
+    }
+
+    fun getTransactionFilterParams(): TransactionFilterParams {
+        val formatter = LocalDate.Format {
+            year(); char('-'); monthNumber(); char('-');
+            day(padding = Padding.ZERO)
+        }
+        val startDateTime = currentState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
+
+        val endDateTime = currentState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
+
+        return TransactionFilterParams(
+            types = currentState.selectedTransactionsTypes.map { it.toDomain() },
+            startDate = startDateTime,
+            endDate = endDateTime
+        )
     }
 
     private suspend fun handleDownloadError(error: ErrorState) {

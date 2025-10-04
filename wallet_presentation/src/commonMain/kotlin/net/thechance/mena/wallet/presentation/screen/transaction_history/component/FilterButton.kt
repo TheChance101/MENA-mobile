@@ -22,13 +22,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun FilterButton(
     activeFilterCount: Int,
     hasActiveFilters: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Button(
         contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
         onClick = onClick,
         containerColor = Theme.colorScheme.brand.brandVariant,
         shape = CircleShape,
+        modifier = modifier
     ) {
         Icon(
             modifier = Modifier.size(16.dp),

@@ -8,7 +8,12 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 interface TransactionRepository {
-    suspend fun getTransactionHistory(transactionFilterParams:TransactionFilterParams?): List<Transaction>
+    suspend fun getTransactionHistory(
+        page: Int,
+        pageSize: Int,
+        transactionFilterParams: TransactionFilterParams?
+    ): List<Transaction>
+
     suspend fun getTransactionById(transactionId: Uuid): Transaction
     suspend fun getFirstTransactionDate(): LocalDate?
 }

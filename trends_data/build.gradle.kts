@@ -12,13 +12,11 @@ plugins {
 }
 
 kotlin {
-    jvm()
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    jvm()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -27,6 +25,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.cio)
         }
+
         commonMain.dependencies {
             implementation(projects.trendsDomain)
             implementation(libs.koin.core)
@@ -36,12 +35,11 @@ kotlin {
             implementation(libs.kermit)
             implementation(projects.identityDomain)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
+
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
+
         commonTest.dependencies {
             implementation(libs.bundles.test)
         }

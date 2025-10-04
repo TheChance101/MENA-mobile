@@ -52,22 +52,12 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `initialization should fetch statement`() = runTest(testDispatcher) {
-        everySuspend { repository.getStoredTransactionsPdf() } returns statement
+        everySuspend { repository.getTransactionsPdf() } returns statement
         initViewModel()
 
         val state = viewModel.state.first()
 
         assertContentEquals((state.statement as UiState.Success).data, statement)
-    }
-
-    @Test
-    fun `initialization should save as error in the state when there is not statement`() = runTest(testDispatcher) {
-        everySuspend { repository.getStoredTransactionsPdf() } returns null
-        initViewModel()
-
-        val state = viewModel.state.first()
-
-        assertTrue(state.statement is UiState.Error)
     }
 
     @Test
@@ -82,7 +72,7 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `onShareClicked should send ShareStatement effect with statement when called`() = runTest(testDispatcher) {
-        everySuspend { repository.getStoredTransactionsPdf() } returns statement
+        everySuspend { repository.getTransactionsPdf() } returns statement
         initViewModel()
 
         viewModel.onShareClicked()
@@ -96,7 +86,7 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `initialization should save the error in the state when an error occurs while fetching the statement`() = runTest(testDispatcher) {
-        everySuspend { repository.getStoredTransactionsPdf() } throws Exception()
+        everySuspend { repository.getTransactionsPdf() } throws Exception()
         initViewModel()
 
         val state = viewModel.state.first()
@@ -105,7 +95,7 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `onShareClicked should not send ShareStatement effect when statement is not available`() = runTest(testDispatcher) {
-        everySuspend { repository.getStoredTransactionsPdf() } throws Exception()
+        everySuspend { repository.getTransactionsPdf() } throws Exception()
         initViewModel()
         viewModel.onShareClicked()
         viewModel.uiEffect.test {

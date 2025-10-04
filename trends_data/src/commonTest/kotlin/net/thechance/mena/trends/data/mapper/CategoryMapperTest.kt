@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.data.mapper
 
 import assertk.assertThat
-import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import net.thechance.mena.trends.data.dto.CategoryDto

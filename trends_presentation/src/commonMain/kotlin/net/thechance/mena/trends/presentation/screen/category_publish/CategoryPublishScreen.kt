@@ -26,11 +26,13 @@ import mena.trends_presentation.generated.resources.choose_categories
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_hint
 import mena.trends_presentation.generated.resources.new_trend
+import mena.trends_presentation.generated.resources.page_number
 import mena.trends_presentation.generated.resources.publish_categories_screen_count
 import mena.trends_presentation.generated.resources.publish_hint
 import mena.trends_presentation.generated.resources.publish_video
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.Button
+import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -56,9 +58,9 @@ internal fun CategoryPublishScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is CategoryPublishEffect.NavigateBack -> navController.popBackStack()
-            is CategoryPublishEffect.NavigateToTrends -> navController.navigate(
-                route = Route.Trends
-            )
+            is CategoryPublishEffect.NavigateToTrends -> navController.navigate(Route.Trends){
+                popUpTo(Route.MainContainer)
+            }
         }
     }
 
@@ -80,7 +82,15 @@ private fun CategoryPublishContent(
                     onBackClick = listener::onBackClick,
                     currentStepNumber = stringResource(Res.string.publish_categories_screen_count)
                 )
-            }
+            },
+            bottomBar = {
+                PublishButton(
+                    onPublishClick = { listener.onPublishClick() },
+                    isButtonEnabled = state.isPublishButtonEnabled(),
+                    isButtonLoading = state.isPublishButtonLoadingVisible,
+                )
+            },
+            modifier = Modifier.padding(bottom = Theme.spacing._24)
         ) {
             Column(
                 modifier = Modifier
@@ -103,7 +113,8 @@ private fun CategoryPublishContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16),
+                        .padding(horizontal = Theme.spacing._16)
+                        .padding(bottom = Theme.spacing._24),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -137,13 +148,8 @@ private fun CategoryPublishContent(
                 }
 
                 Spacer(Modifier.weight(1f))
-
-                PublishButton(
-                    onPublishClick = { listener.onPublishClick() },
-                    isButtonEnabled = state.isPublishButtonEnabled(),
-                    isButtonLoading = state.isPublishButtonLoadingVisible,
-                )
             }
+
         }
     } else {
         LoadingProgressBar()
@@ -165,16 +171,11 @@ private fun CategoryPublishAppBar(
         },
         title = stringResource(Res.string.new_trend),
         trailingContent = {
-            Text(
-                text = currentStepNumber,
-                style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier
-                    .background(
-                        shape = RoundedCornerShape(Theme.radius.full),
-                        color = Theme.colorScheme.background.surfaceLow
-                    )
-                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
+            Chip(
+                text = stringResource(Res.string.page_number, 3, 3),
+                isSelected = false,
+                isEnabled = true,
+                onClick = {},
             )
         }
     )

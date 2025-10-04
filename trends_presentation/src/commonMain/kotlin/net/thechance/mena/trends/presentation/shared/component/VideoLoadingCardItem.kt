@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.arrow_reload_horizontal
@@ -150,7 +151,9 @@ private fun VideoInfoSection(
                 modifier = Modifier.padding(
                     start = Theme.spacing._8,
                     bottom = Theme.spacing._4
-                )
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             when (videoState) {
@@ -171,7 +174,8 @@ private fun VideoInfoSection(
                                 end = Theme.spacing._12
                             )
                             .fillMaxWidth(),
-                        color = Theme.colorScheme.brand.brand
+                        color = Theme.colorScheme.brand.brand,
+                        progress = {progress}
                     )
                 }
 

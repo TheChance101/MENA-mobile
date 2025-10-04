@@ -13,6 +13,7 @@ import net.thechance.mena.trends.data.repository.util.fakeReelList
 import net.thechance.mena.trends.data.repository.util.getReelsResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
+import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.Test
 
@@ -47,7 +48,8 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should update reel successfully`() = runTest {
 
-        networkClient = createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
+        networkClient =
+            createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
         repository = ReelsRepositoryImpl(networkClient)
 
         val result = runCatching {
@@ -72,7 +74,8 @@ internal class ReelRepositoryImplTest {
                 name = FAKE_NAME,
                 mimeType = FAKE_MIME_TYPE,
                 size = FAKE_SIZE,
-                bytes = FAKE_BYTES
+                bytes = FAKE_BYTES,
+                extension = FAKE_EXTENSION
             )
         }
         assertThat(result).isSuccess()
@@ -88,7 +91,8 @@ internal class ReelRepositoryImplTest {
             name = FAKE_NAME,
             mimeType = FAKE_MIME_TYPE,
             size = FAKE_SIZE,
-            bytes = FAKE_BYTES
+            bytes = FAKE_BYTES,
+            extension = FAKE_EXTENSION
         ).toList()
 
         assertThat(progressUpdates).isNotEmpty()
@@ -98,10 +102,30 @@ internal class ReelRepositoryImplTest {
         assertThat(lastProgress.totalBytes).isEqualTo(FAKE_SIZE)
     }
 
+    @Test
+    fun `should upload reel thumbnail successfully when valid id provided`() = runTest {
+
+        networkClient = createReelsHttpClient { uploadReelThumbnailResponse() }
+        repository = ReelsRepositoryImpl(networkClient)
+        val result = runCatching {
+            repository.uploadReelThumbnail(
+                id = "1",
+                name = FAKE_NAME,
+                mimeType = FAKE_MIME_TYPE,
+                size = FAKE_SIZE,
+                thumbnail = FAKE_BYTES,
+                extension = FAKE_EXTENSION
+            )
+        }
+
+        assertThat(result).isSuccess()
+    }
+
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
-        const val FAKE_MIME_TYPE = "mp4"
+        const val FAKE_MIME_TYPE = "video/mp4"
+        const val FAKE_EXTENSION = "mp4"
         const val FAKE_NAME = "test_video"
     }
 }

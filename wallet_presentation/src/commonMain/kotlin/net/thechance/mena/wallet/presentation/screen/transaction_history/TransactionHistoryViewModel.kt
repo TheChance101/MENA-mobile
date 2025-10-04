@@ -10,18 +10,18 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
-import mena.wallet_presentation.generated.resources.failed_to_apply_filters
 import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.time.Clock
@@ -38,35 +38,7 @@ class TransactionHistoryViewModel(
 ), TransactionHistoryInteractionListener {
 
     init {
-        getTransactionHistory()
-    }
-
-    private fun getTransactionHistory(filters: TransactionFilterParams? = null) {
-        tryToExecute(
-            callee = { transactionRepository.getTransactionHistory(filters) },
-            onStart = ::onGetTransactionHistoryStart,
-            onSuccess = ::onGetTransactionHistorySuccess,
-            onError = ::onGetTransactionHistoryError,
-            dispatcher = Dispatchers.IO
-        )
-    }
-
-    private fun onGetTransactionHistoryStart() {
-        updateState { it.copy(isLoading = true, errorState = null) }
-    }
-
-    private fun onGetTransactionHistorySuccess(transactionHistory: List<Transaction>) {
-        updateState {
-            it.copy(
-                history = transactionHistory.map { it -> it.toUi() },
-                isLoading = false,
-                errorState = null
-            )
-        }
-    }
-
-    private fun onGetTransactionHistoryError(errorState: ErrorState) {
-        updateState { it.copy(errorState = errorState, isLoading = false) }
+        loadNextTransactions()
     }
 
     override fun onBackClicked() {
@@ -87,24 +59,30 @@ class TransactionHistoryViewModel(
 
     override fun onResetFilterClicked() {
         updateState { it.copy(filterState = TransactionFilterState()) }
-        getTransactionHistory(filters = null)
+        resetPaginator()
     }
 
     override fun onApplyFilterClicked() {
-        val filters = state.value.filterState
         if (areDatesValid().not()) {
             showInvalidDatesSnackBar()
             return
         }
-        tryToExecute(
-            callee = {
-                transactionRepository.getTransactionHistory(filters.toParams())
-            },
-            onStart = ::onGetTransactionFilterStart,
-            onSuccess = ::onGetTransactionFilterSuccess,
-            onError = ::onGetTransactionFilterError,
-            dispatcher = Dispatchers.IO
-        )
+        resetPaginator()
+    }
+
+    private fun resetPaginator() {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    isLoading = true
+                ),
+                history = emptyList(),
+                isLoading = true
+            )
+        }
+
+        paginator.reset()
+        loadNextTransactions()
     }
 
 
@@ -112,10 +90,6 @@ class TransactionHistoryViewModel(
         val startDate = currentState.filterState.startDate
         val endDate = currentState.filterState.endDate
         return (startDate != null && endDate != null && startDate > endDate).not()
-    }
-
-    override fun onRetryLoadTransactionHistoryClicked() {
-        getTransactionHistory()
     }
 
     override fun onStartDateClicked() {
@@ -126,7 +100,6 @@ class TransactionHistoryViewModel(
             fetchFirstTransactionDate()
         }
     }
-
 
 
     @OptIn(ExperimentalTime::class)
@@ -257,29 +230,6 @@ class TransactionHistoryViewModel(
         }
     }
 
-    private fun onGetTransactionFilterStart() {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    isLoading = true,
-                    errorState = null
-                )
-            )
-        }
-    }
-
-    private fun onGetTransactionFilterSuccess(transactionHistory: List<Transaction>) {
-        updateState {
-            it.copy(
-                isFilterVisible = false,
-                history = transactionHistory.map { tx -> tx.toUi() },
-                filterState = it.filterState.copy(
-                    isLoading = false,
-                    activeFilterCount = getActiveFilterCount()
-                )
-            )
-        }
-    }
 
     private fun getActiveFilterCount(): Int {
         val state = currentState.filterState
@@ -288,26 +238,67 @@ class TransactionHistoryViewModel(
                 (if (state.startDate != null || state.endDate != null) 1 else 0)
     }
 
-    private suspend fun onGetTransactionFilterError(errorState: ErrorState) {
+    override fun onNextPageRequested() {
+        loadNextTransactions()
+    }
+
+    override fun onRetryLoadTransactionHistoryClicked() {
+        loadNextTransactions()
+    }
+
+    private fun loadNextTransactions() {
+        viewModelScope.launch(Dispatchers.IO) {
+            paginator.loadNextItems()
+        }
+    }
+
+    private fun onPaginationLoading(isLoading: Boolean) {
         updateState {
             it.copy(
-                filterState = it.filterState.copy(
-                    isLoading = false,
-                    errorState = errorState
-                )
+                isLoading = isLoading && currentState.history.isEmpty(),
+                isPaginationLoading = isLoading && currentState.history.isNotEmpty(),
             )
         }
 
-        showSnackBar(
-            titleRes = Res.string.error,
-            messageRes = Res.string.failed_to_apply_filters,
-            isSuccess = false
-        )
+        if(isLoading) { updateState { it.copy(errorState = null) } }
     }
 
+    private suspend fun getPagedTransactions(page: Int): List<Transaction> =
+        transactionRepository.getTransactionHistory(
+            page = page,
+            pageSize = PAGE_SIZE,
+            transactionFilterParams = currentState.filterState.toParams()
+        )
+
+    private fun onPaginationSuccess(items: List<Transaction>) {
+
+        updateState {
+            it.copy(
+                history = it.history + items.map { transaction -> transaction.toUi() },
+                endOfPages = items.isEmpty()
+            )
+        }
+
+        if (currentState.isFilterVisible) {
+            updateState {
+                it.copy(
+                    isFilterVisible = false,
+                    filterState = it.filterState.copy(
+                        isLoading = false,
+                        activeFilterCount = getActiveFilterCount()
+                    )
+                )
+            }
+        }
+    }
+
+    private fun onPaginationError(throwable: Throwable?) {
+        updateState { it.copy(errorState = ErrorState.Unknown) }
+    }
 
     private fun showInvalidDatesSnackBar() {
         viewModelScope.launch {
+            val x = getString(Res.string.start_date_must_be_before_end_date)
             showSnackBar(
                 titleRes = Res.string.error,
                 messageRes = Res.string.start_date_must_be_before_end_date,
@@ -342,8 +333,20 @@ class TransactionHistoryViewModel(
         updateState { oldState -> oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false)) }
     }
 
+    private val paginator by lazy {
+        Paginator(
+            initialKey = INITIAL_PAGE,
+            onLoadUpdated = ::onPaginationLoading,
+            onRequest = ::getPagedTransactions,
+            getNextKey = { currentKey, _ -> currentKey + 1 },
+            onError = ::onPaginationError,
+            onSuccess = { result, newKey -> onPaginationSuccess(result) },
+            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
+        )
+    }
 
-
-
-
+    companion object {
+        const val PAGE_SIZE = 20
+        const val INITIAL_PAGE = 0
+    }
 }

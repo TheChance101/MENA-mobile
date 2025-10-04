@@ -60,7 +60,7 @@ internal fun VideoDescriptionScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            is VideoDescriptionEffect.NavigateBack -> navController.navigateUp()
+            is VideoDescriptionEffect.NavigateBack -> navController.popBackStack()
             is VideoDescriptionEffect.NavigateToSelectCategories -> navController.navigate(
                 Route.CategoriesPublish(trendId = effect.trendId, description = effect.description)
             )

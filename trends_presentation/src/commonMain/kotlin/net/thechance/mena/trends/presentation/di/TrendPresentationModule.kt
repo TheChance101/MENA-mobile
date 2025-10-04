@@ -1,7 +1,7 @@
 package net.thechance.mena.trends.presentation.di
 
-import net.thechance.mena.trends.presentation.shared.util.video_util.VideoDurationExtractor
-import net.thechance.mena.trends.presentation.shared.util.video_util.getVideoDurationExtractor
+import net.thechance.mena.trends.presentation.shared.util.video_util.VideoUtilities
+import net.thechance.mena.trends.presentation.shared.util.video_util.getVideoUtilities
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
@@ -11,7 +11,7 @@ import org.koin.core.annotation.Single
 class TrendPresentationModule {
 
     @Single
-    fun providesVideoDurationExtractor(): VideoDurationExtractor {
-        return getVideoDurationExtractor()
+    fun providesVideoDurationExtractor(): VideoUtilities {
+        return getVideoUtilities()
     }
 }

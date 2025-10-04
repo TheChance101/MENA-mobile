@@ -12,6 +12,7 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
@@ -19,6 +20,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
+import net.thechance.mena.trends.data.util.getHttpEngine
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
@@ -61,13 +63,16 @@ class NetworkClientImpl(
     }
 
     fun provideHttpClient(): HttpClient {
-        return HttpClient {
+        return HttpClient(engine = getHttpEngine()) {
             defaultRequest {
                 url(baseUrl)
             }
 
             install(Logging) {
-                level = LogLevel.ALL
+                level = LogLevel.HEADERS
+                filter { request ->
+                    request.body !is MultiPartFormDataContent
+                }
                 logger = object : Logger {
                     override fun log(message: String) {
                         println("Http client: $message")

@@ -12,6 +12,7 @@ interface TransactionHistoryInteractionListener {
     fun onTransactionCardClicked(id: Uuid)
     fun onExportClicked()
     fun onFilterClicked()
+    fun onNextPageRequested()
     fun onDismissFilter()
     fun selectFilterType(type: FilterType)
     fun selectFilterStatus(status: FilterStatus)

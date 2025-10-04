@@ -20,7 +20,7 @@ fun TransactionHistoryCard(
     transaction: TransactionHistoryScreenState.TransactionHistoryUiState,
     onTransactionCardClicked: () -> Unit,
     modifier: Modifier = Modifier
-    ) {
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()

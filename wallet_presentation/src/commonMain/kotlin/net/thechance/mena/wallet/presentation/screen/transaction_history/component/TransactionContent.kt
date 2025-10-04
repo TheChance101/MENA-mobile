@@ -14,7 +14,7 @@ import net.thechance.mena.wallet.presentation.screen.transaction_history.Transac
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
- fun TransactionContent(
+fun TransactionContent(
     transactionTitle: String,
     transactionTimeAndDate: String,
     amount: String,
@@ -25,7 +25,9 @@ import org.jetbrains.compose.resources.stringResource
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = if (transactionStatus.contentRes == Res.string.failed) Arrangement.spacedBy(4.dp) else Arrangement.spacedBy(8.dp)
+        verticalArrangement = if (transactionStatus.contentRes == Res.string.failed) Arrangement.spacedBy(
+            4.dp
+        ) else Arrangement.spacedBy(8.dp)
     ) {
         TransactionTitleAndAmount(
             transactionTitle = transactionTitle,

@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import io.github.vinceglb.filekit.PlatformFile
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.available_video_format
 import mena.trends_presentation.generated.resources.ic_trend_upload
@@ -37,7 +36,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun UploadVideoCard(
     modifier: Modifier = Modifier,
-    thumbnail: PlatformFile? = null,
+    thumbnail: ByteArray? = null,
     isEnabled: Boolean = true,
     onCardClick: () -> Unit = {},
     onEditClick: () -> Unit = {}
@@ -102,7 +101,6 @@ internal fun UploadVideoCard(
                 modifier = Modifier
                     .offset(y = 16.dp)
                     .align(Alignment.BottomCenter),
-                isClickEnabled =  thumbnail != null,
                 onClick = onEditClick
             )
         }

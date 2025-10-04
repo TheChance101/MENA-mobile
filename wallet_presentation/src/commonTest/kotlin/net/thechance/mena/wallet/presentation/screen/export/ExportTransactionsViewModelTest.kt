@@ -29,9 +29,10 @@ import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.CustomToastState
-import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.screen.export.file_saver.FileSaver
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -46,6 +47,7 @@ import kotlin.time.ExperimentalTime
 class ExportTransactionsViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val fileSaver = mock<FileSaver>(mode = MockMode.autofill)
+    private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ExportTransactionsViewModel
 
@@ -159,9 +161,9 @@ class ExportTransactionsViewModelTest {
 
         viewModel.state.test {
             skipItems(1)
-            viewModel.onFromDateClicked()
+            viewModel.onStartDateClicked()
             val state = awaitItem()
-            assertEquals("2025/09/01", state.startDate)
+            assertEquals(LocalDate.parse("2025/09/01"), state.startDate)
         }
     }
 
@@ -171,9 +173,9 @@ class ExportTransactionsViewModelTest {
 
         viewModel.state.test {
             skipItems(1)
-            viewModel.onToDateClicked()
+            viewModel.onEndDateClicked()
             val state = awaitItem()
-            assertEquals("2025/09/27", state.endDate)
+            assertEquals(LocalDate.parse("2025/09/27"), state.endDate)
         }
     }
 
@@ -631,6 +633,7 @@ class ExportTransactionsViewModelTest {
 
     private fun TestScope.initViewModel() {
         viewModel = ExportTransactionsViewModel(
+            transactionRepository = transactionRepository,
             statementRepository = repository,
             fileSaver = fileSaver,
             ioDispatcher = testDispatcher

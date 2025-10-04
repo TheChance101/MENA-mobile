@@ -15,7 +15,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.extension
-import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.nameWithoutExtension
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.CoroutineScope
@@ -24,9 +24,11 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.new_trend
+import mena.trends_presentation.generated.resources.page_number
 import mena.trends_presentation.generated.resources.upload_video
 import mena.trends_presentation.generated.resources.upload_video_description
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -39,6 +41,7 @@ import net.thechance.mena.trends.presentation.shared.component.VideoLoadingCardI
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
+import net.thechance.mena.trends.presentation.shared.util.video_util.getMimeTypeFromExtension
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,9 +57,7 @@ internal fun UploadReelScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is UploadReelScreenEffect.NavigateToAddDescription -> {
-                screenState.trendId?.let {
-                    navController.navigate(Route.VideoDescription(it))
-                }
+                navController.navigate(Route.VideoDescription(effect.id))
             }
 
             UploadReelScreenEffect.NavigateBack -> navController.popBackStack()
@@ -115,7 +116,7 @@ private fun UploadReelScreenContent(
             )
 
             VideoLoadingCardItem(
-                title = state.selectedFile.name,
+                title = "${state.selectedFile.name}.${state.selectedFile.extension}",
                 videoSize = state.selectedFile.sizeInMegaBytes,
                 videoState = state.uploadingTrendState,
                 progress = state.uploadedBytes.toFloat() / state.selectedFile.sizeInBytes.toFloat(),
@@ -149,9 +150,10 @@ private fun launchFilePicker(
     file?.let {
         coroutineScope.launch {
             val fileState = FileUiState(
-                name = file.name,
+                name = file.nameWithoutExtension,
                 extension = file.extension,
-                sizeInBytes = file.size()
+                sizeInBytes = file.size(),
+                mimeType = getMimeTypeFromExtension(file.extension).orEmpty()
             )
             onRetrieveVideo(fileState) { file.readBytes() }
         }
@@ -171,6 +173,14 @@ private fun UploadReelScreenTopBar(
             )
         },
         title = stringResource(Res.string.new_trend),
+        trailingContent = {
+            Chip(
+                text = stringResource(Res.string.page_number, 1, 3),
+                isSelected = false,
+                isEnabled = true,
+                onClick = {},
+            )
+        }
     )
 }
 

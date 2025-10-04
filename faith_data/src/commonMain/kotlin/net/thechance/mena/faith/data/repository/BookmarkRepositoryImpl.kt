@@ -12,6 +12,7 @@ import net.thechance.mena.faith.data.remote.dto.bookmark.AddBookmarkRequest
 import net.thechance.mena.faith.data.remote.dto.bookmark.AyahBookmarkDto
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
+import net.thechance.mena.faith.data.utils.executeLocalSafely
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import kotlin.time.ExperimentalTime
@@ -27,8 +28,8 @@ class BookmarkRepositoryImpl(
         val bookmarkDto = executeApiSafely<AyahBookmarkDto> {
             bookmarkApiService.addBookmark(AddBookmarkRequest(surahId, ayahNumber))
         }
-        val surah = ayahDao.getSurah(surahId)
-        val ayah = ayahDao.getAyah(surahId, ayahNumber)
+        val surah = executeLocalSafely { ayahDao.getSurah(surahId) }
+        val ayah = executeLocalSafely { ayahDao.getAyah(surahId, ayahNumber) }
 
         return AyahBookmark(
             id = bookmarkDto.id.toInt(),
@@ -44,8 +45,16 @@ class BookmarkRepositoryImpl(
         }
         return response.items.mapAsync {
             it.toAyahBookmark(
-                fetchSurah = ayahDao::getSurah,
-                fetchAyah = ayahDao::getAyah
+                fetchSurah = { surahId ->
+                    executeLocalSafely {
+                        ayahDao.getSurah(surahId)
+                    }
+                },
+                fetchAyah = { ayahId, surahId ->
+                    executeLocalSafely {
+                        ayahDao.getAyah(ayahId, surahId)
+                    }
+                }
             )
         }
     }

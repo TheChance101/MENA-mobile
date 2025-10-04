@@ -37,7 +37,7 @@ class TransactionRepositoryImplTest {
         networkClient = createNetworkClient(getRespond = successResponse)
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
-        val result = transactionRepository.getTransactionHistory(null)
+        val result = transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null)
         assertEquals(1, result.size)
         val transaction: Transaction = result.first()
         assertEquals(EXPECTED_AMOUNT, transaction.amount)
@@ -53,7 +53,7 @@ class TransactionRepositoryImplTest {
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
         assertFailsWith<UnknownException> {
-            transactionRepository.getTransactionHistory(null)
+            transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null)
         }
     }
 
@@ -81,6 +81,8 @@ class TransactionRepositoryImplTest {
 
 
     private companion object {
+        const val PAGE_SIZE = 20
+        const val PAGE = 1
         const val EXPECTED_ID = "550e8400-e29b-41d4-a716-446655440000"
         const val EXPECTED_SENDER = "Alice"
         const val EXPECTED_RECEIVER = "Bob"

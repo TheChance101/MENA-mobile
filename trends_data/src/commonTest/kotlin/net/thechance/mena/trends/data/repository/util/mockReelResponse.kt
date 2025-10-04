@@ -54,6 +54,14 @@ internal fun MockRequestHandleScope.deleteReelResponse(
     headers = jsonHeaders
 )
 
+internal fun MockRequestHandleScope.uploadReelThumbnailResponse(
+    status: HttpStatusCode = HttpStatusCode.OK
+) = respond(
+    content = "",
+    status = status,
+    headers = jsonHeaders
+)
+
 internal fun MockRequestHandleScope.updateReelResponse(
     id: String,
     description: String,

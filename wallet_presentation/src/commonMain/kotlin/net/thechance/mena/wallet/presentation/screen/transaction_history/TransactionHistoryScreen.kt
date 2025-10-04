@@ -2,16 +2,10 @@
 
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,16 +25,13 @@ import mena.wallet_presentation.generated.resources.share
 import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.screen.transaction_history.component.FilterButton
-import net.thechance.mena.wallet.presentation.screen.transaction_history.component.FilterTransactionEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
-import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryCard
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
+import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -57,7 +48,6 @@ fun TransactionHistoryScreen(
     navigateToExportTransaction: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
@@ -70,13 +60,16 @@ fun TransactionHistoryScreen(
         }
     )
 
-    TransactionHistoryContent(state = state, interactionListener = viewModel)
+    TransactionHistoryContent(
+        state = state,
+        interactionListener = viewModel
+    )
 }
 
 @Composable
 fun TransactionHistoryContent(
     state: TransactionHistoryScreenState,
-    interactionListener: TransactionHistoryInteractionListener
+    interactionListener: TransactionHistoryInteractionListener,
 ) {
     WalletScaffold(
         topBar = {
@@ -144,67 +137,17 @@ fun TransactionHistoryContent(
             state.errorState != null ->
                 ErrorView(onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
 
-            else ->
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Theme.colorScheme.background.surface)
-                        .padding(horizontal = 16.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp)
-                ) {
-                    item {
-                        if (state.history.isNotEmpty() || state.filterState.activeFilterCount != 0) {
-                            FilterButton(
-                                activeFilterCount = state.filterState.activeFilterCount,
-                                hasActiveFilters = state.filterState.hasActiveFilters,
-                                onClick = interactionListener::onFilterClicked
-                            )
-                        }
-                    }
-                    when {
-                        state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
-                            item {
-                                Box(
-                                    modifier = Modifier.fillParentMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    TransactionHistoryEmpty()
-                                }
-                            }
-                        }
+            state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
+                TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
+            }
 
-                        state.history.isEmpty() && state.filterState.activeFilterCount > 0 -> {
-                            item {
-                                Box(
-                                    modifier = Modifier.fillParentMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    FilterTransactionEmpty()
-                                }
-                            }
-                        }
-
-                        state.history.isNotEmpty() -> {
-                            items(state.history) { transaction ->
-                                TransactionHistoryCard(
-                                    transaction = transaction,
-                                    onTransactionCardClicked = {
-                                        interactionListener.onTransactionCardClicked(transaction.id)
-                                    }
-                                )
-                                if (state.history.last() != transaction) {
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(top = 4.dp)
-                                            .fillMaxWidth()
-                                            .height(1.dp)
-                                            .background(Theme.colorScheme.stroke)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+            else -> {
+                TransactionsListContent(
+                    modifier = Modifier.fillMaxSize(),
+                    interactionListener = interactionListener,
+                    state = state,
+                )
+            }
         }
     }
 }
