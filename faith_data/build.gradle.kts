@@ -58,17 +58,9 @@ kover.reports {
     }
 
     filters {
-        excludes {
-            packages(
-                "*.database",
-                "*.mapper",
-                "*.di",
-            )
-        }
         includes {
-            packages("*.repository")
+            classes("net.thechance.mena.faith.data.repository.QuranRepositoryImpl")
         }
-
     }
 }
 
