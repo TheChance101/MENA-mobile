@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.img_no_internet
+import mena.wallet_presentation.generated.resources.no_internet
 import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -46,7 +46,7 @@ fun WalletScaffold(
                 when (errorState) {
                     is ErrorState.NoInternet -> {
                         ErrorView(
-                            image = painterResource(Res.drawable.img_no_internet),
+                            image = painterResource(Res.drawable.no_internet),
                             title = stringResource(Res.string.no_internet_title),
                             description = stringResource(Res.string.no_internet_content),
                             onRetry = onRetry ?: {}

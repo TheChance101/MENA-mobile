@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.img_no_internet
+import mena.wallet_presentation.generated.resources.no_internet
 import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.retry
@@ -35,7 +35,7 @@ internal fun NoInternetScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         StatePlaceholder(
-            image = painterResource(Res.drawable.img_no_internet),
+            image = painterResource(Res.drawable.no_internet),
             title = stringResource(Res.string.no_internet_title),
             description = stringResource(Res.string.no_internet_content),
         )
