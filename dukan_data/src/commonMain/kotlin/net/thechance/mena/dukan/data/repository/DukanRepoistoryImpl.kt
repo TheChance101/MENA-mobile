@@ -2,14 +2,10 @@ package net.thechance.mena.dukan.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.forms.MultiPartFormDataContent
-import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
@@ -90,8 +86,6 @@ class DukanRepositoryImpl(
             client.get("$BASE_URL/available?name=$name").body()
         }.available.not()
     }
-
-
 
     companion object {
         private const val BASE_URL = "/dukan"
