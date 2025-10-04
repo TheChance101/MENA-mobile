@@ -57,9 +57,18 @@ kover.reports {
         }
     }
 
+
+
     filters {
         includes {
-            classes("net.thechance.mena.faith.data.repository.QuranRepositoryImpl")
+            classes(
+                "*RepositoryImpl",
+                "*MapperKt",
+            )
+        }
+
+        excludes {
+            annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
         }
     }
 }
