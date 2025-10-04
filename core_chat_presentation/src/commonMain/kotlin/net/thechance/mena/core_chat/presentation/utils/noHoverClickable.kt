@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun Modifier.noHoverClickable(
-    enabled: Boolean,
-    onClick: (() -> Unit)? = null
+    enabled: Boolean = true,
+    onClick: (() -> Unit)
 ): Modifier {
 
     val interactionSource = remember { MutableInteractionSource() }
