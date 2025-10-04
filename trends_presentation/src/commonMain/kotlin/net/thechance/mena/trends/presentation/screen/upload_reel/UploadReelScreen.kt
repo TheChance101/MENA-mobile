@@ -24,9 +24,11 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.new_trend
+import mena.trends_presentation.generated.resources.page_number
 import mena.trends_presentation.generated.resources.upload_video
 import mena.trends_presentation.generated.resources.upload_video_description
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -171,6 +173,14 @@ private fun UploadReelScreenTopBar(
             )
         },
         title = stringResource(Res.string.new_trend),
+        trailingContent = {
+            Chip(
+                text = stringResource(Res.string.page_number, 1, 3),
+                isSelected = false,
+                isEnabled = true,
+                onClick = {},
+            )
+        }
     )
 }
 
