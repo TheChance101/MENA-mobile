@@ -15,17 +15,10 @@ fun Modifier.noHoverClickable(
 
     val interactionSource = remember { MutableInteractionSource() }
 
-    return this.then(
-        other = if (enabled) {
-            Modifier.clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick
-            )
-
-        } else {
-            Modifier
-        }
+    return Modifier.clickable(
+        interactionSource = interactionSource,
+        indication = null,
+        onClick = onClick,
+        enabled = enabled
     )
-
 }

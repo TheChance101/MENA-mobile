@@ -45,9 +45,9 @@ fun MessageInfo(
         Theme.colorScheme.shadeTertiary
 
     Row(
-        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+        modifier = modifier.noHoverClickable(onClick = onFailClick, enabled = messageIsMine && messageStatus == MessageStatusUiState.FAILED),
     ) {
         Text(
             text = messageTime.formatAsTime(),
@@ -91,9 +91,7 @@ fun MessageInfo(
                         painter = painterResource(Res.drawable.ic_close_circle),
                         contentDescription = "Failed",
                         tint = messageInfoColor,
-                        modifier = Modifier
-                            .size(16.dp)
-                            .noHoverClickable(onClick = onFailClick)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }

@@ -54,7 +54,7 @@ fun ChatList(
             val isLastItem = items.indexOf(item) == 0
             val paddingBottom = if (isLastItem)
                 0.dp
-            else if (item is ChatListItem.Message && (item.data.isMarkedLastInSeries || item.data.showMessageInfo))
+            else if (item is ChatListItem.Message && (item.data.isMarkedLastInSeries))
                 Theme.spacing._16
             else
                 Theme.spacing._2

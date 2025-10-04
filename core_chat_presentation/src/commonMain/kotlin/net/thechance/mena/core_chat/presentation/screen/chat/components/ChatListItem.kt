@@ -42,7 +42,7 @@ fun ChatListItem(
         is ChatListItem.Message -> {
             val markedMessage = item.data
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = if (markedMessage.message.isMine) Arrangement.End else Arrangement.Start
             ) {
                 TextMessageItem(
@@ -52,7 +52,7 @@ fun ChatListItem(
                     isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
                     onClick = { onMessageClick(markedMessage.message.id) },
                     onFailClick = { onFailedMessageClick(markedMessage.message) },
-                    modifier = modifier
+                    modifier = Modifier
                 )
             }
         }

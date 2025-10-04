@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -47,10 +49,9 @@ fun BaseMessageLayout(
     onMessageClick: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
-    val messageBackground = if (message.isMine)
-        Theme.colorScheme.background.surfaceLow
-    else
-        Theme.colorScheme.brand.brandVariant
+    val messageBackground =
+        if (message.isMine) Theme.colorScheme.background.surfaceLow
+        else Theme.colorScheme.brand.brandVariant
 
     val messagePaddingStart = if (message.isMine)
         Theme.spacing._24
@@ -89,31 +90,35 @@ fun BaseMessageLayout(
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
-            if (!message.isMine && isMarkedLastInSeries) {
-                AsyncImage(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(color = Theme.colorScheme.background.surfaceLow)
-                        .padding(Theme.spacing._4)
-                        .size(24.dp),
-                    model = chatAvatarUrl,
-                    placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-                    error = painterResource(Res.drawable.ic_profile_placeholder),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "Contact photo",
-                )
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (!message.isMine && isMarkedLastInSeries) {
+                    AsyncImage(
+                        modifier = Modifier.fillMaxSize(),
+                        model = chatAvatarUrl,
+                        placeholder = painterResource(Res.drawable.ic_profile_placeholder),
+                        error = painterResource(Res.drawable.ic_profile_placeholder),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Contact photo",
+                    )
+                }
             }
 
             Box(
                 modifier = Modifier
                     .padding(start = messagePaddingStart, end = messagePaddingEnd)
                     .clip(messageShape)
+                    .noHoverClickable(onClick = onMessageClick)
                     .background(
                         color = messageBackground,
                         shape = messageShape
                     )
-                    .noHoverClickable(onClick = onMessageClick)
                     .padding(
                         horizontal = Theme.spacing._8,
                         vertical = Theme.spacing._4
@@ -125,8 +130,7 @@ fun BaseMessageLayout(
         }
         AnimatedVisibility(
             visible = showMessageInfo || isMarkedLastInSeries,
-            modifier = Modifier
-                .align(messageInfoAlignment)
+            modifier = Modifier.align(messageInfoAlignment)
         ) {
             MessageInfo(
                 messageTime = message.sendTime,
@@ -146,8 +150,8 @@ fun BaseMessageLayout(
 private fun PreviewBaseMessageLayout() {
     MenaTheme {
         Box(
-            modifier = Modifier
-                .background(Theme.colorScheme.background.surface)
+            modifier = Modifier.fillMaxWidth()
+//                .background(Color.Red)
         ) {
             BaseMessageLayout(
                 message = TextMessageUiState(
@@ -167,7 +171,6 @@ private fun PreviewBaseMessageLayout() {
                 )
             }
         }
-
     }
 }
 
