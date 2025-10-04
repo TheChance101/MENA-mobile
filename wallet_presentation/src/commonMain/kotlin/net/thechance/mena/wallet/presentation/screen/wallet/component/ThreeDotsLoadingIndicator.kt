@@ -77,7 +77,6 @@ fun ThreeDotsLoadingIndicator(
     }
 }
 
-
 @Preview
 @Composable
 fun LoadingDotsPreview() {

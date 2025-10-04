@@ -37,13 +37,15 @@ import mena.wallet_presentation.generated.resources.couldnt_load_tap_to_retry
 import mena.wallet_presentation.generated.resources.current_balance
 import mena.wallet_presentation.generated.resources.ic_reload
 import mena.wallet_presentation.generated.resources.img_silver
+import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.reload
 import mena.wallet_presentation.generated.resources.silver_coin
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.image.Image
+import androidx.compose.foundation.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.base.UiState.Idle.isSuccess
 import net.thechance.mena.wallet.presentation.utils.formatBalance
@@ -189,7 +191,12 @@ private fun BalanceContent(
             }
 
             is UiState.Error -> {
+                val errorMessage = when (balanceState.error) {
+                    ErrorState.NoInternet -> stringResource(Res.string.no_internet_content)
+                    else -> stringResource(Res.string.couldnt_load_tap_to_retry)
+                }
                 BalanceErrorContent(
+                    errorMessage = errorMessage,
                     onRetry = onRetry,
                     modifier = Modifier.padding(vertical = 7.dp)
                 )
@@ -212,6 +219,7 @@ private fun BalanceContent(
 
 @Composable
 private fun BalanceErrorContent(
+    errorMessage: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -221,7 +229,7 @@ private fun BalanceErrorContent(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(Res.string.couldnt_load_tap_to_retry),
+            text = errorMessage,
             style = Theme.typography.body.small,
             color = Theme.colorScheme.error,
         )
@@ -243,7 +251,7 @@ private fun BalanceCardPreview() {
         ) {
             BalanceCard(balance = UiState.Loading, onRetry = {})
             BalanceCard(balance = UiState.Success(530320.55), onRetry = {})
-            BalanceCard(balance = UiState.Error(Exception()), onRetry = {})
+            BalanceCard(balance = UiState.Error(ErrorState.NoInternet), onRetry = {})
         }
     }
 }

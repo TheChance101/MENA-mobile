@@ -26,6 +26,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.koin.core)
             implementation(projects.dukanDomain)
+            implementation(projects.identityDomain)
             implementation(libs.junit)
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)

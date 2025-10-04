@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.createDukan.content.compone
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -26,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.ic_edit
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.map.MapStyle
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState

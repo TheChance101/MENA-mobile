@@ -44,14 +44,10 @@ class ResetPasswordRepositoryImpl(
         }
     }
 
-    override suspend fun resetPassword(
-        newPassword: String,
-        confirmPassword: String,
-        phoneNumber: PhoneNumber
-    ) {
+    override suspend fun resetPassword(newPassword: String, confirmPassword: String) {
         forgetPasswordSafeWrapper<String> {
             client.postJson(
-                ResetPasswordRequestDto(newPassword, confirmPassword, phoneNumber.getFormattedPhoneNumber()),
+                ResetPasswordRequestDto(newPassword, confirmPassword, sessionId),
                 RESET_PASSWORD
             )
         }
@@ -73,8 +69,8 @@ class ResetPasswordRepositoryImpl(
     }
 
     private companion object {
-        const val REQUEST_OTP = "identity/request-reset-password-otp"
-        const val VERIFY_OTP = "identity/verify-reset-password-otp"
-        const val RESET_PASSWORD = "identity/reset-password"
+        const val REQUEST_OTP = "identity/authentication/request-reset-password-otp"
+        const val VERIFY_OTP = "identity/authentication/verify-reset-password-otp"
+        const val RESET_PASSWORD = "identity/authentication/reset-password"
     }
 }

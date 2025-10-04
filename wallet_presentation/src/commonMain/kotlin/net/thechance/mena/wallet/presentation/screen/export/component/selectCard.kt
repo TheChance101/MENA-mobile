@@ -62,7 +62,6 @@ fun SelectCard(
         RadioButton(
             isSelected = isSelected,
             onClick = onCardSelected,
-            isEnabled = isSelected
         )
         Text(
             text = cardText,

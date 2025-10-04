@@ -44,12 +44,8 @@ class OtpScreenViewModel(
     }
 
     private fun verifySuccess() {
-        sendNewEffect(
-            OtpScreenUIEffect.NavigateToResetPassword(
-                phoneNumber = phoneNumber,
-                callingCode = callingCode,
-            )
-        )
+        sendNewEffect(OtpScreenUIEffect.NavigateToResetPassword)
+        updateState { copy(otpValue = "") }
     }
 
     override fun onChangeOtp(otp: String) {
@@ -93,10 +89,7 @@ class OtpScreenViewModel(
 
     private fun onError(errorState: ErrorState) {
         updateState {
-            copy(
-                isLoading = false,
-                errorMessage = mapErrorToMessage(errorState)
-            )
+            copy(isLoading = false, errorMessage = mapErrorToMessage(errorState))
         }
     }
 

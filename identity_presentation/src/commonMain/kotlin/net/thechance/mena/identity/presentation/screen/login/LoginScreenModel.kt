@@ -17,12 +17,12 @@ class LoginScreenModel(
     LoginScreenInteractionListener {
 
     override fun onLoginClicked() {
-        updateState { copy(isLoading = true , errorMessage = null ) }
+        updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
             function = ::onLogin,
             onSuccess = ::onLoginSuccess,
             onError = ::onErrorAccrue,
-            dispatcher
+            dispatcher = dispatcher
         )
     }
 

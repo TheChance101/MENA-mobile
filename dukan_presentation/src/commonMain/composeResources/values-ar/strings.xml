@@ -66,4 +66,12 @@
     <string name="koin_icon">أيقونة الفلوس</string>
     <string name="discount_icon">أيقونة الخصم</string>
 
+    <string name="error_image_max_limit">يمكنك رفع 10 صور كحد أقصى.</string>
+    <string name="error_image_size">يجب أن يكون حجم الصورة أقل من 5 ميجابايت.</string>
+    <string name="error_upload_failed">فشل الرفع، يرجى المحاولة مرة أخرى.</string>
+    <string name="error_general">حدث خطأ ما، يرجى المحاولة مرة أخرى.</string>
+    <string name="error_price_invalid">السعر غير صالح.</string>
+    <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
+    <string name="error_description_length">يجب أن يكون الوصف بين 100 و 3000 حرف.</string>
+
 </resources>

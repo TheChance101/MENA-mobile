@@ -4,14 +4,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
-import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.error
-import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
-import net.thechance.mena.wallet.presentation.base.SnackBarState
-import net.thechance.mena.wallet.presentation.utils.ImageSharer
+import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -21,13 +18,11 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class TransactionDetailsViewModel(
-    @Provided val imageSharer: ImageSharer,
+    @Provided private val transactionId: String,
     @Provided val transactionRepository: TransactionRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-    @Provided private val transactionId: String,
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
-    TransactionDetailsScreenState()
-), TransactionDetailsInteractionListener {
+    TransactionDetailsScreenState()), TransactionDetailsInteractionListener {
 
     init {
         getTransactionDetails()
@@ -49,15 +44,12 @@ class TransactionDetailsViewModel(
 
     private fun onGetTransactionDetailsSuccess(transaction: Transaction) {
         updateState {
-            it.copy(
-                isLoading = false,
-                transactionDetailsUiState =transaction.toUi()
-            )
+            it.copy(isLoading = false, transactionDetailsUiState = transaction.toUi())
         }
     }
 
-    private fun onGetTransactionDetailsError(throwable: Throwable) {
-        updateState { it.copy(isLoading = false, isError = throwable) }
+    private fun onGetTransactionDetailsError(errorState: ErrorState) {
+        updateState { it.copy(isLoading = false, errorState = errorState) }
     }
 
     private fun onGetTransactionDetailsStart() {
@@ -68,55 +60,32 @@ class TransactionDetailsViewModel(
         sendEffect(TransactionDetailsEffect.NavigateBack)
     }
 
-    override fun onShareReceiptButtonClicked(capture: suspend () -> Unit) {
-        tryToExecute(
-            callee = { capture() },
-            onSuccess = ::onShareReceiptSuccess,
-            onError = ::onShareReceiptError,
-            onStart = ::onShareReceiptStart,
-            dispatcher = ioDispatcher
-        )
+    override fun onShareReceiptButtonClicked() {
+        startButtonLoading()
+        sendEffect(TransactionDetailsEffect.CaptureImage)
     }
 
     @OptIn(ExperimentalUuidApi::class)
     override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {
-        tryToExecute(
-            callee = {
-                imageSharer.shareImage(
-                    imageBytes = byteArray,
-                    fileName = "$fileName.png",
-                    mimeType = IMAGE_TYPE
-                )
-            },
-            onSuccess = ::onScreenShotCapturedSuccess,
-            onError = ::onShareReceiptError,
-            onStart = ::onShareReceiptStart,
-            dispatcher = ioDispatcher
+        sendEffect(TransactionDetailsEffect.ShareImage(
+            imageBytes = byteArray,
+            fileName = "$fileName.png",
+            mimeType = IMAGE_TYPE
+            )
         )
+        stopButtonLoading()
     }
 
-    private fun onScreenShotCapturedSuccess(x: Unit) {
-        updateState { it.copy(isShareReceiptBtnLoading = false) }
+    override fun onRefresh() {
+        updateState { it.copy(isLoading = true, errorState = null) }
+        getTransactionDetails()
     }
 
-    private fun onShareReceiptSuccess(x: Unit) {
-        updateState { it.copy(isShareReceiptBtnLoading = false) }
+    override fun onCaptureError() {
+        sendEffect(TransactionDetailsEffect.showErrorSnackBar)
     }
 
-    private suspend fun onShareReceiptError(throwable: Throwable) {
-        updateState { it.copy(isShareReceiptBtnLoading = false) }
-        showSnackBar(
-            titleRes = Res.string.error,
-            messageRes = Res.string.share_transaction_details_error_msg,
-            isSuccess = false
-        )
-    }
-
-    private fun onShareReceiptStart() {
-        updateState { it.copy(isShareReceiptBtnLoading = true) }
-    }
-
-    private suspend fun showSnackBar(
+    suspend fun showSnackBar(
         titleRes: StringResource,
         messageRes: StringResource,
         isSuccess: Boolean,
@@ -146,9 +115,12 @@ class TransactionDetailsViewModel(
         }
     }
 
-    override fun onRefresh() {
-        updateState { it.copy(isLoading = true, isError = null) }
-        getTransactionDetails()
+    private fun stopButtonLoading() {
+        updateState { it.copy(isShareReceiptBtnLoading = false) }
+    }
+
+    private fun startButtonLoading() {
+        updateState { it.copy(isShareReceiptBtnLoading = true) }
     }
 
     private companion object {

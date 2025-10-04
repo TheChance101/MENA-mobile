@@ -1,6 +1,6 @@
 package net.thechance.mena.wallet.presentation.screen.export
 
-import net.thechance.mena.wallet.presentation.model.FilterStatus
+import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.presentation.model.FilterType
 
 interface ExportTransactionsListener {
@@ -8,8 +8,10 @@ interface ExportTransactionsListener {
     fun onAllTransactionsClicked()
     fun onCustomFilteringClicked()
     fun onTypeSelected(type: FilterType)
-    fun onFromDateClicked()
-    fun onToDateClicked()
+    fun onStartDateClicked()
+    fun onEndDateClicked()
+    fun onDismissDatePicker()
+    fun onPickDateClicked(date: LocalDate)
     fun onViewAndShareClicked()
     fun onDownloadClicked()
 }

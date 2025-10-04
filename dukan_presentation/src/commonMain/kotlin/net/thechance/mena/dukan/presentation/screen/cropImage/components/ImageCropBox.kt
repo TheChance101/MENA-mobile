@@ -45,10 +45,10 @@ import net.thechance.mena.dukan.presentation.util.imageCrop.toAspectRatio
 @Composable
 fun ImageCropBox(
     cropState: CropState,
+    aspectRatio: Float ,
     modifier: Modifier = Modifier,
     backgroundColor: Color = Color.Black,
     overlayColor: Color = Color.Black.copy(.44f),
-    aspectRatio: Float = 16f / 9f,
     cornerRadius: Dp = Theme.radius.lg,
     strokeWidth: Dp = 4.dp,
     cornerSize: Float = 0.1f,

@@ -16,10 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
@@ -42,8 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SurahAppBar(
-    surahName: String,
-    onBackClick: () -> Unit
+    surahName: String, onBackClick: () -> Unit
 ) {
     AppBar(
         leadingContent = {
@@ -51,12 +51,8 @@ internal fun SurahAppBar(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(Res.string.arrow_left)
             )
-        },
-        onLeadingClick = onBackClick,
-        title = surahName,
-        contentPadding = PaddingValues(
-            vertical = Theme.spacing._8,
-            horizontal = Theme.spacing._16
+        }, onLeadingClick = onBackClick, title = surahName, contentPadding = PaddingValues(
+            vertical = Theme.spacing._8, horizontal = Theme.spacing._16
         )
     )
 }
@@ -84,9 +80,7 @@ internal fun BasmalaHeader(
 
 @Composable
 internal fun AnimatedAyahActionButtons(
-    state: SurahScreenState,
-    listener: SurahInteractionListener,
-    modifier: Modifier = Modifier
+    state: SurahScreenState, listener: SurahInteractionListener, modifier: Modifier = Modifier
 ) {
 
     AnimatedVisibility(
@@ -100,53 +94,13 @@ internal fun AnimatedAyahActionButtons(
             AyahActionButtons(
                 onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
                 onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
-                onShareClick = { listener.onShareClick(state.selectedAyah) }
-            )
+                onShareClick = { listener.onShareClick(state.selectedAyah) })
         }
     }
 }
 
 private fun isValidAyahSelection(state: SurahScreenState): Boolean {
-    return state.selectedAyahIndex != null &&
-            state.selectedAyahIndex >= 0 &&
-            state.selectedAyahIndex < state.ayatOfSurah.size
-}
-
-@Composable
-internal fun AyatContent(
-    annotatedText: AnnotatedString,
-    state: SurahScreenState,
-    ayat: List<Ayah>,
-    listener: SurahInteractionListener
-) {
-    var textLayoutResult by remember {
-        mutableStateOf<TextLayoutResult?>(null)
-    }
-
-    BasicText(
-        text = annotatedText,
-        onTextLayout = { textLayoutResult = it },
-        style = getAyahTextStyle(),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16)
-            .pointerInput(state.selectedAyahIndex) {
-                detectTapGestures(
-                    onTap = {
-                        if (state.isAyahActionButtonsVisible) listener.onDismissActionButtons()
-                    },
-                    onLongPress = { offset ->
-                        handleAyahLongPress(
-                            offset = offset,
-                            textLayoutResult = textLayoutResult,
-                            annotatedText = annotatedText,
-                            ayat = ayat,
-                            listener = listener
-                        )
-                    }
-                )
-            }
-    )
+    return state.selectedAyahIndex != null && state.selectedAyahIndex >= 0 && state.selectedAyahIndex < state.ayatOfSurah.size
 }
 
 @Composable
@@ -155,31 +109,66 @@ private fun getAyahTextStyle() = Theme.typography.quran.large.copy(
     textAlign = TextAlign.Justify
 )
 
-private fun handleAyahLongPress(
-    offset: Offset,
-    textLayoutResult: TextLayoutResult?,
-    annotatedText: AnnotatedString,
-    ayat: List<Ayah>,
-    listener: SurahInteractionListener
+
+@Composable
+internal fun UnifiedChunkText(
+    chunkAyat: List<Ayah>,
+    selectedAyahIndex: Int?,
+    onLongPress: (Ayah) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    textLayoutResult?.let { layoutResult ->
-        val position = layoutResult.getOffsetForPosition(offset)
-        val clickedAyahIndex = findClickedAyahIndex(annotatedText, position)
-        if (clickedAyahIndex >= 0 && clickedAyahIndex < ayat.size) {
-            val ayahContent = ayat[clickedAyahIndex].plainContent
-            listener.onAyahLongPress(ayahContent, clickedAyahIndex)
+    var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+
+    val styledText = buildAnnotatedString {
+        chunkAyat.forEach { ayah ->
+            val color = getAyahTextColor(selectedAyahIndex, ayah.number)
+            pushStyle(SpanStyle(color = color))
+            append(ayah.content)
+            pop()
+            append(" ")
         }
+    }
+
+    BasicText(
+        text = styledText,
+        style = getAyahTextStyle(),
+        onTextLayout = { textLayoutResult = it },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._8)
+            .pointerInput(selectedAyahIndex) {
+                detectTapGestures(onTap = { onDismiss() }, onLongPress = { offset ->
+                    textLayoutResult?.let { layout ->
+                        val ayahPosition = layout.getOffsetForPosition(offset)
+                        val clickedAyahIndex = findClickedAyahIndexFromPosition(
+                            ayat = chunkAyat, position = ayahPosition
+                        )
+                        if (clickedAyahIndex != -1) {
+                            val ayah = chunkAyat[clickedAyahIndex]
+                            onLongPress(ayah)
+                        }
+                    }
+                })
+            })
+}
+
+@Composable
+private fun getAyahTextColor(selectedAyahIndex: Int?, currentIndex: Int): Color {
+    return when (selectedAyahIndex) {
+        null -> Theme.colorScheme.shadePrimary
+        currentIndex -> Theme.colorScheme.shadeSecondary
+        else -> Theme.colorScheme.shadeTertiary
     }
 }
 
-private fun findClickedAyahIndex(
-    annotatedText: AnnotatedString,
-    offset: Int
+private fun findClickedAyahIndexFromPosition(
+    ayat: List<Ayah>, position: Int
 ): Int {
-    val annotations = annotatedText.getStringAnnotations(
-        tag = "AYAH",
-        start = offset,
-        end = offset
-    )
-    return annotations.firstOrNull()?.item?.toIntOrNull() ?: -1
+    var currentPosition = 0
+    ayat.forEachIndexed { index, ayah ->
+        val end = currentPosition + ayah.content.length
+        if (position in currentPosition..end) return index
+        currentPosition = end + 1
+    }
+    return -1
 }

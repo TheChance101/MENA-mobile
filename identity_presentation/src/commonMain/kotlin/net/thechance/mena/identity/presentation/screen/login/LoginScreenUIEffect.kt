@@ -4,7 +4,4 @@ sealed class LoginScreenUIEffect {
     data object NavigateToRegister : LoginScreenUIEffect()
     data object NavigateToForgotPassword : LoginScreenUIEffect()
     data object NavigateToHome : LoginScreenUIEffect()
-
-
-
 }

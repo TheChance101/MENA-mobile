@@ -54,6 +54,7 @@ fun ManageDukanScreen(
             }
 
             ManageDukanEffect.NavigateToAddProduct -> {
+                navController.navigate(DukanRoute.CreateProductScreenRoute)
             }
 
             ManageDukanEffect.NavigateToProductDetails -> {

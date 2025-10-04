@@ -22,6 +22,7 @@ class MainViewModel(
 
     private fun getDukanState() {
         tryToExecute(
+            onStart = { updateState { copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Loading)) } },
             block = ::getDukanStateBlock,
             onSuccess = ::onGetDukanStateSuccess,
             onError = ::onGetDukanStateError
@@ -33,7 +34,9 @@ class MainViewModel(
     }
 
     private fun onGetDukanStateSuccess(dukanState: MainScreenUiState.DukanState?) {
-        dukanState?.let {
+        if (dukanState == null) {
+            updateState { copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None)) }
+        } else {
             updateState { copy(dukanState = dukanState) }
         }
     }
@@ -56,6 +59,7 @@ class MainViewModel(
             DukanStatusUi.None -> emitEffect(MainEffect.NavigateToAddDukanScreen)
             DukanStatusUi.Pending -> emitEffect(MainEffect.NavigateToPendingDukanScreen)
             DukanStatusUi.Approved -> emitEffect(MainEffect.NavigateToManageDukanScreen)
+            DukanStatusUi.Loading -> {}
         }
     }
 }

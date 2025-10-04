@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createShelf
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +14,9 @@ import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
+import mena.dukan_presentation.generated.resources.something_went_wrong
+import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.exceptions.ShelfNameTakenException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
@@ -21,6 +25,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import dev.mokkery.matcher.any
+
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateShelfViewModelTest {
@@ -98,4 +104,77 @@ class CreateShelfViewModelTest {
         val state = createShelfViewModel.state.value
         assertTrue(state.snackBarState == null)
     }
+
+    @Test
+    fun `onBackButtonClicked SHOULD emit NavigateBack effect`() = runTest {
+        createShelfViewModel.effect.test {
+            createShelfViewModel.onBackButtonClicked()
+            assertEquals(CreateShelfEffect.NavigateBack, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onCreateButtonClicked SHOULD create shelf and navigate to manage dukan on success`() = runTest {
+        val title = "New Shelf"
+        createShelfViewModel.onTitleChanged(title)
+
+        everySuspend { shelfRepository.createShelf(Shelf(
+            id = "1",
+            name = "fake"
+        )) } returns Unit
+
+        createShelfViewModel.effect.test {
+            createShelfViewModel.onCreateButtonClicked()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // Check state isLoading reset
+            val state = createShelfViewModel.state.value
+            assertFalse(state.isLoading)
+
+            // Check navigation effect emitted
+            assertEquals(CreateShelfEffect.NavigateToManageDukan, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+
+
+
+
+
+    @Test
+    fun `onCreateButtonClicked SHOULD show general error when unknown exception thrown`() = runTest {
+        val title = "Failing Shelf"
+        createShelfViewModel.onTitleChanged(title)
+
+        everySuspend { shelfRepository.createShelf(any()) } throws RuntimeException("Unexpected")
+
+        createShelfViewModel.onCreateButtonClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = createShelfViewModel.state.value
+        assertFalse(state.isLoading)
+        assertTrue(state.snackBarState != null)
+        assertEquals(SnackBarType.ERROR, state.snackBarState!!.snackBarType)
+        assertEquals(Res.string.something_went_wrong, state.snackBarState!!.message)
+    }
+
+    @Test
+    fun `onCreateButtonClicked SHOULD show already exist error when ShelfNameTakenException thrown`() = runTest {
+        val title = "Existing Shelf"
+        createShelfViewModel.onTitleChanged(title)
+
+        everySuspend { shelfRepository.createShelf(any()) } throws ShelfNameTakenException()
+
+        createShelfViewModel.onCreateButtonClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = createShelfViewModel.state.value
+        assertFalse(state.isLoading)
+        assertTrue(state.snackBarState != null)
+        assertEquals(SnackBarType.ERROR, state.snackBarState!!.snackBarType)
+        assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState!!.message)
+    }
+
 }

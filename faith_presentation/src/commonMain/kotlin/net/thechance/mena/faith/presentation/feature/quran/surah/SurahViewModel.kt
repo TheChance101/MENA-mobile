@@ -7,6 +7,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.bookmark_added_successfully
 import mena.faith_presentation.generated.resources.copied_ayah_failed
 import mena.faith_presentation.generated.resources.copied_ayah_successfully
+import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
@@ -33,6 +34,7 @@ class SurahViewModel(
             execute = { quranRepository.getAyatOfSurah(surahId) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { ayat ->
+                handleBasmalaVisibility(surahId = surahId)
                 updateState {
                     it.copy(ayatOfSurah = ayat)
                 }
@@ -133,5 +135,16 @@ class SurahViewModel(
             message = Res.string.copied_ayah_failed,
             status = SnackBarState.Status.Error,
         )
+    }
+
+    private fun handleBasmalaVisibility(surahId: Int) {
+        val isTawbah = surahId == Surah.SurahOrder.AtTawbah.order
+        val isFatiha = surahId == Surah.SurahOrder.AlFatihah.order
+
+        val shouldShowBasmala = !(isTawbah || isFatiha)
+
+        updateState {
+            it.copy(isBasmalaVisible = shouldShowBasmala)
+        }
     }
 }

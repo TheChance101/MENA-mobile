@@ -474,7 +474,8 @@ class ManageDukanViewModelTest {
                 title = Res.string.delete_shelf_title,
                 description = Res.string.delete_shelf_description,
                 type = ConfirmDialogType.DELETE,
-                shelfId = "1"
+                shelfId = "1",
+                isDialogVisible = true
             )
             manageDukanViewModel.onShowDeleteShelfDailog(
                 shelfId = "1"

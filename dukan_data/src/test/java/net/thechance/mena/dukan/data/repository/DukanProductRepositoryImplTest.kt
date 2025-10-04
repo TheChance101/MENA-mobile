@@ -7,6 +7,7 @@ import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultCreate
 import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResult
 import net.thechance.mena.dukan.data.repository.mockEngine.product.productDto1
 import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.domain.util.CreateProductParams
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -25,15 +26,12 @@ class DukanProductRepositoryImplTest {
         )
 
         val responseProductId = repo.createProduct(
-            product = Product(
-                id = "",
+            params = CreateProductParams(
                 name = "new product",
                 description = "new product description",
                 price = 12.2,
-                imageUrls = emptyList(),
-                createdAt = ""
-            ),
-            shelfId = "shelf-123"
+                shelfId = "shelf-123"
+            )
         )
 
         assertTrue(called, "Expected the mock engine to be called")
@@ -54,7 +52,7 @@ class DukanProductRepositoryImplTest {
     @Test
     fun `uploadProductImages returns uploaded image URLs`() = runTest {
         val urls = repository.uploadProductImages(
-            fileName = listOf(),
+            fileName = listOf(""),
             fileBytes = listOf(ByteArray(0)),
             productId = createdProductResponseId
         )

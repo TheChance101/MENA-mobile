@@ -1,5 +1,6 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
+import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import kotlin.uuid.ExperimentalUuidApi
@@ -16,4 +17,9 @@ interface TransactionHistoryInteractionListener {
     fun selectFilterStatus(status: FilterStatus)
     fun onResetFilterClicked()
     fun onApplyFilterClicked()
+    fun onStartDateClicked()
+    fun onEndDateClicked()
+    fun onDismissDatePicker()
+    fun onPickDateClicked(date: LocalDate)
+    fun onRetryLoadTransactionHistoryClicked()
 }

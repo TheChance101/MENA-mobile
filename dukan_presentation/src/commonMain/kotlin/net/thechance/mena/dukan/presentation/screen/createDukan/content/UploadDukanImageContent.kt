@@ -33,6 +33,7 @@ fun UploadDukanImageContent(
         OnSystemBackPressed(interactionListener::onCancelCrop)
         AnimatedVisibility(state.isImageBeingCropped) {
             ImageCropScreen(
+                aspectRatio = 16f / 9f,
                 selectedImage = state.selectedImage,
                 onImageCrop = { image ->
                     interactionListener.onImageCrop(image)

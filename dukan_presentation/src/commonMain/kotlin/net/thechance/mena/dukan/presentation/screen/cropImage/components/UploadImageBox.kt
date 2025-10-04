@@ -37,7 +37,6 @@ import mena.dukan_presentation.generated.resources.ic_add_image
 import mena.dukan_presentation.generated.resources.ic_edit
 import mena.dukan_presentation.generated.resources.upload_dukan_image
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -50,7 +49,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun UploadImageContainer(
     onClick: (image: ImageSrc) -> Unit,
     image: ImageBitmap?,
-    showBottomIcon: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val dashEffect = PathEffect.dashPathEffect(floatArrayOf(16f, 12f), 0f)

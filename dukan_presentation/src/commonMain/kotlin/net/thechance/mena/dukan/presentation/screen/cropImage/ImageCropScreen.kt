@@ -36,6 +36,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ImageCropScreen(
     selectedImage: ImageSrc?,
+    aspectRatio: Float,
     onImageCrop: (ImageBitmap) -> Unit,
     viewModel: ImageCropViewModel = koinViewModel()
 ) {
@@ -56,11 +57,13 @@ fun ImageCropScreen(
     DukanImageCropContent(
         state = state.value,
         interactionListener = viewModel,
+        aspectRatio = aspectRatio,
     )
 }
 
 @Composable
 private fun DukanImageCropContent(
+    aspectRatio: Float,
     state: ImageCropUiState,
     interactionListener: ImageCropInteractionListener,
 ) {
@@ -78,6 +81,7 @@ private fun DukanImageCropContent(
         state.cropper.cropState?.let { cropState ->
             ImageCropBox(
                 cropState = cropState,
+                aspectRatio = aspectRatio,
                 modifier = Modifier.defaultMinSize(minHeight = 400.dp)
                     .weight(1f)
                     .fillMaxWidth()
@@ -110,6 +114,7 @@ private fun DukanImageCropContent(
 private fun DukanImageCropContentPreview() {
     MenaTheme {
         DukanImageCropContent(
+            aspectRatio = 1f,
             state = ImageCropUiState(),
             interactionListener = object : ImageCropInteractionListener {
                 override fun onUploadAnotherImageClicked(imageSrc: ImageSrc?) {}

@@ -13,7 +13,8 @@ import mena.wallet_presentation.generated.resources.sent
 import mena.wallet_presentation.generated.resources.success
 import mena.wallet_presentation.generated.resources.transaction_receive
 import mena.wallet_presentation.generated.resources.transaction_send
-import net.thechance.mena.wallet.presentation.base.SnackBarState
+import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -22,7 +23,7 @@ import kotlin.uuid.Uuid
 data class TransactionHistoryScreenState(
     val history: List<TransactionHistoryUiState> = emptyList(),
     val isLoading: Boolean = false,
-    val isError: Throwable? = null,
+    val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val filterState: TransactionFilterState = TransactionFilterState(),
     val isFilterVisible: Boolean = false

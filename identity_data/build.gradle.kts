@@ -1,16 +1,31 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kover)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
+    androidTarget()
     jvm()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "identity"
+            isStatic = true
+            linkerOpts.add("-lsqlite3")
+        }
+    }
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.androidx.room.sqlite.wrapper)
+        }
         commonMain.dependencies {
             implementation(projects.identityDomain)
             implementation(libs.kotlinx.coroutines.core)
@@ -19,6 +34,8 @@ kotlin {
             implementation(libs.ktor.client.cio)
             implementation(libs.koin.core)
             implementation(libs.multiplatform.settings)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -40,6 +57,26 @@ kover.reports {
     }
 
     filters.excludes {
-        packages("*.di", "*.dto", "*.utils")
+        packages("*.di", "*.dto", "*.utils", "*.database")
     }
+}
+
+android {
+    namespace = "net.thechance.mena.identity.data"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
 }

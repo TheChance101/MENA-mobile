@@ -10,4 +10,5 @@ interface ResetPasswordScreenInteractionListener : BaseInteractionListener {
     fun onClickResetPassword()
     fun onClickBack()
     fun onClearErrorMessage()
+    fun onClickOk()
 }

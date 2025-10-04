@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createShelf.CreateShelfViewModel
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropViewModel
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
@@ -18,6 +19,7 @@ internal val dukanViewModelModule = module {
     viewModelOf(::ManageDukanViewModel)
     viewModelOf(::ImageCropViewModel)
     viewModelOf(::MainViewModel)
+    viewModelOf(::CreateProductViewModel)
     viewModelOf(::ManageShelfViewModel)
     viewModelOf(::CreateShelfViewModel)
 }

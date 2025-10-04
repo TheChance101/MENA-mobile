@@ -11,9 +11,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDate
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.component.filter.FilterContent
+import net.thechance.mena.wallet.presentation.component.FilterContent
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsListener
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsState
@@ -29,11 +30,11 @@ fun FilterSection(
         FilterContent(
             showStatusFilter = false,
             selectedTypes = state.selectedTransactionsTypes,
-            fromDate = state.startDate,
-            toDate = state.endDate,
+            startDate = state.startDate?.toString() ?: "",
+            endDate = state.endDate?.toString() ?: "",
             onTypeSelected = interactionListener::onTypeSelected,
-            onFromClick = interactionListener::onFromDateClicked,
-            onToClick = interactionListener::onToDateClicked
+            onStartDateClicked = interactionListener::onStartDateClicked,
+            onEndDateClicked = interactionListener::onEndDateClicked
         )
     }
 }
@@ -59,8 +60,8 @@ private fun HorizontalDivider() {
 fun FilterSectionPreview() {
     val mockState = ExportTransactionsState(
         selectedTransactionsTypes = setOf(FilterType.SENT, FilterType.ONLINE_PURCHASE),
-        startDate = "2023/01/01",
-        endDate = "2023/12/31"
+        startDate = LocalDate(2023, 4, 2),
+        endDate = LocalDate(2024, 4, 2)
     )
 
     val mockListener = object : ExportTransactionsListener {
@@ -68,8 +69,10 @@ fun FilterSectionPreview() {
         override fun onAllTransactionsClicked() {}
         override fun onCustomFilteringClicked() {}
         override fun onTypeSelected(type: FilterType) {}
-        override fun onFromDateClicked() {}
-        override fun onToDateClicked() {}
+        override fun onStartDateClicked() {}
+        override fun onEndDateClicked() {}
+        override fun onDismissDatePicker() {}
+        override fun onPickDateClicked(date: LocalDate) {}
         override fun onViewAndShareClicked() {}
         override fun onDownloadClicked() {}
     }

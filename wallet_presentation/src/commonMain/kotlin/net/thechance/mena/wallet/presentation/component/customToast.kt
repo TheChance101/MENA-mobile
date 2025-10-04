@@ -23,7 +23,7 @@ import mena.wallet_presentation.generated.resources.downloading_started
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.base.CustomToastState
+import net.thechance.mena.wallet.presentation.model.CustomToastState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

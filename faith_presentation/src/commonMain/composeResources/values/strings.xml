@@ -69,7 +69,7 @@
     <string name="success_icon">Success Icon</string>
     <string name="error_icon">Error Icon</string>
     <string name="navigate_to_sur_screen">Go to Sur Screen</string>"
-    <string name="copied_ayah_successfully">Copied ayah successfully</string>
+    <string name="copied_ayah_successfully">Copied message successfully</string>
     <string name="default_snackbar_message">Bookmark added successfully</string>
     <string name="copied_ayah_failed">Copied ayah failed</string>
 </resources>

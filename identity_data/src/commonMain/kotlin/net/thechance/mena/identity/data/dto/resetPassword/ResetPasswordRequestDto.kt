@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class ResetPasswordRequestDto(
     val newPassword: String,
     val confirmPassword: String,
-    val phoneNumber: String,
+    val sessionId: String
 )

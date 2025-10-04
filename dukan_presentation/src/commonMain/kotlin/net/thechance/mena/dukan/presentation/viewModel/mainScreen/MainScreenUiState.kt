@@ -6,10 +6,11 @@ data class MainScreenUiState(
 ) {
     data class DukanState(
         val name: String = "",
-        val status: DukanStatusUi = DukanStatusUi.None
+        val status: DukanStatusUi = DukanStatusUi.Loading
     )
 
     enum class DukanStatusUi {
+        Loading,
         Pending,
         None,
         Approved

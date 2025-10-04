@@ -7,9 +7,11 @@ import kotlinx.coroutines.delay
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.balance_fetch_error_description
 import mena.wallet_presentation.generated.resources.error
+import mena.wallet_presentation.generated.resources.no_internet_title
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
-import net.thechance.mena.wallet.presentation.base.SnackBarState
+import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
@@ -43,16 +45,18 @@ class WalletViewModel(
         updateState { it.copy(balance = UiState.Success(balance)) }
     }
 
-    private suspend fun onGetBalanceError(throwable: Throwable) {
-        updateState { it.copy(balance = UiState.Error(throwable)) }
-
+    private suspend fun onGetBalanceError(error: ErrorState) {
+        updateState { it.copy(balance = UiState.Error(error)) }
+        val errorMessage = when (error) {
+            ErrorState.NoInternet -> Res.string.no_internet_title
+            else -> Res.string.balance_fetch_error_description
+        }
         showSnackBar(
             titleRes = Res.string.error,
-            messageRes = Res.string.balance_fetch_error_description,
+            messageRes = errorMessage,
             isSuccess = false
         )
     }
-
 
     private suspend fun showSnackBar(
         titleRes: StringResource,
@@ -78,9 +82,7 @@ class WalletViewModel(
 
     private fun hideSnackBar() {
         updateState { oldState ->
-            oldState.copy(
-                snackBar = oldState.snackBar.copy(isVisible = false)
-            )
+            oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
         }
     }
 

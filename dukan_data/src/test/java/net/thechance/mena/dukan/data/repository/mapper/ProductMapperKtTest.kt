@@ -3,23 +3,23 @@ package net.thechance.mena.dukan.data.repository.mapper
 import net.thechance.mena.dukan.data.repository.dto.product.CreateProductRequest
 import net.thechance.mena.dukan.data.repository.dto.product.ProductDto
 import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.domain.util.CreateProductParams
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class ProductMapperKtTest {
 
     @Test
-    fun `toCreateProductRequest maps domain product to request with shelfId`() {
-        val product = Product(
-            id = "p1",
+    fun `toCreateProductRequest maps params correctly to request object`() {
+
+        val params = CreateProductParams(
             name = "Demo Product",
             description = "A description",
             price = 10.5,
-            imageUrls = listOf("url1"),
-            createdAt = "2025-09-26T15:26:41.300823Z"
+            shelfId = "shelf-123"
         )
 
-        val request: CreateProductRequest = product.toCreateProductRequest("shelf-123")
+        val request: CreateProductRequest = params.toCreateProductRequest()
 
         assertEquals("Demo Product", request.name)
         assertEquals("A description", request.description)

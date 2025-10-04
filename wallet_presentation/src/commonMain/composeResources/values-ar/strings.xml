@@ -103,5 +103,9 @@
     <string name="view_transactions_statement_error_message">حدث خطأ اثناء تحميل لملف</string>">
     <string name="loading_pdf_message">جارٍ تحميل الملف ...</string>">
     <string name="rendering_pdf_message">اظهار الملف ...</string>">
+    <string name="start_date_must_be_before_end_date">تاريخ البداية يجب أن يسبق تاريخ النهاية</string>
+    <string name="failed_to_load_date_picker">فشل في تحميل التاريخ</string>
+    <string name="unknown_error_title">خطأ غير معروف</string>
+    <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
 
 </resources>

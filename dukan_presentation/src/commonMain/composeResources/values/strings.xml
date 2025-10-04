@@ -86,4 +86,24 @@
     <string name="edit_product_pencil">Edit Product Pencil </string>
     <string name="koin_icon">Koin Icon</string>
     <string name="discount_icon">Discount Icon</string>
+    <string name="add_product_">Add Product</string>
+    <string name="add">Add</string>
+    <string name="product_name">Product name</string>
+    <string name="shelf">shelf</string>
+    <string name="price">Price</string>
+    <string name="description">Description</string>
+    <string name="image_1_1">Image (1:1)</string>
+    <string name="one_selection_for_each_product">One selection for each product</string>
+    <string name="add_product_success">Add product successfully.</string>
+    <string name="image_size_mb">%1$d MB</string>
+
+    <string name="error_image_max_limit">You can upload a maximum of 10 images.</string>
+    <string name="error_image_size">Image size should be less than 5 MB.</string>
+    <string name="error_upload_failed">Upload failed, please try again.</string>
+    <string name="error_general">Something went wrong, please try again.</string>
+    <string name="error_price_invalid">Price is invalid.</string>
+    <string name="error_price_not_positive">Price must be greater than 0.0.</string>
+    <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
+
+
 </resources>
