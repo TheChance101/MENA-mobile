@@ -17,6 +17,7 @@ import mena.wallet_presentation.generated.resources.pick_start_date
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.presentation.component.CustomToast
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
@@ -32,7 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ExportTransactionScreen(
     onNavigateBackClicked: () -> Unit,
-    navigateToVewTransactionStatement: () -> Unit,
+    navigateToVewTransactionStatement: (filterParams: TransactionFilterParams) -> Unit,
     viewModel: ExportTransactionsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -113,13 +114,13 @@ private fun ExportTransactionScreenContent(
 private fun onExportTransactionsEffect(
     effect: ExportTransactionsEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToVewTransactionStatement: () -> Unit,
+    navigateToVewTransactionStatement: (filterParams: TransactionFilterParams) -> Unit,
 ) {
     when (effect) {
         is ExportTransactionsEffect.NavigateBack -> onNavigateBackClicked()
 
         is ExportTransactionsEffect.NavigateToViewFileScreen
-            -> navigateToVewTransactionStatement()
+            -> navigateToVewTransactionStatement(effect.filterParams)
     }
 }
 

@@ -1,6 +1,8 @@
 package net.thechance.mena.wallet.presentation.navigation
 
 import kotlinx.serialization.Serializable
+import net.thechance.mena.wallet.domain.model.TransactionStatus
+import net.thechance.mena.wallet.domain.model.TransactionType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -27,4 +29,9 @@ data class TransactionDetailsScreenRoute(
 data object ExportTransactionsScreenRoute: WalletRoute()
 
 @Serializable
-data object ViewTransactionsStatementScreenRoute: WalletRoute()
+data class ViewTransactionsStatementScreenRoute(
+    val types: List<TransactionType>? = null,
+    val status: TransactionStatus? = null,
+    val startDate: String? = null,
+    val endDate: String? = null,
+): WalletRoute()
