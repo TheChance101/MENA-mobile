@@ -45,8 +45,16 @@ class BookmarkRepositoryImpl(
         }
         return response.items.mapAsync {
             it.toAyahBookmark(
-                fetchSurah = executeLocalSafely { ayahDao::getSurah },
-                fetchAyah = executeLocalSafely { ayahDao::getAyah }
+                fetchSurah = { surahId ->
+                    executeLocalSafely {
+                        ayahDao.getSurah(surahId)
+                    }
+                },
+                fetchAyah = { ayahId, surahId ->
+                    executeLocalSafely {
+                        ayahDao.getAyah(ayahId, surahId)
+                    }
+                }
             )
         }
     }
