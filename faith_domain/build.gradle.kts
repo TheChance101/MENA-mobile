@@ -32,5 +32,9 @@ kover.reports {
                 "*UseCase"
             )
         }
+
+        excludes {
+            annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
+        }
     }
 }
