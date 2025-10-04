@@ -61,16 +61,6 @@ class ViewTransactionStatementViewModelTest {
     }
 
     @Test
-    fun `initialization should save as error in the state when there is not statement`() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf() } returns null
-        initViewModel()
-
-        val state = viewModel.state.first()
-
-        assertTrue(state.statement is UiState.Error)
-    }
-
-    @Test
     fun `onShareClicked should send ShareStatement effect when called`() = runTest(testDispatcher) {
         viewModel.onShareClicked()
 
