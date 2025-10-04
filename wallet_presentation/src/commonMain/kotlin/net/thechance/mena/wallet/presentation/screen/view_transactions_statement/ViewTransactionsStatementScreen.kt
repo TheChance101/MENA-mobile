@@ -18,7 +18,7 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share_
-import mena.wallet_presentation.generated.resources.img_no_internet
+import mena.wallet_presentation.generated.resources.no_internet
 import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.share_button_title
@@ -117,7 +117,7 @@ fun StatementViewer(
         is UiState.Error -> {
             if (statement.error is ErrorState.NoInternet)
                 ErrorView(
-                    image = painterResource(Res.drawable.img_no_internet),
+                    image = painterResource(Res.drawable.no_internet),
                     title = stringResource(Res.string.no_internet_title),
                     description = stringResource(Res.string.no_internet_content),
                     onRetry = onRetry
