@@ -66,7 +66,7 @@ fun Chip(
             .background(if (isEnabled) containerColor else Theme.colorScheme.disabled)
             .padding(
                 vertical = Theme.spacing._8,
-                horizontal = Theme.spacing._12
+                horizontal = Theme.spacing._16
             )
     ) {
 
