@@ -74,11 +74,9 @@ class LoginScreen(
             overlays = {
                 bottomSheet(state.showCountryBottomSheet) {
                     CountryPicker(
-                        isEnabled = state.countryPickerUIState.isEnabled,
-                        countries = state.countryPickerUIState.countries,
-                        onSelectCountryItem = listener::onSelectCountryItem,
+                        currentCountry = state.currentCountry,
+                        onClickConfirm = listener::onSelectCountryItem,
                         onDismiss = listener::onDismissBottomSheet,
-                        onClickConfirm = listener::onClickConfirmButton
                     )
                 }
             }
@@ -97,8 +95,8 @@ class LoginScreen(
                     LabeledPhoneNumberInput(
                         phoneNumber = state.phoneNumber,
                         onPhoneChange = listener::onPhoneChanged,
-                        countryCode = state.countryPickerUIState.currentCountry.callingCode,
-                        countryFlag = painterResource(state.countryPickerUIState.currentCountry.flagImage),
+                        countryCode = state.currentCountry.callingCode,
+                        countryFlag = painterResource(state.currentCountry.flagImage),
                         onCountryClick = listener::onPhoneCodeClicked
                     )
 

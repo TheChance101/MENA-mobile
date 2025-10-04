@@ -9,7 +9,6 @@ import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.selectByCountry
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class ForgetPasswordScreenViewModel(
@@ -22,37 +21,14 @@ class ForgetPasswordScreenViewModel(
 
     override fun onSelectCountryItem(country: MenaCountry) {
         updateState {
-            copy(
-                countryPickerUIState = countryPickerUIState.copy(
-                    selectedCountry = country,
-                    countries = countryPickerUIState.countries.selectByCountry(country),
-                    isEnabled = countryPickerUIState.currentCountry != country
-                )
-            )
-        }
-    }
-
-    override fun onClickConfirmButton() {
-        updateState {
-            copy(
-                showCountryBottomSheet = false,
-                countryPickerUIState = countryPickerUIState.copy(
-                    currentCountry = countryPickerUIState.selectedCountry!!,
-                    isEnabled = false
-                )
-            )
+            copy(currentCountry = country, showCountryBottomSheet = false)
         }
         changeIsContinueEnabled()
     }
 
     override fun onDismissBottomSheet() {
         updateState {
-            copy(
-                showCountryBottomSheet = false,
-                countryPickerUIState = countryPickerUIState.copy(
-                    selectedCountry = countryPickerUIState.currentCountry
-                )
-            )
+            copy(showCountryBottomSheet = false)
         }
     }
 
@@ -61,10 +37,10 @@ class ForgetPasswordScreenViewModel(
             function = {
                 resetPasswordRepository.requestOTP(
                     phoneNumber = PhoneNumber(
-                        countryCode = state.value.countryPickerUIState.currentCountry.callingCode,
+                        countryCode = state.value.currentCountry.callingCode,
                         localNumber = state.value.phoneNumber
                     ),
-                    countryCodeName = state.value.countryPickerUIState.currentCountry.countryCodeName
+                    countryCodeName = state.value.currentCountry.countryCodeName
                 )
             },
             onSuccess = ::verifyPhoneNumberSuccess,
@@ -77,8 +53,8 @@ class ForgetPasswordScreenViewModel(
         sendNewEffect(
             ForgetPasswordScreenUIEffect.NavigateToOTP(
                 phoneNumber = state.value.phoneNumber,
-                callingCode = state.value.countryPickerUIState.currentCountry.callingCode,
-                countryCode = state.value.countryPickerUIState.currentCountry.countryCodeName
+                callingCode = state.value.currentCountry.callingCode,
+                countryCode = state.value.currentCountry.countryCodeName
             )
         )
     }
@@ -102,7 +78,7 @@ class ForgetPasswordScreenViewModel(
 
     private fun changeIsContinueEnabled() {
         updateState {
-            val countryCode = countryPickerUIState.currentCountry.callingCode
+            val countryCode = currentCountry.callingCode
             val mobileNumberValid = loginUseCase.isMobileNumberValid(countryCode, phoneNumber)
             copy(isContinueEnabled = mobileNumberValid)
         }

@@ -5,7 +5,6 @@ import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCo
 
 interface ForgetPasswordScreenInteractionListener : BaseInteractionListener{
     fun onSelectCountryItem(country: MenaCountry)
-    fun onClickConfirmButton()
     fun onDismissBottomSheet()
     fun onClickContinue()
     fun onClickPhoneCode()

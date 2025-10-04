@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,20 +31,21 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.components.CountrySelectableRowItem
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.components.CountrySelectableRowItem
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ScaffoldScope.CountryPicker(
-    isEnabled: Boolean,
-    countries: List<SelectableCountryItemUiState>,
-    onSelectCountryItem: (MenaCountry) -> Unit,
+    currentCountry: MenaCountry,
     onDismiss: () -> Unit,
-    onClickConfirm: () -> Unit,
+    onClickConfirm: (MenaCountry) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val state: CountryPickerUIState by remember { mutableStateOf(CountryPickerUIState()) }
+    var selectedCountry by remember { mutableStateOf(currentCountry) }
+
     BottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier
@@ -59,8 +64,8 @@ fun ScaffoldScope.CountryPicker(
             ) {
                 PrimaryButton(
                     text = stringResource(Res.string.confirm),
-                    isEnabled = isEnabled,
-                    onClick = onClickConfirm,
+                    isEnabled = currentCountry != selectedCountry,
+                    onClick = { onClickConfirm(selectedCountry) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
@@ -68,7 +73,6 @@ fun ScaffoldScope.CountryPicker(
             }
         },
         sheetContent = {
-
             Text(
                 text = stringResource(Res.string.pick_your_country),
                 color = Theme.colorScheme.shadePrimary,
@@ -82,13 +86,13 @@ fun ScaffoldScope.CountryPicker(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 items(
-                    items = countries,
+                    items = state.countries,
                     key = { it.selectableCountry.item.callingCode }
                 ) { country ->
                     CountrySelectableRowItem(
                         selectedCountry = country.selectableCountry.item,
-                        isSelected = country.selectableCountry.isSelected,
-                        onClick = onSelectCountryItem,
+                        isSelected = country.selectableCountry.item == selectedCountry,
+                        onClick = { selectedCountry = country.selectableCountry.item },
                     )
                 }
             }
@@ -105,18 +109,9 @@ private fun CountryPickerPreview() {
             overlays = {
                 bottomSheet(true) {
                     CountryPicker(
-                        isEnabled = true,
-                        countries = List(18) {
-                            SelectableCountryItemUiState(
-                                selectableCountry = Selectable(
-                                    item = MenaCountry.PALESTINE,
-                                    isSelected = it == 0
-                                )
-                            )
-                        },
-                        onSelectCountryItem = {},
                         onDismiss = {},
-                        onClickConfirm = {}
+                        onClickConfirm = {},
+                        currentCountry = MenaCountry.IRAQ,
                     )
                 }
             }

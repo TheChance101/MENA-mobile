@@ -7,7 +7,6 @@ import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.selectByCountry
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class LoginScreenModel(
@@ -17,7 +16,7 @@ class LoginScreenModel(
     LoginScreenInteractionListener {
 
     override fun onLoginClicked() {
-        updateState { copy(isLoading = true , errorMessage = null ) }
+        updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
             function = ::onLogin,
             onSuccess = ::onLoginSuccess,
@@ -28,7 +27,7 @@ class LoginScreenModel(
 
     private suspend fun onLogin() {
         loginUseCase.login(
-            state.value.countryPickerUIState.currentCountry.callingCode,
+            state.value.currentCountry.callingCode,
             state.value.phoneNumber,
             state.value.password
         )
@@ -51,7 +50,7 @@ class LoginScreenModel(
 
     private fun changeIsLoginEnabled() {
         updateState {
-            val countryCode = countryPickerUIState.currentCountry.callingCode
+            val countryCode = currentCountry.callingCode
             val mobileNumberValid = loginUseCase.isMobileNumberValid(countryCode, phoneNumber)
             val passwordValid = loginUseCase.isPasswordValid(password)
             copy(isLoginEnabled = passwordValid && mobileNumberValid)
@@ -91,40 +90,10 @@ class LoginScreenModel(
 
 
     override fun onSelectCountryItem(country: MenaCountry) {
-        updateState {
-            copy(
-                countryPickerUIState = countryPickerUIState.copy(
-                    selectedCountry = country,
-                    countries = countryPickerUIState.countries.selectByCountry(country),
-                    isEnabled = countryPickerUIState.currentCountry != country
-                )
-            )
-        }
-    }
-
-    override fun onClickConfirmButton() {
-        updateState {
-            copy(
-                showCountryBottomSheet = false,
-                countryPickerUIState = countryPickerUIState.copy(
-                    currentCountry = countryPickerUIState.selectedCountry!!,
-                    isEnabled = false
-                )
-            )
-        }
-        changeIsLoginEnabled()
+        updateState { copy(currentCountry = country, showCountryBottomSheet = false) }
     }
 
     override fun onDismissBottomSheet() {
-        updateState {
-            copy(
-                showCountryBottomSheet = false,
-                countryPickerUIState = countryPickerUIState.copy(
-                    selectedCountry = countryPickerUIState.currentCountry,
-                    countries =  countryPickerUIState.countries.selectByCountry(countryPickerUIState.currentCountry),
-                    isEnabled = false
-                )
-            )
-        }
+        updateState { copy(showCountryBottomSheet = false) }
     }
 }

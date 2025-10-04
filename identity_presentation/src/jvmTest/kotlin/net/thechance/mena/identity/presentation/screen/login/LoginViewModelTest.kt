@@ -30,14 +30,13 @@ class LoginViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         useCase = mockk(relaxed = true)
-        viewModel = LoginScreenModel(useCase,testDispatcher)
+        viewModel = LoginScreenModel(useCase, testDispatcher)
 
     }
 
 
     private fun setupValidCountry() {
         viewModel.onSelectCountryItem(selectedCountry)
-        viewModel.onClickConfirmButton()
     }
 
     @Test
@@ -58,7 +57,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `should show invalid mobile number message when mobile number is wrong`() = runTest{
+    fun `should show invalid mobile number message when mobile number is wrong`() = runTest {
 
         val errorMessage = "Invalid mobile number"
         coEvery { useCase.login(any(), any(), any()) } throws InvalidMobileNumberException("")
@@ -71,7 +70,6 @@ class LoginViewModelTest {
 
 
     }
-
 
 
     @Test
@@ -109,7 +107,7 @@ class LoginViewModelTest {
 
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertTrue { viewModel.state.value.countryPickerUIState.currentCountry == selectedCountry }
+            assertTrue { viewModel.state.value.currentCountry == selectedCountry }
 
         }
 
@@ -150,7 +148,6 @@ class LoginViewModelTest {
         val phoneNumber = "1100661617"
 
         viewModel.onSelectCountryItem(selectedCountry)
-        viewModel.onClickConfirmButton()
         viewModel.onPhoneChanged(phoneNumber)
 
         testDispatcher.scheduler.advanceUntilIdle()
