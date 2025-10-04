@@ -63,7 +63,6 @@ class ForgetPasswordScreenViewModelTest {
             val phoneNumber = "01100661617"
             viewModel.onChangePhone(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
-            viewModel.onClickConfirmButton()
             coEvery {
                 resetPasswordRepository.requestOTP(
                     any(),
