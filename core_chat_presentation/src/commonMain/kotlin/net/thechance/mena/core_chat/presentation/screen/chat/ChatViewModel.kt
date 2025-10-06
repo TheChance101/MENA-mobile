@@ -34,7 +34,7 @@ class ChatViewModel(
     chatArgs: ChatArgs,
     effector: ChatEffector,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, defaultDispatcher),
+) : BaseViewModel<ChatState>(ChatState(), effector, defaultDispatcher),
     ChatInteractionListener {
 
     private var uiMessages: List<TextMessageUiState> = emptyList()
