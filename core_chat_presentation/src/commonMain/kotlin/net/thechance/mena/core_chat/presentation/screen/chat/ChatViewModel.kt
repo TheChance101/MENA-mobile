@@ -9,7 +9,6 @@ import kotlinx.coroutines.IO
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
-import mena.core_chat_presentation.generated.resources.error_cant_send_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -35,7 +34,7 @@ class ChatViewModel(
     chatArgs: ChatArgs,
     effector: ChatEffector,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ChatState>(ChatState(), effector, defaultDispatcher),
+) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, defaultDispatcher),
     ChatInteractionListener {
 
     init {
@@ -89,8 +88,7 @@ class ChatViewModel(
         val chatId = state.value.chatId
         val senderId = state.value.chatRequesterId
 
-        if (chatId == null || senderId == null || text.isEmpty())
-            return showErrorSnackBar(Res.string.error_cant_send_messages)
+        if (chatId == null || senderId == null || text.isEmpty()) return
 
         sendMessage(chatId, senderId, text)
     }

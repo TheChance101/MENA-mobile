@@ -10,5 +10,7 @@ object ApiConstants {
 
     const val CONTACTS_ENDPOINT = "$CHAT_ENDPOINT/contacts"
     const val SYNC_CONTACTS_ENDPOINT = "$CONTACTS_ENDPOINT/sync"
-    const val CHAT_HISTORY_ENDPOINT = "/chat/history"
+    const val CHAT_HISTORY_ENDPOINT = "$CHAT_ENDPOINT/history"
+
+    const val CHAT_DATABASE_BUILDER = "ChatDatabaseBuilder"
 }

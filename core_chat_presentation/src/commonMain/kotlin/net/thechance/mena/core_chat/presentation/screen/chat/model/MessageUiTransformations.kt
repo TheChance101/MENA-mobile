@@ -5,7 +5,6 @@ package net.thechance.mena.core_chat.presentation.screen.chat.model
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.presentation.utils.UiText

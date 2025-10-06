@@ -106,7 +106,7 @@ class ContactsViewModelTest {
     }
 
     @Test
-    fun `onRefreshContacts should load expected contact when repository returns data`() = runTest {
+    fun `onRefreshContactsClicked should load expected contact when repository returns data`() = runTest {
         everySuspend { contactsRepository.getUserContacts(any()) } returns PagedData(
             data = listOf(expectedContact),
             totalItems = 1,
@@ -116,7 +116,7 @@ class ContactsViewModelTest {
             ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
-        viewModel.onRefreshContacts()
+        viewModel.onRefreshContactsClicked()
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -127,7 +127,7 @@ class ContactsViewModelTest {
     }
 
     @Test
-    fun `onRefreshContacts should handle empty list when repository returns no contacts`() =
+    fun `onRefreshContactsClicked should handle empty list when repository returns no contacts`() =
         runTest {
             everySuspend { contactsRepository.getUserContacts(any()) } returns PagedData(
                 data = emptyList(),
@@ -138,7 +138,7 @@ class ContactsViewModelTest {
                 ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
             advanceUntilIdle()
 
-            viewModel.onRefreshContacts()
+            viewModel.onRefreshContactsClicked()
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -149,13 +149,13 @@ class ContactsViewModelTest {
         }
 
     @Test
-    fun `onBackClick should call popBackStack when invoked`() = runTest {
+    fun `onBackClicked should call popBackStack when invoked`() = runTest {
         everySuspend { effector.popBackStack() } returns Unit
         val viewModel =
             ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
-        viewModel.onBackClick()
+        viewModel.onBackClicked()
         advanceUntilIdle()
 
         verifySuspend {
@@ -164,20 +164,20 @@ class ContactsViewModelTest {
     }
 
     @Test
-    fun `onResyncClick should navigate to sync contacts when invoked`() = runTest {
+    fun `onReSyncClicked should navigate to sync contacts when invoked`() = runTest {
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
         val viewModel =
             ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
-        viewModel.onReSyncClick()
+        viewModel.onReSyncClicked()
         advanceUntilIdle()
 
         verifySuspend { effector.navigate(any(), any(), any()) }
     }
 
     @Test
-    fun `onContactClick should navigate to chat screen when called`() = runTest {
+    fun `onContactClicked should navigate to chat screen when called`() = runTest {
         val expectedChat = Chat(
             id = Uuid.random(),
             imageUrl = null,
@@ -191,15 +191,15 @@ class ContactsViewModelTest {
             ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
-        val contactId = Uuid.random().toString()
-        viewModel.onContactClick(contactId)
+        val contactId = Uuid.random()
+        viewModel.onContactClicked(contactId)
         advanceUntilIdle()
 
         verifySuspend { effector.navigate(any(), any(), any()) }
     }
 
     @Test
-    fun `onContactClick should show snack bar when repository throws error`() = runTest {
+    fun `onContactClicked should show snack bar when repository throws error`() = runTest {
         everySuspend { chatRepository.getChatByContactUserId(any()) } throws Exception()
         everySuspend { effector.showSnackBar(any()) } returns Unit
 
@@ -207,7 +207,7 @@ class ContactsViewModelTest {
             ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
         advanceUntilIdle()
 
-        viewModel.onContactClick(Uuid.random().toString())
+        viewModel.onContactClicked(Uuid.random())
         advanceUntilIdle()
 
         verifySuspend {
