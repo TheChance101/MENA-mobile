@@ -71,6 +71,7 @@ class ContactsViewModel(
     }
 
     private fun onLoadContactsSuccess(pagingData: PagingData<ContactUiState>?) {
+        println("Contacts ViewModel: ${pagingData}")
         updateState { it.copy(contacts = flowOf(pagingData ?: PagingData.empty())) }
     }
 

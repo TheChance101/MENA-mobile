@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.screen.chats
+package net.thechance.mena.core_chat.presentation.screen.main
 
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
@@ -7,10 +7,10 @@ import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
 import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 
-class ChatsViewModel(
+class ChatMainViewModel(
     private val contactsRepository: ContactsRepository,
     effector: ChatEffector
-) : BaseViewModel<ChatsUiState>(ChatsUiState(), effector) {
+) : BaseViewModel<ChatMainState>(ChatMainState(), effector) {
 
     fun onNewChatClicked() {
         tryToExecute(

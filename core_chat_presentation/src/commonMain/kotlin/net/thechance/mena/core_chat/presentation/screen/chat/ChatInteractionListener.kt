@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

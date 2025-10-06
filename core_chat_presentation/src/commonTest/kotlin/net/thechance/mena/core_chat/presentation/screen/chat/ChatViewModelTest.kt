@@ -29,6 +29,11 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
+import net.thechance.mena.core_chat.presentation.screen.chat.model.ChatListItem
+import net.thechance.mena.core_chat.presentation.screen.chat.model.MarkedMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.model.MessageStatusUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.model.toEntity
+import net.thechance.mena.core_chat.presentation.screen.chat.model.toUi
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.test.AfterTest
@@ -154,7 +159,7 @@ class ChatViewModelTest {
         val inputMessage = "hi"
         chatViewModel.updateState {
             chatViewModel.state.value.copy(
-                chat = it.chat.copy(id = chatId),
+                chatId = chatId,
                 inputMessage = inputMessage
             )
         }
@@ -171,7 +176,7 @@ class ChatViewModelTest {
         val inputMessage = "hi"
         chatViewModel.updateState {
             chatViewModel.state.value.copy(
-                chat = it.chat.copy(id = chatId),
+                chatId = chatId,
                 inputMessage = inputMessage
             )
         }
@@ -229,11 +234,12 @@ class ChatViewModelTest {
 
     @Test
     fun `onResendMessageClick should update the resend message state to sent when resend message success`() {
-        val failedMessage = messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+        val failedMessage =
+            messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
 
         chatViewModel.updateState {
             it.copy(
-                chat = it.chat.copy(id = chatId),
+                chatId = chatId,
                 failedMessageToReSend = failedMessage,
                 uiMessages = listOf(failedMessage)
             )
@@ -342,7 +348,6 @@ class ChatViewModelTest {
         val chatName = "Noor"
         val chatImage = "https://image.com/noor.jpg"
 
-        // Use fixed UUIDs instead of random ones for consistent testing
         val message1Id = Uuid.parse("22222222-2222-2222-2222-222222222222")
         val message2Id = Uuid.parse("33333333-3333-3333-3333-333333333333")
 

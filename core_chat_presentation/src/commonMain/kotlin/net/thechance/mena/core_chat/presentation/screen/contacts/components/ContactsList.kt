@@ -56,6 +56,7 @@ fun ContactsList(
                 ) { index ->
                     val contact = contacts[index]
 
+                    println("Contact: ${contact}")
                     contact?.let {
                         ContactItem(contact = it, onContactClick = { onContactClick(contact.menaUserId) })
                     }

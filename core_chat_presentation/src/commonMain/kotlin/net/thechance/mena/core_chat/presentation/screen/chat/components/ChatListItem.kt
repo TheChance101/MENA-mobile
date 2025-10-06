@@ -9,9 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
-import net.thechance.mena.core_chat.presentation.screen.chat.ChatUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.model.ChatListItem
+import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
@@ -20,7 +19,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun ChatListItem(
     item: ChatListItem,
-    chat: ChatUiState,
+    chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
     onFailedMessageClick: (TextMessageUiState) -> Unit,
     modifier: Modifier = Modifier
@@ -46,7 +45,7 @@ fun ChatListItem(
             ) {
                 TextMessageItem(
                     message = markedMessage.message,
-                    chatAvatarUrl = chat.avatarUrl,
+                    chatAvatarUrl = chatAvatarUrl,
                     showMessageInfo = markedMessage.showMessageInfo,
                     isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
                     onClick = { onMessageClick(markedMessage.message.id) },

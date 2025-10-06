@@ -33,13 +33,13 @@ fun ChatScreen(
 
 @Composable
 fun ChatScreenContent(
-    state: ChatScreenState = ChatScreenState(),
+    state: ChatState = ChatState(),
     interactions: ChatInteractionListener
 ) {
     Scaffold(
         topBar = {
             ChatHeader(
-                chatName = state.chat.name,
+                chatName = state.chatName,
                 onMenuClick = {},
                 onBackClick = interactions::onBackClicked,
                 modifier = Modifier
@@ -67,7 +67,7 @@ fun ChatScreenContent(
     ) {
         ChatList(
             items = state.chatListItems,
-            chat = state.chat,
+            chatAvatarUrl = state.chatAvatarUrl,
             onMessageClick = interactions::onMessageClicked,
             onFailedMessageClick = interactions::onFailedMessageClicked,
         )
