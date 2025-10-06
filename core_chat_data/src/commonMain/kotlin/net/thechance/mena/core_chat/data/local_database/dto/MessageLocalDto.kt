@@ -19,7 +19,7 @@ data class MessageLocalDto(
     val status: MessageStatus,
 ) {
     enum class MessageStatus {
-        SENDING,
+        LOADING,
         SENT,
         READ,
         FAILED

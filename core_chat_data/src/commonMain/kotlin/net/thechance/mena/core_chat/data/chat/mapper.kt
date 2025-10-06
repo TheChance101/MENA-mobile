@@ -60,12 +60,7 @@ fun Message.toLocalDto(): MessageLocalDto {
         text = this.text,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
-        status = when (status) {
-            MessageStatus.LOADING -> MessageLocalDto.MessageStatus.SENDING
-            MessageStatus.SENT -> MessageLocalDto.MessageStatus.SENT
-            MessageStatus.FAILED -> MessageLocalDto.MessageStatus.FAILED
-            MessageStatus.READ -> MessageLocalDto.MessageStatus.READ
-        }
+        status = status.toLocalDto()
     )
 }
 
@@ -76,11 +71,24 @@ fun MessageLocalDto.toEntity(): Message {
         chatId = Uuid.parse(this.chatId),
         text = this.text,
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
-        status = when (this.status) {
-            MessageLocalDto.MessageStatus.SENDING -> MessageStatus.LOADING
-            MessageLocalDto.MessageStatus.SENT -> MessageStatus.SENT
-            MessageLocalDto.MessageStatus.FAILED -> MessageStatus.FAILED
-            MessageLocalDto.MessageStatus.READ -> MessageStatus.READ
-        }
+        status = status.toEntity()
     )
+}
+
+fun MessageLocalDto.MessageStatus.toEntity(): MessageStatus {
+    return when (this) {
+        MessageLocalDto.MessageStatus.LOADING -> MessageStatus.LOADING
+        MessageLocalDto.MessageStatus.SENT -> MessageStatus.SENT
+        MessageLocalDto.MessageStatus.FAILED -> MessageStatus.FAILED
+        MessageLocalDto.MessageStatus.READ -> MessageStatus.READ
+    }
+}
+
+fun MessageStatus.toLocalDto(): MessageLocalDto.MessageStatus {
+    return when (this) {
+        MessageStatus.LOADING -> MessageLocalDto.MessageStatus.LOADING
+        MessageStatus.SENT -> MessageLocalDto.MessageStatus.SENT
+        MessageStatus.FAILED -> MessageLocalDto.MessageStatus.FAILED
+        MessageStatus.READ -> MessageLocalDto.MessageStatus.READ
+    }
 }

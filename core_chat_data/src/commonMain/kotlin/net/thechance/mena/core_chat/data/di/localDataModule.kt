@@ -16,9 +16,9 @@ import org.koin.dsl.module
 internal val localDataModule = module {
     single { createContactsProvider() }
     single { createSettingsDataStore() }
-    single(named("ChatDatabaseBuilder")) { getDatabaseBuilder() }
+    single(named(ChatDatabaseBuilder)) { getDatabaseBuilder() }
 
-    single<ChatDatabase> { getChatDatabase(get(named("ChatDatabaseBuilder"))) }
+    single<ChatDatabase> { getChatDatabase(get(named(ChatDatabaseBuilder))) }
     single<MessageDao> { get<ChatDatabase>().getMessageDao() }
 }
 
@@ -30,3 +30,5 @@ private fun getChatDatabase(builder: RoomDatabase.Builder<ChatDatabase>): ChatDa
     .setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()
+
+private const val ChatDatabaseBuilder = "ChatDatabaseBuilder"

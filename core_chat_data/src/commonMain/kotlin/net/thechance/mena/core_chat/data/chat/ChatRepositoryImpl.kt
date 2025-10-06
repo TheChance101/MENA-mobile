@@ -154,7 +154,7 @@ class ChatRepositoryImpl(
         webSocketManager.disconnect()
     }
 
-    companion object{
+    private companion object{
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
         const val CHAT_ID_PARAMETER = "chatId"

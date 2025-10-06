@@ -21,12 +21,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.thechance.mena.core_chat.data.chat.ChatRepositoryImpl
-import net.thechance.mena.core_chat.data.chat.ChatRepositoryImpl.Companion.CHAT_ENDPOINT
-import net.thechance.mena.core_chat.data.chat.ChatRepositoryImpl.Companion.CHAT_HISTORY_ENDPOINT
 import net.thechance.mena.core_chat.data.chat.dto.ChatDto
 import net.thechance.mena.core_chat.data.chat.dto.MessageRemoteDto
-import net.thechance.mena.core_chat.data.contacts.ContactsRepositoryImpl.Companion.CONTACTS_ENDPOINT
-import net.thechance.mena.core_chat.data.contacts.ContactsRepositoryImpl.Companion.SYNC_CONTACTS_ENDPOINT
 import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
@@ -183,3 +179,8 @@ fun createHttpClient(
         }
     }
 }
+
+private const val CONTACTS_ENDPOINT = "/chat/contacts"
+private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
+private const val CHAT_ENDPOINT = "/chat"
+private const val CHAT_HISTORY_ENDPOINT = "/chat/history"

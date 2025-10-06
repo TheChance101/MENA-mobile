@@ -84,7 +84,7 @@ class ContactsRepositoryImpl(
         }
     }
 
-    companion object {
+    private companion object {
         val USER_SYNCED_STATE_KEY = booleanPreferencesKey("user_synced_state_key")
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"

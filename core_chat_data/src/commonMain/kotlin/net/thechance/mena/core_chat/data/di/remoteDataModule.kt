@@ -20,7 +20,8 @@ internal val networkModule = module {
         createHttpClient(
             get(named(BASE_URL)),
             get(),
-            httpClientEngineFactory
+            httpClientEngineFactory,
+            get(named(CHAT_JSON))
         )
     }
     single<WebSocketManager> {

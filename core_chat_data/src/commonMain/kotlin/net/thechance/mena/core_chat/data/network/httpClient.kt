@@ -26,7 +26,8 @@ expect val httpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConf
 fun createHttpClient(
     baseUrl: String,
     authorizationService: AuthorizationService,
-    httpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
+    httpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>,
+    json: Json
 ): HttpClient {
     val timeOutIntervalMilliSeconds = 30_000L
     return HttpClient(httpClientEngineFactory) {
@@ -39,21 +40,13 @@ fun createHttpClient(
             accept(ContentType.Application.Json)
         }
 
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                    prettyPrint = true
-                    isLenient = true
-                }
-            )
-        }
+        install(ContentNegotiation) { json(json) }
 
         install(plugin = Auth) {
             bearer {
                 loadTokens {
                     BearerTokens(
-                        accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJiNmMyYzMyZi0wOWIzLTRjM2EtYjFhYy00N2IzZDhjMjA0NGUiLCJpYXQiOjE3NTk3NDA0ODksImV4cCI6MTc1OTc0NDA4OX0.NjjWnoYwHXFQxMzD64VShS6g3EP48mKB6x9UCDLrWSk",
+                        accessToken = authorizationService.getAccessToken(),
                         refreshToken = ""
                     )
                 }
