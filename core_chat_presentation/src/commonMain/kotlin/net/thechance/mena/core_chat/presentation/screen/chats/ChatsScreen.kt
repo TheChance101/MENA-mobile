@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.screen.main
+package net.thechance.mena.core_chat.presentation.screen.chats
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,7 +14,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ChatsScreen(
-    viewModel: ChatMainViewModel = koinViewModel<ChatMainViewModel>(),
+    viewModel: ChatsViewModel = koinViewModel<ChatsViewModel>(),
 ) {
     Row(
         modifier = Modifier

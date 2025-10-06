@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffectorImpl
-import net.thechance.mena.core_chat.presentation.screen.main.ChatMainViewModel
+import net.thechance.mena.core_chat.presentation.screen.chats.ChatsViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatArgs
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatArgsImpl
@@ -26,7 +26,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 internal val viewModelModule = module {
     single<CoroutineDispatcher> { Dispatchers.IO }
-    viewModelOf(::ChatMainViewModel)
+    viewModelOf(::ChatsViewModel)
     viewModelOf(::ContactsViewModel)
     viewModelOf(::SyncContactsViewModel)
     viewModelOf(::ChatViewModel)
