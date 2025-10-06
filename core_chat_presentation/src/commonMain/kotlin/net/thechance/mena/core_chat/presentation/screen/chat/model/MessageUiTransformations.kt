@@ -33,12 +33,23 @@ fun List<MarkedMessageUiState>.withDateSeparators(): List<ChatListItem> {
     return asReversed()
         .groupBy { it.message.sendTime.date }
         .flatMap { (date, messages) ->
+            val markedMessages = messages.markLastInGroup()
+
             buildList {
                 add(ChatListItem.DateSeparator(date.toLabel(today, yesterday)))
-                addAll(messages.map { ChatListItem.Message(it) })
+                addAll(markedMessages.map { ChatListItem.Message(it) })
             }
         }
         .asReversed()
+}
+
+private fun List<MarkedMessageUiState>.markLastInGroup(): List<MarkedMessageUiState> {
+    return mapIndexed { index, message ->
+        if (index == lastIndex)
+            message.copy(isMarkedLastInSeries = true)
+        else
+            message
+    }
 }
 
 private fun LocalDate.toLabel(
