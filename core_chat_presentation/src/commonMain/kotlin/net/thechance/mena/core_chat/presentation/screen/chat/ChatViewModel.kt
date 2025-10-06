@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
@@ -17,17 +16,16 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
-import net.thechance.mena.core_chat.presentation.screen.chat.model.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.model.MessageStatusUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.model.markLastInSeries
+import net.thechance.mena.core_chat.presentation.screen.chat.model.buildListItems
 import net.thechance.mena.core_chat.presentation.screen.chat.model.toEntity
 import net.thechance.mena.core_chat.presentation.screen.chat.model.toUi
-import net.thechance.mena.core_chat.presentation.screen.chat.model.withDateSeparators
+import net.thechance.mena.core_chat.presentation.screen.chat.model.toggleMessageInfo
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
-import net.thechance.mena.core_chat.presentation.utils.now
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -41,34 +39,39 @@ class ChatViewModel(
     ChatInteractionListener {
 
     init {
-        val chatId = getUuidOrNull(chatArgs.chatId)
-        val requesterUserId = getUuidOrNull(chatArgs.chatRequesterId)
+        updateInitialState(
+            chatId = getUuidOrNull(chatArgs.chatId),
+            requesterUserId = getUuidOrNull(chatArgs.chatRequesterId),
+            chatName = chatArgs.chatName,
+            chatAvatarUrl = chatArgs.chatImageUrl
+        )
+    }
 
-        if (chatId == null || requesterUserId == null) {
-            showSnackBarAndNavigateBack()
-        } else {
-            updateState {
-                it.copy(
-                    chatId = chatId,
-                    chatName = chatArgs.chatName,
-                    chatAvatarUrl = chatArgs.chatImageUrl,
-                    chatRequesterId = requesterUserId,
-                )
-            }
+    private fun updateInitialState(
+        chatId: Uuid?,
+        requesterUserId: Uuid?,
+        chatName: String,
+        chatAvatarUrl: String
+    ) {
+        if (chatId == null || requesterUserId == null) return showSnackBarAndNavigateBack()
 
-            subscribeToNewMessages(chatId)
-            loadChatHistory(chatId)
-            observeReadMessages()
+        updateState { state ->
+            state.copy(
+                chatId = chatId,
+                chatName = chatName,
+                chatAvatarUrl = chatAvatarUrl,
+                chatRequesterId = requesterUserId,
+            )
         }
+
+        subscribeToNewMessages(chatId)
+        loadChatHistory(chatId)
+        observeReadMessages()
     }
 
     private fun showSnackBarAndNavigateBack() {
-        showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.error),
-                message = UiText.StringRes(Res.string.error_cant_get_messages)
-            )
-        )
+        showErrorSnackBar(Res.string.error_cant_get_messages)
+
         popBackStack()
     }
 
@@ -78,61 +81,39 @@ class ChatViewModel(
     }
 
     override fun onInputMessageChanged(value: String) {
-        updateState { it.copy(inputMessage = value) }
+        updateState { state -> state.copy(inputMessage = value) }
     }
 
     override fun onSendMessageClicked() {
+        val text = state.value.inputMessage.trim()
         val chatId = state.value.chatId
         val senderId = state.value.chatRequesterId
 
-        if (chatId == null || senderId == null) {
-            showSnackBar(
-                SnackBarData(
-                    title = UiText.StringRes(Res.string.error),
-                    message = UiText.StringRes(Res.string.error_cant_send_messages)
-                )
-            )
-            return
-        }
+        if (chatId == null || senderId == null || text.isEmpty())
+            return showErrorSnackBar(Res.string.error_cant_send_messages)
 
-        val text = state.value.inputMessage.trim()
-        if (text.isEmpty()) return
+        sendMessage(chatId, senderId, text)
+    }
 
-        val now = LocalDateTime.now()
-        val uiMessage = TextMessageUiState(
+    private fun sendMessage(chatId: Uuid, senderId: Uuid, text: String) {
+        val message = TextMessageUiState(
             chatId = chatId,
-            sendTime = now,
             senderId = senderId,
-            status = MessageStatusUiState.SENDING,
-            isMine = true,
             text = text
         )
 
-        updateState { s ->
-            val newMessages = s.uiMessages + uiMessage
-            s.copy(
-                uiMessages = newMessages.sortedByDescending { it.sendTime },
-                inputMessage = "",
-                chatListItems = buildListItems(newMessages)
-            )
-        }
+        updateStateWithNewMessage(message)
+        updateState { state -> state.copy(inputMessage = "") }
 
         tryToExecute(
-            execute = { chatRepository.sendMessage(uiMessage.toEntity()) },
-            onSuccess = { onSendMessageSuccess(uiMessage) },
-            onError = { onSendMessageError(uiMessage) },
+            execute = { chatRepository.sendMessage(message.toEntity()) },
+            onSuccess = { onSendMessageSuccess(message) },
+            onError = { onSendMessageError(message) },
         )
     }
 
     private fun onSendMessageSuccess(message: TextMessageUiState) {
-        val updatedMessages =
-            state.value.uiMessages.filterNot { it.id == message.id && it.sendTime == message.sendTime }
-        updateState {
-            it.copy(
-                uiMessages = updatedMessages,
-                chatListItems = buildListItems(updatedMessages),
-            )
-        }
+        filterMessagesState { it.id != message.id && it.sendTime != message.sendTime }
     }
 
     private fun onSendMessageError(message: TextMessageUiState) {
@@ -140,27 +121,14 @@ class ChatViewModel(
     }
 
     override fun onMessageClicked(messageId: Uuid) {
-        updateState {
-            it.copy(
-                chatListItems = it.chatListItems.map { item ->
-                    if (item is ChatListItem.Message && item.data.message.id == messageId) {
-                        item.copy(
-                            data = item.data.copy(
-                                showMessageInfo = !item.data.showMessageInfo
-                            )
-                        )
-                    } else {
-                        item
-                    }
-                }
-            )
+        updateState { state ->
+            state.copy(chatListItems = state.chatListItems.toggleMessageInfo(messageId))
         }
     }
 
-
     override fun onFailedMessageClicked(message: TextMessageUiState) {
-        updateState {
-            it.copy(
+        updateState { state ->
+            state.copy(
                 isResendMessageDialogVisible = true,
                 failedMessageToReSend = message
             )
@@ -168,21 +136,18 @@ class ChatViewModel(
     }
 
     override fun onDeleteFailedMessageClicked() {
-        state.value.failedMessageToReSend?.let { failedMessage ->
-            tryToExecute(
-                execute = { chatRepository.deleteMessage(failedMessage.toEntity()) },
-                onSuccess = { onDeleteFailedMessageSuccess(failedMessage) }
-            )
-        }
+        val failedMessage = state.value.failedMessageToReSend ?: return
+
+        tryToExecute(
+            execute = { chatRepository.deleteMessage(failedMessage.toEntity()) },
+            onSuccess = { onDeleteFailedMessageSuccess(failedMessage) }
+        )
     }
 
     private fun onDeleteFailedMessageSuccess(failedMessage: TextMessageUiState) {
-        updateState { s ->
-            val updatedMessages = s.uiMessages.filterNot { it.id == failedMessage.id }
-                .sortedByDescending { it.sendTime }
-            s.copy(
-                uiMessages = updatedMessages,
-                chatListItems = buildListItems(updatedMessages),
+        filterMessagesState { it.id != failedMessage.id }
+        updateState { state ->
+            state.copy(
                 failedMessageToReSend = null,
                 isResendMessageDialogVisible = false
             )
@@ -190,169 +155,126 @@ class ChatViewModel(
     }
 
     override fun onResendMessageClicked() {
-        updateState { it.copy(isResendMessageDialogVisible = false) }
-        val failedMessage = state.value.failedMessageToReSend
-        updateState { s ->
-            val updatedMessages = s.uiMessages.toMutableList().mapIndexed { index, message ->
-                if (message.id == failedMessage?.id) {
-                    failedMessage.copy(status = MessageStatusUiState.SENDING)
-                } else {
-                    message
-                }
-            }
-            s.copy(
-                uiMessages = updatedMessages,
-                failedMessageToReSend = null,
+        val message = state.value.failedMessageToReSend ?: return
+
+        updateState { state ->
+            state.copy(
+                isResendMessageDialogVisible = false,
+                failedMessageToReSend = null
             )
         }
-        failedMessage?.let { message ->
-            tryToExecute(
-                execute = { chatRepository.sendMessage(message.toEntity()) },
-                onSuccess = { onSendMessageSuccess(message) },
-                onError = { onSendMessageError(message) },
-            )
-        }
+        updateStateWithNewMessage(message.copy(status = MessageStatusUiState.SENDING))
+
+        sendMessage(
+            chatId = message.chatId,
+            senderId = message.senderId,
+            text = message.text
+        )
     }
 
     override fun onResendMessageDialogDismissed() {
         updateState { it.copy(isResendMessageDialogVisible = false) }
     }
 
+    private fun subscribeToNewMessages(chatId: Uuid) {
+        tryToCollect(
+            collect = { chatRepository.subscribeToMessages(chatId) },
+            onCollect = ::onCollectNewMessage,
+            onError = { showErrorSnackBar(Res.string.error_cant_subscribe_to_new_messages) },
+        )
+    }
+
+    private fun onCollectNewMessage(message: Message?) {
+        if (message == null) return
+
+        val senderId = state.value.chatRequesterId ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
+
+        updateStateWithNewMessage(message.toUi(senderId))
+    }
+
     private fun loadChatHistory(chatId: Uuid) {
         tryToExecute(
             execute = {
-                val serverMessages = chatRepository.loadMessages(chatId)
-                val localMessages = chatRepository.getLocalMessages(chatId)
-                (serverMessages + localMessages)
+                val messagesHistory = chatRepository.loadMessages(chatId)
+                val pendingMessages = chatRepository.getLocalMessages(chatId)
+                (messagesHistory + pendingMessages)
             },
             onSuccess = ::onLoadChatHistorySuccess,
-            onError = ::onLoadChatHistoryError
+            onError = { showErrorSnackBar(Res.string.error_cant_get_messages) }
         )
     }
 
     private fun onLoadChatHistorySuccess(messages: List<Message>) {
-        val senderId = state.value.chatRequesterId
-        if (senderId == null) {
-            showSnackBar(
-                SnackBarData(
-                    title = UiText.StringRes(Res.string.error),
-                    message = UiText.StringRes(Res.string.error_cant_get_messages)
-                )
-            )
-            return
-        }
+        val senderId = state.value.chatRequesterId ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
 
-        val uiMessages =
-            messages.map { it.toUi(senderId) }
-                .sortedByDescending { it.sendTime }
-        updateState { s ->
-            s.copy(
-                uiMessages = uiMessages,
-                chatListItems = buildListItems(uiMessages)
-            )
-        }
 
-        val loadingMessages = messages.filter { it.status == MessageStatus.LOADING }
-        handleLoadingMessages(loadingMessages, senderId)
-    }
+        val uiMessages = messages.map { it.toUi(senderId) }
+        updateChatListItems(uiMessages)
 
-    private fun handleLoadingMessages(messages: List<Message>, senderId: Uuid) {
-        val loadingMessages = messages.filter { it.status == MessageStatus.LOADING }
-        loadingMessages.forEach { message ->
-            tryToExecute(
-                execute = { chatRepository.sendMessage(message) },
-                onSuccess = { onSendMessageSuccess(message.toUi(senderId)) },
-                onError = { onSendMessageError(message.toUi(senderId)) },
-            )
-        }
-    }
-
-    private fun onLoadChatHistoryError(throwable: Throwable) {
-        showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.error),
-                message = UiText.StringRes(Res.string.error_cant_get_messages)
-            )
-        )
-    }
-
-    private fun subscribeToNewMessages(chatId: Uuid) {
-        tryToCollect(
-            collect = { chatRepository.subscribeToMessages(chatId) },
-            onCollect = ::onSubscribeToNewMessagesSuccess,
-            onError = ::onSubscribeToNewMessagesError,
-        )
-    }
-
-    private fun onSubscribeToNewMessagesSuccess(newMessage: Message?) {
-        val senderId = state.value.chatRequesterId
-        if (senderId == null) {
-            showSnackBar(
-                SnackBarData(
-                    title = UiText.StringRes(Res.string.error),
-                    message = UiText.StringRes(Res.string.error_cant_get_messages)
-                )
-            )
-            return
-        }
-
-        newMessage?.toUi(senderId)?.let { incomingUi ->
-            updateStateWithNewMessage(incomingUi)
-        }
-    }
-
-    private fun onSubscribeToNewMessagesError(throwable: Throwable) {
-        showSnackBar(
-            snackBarData = SnackBarData(
-                title = UiText.StringRes(Res.string.error),
-                message = UiText.StringRes(Res.string.error_cant_subscribe_to_new_messages),
-            )
-        )
+        messages
+            .filter { it.status == MessageStatus.LOADING }
+            .forEach { sendMessage(chatId = it.chatId, senderId = senderId, text = it.text) }
     }
 
     private fun observeReadMessages() {
         tryToCollect(
             collect = { chatRepository.observeReadMessages() },
-            onCollect = ::onObserveReadMessagesSuccess
+            onCollect = ::onCollectReadMessagesEvent
         )
     }
 
-    private fun onObserveReadMessagesSuccess(readerId: String?) {
-        readerId?.let { readerId ->
-            updateState {
-                val updatedMessages = it.uiMessages.toMutableList().map { message ->
-                    if (message.senderId.toString() != readerId && message.status == MessageStatusUiState.SENT) {
-                        println("${message.text} :    ${message.senderId} != $readerId")
-                        message.copy(status = MessageStatusUiState.READ)
-                    } else {
-                        message
-                    }
-                }
-                it.copy(
-                    uiMessages = updatedMessages,
-                    chatListItems = buildListItems(updatedMessages)
-                )
-            }
+    private fun onCollectReadMessagesEvent(readerId: String?) {
+        if (readerId == null) return
+
+        mapMessagesState { message ->
+            if (message.senderId.toString() != readerId && message.status == MessageStatusUiState.SENT)
+                message.copy(status = MessageStatusUiState.READ)
+            else message
         }
+
     }
+
 
     private fun updateStateWithNewMessage(newMessage: TextMessageUiState) {
-        updateState { s ->
-            val merged =
-                s.uiMessages.toMutableList().apply { add(0, newMessage) }.distinctBy { it.id }
-                    .sortedByDescending { it.sendTime }
-            s.copy(uiMessages = merged, chatListItems = buildListItems(merged))
+        val messages = state.value.uiMessages.toMutableList()
+            .apply { add(0, newMessage) }
+            .distinctBy { it.id }
+            .sortedByDescending { it.sendTime }
+        updateChatListItems(messages)
+    }
+
+    private fun mapMessagesState(transform: (TextMessageUiState) -> TextMessageUiState) {
+        val messages = state.value.uiMessages.map(transform).distinctBy { it.id }
+            .sortedByDescending { it.sendTime }
+        updateChatListItems(messages)
+    }
+
+    private fun filterMessagesState(predicate: (TextMessageUiState) -> Boolean) {
+        val messages = state.value.uiMessages.filter(predicate).distinctBy { it.id }
+            .sortedByDescending { it.sendTime }
+        updateChatListItems(messages)
+    }
+
+    private fun updateChatListItems(messages: List<TextMessageUiState>) {
+        updateState { state ->
+            state.copy(
+                uiMessages = messages.distinctBy { it.id }.sortedByDescending { it.sendTime },
+                chatListItems = messages.buildListItems()
+            )
         }
     }
 
-    private fun buildListItems(uiMessages: List<TextMessageUiState>): List<ChatListItem> {
-        val marked = uiMessages.sortedByDescending { it.sendTime }.markLastInSeries()
-        return marked.withDateSeparators()
+    private fun showErrorSnackBar(stringRes: StringResource) {
+        showSnackBar(
+            SnackBarData(
+                title = UiText.StringRes(Res.string.error),
+                message = UiText.StringRes(stringRes)
+            )
+        )
     }
 
     override fun onCleared() {
         super.onCleared()
-        println("Disconnected")
         tryToExecute(
             coroutineScope = CoroutineScope(Dispatchers.IO), // Required to avoid cancellation
             execute = { chatRepository.disconnect() }

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import net.thechance.mena.core_chat.presentation.screen.chat.model.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.utils.asString
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
@@ -27,7 +28,7 @@ fun ChatListItem(
     when (item) {
         is ChatListItem.DateSeparator -> {
             Text(
-                text = item.label,
+                text = item.label.asString(),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeTertiary,
                 modifier = Modifier

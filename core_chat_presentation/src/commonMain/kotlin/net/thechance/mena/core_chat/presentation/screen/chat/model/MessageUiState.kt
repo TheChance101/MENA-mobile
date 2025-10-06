@@ -3,12 +3,14 @@
 package net.thechance.mena.core_chat.presentation.screen.chat.model
 
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
 sealed interface ChatListItem {
-    data class DateSeparator(val label: String) : ChatListItem
+    data class DateSeparator(val label: UiText) : ChatListItem
     data class Message(val data: MarkedMessageUiState) : ChatListItem
 }
 
@@ -17,10 +19,10 @@ data class TextMessageUiState(
     val id: Uuid = Uuid.random(),
     val senderId: Uuid = Uuid.random(),
     val chatId: Uuid = Uuid.random(),
-    val sendTime: LocalDateTime,
-    val status: MessageStatusUiState,
-    val isMine: Boolean,
-    val text: String
+    val sendTime: LocalDateTime = LocalDateTime.now(),
+    val status: MessageStatusUiState = MessageStatusUiState.SENDING,
+    val isMine: Boolean = true,
+    val text: String = ""
 )
 
 enum class MessageStatusUiState {
