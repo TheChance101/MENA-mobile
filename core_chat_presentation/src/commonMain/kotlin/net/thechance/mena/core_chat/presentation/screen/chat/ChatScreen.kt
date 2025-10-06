@@ -13,9 +13,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInpu
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -33,7 +31,7 @@ fun ChatScreen(
 
 @Composable
 fun ChatScreenContent(
-    state: ChatState = ChatState(),
+    state: ChatState,
     interactions: ChatInteractionListener
 ) {
     Scaffold(
@@ -71,14 +69,5 @@ fun ChatScreenContent(
             onMessageClick = interactions::onMessageClicked,
             onFailedMessageClick = interactions::onFailedMessageClicked,
         )
-    }
-}
-
-@Composable
-@Preview()
-private fun PreviewMessagingScreenDark() {
-
-    MenaTheme {
-        ChatScreen()
     }
 }
