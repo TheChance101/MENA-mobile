@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.amount_with_currency
 import mena.wallet_presentation.generated.resources.date_range
 import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.inflows
@@ -64,20 +65,15 @@ fun StatementHistoryCard(
 
 @Composable
 private fun StatementHistoryIcon() {
-    Box(
+    Icon(
+        painter = painterResource(Res.drawable.ic_clock),
+        contentDescription = null,
         modifier = Modifier
-            .clip(CircleShape)
-            .background(color = Theme.colorScheme.primary.onPrimary, shape = CircleShape)
             .size(48.dp)
-            .padding(Theme.spacing._12),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_clock),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp)
-        )
-    }
+            .clip(CircleShape)
+            .background(Theme.colorScheme.primary.onPrimary)
+            .padding(Theme.spacing._12)
+    )
 }
 
 @Composable
@@ -129,7 +125,11 @@ private fun FlowItem(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = amount + stringResource(Res.string.silvers),
+            text = stringResource(
+                Res.string.amount_with_currency,
+                amount,
+                stringResource(Res.string.silvers)
+            ),
             style = Theme.typography.label.extraSmall,
             color = color,
             modifier = Modifier.padding(end = Theme.spacing._4)
