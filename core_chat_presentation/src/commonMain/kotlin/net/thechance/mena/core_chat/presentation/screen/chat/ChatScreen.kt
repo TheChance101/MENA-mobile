@@ -33,7 +33,7 @@ fun ChatScreen(
 
 @Composable
 fun ChatScreenContent(
-    state: ChatState = ChatState(),
+    state: ChatScreenState = ChatScreenState(),
     interactions: ChatInteractionListener
 ) {
     Scaffold(
