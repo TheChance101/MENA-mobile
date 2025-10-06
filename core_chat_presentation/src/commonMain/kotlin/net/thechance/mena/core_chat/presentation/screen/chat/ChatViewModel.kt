@@ -38,6 +38,8 @@ class ChatViewModel(
 ) : BaseViewModel<ChatState>(ChatState(), effector, defaultDispatcher),
     ChatInteractionListener {
 
+    private var uiMessages: List<TextMessageUiState> = emptyList()
+
     init {
         updateInitialState(
             chatId = getUuidOrNull(chatArgs.chatId),
@@ -187,7 +189,8 @@ class ChatViewModel(
     private fun onCollectNewMessage(message: Message?) {
         if (message == null) return
 
-        val senderId = state.value.chatRequesterId ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
+        val senderId = state.value.chatRequesterId
+            ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
 
         updateStateWithNewMessage(message.toUi(senderId))
     }
@@ -205,7 +208,8 @@ class ChatViewModel(
     }
 
     private fun onLoadChatHistorySuccess(messages: List<Message>) {
-        val senderId = state.value.chatRequesterId ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
+        val senderId = state.value.chatRequesterId
+            ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
 
 
         val uiMessages = messages.map { it.toUi(senderId) }
@@ -236,7 +240,7 @@ class ChatViewModel(
 
 
     private fun updateStateWithNewMessage(newMessage: TextMessageUiState) {
-        val messages = state.value.uiMessages.toMutableList()
+        val messages = uiMessages.toMutableList()
             .apply { add(0, newMessage) }
             .distinctBy { it.id }
             .sortedByDescending { it.sendTime }
@@ -244,21 +248,21 @@ class ChatViewModel(
     }
 
     private fun mapMessagesState(transform: (TextMessageUiState) -> TextMessageUiState) {
-        val messages = state.value.uiMessages.map(transform).distinctBy { it.id }
+        val messages = uiMessages.map(transform).distinctBy { it.id }
             .sortedByDescending { it.sendTime }
         updateChatListItems(messages)
     }
 
     private fun filterMessagesState(predicate: (TextMessageUiState) -> Boolean) {
-        val messages = state.value.uiMessages.filter(predicate).distinctBy { it.id }
+        val messages = uiMessages.filter(predicate).distinctBy { it.id }
             .sortedByDescending { it.sendTime }
         updateChatListItems(messages)
     }
 
     private fun updateChatListItems(messages: List<TextMessageUiState>) {
+        uiMessages = messages.distinctBy { it.id }.sortedByDescending { it.sendTime }
         updateState { state ->
             state.copy(
-                uiMessages = messages.distinctBy { it.id }.sortedByDescending { it.sendTime },
                 chatListItems = messages.buildListItems()
             )
         }

@@ -14,7 +14,6 @@ data class ChatState(
     val chatRequesterId: Uuid? = null,
     val inputMessage: String = "",
     val chatListItems: List<ChatListItem> = emptyList(),
-    val uiMessages: List<TextMessageUiState> = emptyList(),
 
     val isResendMessageDialogVisible: Boolean = false,
 
