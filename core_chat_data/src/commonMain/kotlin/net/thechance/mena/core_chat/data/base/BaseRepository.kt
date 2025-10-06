@@ -1,15 +1,16 @@
 package net.thechance.mena.core_chat.data.base
 
-import com.bilalazzam.contacts_provider.ContactsPermissionDeniedException
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.util.reflect.TypeInfo
 import net.thechance.mena.core_chat.domain.exception.ChatException
+import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.UnAuthorizedException
 import net.thechance.mena.core_chat.domain.exception.UnknownException
+import com.bilalazzam.contacts_provider.ContactsPermissionDeniedException as ContactsProviderPermissionDeniedException
 
 interface BaseRepository {
 
@@ -50,11 +51,8 @@ interface BaseRepository {
     ): T? {
         return try {
             block()
-        } catch (e: ContactsPermissionDeniedException) {
-            throw net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException(
-                "Contacts Permission Denied!",
-                e
-            )
+        } catch (e: ContactsProviderPermissionDeniedException) {
+            throw ContactsPermissionDeniedException("Contacts Permission Denied!", e)
         } catch (e: ChatException) {
             throw e
         } catch (e: Throwable) {
