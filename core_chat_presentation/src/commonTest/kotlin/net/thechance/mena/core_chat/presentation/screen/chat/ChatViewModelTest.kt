@@ -32,6 +32,7 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.screen.chat.model.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.model.MarkedMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.model.MessageStatusUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.model.toEntity
 import net.thechance.mena.core_chat.presentation.screen.chat.model.toUi
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -73,12 +74,10 @@ class ChatViewModelTest {
         everySuspend { repository.loadMessages(chatId) } returns messages
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
 
-
         chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
-
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertThat(chatViewModel.state.value.uiMessages)
+        assertThat(chatViewModel.state.value.chatListItems.currentUiMessages())
             .isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
     }
 
@@ -87,7 +86,6 @@ class ChatViewModelTest {
         everySuspend { repository.loadMessages(chatId) } throws Exception()
 
         chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
-
         testDispatcher.scheduler.advanceUntilIdle()
 
         verifySuspend {
@@ -105,54 +103,41 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf(messages.first())
 
         chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
-
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertThat(chatViewModel.state.value.uiMessages).isEqualTo(
-            listOf(
-                messages.first().toUi(chatRequesterId)
-            )
+        assertThat(chatViewModel.state.value.chatListItems.currentUiMessages()).isEqualTo(
+            listOf(messages.first().toUi(chatRequesterId))
         )
     }
 
     @Test
     fun `onBackClicked should send pop back stack effect when its call`() {
         chatViewModel.onBackClicked()
-
         testDispatcher.scheduler.advanceUntilIdle()
-
         verifySuspend { effector.popBackStack() }
     }
-
 
     @Test
     fun `onInputMessageChanged should update the inputMessage value with provided value when its call`() {
         val inputMessage = "Hi Noor"
-
         chatViewModel.onInputMessageChanged(inputMessage)
         testDispatcher.scheduler.advanceUntilIdle()
-
         assertThat(chatViewModel.state.value.inputMessage).isEqualTo(inputMessage)
     }
 
     @Test
     fun `onResendMessageDialogDismissed should set isResendMessageDialogVisible to false when its call`() {
         chatViewModel.onResendMessageDialogDismissed()
-
         testDispatcher.scheduler.advanceUntilIdle()
-
         assertThat(chatViewModel.state.value.isResendMessageDialogVisible).isFalse()
     }
 
     @Test
     fun `onResendMessageDialogDismissed should set isChatActionsDialogVisible to false when its called`() {
         chatViewModel.onResendMessageDialogDismissed()
-
         testDispatcher.scheduler.advanceUntilIdle()
-
         assertThat(chatViewModel.state.value.isResendMessageDialogVisible).isFalse()
     }
-
 
     @Test
     fun `onSendMessageClicked should update current messages with sent state and reset the user input when its successfully sent `() {
@@ -181,44 +166,39 @@ class ChatViewModelTest {
             )
         }
 
-
+        // repository.sendMessage not stubbed -> will fail path (or you can explicitly throw)
         chatViewModel.onSendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertThat(chatViewModel.state.value.uiMessages.first().chatId).isEqualTo(chatId)
-        assertThat(chatViewModel.state.value.uiMessages.first().isMine).isTrue()
-        assertThat(chatViewModel.state.value.uiMessages.first().status).isEqualTo(
-            MessageStatusUiState.FAILED
-        )
+        val first = chatViewModel.state.value.chatListItems.currentUiMessages().first()
+        assertThat(first.chatId).isEqualTo(chatId)
+        assertThat(first.isMine).isTrue()
+        assertThat(first.status).isEqualTo(MessageStatusUiState.FAILED)
         assertThat(chatViewModel.state.value.inputMessage).isEmpty()
     }
 
     @Test
     fun `onFailedMessageClicked should update the failedMessageToResend to the failedMessage when its call`() {
         val failedMessage = messages.first().toUi(chatRequesterId)
-
         chatViewModel.onFailedMessageClicked(failedMessage)
-
         assertThat(chatViewModel.state.value.failedMessageToReSend).isEqualTo(failedMessage)
     }
-
 
     @Test
     fun `onFailedMessageClicked should update the isResendMessageDialogVisible to true when its call`() {
         val failedMessage = messages.first().toUi(chatRequesterId)
-
         chatViewModel.onFailedMessageClicked(failedMessage)
-
         assertThat(chatViewModel.state.value.isResendMessageDialogVisible).isEqualTo(true)
     }
 
-
     @Test
     fun `onDeleteFailedMessageClick should delete the clicked failed message when its call`() {
+        val msgUi = messages.first().toUi(chatRequesterId)
+        // set failed message and chatListItems (instead of uiMessages)
         chatViewModel.updateState {
             it.copy(
-                failedMessageToReSend = messages.first().toUi(chatRequesterId),
-                uiMessages = listOf(messages.first().toUi(chatRequesterId))
+                failedMessageToReSend = msgUi,
+                chatListItems = listOf(msgUi.toChatListMessage())
             )
         }
 
@@ -227,9 +207,7 @@ class ChatViewModelTest {
         chatViewModel.onDeleteFailedMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertThat(chatViewModel.state.value.uiMessages).doesNotContain(
-            messages.first().toUi(chatRequesterId)
-        )
+        assertThat(chatViewModel.state.value.chatListItems.currentUiMessages()).doesNotContain(msgUi)
     }
 
     @Test
@@ -241,39 +219,31 @@ class ChatViewModelTest {
             it.copy(
                 chatId = chatId,
                 failedMessageToReSend = failedMessage,
-                uiMessages = listOf(failedMessage)
+                chatListItems = listOf(failedMessage.toChatListMessage())
             )
         }
 
         everySuspend { repository.loadMessages(chatId) } returns emptyList()
-
         everySuspend { repository.getLocalMessages(chatId) } returns listOf(failedMessage.toEntity())
-
         everySuspend { repository.sendMessage(any()) } returns Unit
 
         chatViewModel.onResendMessageClicked()
 
-        assertThat(chatViewModel.state.value.uiMessages.first().status).isEqualTo(
-            MessageStatusUiState.SENDING
-        )
+        assertThat(chatViewModel.state.value.chatListItems.currentUiMessages().first().status).isEqualTo(MessageStatusUiState.SENDING)
 
         val sentMessage = failedMessage.toEntity().copy(status = MessageStatus.SENT)
         everySuspend { repository.loadMessages(chatId) } returns listOf(sentMessage)
-
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
 
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val finalMessages = chatViewModel.state.value.uiMessages
+        val finalMessages = chatViewModel.state.value.chatListItems.currentUiMessages()
         if (finalMessages.isNotEmpty()) {
-            assertThat(finalMessages.first().status).isEqualTo(
-                MessageStatusUiState.SENT
-            )
+            assertThat(finalMessages.first().status).isEqualTo(MessageStatusUiState.SENT)
         } else {
             verifySuspend { repository.sendMessage(any()) }
         }
     }
-
 
     @Test
     fun `onResendMessageClick should update the resend message state to failed when resend message failed`() {
@@ -281,19 +251,15 @@ class ChatViewModelTest {
         chatViewModel.updateState {
             it.copy(
                 failedMessageToReSend = failedMessage,
-                uiMessages = listOf(messages.first().toUi(chatRequesterId))
+                chatListItems = listOf(messages.first().toUi(chatRequesterId).toChatListMessage())
             )
         }
 
         chatViewModel.onResendMessageClicked()
 
-        assertThat(chatViewModel.state.value.uiMessages.first().status).isEqualTo(
-            MessageStatusUiState.SENDING
-        )
+        assertThat(chatViewModel.state.value.chatListItems.currentUiMessages().first().status).isEqualTo(MessageStatusUiState.SENDING)
         testDispatcher.scheduler.advanceUntilIdle()
-        assertThat(chatViewModel.state.value.uiMessages.first().status).isEqualTo(
-            MessageStatusUiState.FAILED
-        )
+        assertThat(chatViewModel.state.value.chatListItems.currentUiMessages().first().status).isEqualTo(MessageStatusUiState.FAILED)
     }
 
     @Test
@@ -331,7 +297,6 @@ class ChatViewModelTest {
         val chatListItem = ChatListItem.Message(markedMessageUiState)
         chatViewModel.updateState { it.copy(chatListItems = listOf(chatListItem)) }
 
-        // Use a non-existent message ID
         val nonExistentId = Uuid.parse("99999999-9999-9999-9999-999999999999")
         chatViewModel.onMessageClicked(nonExistentId)
         testDispatcher.scheduler.advanceUntilIdle()
@@ -340,6 +305,20 @@ class ChatViewModelTest {
         assertThat(result.data.showMessageInfo).isEqualTo(markedMessageUiState.showMessageInfo)
     }
 
+
+    private fun List<ChatListItem>.currentUiMessages(): List<TextMessageUiState> =
+        filterIsInstance<ChatListItem.Message>()
+            .map { it.data.message }
+            .sortedByDescending { it.sendTime }
+
+    private fun TextMessageUiState.toChatListMessage(): ChatListItem.Message =
+        ChatListItem.Message(
+            MarkedMessageUiState(
+                message = this,
+                isMarkedLastInSeries = false,
+                showMessageInfo = false
+            )
+        )
 
     private companion object {
 
@@ -372,3 +351,4 @@ class ChatViewModelTest {
             )
     }
 }
+

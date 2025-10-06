@@ -7,14 +7,13 @@ import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUi
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-data class ChatScreenState(
+data class ChatState(
     val chatId: Uuid? = null,
     val chatName: String = "",
     val chatAvatarUrl: String = "",
     val chatRequesterId: Uuid? = null,
     val inputMessage: String = "",
     val chatListItems: List<ChatListItem> = emptyList(),
-    val uiMessages: List<TextMessageUiState> = emptyList(),
 
     val isResendMessageDialogVisible: Boolean = false,
 

@@ -24,54 +24,45 @@ fun List<TextMessageUiState>.markLastInSeries(): List<MarkedMessageUiState> {
     }
 }
 
-fun List<MarkedMessageUiState>.withDateSeparators(
-    todayLabel: UiText = UiText.StringRes(Res.string.today),
-    yesterdayLabel: UiText = UiText.StringRes(Res.string.yesterday)
-): List<ChatListItem> {
-    if (this.isEmpty()) return emptyList()
+fun List<MarkedMessageUiState>.withDateSeparators(): List<ChatListItem> {
+    if (isEmpty()) return emptyList()
 
     val today = LocalDateTime.now().date
     val yesterday = today.minusDays(1)
 
-    val result = mutableListOf<ChatListItem>()
-    var lastDate: LocalDate? = null
-    var lastMessageIndexInDate: Int? = null
+    return asReversed()
+        .groupBy { it.message.sendTime.date }
+        .flatMap { (date, messages) ->
+            val markedMessages = messages.markLastInGroup()
 
-    val reversed = this.asReversed()
-
-    for ((index, item) in reversed.withIndex()) {
-        val messageDate = item.message.sendTime.date
-
-        if (messageDate != lastDate) {
-            lastMessageIndexInDate?.let { idx ->
-                val msgItem = result[idx] as ChatListItem.Message
-                result[idx] = msgItem.copy(
-                    data = msgItem.data.copy(isMarkedLastInSeries = true)
-                )
+            buildList {
+                add(ChatListItem.DateSeparator(date.toLabel(today, yesterday)))
+                addAll(markedMessages.map { ChatListItem.Message(it) })
             }
-
-            val label = when (messageDate) {
-                today -> todayLabel
-                yesterday -> yesterdayLabel
-                else -> UiText.DynamicString(messageDate.format())
-            }
-            result.add(ChatListItem.DateSeparator(label))
-            lastDate = messageDate
         }
-
-        result.add(ChatListItem.Message(item))
-        lastMessageIndexInDate = result.lastIndex
-
-        if (index == reversed.lastIndex) {
-            val msgItem = result[lastMessageIndexInDate] as ChatListItem.Message
-            result[lastMessageIndexInDate] = msgItem.copy(
-                data = msgItem.data.copy(isMarkedLastInSeries = true)
-            )
-        }
-    }
-
-    return result.asReversed()
+        .asReversed()
 }
+
+private fun List<MarkedMessageUiState>.markLastInGroup(): List<MarkedMessageUiState> {
+    return mapIndexed { index, message ->
+        if (index == lastIndex)
+            message.copy(isMarkedLastInSeries = true)
+        else
+            message
+    }
+}
+
+private fun LocalDate.toLabel(
+    today: LocalDate,
+    yesterday: LocalDate,
+    todayLabel: UiText = UiText.StringRes(Res.string.today),
+    yesterdayLabel: UiText = UiText.StringRes(Res.string.yesterday)
+): UiText = when (this) {
+    today -> todayLabel
+    yesterday -> yesterdayLabel
+    else -> UiText.DynamicString(format())
+}
+
 
 
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
