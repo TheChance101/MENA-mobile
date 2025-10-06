@@ -1,16 +1,15 @@
-package net.thechance.mena.core_chat.data.shared
+package net.thechance.mena.core_chat.data.base
 
+import com.bilalazzam.contacts_provider.ContactsPermissionDeniedException
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.util.reflect.TypeInfo
 import net.thechance.mena.core_chat.domain.exception.ChatException
-import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.UnAuthorizedException
 import net.thechance.mena.core_chat.domain.exception.UnknownException
-import com.bilalazzam.contacts_provider.ContactsPermissionDeniedException as ContactsProviderPermissionDeniedException
 
 interface BaseRepository {
 
@@ -31,8 +30,9 @@ interface BaseRepository {
         }
     }
 
-    suspend fun <T> retry(
-        maxAttempts: Int = 3, block: suspend () -> T?
+    private suspend fun <T> retry(
+        maxAttempts: Int = 3,
+        block: suspend () -> T?
     ): T? {
         return try {
             block()
@@ -40,19 +40,21 @@ interface BaseRepository {
             throw e
         } catch (e: Throwable) {
             if (maxAttempts <= 1) throw e
-            retry(
-                maxAttempts = maxAttempts - 1, block = block
-            )
+            retry(maxAttempts = maxAttempts - 1, block = block)
         }
     }
 
     private suspend fun <T> runCatchingWithException(
-        defaultException: (Throwable) -> ChatException, block: suspend () -> T?
+        defaultException: (Throwable) -> ChatException,
+        block: suspend () -> T?
     ): T? {
         return try {
             block()
-        } catch (e: ContactsProviderPermissionDeniedException) {
-            throw ContactsPermissionDeniedException("Contacts Permission Denied!", e)
+        } catch (e: ContactsPermissionDeniedException) {
+            throw net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException(
+                "Contacts Permission Denied!",
+                e
+            )
         } catch (e: ChatException) {
             throw e
         } catch (e: Throwable) {
@@ -63,8 +65,8 @@ interface BaseRepository {
     private suspend fun <T> HttpResponse.getSuccessBodyOrThrow(bodyType: TypeInfo): T? {
         return when {
             this.status.isSuccess() -> this.body(bodyType)
-            this.status == HttpStatusCode.Unauthorized -> throw UnAuthorizedException()
-            this.status == HttpStatusCode.NotFound -> throw NotFoundException("Chat Not Found")
+            this.status == HttpStatusCode.Companion.Unauthorized -> throw UnAuthorizedException()
+            this.status == HttpStatusCode.Companion.NotFound -> throw NotFoundException(this.status.description)
             //TODO: handle more cases like 500, 404
             else -> throw UnknownException(this.status.description)
         }

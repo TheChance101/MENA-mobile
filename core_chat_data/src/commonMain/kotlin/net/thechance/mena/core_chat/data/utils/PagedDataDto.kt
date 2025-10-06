@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.data.shared.dto
+package net.thechance.mena.core_chat.data.utils
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

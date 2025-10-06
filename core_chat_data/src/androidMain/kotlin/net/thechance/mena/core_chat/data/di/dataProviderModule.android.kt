@@ -7,10 +7,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.bilalazzam.contacts_provider.ContactsProvider
 import com.bilalazzam.contacts_provider.ContactsProviderFactory
-import net.thechance.mena.core_chat.data.contacts.utils.createDataStore
-import net.thechance.mena.core_chat.data.contacts.utils.dataStoreName
-import net.thechance.mena.core_chat.data.database.ChatDatabase
-import net.thechance.mena.core_chat.data.database.DatabaseConstants
+import net.thechance.mena.core_chat.data.local_data_store.createDataStore
+import net.thechance.mena.core_chat.data.local_data_store.dataStoreName
+import net.thechance.mena.core_chat.data.local_database.ChatDatabase
+import net.thechance.mena.core_chat.data.local_database.DatabaseConstants
 import org.koin.core.scope.Scope
 
 actual fun Scope.createContactsProvider(): ContactsProvider {

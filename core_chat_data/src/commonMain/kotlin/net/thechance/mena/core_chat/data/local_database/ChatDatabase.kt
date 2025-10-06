@@ -1,16 +1,16 @@
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 
-package net.thechance.mena.core_chat.data.database
+package net.thechance.mena.core_chat.data.local_database
 
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
-import net.thechance.mena.core_chat.data.database.dao.MessageDao
-import net.thechance.mena.core_chat.data.database.entity.MessageEntity
+import net.thechance.mena.core_chat.data.local_database.dao.MessageDao
+import net.thechance.mena.core_chat.data.local_database.dto.MessageLocalDto
 
-@Database(entities = [MessageEntity::class], version = 1)
+@Database(entities = [MessageLocalDto::class], version = 1)
 @ConstructedBy(ChatDatabaseConstructor::class)
 @TypeConverters(MessageStatusConverter::class)
 abstract class ChatDatabase : RoomDatabase() {

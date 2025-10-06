@@ -1,9 +1,8 @@
-package net.thechance.mena.core_chat.data.chat.utils
+package net.thechance.mena.core_chat.data.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocket
-import io.ktor.client.request.bearerAuth
 import io.ktor.websocket.Frame
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
@@ -14,12 +13,12 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import net.thechance.mena.core_chat.data.network.ApiConstants.WEB_SOCKETS_ENDPOINT
 import kotlin.coroutines.cancellation.CancellationException
 
 
@@ -28,22 +27,16 @@ class WebSocketManagerImpl(
     private val client: HttpClient,
 ) : WebSocketManager {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
     private var session: DefaultClientWebSocketSession? = null
     private var isActiveSession = false
     private var shouldReconnect = false
     private var connectionJob: Job? = null
+    private val exceptionHandler = CoroutineExceptionHandler { _, _ -> isActiveSession = false }
 
     private val _incomingMessages = MutableSharedFlow<String>(extraBufferCapacity = 64)
     override val incomingMessages: SharedFlow<String> = _incomingMessages
 
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        println("WebSocket Error: ${throwable.message}")
-        isActiveSession = false
-    }
-
     override fun connect(
-        token: String,
         onConnected: suspend () -> Unit
     ) {
         if (isActiveSession) return
@@ -52,35 +45,42 @@ class WebSocketManagerImpl(
         connectionJob = scope.launch(exceptionHandler) {
             while (shouldReconnect && isActive) {
                 try {
-                    client.webSocket(
-                        urlString = getConstructWebSocketUrl(baseUrl),
-                        request = { bearerAuth(token) }
-                    ) {
-                        session = this
-                        isActiveSession = true
-                        sendConnectFrame()
-                        println("WebSocket connected")
-
-                        // Listen for incoming frames
-                        for (frame in incoming) {
-                            if (!isActive) break
-                            if (frame is Frame.Text) {
-                                val text = frame.readText()
-                                when {
-                                    text.startsWith("CONNECTED") -> onConnected()
-                                    text.startsWith("MESSAGE") -> _incomingMessages.emit(text)
-                                }
-                            }
-                        }
-                    }
+                    performHandShake(onConnected)
                 } catch (_: CancellationException) {
-                    println("WebSocket job cancelled")
                     break
-                } catch (e: Exception) {
-                    println("WebSocket reconnect error: ${e.message}")
+                } catch (_: Exception) {
                     isActiveSession = false
                     session = null
                     if (shouldReconnect) delay(RECONNECT_DELAY)
+                }
+            }
+        }
+    }
+
+    private suspend fun performHandShake(
+        onConnected: suspend () -> Unit
+    ) {
+        client.webSocket(
+            urlString = getConstructWebSocketUrl(baseUrl),
+        ) {
+            session = this
+            isActiveSession = true
+            sendConnectFrame()
+            listenForIncomingFrames(incoming, onConnected)
+        }
+    }
+
+    private suspend fun DefaultClientWebSocketSession.listenForIncomingFrames(
+        incoming: ReceiveChannel<Frame>,
+        onConnected: suspend () -> Unit
+    ) {
+        for (frame in incoming) {
+            if (!isActive) break
+            if (frame is Frame.Text) {
+                val text = frame.readText()
+                when {
+                    text.startsWith("CONNECTED") -> onConnected()
+                    text.startsWith("MESSAGE") -> _incomingMessages.emit(text)
                 }
             }
         }
@@ -126,6 +126,7 @@ class WebSocketManagerImpl(
     }
 
     private companion object {
+        const val WEB_SOCKETS_ENDPOINT = "ws"
         const val RECONNECT_DELAY = 5000L
     }
 }

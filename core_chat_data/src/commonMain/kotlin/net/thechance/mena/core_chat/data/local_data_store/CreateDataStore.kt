@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.data.contacts.utils
+package net.thechance.mena.core_chat.data.local_data_store
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -6,11 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import okio.Path.Companion.toPath
 
 fun createDataStore(path: () -> String): DataStore<Preferences> {
-    return PreferenceDataStoreFactory.createWithPath (
-        produceFile = {
-            path().toPath()
-        }
-    )
+    return PreferenceDataStoreFactory.createWithPath (produceFile = { path().toPath() })
 }
 
 internal const val dataStoreName = "setting.preferences_pb"

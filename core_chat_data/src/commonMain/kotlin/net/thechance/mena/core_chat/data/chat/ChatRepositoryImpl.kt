@@ -1,7 +1,6 @@
 package net.thechance.mena.core_chat.data.chat
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.reflect.typeInfo
@@ -12,25 +11,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import net.thechance.mena.core_chat.data.base.BaseRepository
 import net.thechance.mena.core_chat.data.chat.dto.ChatDto
 import net.thechance.mena.core_chat.data.chat.dto.MarkAsReadRequest
-import net.thechance.mena.core_chat.data.chat.dto.MessageDto
-import net.thechance.mena.core_chat.data.chat.dto.MessageEvent
+import net.thechance.mena.core_chat.data.chat.dto.MessageEventDto
+import net.thechance.mena.core_chat.data.chat.dto.MessageRemoteDto
 import net.thechance.mena.core_chat.data.chat.dto.SendMessageDto
-import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
-import net.thechance.mena.core_chat.data.database.dao.MessageDao
-import net.thechance.mena.core_chat.data.database.entity.MessageEntity
-import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_ENDPOINT
-import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_HISTORY_ENDPOINT
-import net.thechance.mena.core_chat.data.shared.BaseRepository
-import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.local_database.dao.MessageDao
+import net.thechance.mena.core_chat.data.local_database.dto.MessageLocalDto
+import net.thechance.mena.core_chat.data.network.WebSocketManager
+import net.thechance.mena.core_chat.data.utils.PagedDataDto
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
-import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -38,7 +34,6 @@ import kotlin.uuid.Uuid
 class ChatRepositoryImpl(
     private val client: HttpClient,
     private val webSocketManager: WebSocketManager,
-    private val authenticationRepository: AuthenticationRepository,
     private val messageDao: MessageDao,
     private val json: Json,
 ) : ChatRepository, BaseRepository {
@@ -47,18 +42,14 @@ class ChatRepositoryImpl(
     private val markMessagesAsRead = MutableSharedFlow<String>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
-
     override suspend fun loadMessages(chatId: Uuid): List<Message> {
-        return tryNetworkCall<PagedDataDto<MessageDto>>(
-            bodyType = typeInfo<PagedDataDto<MessageDto>>()
+        return tryNetworkCall<PagedDataDto<MessageRemoteDto>>(
+            bodyType = typeInfo<PagedDataDto<MessageRemoteDto>>()
         ) {
-            val token = authenticationRepository.getAccessToken()
-
             client.get(CHAT_HISTORY_ENDPOINT) {
                 parameter(CHAT_ID_PARAMETER, chatId)
                 parameter(PAGE_NUMBER_PARAMETER, PAGE_NUMBER)
                 parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
-                bearerAuth(token)
             }
         }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
     }
@@ -71,18 +62,15 @@ class ChatRepositoryImpl(
         return tryNetworkCall<ChatDto>(
             bodyType = typeInfo<ChatDto>()
         ) {
-            val token = authenticationRepository.getAccessToken()
-
             client.get(CHAT_ENDPOINT) {
                 parameter(RECEIVER_ID_PARAMETER, userId)
-                bearerAuth(token)
             }
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
     override suspend fun getLocalMessages(chatId: Uuid): List<Message> {
         val failedEntities = messageDao.getMessagesByChat(chatId.toString())
-        return failedEntities.map { it.toMessageDomain() }
+        return failedEntities.map { it.toEntity() }
     }
 
     override fun subscribeToMessages(chatId: Uuid): Flow<Message> {
@@ -93,7 +81,7 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun sendMessage(message: Message) {
-        val updatedMessage = message.copy(status = MessageStatus.LOADING).toMessageEntity()
+        val updatedMessage = message.copy(status = MessageStatus.LOADING).toLocalDto()
         messageDao.insertMessage(updatedMessage)
         try {
             if (webSocketManager.isConnected()) {
@@ -113,7 +101,7 @@ class ChatRepositoryImpl(
         } catch (e: Exception) {
             messageDao.updateMessageStatus(
                 updatedMessage.id,
-                MessageEntity.MessageStatus.FAILED
+                MessageLocalDto.MessageStatus.FAILED
             )
             throw SendMessageFailedException("Failed to send message: ${e.message}")
         }
@@ -124,10 +112,7 @@ class ChatRepositoryImpl(
     }
 
     private suspend fun initializeWebsocketConnection(chatId: String) {
-        val bearerToken = authenticationRepository.getAccessToken()
-
         webSocketManager.connect(
-            token = bearerToken,
             onConnected = { onConnectedWebSocket(chatId) }
         )
 
@@ -144,14 +129,14 @@ class ChatRepositoryImpl(
         incomingText: String
     ) {
         val jsonBody = incomingText.substringAfter("\n\n").trimEnd('\u0000')
-        val event = json.decodeFromString<MessageEvent>(jsonBody)
+        val event = json.decodeFromString<MessageEventDto>(jsonBody)
 
         when (event) {
-            is MessageEvent.MarkAsRead -> {
+            is MessageEventDto.MarkAsRead -> {
                 markMessagesAsRead.emit(event.dto.readBy)
             }
 
-            is MessageEvent.Message -> {
+            is MessageEventDto.Message -> {
                 event.dto.toDomain()?.let { messageFlows.emit(it) }
                 markMessageAsRead(chatId)
             }
@@ -169,7 +154,7 @@ class ChatRepositoryImpl(
         webSocketManager.disconnect()
     }
 
-    private companion object{
+    companion object{
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
         const val CHAT_ID_PARAMETER = "chatId"
@@ -180,5 +165,7 @@ class ChatRepositoryImpl(
         const val SEND_MESSAGE_DESTINATION = "/app/chat.privateMessage"
         const val WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
+        const val CHAT_ENDPOINT = "/chat"
+        const val CHAT_HISTORY_ENDPOINT = "/chat/history"
     }
 }

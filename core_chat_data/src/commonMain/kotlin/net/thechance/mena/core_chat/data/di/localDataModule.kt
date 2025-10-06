@@ -3,15 +3,17 @@ package net.thechance.mena.core_chat.data.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.bilalazzam.contacts_provider.ContactsProvider
-import net.thechance.mena.core_chat.data.database.ChatDatabase
-import net.thechance.mena.core_chat.data.database.dao.MessageDao
-import net.thechance.mena.core_chat.data.database.getChatDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import net.thechance.mena.core_chat.data.local_database.ChatDatabase
+import net.thechance.mena.core_chat.data.local_database.dao.MessageDao
+import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
-import org.koin.core.qualifier.named
 
-internal val dataProviderModule = module {
+internal val localDataModule = module {
     single { createContactsProvider() }
     single { createSettingsDataStore() }
     single(named("ChatDatabaseBuilder")) { getDatabaseBuilder() }
@@ -23,3 +25,8 @@ internal val dataProviderModule = module {
 expect fun Scope.createContactsProvider(): ContactsProvider
 expect fun Scope.createSettingsDataStore(): DataStore<Preferences>
 expect fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<ChatDatabase>
+
+private fun getChatDatabase(builder: RoomDatabase.Builder<ChatDatabase>): ChatDatabase = builder
+    .setDriver(BundledSQLiteDriver())
+    .setQueryCoroutineContext(Dispatchers.IO)
+    .build()

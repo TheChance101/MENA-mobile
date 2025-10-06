@@ -29,6 +29,7 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.identity.domain.service.AuthorizationService
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -38,6 +39,7 @@ class CreateHttpClientTest {
 
     private val mockEngine = mock<HttpClientEngine>()
     private lateinit var mockFactory: HttpClientEngineFactory<HttpClientEngineConfig>
+    private val authorizationService: AuthorizationService = mock()
 
     @BeforeTest
     fun setUp() {
@@ -60,25 +62,25 @@ class CreateHttpClientTest {
 
     @Test
     fun `createHttpClient should return non null HttpClient when factory is provided`() {
-        val client = createHttpClient("https://example.com", mockFactory)
+        val client = createHttpClient("https://example.com", authorizationService, mockFactory)
         assertThat(client).isNotNull()
     }
 
     @Test
     fun `createHttpClient should delegate engine creation to factory`() {
-        createHttpClient("https://example.com", mockFactory)
+        createHttpClient("https://example.com", authorizationService, mockFactory)
         verify { mockFactory.create(any()) }
     }
 
     @Test
     fun `createHttpClient should install ContentNegotiation plugin`() {
-        val client = createHttpClient("https://example.com", mockFactory)
+        val client = createHttpClient("https://example.com", authorizationService, mockFactory)
         assertThat(client.plugin(ContentNegotiation)).isNotNull()
     }
 
     @Test
     fun `createHttpClient should install Logging plugin`() {
-        val client = createHttpClient("https://example.com", mockFactory)
+        val client = createHttpClient("https://example.com", authorizationService, mockFactory)
         assertThat(client.plugin(Logging)).isNotNull()
     }
 
@@ -93,7 +95,7 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", engineFactory)
+        val client = createHttpClient("https://example.com", authorizationService, engineFactory)
 
         client.get("/test")
 
@@ -111,7 +113,7 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", engineFactory)
+        val client = createHttpClient("https://example.com", authorizationService, engineFactory)
 
         client.post("/test") { setBody("{}") }
 
@@ -130,7 +132,7 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", engineFactory)
+        val client = createHttpClient("https://example.com", authorizationService, engineFactory)
 
         client.get("/test")
 

@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.data.contacts.utils
+package net.thechance.mena.core_chat.data.utils
 
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

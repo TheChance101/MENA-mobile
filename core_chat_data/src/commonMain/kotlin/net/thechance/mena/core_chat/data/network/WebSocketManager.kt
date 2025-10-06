@@ -1,13 +1,10 @@
-package net.thechance.mena.core_chat.data.chat.utils
+package net.thechance.mena.core_chat.data.network
 
 import kotlinx.coroutines.flow.SharedFlow
 
 interface WebSocketManager {
     val incomingMessages: SharedFlow<String>
-    fun connect(
-        token: String,
-        onConnected: suspend () -> Unit
-    )
+    fun connect(onConnected: suspend () -> Unit)
     suspend fun subscribe(destination: String)
     suspend fun disconnect()
     suspend fun sendTextFrame(destination: String, payload: String)

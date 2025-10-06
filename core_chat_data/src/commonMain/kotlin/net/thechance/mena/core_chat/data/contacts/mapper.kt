@@ -2,8 +2,8 @@ package net.thechance.mena.core_chat.data.contacts
 
 import net.thechance.mena.core_chat.data.contacts.dto.ContactCreationRequestDto
 import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
-import net.thechance.mena.core_chat.data.contacts.utils.getUuidOrNull
-import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.utils.PagedDataDto
+import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
