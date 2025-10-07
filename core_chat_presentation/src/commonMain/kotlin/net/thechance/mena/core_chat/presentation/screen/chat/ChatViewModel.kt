@@ -2,6 +2,8 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +29,7 @@ class ChatViewModel(
     private val chatRepository: ChatRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
+    private val permissionsController: PermissionsController,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, defaultDispatcher),
     ChatInteractionListener {
@@ -69,6 +72,7 @@ class ChatViewModel(
     override fun onBackClicked() {
         popBackStack()
     }
+
     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
         val chatId = state.value.chat.id
         val requesterId = state.value.chat.requesterId
@@ -341,5 +345,20 @@ class ChatViewModel(
             coroutineScope = CoroutineScope(Dispatchers.IO), // Required to avoid cancellation
             execute = { chatRepository.disconnect() }
         )
+    }
+
+    override fun onCameraClicked() {
+        tryToExecute(
+            execute = { permissionsController.providePermission(permission = Permission.CAMERA) },
+            onSuccess = { onCameraPermissionGranted() },
+        )
+    }
+
+    private fun onCameraPermissionGranted() {
+        updateState { it.copy(isCameraOpen = true) }
+    }
+
+    override fun onCameraDismissed() {
+        updateState { it.copy(isCameraOpen = false) }
     }
 }
