@@ -10,5 +10,6 @@ data class ChatScreenState(
     val chatListItems: List<ChatListItem> = emptyList(),
     val uiMessages: List<MessageUiState> = emptyList(),
     val isResendMessageDialogVisible: Boolean = false,
-    val failedMessageToReSend: MessageUiState? = null
+    val failedMessageToReSend: MessageUiState? = null,
+    val isCameraOpen: Boolean = false,
 )
