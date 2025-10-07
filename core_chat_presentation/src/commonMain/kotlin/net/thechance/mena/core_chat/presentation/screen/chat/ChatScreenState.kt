@@ -7,7 +7,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUi
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-data class ChatState(
+data class ChatScreenState(
     val chatId: Uuid? = null,
     val chatName: String = "",
     val chatAvatarUrl: String = "",
