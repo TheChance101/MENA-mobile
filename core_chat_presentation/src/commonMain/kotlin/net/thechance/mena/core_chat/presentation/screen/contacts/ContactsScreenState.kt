@@ -27,3 +27,15 @@ data class ContactUiState(
             else -> "Unknown"
         }
 }
+
+@OptIn(ExperimentalUuidApi::class)
+fun Contact.toUi(): ContactUiState {
+    return ContactUiState(
+        firstName = this.firstName,
+        lastName = this.lastName,
+        phoneNumber = this.phone,
+        isMenaUser = menaUserId != null,
+        menaUserId = this.menaUserId,
+        imageUri = this.imageUrl
+    )
+}

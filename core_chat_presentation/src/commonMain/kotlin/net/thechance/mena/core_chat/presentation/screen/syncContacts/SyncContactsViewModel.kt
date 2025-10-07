@@ -32,10 +32,10 @@ class SyncContactsViewModel(
     SyncContactsInteractionListener {
 
     init {
-        onInit()
+        checkForceSync()
     }
 
-    private fun onInit() {
+    private fun checkForceSync() {
         if (syncContactsScreenArgs.forceSync) {
             updateState { it.copy(isFirstSync = false) }
             syncContacts()
