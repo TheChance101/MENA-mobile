@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.di
 
+import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -29,7 +30,15 @@ internal val viewModelModule = module {
     viewModelOf(::ChatsViewModel)
     viewModelOf(::ContactsViewModel)
     viewModelOf(::SyncContactsViewModel)
-    viewModelOf(::ChatViewModel)
+    factory { (permissionsController: PermissionsController) ->
+        ChatViewModel(
+            chatRepository = get(),
+            chatArgs = get(),
+            effector = get(),
+            permissionsController = permissionsController,
+            defaultDispatcher = get()
+        )
+    }
     factoryOf(::SyncContactsScreenArgsImpl) bind SyncContactsScreenArgs::class
     singleOf(::ChatEffectorImpl) bind ChatEffector::class
     factoryOf(::SettingsOpenerImpl) bind SettingsOpener::class
