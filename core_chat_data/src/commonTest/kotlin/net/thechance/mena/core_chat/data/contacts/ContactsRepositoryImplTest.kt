@@ -14,13 +14,15 @@ import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.IOException
-import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
 import net.thechance.mena.core_chat.data.contacts.fakes.FakeContactsProvider
 import net.thechance.mena.core_chat.data.contacts.fakes.FakeDataStore
 import net.thechance.mena.core_chat.data.contacts.fakes.createPagedDataDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContact
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleDeviceContact
-import net.thechance.mena.core_chat.data.utils.PagedDataDto
+import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
+import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.domain.exception.ContactSyncFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException

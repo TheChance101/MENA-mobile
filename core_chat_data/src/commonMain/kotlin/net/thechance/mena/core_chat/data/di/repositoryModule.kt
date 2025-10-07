@@ -1,7 +1,7 @@
 package net.thechance.mena.core_chat.data.di
 
-import net.thechance.mena.core_chat.data.chat.ChatRepositoryImpl
-import net.thechance.mena.core_chat.data.contacts.ContactsRepositoryImpl
+import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
+import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import org.koin.core.qualifier.named

@@ -18,7 +18,6 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.core_chat.data.chat.dto.MessageRemoteDto
 import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
@@ -26,8 +25,11 @@ import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
-import net.thechance.mena.core_chat.data.local_database.dao.MessageDao
-import net.thechance.mena.core_chat.data.network.WebSocketManager
+import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository

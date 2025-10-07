@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import net.thechance.mena.core_chat.data.local_data_store.createDataStore
+import net.thechance.mena.core_chat.data.source.local.datastore.createDataStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

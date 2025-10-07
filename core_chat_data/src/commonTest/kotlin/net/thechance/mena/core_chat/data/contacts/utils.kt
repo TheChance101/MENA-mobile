@@ -20,16 +20,17 @@ import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import net.thechance.mena.core_chat.data.chat.ChatRepositoryImpl
-import net.thechance.mena.core_chat.data.chat.dto.ChatDto
-import net.thechance.mena.core_chat.data.chat.dto.MessageRemoteDto
-import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
-import net.thechance.mena.core_chat.data.local_database.dao.MessageDao
-import net.thechance.mena.core_chat.data.network.WebSocketManager
-import net.thechance.mena.core_chat.data.utils.PagedDataDto
+import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
+import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }

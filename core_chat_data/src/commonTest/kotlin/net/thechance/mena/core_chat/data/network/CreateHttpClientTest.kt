@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
+import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.service.AuthorizationService
 import kotlin.coroutines.EmptyCoroutineContext
@@ -71,7 +72,8 @@ class CreateHttpClientTest {
 
     @Test
     fun `createHttpClient should return non null HttpClient when factory is provided`() {
-        val client = createHttpClient("https://example.com", authorizationService, mockFactory, json)
+        val client =
+            createHttpClient("https://example.com", authorizationService, mockFactory, json)
         assertThat(client).isNotNull()
     }
 
@@ -83,13 +85,15 @@ class CreateHttpClientTest {
 
     @Test
     fun `createHttpClient should install ContentNegotiation plugin`() {
-        val client = createHttpClient("https://example.com", authorizationService, mockFactory, json)
+        val client =
+            createHttpClient("https://example.com", authorizationService, mockFactory, json)
         assertThat(client.plugin(ContentNegotiation)).isNotNull()
     }
 
     @Test
     fun `createHttpClient should install Logging plugin`() {
-        val client = createHttpClient("https://example.com", authorizationService, mockFactory, json)
+        val client =
+            createHttpClient("https://example.com", authorizationService, mockFactory, json)
         assertThat(client.plugin(Logging)).isNotNull()
     }
 
@@ -104,7 +108,8 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", authorizationService, engineFactory, json)
+        val client =
+            createHttpClient("https://example.com", authorizationService, engineFactory, json)
 
         client.get("/test")
 
@@ -122,7 +127,8 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", authorizationService, engineFactory, json)
+        val client =
+            createHttpClient("https://example.com", authorizationService, engineFactory, json)
 
         client.post("/test") { setBody("{}") }
 
@@ -141,7 +147,8 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", authorizationService, engineFactory, json)
+        val client =
+            createHttpClient("https://example.com", authorizationService, engineFactory, json)
 
         client.get("/test")
 

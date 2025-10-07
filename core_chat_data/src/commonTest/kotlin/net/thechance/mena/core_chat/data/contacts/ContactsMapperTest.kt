@@ -11,11 +11,14 @@ import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createContactDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createDeviceContact
 import net.thechance.mena.core_chat.data.contacts.fakes.createPagedDataDto
-import net.thechance.mena.core_chat.data.utils.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.source.remote.mapper.toListOfContactCreationRequestDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfContacts
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import kotlin.test.Test
 import kotlin.test.assertFailsWith

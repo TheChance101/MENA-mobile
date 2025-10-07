@@ -7,8 +7,8 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.bilalazzam.contacts_provider.ContactsProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.core_chat.data.local_database.ChatDatabase
-import net.thechance.mena.core_chat.data.local_database.dao.MessageDao
+import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
+import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
