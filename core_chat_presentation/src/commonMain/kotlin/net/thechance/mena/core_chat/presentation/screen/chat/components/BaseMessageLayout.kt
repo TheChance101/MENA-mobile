@@ -24,8 +24,8 @@ import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
-import net.thechance.mena.core_chat.presentation.screen.chat.model.MessageStatusUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text

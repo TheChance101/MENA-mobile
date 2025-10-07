@@ -1,8 +1,5 @@
 package net.thechance.mena.core_chat.presentation.di
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffectorImpl
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatArgs
@@ -17,7 +14,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val navigationModule = module {
-    single<CoroutineDispatcher> { Dispatchers.IO }
     factoryOf(::SyncContactsScreenArgsImpl) bind SyncContactsScreenArgs::class
     singleOf(::ChatEffectorImpl) bind ChatEffector::class
     factoryOf(::SettingsOpenerImpl) bind SettingsOpener::class

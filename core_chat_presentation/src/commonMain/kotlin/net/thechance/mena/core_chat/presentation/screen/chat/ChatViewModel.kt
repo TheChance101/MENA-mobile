@@ -15,12 +15,6 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
-import net.thechance.mena.core_chat.presentation.screen.chat.model.MessageStatusUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.model.buildListItems
-import net.thechance.mena.core_chat.presentation.screen.chat.model.toEntity
-import net.thechance.mena.core_chat.presentation.screen.chat.model.toUi
-import net.thechance.mena.core_chat.presentation.screen.chat.model.toggleMessageInfo
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
@@ -33,8 +27,8 @@ class ChatViewModel(
     private val chatRepository: ChatRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ChatState>(ChatState(), effector, defaultDispatcher),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, dispatcher),
     ChatInteractionListener {
 
     private var uiMessages: List<TextMessageUiState> = emptyList()
