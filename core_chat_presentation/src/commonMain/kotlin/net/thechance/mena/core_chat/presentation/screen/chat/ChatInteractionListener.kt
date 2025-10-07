@@ -12,6 +12,8 @@ interface ChatInteractionListener : MessageListInteractionListener {
     fun onSendImageClicked(imageByteArrays: List<ByteArray>)
     fun onInputMessageChanged(value: String)
     fun onSendMessageClicked()
+    fun onCameraClicked()
+    fun onCameraDismissed()
 }
 
 interface MessageListInteractionListener {
