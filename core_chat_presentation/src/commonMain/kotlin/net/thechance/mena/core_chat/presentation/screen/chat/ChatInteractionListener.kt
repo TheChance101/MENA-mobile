@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 interface ChatInteractionListener : MessageListInteractionListener {
 
     fun onBackClicked()
-
+    fun onSendImageClicked(imageByteArrays: List<ByteArray>)
     fun onInputMessageChanged(value: String)
     fun onSendMessageClicked()
 }
@@ -17,7 +17,7 @@ interface ChatInteractionListener : MessageListInteractionListener {
 interface MessageListInteractionListener {
     fun onMessageClicked(messageId: Uuid)
 
-    fun onFailedMessageClicked(message: TextMessageUiState)
+    fun onFailedMessageClicked(message: MessageUiState)
 
     fun onDeleteFailedMessageClicked()
 

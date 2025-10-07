@@ -23,7 +23,6 @@ import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     chatArgs: ChatArgs,
@@ -70,6 +69,31 @@ class ChatViewModel(
     override fun onBackClicked() {
         popBackStack()
     }
+    override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
+        val chatId = state.value.chat.id
+        val requesterId = state.value.chat.requesterId
+        val now = LocalDateTime.now()
+
+        imageByteArrays.forEach { bytes ->
+            val uiMessage = MessageUiState(
+                id = Uuid.random(),
+                chatId = chatId,
+                senderId = requesterId,
+                sendTime = now,
+                status = MessageStatusUiState.SENDING,
+                isMine = true,
+                imageBytes = bytes,
+                text = null
+            )
+
+            tryToExecute(
+                execute = { chatRepository.sendMessage(uiMessage.toEntity()) },
+                onSuccess = { onSendMessageSuccess(uiMessage) },
+                onError = { onSendMessageError(uiMessage) }
+            )
+        }
+    }
+
 
     override fun onInputMessageChanged(value: String) {
         updateState { it.copy(inputMessage = value) }
@@ -81,7 +105,7 @@ class ChatViewModel(
         if (text.isEmpty()) return
 
         val now = LocalDateTime.now()
-        val uiMessage = TextMessageUiState(
+        val uiMessage = MessageUiState(
             chatId = chatId,
             sendTime = now,
             senderId = state.value.chat.requesterId,
@@ -106,7 +130,7 @@ class ChatViewModel(
         )
     }
 
-    private fun onSendMessageSuccess(message: TextMessageUiState) {
+    private fun onSendMessageSuccess(message: MessageUiState) {
         val updatedMessages =
             state.value.uiMessages.filterNot { it.id == message.id && it.sendTime == message.sendTime }
         updateState {
@@ -117,7 +141,7 @@ class ChatViewModel(
         }
     }
 
-    private fun onSendMessageError(message: TextMessageUiState) {
+    private fun onSendMessageError(message: MessageUiState) {
         updateStateWithNewMessage(message.copy(status = MessageStatusUiState.FAILED))
     }
 
@@ -140,7 +164,7 @@ class ChatViewModel(
     }
 
 
-    override fun onFailedMessageClicked(message: TextMessageUiState) {
+    override fun onFailedMessageClicked(message: MessageUiState) {
         updateState {
             it.copy(
                 isResendMessageDialogVisible = true,
@@ -158,7 +182,7 @@ class ChatViewModel(
         }
     }
 
-    private fun onDeleteFailedMessageSuccess(failedMessage: TextMessageUiState) {
+    private fun onDeleteFailedMessageSuccess(failedMessage: MessageUiState) {
         updateState { s ->
             val updatedMessages = s.uiMessages.filterNot { it.id == failedMessage.id }
                 .sortedByDescending { it.sendTime }
@@ -296,7 +320,7 @@ class ChatViewModel(
         }
     }
 
-    private fun updateStateWithNewMessage(newMessage: TextMessageUiState) {
+    private fun updateStateWithNewMessage(newMessage: MessageUiState) {
         updateState { s ->
             val merged =
                 s.uiMessages.toMutableList().apply { add(0, newMessage) }.distinctBy { it.id }
@@ -305,7 +329,7 @@ class ChatViewModel(
         }
     }
 
-    private fun buildListItems(uiMessages: List<TextMessageUiState>): List<ChatListItem> {
+    private fun buildListItems(uiMessages: List<MessageUiState>): List<ChatListItem> {
         val marked = uiMessages.sortedByDescending { it.sendTime }.markLastInSeries()
         return marked.withDateSeparators()
     }
