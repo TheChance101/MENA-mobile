@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -22,7 +22,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun TextMessageItem(
-    message: TextMessageUiState,
+    message: MessageUiState,
     chatAvatarUrl: String? = null,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
@@ -40,7 +40,7 @@ fun TextMessageItem(
         modifier = modifier
     ) {
         Text(
-            text = message.text,
+            text = message.text.toString(),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
@@ -59,7 +59,7 @@ private fun PreviewTextMessageItem() {
         ) {
             TextMessageItem(
                 modifier = Modifier,
-                message = TextMessageUiState(
+                message = MessageUiState(
                     id = Uuid.random(),
                     sendTime = LocalDateTime.now(),
                     status = MessageStatusUiState.READ,

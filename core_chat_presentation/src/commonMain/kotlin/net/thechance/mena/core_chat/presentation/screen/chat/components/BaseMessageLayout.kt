@@ -25,7 +25,7 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -39,7 +39,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun BaseMessageLayout(
-    message: TextMessageUiState,
+    message: MessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
@@ -153,7 +153,7 @@ private fun PreviewBaseMessageLayout() {
             modifier = Modifier.fillMaxWidth()
         ) {
             BaseMessageLayout(
-                message = TextMessageUiState(
+                message = MessageUiState(
                     Uuid.random(),
                     Uuid.random(),
                     sendTime = LocalDateTime.now(),

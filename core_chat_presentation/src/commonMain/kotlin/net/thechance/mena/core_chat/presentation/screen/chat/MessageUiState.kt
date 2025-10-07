@@ -12,14 +12,16 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import net.thechance.mena.core_chat.domain.entity.MessageStatus as DomainMessageStatus
 
-data class TextMessageUiState(
+data class MessageUiState(
     val id: Uuid = Uuid.random(),
     val senderId: Uuid = Uuid.random(),
     val chatId: Uuid = Uuid.random(),
     val sendTime: LocalDateTime,
     val status: MessageStatusUiState,
     val isMine: Boolean,
-    val text: String
+    val text: String?,
+    val imageBytes: ByteArray? = null
+
 )
 
 enum class MessageStatusUiState {
@@ -30,12 +32,12 @@ enum class MessageStatusUiState {
 }
 
 data class MarkedMessageUiState(
-    val message: TextMessageUiState,
+    val message: MessageUiState,
     val isMarkedLastInSeries: Boolean,
     val showMessageInfo: Boolean = false
 )
 
-fun List<TextMessageUiState>.markLastInSeries(): List<MarkedMessageUiState> {
+fun List<MessageUiState>.markLastInSeries(): List<MarkedMessageUiState> {
     return this.mapIndexed { index, message ->
         val nextIsMine = this.getOrNull(index - 1)?.isMine
         val isLastInSeries = nextIsMine != message.isMine
@@ -94,26 +96,28 @@ fun List<MarkedMessageUiState>.withDateSeparators(
 }
 
 
-fun Message.toUi(currentUserId: Uuid): TextMessageUiState {
-    return TextMessageUiState(
+fun Message.toUi(currentUserId: Uuid): MessageUiState {
+    return MessageUiState(
         id = id,
         senderId = senderId,
         chatId = chatId,
         sendTime = sendAt,
         status = status.toUi(),
         isMine = senderId == currentUserId,
-        text = text
+        text = text,
+        imageBytes = imageBytes
     )
 }
 
-fun TextMessageUiState.toEntity(): Message {
+fun MessageUiState.toEntity(): Message {
     return Message(
         id = id,
         senderId = senderId,
         chatId = chatId,
-        text = text,
+        text = text.orEmpty(),
         sendAt = sendTime,
-        status = status.toEntity()
+        status = status.toEntity(),
+        imageBytes = imageBytes
     )
 }
 

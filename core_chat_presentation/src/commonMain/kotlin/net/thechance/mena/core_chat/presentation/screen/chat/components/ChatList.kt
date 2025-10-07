@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -24,7 +24,7 @@ fun ChatList(
     items: List<ChatListItem>,
     chat: ChatUiState,
     onMessageClick: (Uuid) -> Unit,
-    onFailedMessageClick: (TextMessageUiState) -> Unit
+    onFailedMessageClick: (MessageUiState) -> Unit
 ) {
 
     val chatListState = rememberLazyListState()
