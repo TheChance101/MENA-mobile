@@ -7,7 +7,6 @@ import com.bilalazzam.contacts_provider.ContactsProvider
 import net.thechance.mena.core_chat.data.database.ChatDatabase
 import net.thechance.mena.core_chat.data.database.dao.MessageDao
 import net.thechance.mena.core_chat.data.database.getChatDatabase
-import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_DATABASE_BUILDER
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
 import org.koin.core.qualifier.named
@@ -15,9 +14,9 @@ import org.koin.core.qualifier.named
 internal val dataProviderModule = module {
     single { createContactsProvider() }
     single { createSettingsDataStore() }
-    single(named(CHAT_DATABASE_BUILDER)) { getDatabaseBuilder() }
+    single(named("ChatDatabaseBuilder")) { getDatabaseBuilder() }
 
-    single<ChatDatabase> { getChatDatabase(get(named(CHAT_DATABASE_BUILDER))) }
+    single<ChatDatabase> { getChatDatabase(get(named("ChatDatabaseBuilder"))) }
     single<MessageDao> { get<ChatDatabase>().getMessageDao() }
 }
 
