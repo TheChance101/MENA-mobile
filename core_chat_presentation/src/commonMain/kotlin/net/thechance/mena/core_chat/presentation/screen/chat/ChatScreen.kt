@@ -6,8 +6,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.preat.peekaboo.image.picker.SelectionMode
+import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
@@ -30,20 +33,27 @@ fun ChatScreen(
     )
 
 }
-
 @Composable
 fun ChatScreenContent(
     state: ChatScreenState = ChatScreenState(),
     interactions: ChatInteractionListener
 ) {
+    val scope = rememberCoroutineScope()
+
+    val imagePickerLauncher = rememberImagePickerLauncher(
+        selectionMode = SelectionMode.Multiple(maxSelection = 10),
+        scope = scope,
+        onResult = { byteArrays ->
+            interactions.onSendImageClicked(byteArrays)
+        }
+    )
     Scaffold(
         topBar = {
             ChatHeader(
                 chatName = state.chat.name,
                 onMenuClick = {},
                 onBackClick = interactions::onBackClicked,
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
         },
         bottomBar = {
@@ -51,6 +61,7 @@ fun ChatScreenContent(
                 userInput = state.inputMessage,
                 onTextChange = interactions::onInputMessageChanged,
                 onSendButtonClick = interactions::onSendMessageClicked,
+                onAttachButtonClick = { imagePickerLauncher.launch() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Theme.colorScheme.background.surface)
