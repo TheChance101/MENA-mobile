@@ -31,7 +31,7 @@ interface BaseRepository {
     }
 
     private suspend fun <T> retry(
-        maxAttempts: Int = 3,
+        maxAttempts: Int,
         block: suspend () -> T?
     ): T? {
         return try {

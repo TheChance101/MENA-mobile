@@ -38,15 +38,6 @@ fun ChatDto.toDomain(): Chat? {
     )
 }
 
-fun Message.toDto() = MessageRemoteDto(
-    id = id.toString(),
-    senderId = senderId.toString(),
-    chatId = chatId.toString(),
-    text = text,
-    sendAt = sendAt.toInstant().toString(),
-    isRead = status == MessageStatus.READ
-)
-
 fun Message.toSendMessageRequestDto() = SendMessageDto(
     chatId = chatId.toString(),
     text = text
