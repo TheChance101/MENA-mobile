@@ -29,12 +29,6 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
-import net.thechance.mena.core_chat.presentation.screen.chat.model.ChatListItem
-import net.thechance.mena.core_chat.presentation.screen.chat.model.MarkedMessageUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.model.MessageStatusUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.model.TextMessageUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.model.toEntity
-import net.thechance.mena.core_chat.presentation.screen.chat.model.toUi
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.test.AfterTest
