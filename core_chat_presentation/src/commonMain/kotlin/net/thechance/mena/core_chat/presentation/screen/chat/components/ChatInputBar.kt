@@ -30,6 +30,7 @@ import mena.core_chat_presentation.generated.resources.ic_add
 import mena.core_chat_presentation.generated.resources.message_holder
 import mena.core_chat_presentation.generated.resources.ic_mic
 import mena.core_chat_presentation.generated.resources.ic_telegram
+import mena.core_chat_presentation.generated.resources.ic_warning
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.textField.MultiLineTextField
@@ -47,6 +48,7 @@ fun ChatInputBar(
     onSendButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     onVoiceRecordClick: () -> Unit = {},
+    onCameraButtonClick: () -> Unit = {},
     onAttachButtonClick: () -> Unit = {}
 ) {
     Row(
@@ -91,6 +93,11 @@ fun ChatInputBar(
                     )
                 )
             }
+            Icon(
+                painter = painterResource(Res.drawable.ic_warning),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp).clickable(onClick = onCameraButtonClick
+            ))
         }
         Crossfade(targetState = userInput.isBlank(), modifier = Modifier.align(Alignment.Bottom)) {
             if (it)
