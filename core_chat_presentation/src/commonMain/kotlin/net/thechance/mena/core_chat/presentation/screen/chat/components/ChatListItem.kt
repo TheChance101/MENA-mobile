@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
@@ -22,7 +22,7 @@ fun ChatListItem(
     item: ChatListItem,
     chat: ChatUiState,
     onMessageClick: (Uuid) -> Unit,
-    onFailedMessageClick: (TextMessageUiState) -> Unit,
+    onFailedMessageClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (item) {
@@ -44,16 +44,26 @@ fun ChatListItem(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = if (markedMessage.message.isMine) Arrangement.End else Arrangement.Start
             ) {
-                TextMessageItem(
-                    message = markedMessage.message,
-                    chatAvatarUrl = chat.avatarUrl,
-                    showMessageInfo = markedMessage.showMessageInfo,
-                    isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
-                    onClick = { onMessageClick(markedMessage.message.id) },
-                    onFailClick = { onFailedMessageClick(markedMessage.message) },
-                    modifier = Modifier
-                )
+                if (markedMessage.message.imageBytes != null) {
+                    ImageMessageItem(
+                        message = markedMessage.message,
+                        showMessageInfo = markedMessage.showMessageInfo,
+                        isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
+                        onClick = { onMessageClick(markedMessage.message.id) },
+                        onFailClick = { onFailedMessageClick(markedMessage.message) }
+                    )
+                } else {
+                    TextMessageItem(
+                        message = markedMessage.message,
+                        chatAvatarUrl = chat.avatarUrl,
+                        showMessageInfo = markedMessage.showMessageInfo,
+                        isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
+                        onClick = { onMessageClick(markedMessage.message.id) },
+                        onFailClick = { onFailedMessageClick(markedMessage.message) }
+                    )
+                }
             }
         }
     }
+
 }
