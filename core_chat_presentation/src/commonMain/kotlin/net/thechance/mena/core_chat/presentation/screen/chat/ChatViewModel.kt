@@ -33,8 +33,8 @@ class ChatViewModel(
     private val chatRepository: ChatRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ChatState>(ChatState(), effector, defaultDispatcher),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<ChatState>(ChatState(), effector, dispatcher),
     ChatInteractionListener {
 
     private var uiMessages: List<TextMessageUiState> = emptyList()

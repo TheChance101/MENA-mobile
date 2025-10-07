@@ -2,21 +2,22 @@
 
 package net.thechance.mena.core_chat.presentation.di
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.chats.ChatsViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
-import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsViewModel
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import kotlin.uuid.ExperimentalUuidApi
 
 internal val viewModelModule = module {
-    single<CoroutineDispatcher> { Dispatchers.IO }
-    viewModelOf(::ChatsViewModel)
-    viewModelOf(::ContactsViewModel)
-    viewModelOf(::SyncContactsViewModel)
-    viewModelOf(::ChatViewModel)
+    viewModel { ChatsViewModel(contactsRepository = get(), effector = get()) }
+    viewModel {
+        ContactsViewModel(get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
+    }
+    viewModel {
+        SyncContactsViewModel(get(), get(), get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
+    }
+    viewModel { ChatViewModel(get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER))) }
 }
