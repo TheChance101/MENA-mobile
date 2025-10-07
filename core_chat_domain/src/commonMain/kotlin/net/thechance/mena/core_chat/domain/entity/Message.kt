@@ -11,5 +11,6 @@ data class Message(
     val chatId: Uuid,
     val text: String,
     val sendAt: LocalDateTime,
-    val status: MessageStatus
+    val status: MessageStatus,
+    val imageBytes: ByteArray? = null
 )
