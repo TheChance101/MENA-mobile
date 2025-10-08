@@ -17,8 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.core_chat.presentation.components.AnimatedSnackBarHost
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
-import net.thechance.mena.core_chat.presentation.screen.chats.HomeScreen
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme

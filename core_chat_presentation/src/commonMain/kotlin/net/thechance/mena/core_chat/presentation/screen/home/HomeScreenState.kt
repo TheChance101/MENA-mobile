@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.screen.chats
+package net.thechance.mena.core_chat.presentation.screen.home
 
 data class HomeScreenState(
     val isLoading: Boolean = false,

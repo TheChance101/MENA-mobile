@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.screen.chats
+package net.thechance.mena.core_chat.presentation.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

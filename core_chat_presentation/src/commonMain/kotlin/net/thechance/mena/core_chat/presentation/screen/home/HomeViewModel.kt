@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.screen.chats
+package net.thechance.mena.core_chat.presentation.screen.home
 
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
