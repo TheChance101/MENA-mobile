@@ -1,5 +1,4 @@
 <resources>
-
     <string name="app_name">MENA</string>
     <string name="welcome_back">Welcome Back to MENA</string>
     <string name="login_prompt">Fill your information to login</string>
@@ -81,4 +80,19 @@
     <string name="profile_profile_picture_content_description">Profile Picture</string>
     <string name="profile_share_icon_content_description">Share Icon</string>
     <string name="profile_invite_friends_icon_content_description">Invite Friends Icon</string>
+
+    <string name="address_type_home">Home</string>
+    <string name="address_type_office">Office</string>
+    <string name="address_type_other">Other</string>
+
+    <string name="address_priority_main">Main</string>
+    <string name="address_edit">Edit</string>
+
+    <string name="delete_address_description">Are you sure you want to delete this location?</string>
+    <string name="delete_address_title">Delete Location</string>
+    <string name="confirmation_dialog_delete">Delete</string>
+
+    <string name="my_location_app_bar_title">My locations</string>
+
+
 </resources>
