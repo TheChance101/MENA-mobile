@@ -8,5 +8,4 @@ import kotlin.uuid.Uuid
 sealed interface StatementsHistoryEffect {
     data object NavigateBack : StatementsHistoryEffect
     data class NavigateToStatementDetails(val id: Uuid) : StatementsHistoryEffect
-
 }
