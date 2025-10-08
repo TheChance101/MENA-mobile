@@ -20,5 +20,5 @@ data class ReelUiState(
 )
 data class ProfileUiState(
     val userName: String = "",
-    val profileImageUrl: String? = null,
+    val profileImageUrl: String = "",
 )

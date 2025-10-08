@@ -13,6 +13,6 @@ data class ProfileDto(
     @SerialName("lastName")
     val lastName: String,
     @SerialName("profileImageUrl")
-    val profileImageUrl: String?
+    val profileImageUrl: String? = null
 
 )

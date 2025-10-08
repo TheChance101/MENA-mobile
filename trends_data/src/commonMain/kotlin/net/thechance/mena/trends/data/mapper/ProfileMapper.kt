@@ -7,7 +7,7 @@ internal fun ProfileDto.toEntity(): Profile {
     return Profile(
         firstName = firstName,
         lastName = lastName,
-        profileImageUrl = profileImageUrl,
+        profileImageUrl = profileImageUrl.orEmpty(),
         username = username
     )
 }

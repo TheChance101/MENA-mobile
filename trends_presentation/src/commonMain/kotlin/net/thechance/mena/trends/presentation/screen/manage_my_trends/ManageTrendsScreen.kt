@@ -106,7 +106,7 @@ private fun ManageTrendsScreenContent(
         ) {
 
         AsyncImage(
-            model =  state.profile.profileImageUrl ?: painterResource(Res.drawable.placeholder_profile_image) ,
+            model =  state.profile.profileImageUrl.ifEmpty { Res.drawable.placeholder_profile_image } ,
             contentDescription = stringResource(Res.string.profile_image_desc),
             modifier = Modifier
                 .padding(top = 32.dp)
