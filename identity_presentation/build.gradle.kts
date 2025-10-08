@@ -52,6 +52,8 @@ kotlin {
             implementation(libs.bundles.coil)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            implementation(libs.maplibre.compose)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.test)
