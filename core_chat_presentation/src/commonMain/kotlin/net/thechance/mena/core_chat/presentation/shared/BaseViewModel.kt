@@ -56,8 +56,10 @@ open class BaseViewModel<S>(
     protected fun popBackStack(vararg arguments: Pair<String, Any>) =
         viewModelScope.launch { effector.popBackStack(*arguments) }
 
-    protected fun showSnackBar(snackBarData: SnackBarData) = viewModelScope.launch {
-        effector.showSnackBar(snackBarData)
+    protected fun showSnackBar(snackBarData: SnackBarData) {
+        viewModelScope.launch {
+            effector.showSnackBar(snackBarData)
+        }
     }
 
     fun updateState(updater: (S) -> S) = _state.update(updater)

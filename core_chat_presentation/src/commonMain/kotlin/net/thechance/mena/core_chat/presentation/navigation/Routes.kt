@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 interface ChatRoute
 
 @Serializable
-data object ChatsRoute : ChatRoute
+data object HomeRoute : ChatRoute
 
 @Serializable
 data object WalletRoute : ChatRoute

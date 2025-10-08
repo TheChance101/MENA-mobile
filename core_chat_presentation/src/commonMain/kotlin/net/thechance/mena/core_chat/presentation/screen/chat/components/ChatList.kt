@@ -22,7 +22,7 @@ import kotlin.uuid.Uuid
 @Composable
 fun ChatList(
     items: List<ChatListItem>,
-    chat: ChatUiState,
+    chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit
 ) {
@@ -60,7 +60,7 @@ fun ChatList(
                 Theme.spacing._2
             ChatListItem(
                 item = item,
-                chat = chat,
+                chatAvatarUrl = chatAvatarUrl,
                 onMessageClick = onMessageClick,
                 onFailedMessageClick = onFailedMessageClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
