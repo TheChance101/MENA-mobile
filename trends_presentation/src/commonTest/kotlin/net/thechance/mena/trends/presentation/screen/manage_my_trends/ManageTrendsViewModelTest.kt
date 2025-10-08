@@ -15,13 +15,12 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.utils.categories
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
-
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageTrendsViewModelTest {
@@ -38,7 +37,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getAllReels(1) } returns reelList
+            everySuspend { repository.getAllReels(1) } returns reels
 
             viewModel.state.test {
                 val currentState = awaitItem()
@@ -51,8 +50,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `initialize view model should handle error state when getAllReels fails`() =
         runTest(testDispatcher) {
-            val errorMessage = "error"
-            everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
+            everySuspend { repository.getAllReels(1) } throws Exception()
             assertFailsWith<Exception> {
                 viewModel.state.value.reels.asSnapshot()
             }
@@ -79,37 +77,29 @@ class ManageTrendsViewModelTest {
 
     private companion object {
         const val REEL_ID = "1"
-        val reelList = listOf(
-            Reel(
-                id = "1",
-                thumbnailUrl = "thumb1.jpg",
-                videoUrl = "video1.mp4",
-                description = "First reel",
-                likesCount = 100,
-                viewsCount = 1000,
-                createdAt = LocalDateTime(2023, 10, 1, 12, 0),
-                categories = listOf(Category("1", "Trend", ":fire:"))
-            ),
-            Reel(
+        val reel = Reel(
+            id = "1",
+            thumbnailUrl = "thumb1.jpg",
+            videoUrl = "video1.mp4",
+            description = "First reel",
+            likesCount = 100,
+            viewsCount = 1000,
+            createdAt = LocalDateTime(2002, 2, 22, 2, 22),
+            categories = categories
+        )
+
+        val reels = listOf(
+            reel,
+            reel.copy(
                 id = "2",
                 thumbnailUrl = "thumb2.jpg",
                 videoUrl = "video2.mp4",
                 description = "Second reel",
-                likesCount = 200,
-                viewsCount = 2000,
-                createdAt = LocalDateTime(2023, 10, 2, 12, 0),
-                categories = listOf(Category("2", "Viral", ":rocket:"))
             )
         )
         val expectedReelUiStateList = listOf(
-            ReelUiState(
-                id = "1",
-                thumbnailUrl = "thumb1.jpg",
-            ),
-            ReelUiState(
-                id = "2",
-                thumbnailUrl = "thumb2.jpg",
-            )
+            ReelUiState(id = "1", thumbnailUrl = "thumb1.jpg"),
+            ReelUiState(id = "2", thumbnailUrl = "thumb2.jpg")
         )
     }
 }
