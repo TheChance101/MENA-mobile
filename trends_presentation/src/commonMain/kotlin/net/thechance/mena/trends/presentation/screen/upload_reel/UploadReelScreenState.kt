@@ -4,17 +4,18 @@ import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 
 data class UploadReelScreenState(
+    val reelId: String? = null,
     val selectedFile: FileUiState = FileUiState(),
+    val uploadingState: UploadingTrendState = UploadingTrendState.IDLE,
     val thumbnail: ByteArray? = null,
-    val uploadingTrendState: UploadingTrendState = UploadingTrendState.IDLE,
-    val uploadedBytes: Long = 0,
+    val uploadingProgress: Float = 0f,
+    val uploadedBytes: String = "",
     val isNextButtonEnabled: Boolean = false,
     val isNextButtonLoading: Boolean = false,
-    val errorState: ErrorState? = null,
-    val trendId: String? = null
+    val errorState: ErrorState? = null
 ) {
     val isUploadVideoCardEnabled: Boolean
-        get() = uploadingTrendState == UploadingTrendState.IDLE || uploadingTrendState == UploadingTrendState.FAILED
+        get() = uploadingState == UploadingTrendState.IDLE || uploadingState == UploadingTrendState.FAILED
 
     enum class UploadingTrendState {
         IDLE,
