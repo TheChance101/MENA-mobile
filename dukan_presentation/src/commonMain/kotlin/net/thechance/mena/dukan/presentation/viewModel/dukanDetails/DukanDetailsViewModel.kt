@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
-import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfArgs.shelfId
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class DukanDetailsViewModel :
@@ -15,7 +14,7 @@ class DukanDetailsViewModel :
     }
 
     override fun onViewAllShelfProductsClicked(id: String, name: String) {
-        emitEffect(DukanDetailsEffects.NavigateToViewAllShelfProducts(shelfId, name))
+        emitEffect(DukanDetailsEffects.NavigateToViewAllShelfProducts(id, name))
     }
 
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {
