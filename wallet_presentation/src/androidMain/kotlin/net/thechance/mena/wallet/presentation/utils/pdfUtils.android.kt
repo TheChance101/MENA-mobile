@@ -95,7 +95,7 @@ actual class PdfHandler{
     }
 
     private companion object {
-        const val IMAGE_SCALE = 2.0f
+        const val IMAGE_SCALE = 1.67f
     }
 
 }
