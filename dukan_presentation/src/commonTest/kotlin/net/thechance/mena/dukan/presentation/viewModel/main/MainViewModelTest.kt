@@ -160,7 +160,7 @@ class MainViewModelTest {
 
     @Test
     fun `When getCategories throws an exception then errorMessage should be set`() = runTest {
-        everySuspend { dukanRepository.getCategories() } throws Throwable("Network failure")
+        everySuspend { dukanRepository.getCategories() } throws Exception("Network failure")
 
         mainViewModel = MainViewModel(dukanRepository, testDispatcher)
         advanceUntilIdle()
