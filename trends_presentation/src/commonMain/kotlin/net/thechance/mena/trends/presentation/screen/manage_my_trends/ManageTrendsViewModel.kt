@@ -57,11 +57,12 @@ internal class ManageTrendsViewModel(
             onError = { errorState ->
                 updateState { copy(error = errorState) }
             },
-            onStart = {  updateState { copy(isLoading = true) }},
+            onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = ioDispatcher
         )
     }
+
     private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
         val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
             pagingData.map { reel -> reel.toUiState() }
