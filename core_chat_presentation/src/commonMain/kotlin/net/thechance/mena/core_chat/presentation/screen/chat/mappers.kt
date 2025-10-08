@@ -62,7 +62,7 @@ private fun MessageStatusUiState.toEntity(): DomainMessageStatus {
 }
 
 
-fun List<TextMessageUiState>.markLastInSeries(): List<MarkedMessageUiState> {
+fun List<MessageUiState>.markLastInSeries(): List<MarkedMessageUiState> {
     return this.mapIndexed { index, message ->
         val nextIsMine = this.getOrNull(index - 1)?.isMine
         val isLastInSeries = nextIsMine != message.isMine
@@ -119,6 +119,6 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
 }
 
 
-fun List<TextMessageUiState>.buildListItems(): List<ChatListItem> {
+fun List<MessageUiState>.buildListItems(): List<ChatListItem> {
     return sortedByDescending { it.sendTime }.markLastInSeries().withDateSeparators()
 }

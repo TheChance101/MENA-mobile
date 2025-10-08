@@ -300,12 +300,12 @@ class ChatViewModelTest {
     }
 
 
-    private fun List<ChatListItem>.currentUiMessages(): List<TextMessageUiState> =
+    private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.Message>()
             .map { it.data.message }
             .sortedByDescending { it.sendTime }
 
-    private fun TextMessageUiState.toChatListMessage(): ChatListItem.Message =
+    private fun MessageUiState.toChatListMessage(): ChatListItem.Message =
         ChatListItem.Message(
             MarkedMessageUiState(
                 message = this,

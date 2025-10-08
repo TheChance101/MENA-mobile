@@ -26,14 +26,15 @@ sealed interface ChatListItem {
     data class Message(val data: MarkedMessageUiState) : ChatListItem
 }
 
-data class TextMessageUiState(
+data class MessageUiState(
     val id: Uuid = Uuid.random(),
     val senderId: Uuid = Uuid.random(),
     val chatId: Uuid = Uuid.random(),
     val sendTime: LocalDateTime = LocalDateTime.now(),
     val status: MessageStatusUiState = MessageStatusUiState.SENDING,
     val isMine: Boolean = true,
-    val text: String = ""
+    val text: String?,
+    val imageBytes: ByteArray? = null
 )
 
 enum class MessageStatusUiState {
@@ -44,7 +45,7 @@ enum class MessageStatusUiState {
 }
 
 data class MarkedMessageUiState(
-    val message: TextMessageUiState,
+    val message: MessageUiState,
     val isMarkedLastInSeries: Boolean,
     val showMessageInfo: Boolean = false
 )

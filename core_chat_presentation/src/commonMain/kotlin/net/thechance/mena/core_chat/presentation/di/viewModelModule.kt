@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.di
 
+import dev.icerock.moko.permissions.PermissionsController
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
 import net.thechance.mena.core_chat.presentation.screen.home.HomeViewModel
@@ -19,5 +20,13 @@ internal val viewModelModule = module {
     viewModel {
         SyncContactsViewModel(get(), get(), get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
     }
-    viewModel { ChatViewModel(get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER))) }
+    factory { (permissionsController: PermissionsController) ->
+        ChatViewModel(
+            chatRepository = get(),
+            chatArgs = get(),
+            effector = get(),
+            permissionsController = permissionsController,
+            dispatcher = get(named(CHAT_IO_DISPATCHER))
+        )
+    }
 }

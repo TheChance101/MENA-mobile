@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
@@ -20,6 +21,7 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
+import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -33,7 +35,7 @@ class ChatViewModel(
 ) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, dispatcher),
     ChatInteractionListener {
 
-    private var uiMessages: List<TextMessageUiState> = emptyList()
+    private var uiMessages: List<MessageUiState> = emptyList()
 
     init {
         updateInitialState(
@@ -78,15 +80,17 @@ class ChatViewModel(
     }
 
     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
-        val chatId = state.value.chat.id
-        val requesterId = state.value.chat.requesterId
+        val chatId = state.value.chatId
+        val senderId = state.value.chatRequesterId
         val now = LocalDateTime.now()
+
+        if (chatId == null || senderId == null) return
 
         imageByteArrays.forEach { bytes ->
             val uiMessage = MessageUiState(
                 id = Uuid.random(),
                 chatId = chatId,
-                senderId = requesterId,
+                senderId = senderId,
                 sendTime = now,
                 status = MessageStatusUiState.SENDING,
                 isMine = true,
@@ -190,7 +194,7 @@ class ChatViewModel(
         sendMessage(
             chatId = message.chatId,
             senderId = message.senderId,
-            text = message.text
+            text = message.text.orEmpty()
         )
     }
 
