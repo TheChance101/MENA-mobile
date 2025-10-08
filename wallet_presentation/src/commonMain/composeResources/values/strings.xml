@@ -98,12 +98,17 @@
     <string name="start_date_must_be_before_end_date">Start date must be earlier than end date</string>
     <string name="failed_to_load_date_picker">Failed to load date picker</string>
 
-    <string name="share_button_title">Share</string>">
-    <string name="view_transactions">View Transactions</string>">
+    <string name="share_button_title">Share</string>
+    <string name="view_transactions">View Transactions</string>
 
-    <string name="view_transactions_statement_error_message">an error happened while loading the statement file</string>">
-    <string name="loading_pdf_message">Loading PDF...</string>">
-    <string name="rendering_pdf_message">Rendering PDF...</string>">
+    <string name="view_transactions_statement_error_message">an error happened while loading the statement file</string>
+    <string name="loading_pdf_message">Loading PDF...</string>
+    <string name="rendering_pdf_message">Rendering PDF...</string>
     <string name="unknown_error_title">Unknown error</string>
     <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
+    <string name="inflows">Inflows</string>
+    <string name="outflows">Outflows</string>
+    <string name="silvers">Silvers</string>
+    <string name="date_range">%1$s - %2$s</string>
+    <string name="amount_with_currency">%1$s %2$s</string>
 </resources>

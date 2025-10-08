@@ -1,0 +1,159 @@
+package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.amount_with_currency
+import mena.wallet_presentation.generated.resources.date_range
+import mena.wallet_presentation.generated.resources.ic_clock
+import mena.wallet_presentation.generated.resources.inflows
+import mena.wallet_presentation.generated.resources.outflows
+import mena.wallet_presentation.generated.resources.silvers
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun StatementHistoryCard(
+    startDate: String,
+    endDate: String,
+    totalInflow: String,
+    totalOutflow: String,
+    onStatementCardClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = Theme.spacing._16)
+            .clip(RoundedCornerShape(Theme.spacing._12))
+            .clickable { onStatementCardClicked() },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+    ) {
+        StatementHistoryIcon()
+
+        StatementHistoryContent(
+            startDate = startDate,
+            endDate = endDate,
+            totalInflow = totalInflow,
+            totalOutflow = totalOutflow
+        )
+    }
+}
+
+@Composable
+private fun StatementHistoryIcon() {
+    Icon(
+        painter = painterResource(Res.drawable.ic_clock),
+        contentDescription = null,
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .background(Theme.colorScheme.primary.onPrimary)
+            .padding(Theme.spacing._12)
+    )
+}
+
+@Composable
+private fun StatementHistoryContent(
+    startDate: String,
+    endDate: String,
+    totalInflow: String,
+    totalOutflow: String,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
+        Text(
+            text = stringResource(Res.string.date_range, startDate, endDate),
+            style = Theme.typography.body.small,
+            color = Theme.colorScheme.shadePrimary
+        )
+        StatementInOutflowRow(totalInflow, totalOutflow)
+    }
+}
+
+@Composable
+private fun StatementInOutflowRow(totalInflow: String, totalOutflow: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        FlowItem(
+            amount = "+$totalInflow",
+            label = stringResource(Res.string.inflows),
+            color = Theme.colorScheme.success
+        )
+        Box(
+            modifier = Modifier
+                .padding(horizontal = Theme.spacing._8)
+                .height(16.dp)
+                .width(1.dp)
+                .background(Theme.colorScheme.stroke)
+        )
+        FlowItem(
+            amount = "-$totalOutflow",
+            label = stringResource(Res.string.outflows),
+            color = Theme.colorScheme.error
+        )
+    }
+}
+
+
+@Composable
+private fun FlowItem(
+    amount: String,
+    label: String,
+    color: Color
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(
+                Res.string.amount_with_currency,
+                amount,
+                stringResource(Res.string.silvers)
+            ),
+            style = Theme.typography.label.extraSmall,
+            color = color,
+            modifier = Modifier.padding(end = Theme.spacing._4)
+        )
+        Text(
+            text = label,
+            style = Theme.typography.label.extraSmall,
+            color = Theme.colorScheme.shadeSecondary
+        )
+    }
+}
+
+
+@Preview
+@Composable
+private fun StatementItemPreview() {
+    MenaTheme {
+        StatementHistoryCard(
+            startDate = "Jul 23 2025",
+            endDate = "Aug 27 2025",
+            totalInflow = "2000",
+            totalOutflow = "4200",
+            onStatementCardClicked = {},
+            modifier = Modifier.background(Theme.colorScheme.background.surface)
+        )
+    }
+}

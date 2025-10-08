@@ -102,5 +102,9 @@
     <string name="failed_to_load_date_picker">فشل في تحميل التاريخ</string>
     <string name="unknown_error_title">خطأ غير معروف</string>
     <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
-
+    <string name="inflows">واردات</string>
+    <string name="outflows">صادرات</string>
+    <string name="silvers">فضيات</string>
+    <string name="date_range">%1$s - %2$s</string>
+    <string name="amount_with_currency">%1$s %2$s</string>
 </resources>

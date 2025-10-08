@@ -3,8 +3,8 @@
 package net.thechance.mena.core_chat.presentation.di
 
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
-import net.thechance.mena.core_chat.presentation.screen.chats.ChatsViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
+import net.thechance.mena.core_chat.presentation.screen.home.HomeViewModel
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -12,7 +12,7 @@ import org.koin.dsl.module
 import kotlin.uuid.ExperimentalUuidApi
 
 internal val viewModelModule = module {
-    viewModel { ChatsViewModel(contactsRepository = get(), effector = get()) }
+    viewModel { HomeViewModel(contactsRepository = get(), effector = get()) }
     viewModel {
         ContactsViewModel(get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
     }
