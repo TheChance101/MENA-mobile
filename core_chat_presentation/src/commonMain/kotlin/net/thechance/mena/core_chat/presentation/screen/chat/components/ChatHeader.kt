@@ -8,7 +8,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_arrow_left
 import mena.core_chat_presentation.generated.resources.ic_menu
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.button.FabButton
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -36,17 +36,12 @@ fun ChatHeader(
         onLeadingClick = onBackClick,
         title = chatName,
         trailingContent = {
-            FabButton(
-                painter = painterResource(Res.drawable.ic_menu),
-                contentDescription = null,
-                onClick = {}
-            )
-//            AppBarOptionContainer(onClick = onMenuClick) {
-//                Icon(
-//                    painter = painterResource(Res.drawable.ic_menu),
-//                    contentDescription = null
-//                )
-//            }
+            AppBarOptionContainer(onClick = onMenuClick) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_menu),
+                    contentDescription = null
+                )
+            }
         },
         modifier = modifier.background(Theme.colorScheme.background.surfaceLow)
     )
