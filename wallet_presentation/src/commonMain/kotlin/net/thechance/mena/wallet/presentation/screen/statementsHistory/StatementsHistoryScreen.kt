@@ -26,7 +26,6 @@ import mena.wallet_presentation.generated.resources.statements
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.EmptyStatementsHistory
@@ -112,9 +111,6 @@ private fun StatementHistoryContent(
                     ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
-
-            state.errorState != null ->
-                ErrorView(onRetry = { listener.onRetryLoadStatementsHistoryClicked() })
 
             state.statements.isEmpty() -> {
                 EmptyStatementsHistory(modifier = Modifier.fillMaxSize())

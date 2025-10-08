@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
@@ -74,7 +75,10 @@ class StatementsHistoryViewModel(
     }
 
     private fun onPaginationError(throwable: Throwable?) {
-        updateState { it.copy(errorState = ErrorState.Unknown) }
+        when (throwable) {
+            is NoInternetException -> updateState { it.copy(errorState = ErrorState.NoInternet) }
+            else -> updateState { it.copy(errorState = ErrorState.Unknown) }
+        }
     }
 
     private fun onPaginationSuccess(items: List<Statement>) {
