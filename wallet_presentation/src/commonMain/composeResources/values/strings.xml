@@ -106,6 +106,7 @@
     <string name="rendering_pdf_message">Rendering PDF...</string>
     <string name="unknown_error_title">Unknown error</string>
     <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
+    <string name="remove_statements">Remove Statements</string>
     <string name="inflows">Inflows</string>
     <string name="outflows">Outflows</string>
     <string name="silvers">Silvers</string>
