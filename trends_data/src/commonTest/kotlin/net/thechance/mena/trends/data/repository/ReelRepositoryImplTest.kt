@@ -2,6 +2,7 @@ package net.thechance.mena.trends.data.repository
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isLessThanOrEqualTo
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isSuccess
 import kotlinx.coroutines.flow.toList
@@ -48,8 +49,9 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should update reel successfully`() = runTest {
 
-        networkClient =
-            createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
+        networkClient = createReelsHttpClient {
+                updateReelResponse("1", "Updated description", listOf("cat1"))
+            }
         repository = ReelsRepositoryImpl(networkClient)
 
         val result = runCatching {
