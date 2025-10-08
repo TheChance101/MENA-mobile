@@ -2,13 +2,20 @@ package net.thechance.mena.dukan.presentation.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.best_dukans_around_you
+import mena.dukan_presentation.generated.resources.editor_pick_dukans
+import mena.dukan_presentation.generated.resources.what_do_you_need
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -16,11 +23,19 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanSc
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
+import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.BestNearestDukanSection
+import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.fakeBestNearestDuknas
+import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.CategorySection
+import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
+import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.EditorPickDukanItemsList
+import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.fakeDukans
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewMainScreenInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,9 +55,24 @@ fun MainScreen(
             )
 
             MainEffect.NavigateToManageDukanScreen -> navController.navigate(ManageDukanScreenRoute)
+
+            MainEffect.NavigateCategoryToScreen -> {
+                //ToDO: navigate to category screen
+            }
+
+            is MainEffect.NavigateToDukansScreenByCategory -> {
+                //ToDO: navigate to dukan screen by category
+            }
+
+            is MainEffect.NavigateSelectedEditorPickDukan -> {
+                //ToDO: navigate to editor pick dukan
+            }
+
+            is MainEffect.NavigateSelectedNearsetDukan -> {
+                //ToDo: navigate to nearest dukan
+            }
         }
     }
-
 
     MainContent(
         listener = viewModel,
@@ -64,7 +94,59 @@ private fun MainContent(
             )
         },
     ) {
+        Column {
+            Text(
+                text = stringResource(Res.string.what_do_you_need),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(
+                    start = Theme.spacing._16,
+                    bottom = Theme.spacing._8
+                )
+            )
 
+            CategorySection(
+                categories = state.categories,
+                onCategoryClick = listener::onCategorySelectedClick,
+                onViewMoreClick = listener::onViewMoreButtonClick,
+            )
+
+            Text(
+                text = stringResource(Res.string.best_dukans_around_you),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(
+                    start = Theme.spacing._16,
+                    top = Theme.spacing._16
+                )
+            )
+
+            BestNearestDukanSection(
+                dukans = state.bestNearestDukans,
+                onDukanClick = listener::onNearestDukanClick,
+                modifier = Modifier
+                    .padding(
+                        start = Theme.spacing._16,
+                        top = Theme.spacing._8
+                    )
+            )
+
+            Text(
+                stringResource(Res.string.editor_pick_dukans),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(
+                    top = Theme.spacing._16,
+                    start = Theme.spacing._16,
+                    bottom = Theme.spacing._12
+                )
+            )
+
+            EditorPickDukanItemsList(
+                dukans = state.editorPickDukans,
+                onDukanClick = listener::onEditorPickDukanClick
+            )
+        }
     }
 }
 
@@ -79,10 +161,12 @@ private fun MainScreenPreview() {
             contentAlignment = Alignment.Center
         ) {
             MainContent(
-                listener = object : MainInteractionListener {
-                    override fun onDukanButtonClicked() {}
-                },
-                state = MainScreenUiState()
+                listener = PreviewMainScreenInteractionListener,
+                state = MainScreenUiState(
+                    categories = fakeCategories(),
+                    bestNearestDukans = fakeBestNearestDuknas(),
+                    editorPickDukans = fakeDukans()
+                )
             )
         }
     }

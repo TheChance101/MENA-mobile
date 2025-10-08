@@ -105,5 +105,8 @@
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
     <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
 
+    <string name="best_dukans_around_you">Best Dukans around you</string>
+    <string name="editor_pick_dukans">Editor Pick Dukans</string>
+    <string name="what_do_you_need">what do you need?</string>
 
 </resources>
