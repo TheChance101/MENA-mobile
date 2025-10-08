@@ -17,7 +17,7 @@ interface ChatInteractionListener : MessageListInteractionListener {
 interface MessageListInteractionListener {
     fun onMessageClicked(messageId: Uuid)
 
-    fun onFailedMessageClicked(message: TextMessageUiState)
+    fun onFailedMessageClicked(message: MessageUiState)
 
     fun onDeleteFailedMessageClicked()
 

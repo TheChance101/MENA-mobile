@@ -24,11 +24,11 @@ import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageContent
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -38,15 +38,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun BaseMessageLayout(
-    message: TextMessageUiState,
+fun MessageLayout(
+    message: MessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
     onFailClick: () -> Unit = {},
-    onMessageClick: () -> Unit = {},
-    content: @Composable () -> Unit,
+    onMessageClick: () -> Unit = {}
 ) {
     val messageBackground =
         if (message.isMine) Theme.colorScheme.background.surfaceLow
@@ -124,7 +123,7 @@ fun BaseMessageLayout(
                         vertical = Theme.spacing._4
                     )
             ) {
-                content()
+                MessageContent(messageContent = message.content)
             }
 
         }
@@ -152,23 +151,18 @@ private fun PreviewBaseMessageLayout() {
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            BaseMessageLayout(
-                message = TextMessageUiState(
+            MessageLayout(
+                message = MessageUiState(
                     Uuid.random(),
                     Uuid.random(),
                     sendTime = LocalDateTime.now(),
-                    status = MessageStatusUiState.READ,
+                    status = MessageStatus.READ,
                     isMine = false,
-                    text = ""
+                    content = MessageContent.Text("")
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true
-            ) {
-                Text(
-                    text = "Hello,\nBilal",
-                    style = Theme.typography.body.small
-                )
-            }
+            )
         }
     }
 }
