@@ -23,7 +23,7 @@ fun BestNearestDukanSection(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(dukans) { dukan ->
-            NearDukanItem(
+            BestNearDukanItem(
                 dukanName = dukan.name,
                 dukanImage = dukan.imageUrl,
                 onClick = { onDukanClick(dukan.id) }
