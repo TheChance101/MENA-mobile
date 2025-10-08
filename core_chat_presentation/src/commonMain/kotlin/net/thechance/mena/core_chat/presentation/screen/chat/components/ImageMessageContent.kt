@@ -21,7 +21,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 @Composable
 fun ImageMessageContent(
     modifier: Modifier = Modifier,
-    images: List<String> = emptyList(),
+    images: List<Any> = emptyList(), // could be url: String or byteArray: ByteArray
     onImageClick: (Int) -> Unit = {},
 ) {
     val displayImages = images.take(4)

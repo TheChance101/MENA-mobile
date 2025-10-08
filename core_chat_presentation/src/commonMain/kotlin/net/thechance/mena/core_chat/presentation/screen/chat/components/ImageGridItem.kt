@@ -1,5 +1,6 @@
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.decodeToImageBitmap
 
 
 @Composable
 fun ImageGridItem(
-    imageUrl: String,
+    imageUrl: Any,
     index: Int,
     onClick: (Int) -> Unit,
     overlayText: String? = null,
@@ -32,15 +34,31 @@ fun ImageGridItem(
             .clip(RoundedCornerShape(0.dp)),
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-            colorFilter = if (overlayText != null)
-                ColorFilter.tint(Color.Black.copy(alpha = 0.7f), BlendMode.Darken)
-            else null
-        )
+        when (imageUrl) {
+            is String -> AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+                colorFilter = if (overlayText != null)
+                    ColorFilter.tint(Color.Black.copy(alpha = 0.7f), BlendMode.Darken)
+                else null
+            )
+
+            is ByteArray -> {
+                val bitmap = imageUrl.decodeToImageBitmap()
+                Image(
+                    bitmap = bitmap,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                    colorFilter = if (overlayText != null)
+                        ColorFilter.tint(Color.Black.copy(alpha = 0.7f), BlendMode.Darken)
+                    else null
+                )
+            }
+        }
+
 
         overlayText?.let {
             Text(

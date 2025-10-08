@@ -15,11 +15,7 @@ fun MessageContent(
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
-
         is MessageContent.ImageUrl -> ImageMessageContent(images = messageContent.imageUrls)
-
-        is MessageContent.ImageByteArray -> {
-
-        }
+        is MessageContent.ImageByteArray -> ImageMessageContent(images = messageContent.images)
     }
 }
