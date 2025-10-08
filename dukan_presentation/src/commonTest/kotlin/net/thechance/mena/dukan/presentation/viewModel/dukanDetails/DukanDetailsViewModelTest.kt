@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.BeforeTest
@@ -25,33 +24,34 @@ class DukanDetailsViewModelTest {
 
     @Test
     fun `when onBackClicked SHOULD emit NavigateBack effect`() = runTest {
-        dukanDetailsViewModel.onBackClicked()
-        advanceUntilIdle()
         dukanDetailsViewModel.effect.test {
-            val effect = awaitItem()
-            assertEquals(DukanDetailsEffects.NavigateBack, effect)
+            dukanDetailsViewModel.onBackClicked()
+            assertEquals(DukanDetailsEffects.NavigateBack, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `when onViewAllShelfProductsClicked SHOULD emit NavigateToViewAllShelfProducts effect`() = runTest {
-        dukanDetailsViewModel.onViewAllShelfProductsClicked("id123", "shelf")
-        advanceUntilIdle()
-        dukanDetailsViewModel.effect.test {
-            val effect = awaitItem()
-            assertEquals(DukanDetailsEffects.NavigateToViewAllShelfProducts("id123", "shelf"), effect)
-            cancelAndIgnoreRemainingEvents()
+    fun `when onViewAllShelfProductsClicked SHOULD emit NavigateToViewAllShelfProducts effect`() =
+        runTest {
+            dukanDetailsViewModel.effect.test {
+                dukanDetailsViewModel.onViewAllShelfProductsClicked("id123", "shelf")
+                assertEquals(
+                    DukanDetailsEffects.NavigateToViewAllShelfProducts("id123", "shelf"),
+                    awaitItem()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `when onViewDukanOnMapClicked SHOULD emit NavigateToViewDukanOnMap effect`() = runTest {
-        dukanDetailsViewModel.onViewDukanOnMapClicked(28.0, 29.0)
-        advanceUntilIdle()
         dukanDetailsViewModel.effect.test {
-            val effect = awaitItem()
-            assertEquals(DukanDetailsEffects.NavigateToViewDukanOnMap(28.0, 29.0), effect)
+            dukanDetailsViewModel.onViewDukanOnMapClicked(28.0, 29.0)
+            assertEquals(
+                DukanDetailsEffects.NavigateToViewDukanOnMap(28.0, 29.0),
+                awaitItem()
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
