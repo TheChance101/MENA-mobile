@@ -27,7 +27,7 @@ import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
@@ -98,7 +98,7 @@ class ChatRepositoryImplTest {
     @Test
     fun `should throw NotFoundException when loadMessages returns error`() = runTest {
         httpClient = createHttpClient(
-            chatHistoryResponse = { mockErrorPagedResponse<MessageRemoteDto>(HttpStatusCode.NotFound) }
+            chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
         )
         repository = createChatRepository(
             httpClient = httpClient,

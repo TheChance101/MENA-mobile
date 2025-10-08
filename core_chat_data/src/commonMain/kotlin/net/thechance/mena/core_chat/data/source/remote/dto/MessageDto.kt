@@ -3,7 +3,7 @@ package net.thechance.mena.core_chat.data.source.remote.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MessageRemoteDto(
+data class MessageDto(
     val id: String,
     val senderId: String,
     val chatId: String,

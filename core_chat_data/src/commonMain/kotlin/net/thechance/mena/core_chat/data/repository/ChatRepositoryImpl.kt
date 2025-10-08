@@ -15,7 +15,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
@@ -46,8 +46,8 @@ class ChatRepositoryImpl(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     override suspend fun loadMessages(chatId: Uuid): List<Message> {
-        return tryNetworkCall<PagedDataDto<MessageRemoteDto>>(
-            bodyType = typeInfo<PagedDataDto<MessageRemoteDto>>()
+        return tryNetworkCall<PagedDataDto<MessageDto>>(
+            bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
             client.get(CHAT_HISTORY_ENDPOINT) {
                 parameter(CHAT_ID_PARAMETER, chatId)

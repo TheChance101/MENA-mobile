@@ -5,7 +5,7 @@ package net.thechance.mena.core_chat.data.contacts.fakes
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.utils.now
@@ -85,7 +85,7 @@ fun createMessageDto(
     text: String = "Hello from history",
     sendAt: String = "2025-10-01T12:00:00Z",
     isRead: Boolean = false
-) = MessageRemoteDto(
+) = MessageDto(
     id = id,
     senderId = senderId,
     chatId = chatId,

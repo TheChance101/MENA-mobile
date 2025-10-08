@@ -4,7 +4,7 @@ package net.thechance.mena.core_chat.data.source.remote.mapper
 
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
@@ -18,7 +18,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-fun MessageRemoteDto.toDomain(): Message? {
+fun MessageDto.toDomain(): Message? {
     return Message(
         id = getUuidOrNull(id) ?: return null,
         senderId = getUuidOrNull(senderId) ?: return null,

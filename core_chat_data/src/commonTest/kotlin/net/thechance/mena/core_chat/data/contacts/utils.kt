@@ -28,7 +28,7 @@ import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import kotlin.uuid.ExperimentalUuidApi
@@ -84,7 +84,7 @@ fun MockRequestHandleScope.defaultSyncContactsResponse() = respond(
 
 fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
     content = jsonSerialization.encodeToString(
-        PagedDataDto.serializer(MessageRemoteDto.serializer()),
+        PagedDataDto.serializer(MessageDto.serializer()),
         PagedDataDto(
             data = listOf(
                 createMessageDto()

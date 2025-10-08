@@ -11,12 +11,12 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageRemoteDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 
 
 @Serializable(with = MessageEventSerializer::class)
 sealed class MessageEvent {
-    data class Message(val dto: MessageRemoteDto) : MessageEvent()
+    data class Message(val dto: MessageDto) : MessageEvent()
     data class MarkAsRead(val dto: MarkAsReadResponse) : MessageEvent()
 }
 
@@ -27,7 +27,7 @@ private object MessageEventSerializer : KSerializer<MessageEvent> {
     override fun serialize(encoder: Encoder, value: MessageEvent) {
         when (value) {
             is MessageEvent.Message ->
-                encoder.encodeSerializableValue(MessageRemoteDto.serializer(), value.dto)
+                encoder.encodeSerializableValue(MessageDto.serializer(), value.dto)
 
             is MessageEvent.MarkAsRead ->
                 encoder.encodeSerializableValue(MarkAsReadResponse.serializer(), value.dto)
@@ -47,7 +47,7 @@ private object MessageEventSerializer : KSerializer<MessageEvent> {
                 )
 
             "id" in element && "senderId" in element && "chatId" in element && "sendAt" in element && "isRead" in element ->
-                MessageEvent.Message(Json.decodeFromJsonElement(MessageRemoteDto.serializer(), element))
+                MessageEvent.Message(Json.decodeFromJsonElement(MessageDto.serializer(), element))
 
             else -> throw SerializationException("Unknown payload: $element")
         }
