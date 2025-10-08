@@ -130,7 +130,9 @@ class UploadTrendViewModelTest : TestExtensions() {
         viewModel.onRetryUploadClick()
         advanceUntilIdle()
 
-        verify(exactly(1)) { repository.uploadReel(any(), any(), any(), any(), any()) }
+        verify(exactly(1)) {
+            repository.uploadReel(any(), any(), any(), any(), any())
+        }
     }
 
     @Test
@@ -145,7 +147,15 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `onNextClick should update isNextButtonLoading to true`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+        every {
+            repository.uploadReel(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns flowOf(uploadDone)
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -162,52 +172,71 @@ class UploadTrendViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onNextClick should send NavigateToAddDescription effect if upload thumbnail success`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+    fun `onNextClick should send NavigateToAddDescription effect if upload thumbnail success`() =
+        runTest(testDispatcher) {
+            every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(
+                uploadDone
+            )
 
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
+            viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+            advanceUntilIdle()
 
-        viewModel.onNextClick()
+            viewModel.onNextClick()
 
-        viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateToAddDescription("id1"))
-            cancelAndIgnoreRemainingEvents()
+            viewModel.effect.test {
+                assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateToAddDescription("id1"))
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `onNextClick should update thumbnail in state if upload thumbnail success`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+    fun `onNextClick should update thumbnail in state if upload thumbnail success`() =
+        runTest(testDispatcher) {
+            every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(
+                uploadDone
+            )
 
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
+            viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+            advanceUntilIdle()
 
-        viewModel.onNextClick()
-        advanceUntilIdle()
+            viewModel.onNextClick()
+            advanceUntilIdle()
 
-        viewModel.state.test {
-            assertThat(awaitItem().thumbnail).isNotNull()
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                assertThat(awaitItem().thumbnail).isNotNull()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `onNextClick should update state with error if upload thumbnail failed`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
-        everySuspend { repository.uploadReelThumbnail(any(), any(), any(), any(), any(), any()) } throws Exception("Failed")
+    fun `onNextClick should update state with error if upload thumbnail failed`() =
+        runTest(testDispatcher) {
+            every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(
+                uploadDone
+            )
+            everySuspend {
+                repository.uploadReelThumbnail(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            } throws Exception(ERROR_MESSAGE)
 
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
+            viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+            advanceUntilIdle()
 
-        viewModel.onNextClick()
-        advanceUntilIdle()
+            viewModel.onNextClick()
+            advanceUntilIdle()
 
-        viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(ErrorState.RequestFailed("Failed"))
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                assertThat(awaitItem().errorState)
+                    .isEqualTo(ErrorState.RequestFailed(ERROR_MESSAGE))
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `onDeleteVideoClick should cancel job and update uploading state to IDLE`() = runTest {
@@ -236,7 +265,15 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `should update uploading state to FAILED if repository throws exception`() = runTest {
-        everySuspend { repository.uploadReel(any(), any(), any(), any(), any()) } throws Exception()
+        everySuspend {
+            repository.uploadReel(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } throws Exception()
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -276,7 +313,17 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `should update state with progress of uploaded bytes when uploading`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadInProgress)
+        every {
+            repository.uploadReel(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns flowOf(
+            uploadInProgress
+        )
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -289,7 +336,15 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `should update state with reelId when uploaded successfully`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+        every {
+            repository.uploadReel(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns flowOf(uploadDone)
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
         advanceUntilIdle()
@@ -301,24 +356,31 @@ class UploadTrendViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onNextClick should send NavigateToAddDescription effect`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
-
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
-
-        viewModel.onNextClick()
-
-        viewModel.effect.test {
-            val trendId = viewModel.state.value.trendId
-            assertThat(awaitItem()).isEqualTo(
-                UploadReelScreenEffect.NavigateToAddDescription(
-                    trendId ?: ""
+    fun `onNextClick should send NavigateToAddDescription effect`() =
+        runTest(testDispatcher) {
+            every {
+                repository.uploadReel(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
                 )
-            )
-            cancelAndIgnoreRemainingEvents()
+            } returns flowOf(uploadDone)
+
+            viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+            advanceUntilIdle()
+
+            viewModel.onNextClick()
+
+            viewModel.effect.test {
+                val trendId = viewModel.state.value.trendId
+                assertThat(awaitItem()).isEqualTo(
+                    UploadReelScreenEffect.NavigateToAddDescription(trendId ?: "")
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `onEditVideoClick should reset thumbnail and state`() = runTest {
@@ -348,7 +410,15 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `onDeleteVideoClick should call deleteReelById and reset state`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
+        every {
+            repository.uploadReel(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns flowOf(uploadDone)
         everySuspend { repository.deleteReelById(any()) } returns Unit
 
         viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
@@ -366,26 +436,34 @@ class UploadTrendViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onDeleteVideoClick should update errorState when repository throws exception`() = runTest {
-        every { repository.uploadReel(any(), any(), any(), any(), any()) } returns flowOf(uploadDone)
-        everySuspend { repository.deleteReelById(any()) } throws Exception("Delete failed")
+    fun `onDeleteVideoClick should update errorState when repository throws exception`() =
+        runTest {
+            every {
+                repository.uploadReel(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+                )
+            } returns flowOf(uploadDone)
+            everySuspend { repository.deleteReelById(any()) } throws Exception(ERROR_MESSAGE)
 
-        viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
-        advanceUntilIdle()
+            viewModel.onRetrieveVideo(fileWithValidInfo, ::defaultReadBytes)
+            advanceUntilIdle()
 
-        viewModel.onDeleteVideoClick()
-        advanceUntilIdle()
+            viewModel.onDeleteVideoClick()
+            advanceUntilIdle()
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.errorState).isEqualTo(ErrorState.RequestFailed("Delete failed"))
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                val state = awaitItem()
+                assertThat(state.errorState).isEqualTo(ErrorState.RequestFailed(ERROR_MESSAGE))
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
-
-
 
     private companion object {
+        const val ERROR_MESSAGE = "error"
         const val INVALID_SIZE = 200 * 1024 * 1024 + 1L
         const val VALID_SIZE = 50 * 1024 * 1024 + 1L
         const val VALID_DURATION = 30_000L
