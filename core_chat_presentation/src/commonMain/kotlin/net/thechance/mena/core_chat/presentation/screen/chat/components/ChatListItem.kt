@@ -47,7 +47,7 @@ fun ChatListItem(
                 MessageLayout(
                     message = markedMessage,
                     chatAvatarUrl = chatAvatarUrl,
-                    showMessageInfo = markedMessage.isVisible,
+                    showMessageInfo = markedMessage.isVisibleMessageInfo,
                     isMarkedLastInSeries = markedMessage.isLastInSeries,
                     onMessageClick = { onMessageClick(markedMessage.id) },
                     onFailClick = { onFailedMessageClick(markedMessage) },

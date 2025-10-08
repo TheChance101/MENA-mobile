@@ -91,7 +91,7 @@ private fun LocalDate.toLabel(
 
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
     if (item is ChatListItem.Message && item.data.id == messageId)
-        item.copy(data = item.data.copy(isVisible = !item.data.isVisible))
+        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
     else item
 }
 

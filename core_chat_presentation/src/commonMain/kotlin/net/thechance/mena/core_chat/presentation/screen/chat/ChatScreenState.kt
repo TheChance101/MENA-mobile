@@ -35,7 +35,7 @@ data class MessageUiState(
     val status: MessageStatus = MessageStatus.LOADING,
     val isMine: Boolean = true,
     val isLastInSeries: Boolean = false,
-    val isVisible: Boolean = false,
+    val isVisibleMessageInfo: Boolean = false,
     val content: MessageContent
 )
 

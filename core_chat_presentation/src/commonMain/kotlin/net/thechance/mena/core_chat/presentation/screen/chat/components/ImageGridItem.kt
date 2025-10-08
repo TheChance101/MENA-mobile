@@ -38,7 +38,7 @@ fun ImageGridItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
             colorFilter = if (overlayText != null)
-                ColorFilter.tint(Color.Black.copy(alpha = 0.6f), BlendMode.Darken)
+                ColorFilter.tint(Color.Black.copy(alpha = 0.7f), BlendMode.Darken)
             else null
         )
 

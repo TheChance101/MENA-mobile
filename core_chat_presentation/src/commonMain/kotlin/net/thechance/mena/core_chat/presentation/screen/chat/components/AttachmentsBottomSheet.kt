@@ -54,23 +54,10 @@ fun AttachmentsBottomSheet(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
-        Row(
+        AttachmentBottomSheetContent(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            AttachmentsBottomSheetItem(
-                iconRes = Res.drawable.ic_gallery,
-                titleRes = Res.string.photo,
-                onClick = attachmentsInteractionListener::onPhotoClicked
-            )
-
-            AttachmentsBottomSheetItem(
-                iconRes = Res.drawable.ic_camera,
-                titleRes = Res.string.camera,
-                onClick = attachmentsInteractionListener::onCameraClicked
-            )
-        }
+            attachmentsInteractionListener = attachmentsInteractionListener
+        )
 
         FabButton(
             painter = painterResource(Res.drawable.ic_cancel),
@@ -85,6 +72,31 @@ fun AttachmentsBottomSheet(
                 )
                 .align(Alignment.End),
             onClick = attachmentsInteractionListener::onCancelClicked
+        )
+    }
+}
+
+@Composable
+private fun AttachmentBottomSheetContent(
+    attachmentsInteractionListener: AttachmentsInteractionListener,
+    modifier: Modifier = Modifier
+) {
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        AttachmentsBottomSheetItem(
+            iconRes = Res.drawable.ic_gallery,
+            titleRes = Res.string.photo,
+            onClick = attachmentsInteractionListener::onPhotoClicked
+        )
+
+        AttachmentsBottomSheetItem(
+            iconRes = Res.drawable.ic_camera,
+            titleRes = Res.string.camera,
+            onClick = attachmentsInteractionListener::onCameraClicked
         )
     }
 }
