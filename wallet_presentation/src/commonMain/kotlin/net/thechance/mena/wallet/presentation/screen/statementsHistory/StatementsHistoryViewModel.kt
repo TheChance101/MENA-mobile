@@ -28,9 +28,7 @@ class StatementsHistoryViewModel(
     }
 
     private fun loadNextStatements() {
-        viewModelScope.launch(Dispatchers.IO) {
-            paginator.loadNextItems()
-        }
+        viewModelScope.launch(Dispatchers.IO) { paginator.loadNextItems() }
     }
 
     override fun onBackClicked() {
@@ -68,10 +66,7 @@ class StatementsHistoryViewModel(
 
 
     private suspend fun getPagedStatements(page: Int): List<Statement> {
-        return statementRepository.getStatements(
-            page = page,
-            pageSize = PAGE_SIZE
-        )
+        return statementRepository.getStatements(page = page, pageSize = PAGE_SIZE)
     }
 
     private fun onPaginationError(throwable: Throwable?) {

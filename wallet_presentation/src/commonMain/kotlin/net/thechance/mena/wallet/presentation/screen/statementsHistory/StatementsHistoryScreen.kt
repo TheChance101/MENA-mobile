@@ -56,9 +56,7 @@ fun StatementHistoryScreen(
         }
     )
 
-    StatementHistoryContent(
-        state = state, listener = viewModel
-    )
+    StatementHistoryContent(state = state, listener = viewModel)
 }
 
 @Composable
@@ -94,16 +92,13 @@ private fun StatementHistoryContent(
                             .clip(RoundedCornerShape(Theme.radius.md))
                             .clickable { listener.onEditClicked() }
                             .padding(10.dp)
-
                     )
                 }
             )
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
-        onRetry = {
-            listener.onRetryLoadStatementsHistoryClicked()
-        }
+        onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
     ) {
         when {
             state.isLoading -> {
