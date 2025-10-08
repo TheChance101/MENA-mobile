@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,18 +22,20 @@ import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.camera
 import mena.core_chat_presentation.generated.resources.ic_camera
+import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_gallery
 import mena.core_chat_presentation.generated.resources.photo
+import net.thechance.mena.core_chat.presentation.screen.chat.AttachmentsInteractionListener
+import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun AddPhotoBottomSheet(
+fun AttachmentsBottomSheet(
     modifier: Modifier = Modifier,
-    onPhotoClick: () -> Unit = {},
-    onCameraClick: () -> Unit = {},
-    onCancelClick: () -> Unit = {}
+    attachmentsInteractionListener: AttachmentsInteractionListener,
 ) {
     Column(
         modifier = modifier
@@ -55,24 +59,33 @@ fun AddPhotoBottomSheet(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            AddPhotoBottomSheetItem(
+            AttachmentsBottomSheetItem(
                 iconRes = Res.drawable.ic_gallery,
                 titleRes = Res.string.photo,
-                onClick = onPhotoClick
+                onClick = attachmentsInteractionListener::onPhotoClicked
             )
 
-            AddPhotoBottomSheetItem(
+            AttachmentsBottomSheetItem(
                 iconRes = Res.drawable.ic_camera,
                 titleRes = Res.string.camera,
-                onClick = onCameraClick
+                onClick = attachmentsInteractionListener::onCameraClicked
             )
         }
 
-        CancelBottomSheetButton(
-            modifier = Modifier.align(Alignment.End),
-            onClick = onCancelClick
+        FabButton(
+            painter = painterResource(Res.drawable.ic_cancel),
+            shape = RoundedCornerShape(Theme.spacing._12),
+            containerColor = Theme.colorScheme.background.surface,
+            contentColor = Theme.colorScheme.primary.primary,
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = Theme.colorScheme.stroke,
+                    shape = RoundedCornerShape(Theme.spacing._12)
+                )
+                .align(Alignment.End),
+            onClick = attachmentsInteractionListener::onCancelClicked
         )
-
     }
 }
 
@@ -86,8 +99,13 @@ private fun PreviewAddPhotoBottomSheet() {
                 .fillMaxSize()
                 .background(Theme.colorScheme.background.surface)
         ) {
-            AddPhotoBottomSheet(
-                modifier = Modifier.align(Alignment.BottomCenter)
+            AttachmentsBottomSheet(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                attachmentsInteractionListener = object : AttachmentsInteractionListener {
+                    override fun onPhotoClicked() {}
+                    override fun onCameraClicked() {}
+                    override fun onCancelClicked() {}
+                }
             )
 
         }
