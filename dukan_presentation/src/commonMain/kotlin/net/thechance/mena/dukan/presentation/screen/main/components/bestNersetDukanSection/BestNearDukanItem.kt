@@ -55,10 +55,10 @@ fun BestNearDukanItem(
 
 @Preview
 @Composable
-private fun NearDukanItemPreview() {
+private fun BestNearDukanItemPreview() {
     MenaTheme {
         BestNearDukanItem(
-            dukanName = "abdo",
+            dukanName = "DeFacto",
             dukanImage = "https://www.ascenciamalls.com/media/3lncwwzl/the-faceshop-2-_1.jpg?anchor=center&mode=crop&width=784&height=650&rnd=133027033116700000",
             onClick = {}
         )
