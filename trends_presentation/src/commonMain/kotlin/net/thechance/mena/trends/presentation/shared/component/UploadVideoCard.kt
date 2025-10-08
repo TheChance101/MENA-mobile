@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -49,18 +47,17 @@ internal fun UploadVideoCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1.3f)
-                .clip(
-                    RoundedCornerShape(Theme.radius.xl))
+                .clip(shape = RoundedCornerShape(Theme.radius.xl))
                 .background(color = Theme.colorScheme.background.surfaceLow)
                 .then(
                     thumbnail?.let {
-                        Modifier.dashedBorder(color = Theme.colorScheme.brand.brand, cornerRadius = Theme.radius.xl)
+                        Modifier.dashedBorder(
+                            color = Theme.colorScheme.brand.brand,
+                            cornerRadius = Theme.radius.xl
+                        )
                     } ?: Modifier
                 )
-                .noRippleClickable(
-                    enabled = isEnabled,
-                    onClick = onCardClick
-                ),
+                .noRippleClickable(enabled = isEnabled, onClick = onCardClick),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -69,11 +66,10 @@ internal fun UploadVideoCard(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_trend_upload),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
+                    contentDescription = "upload trend icon",
                     modifier = Modifier
                         .padding(bottom = Theme.spacing._12)
-                        .size(40.dp)
+                        .size(size = 40.dp)
                 )
                 Text(
                     text = stringResource(Res.string.upload_your_video),
@@ -87,7 +83,7 @@ internal fun UploadVideoCard(
                     color = Theme.colorScheme.shadeSecondary
                 )
             }
-            thumbnail?.let{
+            thumbnail?.let {
                 AsyncImage(
                     model = thumbnail,
                     contentDescription = stringResource(Res.string.thumbnail_description),
@@ -96,7 +92,7 @@ internal fun UploadVideoCard(
                 )
             }
         }
-        thumbnail?.let{
+        thumbnail?.let {
             EditButton(
                 modifier = Modifier
                     .offset(y = 16.dp)
@@ -107,16 +103,8 @@ internal fun UploadVideoCard(
     }
 }
 
-@Composable
 @Preview
+@Composable
 private fun UploadVideoCardPreview() {
-    MenaTheme {
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .background(Color.White)
-                .padding(16.dp)
-        ) {
-            UploadVideoCard()
-        }
-    }
+    MenaTheme { UploadVideoCard() }
 }

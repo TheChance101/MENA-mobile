@@ -32,7 +32,8 @@
     <string name="upload_your_video">Upload your video</string>
     <string name="available_video_format">MP4, MOV up to 100MB</string>
     <string name="thumbnail_description">Uploaded video thumbnail</string>
-    <string name="edit_button_description">Edit button icon</string>
+    <string name="edit_button_description">Edit button icon</string>//upload trend icon
+    <string name="upload_video_card_description">upload trend icon</string>
 
     <!-- Video Description Screen  -->
     <string name="new_trend">New Trend</string>

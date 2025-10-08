@@ -12,15 +12,17 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun NextButton(
-    onNextClick: () -> Unit,
+internal fun NextButton(
     isButtonEnabled: Boolean,
     isButtonLoading: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNextClick: () -> Unit
 ) {
     Button(
         onClick = onNextClick,
@@ -29,9 +31,7 @@ fun NextButton(
         modifier = modifier
             .fillMaxWidth()
             .background(Theme.colorScheme.background.surface)
-            .padding(
-                bottom = Theme.spacing._24
-            ),
+            .padding(bottom = Theme.spacing._24),
         shape = RoundedCornerShape(Theme.radius.md),
         containerColor = Theme.colorScheme.primary.primary,
         disabledContainerColor = Theme.colorScheme.primary.primary.copy(alpha = 0.5f),
@@ -48,6 +48,18 @@ fun NextButton(
                     vertical = 13.dp,
                     horizontal = Theme.spacing._24
                 )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun NextButtonPreview() {
+    MenaTheme {
+        NextButton(
+            onNextClick = {},
+            isButtonEnabled = true,
+            isButtonLoading = false
         )
     }
 }
