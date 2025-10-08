@@ -105,34 +105,34 @@ class QiblahBearingCalculatorUseCaseTest {
         assertTrue(result in RANGE_ANGLE_START..RANGE_ANGLE_END)
     }
 
-    companion object {
-        private const val KAABA_LATITUDE = 21.4225
-        private const val KAABA_LONGITUDE = 39.8262
+    private companion object {
+        const val KAABA_LATITUDE = 21.4225
+        const val KAABA_LONGITUDE = 39.8262
 
-        private const val GAZA_LATITUDE = 31.5017
-        private const val GAZA_LONGITUDE = 34.4668
-        private const val GAZA_QIBLA_ANGLE = 153.3
+        const val GAZA_LATITUDE = 31.5017
+        const val GAZA_LONGITUDE = 34.4668
+        const val GAZA_QIBLA_ANGLE = 153.3
 
-        private const val CAIRO_LATITUDE = 30.0444
-        private const val CAIRO_LONGITUDE = 31.2357
-        private const val CAIRO_QIBLA_ANGLE = 136.14
+        const val CAIRO_LATITUDE = 30.0444
+        const val CAIRO_LONGITUDE = 31.2357
+        const val CAIRO_QIBLA_ANGLE = 136.14
 
-        private const val BAGHDAD_LATITUDE = 33.3128
-        private const val BAGHDAD_LONGITUDE = 44.3615
-        private const val BAGHDAD_QIBLA_ANGLE = 199.80
+        const val BAGHDAD_LATITUDE = 33.3128
+        const val BAGHDAD_LONGITUDE = 44.3615
+        const val BAGHDAD_QIBLA_ANGLE = 199.80
 
-        private const val RANGE_ANGLE_START = 0.0
-        private const val RANGE_ANGLE_END = 360.0
+        const val RANGE_ANGLE_START = 0.0
+        const val RANGE_ANGLE_END = 360.0
 
-        private const val MIN_LATITUDE = -90.0
-        private const val MAX_LATITUDE = 90.0
-        private const val MIN_LONGITUDE = -180.0
-        private const val MAX_LONGITUDE = 180.0
-        private const val ZERO_LOCATION = 0.0
+        const val MIN_LATITUDE = -90.0
+        const val MAX_LATITUDE = 90.0
+        const val MIN_LONGITUDE = -180.0
+        const val MAX_LONGITUDE = 180.0
+        const val ZERO_LOCATION = 0.0
 
-        private const val INVALID_MAX_LATITUDE = 100.0
-        private const val INVALID_MIN_LATITUDE = -91.0
-        private const val INVALID_MAX_LONGITUDE = 200.0
-        private const val INVALID_MIN_LONGITUDE = -320.0
+        const val INVALID_MAX_LATITUDE = 100.0
+        const val INVALID_MIN_LATITUDE = -91.0
+        const val INVALID_MAX_LONGITUDE = 200.0
+        const val INVALID_MIN_LONGITUDE = -320.0
     }
 }
