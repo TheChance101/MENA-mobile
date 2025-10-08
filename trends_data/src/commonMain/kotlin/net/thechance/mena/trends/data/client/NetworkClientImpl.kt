@@ -117,6 +117,6 @@ class NetworkClientImpl(
 
     private companion object {
         const val TIME_OUT_INTERVAL_MILLI = 15_000L
-        const val BASE_URL = "baseUrl"
+        const val BASE_URL = "http://172.20.96.1:8080/"
     }
 }

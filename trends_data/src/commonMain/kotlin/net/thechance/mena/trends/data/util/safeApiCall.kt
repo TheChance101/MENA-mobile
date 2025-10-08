@@ -19,7 +19,7 @@ internal suspend inline fun <reified T> safeApiCall(
     } catch (exception: UnresolvedAddressException) {
         logError(SAFE_API_CALL_TAG, "UnresolvedAddressException", exception.message.toString())
         throw NoInternetException()
-    } catch (exception: Exception) {
+    }catch (exception: Exception) {
         logError(SAFE_API_CALL_TAG, "Unknown exception", exception.message.toString())
         throw exception
     }

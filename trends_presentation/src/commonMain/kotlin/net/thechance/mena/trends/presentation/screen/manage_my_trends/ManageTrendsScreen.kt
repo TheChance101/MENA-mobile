@@ -36,6 +36,7 @@ import mena.trends_presentation.generated.resources.favorite
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
+import mena.trends_presentation.generated.resources.placeholder_profile_image
 import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -103,18 +104,20 @@ private fun ManageTrendsScreenContent(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            AsyncImage(
-                model = state.profileImageUrl,
-                contentDescription = stringResource(Res.string.profile_image_desc),
-                modifier = Modifier
-                    .padding(top = 32.dp)
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.CenterHorizontally),
-                contentScale = ContentScale.Crop,
-            )
+
+        AsyncImage(
+            model =  state.profile.profileImageUrl ?: painterResource(Res.drawable.placeholder_profile_image) ,
+            contentDescription = stringResource(Res.string.profile_image_desc),
+            modifier = Modifier
+                .padding(top = 32.dp)
+                .size(100.dp)
+                .clip(CircleShape)
+                .align(Alignment.CenterHorizontally),
+            contentScale = ContentScale.Crop,
+        )
+
             Text(
-                text = state.userName,
+                text = state.profile.userName,
                 style = Theme.typography.label.medium,
                 modifier = Modifier
                     .padding(top = 8.dp, bottom = 32.dp)
