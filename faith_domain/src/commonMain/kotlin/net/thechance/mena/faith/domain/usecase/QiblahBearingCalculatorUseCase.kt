@@ -1,25 +1,19 @@
-package net.thechance.mena.faith.presentation.util
+package net.thechance.mena.faith.domain.usecase
 
-
+import net.thechance.mena.faith.domain.exception.FaithException
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.round
 import kotlin.math.sin
 
-class QiblahBearingCalculator {
-    val kaabaLatitude = 21.4225
-    val kaabaLongitude = 39.8262
-
-    fun Double.toRadians(): Double = this * PI / 180.0
-    fun Double.toDegrees(): Double = this * 180.0 / PI
-
+class QiblahBearingCalculatorUseCase {
     fun calculateQiblahAngle(userLatitude: Double, userLongitude: Double): Double {
         validateCoordinates(latitude = userLatitude, longitude = userLongitude)
         val userLatitudeRadians = userLatitude.toRadians()
         val userLongitudeRadians = userLongitude.toRadians()
-        val kaabaLatitudeRadians = kaabaLatitude.toRadians()
-        val kaabaLongitudeRadians = kaabaLongitude.toRadians()
+        val kaabaLatitudeRadians = KAABA_LATITUDE.toRadians()
+        val kaabaLongitudeRadians = KAABA_LONGITUDE.toRadians()
 
         val longitudeDifference = kaabaLongitudeRadians - userLongitudeRadians
 
@@ -37,10 +31,20 @@ class QiblahBearingCalculator {
     }
 
     private fun validateCoordinates(latitude: Double, longitude: Double) {
-        if (latitude < -90.0 || latitude > 90.0) {
-            throw IllegalArgumentException("Latitude must be between -90 and 90 degrees.")
-        } else if (longitude < -180.0 || longitude > 180.0) {
-            throw IllegalArgumentException("Longitude must be between -180 and 180 degrees.")
+        require(latitude in -90.0..90.0) {
+            throw FaithException.InvalidLatitudeException
         }
+        require(longitude in -180.0..180.0) {
+            throw FaithException.InvalidLongitudeException
+        }
+    }
+
+    private fun Double.toRadians(): Double = this * PI / 180.0
+
+    private fun Double.toDegrees(): Double = this * 180.0 / PI
+
+    companion object Companion {
+        const val KAABA_LATITUDE = 21.4225
+        const val KAABA_LONGITUDE = 39.8262
     }
 }

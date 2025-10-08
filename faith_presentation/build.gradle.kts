@@ -84,7 +84,6 @@ kover.reports {
             classes(
                 "*ViewModel",
                 "*MapperKt",
-                "net.thechance.mena.faith.presentation.util.QiblahBearingCalculator",
             )
         }
 
