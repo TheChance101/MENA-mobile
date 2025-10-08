@@ -98,11 +98,7 @@ class ChatViewModel(
                 text = null
             )
 
-            tryToExecute(
-                execute = { chatRepository.sendMessage(uiMessage.toEntity()) },
-                onSuccess = { onSendMessageSuccess(uiMessage) },
-                onError = { onSendMessageError(uiMessage) }
-            )
+            updateStateWithNewMessage(uiMessage)
         }
     }
 
