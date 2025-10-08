@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.download
+import mena.wallet_presentation.generated.resources.downloaded_statements
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.my_wallet
@@ -106,8 +107,8 @@ private fun WalletContent(
 
             LabeledButtonWithCircularIcon(
                 icon = painterResource(Res.drawable.download),
-                contentDescription = "Downloaded Statements",
-                label = "Downloaded Statements",
+                contentDescription = stringResource(Res.string.downloaded_statements),
+                label = stringResource(Res.string.downloaded_statements),
                 onClick = interactionListener::onStatementHistoryClicked,
                 modifier = Modifier
                     .fillMaxWidth()
