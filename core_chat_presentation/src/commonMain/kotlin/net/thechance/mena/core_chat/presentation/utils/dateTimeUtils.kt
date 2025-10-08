@@ -9,30 +9,17 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 
 fun LocalDateTime.Companion.now(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime {
     return Clock.System.now().toLocalDateTime(timeZone)
 }
 
-
-fun LocalDateTime.minusMinutes(
-    minutes: Int,
-    timeZone: TimeZone = TimeZone.currentSystemDefault()
-): LocalDateTime {
-    return this.toInstant(timeZone)
-        .minus(minutes.minutes)
-        .toLocalDateTime(timeZone)
-}
-
 fun LocalDate.minusDays(days: Int): LocalDate {
     return this.minus(DatePeriod(days = days))
 }
-
 
 fun LocalDateTime.formatAsTime(): String {
     val timeFormat = LocalDateTime.Format {

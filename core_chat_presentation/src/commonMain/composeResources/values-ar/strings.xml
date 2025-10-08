@@ -27,5 +27,9 @@
     <string name="confirm_delete_chat_message">هل أنت متأكد من حذف هذه المحادثة؟</string>
     <string name="error_cant_subscribe_to_new_messages">غير متصل</string>
     <string name="error_cant_get_messages">لم نتمكن من جلب الرسائل</string>
+    <string name="error_cant_load_messages_history">لم نتمكن من تحميل تاريخ الرسائل</string>
+    <string name="error_cant_send_messages">لم نتمكن من ارسال الرسالة</string>
     <string name="contact_not_mena_user">هذا الشخص لا يملك حساب مينا</string>
+    <string name="today">اليوم</string>
+    <string name="yesterday">الأمس</string>
 </resources>

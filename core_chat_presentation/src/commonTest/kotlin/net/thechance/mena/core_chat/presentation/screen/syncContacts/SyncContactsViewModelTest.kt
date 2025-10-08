@@ -104,7 +104,7 @@ class SyncContactsViewModelTest {
     }
 
     @Test
-    fun `should request permission and sync contacts when onSyncClick is called successfully`() =
+    fun `should request permission and sync contacts when onSyncClicked is called successfully`() =
         runTest {
             everySuspend { permissionsController.providePermission(Permission.CONTACTS) } returns Unit
             everySuspend { contactsRepository.syncContacts() } returns Unit
@@ -127,7 +127,7 @@ class SyncContactsViewModelTest {
             viewModel.state.test {
                 awaitItem()
 
-                viewModel.onSyncClick()
+                viewModel.onSyncClicked()
 
                 awaitItem()
 
@@ -137,7 +137,7 @@ class SyncContactsViewModelTest {
         }
 
     @Test
-    fun `onSyncClick should show SnackBar when permission is denied`() = runTest {
+    fun `onSyncClicked should show SnackBar when permission is denied`() = runTest {
         everySuspend { permissionsController.providePermission(Permission.CONTACTS) } throws DeniedException(
             Permission.CONTACTS
         )
@@ -153,7 +153,7 @@ class SyncContactsViewModelTest {
         )
         advanceUntilIdle()
 
-        viewModel.onSyncClick()
+        viewModel.onSyncClicked()
         advanceUntilIdle()
 
         verifySuspend { effector.showSnackBar(any()) }
@@ -179,7 +179,7 @@ class SyncContactsViewModelTest {
         viewModel.state.test {
             awaitItem()
 
-            viewModel.onSyncClick()
+            viewModel.onSyncClicked()
 
             val error = awaitItem()
             assertThat(error.isLoading).isFalse()
@@ -215,7 +215,7 @@ class SyncContactsViewModelTest {
 
 
     @Test
-    fun `onBackClick should pop back stack when called`() = runTest {
+    fun `onBackClicked should pop back stack when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
         everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
         everySuspend { effector.showSnackBar(any()) } returns Unit
@@ -232,7 +232,7 @@ class SyncContactsViewModelTest {
         )
         advanceUntilIdle()
 
-        viewModel.onBackClick()
+        viewModel.onBackClicked()
         advanceUntilIdle()
 
         verifySuspend { effector.popBackStack() }
@@ -267,7 +267,7 @@ class SyncContactsViewModelTest {
         }
 
     @Test
-    fun `onGoToSettingsClick should call openAppSettings when called`() = runTest {
+    fun `onGoToSettingsClicked should call openAppSettings when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
         everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
         everySuspend { effector.showSnackBar(any()) } returns Unit
@@ -283,7 +283,7 @@ class SyncContactsViewModelTest {
             testDispatcher
         )
         advanceUntilIdle()
-        viewModel.onGoToSettingsClick()
+        viewModel.onGoToSettingsClicked()
 
         verifySuspend { settingsOpener.openSettings() }
     }
