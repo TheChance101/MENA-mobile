@@ -115,4 +115,5 @@
     <string name="edit">edit</string>
     <string name="no_statements_title">No statements yet</string>
     <string name="no_statements_description">Export a transaction history to see your downloaded statements here.</string>
+    <string name="downloaded_statements">Downloaded Statements</string>
 </resources>

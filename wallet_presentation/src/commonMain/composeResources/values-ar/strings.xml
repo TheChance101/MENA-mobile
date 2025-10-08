@@ -111,4 +111,5 @@
     <string name="edit">تعديل</string>
     <string name="no_statements_title">لا توجد كشوفات حتى الآن</string>
     <string name="no_statements_description">قم بتصدير المعاملات لعرض كشوفاتك المحمّلة هنا.</string>
+    <string name="downloaded_statements">كشوفات الحساب المحمّلة</string>
 </resources>
