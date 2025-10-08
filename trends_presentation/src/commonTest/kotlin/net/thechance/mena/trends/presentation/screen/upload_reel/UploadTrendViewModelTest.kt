@@ -55,8 +55,6 @@ class UploadTrendViewModelTest : TestExtensions() {
 
     @Test
     fun `onRetrieveVideo should call validateSize`() = runTest(testDispatcher) {
-        viewModel
-
         viewModel.onRetrieveVideo(defaultFile, ::defaultReadBytes)
 
         verify(exactly(1)) { validator.validateSize(any()) }
@@ -83,7 +81,6 @@ class UploadTrendViewModelTest : TestExtensions() {
         runTest(testDispatcher) {
             everySuspend { videoExtractor.getDuration(any()) } returns null
 
-            viewModel
             viewModel.onRetrieveVideo(fileWithInvalidSize, ::defaultReadBytes)
 
             verify(exactly(0)) { validator.validateDuration(any()) }
