@@ -13,8 +13,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ChatsScreen(
-    viewModel: ChatsViewModel = koinViewModel<ChatsViewModel>(),
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
 ) {
     Row(
         modifier = Modifier
