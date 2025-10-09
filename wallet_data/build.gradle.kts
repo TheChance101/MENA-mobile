@@ -69,6 +69,7 @@ ksp {
 }
 
 dependencies {
+    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
@@ -76,12 +77,19 @@ dependencies {
 
 }
 
-project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
+
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }
 
+
+tasks.matching {
+    it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata"
+}.configureEach {
+    dependsOn("kspCommonMainKotlinMetadata")
+}
 android {
     namespace = "net.thechance.mena.wallet.data"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
