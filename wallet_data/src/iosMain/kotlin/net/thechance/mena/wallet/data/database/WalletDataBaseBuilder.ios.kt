@@ -8,14 +8,15 @@ import kotlinx.coroutines.IO
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 
 
 actual fun getDatabaseBuilder(context: Any?): RoomDatabase.Builder<WalletDatabase> {
-    val dbFilePath = documentDirectory() + "/wallet.db"
+    val dbFilePath = documentDirectory() + "/" +DataBaseConfig.DATABASE_NAME
     return Room.databaseBuilder<WalletDatabase>(
         name = dbFilePath,
     )
-        .setDriver(_root_ide_package_.androidx.sqlite.driver.bundled.BundledSQLiteDriver())
+        .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
 }
 
