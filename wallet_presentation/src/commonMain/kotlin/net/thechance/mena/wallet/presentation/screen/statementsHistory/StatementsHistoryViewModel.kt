@@ -3,6 +3,7 @@
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
@@ -20,6 +21,7 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class StatementsHistoryViewModel(
     @Provided private val statementRepository: StatementRepository,
+    private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementsHistoryScreenState, StatementsHistoryEffect>
     (StatementsHistoryScreenState()), StatementsHistoryInteractionListener {
 
@@ -28,7 +30,7 @@ class StatementsHistoryViewModel(
     }
 
     private fun loadNextStatements() {
-        viewModelScope.launch(Dispatchers.IO) { paginator.loadNextItems() }
+        viewModelScope.launch(dispatcherIO) { paginator.loadNextItems() }
     }
 
     override fun onBackClicked() {
