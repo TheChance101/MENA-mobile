@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -64,7 +65,8 @@ fun ImageGridItem(
             Text(
                 text = it,
                 color = Theme.colorScheme.primary.onPrimary,
-                style = Theme.typography.label.large
+                style = Theme.typography.label.large,
+                modifier = Modifier.offset(x = (-4).dp)
             )
         }
     }
