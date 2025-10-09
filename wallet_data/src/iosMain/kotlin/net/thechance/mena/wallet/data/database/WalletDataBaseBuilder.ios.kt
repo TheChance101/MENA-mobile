@@ -10,7 +10,7 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 
-fun getDatabaseBuilder(): RoomDatabase.Builder<WalletDatabase> {
+actual fun getDatabaseBuilder(context: Any?): RoomDatabase.Builder<WalletDatabase> {
     val dbFilePath = documentDirectory() + "/wallet.db"
     return Room.databaseBuilder<WalletDatabase>(
         name = dbFilePath,

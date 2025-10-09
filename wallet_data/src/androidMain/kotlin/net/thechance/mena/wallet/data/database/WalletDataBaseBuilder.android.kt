@@ -5,8 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 
-fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<WalletDatabase> {
-    val appContext = context.applicationContext
+actual fun getDatabaseBuilder(context: Any?): RoomDatabase.Builder<WalletDatabase> {
+    val appContext = context as Context
     val dbFile = appContext.getDatabasePath("wallet.db")
     return Room.databaseBuilder<WalletDatabase>(
         context = appContext,
