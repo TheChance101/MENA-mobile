@@ -10,16 +10,12 @@ import kotlin.uuid.Uuid
 
 @Dao
 interface StatementDao {
-   @Insert
-   suspend fun insertStatement(statement : Statement)
+    @Insert
+    suspend fun insertStatement(statement: Statement)
 
-   @Query("SELECT * FROM statement")
-   suspend fun getAllStatement():List<Statement>
+    @Query("SELECT * FROM statement")
+    suspend fun getAllStatement(): List<Statement>
 
-   @OptIn(ExperimentalUuidApi::class)
-   @Delete
-   suspend fun deleteStatement(statementId : Uuid)
-
-
-
+    @Delete
+    suspend fun deleteStatement(statement: Statement)
 }
