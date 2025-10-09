@@ -43,6 +43,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.bundles.test)
+            implementation(libs.turbine)
         }
     }
     sourceSets.named("commonMain").configure {
