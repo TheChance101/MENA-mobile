@@ -10,13 +10,13 @@ internal class ProfileMapperTest {
 
     @Test
     fun `profileDto toEntity() should map correctly`() {
-        val dto = ProfileDto(
+        val profileDto = ProfileDto(
             firstName = "nour",
             lastName = "nour",
             profileImageUrl = "img.jpg",
             username = "nour"
         )
-        val profile = dto.toEntity()
+        val profile = profileDto.toEntity()
 
         assertThat(profile.firstName).isEqualTo("nour")
         assertThat(profile.lastName).isEqualTo("nour")
@@ -26,13 +26,13 @@ internal class ProfileMapperTest {
 
     @Test
     fun `profileDto with null profileImageUrl toEntity() should map to empty string`() {
-        val dto = ProfileDto(
+        val profileDto = ProfileDto(
             firstName = "nour",
             lastName = "nour",
             profileImageUrl = null,
             username = "nour"
         )
-        val profile = dto.toEntity()
+        val profile = profileDto.toEntity()
 
         assertThat(profile.firstName).isEqualTo("nour")
         assertThat(profile.lastName).isEqualTo("nour")
