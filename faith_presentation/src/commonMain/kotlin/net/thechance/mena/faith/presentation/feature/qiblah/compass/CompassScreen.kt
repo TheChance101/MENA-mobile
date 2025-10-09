@@ -86,7 +86,7 @@ private fun Content(
                         )
 
                         Text(
-                            text = "Baghdad, Iraq",
+                            text = uiState.currentLocation.cityName,
                             color = Theme.colorScheme.shadePrimary,
                             style = Theme.typography.label.small,
                             modifier = Modifier.align(Alignment.CenterVertically)
@@ -116,118 +116,122 @@ private fun CompassView(
     azimuth: Float,
     qiblahDirection: Float
 ) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CompassContent(azimuth = azimuth, qiblahDirection = qiblahDirection)
+        QiblahImage(qiblahDirection)
+    }
+}
+
+@Composable
+private fun CompassContent(
+    azimuth: Float, qiblahDirection: Float
+) {
     val animatedBearing by animateFloatAsState(
         targetValue = azimuth,
         animationSpec = tween(durationMillis = 300),
         label = "compass_rotation"
     )
-
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.size(224.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier = Modifier.size(224.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .border(
+                    width = 3.dp,
+                    color = Theme.colorScheme.secondary.secondary,
+                    shape = CircleShape
+                )
+        )
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Box(
+            Text(
+                text = "N",
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .border(
-                        width = 3.dp,
-                        color = Theme.colorScheme.secondary.secondary,
-                        shape = CircleShape
-                    )
+                    .align(Alignment.TopCenter)
+                    .offset(y = 16.dp)
             )
-
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "N",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .offset(y = 16.dp)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .offset(x = (-48).dp, y = (-64).dp)
-                )
-
-                Text(
-                    text = "S",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = (-16).dp)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .offset(x = (48).dp, y = (-64).dp)
-                )
-
-                Text(
-                    text = "E",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .offset(x = (-20).dp)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .offset(x = (-48).dp, y = (64).dp)
-                )
-
-                Text(
-                    text = "W",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .offset(x = 20.dp)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .offset(x = (48).dp, y = (64).dp)
-                )
-            }
 
             Image(
-                painter = painterResource(Res.drawable.ic_direction),
+                painter = painterResource(Res.drawable.ic_circle),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(128.dp)
-                    .rotate(animatedBearing)
+                    .align(Alignment.CenterEnd)
+                    .offset(x = (-48).dp, y = (-64).dp)
             )
 
-            TextAngleToQiblah(azimuth, qiblahDirection)
+            Text(
+                text = "S",
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = (-16).dp)
+            )
+
+            Image(
+                painter = painterResource(Res.drawable.ic_circle),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .offset(x = (48).dp, y = (-64).dp)
+            )
+
+            Text(
+                text = "E",
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .offset(x = (-20).dp)
+            )
+
+            Image(
+                painter = painterResource(Res.drawable.ic_circle),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .offset(x = (-48).dp, y = (64).dp)
+            )
+
+            Text(
+                text = "W",
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .offset(x = 20.dp)
+            )
+
+            Image(
+                painter = painterResource(Res.drawable.ic_circle),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .offset(x = (48).dp, y = (64).dp)
+            )
         }
 
-        QiblahImage(qiblahDirection)
+        Image(
+            painter = painterResource(Res.drawable.ic_direction),
+            contentDescription = null,
+            modifier = Modifier
+                .size(128.dp)
+                .rotate(animatedBearing)
+        )
+
+        TextAngleToQiblah(azimuth, qiblahDirection)
     }
 }
-
 
 @Composable
 private fun BoxScope.TextAngleToQiblah(azimuth: Float, qiblahDirection: Float) {
