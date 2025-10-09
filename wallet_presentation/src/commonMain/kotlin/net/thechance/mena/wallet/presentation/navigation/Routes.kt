@@ -20,13 +20,7 @@ data object StatementsHistoryScreenRoute : WalletRoute()
 
 @OptIn(ExperimentalUuidApi::class)
 @Serializable
-data class StatementDetailsScreenRoute(
-    val id: String
-) : WalletRoute() {
-    init {
-        Uuid.parse(id)
-    }
-}
+data class StatementDetailsScreenRoute(val id: String) : WalletRoute()
 
 @OptIn(ExperimentalUuidApi::class)
 @Serializable
