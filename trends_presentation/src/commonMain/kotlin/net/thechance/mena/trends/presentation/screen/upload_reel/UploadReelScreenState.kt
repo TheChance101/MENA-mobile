@@ -6,18 +6,18 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 data class UploadReelScreenState(
     val reelId: String? = null,
     val selectedFile: FileUiState = FileUiState(),
-    val uploadingState: UploadingTrendState = UploadingTrendState.IDLE,
+    val uploadingState: UploadingReelState = UploadingReelState.IDLE,
     val thumbnail: ByteArray? = null,
     val uploadingProgress: Float = 0f,
-    val uploadedBytes: String = "",
+    val sizeUploaded: String = "",
     val isNextButtonEnabled: Boolean = false,
     val isNextButtonLoading: Boolean = false,
     val errorState: ErrorState? = null
 ) {
     val isUploadVideoCardEnabled: Boolean
-        get() = uploadingState == UploadingTrendState.IDLE || uploadingState == UploadingTrendState.FAILED
+        get() = uploadingState == UploadingReelState.IDLE || uploadingState == UploadingReelState.FAILED
 
-    enum class UploadingTrendState {
+    enum class UploadingReelState {
         IDLE,
         UPLOADING,
         FAILED,

@@ -1,22 +1,25 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.extension
-import io.github.vinceglb.filekit.nameWithoutExtension
-import io.github.vinceglb.filekit.readBytes
+import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -28,14 +31,12 @@ import mena.trends_presentation.generated.resources.page_number
 import mena.trends_presentation.generated.resources.upload_video
 import mena.trends_presentation.generated.resources.upload_video_description
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
@@ -45,7 +46,7 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
-import net.thechance.mena.trends.presentation.shared.util.video_util.getMimeTypeFromExtension
+import net.thechance.mena.trends.presentation.shared.util.getFilePath
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,7 +62,7 @@ internal fun UploadReelScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is UploadReelScreenEffect.NavigateToAddDescription -> {
-                navController.navigate(Route.VideoDescription(effect.id))
+                navController.navigate(Route.VideoDescription(effect.reelId))
             }
 
             UploadReelScreenEffect.NavigateBack -> navController.popBackStack()
@@ -95,12 +96,10 @@ private fun UploadReelScreenContent(
         topBar = { UploadReelScreenTopBar(onBackClick = listener::onBackClick) },
         snakeBar = {
             state.errorState?.let { errorState ->
-                if (errorState == ErrorState.FileTooLarge || errorState == ErrorState.DurationTooLarge) {
-                    TrendsSnackBar(
-                        message = stringResource(errorState.toStringResource()),
-                        status = SnackBarStatus.Error
-                    )
-                }
+               TrendsSnackBar(
+                   message = stringResource(errorState.toStringResource()),
+                   status = SnackBarStatus.Error
+               )
             }
         }
     ) {
@@ -110,39 +109,36 @@ private fun UploadReelScreenContent(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = Theme.spacing._16)
         ) {
-            UploadReelScreenHeader(
-                modifier = Modifier
-                    .padding(
-                        top = Theme.spacing._16,
-                        bottom = Theme.spacing._24
-                    )
-            )
+            UploadReelScreenHeader(Modifier.padding(top = Theme.spacing._16))
 
             UploadVideoCard(
+                modifier = Modifier.padding(top = Theme.spacing._24),
                 thumbnail = state.thumbnail,
                 isEnabled = state.isUploadVideoCardEnabled,
                 onCardClick = launcher::launch,
-                onEditClick = {
-                    listener.onEditVideoClick()
-                    launcher.launch()
-                },
-                modifier = Modifier.padding(bottom = Theme.spacing._24)
+                onEditClick = launcher::launch
             )
 
-            VideoLoadingCardItem(
-                title = "${state.selectedFile.name}.${state.selectedFile.extension}",
-                videoSize = state.selectedFile.sizeInMegaBytes,
-                videoState = state.uploadingTrendState,
-                progress = state.uploadedBytes.toFloat() / state.selectedFile.sizeInBytes.toFloat(),
-                modifier = Modifier.padding(bottom = Theme.spacing._16),
-                onAction = { action ->
-                    when (action) {
-                        VideoAction.Cancel -> listener.onCancelUploadClick()
-                        VideoAction.Retry -> listener.onRetryUploadClick()
-                        VideoAction.Delete -> listener.onDeleteVideoClick()
+            if (state.uploadingState != UploadReelScreenState.UploadingReelState.IDLE) {
+                VideoLoadingCardItem(
+                    modifier = Modifier.padding(
+                        top = state.thumbnail?.let {
+                            Theme.spacing._24
+                        } ?: Theme.spacing._8
+                    ),
+                    title = state.selectedFile.name,
+                    videoSize = state.sizeUploaded,
+                    videoState = state.uploadingState,
+                    progress = state.uploadingProgress,
+                    onAction = { action ->
+                        when (action) {
+                            VideoAction.Cancel -> listener.onCancelUploadClick()
+                            VideoAction.Retry -> listener.onRetryUploadClick()
+                            VideoAction.Delete -> listener.onDeleteVideoClick()
+                        }
                     }
-                }
-            )
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -150,7 +146,7 @@ private fun UploadReelScreenContent(
                 onNextClick = listener::onNextClick,
                 isButtonEnabled = state.isNextButtonEnabled,
                 isButtonLoading = state.isNextButtonLoading,
-                modifier = Modifier.padding(bottom = Theme.spacing._16)
+                modifier = Modifier.padding(bottom = Theme.spacing._24)
             )
         }
     }
@@ -159,17 +155,16 @@ private fun UploadReelScreenContent(
 private fun launchFilePicker(
     file: PlatformFile?,
     coroutineScope: CoroutineScope,
-    onRetrieveVideo: (file: FileUiState, readBytes: suspend () -> ByteArray) -> Unit
+    onRetrieveVideo: (file: FileUiState) -> Unit
 ) {
     file?.let {
         coroutineScope.launch {
             val fileState = FileUiState(
-                name = file.nameWithoutExtension,
-                extension = file.extension,
-                sizeInBytes = file.size(),
-                mimeType = getMimeTypeFromExtension(file.extension).orEmpty()
+                filePath = file.getFilePath(),
+                name = file.name,
+                size = file.size(),
             )
-            onRetrieveVideo(fileState) { file.readBytes() }
+            onRetrieveVideo(fileState)
         }
     }
 }
@@ -188,12 +183,19 @@ private fun UploadReelScreenTopBar(
         },
         title = stringResource(Res.string.new_trend),
         trailingContent = {
-            Chip(
-                text = stringResource(Res.string.page_number, 1, 3),
-                isSelected = false,
-                isEnabled = true,
-                onClick = {},
-            )
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Theme.radius.full))
+                    .background(Theme.colorScheme.background.surfaceLow)
+                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = stringResource(Res.string.page_number, 1, 3),
+                    style = Theme.typography.label.small,
+                    color = Theme.colorScheme.shadePrimary
+                )
+            }
         }
     )
 }
@@ -202,18 +204,15 @@ private fun UploadReelScreenTopBar(
 private fun UploadReelScreenHeader(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
+    Column(modifier = modifier) {
         Text(
             text = stringResource(Res.string.upload_video),
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier
-                .padding(bottom = Theme.spacing._4)
         )
 
         Text(
+            modifier = Modifier.padding(top = Theme.spacing._4),
             text = stringResource(Res.string.upload_video_description),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary

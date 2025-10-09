@@ -42,21 +42,14 @@ internal fun UploadVideoCard(
     onEditClick: () -> Unit = {}
 ) {
 
-    Box(
-        modifier = modifier
-    ) {
+    Box(modifier = modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1.3f)
-                .clip(
-                    RoundedCornerShape(Theme.radius.xl))
+                .clip(RoundedCornerShape(Theme.radius.xl))
                 .background(color = Theme.colorScheme.background.surfaceLow)
-                .then(
-                    thumbnail?.let {
-                        Modifier.dashedBorder(color = Theme.colorScheme.brand.brand, cornerRadius = Theme.radius.xl)
-                    } ?: Modifier
-                )
+                .dashedBorder(color = Theme.colorScheme.brand.brand, cornerRadius = Theme.radius.xl)
                 .noRippleClickable(
                     enabled = isEnabled,
                     onClick = onCardClick
@@ -64,24 +57,22 @@ internal fun UploadVideoCard(
             contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = Modifier.padding(vertical = 71.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
+                    modifier = Modifier.size(40.dp),
                     painter = painterResource(Res.drawable.ic_trend_upload),
                     contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .padding(bottom = Theme.spacing._12)
-                        .size(40.dp)
+                    tint = Theme.colorScheme.brand.brand
                 )
                 Text(
+                    modifier = Modifier.padding(top = Theme.spacing._12),
                     text = stringResource(Res.string.upload_your_video),
                     style = Theme.typography.label.medium,
-                    color = Theme.colorScheme.primary.primary,
-                    modifier = Modifier.padding(bottom = Theme.spacing._4)
+                    color = Theme.colorScheme.primary.primary
                 )
                 Text(
+                    modifier = Modifier.padding(top = Theme.spacing._4),
                     text = stringResource(Res.string.available_video_format),
                     style = Theme.typography.label.extraSmall,
                     color = Theme.colorScheme.shadeSecondary
@@ -89,9 +80,9 @@ internal fun UploadVideoCard(
             }
             thumbnail?.let{
                 AsyncImage(
+                    modifier = Modifier.fillMaxWidth(),
                     model = thumbnail,
                     contentDescription = stringResource(Res.string.thumbnail_description),
-                    modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.Crop
                 )
             }

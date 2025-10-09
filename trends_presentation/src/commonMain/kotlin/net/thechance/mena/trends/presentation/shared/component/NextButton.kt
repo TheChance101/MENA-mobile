@@ -28,10 +28,7 @@ fun NextButton(
         isLoading = isButtonLoading,
         modifier = modifier
             .fillMaxWidth()
-            .background(Theme.colorScheme.background.surface)
-            .padding(
-                bottom = Theme.spacing._24
-            ),
+            .background(Theme.colorScheme.background.surface),
         shape = RoundedCornerShape(Theme.radius.md),
         containerColor = Theme.colorScheme.primary.primary,
         disabledContainerColor = Theme.colorScheme.primary.primary.copy(alpha = 0.5f),
