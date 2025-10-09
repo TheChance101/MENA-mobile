@@ -8,4 +8,5 @@ internal interface UserReelInteractionListener {
     fun onDismissSuccessDialog()
     fun onDismissErrorDialog()
     fun onDescriptionClick(isCollapsed: Boolean)
+    fun onPublisherInfoClick()
 }
