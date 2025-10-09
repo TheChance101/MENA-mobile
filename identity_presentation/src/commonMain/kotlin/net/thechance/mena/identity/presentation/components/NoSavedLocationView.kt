@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.add_location_button
 import mena.identity_presentation.generated.resources.ic_location_saved_empty
+import mena.identity_presentation.generated.resources.location_saved_empty_desc
 import mena.identity_presentation.generated.resources.no_saved_locations_message
 import mena.identity_presentation.generated.resources.no_saved_locations_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -45,7 +46,7 @@ fun NoSavedLocationsComponent(
             modifier = Modifier
                 .size(128.dp)
                 .padding(bottom = 24.dp),
-            contentDescription = "location saved empty",
+            contentDescription = stringResource(Res.string.location_saved_empty_desc),
         )
 
         Text(

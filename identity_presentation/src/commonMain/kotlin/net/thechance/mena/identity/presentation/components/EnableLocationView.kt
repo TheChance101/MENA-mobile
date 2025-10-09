@@ -19,6 +19,7 @@ import mena.identity_presentation.generated.resources.enable_location_message
 import mena.identity_presentation.generated.resources.enable_location_permission_button
 import mena.identity_presentation.generated.resources.enable_location_title
 import mena.identity_presentation.generated.resources.ic_location
+import mena.identity_presentation.generated.resources.location_icon_desc
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -46,7 +47,7 @@ fun EnableLocationComponent(
             modifier = Modifier
                 .size(128.dp)
                 .padding(bottom = 24.dp),
-            contentDescription = "location",
+            contentDescription = stringResource(Res.string.location_icon_desc),
         )
 
         Text(
