@@ -45,17 +45,17 @@ fun ChatScreenContent(
     state: ChatScreenState,
     interactions: ChatInteractionListener
 ) {
-
-    Scaffold(
-        topBar = {
-            ChatHeader(
-                chatName = state.chatName,
-                onMenuClick = {},
-                onBackClick = interactions::onBackClicked,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        bottomBar = {
+    Box(contentAlignment = Alignment.Center) {
+        Scaffold(
+            topBar = {
+                ChatHeader(
+                    chatName = state.chatName,
+                    onMenuClick = {},
+                    onBackClick = interactions::onBackClicked,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            bottomBar = {
                 ChatInputBar(
                     userInput = state.inputMessage,
                     onTextChange = interactions::onInputMessageChanged,
@@ -65,22 +65,17 @@ fun ChatScreenContent(
                         .fillMaxWidth()
                         .background(Theme.colorScheme.background.surface)
                 )
-            if (state.isAttachmentsOverlayVisible) {
-                AttachmentsBottomSheet(
-                    attachmentsInteractionListener = interactions
+
+            },
+            overlays = {
+                ChatScreenOverlays(
+                    showResendMessageDialog = state.isResendMessageDialogVisible,
+                    onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
+                    onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
+                    onResendFailedMessageClick = interactions::onResendMessageClicked,
                 )
             }
-
-        },
-        overlays = {
-            ChatScreenOverlays(
-                showResendMessageDialog = state.isResendMessageDialogVisible,
-                onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
-                onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
-                onResendFailedMessageClick = interactions::onResendMessageClicked,
-            )
-        }
-    ) {
+        ) {
             ChatList(
                 items = state.chatListItems,
                 chatAvatarUrl = state.chatAvatarUrl,
@@ -89,8 +84,16 @@ fun ChatScreenContent(
             )
 
         }
+
+        if (state.isAttachmentsOverlayVisible) {
+            AttachmentsBottomSheet(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                attachmentsInteractionListener = interactions
+            )
+        }
     }
 
+}
 @Composable
 @Preview()
 private fun PreviewMessagingScreenDark() {
