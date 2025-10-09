@@ -28,7 +28,11 @@ internal class UploadReelViewModel(
     private var uploadingTrendJob: Job? = null
 
     override fun onRetrieveVideo(file: FileUiState) {
-        updateState { UploadReelScreenState(selectedFile = file)}
+        updateState {
+            UploadReelScreenState(
+                selectedFile = file.copy(sizeText = formatBytes(file.size)),
+            )
+        }
         tryToExecute(
             block = { validateFile() },
             onError = ::onValidationError,
@@ -82,7 +86,10 @@ internal class UploadReelViewModel(
             copy(
                 reelId = progress.reelId.takeIf(String::isNotEmpty),
                 uploadingProgress = uploadingProgress,
-                sizeUploaded = formatBytes(progress.numberOfUploadedBytes)
+                sizeUploaded = formatBytes(
+                    bytes = progress.numberOfUploadedBytes,
+                    withUnit = false
+                )
             )
         }
     }

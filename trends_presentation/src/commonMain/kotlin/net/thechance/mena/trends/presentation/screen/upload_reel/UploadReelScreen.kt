@@ -127,7 +127,8 @@ private fun UploadReelScreenContent(
                         } ?: Theme.spacing._8
                     ),
                     title = state.selectedFile.name,
-                    videoSize = state.sizeUploaded,
+                    sizeUploaded = state.sizeUploaded,
+                    videoSize = state.selectedFile.sizeText,
                     videoState = state.uploadingState,
                     progress = state.uploadingProgress,
                     onAction = { action ->

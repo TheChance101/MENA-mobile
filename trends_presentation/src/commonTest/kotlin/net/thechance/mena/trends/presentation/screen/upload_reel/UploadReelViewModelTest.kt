@@ -249,7 +249,9 @@ class UploadReelViewModelTest : TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().sizeUploaded).isEqualTo(formatBytes(uploadInProgress.numberOfUploadedBytes))
+            assertThat(awaitItem().sizeUploaded).isEqualTo(
+                formatBytes(uploadInProgress.numberOfUploadedBytes, false)
+            )
         }
     }
 

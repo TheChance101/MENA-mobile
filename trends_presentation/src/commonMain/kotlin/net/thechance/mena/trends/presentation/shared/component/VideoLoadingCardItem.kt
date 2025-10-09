@@ -43,6 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun VideoLoadingCardItem(
     title: String,
+    sizeUploaded: String,
     videoSize: String,
     videoState: UploadReelScreenState.UploadingReelState,
     progress: Float,
@@ -81,6 +82,7 @@ fun VideoLoadingCardItem(
                         .weight(1f)
                         .padding(end = Theme.spacing._16),
                     title = title,
+                    sizeUploaded = sizeUploaded,
                     videoSize = videoSize,
                     videoState = videoState
                 )
@@ -108,6 +110,7 @@ fun VideoLoadingCardItem(
 @Composable
 private fun VideoInfoSection(
     title: String,
+    sizeUploaded: String,
     videoSize: String,
     videoState: UploadReelScreenState.UploadingReelState,
     modifier: Modifier = Modifier,
@@ -128,7 +131,7 @@ private fun VideoInfoSection(
             UploadReelScreenState.UploadingReelState.UPLOADING,
             UploadReelScreenState.UploadingReelState.SUCCESS -> {
                 Text(
-                    text = videoSize,
+                    text = "$sizeUploaded/$videoSize",
                     color = Theme.colorScheme.shadeSecondary,
                     style = Theme.typography.label.extraSmall
                 )
