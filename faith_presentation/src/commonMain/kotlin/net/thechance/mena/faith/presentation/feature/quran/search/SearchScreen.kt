@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.aya
 import mena.faith_presentation.generated.resources.back
-import mena.faith_presentation.generated.resources.ic_arrow
+import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_clear
 import mena.faith_presentation.generated.resources.ic_outline_search
 import mena.faith_presentation.generated.resources.ic_search
@@ -36,6 +37,7 @@ import mena.faith_presentation.generated.resources.no_results_found_title
 import mena.faith_presentation.generated.resources.shadow
 import mena.faith_presentation.generated.resources.start_searching_subtitle
 import mena.faith_presentation.generated.resources.start_searching_title
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -68,10 +70,7 @@ private fun Content(
     state: SearchScreenState,
     listener: SearchInteractionListener
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    Scaffold(topBar = {
         SearchHeader(
             query = state.query,
             hint = state.hint,
@@ -81,19 +80,26 @@ private fun Content(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
         )
-        StartOrEmptyState(
-            isBlankQuery = state.query.isBlank(),
-            isEmptyResult = state.searchResult.isEmpty(),
-            modifier = Modifier.fillMaxWidth().weight(1f)
-        )
-        ResultList(
-            isNotBlankQuery = state.query.isNotBlank(),
-            isNotEmptyResult = state.searchResult.isNotEmpty(),
-            result = state.searchResult,
-            onSearchClick = listener::onSearchResultClick
-        )
+    }) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            StartOrEmptyState(
+                isBlankQuery = state.query.isBlank(),
+                isEmptyResult = state.searchResult.isEmpty(),
+                modifier = Modifier.fillMaxWidth().weight(1f)
+            )
+            ResultList(
+                isNotBlankQuery = state.query.isNotBlank(),
+                isNotEmptyResult = state.searchResult.isNotEmpty(),
+                result = state.searchResult,
+                onSearchClick = listener::onSearchResultClick
+            )
+        }
     }
 }
+
 
 @Composable
 private fun SearchHeader(
@@ -109,18 +115,21 @@ private fun SearchHeader(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        Image(
+        Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(
-                    Theme.colorScheme.background.surfaceLow,
-                    RoundedCornerShape(Theme.radius.md)
-                )
-                .padding(vertical = 14.56.dp, horizontal = 17.dp)
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .background(Theme.colorScheme.background.surfaceLow)
                 .clickable(onClick = onBackClick),
-            painter = painterResource(Res.drawable.ic_arrow),
-            contentDescription = stringResource(Res.string.back)
-        )
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(20.dp),
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back)
+            )
+        }
         TextField(
             modifier = Modifier.weight(1f),
             value = query,
@@ -195,7 +204,12 @@ private fun ResultList(
                 surahName = it.surahName,
                 ayaNumber = it.number,
                 ayaText = it.content,
-                modifier = Modifier.clickable { onSearchClick(it.surahId, it.number) }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(Theme.radius.md))
+                    .background(Theme.colorScheme.background.surfaceLow)
+                    .clickable { onSearchClick(it.surahId, it.number) }
+                    .padding(Theme.spacing._12)
             )
         }
     }
@@ -209,10 +223,7 @@ private fun SearchResultCard(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().background(
-            color = Theme.colorScheme.background.surfaceLow,
-            shape = RoundedCornerShape(Theme.radius.md)
-        ).padding(Theme.spacing._12),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         SurahAndAyaInfo(
