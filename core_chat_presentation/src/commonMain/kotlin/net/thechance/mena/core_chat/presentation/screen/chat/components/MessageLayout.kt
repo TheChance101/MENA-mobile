@@ -24,11 +24,11 @@ import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageContent
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -38,15 +38,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun BaseMessageLayout(
-    message: TextMessageUiState,
+fun MessageLayout(
+    message: MessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
     onFailClick: () -> Unit = {},
-    onMessageClick: () -> Unit = {},
-    content: @Composable () -> Unit,
+    onMessageClick: () -> Unit = {}
 ) {
     val messageBackground =
         if (message.isMine) Theme.colorScheme.background.surfaceLow
@@ -58,20 +57,21 @@ fun BaseMessageLayout(
         Theme.spacing._8
 
     val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
+    val maxRadius = if (message.content is MessageContent.Text) Theme.radius.md else Theme.radius.lg
 
     val messageShape = if (message.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
-            topStart = Theme.radius.md,
-            topEnd = Theme.radius.md,
-            bottomStart = Theme.radius.md,
+            topStart = maxRadius,
+            topEnd = maxRadius,
+            bottomStart = maxRadius,
             bottomEnd = Theme.radius.xxs
         )
     else if (!message.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
-            topStart = Theme.radius.md,
-            topEnd = Theme.radius.md,
+            topStart = maxRadius,
+            topEnd = maxRadius,
             bottomStart = Theme.radius.xxs,
-            bottomEnd = Theme.radius.md
+            bottomEnd = maxRadius
         )
     else
         RoundedCornerShape(size = Theme.radius.md)
@@ -82,6 +82,8 @@ fun BaseMessageLayout(
         Alignment.End
     val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
+    val verticalPadding =
+        if (message.content is MessageContent.Text) Theme.spacing._8 else Theme.spacing._4
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
@@ -120,11 +122,11 @@ fun BaseMessageLayout(
                         shape = messageShape
                     )
                     .padding(
-                        horizontal = Theme.spacing._8,
+                        horizontal = verticalPadding,
                         vertical = Theme.spacing._4
                     )
             ) {
-                content()
+                MessageContent(messageContent = message.content, shape = messageShape)
             }
 
         }
@@ -152,23 +154,18 @@ private fun PreviewBaseMessageLayout() {
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            BaseMessageLayout(
-                message = TextMessageUiState(
+            MessageLayout(
+                message = MessageUiState(
                     Uuid.random(),
                     Uuid.random(),
                     sendTime = LocalDateTime.now(),
-                    status = MessageStatusUiState.READ,
+                    status = MessageStatus.READ,
                     isMine = false,
-                    text = ""
+                    content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true
-            ) {
-                Text(
-                    text = "Hello,\nBilal",
-                    style = Theme.typography.body.small
-                )
-            }
+            )
         }
     }
 }

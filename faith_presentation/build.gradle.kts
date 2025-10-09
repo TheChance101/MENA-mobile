@@ -49,6 +49,8 @@ kotlin {
             implementation(libs.androidx.paging.compose)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.gif)
         }
         iosMain.dependencies {
 

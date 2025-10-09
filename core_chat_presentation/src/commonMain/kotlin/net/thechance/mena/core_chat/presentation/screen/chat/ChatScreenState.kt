@@ -3,6 +3,7 @@
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.uuid.ExperimentalUuidApi
@@ -18,33 +19,28 @@ data class ChatScreenState(
 
     val isResendMessageDialogVisible: Boolean = false,
 
-    val failedMessageToReSend: TextMessageUiState? = null
+    val failedMessageToReSend: MessageUiState? = null
 )
 
 sealed interface ChatListItem {
     data class DateSeparator(val label: UiText) : ChatListItem
-    data class Message(val data: MarkedMessageUiState) : ChatListItem
+    data class Message(val data: MessageUiState) : ChatListItem
 }
 
-data class TextMessageUiState(
+data class MessageUiState(
     val id: Uuid = Uuid.random(),
     val senderId: Uuid = Uuid.random(),
     val chatId: Uuid = Uuid.random(),
     val sendTime: LocalDateTime = LocalDateTime.now(),
-    val status: MessageStatusUiState = MessageStatusUiState.SENDING,
+    val status: MessageStatus = MessageStatus.LOADING,
     val isMine: Boolean = true,
-    val text: String = ""
+    val isLastInSeries: Boolean = false,
+    val isVisibleMessageInfo: Boolean = false,
+    val content: MessageContent
 )
 
-enum class MessageStatusUiState {
-    SENDING,
-    SENT,
-    READ,
-    FAILED
+sealed class MessageContent{
+    data class Text(val text: String): MessageContent()
+    data class ImageUrl(val imageUrls: List<String>): MessageContent()
+    data class ImageByteArray(val images: List<ByteArray>): MessageContent()
 }
-
-data class MarkedMessageUiState(
-    val message: TextMessageUiState,
-    val isMarkedLastInSeries: Boolean,
-    val showMessageInfo: Boolean = false
-)
