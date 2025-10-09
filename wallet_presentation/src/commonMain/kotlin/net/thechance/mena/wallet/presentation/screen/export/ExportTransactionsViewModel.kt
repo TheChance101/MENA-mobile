@@ -253,7 +253,7 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private suspend fun onViewAndShareSuccess(pdfBytes: ByteArray) {
+    private fun onViewAndShareSuccess(pdfBytes: ByteArray) {
         resetViewAndShareState()
         sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(getTransactionFilterParams()))
     }
@@ -292,7 +292,7 @@ class ExportTransactionsViewModel(
         }
     }
 
-    fun getTransactionFilterParams(): TransactionFilterParams {
+    private fun getTransactionFilterParams(): TransactionFilterParams {
         val formatter = LocalDate.Format {
             year(); char('-'); monthNumber(); char('-');
             day(padding = Padding.ZERO)

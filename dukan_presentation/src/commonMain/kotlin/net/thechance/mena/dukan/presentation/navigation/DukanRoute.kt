@@ -19,11 +19,17 @@ sealed interface DukanRoute {
     object MyDukanScreenRoute : DukanRoute
 
     @Serializable
-    data class PendingScreenRoute(val dukanName: String ) : DukanRoute
+    data class PendingScreenRoute(val dukanName: String) : DukanRoute
 
     @Serializable
     data class ManageShelfScreenRoute(val shelfId: String, val shelfTitle: String) : DukanRoute
 
     @Serializable
     object CreateProductScreenRoute : DukanRoute
+
+    @Serializable
+    data class DukanDetails(val dukanId: String) : DukanRoute
+
+    @Serializable
+    data class ShelfDetails(val shelfId: String, val shelfName: String) : DukanRoute
 }

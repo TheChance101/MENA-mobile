@@ -18,8 +18,6 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.core_chat.data.chat.dto.MessageDto
-import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
 import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
@@ -27,7 +25,11 @@ import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
-import net.thechance.mena.core_chat.data.database.dao.MessageDao
+import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
@@ -59,7 +61,6 @@ class ChatRepositoryImplTest {
 
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
             webSocketManager = webSocketManager,
             messageDao = messageDao
         )
@@ -72,7 +73,6 @@ class ChatRepositoryImplTest {
         )
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
             webSocketManager = webSocketManager,
             messageDao = messageDao
         )
@@ -102,7 +102,6 @@ class ChatRepositoryImplTest {
         )
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
             webSocketManager = webSocketManager,
             messageDao = messageDao
         )
@@ -118,7 +117,6 @@ class ChatRepositoryImplTest {
         httpClient = createHttpClient(chatResponse = { defaultChatResponse() })
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
             webSocketManager = webSocketManager,
             messageDao = messageDao
         )
@@ -135,7 +133,6 @@ class ChatRepositoryImplTest {
         )
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
             webSocketManager = webSocketManager,
             messageDao = messageDao
         )
@@ -200,8 +197,8 @@ class ChatRepositoryImplTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
         val message2 = createMessage(senderId = userId, chatId = chatId)
         val messageEntities = listOf(
-            message1.toMessageEntity(),
-            message2.toMessageEntity()
+            message1.toLocalDto(),
+            message2.toLocalDto()
         )
 
         everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns messageEntities
@@ -226,7 +223,7 @@ class ChatRepositoryImplTest {
     @Test
     fun `should return flow when subscribeToMessages is called`() = runTest {
         everySuspend { authRepository.getAccessToken() } returns "test-token"
-        everySuspend { webSocketManager.connect(any(), any()) } returns Unit
+        everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
         every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply { tryEmit("test-message") }
