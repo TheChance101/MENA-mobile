@@ -44,7 +44,7 @@ fun NoSavedLocationsComponent(
             painter = painterResource(Res.drawable.ic_location_saved_empty),
             modifier = Modifier
                 .size(128.dp)
-                .padding(bottom = 16.dp),
+                .padding(bottom = 24.dp),
             contentDescription = "location saved empty",
         )
 
