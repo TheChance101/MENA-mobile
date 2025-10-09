@@ -138,6 +138,7 @@ actual class PdfHandler {
         return if (saved) NSURL.fileURLWithPath(sharedFile) else null
     }
     private companion object {
+        // Chosen as a good balance between rendering time and image sharpness
         const val IMAGE_SCALE = 1.67f
 
     }
