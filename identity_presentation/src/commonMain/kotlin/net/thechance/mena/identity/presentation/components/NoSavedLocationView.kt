@@ -67,7 +67,7 @@ fun NoSavedLocationsComponent(
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(Res.string.add_location_button),
-            contentPadding = PaddingValues(vertical = Theme.spacing._12, horizontal = Theme.spacing._16),
+            contentPadding = PaddingValues(horizontal = Theme.spacing._16),
             onClick = onAddLocationClicked,
             isEnabled = !isLoading,
             isLoading = isLoading
