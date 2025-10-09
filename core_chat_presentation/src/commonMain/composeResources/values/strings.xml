@@ -32,5 +32,7 @@
     <string name="contact_not_mena_user">This Contact Is Not Mena User!</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
-
+    <string name="cancel">Cancel</string>
+    <string name="photo">Photo</string>
+    <string name="camera">Camera</string>
 </resources>

@@ -66,4 +66,6 @@
     <string name="error_no_internet">لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.</string>
     <string name="error_unauthorized">لست مخولاً للقيام بهذا الإجراء.</string>
     <string name="error_network">خطأ في الشبكة. يرجى المحاولة لاحقاً.</string>
+    <string name="error_latitude">يجب أن يكون خط العرض بين -90 و 90 درجة.</string>
+    <string name="error_longitude">يجب أن يكون خط الطول بين -180 و 180 درجة.</string>
 </resources>

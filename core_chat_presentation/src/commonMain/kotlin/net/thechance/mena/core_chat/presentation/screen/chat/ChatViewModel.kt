@@ -31,7 +31,7 @@ class ChatViewModel(
 ) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, dispatcher),
     ChatInteractionListener {
 
-    private var uiMessages: List<TextMessageUiState> = emptyList()
+    private var uiMessages: List<MessageUiState> = emptyList()
 
     init {
         updateInitialState(
@@ -86,14 +86,16 @@ class ChatViewModel(
 
         if (chatId == null || senderId == null || text.isEmpty()) return
 
-        sendMessage(chatId, senderId, text)
+        // todo temp text content
+        val content = MessageContent.Text(text)
+        sendMessage(chatId, senderId, content)
     }
 
-    private fun sendMessage(chatId: Uuid, senderId: Uuid, text: String) {
-        val message = TextMessageUiState(
+    private fun sendMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
+        val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
-            text = text
+            content = content
         )
 
         updateStateWithNewMessage(message)
@@ -106,12 +108,12 @@ class ChatViewModel(
         )
     }
 
-    private fun onSendMessageSuccess(message: TextMessageUiState) {
+    private fun onSendMessageSuccess(message: MessageUiState) {
         filterMessagesState { it.id != message.id && it.sendTime != message.sendTime }
     }
 
-    private fun onSendMessageError(message: TextMessageUiState) {
-        updateStateWithNewMessage(message.copy(status = MessageStatusUiState.FAILED))
+    private fun onSendMessageError(message: MessageUiState) {
+        updateStateWithNewMessage(message.copy(status = MessageStatus.FAILED))
     }
 
     override fun onMessageClicked(messageId: Uuid) {
@@ -120,7 +122,7 @@ class ChatViewModel(
         }
     }
 
-    override fun onFailedMessageClicked(message: TextMessageUiState) {
+    override fun onFailedMessageClicked(message: MessageUiState) {
         updateState { state ->
             state.copy(
                 isResendMessageDialogVisible = true,
@@ -138,7 +140,7 @@ class ChatViewModel(
         )
     }
 
-    private fun onDeleteFailedMessageSuccess(failedMessage: TextMessageUiState) {
+    private fun onDeleteFailedMessageSuccess(failedMessage: MessageUiState) {
         filterMessagesState { it.id != failedMessage.id }
         updateState { state ->
             state.copy(
@@ -157,12 +159,12 @@ class ChatViewModel(
                 failedMessageToReSend = null
             )
         }
-        updateStateWithNewMessage(message.copy(status = MessageStatusUiState.SENDING))
+        updateStateWithNewMessage(message.copy(status = MessageStatus.LOADING))
 
         sendMessage(
             chatId = message.chatId,
             senderId = message.senderId,
-            text = message.text
+            content = message.content
         )
     }
 
@@ -209,7 +211,11 @@ class ChatViewModel(
 
         messages
             .filter { it.status == MessageStatus.LOADING }
-            .forEach { sendMessage(chatId = it.chatId, senderId = senderId, text = it.text) }
+            .forEach {
+                // todo temp text content
+                val content = MessageContent.Text(it.text)
+                sendMessage(chatId = it.chatId, senderId = senderId, content = content)
+            }
     }
 
     private fun observeReadMessages() {
@@ -223,15 +229,15 @@ class ChatViewModel(
         if (readerId == null) return
 
         mapMessagesState { message ->
-            if (message.senderId.toString() != readerId && message.status == MessageStatusUiState.SENT)
-                message.copy(status = MessageStatusUiState.READ)
+            if (message.senderId.toString() != readerId && message.status == MessageStatus.SENT)
+                message.copy(status = MessageStatus.READ)
             else message
         }
 
     }
 
 
-    private fun updateStateWithNewMessage(newMessage: TextMessageUiState) {
+    private fun updateStateWithNewMessage(newMessage: MessageUiState) {
         val messages = uiMessages.toMutableList()
             .apply { add(0, newMessage) }
             .distinctBy { it.id }
@@ -239,19 +245,19 @@ class ChatViewModel(
         updateChatListItems(messages)
     }
 
-    private fun mapMessagesState(transform: (TextMessageUiState) -> TextMessageUiState) {
+    private fun mapMessagesState(transform: (MessageUiState) -> MessageUiState) {
         val messages = uiMessages.map(transform).distinctBy { it.id }
             .sortedByDescending { it.sendTime }
         updateChatListItems(messages)
     }
 
-    private fun filterMessagesState(predicate: (TextMessageUiState) -> Boolean) {
+    private fun filterMessagesState(predicate: (MessageUiState) -> Boolean) {
         val messages = uiMessages.filter(predicate).distinctBy { it.id }
             .sortedByDescending { it.sendTime }
         updateChatListItems(messages)
     }
 
-    private fun updateChatListItems(messages: List<TextMessageUiState>) {
+    private fun updateChatListItems(messages: List<MessageUiState>) {
         uiMessages = messages.distinctBy { it.id }.sortedByDescending { it.sendTime }
         updateState { state ->
             state.copy(
