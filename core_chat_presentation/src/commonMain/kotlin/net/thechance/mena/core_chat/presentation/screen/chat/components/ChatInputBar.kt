@@ -48,7 +48,6 @@ fun ChatInputBar(
     onSendButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     onVoiceRecordClick: () -> Unit = {},
-    onCameraButtonClick: () -> Unit = {},
     onAttachButtonClick: () -> Unit = {}
 ) {
     Row(
@@ -93,11 +92,6 @@ fun ChatInputBar(
                     )
                 )
             }
-            Icon(
-                painter = painterResource(Res.drawable.ic_warning),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp).clickable(onClick = onCameraButtonClick
-            ))
         }
         Crossfade(targetState = userInput.isBlank(), modifier = Modifier.align(Alignment.Bottom)) {
             if (it)
