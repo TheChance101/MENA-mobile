@@ -73,4 +73,5 @@
     <string name="start_searching_subtitle">أدخل كلمة من آية معينة لعرضها.</string>
     <string name="no_results_found_title">لم يتم العثور على نتائج!</string>
     <string name="no_results_found_subtitle">يرجى المحاولة مرة أخرى بكلمة بحث أخرى.</string>
+    <string name="back">رجوع</string>
 </resources>

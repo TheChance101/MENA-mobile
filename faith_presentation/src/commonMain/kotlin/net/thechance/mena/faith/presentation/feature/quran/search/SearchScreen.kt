@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.aya
+import mena.faith_presentation.generated.resources.back
 import mena.faith_presentation.generated.resources.ic_arrow
 import mena.faith_presentation.generated.resources.ic_clear
 import mena.faith_presentation.generated.resources.ic_outline_search
@@ -39,6 +40,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.component.DotSeparator
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.getAyahTextStyle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -52,13 +54,13 @@ fun SearchScreen(
     viewModel: SearchViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    ObserveAsEffect(viewModel.uiEffect) {
-        when (it) {
+    ObserveAsEffect(viewModel.uiEffect) { effect ->
+        when (effect) {
             SearchEffect.NavigateBack -> {}
             is SearchEffect.NavigateToSurah -> {}
         }
     }
-    Content(state, viewModel)
+    Content(state = state, listener = viewModel)
 }
 
 @Composable
@@ -73,16 +75,12 @@ private fun Content(
         SearchHeader(
             query = state.query,
             hint = state.hint,
-            onQueryChange = interactionListener::onQueryChange,
-            clearQuery = interactionListener::clearQuery,
+            onQueryChange = listener::onQueryChange,
+            clearQuery = listener::onClearQueryClick,
+            onBackClick = listener::onBackClick,
             modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .clickable(onClick = interactionListener::onBackClick)
+                .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
         )
-        StartOrEmptyState(
-            state.query.isBlank(),
-            state.searchResult.isEmpty(),
-            Modifier.fillMaxWidth().weight(1f)
         StartOrEmptyState(
             isBlankQuery = state.query.isBlank(),
             isEmptyResult = state.searchResult.isEmpty(),
@@ -92,7 +90,7 @@ private fun Content(
             isNotBlankQuery = state.query.isNotBlank(),
             isNotEmptyResult = state.searchResult.isNotEmpty(),
             result = state.searchResult,
-            onSearchClick = interactionListener::onSearchResultClick
+            onSearchClick = listener::onSearchResultClick
         )
     }
 }
@@ -103,12 +101,13 @@ private fun SearchHeader(
     hint: String,
     onQueryChange: (String) -> Unit,
     clearQuery: () -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         Image(
             modifier = Modifier
@@ -117,9 +116,10 @@ private fun SearchHeader(
                     Theme.colorScheme.background.surfaceLow,
                     RoundedCornerShape(Theme.radius.md)
                 )
-                .padding(vertical = 14.56.dp, horizontal = 17.dp),
+                .padding(vertical = 14.56.dp, horizontal = 17.dp)
+                .clickable(onClick = onBackClick),
             painter = painterResource(Res.drawable.ic_arrow),
-            contentDescription = ""
+            contentDescription = stringResource(Res.string.back)
         )
         TextField(
             modifier = Modifier.weight(1f),
@@ -157,9 +157,9 @@ private fun StartOrEmptyState(
                     contentDescription = null
                 )
                 Image(
-                    modifier = Modifier.padding(bottom = 12.dp),
+                    modifier = Modifier.padding(bottom = Theme.spacing._12),
                     painter = painterResource(if (isBlankQuery) Res.drawable.ic_search else Res.drawable.ic_search_warning),
-                    contentDescription = null
+                    contentDescription = stringResource(if (isBlankQuery) Res.string.start_searching_title else Res.string.no_results_found_title)
                 )
             }
             Text(
@@ -184,8 +184,11 @@ private fun ResultList(
     onSearchClick: (surahId: Int, ayahId: Int) -> Unit
 ) {
     if (isNotBlankQuery && isNotEmptyResult) LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(
+            horizontal = Theme.spacing._16,
+            vertical = Theme.spacing._12
+        ),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(result) {
             SearchResultCard(
@@ -246,17 +249,4 @@ private fun SurahAndAyaInfo(
             style = Theme.typography.label.medium,
         )
     }
-}
-
-@Composable
-private fun DotSeparator() {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = Theme.spacing._8)
-            .size(3.dp)
-            .background(
-                color = Theme.colorScheme.shadeTertiary,
-                shape = RoundedCornerShape(Theme.radius.full)
-            )
-    )
 }

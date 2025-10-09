@@ -25,7 +25,7 @@ class SearchViewModel(
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
         searchJob?.cancel()
-        if (query.length < 2) {
+        if (query.length < LENGTH_OF_SHORTEST_WORD_IN_QURAN) {
             updateState { it.copy(searchResult = emptyList()) }
             return
         }
@@ -40,7 +40,7 @@ class SearchViewModel(
         )
     }
 
-    override fun clearQuery() {
+    override fun onClearQueryClick() {
         updateState { it.copy(query = "") }
     }
 
@@ -66,5 +66,9 @@ class SearchViewModel(
                 ayah.toSearchResult(it.surahName)
             })
         }
+    }
+
+    private companion object {
+        const val LENGTH_OF_SHORTEST_WORD_IN_QURAN = 2
     }
 }
