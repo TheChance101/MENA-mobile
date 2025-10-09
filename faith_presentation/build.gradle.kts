@@ -84,13 +84,14 @@ kover.reports {
     filters {
         includes {
             classes(
-                "*ViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel",
                 "*MapperKt",
             )
         }
 
         excludes {
-            classes("net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel")
             annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
         }
     }
