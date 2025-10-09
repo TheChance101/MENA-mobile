@@ -39,6 +39,11 @@ class CategoryPublishViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { categoryRepository.getAllCategories() } returns categories
+        every { categoryPublishArgs.trendId } returns TREND_ID
+        every { categoryPublishArgs.description } returns DESCRIPTION
+        everySuspend {
+            reelsRepository.updateReelById(any(), any(), any())
+        } returns Unit
 
         viewModel = CategoryPublishViewModel(
             categoryPublishArgs = categoryPublishArgs,
@@ -123,13 +128,6 @@ class CategoryPublishViewModelTest {
     @Test
     fun `onPublishClick should call updateReelById with correct params when category is selected`() =
         runTest {
-            every { categoryPublishArgs.trendId } returns TREND_ID
-            every { categoryPublishArgs.description } returns DESCRIPTION
-            everySuspend {
-                reelsRepository.updateReelById(any(), any(), any())
-            } returns Unit
-            testDispatcher.scheduler.advanceUntilIdle()
-
             viewModel.onCategoryClick(category.id)
             testDispatcher.scheduler.advanceUntilIdle()
 

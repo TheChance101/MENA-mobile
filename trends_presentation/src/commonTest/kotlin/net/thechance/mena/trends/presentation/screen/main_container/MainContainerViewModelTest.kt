@@ -57,7 +57,7 @@ class MainContainerViewModelTest {
     }
 
     @Test
-    fun `navigateToCategories should navigate to categories screen when user categories are already set`() =
+    fun `navigateToCategories should navigate to categories screen when when user categories are not set`() =
         runTest {
             viewModel.handleGetIsUserCategorySet(isUserCategorySet = false)
             viewModel.effect.test {
@@ -67,7 +67,7 @@ class MainContainerViewModelTest {
         }
 
     @Test
-    fun `navigateToCategories should navigate to trends screen when user categories are not set`() =
+    fun `navigateToCategories should navigate to trends screen when user categories are already set`() =
         runTest {
             viewModel.handleGetIsUserCategorySet(isUserCategorySet = true)
             viewModel.effect.test {

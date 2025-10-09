@@ -1,13 +1,22 @@
 package net.thechance.mena.trends.data.repository
 
 import assertk.assertThat
+import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import assertk.assertions.isGreaterThan
+import assertk.assertions.isLessThan
 import assertk.assertions.isLessThanOrEqualTo
 import assertk.assertions.isNotEmpty
+import assertk.assertions.isNotNull
 import assertk.assertions.isSuccess
+import assertk.assertions.isTrue
+import dev.mokkery.matcher.capture.Capture.Companion.slot
+import io.ktor.client.request.forms.MultiPartFormDataContent
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.data.client.NetworkClient
+import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
@@ -15,6 +24,7 @@ import net.thechance.mena.trends.data.repository.util.getReelsResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.Test
 
