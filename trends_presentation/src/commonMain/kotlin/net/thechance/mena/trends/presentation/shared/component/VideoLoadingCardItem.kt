@@ -46,8 +46,8 @@ internal fun VideoLoadingCardItem(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(Theme.spacing._12))
-                .background(Theme.colorScheme.primary.onPrimary)
+                .clip(shape = RoundedCornerShape(size = Theme.spacing._12))
+                .background(color = Theme.colorScheme.primary.onPrimary)
                 .padding(horizontal = Theme.spacing._12),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -62,7 +62,7 @@ internal fun VideoLoadingCardItem(
             when (videoState) {
                 UploadReelScreenState.UploadingTrendState.UPLOADING -> {
                     ActionIcon(
-                        actinIcon = painterResource(Res.drawable.ic_cancel),
+                        actinIcon = painterResource(resource = Res.drawable.ic_cancel),
                         modifier = Modifier.padding(top = Theme.spacing._12)
                     ) {
                         onAction(VideoAction.Cancel)
@@ -72,13 +72,13 @@ internal fun VideoLoadingCardItem(
                 UploadReelScreenState.UploadingTrendState.FAILED -> {
                     Row(
                         modifier = Modifier.padding(top = Theme.spacing._24),
-                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
+                        horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._16),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        ActionIcon(actinIcon = painterResource(Res.drawable.ic_delete)) {
+                        ActionIcon(actinIcon = painterResource(resource = Res.drawable.ic_delete)) {
                             onAction(VideoAction.Delete)
                         }
-                        ActionIcon(actinIcon = painterResource(Res.drawable.arrow_reload_horizontal)) {
+                        ActionIcon(actinIcon = painterResource(resource = Res.drawable.arrow_reload_horizontal)) {
                             onAction(VideoAction.Retry)
                         }
                     }
@@ -86,7 +86,7 @@ internal fun VideoLoadingCardItem(
 
                 UploadReelScreenState.UploadingTrendState.SUCCESS -> {
                     ActionIcon(
-                        actinIcon = painterResource(Res.drawable.ic_delete),
+                        actinIcon = painterResource(resource = Res.drawable.ic_delete),
                         modifier = Modifier.padding(top = Theme.spacing._24)
                     ) {
                         onAction(VideoAction.Delete)
@@ -112,16 +112,7 @@ private fun VideoInfoSection(
             .padding(top = Theme.spacing._12),
         verticalAlignment = Alignment.Top
     ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_video),
-            contentDescription = stringResource(Res.string.thumbnail),
-            tint = Theme.colorScheme.brand.brand,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(Theme.radius.md))
-                .background(Theme.colorScheme.brand.brandVariant)
-                .padding(Theme.spacing._8)
-        )
+        VideoIcon()
 
         Column(
             modifier = Modifier.padding(bottom = Theme.spacing._12)
@@ -173,10 +164,10 @@ private fun ActionIcon(
 ) {
     Icon(
         painter = actinIcon,
-        contentDescription = stringResource(Res.string.acton_icon_description),
+        contentDescription = stringResource(resource = Res.string.acton_icon_description),
         tint = Theme.colorScheme.shadeSecondary,
         modifier = modifier
-            .size(Theme.spacing._16)
+            .size(size = Theme.spacing._16)
             .clickable { onAction() }
     )
 }
@@ -191,6 +182,19 @@ private fun UploadVideoSize(videoSize: String, modifier: Modifier = Modifier) {
     )
 }
 
+@Composable
+private fun VideoIcon() {
+    Icon(
+        painter = painterResource(Res.drawable.ic_video),
+        contentDescription = stringResource(Res.string.thumbnail),
+        tint = Theme.colorScheme.brand.brand,
+        modifier = Modifier
+            .size(size = 40.dp)
+            .clip(shape = RoundedCornerShape(Theme.radius.md))
+            .background(color = Theme.colorScheme.brand.brandVariant)
+            .padding(all = Theme.spacing._8)
+    )
+}
 
 @Preview
 @Composable
