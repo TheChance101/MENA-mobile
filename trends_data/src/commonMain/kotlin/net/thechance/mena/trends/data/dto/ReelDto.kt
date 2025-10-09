@@ -20,5 +20,7 @@ internal data class ReelDto(
     @SerialName("viewsCount")
     val viewsCount : Int? = null,
     @SerialName("categories")
-    val categories : List<CategoryDto>? = null
+    val categories : List<CategoryDto>? = null,
+    @SerialName("isCurrentUserOwner")
+    val isCurrentUserOwner : Boolean
 )
