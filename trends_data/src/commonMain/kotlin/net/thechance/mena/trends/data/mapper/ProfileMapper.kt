@@ -5,9 +5,9 @@ import net.thechance.mena.trends.domain.entity.Profile
 
 internal fun ProfileDto.toEntity(): Profile {
     return Profile(
-        firstName = firstName,
-        lastName = lastName,
+        firstName = firstName.orEmpty(),
+        lastName = lastName.orEmpty(),
         profileImageUrl = profileImageUrl.orEmpty(),
-        username = username
+        username = username.orEmpty()
     )
 }

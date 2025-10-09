@@ -2,16 +2,16 @@ package net.thechance.mena.trends.data.dto
 
 
 import kotlinx.serialization.SerialName
-
 import kotlinx.serialization.Serializable
+
 @Serializable
-data class ProfileDto(
+internal data class ProfileDto(
     @SerialName("username")
-    val username: String,
+    val username: String? = null,
     @SerialName("firstName")
-    val firstName: String,
+    val firstName: String? = null,
     @SerialName("lastName")
-    val lastName: String,
+    val lastName: String? = null,
     @SerialName("profileImageUrl")
     val profileImageUrl: String? = null
 
