@@ -37,28 +37,6 @@ class UserRepositoryImplTest {
         repository = UserRepositoryImpl(networkClient)
     }
 
-    private fun mockHttpClient(response: ProfileDto): HttpClient {
-        return HttpClient(MockEngine) {
-            install(ContentNegotiation) {
-                json(Json {
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                })
-            }
-            engine {
-                addHandler { request ->
-                    respond(
-                        content = Json.encodeToString(ProfileDto.serializer(), response),
-                        status = HttpStatusCode.OK,
-                        headers = headersOf(
-                            HttpHeaders.ContentType, ContentType.Application.Json.toString()
-                        )
-                    )
-                }
-            }
-        }
-    }
-
     @Test
     fun `should return profile entity successfully when network client returns valid profile response`() =
         runTest {
@@ -84,4 +62,25 @@ class UserRepositoryImplTest {
 
             assertThat(actualProfile).isEqualTo(expectedProfile)
         }
+    private fun mockHttpClient(response: ProfileDto): HttpClient {
+        return HttpClient(MockEngine) {
+            install(ContentNegotiation) {
+                json(Json {
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                })
+            }
+            engine {
+                addHandler { request ->
+                    respond(
+                        content = Json.encodeToString(ProfileDto.serializer(), response),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(
+                            HttpHeaders.ContentType, ContentType.Application.Json.toString()
+                        )
+                    )
+                }
+            }
+        }
+    }
 }
