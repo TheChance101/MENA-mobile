@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.dp
 import net.thechance.mena.identity.domain.entity.Coordinates
 import net.thechance.mena.identity.domain.repository.LocationRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -19,7 +20,7 @@ class PickLocationScreenViewModel(
         tryToExecute(
             function = { onMapClickedBlock(coordinates, pointerLocation) },
             onSuccess = ::onMapClickedSuccess,
-            onError = {}
+            onError = ::onError
         )
     }
 
@@ -59,7 +60,8 @@ class PickLocationScreenViewModel(
                 address = "",
                 currentLocation = PickLocationScreenUIState.CoordinatesUiState(),
                 pointerLocation = null,
-                isMapLocked = false
+                isMapLocked = false,
+                animateToCurrentLocation = false
             )
         }
         changeIsConfirmEnabled()
@@ -83,7 +85,8 @@ class PickLocationScreenViewModel(
         updateState {
             copy(
                 currentLocation = coordinates?.toUiState(),
-                pointerLocation = null,
+                pointerLocation = DpOffset(150.dp, 300.dp),
+                isMapLocked = true,
                 animateToCurrentLocation = true
             )
         }
