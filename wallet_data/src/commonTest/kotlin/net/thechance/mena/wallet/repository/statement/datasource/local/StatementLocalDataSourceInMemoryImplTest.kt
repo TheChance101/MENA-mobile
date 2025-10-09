@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTime::class)
-
 package net.thechance.mena.wallet.repository.statement.datasource.local
 
 import kotlinx.coroutines.test.runTest
@@ -10,6 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 class StatementLocalDataSourceInMemoryImplTest {
 
     lateinit var statementLocalDataSourceInMemoryImpl: StatementLocalDataSourceInMemoryImpl
