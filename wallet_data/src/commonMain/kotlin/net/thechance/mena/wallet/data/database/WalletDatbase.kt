@@ -11,6 +11,7 @@ import androidx.room.RoomDatabaseConstructor
 abstract class WalletDatabase : RoomDatabase() {
     abstract fun getStatementDao(): StatementDao
 }
+
 @Suppress("KotlinNoActualForExpect")
 expect object WalletDatabaseConstructor : RoomDatabaseConstructor<WalletDatabase> {
     override fun initialize(): WalletDatabase
