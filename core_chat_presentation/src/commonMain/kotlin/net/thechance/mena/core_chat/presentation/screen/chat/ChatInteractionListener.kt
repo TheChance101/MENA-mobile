@@ -6,28 +6,23 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-interface ChatInteractionListener : MessageListInteractionListener {
-
+interface ChatInteractionListener : MessageListInteractionListener, AttachmentsInteractionListener {
     fun onBackClicked()
-    fun onSendImageClicked(imageByteArrays: List<ByteArray>)
+    fun onAttachmentClicked()
     fun onInputMessageChanged(value: String)
     fun onSendMessageClicked()
-    fun onCameraClicked()
-    fun onCameraDismissed()
 }
 
 interface MessageListInteractionListener {
     fun onMessageClicked(messageId: Uuid)
-
     fun onFailedMessageClicked(message: MessageUiState)
-
     fun onDeleteFailedMessageClicked()
-
     fun onResendMessageClicked()
     fun onResendMessageDialogDismissed()
 }
 
 interface AttachmentsInteractionListener {
+    fun onSendImageClicked(imageByteArrays: List<ByteArray>)
     fun onPhotoClicked()
     fun onCameraClicked()
     fun onCancelClicked()
