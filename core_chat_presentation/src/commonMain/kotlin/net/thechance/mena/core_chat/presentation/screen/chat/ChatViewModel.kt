@@ -19,10 +19,10 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
+import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
@@ -81,24 +81,38 @@ class ChatViewModel(
         val senderId = state.value.chatRequesterId
         val now = LocalDateTime.now()
 
-        if (chatId == null || senderId == null) return
+        if (chatId == null || senderId == null) {
+            return
+        }
 
         imageByteArrays.forEach { bytes ->
-            val uiMessage = MessageUiState(
-                id = Uuid.random(),
-                chatId = chatId,
-                senderId = senderId,
-                sendTime = now,
-                status = MessageStatusUiState.SENDING,
-                isMine = true,
-                imageBytes = bytes,
-                text = null
-            )
-
-            updateStateWithNewMessage(uiMessage)
+            processAndSendMessage(chatId, senderId, now, bytes)
         }
     }
 
+    private fun processAndSendMessage(
+        chatId: Uuid,
+        senderId: Uuid,
+        sendTime: LocalDateTime,
+        bytes: ByteArray
+    ) {
+        val uiMessage = MessageUiState(
+            id = Uuid.random(),
+            chatId = chatId,
+            senderId = senderId,
+            sendTime = sendTime,
+            isMine = true,
+            status = MessageStatus.LOADING,
+            content = MessageContent.ImageByteArray(listOf(bytes))
+        )
+
+        updateStateWithNewMessage(uiMessage)
+        tryToExecute(
+            execute = { chatRepository.sendMessage(uiMessage.toEntity()) },
+            onSuccess = { onSendMessageSuccess(uiMessage) },
+            onError = { onSendMessageError(uiMessage) },
+        )
+    }
 
     override fun onInputMessageChanged(value: String) {
         updateState { state -> state.copy(inputMessage = value) }
@@ -237,7 +251,6 @@ class ChatViewModel(
         messages
             .filter { it.status == MessageStatus.LOADING }
             .forEach {
-                // todo temp text content
                 val content = MessageContent.Text(it.text)
                 sendMessage(chatId = it.chatId, senderId = senderId, content = content)
             }
@@ -306,5 +319,21 @@ class ChatViewModel(
             coroutineScope = CoroutineScope(Dispatchers.IO), // Required to avoid cancellation
             execute = { chatRepository.disconnect() }
         )
+    }
+
+    override fun onAttachmentClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = true) }
+    }
+
+    override fun onPhotoClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onCameraClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onCancelClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 }
