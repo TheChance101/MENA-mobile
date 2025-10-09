@@ -101,8 +101,10 @@ private fun AttachmentBottomSheetContent(
         AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
-            onClick = {attachmentsInteractionListener::onPhotoClicked
-            imagePickerLauncher.launch()}
+            onClick = {
+                attachmentsInteractionListener.onPhotoClicked()
+                imagePickerLauncher.launch()
+            }
         )
 
         AttachmentsBottomSheetItem(
