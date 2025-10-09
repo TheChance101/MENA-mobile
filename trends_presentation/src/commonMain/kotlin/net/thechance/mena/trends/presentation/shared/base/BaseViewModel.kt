@@ -26,6 +26,7 @@ import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededExcepti
 import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
+import kotlin.coroutines.cancellation.CancellationException
 
 internal abstract class BaseViewModel<State, Effect>(
     initialState: State
@@ -87,6 +88,7 @@ internal abstract class BaseViewModel<State, Effect>(
         scope: CoroutineScope = viewModelScope
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+            if(exception is kotlinx.coroutines.CancellationException) return@CoroutineExceptionHandler
             onError(ErrorState.RequestFailed(exception.message))
         }
 
@@ -97,6 +99,7 @@ internal abstract class BaseViewModel<State, Effect>(
                 .onEach { onNewValue(it) }
                 .onCompletion { throwable ->
                     throwable?.let {
+                        if(throwable is CancellationException) return@onCompletion
                         mapExceptionToErrorState(throwable, onError)
                     } ?: onEnd()
                 }
