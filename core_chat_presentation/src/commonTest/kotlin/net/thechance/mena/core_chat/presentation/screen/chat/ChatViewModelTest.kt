@@ -333,6 +333,7 @@ class ChatViewModelTest {
     @Test
     fun `onSendImageClicked should update message to FAILED status after failed repository call`() {
 
+
         val imageByteArray = byteArrayOf(1, 2, 3)
         val imageByteArrays = listOf(imageByteArray)
         everySuspend { repository.sendMessage(any()) } throws Exception("Failed to send")
