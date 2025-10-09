@@ -21,7 +21,7 @@ fun MessageContent(
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
-        is MessageContent.ImageUrls -> ImageMessageContent(images = messageContent.imageUrls, modifier = Modifier.size(156.dp, 162.dp).clip(shape))
-        is MessageContent.PendingImages -> ImageMessageContent(images = messageContent.images, modifier = Modifier.size(156.dp, 162.dp).clip(shape))
+        is MessageContent.ImageUrls -> ImageMessageContent(images = messageContent.urls, modifier = Modifier.size(156.dp, 162.dp).clip(shape))
+        is MessageContent.PendingImages -> ImageMessageContent(images = messageContent.byteArrays, modifier = Modifier.size(156.dp, 162.dp).clip(shape))
     }
 }
