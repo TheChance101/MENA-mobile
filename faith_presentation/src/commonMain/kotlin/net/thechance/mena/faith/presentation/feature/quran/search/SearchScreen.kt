@@ -64,7 +64,7 @@ fun SearchScreen(
 @Composable
 private fun Content(
     state: SearchScreenState,
-    interactionListener: SearchInteractionListener
+    listener: SearchInteractionListener
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
