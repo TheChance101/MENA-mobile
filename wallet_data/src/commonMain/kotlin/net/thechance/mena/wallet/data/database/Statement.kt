@@ -7,10 +7,10 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Entity(tableName = "statement")
-data class Statement @OptIn(ExperimentalUuidApi::class) constructor(
-    @PrimaryKey val id: Uuid,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+data class Statement(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    val startDate: String,
+    val endDate: String,
     val totalInflows: Double,
     val totalOutflows: Double,
     val pathUrl: String,
