@@ -10,7 +10,7 @@ import platform.Foundation.localTimeZone
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-actual fun formatStatementDate(date: LocalDate, outputFormat: String): String {
+actual fun formatLocalDate(date: LocalDate, outputFormat: String): String {
     val timeZone = TimeZone.currentSystemDefault()
     val instant = date.atStartOfDayIn(timeZone).epochSeconds
 

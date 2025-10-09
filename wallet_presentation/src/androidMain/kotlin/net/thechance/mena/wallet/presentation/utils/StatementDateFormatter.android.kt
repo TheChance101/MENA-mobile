@@ -10,7 +10,7 @@ import java.util.Locale
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-actual fun formatStatementDate(date: LocalDate, outputFormat: String): String {
+actual fun formatLocalDate(date: LocalDate, outputFormat: String): String {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val formatter =
             java.time.format.DateTimeFormatter.ofPattern(outputFormat, Locale.getDefault())

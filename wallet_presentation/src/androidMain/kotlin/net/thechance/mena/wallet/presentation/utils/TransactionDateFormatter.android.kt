@@ -12,7 +12,7 @@ import java.util.Locale
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-actual fun formatTransactionDate(date: LocalDateTime, outputFormat: String): String {
+actual fun formatLocalDateTime(date: LocalDateTime, outputFormat: String): String {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val formatter = ofPattern("dd MMM yyyy, h:mm a", Locale.getDefault())
         return date.toJavaLocalDateTime().format(formatter)
