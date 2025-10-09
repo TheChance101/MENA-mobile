@@ -1,0 +1,60 @@
+package net.thechance.mena.faith.presentation.feature.quran.search
+
+import kotlinx.coroutines.Job
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.quran
+import mena.faith_presentation.generated.resources.search_in_surah_hint
+import net.thechance.mena.faith.domain.entity.Ayah
+import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.util.toSearchResult
+import org.jetbrains.compose.resources.getString
+
+class SearchViewModel(
+    surahName: String?,
+    surahId: Int?,
+    private val repository: QuranRepository
+) : BaseViewModel<SearchScreenState, SearchEffect>(SearchScreenState(surahId, surahName)),
+    SearchInteractionListener {
+    private var searchJob: Job? = null
+
+    init {
+        handleHint()
+    }
+
+    private fun handleHint() {
+        tryToExecute({
+            val hintPostfix = uiState.value.surahName ?: getString(Res.string.quran)
+            val hint = getString(Res.string.search_in_surah_hint, hintPostfix)
+            updateState { it.copy(hint = hint) }
+        })
+    }
+
+    override fun onQueryChange(query: String) {
+        updateState { it.copy(query = query) }
+        searchJob?.cancel()
+        if (query.length < 2) {
+            updateState { it.copy(searchResult = emptyList()) }
+            return
+        }
+        searchJob = tryToExecute(
+            delayMillis = 1000L,
+            execute = {
+                uiState.value.surahId?.let {
+                    repository.searchForAyahInSurah(it, query)
+                } ?: repository.searchForAyahInQuran(query)
+            },
+            onSuccess = ::onGetSearchResultSuccess
+        )
+    }
+
+    private fun onGetSearchResultSuccess(ayat: List<Ayah>) {
+        updateState {
+            it.copy(searchResult = ayat.map { ayah -> ayah.toSearchResult(it.surahName) })
+        }
+    }
+
+    override fun clearQuery() {
+        updateState { it.copy(query = "") }
+    }
+}
