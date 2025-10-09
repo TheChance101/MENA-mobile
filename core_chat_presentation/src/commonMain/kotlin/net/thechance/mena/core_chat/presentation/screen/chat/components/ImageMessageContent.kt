@@ -4,18 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 
 @Composable
@@ -29,17 +26,16 @@ fun ImageMessageContent(
     val gridCells = if (displayImages.size == 2 || displayImages.size == 1) 1 else 2
 
     val spacing = 1.dp
-    val cornerRadius = Theme.spacing._16
 
     BoxWithConstraints(modifier = modifier) {
-        val gridSize = maxWidth
+        val gridWith = maxWidth
+        val gridHeight = maxHeight
 
         LazyHorizontalGrid(
             rows = GridCells.Fixed(gridCells),
             modifier = Modifier
-                .width(gridSize)
-                .height(gridSize)
-                .clip(RoundedCornerShape(cornerRadius)),
+                .width(gridWith)
+                .height(gridHeight),
             horizontalArrangement = Arrangement.spacedBy(spacing),
             verticalArrangement = Arrangement.spacedBy(spacing),
             userScrollEnabled = false
@@ -51,7 +47,7 @@ fun ImageMessageContent(
                             imageUrl = displayImages[0],
                             index = 0,
                             onClick = onImageClick,
-                            modifier = Modifier.size(gridSize)
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }

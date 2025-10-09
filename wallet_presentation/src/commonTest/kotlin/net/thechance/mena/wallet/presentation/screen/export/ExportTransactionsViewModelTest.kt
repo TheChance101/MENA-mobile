@@ -39,6 +39,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 
@@ -156,14 +157,24 @@ class ExportTransactionsViewModelTest {
         }
 
     @Test
-    fun `should update startDate when onFromDateClicked is called`() = runTest {
+    fun `should update startDate when user picks start date`() = runTest {
+        everySuspend {
+            transactionRepository.getFirstTransactionDate()
+        } returns LocalDate(2025, 9, 1)
         initViewModel()
 
         viewModel.state.test {
             skipItems(1)
             viewModel.onStartDateClicked()
+            advanceUntilIdle()
+            skipItems(1)
+
+            val selectedDate = LocalDate(2025, 9, 15)
+            viewModel.onPickDateClicked(selectedDate)
+
             val state = awaitItem()
-            assertEquals(LocalDate.parse("2025/09/01"), state.startDate)
+            assertEquals(selectedDate, state.startDate)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -174,8 +185,15 @@ class ExportTransactionsViewModelTest {
         viewModel.state.test {
             skipItems(1)
             viewModel.onEndDateClicked()
+
             val state = awaitItem()
-            assertEquals(LocalDate.parse("2025/09/27"), state.endDate)
+            assertTrue(state.isDateBottomSheetVisible)
+            assertEquals(
+                ExportTransactionsState.DatePickerMode.END_DATE,
+                state.datePickerMode
+            )
+            assertNotNull(state.defaultEndDate)
+
         }
     }
 

@@ -30,7 +30,6 @@ fun Message.toUi(currentUserId: Uuid): MessageUiState {
 }
 
 fun MessageUiState.toEntity(): Message {
-    val content = content as MessageContent.Text
     return Message(
         id = id,
         senderId = senderId,

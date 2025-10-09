@@ -57,20 +57,21 @@ fun MessageLayout(
         Theme.spacing._8
 
     val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
+    val maxRadius = if (message.content is MessageContent.Text) Theme.radius.md else Theme.radius.lg
 
     val messageShape = if (message.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
-            topStart = Theme.radius.md,
-            topEnd = Theme.radius.md,
-            bottomStart = Theme.radius.md,
+            topStart = maxRadius,
+            topEnd = maxRadius,
+            bottomStart = maxRadius,
             bottomEnd = Theme.radius.xxs
         )
     else if (!message.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
-            topStart = Theme.radius.md,
-            topEnd = Theme.radius.md,
+            topStart = maxRadius,
+            topEnd = maxRadius,
             bottomStart = Theme.radius.xxs,
-            bottomEnd = Theme.radius.md
+            bottomEnd = maxRadius
         )
     else
         RoundedCornerShape(size = Theme.radius.md)
@@ -81,6 +82,8 @@ fun MessageLayout(
         Alignment.End
     val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
+    val verticalPadding =
+        if (message.content is MessageContent.Text) Theme.spacing._8 else Theme.spacing._4
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
@@ -119,11 +122,11 @@ fun MessageLayout(
                         shape = messageShape
                     )
                     .padding(
-                        horizontal = Theme.spacing._8,
+                        horizontal = verticalPadding,
                         vertical = Theme.spacing._4
                     )
             ) {
-                MessageContent(messageContent = message.content)
+                MessageContent(messageContent = message.content, shape = messageShape)
             }
 
         }
@@ -158,7 +161,7 @@ private fun PreviewBaseMessageLayout() {
                     sendTime = LocalDateTime.now(),
                     status = MessageStatus.READ,
                     isMine = false,
-                    content = MessageContent.Text("")
+                    content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true
