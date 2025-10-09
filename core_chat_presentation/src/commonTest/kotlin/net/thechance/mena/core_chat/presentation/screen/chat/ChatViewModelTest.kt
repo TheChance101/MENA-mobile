@@ -302,7 +302,47 @@ class ChatViewModelTest {
         val result = chatViewModel.state.value.chatListItems.first() as ChatListItem.Message
         assertThat(result.data.isVisibleMessageInfo).isEqualTo(messageUiState.isVisibleMessageInfo)
     }
+    @Test
+    fun `onSendImageClicked should add a new message with LOADING status and call repository`() {
 
+        val imageByteArray = byteArrayOf(1, 2, 3)
+        val imageByteArrays = listOf(imageByteArray)
+        everySuspend { repository.sendMessage(any()) } returns Unit
+
+        chatViewModel.onSendImageClicked(imageByteArrays)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val firstMessage = chatViewModel.state.value.chatListItems.currentUiMessages().first()
+        assertThat(firstMessage.status).isEqualTo(MessageStatus.LOADING)
+    }
+
+    @Test
+    fun `onSendImageClicked should update message to SENT status after successful repository call`() {
+
+        val imageByteArray = byteArrayOf(1, 2, 3)
+        val imageByteArrays = listOf(imageByteArray)
+        everySuspend { repository.sendMessage(any()) } returns Unit
+
+        chatViewModel.onSendImageClicked(imageByteArrays)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val firstMessage = chatViewModel.state.value.chatListItems.currentUiMessages().first()
+        assertThat(firstMessage.status).isEqualTo(MessageStatus.SENT)
+    }
+
+    @Test
+    fun `onSendImageClicked should update message to FAILED status after failed repository call`() {
+
+        val imageByteArray = byteArrayOf(1, 2, 3)
+        val imageByteArrays = listOf(imageByteArray)
+        everySuspend { repository.sendMessage(any()) } throws Exception("Failed to send")
+
+        chatViewModel.onSendImageClicked(imageByteArrays)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val firstMessage = chatViewModel.state.value.chatListItems.currentUiMessages().first()
+        assertThat(firstMessage.status).isEqualTo(MessageStatus.FAILED)
+    }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.Message>()
