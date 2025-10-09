@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
@@ -49,11 +51,12 @@ fun AttachmentsBottomSheetItem(
                 modifier = Modifier
                     .size(Theme.spacing._32)
                     .dropShadow(
-                        shape = CircleShape, shadow = Shadow(
+                        shape = RoundedCornerShape(Theme.spacing._12), shadow = Shadow(
                             radius = Theme.spacing._8,
                             spread = 0.dp,
-                            color = Color.Black.copy(alpha = .12f),
-                            offset = DpOffset(0.dp, 4.dp)
+                            color = Color.Black.copy(alpha = .06f),
+                            offset = DpOffset(0.dp, 4.dp),
+                            blendMode = BlendMode.SrcOver
                         )
                     ),
                 painter = painterResource(iconRes),
