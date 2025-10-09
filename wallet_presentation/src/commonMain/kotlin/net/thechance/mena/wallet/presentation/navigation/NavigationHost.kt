@@ -95,8 +95,12 @@ fun NavigationHost(
         composable<StatementsHistoryScreenRoute> {
             StatementHistoryScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
-                navigateToStatementDetails = { navController.navigate(it.toString()) },
+                navigateToStatementDetails = { navController.navigate(StatementDetailsScreenRoute(id = it.toString())) },
             )
+        }
+
+        composable<StatementDetailsScreenRoute> { backStackEntry ->
+            DummyScreen(title = "Statement Details")
         }
     }
 }
