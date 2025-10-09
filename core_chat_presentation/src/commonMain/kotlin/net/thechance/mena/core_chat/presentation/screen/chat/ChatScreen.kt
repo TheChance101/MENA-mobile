@@ -43,6 +43,7 @@ fun ChatScreen() {
     )
 }
 
+
 @Composable
 fun ChatScreenContent(
     state: ChatScreenState,
@@ -111,4 +112,5 @@ fun ChatScreenContent(
             )
         }
     }
+
 }

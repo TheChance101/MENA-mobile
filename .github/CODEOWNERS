@@ -2,10 +2,10 @@
 /composeApp/ @ibareq
 
 # Chat core modules owned by @mosayed01, @AzizaHelmy, @Joseph-Sameh-0, @ZainabAlnajjar
-/core_chat_api/ @mosayed01 @AzizaHelmy @Joseph-Sameh-0 @ZainabAlnajjar
-/core_chat_data/ @mosayed01 @AzizaHelmy @Joseph-Sameh-0 @ZainabAlnajjar
-/core_chat_domain/ @mosayed01 @AzizaHelmy @Joseph-Sameh-0 @ZainabAlnajjar
-/core_chat_presentation/ @mosayed01 @AzizaHelmy @Joseph-Sameh-0 @ZainabAlnajjar
+/core_chat_api/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
+/core_chat_data/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
+/core_chat_domain/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
+/core_chat_presentation/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
 
 # Design system owned by @ibareq
 /design_system/ @ibareq
@@ -17,16 +17,16 @@
 /dukan_presentation/ @TarekIdrees @devfalah @haideraljawasim @mostafa-n3ma @YoussefmSaber
 
 # Faith modules owned by @Asiasama710, @BassantM, @FaresM0hamed
-/faith_api/ @Asiasama710 @BassantM @FaresM0hamed @Al-Taie
-/faith_data/ @Asiasama710 @BassantM @FaresM0hamed @Al-Taie
-/faith_domain/ @Asiasama710 @BassantM @FaresM0hamed @Al-Taie
-/faith_presentation/ @Asiasama710 @BassantM @FaresM0hamed @Al-Taie
+/faith_api/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
+/faith_data/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
+/faith_domain/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
+/faith_presentation/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
 
 # Identity modules owned by @ibareq, @AimanYosofiUlt, @AhmadKharfan, @amnah44
-/identity_api/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44
-/identity_data/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44
-/identity_domain/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44
-/identity_presentation/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44
+/identity_api/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
+/identity_data/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
+/identity_domain/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
+/identity_presentation/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
 
 # iOS app owned by @ibareq
 /iosApp/ @ibareq
@@ -38,9 +38,9 @@
 /trends_presentation/ @ahmednasserzaza @kamelkiko @ahmeddsamii @iZyadNasser
 
 # Wallet modules owned by @Karrar-Mohammed, @abdallahFc, @Ahmed7osny1, @Al-Qassim, @EL-MANCY
-/wallet_api/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @Al-Qassim @EL-MANCY
-/wallet_data/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @Al-Qassim @EL-MANCY
-/wallet_domain/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @Al-Qassim @EL-MANCY
-/wallet_presentation/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @Al-Qassim @EL-MANCY
+/wallet_api/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
+/wallet_data/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
+/wallet_domain/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
+/wallet_presentation/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
 
 /.github/CODEOWNERS @iBareq

@@ -20,6 +20,11 @@
     <string name="app_name">MENA</string>
     <string name="back_icon">Back Icon</string>
     <string name="bookmarks">Bookmarks</string>
+    <string name="calibrate_device">Calibrate device</string>
+    <string name="continue_btn">Continue</string>
+    <string name="islamic_decoration">islamic decoration</string>
+    <string name="calibrate_device_animation">calibrate device animation</string>
+    <string name="motion_configuration">Move your phone in a figure-8 motion, as shown in the animation above</string>
     <string name="remove_bookmark_icon">Remove Bookmark Icon</string>
     <string name="time_icon">Time Icon</string>
     <string name="swipe_animation">SwipeAnimation</string>

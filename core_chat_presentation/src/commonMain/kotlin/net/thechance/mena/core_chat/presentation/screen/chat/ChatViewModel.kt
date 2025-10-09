@@ -2,8 +2,6 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
-import dev.icerock.moko.permissions.Permission
-import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,16 +19,15 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
-import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
-    private val permissionsController: PermissionsController,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, dispatcher),
     ChatInteractionListener {
@@ -114,14 +111,16 @@ class ChatViewModel(
 
         if (chatId == null || senderId == null || text.isEmpty()) return
 
-        sendMessage(chatId, senderId, text)
+        // todo temp text content
+        val content = MessageContent.Text(text)
+        sendMessage(chatId, senderId, content)
     }
 
-    private fun sendMessage(chatId: Uuid, senderId: Uuid, text: String) {
+    private fun sendMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
         val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
-            text = text
+            content = content
         )
 
         updateStateWithNewMessage(message)
@@ -139,7 +138,7 @@ class ChatViewModel(
     }
 
     private fun onSendMessageError(message: MessageUiState) {
-        updateStateWithNewMessage(message.copy(status = MessageStatusUiState.FAILED))
+        updateStateWithNewMessage(message.copy(status = MessageStatus.FAILED))
     }
 
     override fun onMessageClicked(messageId: Uuid) {
@@ -185,12 +184,12 @@ class ChatViewModel(
                 failedMessageToReSend = null
             )
         }
-        updateStateWithNewMessage(message.copy(status = MessageStatusUiState.SENDING))
+        updateStateWithNewMessage(message.copy(status = MessageStatus.LOADING))
 
         sendMessage(
             chatId = message.chatId,
             senderId = message.senderId,
-            text = message.text.orEmpty()
+            content = message.content
         )
     }
 
@@ -237,7 +236,11 @@ class ChatViewModel(
 
         messages
             .filter { it.status == MessageStatus.LOADING }
-            .forEach { sendMessage(chatId = it.chatId, senderId = senderId, text = it.text) }
+            .forEach {
+                // todo temp text content
+                val content = MessageContent.Text(it.text)
+                sendMessage(chatId = it.chatId, senderId = senderId, content = content)
+            }
     }
 
     private fun observeReadMessages() {
@@ -251,11 +254,13 @@ class ChatViewModel(
         if (readerId == null) return
 
         mapMessagesState { message ->
-            if (message.senderId.toString() != readerId && message.status == MessageStatusUiState.SENT)
-                message.copy(status = MessageStatusUiState.READ)
+            if (message.senderId.toString() != readerId && message.status == MessageStatus.SENT)
+                message.copy(status = MessageStatus.READ)
             else message
         }
+
     }
+
 
     private fun updateStateWithNewMessage(newMessage: MessageUiState) {
         val messages = uiMessages.toMutableList()
@@ -301,20 +306,5 @@ class ChatViewModel(
             coroutineScope = CoroutineScope(Dispatchers.IO), // Required to avoid cancellation
             execute = { chatRepository.disconnect() }
         )
-    }
-
-    override fun onCameraClicked() {
-        tryToExecute(
-            execute = { permissionsController.providePermission(permission = Permission.CAMERA) },
-            onSuccess = { onCameraPermissionGranted() },
-        )
-    }
-
-    private fun onCameraPermissionGranted() {
-        updateState { it.copy(isCameraOpen = true) }
-    }
-
-    override fun onCameraDismissed() {
-        updateState { it.copy(isCameraOpen = false) }
     }
 }

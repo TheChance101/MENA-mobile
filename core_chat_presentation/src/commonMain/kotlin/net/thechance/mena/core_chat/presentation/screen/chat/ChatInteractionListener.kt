@@ -26,3 +26,9 @@ interface MessageListInteractionListener {
     fun onResendMessageClicked()
     fun onResendMessageDialogDismissed()
 }
+
+interface AttachmentsInteractionListener {
+    fun onPhotoClicked()
+    fun onCameraClicked()
+    fun onCancelClicked()
+}

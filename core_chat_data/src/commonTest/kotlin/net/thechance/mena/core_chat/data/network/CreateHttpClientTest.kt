@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.data.network
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.matcher.any
@@ -29,6 +30,10 @@ import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import net.thechance.mena.identity.domain.service.AuthorizationService
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -38,6 +43,13 @@ class CreateHttpClientTest {
 
     private val mockEngine = mock<HttpClientEngine>()
     private lateinit var mockFactory: HttpClientEngineFactory<HttpClientEngineConfig>
+    private val authenticationRepository: AuthenticationRepository = mock(MockMode.autofill)
+    private val authorizationService: AuthorizationService = AuthorizationService(authenticationRepository)
+    private val json: Json = Json {
+        ignoreUnknownKeys = true
+        prettyPrint = true
+        isLenient = true
+    }
 
     @BeforeTest
     fun setUp() {
@@ -60,25 +72,28 @@ class CreateHttpClientTest {
 
     @Test
     fun `createHttpClient should return non null HttpClient when factory is provided`() {
-        val client = createHttpClient("https://example.com", mockFactory)
+        val client =
+            createHttpClient("https://example.com", authorizationService, mockFactory, json)
         assertThat(client).isNotNull()
     }
 
     @Test
     fun `createHttpClient should delegate engine creation to factory`() {
-        createHttpClient("https://example.com", mockFactory)
+        createHttpClient("https://example.com", authorizationService, mockFactory, json)
         verify { mockFactory.create(any()) }
     }
 
     @Test
     fun `createHttpClient should install ContentNegotiation plugin`() {
-        val client = createHttpClient("https://example.com", mockFactory)
+        val client =
+            createHttpClient("https://example.com", authorizationService, mockFactory, json)
         assertThat(client.plugin(ContentNegotiation)).isNotNull()
     }
 
     @Test
     fun `createHttpClient should install Logging plugin`() {
-        val client = createHttpClient("https://example.com", mockFactory)
+        val client =
+            createHttpClient("https://example.com", authorizationService, mockFactory, json)
         assertThat(client.plugin(Logging)).isNotNull()
     }
 
@@ -93,7 +108,8 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", engineFactory)
+        val client =
+            createHttpClient("https://example.com", authorizationService, engineFactory, json)
 
         client.get("/test")
 
@@ -111,7 +127,8 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", engineFactory)
+        val client =
+            createHttpClient("https://example.com", authorizationService, engineFactory, json)
 
         client.post("/test") { setBody("{}") }
 
@@ -130,7 +147,8 @@ class CreateHttpClientTest {
             }
         }
 
-        val client = createHttpClient("https://example.com", engineFactory)
+        val client =
+            createHttpClient("https://example.com", authorizationService, engineFactory, json)
 
         client.get("/test")
 

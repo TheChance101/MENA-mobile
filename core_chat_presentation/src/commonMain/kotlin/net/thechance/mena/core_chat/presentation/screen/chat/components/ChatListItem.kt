@@ -42,26 +42,17 @@ fun ChatListItem(
             val markedMessage = item.data
             Row(
                 modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = if (markedMessage.message.isMine) Arrangement.End else Arrangement.Start
+                horizontalArrangement = if (markedMessage.isMine) Arrangement.End else Arrangement.Start
             ) {
-                if (markedMessage.message.imageBytes != null) {
-                    ImageMessageItem(
-                        message = markedMessage.message,
-                        showMessageInfo = markedMessage.showMessageInfo,
-                        isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
-                        onClick = { onMessageClick(markedMessage.message.id) },
-                        onFailClick = { onFailedMessageClick(markedMessage.message) }
-                    )
-                } else {
-                    TextMessageItem(
-                        message = markedMessage.message,
-                        chatAvatarUrl = chatAvatarUrl,
-                        showMessageInfo = markedMessage.showMessageInfo,
-                        isMarkedLastInSeries = markedMessage.isMarkedLastInSeries,
-                        onClick = { onMessageClick(markedMessage.message.id) },
-                        onFailClick = { onFailedMessageClick(markedMessage.message) }
-                    )
-                }
+                MessageLayout(
+                    message = markedMessage,
+                    chatAvatarUrl = chatAvatarUrl,
+                    showMessageInfo = markedMessage.isVisibleMessageInfo,
+                    isMarkedLastInSeries = markedMessage.isLastInSeries,
+                    onMessageClick = { onMessageClick(markedMessage.id) },
+                    onFailClick = { onFailedMessageClick(markedMessage) },
+                    modifier = Modifier
+                )
             }
         }
     }
