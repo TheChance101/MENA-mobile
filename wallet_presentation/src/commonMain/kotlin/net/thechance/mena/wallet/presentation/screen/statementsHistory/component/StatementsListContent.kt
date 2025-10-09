@@ -20,7 +20,7 @@ import mena.wallet_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryInteractionListener
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryState
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionLoadingState
 import net.thechance.mena.wallet.presentation.utils.PaginationTrigger
 import org.jetbrains.compose.resources.stringResource
@@ -29,7 +29,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun StatementsListContent(
     listener: StatementsHistoryInteractionListener,
-    state: StatementsHistoryState,
+    state: StatementsHistoryScreenState,
     modifier: Modifier = Modifier
 ) {
 
@@ -49,50 +49,48 @@ fun StatementsListContent(
         contentPadding = PaddingValues(bottom = Theme.spacing._16),
         state = listState
     ) {
-        if (state.statements.isNotEmpty()) {
-            items(state.statements) { statement ->
-                StatementHistoryCard(
-                    startDate = statement.startDate,
-                    endDate = statement.endDate,
-                    totalInflow = statement.totalInflow.toString(),
-                    totalOutflow = statement.totalOutflow.toString(),
-                    onStatementCardClicked = { listener.onStatementCardClicked(id = statement.id) }
+        items(state.statements) { statement ->
+            StatementHistoryCard(
+                startDate = statement.startDate,
+                endDate = statement.endDate,
+                totalInflow = statement.totalInflow.toString(),
+                totalOutflow = statement.totalOutflow.toString(),
+                onStatementCardClicked = { listener.onStatementCardClicked(id = statement.id) }
+            )
+
+            if (state.statements.last() != statement) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Theme.colorScheme.stroke)
                 )
-
-                if (state.statements.last() != statement) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(Theme.colorScheme.stroke)
-                    )
-                }
             }
+        }
 
-            if (state.isPaginationLoading) {
-                item {
-                    TransactionLoadingState(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = Theme.spacing._16)
-                    )
-                }
+        if (state.isPaginationLoading) {
+            item {
+                TransactionLoadingState(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Theme.spacing._16)
+                )
             }
+        }
 
-            if (state.errorState != null && state.statements.isNotEmpty()) {
-                item {
-                    PrimaryButton(
-                        modifier = Modifier
-                            .padding(top = Theme.spacing._12)
-                            .wrapContentSize(),
-                        text = stringResource(Res.string.retry),
-                        onClick = listener::onRetryLoadStatementsHistoryClicked,
-                        contentPadding = PaddingValues(
-                            vertical = Theme.spacing._8,
-                            horizontal = Theme.spacing._16
-                        )
+        if (state.errorState != null && state.statements.isNotEmpty()) {
+            item {
+                PrimaryButton(
+                    modifier = Modifier
+                        .padding(top = Theme.spacing._12)
+                        .wrapContentSize(),
+                    text = stringResource(Res.string.retry),
+                    onClick = listener::onRetryLoadStatementsHistoryClicked,
+                    contentPadding = PaddingValues(
+                        vertical = Theme.spacing._8,
+                        horizontal = Theme.spacing._16
                     )
-                }
+                )
             }
         }
     }

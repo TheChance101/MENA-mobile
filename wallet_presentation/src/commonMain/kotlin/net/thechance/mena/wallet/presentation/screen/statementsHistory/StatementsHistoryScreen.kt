@@ -61,7 +61,7 @@ fun StatementHistoryScreen(
 
 @Composable
 private fun StatementHistoryContent(
-    state: StatementsHistoryState,
+    state: StatementsHistoryScreenState,
     listener: StatementsHistoryInteractionListener
 ) {
     WalletScaffold(
@@ -130,8 +130,6 @@ private fun onStatementHistoryEffect(
 ) {
     when (effect) {
         StatementsHistoryEffect.NavigateBack -> onNavigateBackClicked()
-        is StatementsHistoryEffect.NavigateToStatementDetails -> navigateToStatementDetails(
-            effect.id
-        )
+        is StatementsHistoryEffect.NavigateToStatementDetails -> navigateToStatementDetails(effect.id)
     }
 }

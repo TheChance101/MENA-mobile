@@ -48,10 +48,10 @@ fun WalletMainScreen(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onWalletEffect(
-                effect,
-                onNavigateBackClicked,
-                navigateToTransactionHistory,
-                navigateToStatementsHistory
+                effect = effect,
+                onNavigateBackClicked = onNavigateBackClicked,
+                navigateToTransactionHistory = navigateToTransactionHistory,
+                navigateToStatementsHistory = navigateToStatementsHistory
             )
         }
     )

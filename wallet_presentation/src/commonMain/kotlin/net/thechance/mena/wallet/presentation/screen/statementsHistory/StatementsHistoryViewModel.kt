@@ -20,8 +20,8 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class StatementsHistoryViewModel(
     @Provided private val statementRepository: StatementRepository,
-) : BaseViewModel<StatementsHistoryState, StatementsHistoryEffect>
-    (StatementsHistoryState()), StatementsHistoryInteractionListener {
+) : BaseViewModel<StatementsHistoryScreenState, StatementsHistoryEffect>
+    (StatementsHistoryScreenState()), StatementsHistoryInteractionListener {
 
     init {
         loadNextStatements()
@@ -98,7 +98,7 @@ class StatementsHistoryViewModel(
         )
     }
 
-    companion object {
+    private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
     }

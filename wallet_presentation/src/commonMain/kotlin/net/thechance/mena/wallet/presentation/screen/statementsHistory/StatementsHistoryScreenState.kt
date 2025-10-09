@@ -7,7 +7,7 @@ import net.thechance.mena.wallet.presentation.model.SnackBarState
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-data class StatementsHistoryState(
+data class StatementsHistoryScreenState(
     val statements: List<StatementItem> = emptyList(),
     val isLoading: Boolean = false,
     val isPaginationLoading: Boolean = false,
