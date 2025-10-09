@@ -1,6 +1,7 @@
 <resources>
     <string name="sur">Sur</string>
     <string name="quran">Quran</string>
+    <string name="qiblah">Qiblah</string>
     <string name="makki">Makki</string>
     <string name="madani">Madani</string>
     <string name="ayat">Ayat</string>

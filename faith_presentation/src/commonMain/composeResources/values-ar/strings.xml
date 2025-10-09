@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="qiblah">قبله</string>
     <plurals name="time_seconds_ago">
         <item quantity="zero">منذ أقل من ثانية</item>
         <item quantity="one">منذ ثانية واحدة</item>
