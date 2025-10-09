@@ -10,7 +10,7 @@ internal data class ManageTrendsScreenState(
     val isLoading: Boolean = true,
     val error: ErrorState? = null,
     val reels: Flow<PagingData<ReelUiState>> = flowOf(),
-    val profile: ProfileUiState = ProfileUiState(),
+    val profile: UserInfoUiState = UserInfoUiState(),
     val currentTab: String = "",
     val errorMessage: StringResource? = null,
 )
@@ -18,7 +18,7 @@ data class ReelUiState(
     val id: String,
     val thumbnailUrl: String,
 )
-data class ProfileUiState(
+data class UserInfoUiState(
     val userName: String = "",
     val profileImageUrl: String = "",
 )

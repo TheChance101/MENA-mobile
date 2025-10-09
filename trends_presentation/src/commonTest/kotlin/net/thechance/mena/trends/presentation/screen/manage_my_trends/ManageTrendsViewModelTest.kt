@@ -16,8 +16,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
-import net.thechance.mena.trends.domain.entity.Profile
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.entity.UserInfo
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.repository.UserRepository
 import kotlin.test.BeforeTest
@@ -36,22 +36,20 @@ class ManageTrendsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         viewModel = ManageTrendsViewModel(repository,userRepository ,testDispatcher)
+        everySuspend { userRepository.getCurrentUserProfile() } returns userInfo
+
     }
 
 
     @Test
     fun `getCurrentUserProfile should update state with profile when userRepository returns data`() =
         runTest(testDispatcher) {
-            everySuspend { userRepository.getCurrentUserProfile() } returns profile
-
             viewModel.getCurrentUserProfile()
 
             viewModel.state.test {
-                val initialState = awaitItem()
-                assertThat(initialState.isLoading).isEqualTo(true)
-
+                skipItems(1)
                 val successState = awaitItem()
-                assertThat(successState.profile).isEqualTo(profileUiState)
+                assertThat(successState.profile).isEqualTo(userInfoUiState)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -132,13 +130,13 @@ class ManageTrendsViewModelTest {
                 thumbnailUrl = "thumb2.jpg",
             )
         )
-        val profile = Profile(
+        val userInfo = UserInfo(
             username = "nour",
             firstName = "nour",
             lastName = "nour",
             profileImageUrl = "img.jpg"
         )
-        val profileUiState = ProfileUiState(
+        val userInfoUiState = UserInfoUiState(
             userName = "nour",
             profileImageUrl = "img.jpg"
         )

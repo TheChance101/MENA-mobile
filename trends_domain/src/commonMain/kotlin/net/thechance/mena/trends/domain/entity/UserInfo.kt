@@ -1,6 +1,6 @@
 package net.thechance.mena.trends.domain.entity
 
-data class Profile(
+data class UserInfo(
     val username: String,
     val firstName: String,
     val lastName: String,

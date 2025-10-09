@@ -3,20 +3,15 @@ package net.thechance.mena.trends.data.mapper
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import net.thechance.mena.trends.data.dto.ProfileDto
+import net.thechance.mena.trends.data.dto.UserInfoDto
 import kotlin.test.Test
 
 internal class ProfileMapperTest {
 
     @Test
     fun `profileDto toEntity() should map correctly`() {
-        val profileDto = ProfileDto(
-            firstName = "nour",
-            lastName = "nour",
-            profileImageUrl = "img.jpg",
-            username = "nour"
-        )
-        val profile = profileDto.toEntity()
+
+        val profile = userInfoDto[0].toEntity()
 
         assertThat(profile.firstName).isEqualTo("nour")
         assertThat(profile.lastName).isEqualTo("nour")
@@ -25,18 +20,30 @@ internal class ProfileMapperTest {
     }
 
     @Test
-    fun `profileDto with null profileImageUrl toEntity() should map to empty string`() {
-        val profileDto = ProfileDto(
-            firstName = "nour",
-            lastName = "nour",
-            profileImageUrl = null,
-            username = "nour"
-        )
-        val profile = profileDto.toEntity()
+    fun `profileDto with null  toEntity() should map to empty string`() {
 
-        assertThat(profile.firstName).isEqualTo("nour")
-        assertThat(profile.lastName).isEqualTo("nour")
+        val profile = userInfoDto[1].toEntity()
+
+        assertThat(profile.firstName).isEmpty()
+        assertThat(profile.lastName).isEmpty()
         assertThat(profile.profileImageUrl).isEmpty()
-        assertThat(profile.username).isEqualTo("nour")
+        assertThat(profile.username).isEmpty()
+    }
+    private companion object {
+        val userInfoDto = listOf(
+            UserInfoDto(
+                firstName = "nour",
+                lastName = "nour",
+                profileImageUrl = "img.jpg",
+                username = "nour"
+            ),
+            UserInfoDto(
+                firstName = null,
+                lastName = null,
+                profileImageUrl = null,
+                username = null
+            )
+
+        )
     }
 }
