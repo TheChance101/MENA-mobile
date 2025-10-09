@@ -20,6 +20,11 @@
     <string name="app_name">MENA</string>
     <string name="back_icon">Back Icon</string>
     <string name="bookmarks">Bookmarks</string>
+    <string name="calibrate_device">Calibrate device</string>
+    <string name="continue_btn">Continue</string>
+    <string name="islamic_decoration">islamic decoration</string>
+    <string name="calibrate_device_animation">calibrate device animation</string>
+    <string name="motion_configuration">Move your phone in a figure-8 motion, as shown in the animation above</string>
     <string name="remove_bookmark_icon">Remove Bookmark Icon</string>
     <string name="time_icon">Time Icon</string>
     <string name="swipe_animation">SwipeAnimation</string>
@@ -76,4 +81,6 @@
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unauthorized">You’re not authorized to perform this action.</string>
     <string name="error_network">Network error. Please try again later.</string>
+    <string name="error_latitude">Latitude must be between -90 and 90 degrees.</string>
+    <string name="error_longitude">Longitude must be between -180 and 180 degrees.</string>
 </resources>

@@ -5,5 +5,7 @@ sealed class FaithException : Throwable() {
     data object NoInternetException : FaithException()
     data object UnauthorizedException : FaithException()
     data object NetworkException : FaithException()
+    data object InvalidLatitudeException : FaithException()
+    data object InvalidLongitudeException : FaithException()
 }
 

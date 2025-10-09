@@ -17,3 +17,6 @@ data object MainRoute
 
 @Serializable
 data object BookmarksRoute
+
+@Serializable
+data object CalibrateDeviceRoute
