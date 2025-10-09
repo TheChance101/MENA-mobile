@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.domain.usecase
 
+import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.exception.FaithException
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -8,10 +9,10 @@ import kotlin.math.round
 import kotlin.math.sin
 
 class QiblahBearingCalculatorUseCase {
-    fun calculateQiblahAngle(userLatitude: Double, userLongitude: Double): Double {
-        validateCoordinates(latitude = userLatitude, longitude = userLongitude)
-        val userLatitudeRadians = userLatitude.toRadians()
-        val userLongitudeRadians = userLongitude.toRadians()
+    fun calculateQiblahAngle(userLocation: Location): Double {
+        validateCoordinates(location = userLocation)
+        val userLatitudeRadians = userLocation.latitude.toRadians()
+        val userLongitudeRadians = userLocation.longitude.toRadians()
         val kaabaLatitudeRadians = KAABA_LATITUDE.toRadians()
         val kaabaLongitudeRadians = KAABA_LONGITUDE.toRadians()
 
@@ -30,11 +31,11 @@ class QiblahBearingCalculatorUseCase {
         return round(qiblaAngle)
     }
 
-    private fun validateCoordinates(latitude: Double, longitude: Double) {
-        require(latitude in -90.0..90.0) {
+    private fun validateCoordinates(location: Location) {
+        require(location.latitude in -90.0..90.0) {
             throw FaithException.InvalidLatitudeException
         }
-        require(longitude in -180.0..180.0) {
+        require(location.longitude in -180.0..180.0) {
             throw FaithException.InvalidLongitudeException
         }
     }
