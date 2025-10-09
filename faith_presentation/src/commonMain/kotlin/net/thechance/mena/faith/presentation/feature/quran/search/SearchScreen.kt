@@ -83,6 +83,10 @@ private fun Content(
             state.query.isBlank(),
             state.searchResult.isEmpty(),
             Modifier.fillMaxWidth().weight(1f)
+        StartOrEmptyState(
+            isBlankQuery = state.query.isBlank(),
+            isEmptyResult = state.searchResult.isEmpty(),
+            modifier = Modifier.fillMaxWidth().weight(1f)
         )
         ResultList(
             isNotBlankQuery = state.query.isNotBlank(),
