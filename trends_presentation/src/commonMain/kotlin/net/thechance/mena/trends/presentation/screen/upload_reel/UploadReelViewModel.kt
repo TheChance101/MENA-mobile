@@ -42,7 +42,7 @@ internal class UploadReelViewModel(
 
         videoValidator.validateSize(selectedFile.size)
         videoUtilities.getDuration(selectedFile.filePath)?.let { duration ->
-            // TODO: videoValidator.validateDuration(duration)
+            videoValidator.validateDuration(duration)
         }
     }
 

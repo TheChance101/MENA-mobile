@@ -143,10 +143,10 @@ private fun UploadReelScreenContent(
             Spacer(modifier = Modifier.weight(1f))
 
             NextButton(
+                modifier = Modifier.padding(vertical = Theme.spacing._24),
                 onNextClick = listener::onNextClick,
                 isButtonEnabled = state.isNextButtonEnabled,
-                isButtonLoading = state.isNextButtonLoading,
-                modifier = Modifier.padding(bottom = Theme.spacing._24)
+                isButtonLoading = state.isNextButtonLoading
             )
         }
     }
