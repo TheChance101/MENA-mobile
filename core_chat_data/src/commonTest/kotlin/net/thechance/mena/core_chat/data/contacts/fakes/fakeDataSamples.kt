@@ -4,6 +4,8 @@ package net.thechance.mena.core_chat.data.contacts.fakes
 
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryStatusDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -14,7 +16,6 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import com.bilalazzam.contacts_provider.Contact as DeviceContact
-
 
 val sampleDeviceContact = createDeviceContact(
     id = "1",
@@ -104,4 +105,28 @@ fun createChatDto(
     name = name,
     imageUrl = imageUrl,
     requesterId = requesterId
+)
+
+fun createChatSummaryStatusDto(
+    isMine: Boolean = false,
+    unReadMessagesCount: Int = 0
+) = ChatSummaryStatusDto(
+    isMine = isMine,
+    unReadMessagesCount = unReadMessagesCount
+)
+
+fun createChatSummaryDto(
+    id: String = Uuid.random().toString(),
+    imageUrl: String? = "http://example.com/image.jpg",
+    lastMessage: String = "Hello there",
+    lastMessageTime: String = "2025-10-01T12:00:00Z",
+    name: String = "Test Chat",
+    chatSummaryStatusDto: ChatSummaryStatusDto = createChatSummaryStatusDto()
+) = ChatSummaryDto(
+    id = id,
+    imageUrl = imageUrl,
+    lastMessage = lastMessage,
+    lastMessageTime = lastMessageTime,
+    name = name,
+    chatSummaryStatusDto = chatSummaryStatusDto
 )

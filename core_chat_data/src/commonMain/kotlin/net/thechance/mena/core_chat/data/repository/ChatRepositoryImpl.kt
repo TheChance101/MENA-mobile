@@ -14,6 +14,7 @@ import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -21,14 +22,17 @@ import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
 import net.thechance.mena.core_chat.data.source.remote.mapper.toSendMessageRequestDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.domain.entity.Chat
+import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -55,6 +59,18 @@ class ChatRepositoryImpl(
                 parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
             }
         }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
+    }
+
+    override suspend fun getChatSummary(userId: Uuid): PagedData<ChatSummary> {
+        return tryNetworkCall<PagedDataDto<ChatSummaryDto>>(
+            bodyType = typeInfo<PagedDataDto<ChatSummaryDto>>()
+        ) {
+            client.get(CHAT_SUMMARY_ENDPOINT) {
+                parameter(USER_ID_PARAMETER, userId)
+                parameter(PAGE_NUMBER_PARAMETER, PAGE_NUMBER)
+                parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
+            }
+        }.toPagedListOfChatSummary()
     }
 
     override suspend fun deleteMessage(message: Message) {
@@ -157,10 +173,11 @@ class ChatRepositoryImpl(
         webSocketManager.disconnect()
     }
 
-    private companion object{
+    private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
         const val CHAT_ID_PARAMETER = "chatId"
+        const val USER_ID_PARAMETER = "userId"
         const val RECEIVER_ID_PARAMETER = "receiverId"
         const val PAGE_SIZE = 1000
         const val PAGE_NUMBER = 0
@@ -170,5 +187,6 @@ class ChatRepositoryImpl(
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
+        const val CHAT_SUMMARY_ENDPOINT = "/chat/list"
     }
 }

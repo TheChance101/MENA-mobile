@@ -22,11 +22,13 @@ import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
+import net.thechance.mena.core_chat.data.contacts.defaultChatSummaryResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -139,6 +141,38 @@ class ChatRepositoryImplTest {
 
         assertFailsWith<NotFoundException> {
             repository.getChatByContactUserId(userId)
+        }
+    }
+
+    @Test
+    fun `should return chat summary when getChatSummary is successful`() = runTest {
+        httpClient = createHttpClient(
+            chatHistoryResponse = { defaultChatSummaryResponse() }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao
+        )
+
+        val result = repository.getChatSummary(userId)
+
+        assertThat(result.data).isNotEmpty()
+    }
+
+    @Test
+    fun `should throw NotFoundException when getChatSummary returns error`() = runTest {
+        httpClient = createHttpClient(
+            chatHistoryResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao
+        )
+
+        assertFailsWith<NotFoundException> {
+            repository.getChatSummary(userId)
         }
     }
 

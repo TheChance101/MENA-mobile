@@ -21,12 +21,14 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
+import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -103,6 +105,23 @@ fun MockRequestHandleScope.defaultChatResponse() = respond(
     content = jsonSerialization.encodeToString(
         ChatDto.serializer(),
         createChatDto()
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun MockRequestHandleScope.defaultChatSummaryResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PagedDataDto.serializer(ChatSummaryDto.serializer()),
+        PagedDataDto(
+            data = listOf(
+                createChatSummaryDto()
+            ),
+            pageNumber = 0,
+            pageSize = 20,
+            totalItems = 1,
+            totalPages = 1
+        )
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
