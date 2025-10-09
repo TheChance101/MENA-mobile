@@ -60,27 +60,28 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `should return profile entity successfully when network client returns valid profile response`() = runTest {
-        val expectedProfile = Profile(
-            username = "nour",
-            firstName = "nour",
-            lastName = "nour",
-            profileImageUrl = "img.png"
-        )
-        val profileDto = ProfileDto(
-            username = "nour",
-            firstName = "nour",
-            lastName = "nour",
-            profileImageUrl = "img.png"
-        )
+    fun `should return profile entity successfully when network client returns valid profile response`() =
+        runTest {
+            val expectedProfile = Profile(
+                username = "nour",
+                firstName = "nour",
+                lastName = "nour",
+                profileImageUrl = "img.png"
+            )
+            val profileDto = ProfileDto(
+                username = "nour",
+                firstName = "nour",
+                lastName = "nour",
+                profileImageUrl = "img.png"
+            )
 
-        val mockHttpClient = mockHttpClient(profileDto)
-        everySuspend {
-            networkClient.get("/$IDENTITY_PATH/$PROFILE_ENDPOINT")
-        } returns mockHttpClient.get {  "/$IDENTITY_PATH/$PROFILE_ENDPOINT"}
+            val mockHttpClient = mockHttpClient(profileDto)
+            everySuspend {
+                networkClient.get("/$IDENTITY_PATH/$PROFILE_ENDPOINT")
+            } returns mockHttpClient.get { "/$IDENTITY_PATH/$PROFILE_ENDPOINT" }
 
-        val actualProfile = repository.getCurrentUserProfile()
+            val actualProfile = repository.getCurrentUserProfile()
 
-        assertThat(actualProfile).isEqualTo(expectedProfile)
-    }
+            assertThat(actualProfile).isEqualTo(expectedProfile)
+        }
 }
