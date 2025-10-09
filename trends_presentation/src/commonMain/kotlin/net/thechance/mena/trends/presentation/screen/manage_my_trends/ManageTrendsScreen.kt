@@ -36,7 +36,7 @@ import mena.trends_presentation.generated.resources.favorite
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
-import mena.trends_presentation.generated.resources.placeholder_profile_image
+import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -106,7 +106,7 @@ private fun ManageTrendsScreenContent(
         ) {
 
         AsyncImage(
-            model =  state.profile.profileImageUrl.ifEmpty { Res.drawable.placeholder_profile_image } ,
+            model =  state.profile.profileImageUrl.ifEmpty { Res.drawable.ic_placeholder_profile } ,
             contentDescription = stringResource(Res.string.profile_image_desc),
             modifier = Modifier
                 .padding(top = 32.dp)
