@@ -26,8 +26,8 @@ fun ChatScreen(
         state = state,
         interactions = viewModel
     )
-
 }
+
 
 @Composable
 fun ChatScreenContent(
@@ -70,4 +70,5 @@ fun ChatScreenContent(
             onFailedMessageClick = interactions::onFailedMessageClicked,
         )
     }
+
 }
