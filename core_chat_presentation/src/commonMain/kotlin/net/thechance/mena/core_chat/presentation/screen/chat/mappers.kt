@@ -8,6 +8,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -24,17 +25,17 @@ fun Message.toUi(currentUserId: Uuid): MessageUiState {
         sendTime = sendAt,
         status = status,
         isMine = senderId == currentUserId,
-        content = MessageContent.Text(text) // todo temp casting until entity change
+        content = content
     )
 }
 
 fun MessageUiState.toEntity(): Message {
-    val content = content as MessageContent.Text // todo temp casting until entity change
+    val content = content as MessageContent.Text
     return Message(
         id = id,
         senderId = senderId,
         chatId = chatId,
-        text = content.text,
+        content = content,
         sendAt = sendTime,
         status = status
     )

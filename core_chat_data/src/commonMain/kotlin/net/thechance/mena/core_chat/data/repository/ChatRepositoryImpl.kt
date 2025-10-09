@@ -90,7 +90,7 @@ class ChatRepositoryImpl(
             if (webSocketManager.isConnected()) {
                 val messageJson = json.encodeToString(
                     SendMessageDto.serializer(),
-                    message.toSendMessageRequestDto()
+                    message.content.toSendMessageRequestDto(message.chatId.toString())
                 )
                 webSocketManager.sendTextFrame(
                     destination = SEND_MESSAGE_DESTINATION,

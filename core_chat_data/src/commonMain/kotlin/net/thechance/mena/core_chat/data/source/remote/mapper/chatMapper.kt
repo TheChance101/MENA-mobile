@@ -11,6 +11,7 @@ import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -19,13 +20,19 @@ import kotlin.uuid.Uuid
 
 
 fun MessageDto.toDomain(): Message? {
+    val content = when {
+        !text.isNullOrBlank() -> MessageContent.Text(text)
+        !images.isNullOrEmpty() -> MessageContent.ImageUrls(images)
+        else -> return null
+    }
+
     return Message(
         id = getUuidOrNull(id) ?: return null,
         senderId = getUuidOrNull(senderId) ?: return null,
         chatId = getUuidOrNull(chatId) ?: return null,
-        text = text,
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
-        status = if (isRead) MessageStatus.READ else MessageStatus.SENT
+        status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
+        content = content
     )
 }
 
@@ -38,29 +45,52 @@ fun ChatDto.toDomain(): Chat? {
     )
 }
 
-fun Message.toSendMessageRequestDto() = SendMessageDto(
-    chatId = chatId.toString(),
-    text = text
-)
+fun MessageContent.toSendMessageRequestDto(chatId: String): SendMessageDto {
+    return when (this) {
+        is MessageContent.Text -> SendMessageDto(chatId = chatId, text = text)
+        is MessageContent.ImageUrls -> SendMessageDto(chatId = chatId, images = urls)
+        else -> error("PendingImages should be uploaded first")
+    }
+}
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 fun Message.toLocalDto(): MessageLocalDto {
+    val content = this.content
+    val contentType = content.toContentType()
+    val text = if (content is MessageContent.Text) content.text else null
+    val images = if (content is MessageContent.PendingImages) content.byteArrays else null
+
+
     return MessageLocalDto(
         id = this.id.toString(),
         senderId = this.senderId.toString(),
-        text = this.text,
+        contentType = contentType,
+        text = text,
+        images = images,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         status = status.toLocalDto()
     )
 }
 
+private fun MessageContent.toContentType(): MessageLocalDto.MessageContentType {
+    return when (this) {
+        is MessageContent.Text -> MessageLocalDto.MessageContentType.TEXT
+        is MessageContent.PendingImages -> MessageLocalDto.MessageContentType.IMAGES
+        else -> error("PendingImages should be uploaded first")
+    }
+}
+
 fun MessageLocalDto.toEntity(): Message {
+    val content = when (contentType) {
+        MessageLocalDto.MessageContentType.TEXT -> MessageContent.Text(text ?: "")
+        MessageLocalDto.MessageContentType.IMAGES -> MessageContent.PendingImages(images.orEmpty())
+    }
     return Message(
         id = Uuid.parse(this.id),
         senderId = Uuid.parse(this.senderId),
         chatId = Uuid.parse(this.chatId),
-        text = this.text,
+        content = content,
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
         status = status.toEntity()
     )

@@ -9,7 +9,13 @@ data class Message(
     val id: Uuid,
     val senderId: Uuid,
     val chatId: Uuid,
-    val text: String,
     val sendAt: LocalDateTime,
-    val status: MessageStatus
+    val status: MessageStatus,
+    val content: MessageContent
 )
+
+sealed class MessageContent {
+    data class Text(val text: String) : MessageContent()
+    data class ImageUrls(val urls: List<String>) : MessageContent()
+    data class PendingImages(val byteArrays: List<ByteArray>) : MessageContent()
+}

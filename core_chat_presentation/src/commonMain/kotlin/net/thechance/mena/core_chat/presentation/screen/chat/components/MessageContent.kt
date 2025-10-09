@@ -1,7 +1,7 @@
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.runtime.Composable
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
@@ -15,7 +15,7 @@ fun MessageContent(
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
-        is MessageContent.ImageUrl -> ImageMessageContent(images = messageContent.imageUrls)
-        is MessageContent.ImageByteArray -> ImageMessageContent(images = messageContent.images)
+        is MessageContent.ImageUrls -> ImageMessageContent(images = messageContent.urls)
+        is MessageContent.PendingImages -> ImageMessageContent(images = messageContent.byteArrays)
     }
 }
