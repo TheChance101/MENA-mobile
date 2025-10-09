@@ -15,9 +15,7 @@ class StatementLocalDataSourceInMemoryImplTest {
 
     @Test
     fun `saveStatement should add statement to the list`() = runTest {
-        statementLocalDataSourceInMemoryImpl = StatementLocalDataSourceInMemoryImpl()
-
-        statementLocalDataSourceInMemoryImpl.saveStatement(dto1)
+        setupTest()
 
         assertEquals(1, statementLocalDataSourceInMemoryImpl.statements.size)
         assertEquals(dto1, statementLocalDataSourceInMemoryImpl.statements.first())
@@ -25,9 +23,7 @@ class StatementLocalDataSourceInMemoryImplTest {
 
     @Test
     fun `getStatement should get statement by key`() = runTest {
-        statementLocalDataSourceInMemoryImpl = StatementLocalDataSourceInMemoryImpl()
-
-        statementLocalDataSourceInMemoryImpl.saveStatement(dto1)
+        setupTest()
         val res =  statementLocalDataSourceInMemoryImpl.getStatement(key1)
 
         assertEquals(pdf1, res)
@@ -35,9 +31,7 @@ class StatementLocalDataSourceInMemoryImplTest {
 
     @Test
     fun `getStatement should return null when there is no statement with this key`() = runTest {
-        statementLocalDataSourceInMemoryImpl = StatementLocalDataSourceInMemoryImpl()
-
-        statementLocalDataSourceInMemoryImpl.saveStatement(dto1)
+        setupTest()
         val res =  statementLocalDataSourceInMemoryImpl.getStatement(key2)
 
         assertEquals(null, res)
@@ -45,9 +39,7 @@ class StatementLocalDataSourceInMemoryImplTest {
 
     @Test
     fun `clearStatement should delete statement by key`() = runTest {
-        statementLocalDataSourceInMemoryImpl = StatementLocalDataSourceInMemoryImpl()
-
-        statementLocalDataSourceInMemoryImpl.saveStatement(dto1)
+        setupTest()
         statementLocalDataSourceInMemoryImpl.clearStatement(key1)
 
         assertEquals(0, statementLocalDataSourceInMemoryImpl.statements.size)
@@ -55,9 +47,7 @@ class StatementLocalDataSourceInMemoryImplTest {
 
     @Test
     fun `clearAllStatements should delete all statements`() = runTest {
-        statementLocalDataSourceInMemoryImpl = StatementLocalDataSourceInMemoryImpl()
-
-        statementLocalDataSourceInMemoryImpl.saveStatement(dto1)
+        setupTest()
         statementLocalDataSourceInMemoryImpl.saveStatement(dto1.copy(key = key2))
         statementLocalDataSourceInMemoryImpl.clearAllStatements()
 
@@ -66,14 +56,17 @@ class StatementLocalDataSourceInMemoryImplTest {
 
     @Test
     fun `clearExpiredStatements should delete all expired statements`() = runTest {
-        statementLocalDataSourceInMemoryImpl = StatementLocalDataSourceInMemoryImpl()
-
-        statementLocalDataSourceInMemoryImpl.saveStatement(dto1)
+        setupTest()
         statementLocalDataSourceInMemoryImpl.saveStatement(dto1.copy(key = key2))
 
         statementLocalDataSourceInMemoryImpl.clearExpiredStatements(Instant.fromEpochMilliseconds(2000))
 
         assertEquals(0, statementLocalDataSourceInMemoryImpl.statements.size)
+    }
+
+    private fun setupTest() = runTest{
+        statementLocalDataSourceInMemoryImpl = StatementLocalDataSourceInMemoryImpl()
+        statementLocalDataSourceInMemoryImpl.saveStatement(dto1)
     }
 
     companion object{
