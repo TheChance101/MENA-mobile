@@ -20,6 +20,7 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.available_video_format
 import mena.trends_presentation.generated.resources.ic_trend_upload
 import mena.trends_presentation.generated.resources.thumbnail_description
+import mena.trends_presentation.generated.resources.upload_video_card_description
 import mena.trends_presentation.generated.resources.upload_your_video
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -66,7 +67,7 @@ internal fun UploadVideoCard(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_trend_upload),
-                    contentDescription = "upload trend icon",
+                    contentDescription = stringResource(Res.string.upload_video_card_description),
                     modifier = Modifier
                         .padding(bottom = Theme.spacing._12)
                         .size(size = 40.dp)

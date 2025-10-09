@@ -77,7 +77,9 @@ internal fun VideoLoadingCardItem(
                 }
 
                 UploadReelScreenState.UploadingTrendState.SUCCESS -> {
-                    Delete { onAction(VideoAction.Delete) }
+                    Delete(modifier = Modifier.padding(top = Theme.spacing._24)) {
+                        onAction(VideoAction.Delete)
+                    }
                 }
 
                 UploadReelScreenState.UploadingTrendState.IDLE -> {}
@@ -166,12 +168,12 @@ private fun Cancel(onAction: (VideoAction) -> Unit) {
 }
 
 @Composable
-private fun Delete(onAction: (VideoAction) -> Unit) {
+private fun Delete(modifier: Modifier = Modifier, onAction: (VideoAction) -> Unit) {
     Icon(
         painter = painterResource(Res.drawable.ic_delete),
         contentDescription = stringResource(Res.string.error),
         tint = Theme.colorScheme.shadeSecondary,
-        modifier = Modifier
+        modifier = modifier
             .size(Theme.spacing._16)
             .clickable { onAction(VideoAction.Delete) }
     )
