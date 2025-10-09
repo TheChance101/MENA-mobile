@@ -48,7 +48,7 @@ internal class ManageTrendsViewModel(
         )
     }
 
-    private fun getCurrentUserProfile() {
+    fun getCurrentUserProfile() {
         tryToExecute(
             block = { userRepository.getCurrentUserProfile() },
             onSuccess = { profile ->
