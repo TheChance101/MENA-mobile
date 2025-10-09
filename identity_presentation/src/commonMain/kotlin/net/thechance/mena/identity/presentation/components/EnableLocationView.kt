@@ -69,7 +69,7 @@ fun EnableLocationComponent(
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(Res.string.enable_location_permission_button),
-            contentPadding = PaddingValues(horizontal = Theme.spacing._24),
+            contentPadding = PaddingValues(horizontal = Theme.spacing._24, vertical = Theme.spacing._16),
             onClick = onEnablePermissionClicked,
             isEnabled = !isLoading,
             isLoading = isLoading
