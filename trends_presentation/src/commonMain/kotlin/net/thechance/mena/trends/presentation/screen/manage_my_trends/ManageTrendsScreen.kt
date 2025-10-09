@@ -120,7 +120,7 @@ private fun ManageTrendsScreenContent(
                 text = state.profile.userName,
                 style = Theme.typography.label.medium,
                 modifier = Modifier
-                    .padding(top = 8.dp, bottom = 32.dp)
+                    .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
                     .align(Alignment.CenterHorizontally)
             )
             SegmentSection(
