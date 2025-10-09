@@ -1,55 +1,30 @@
 package net.thechance.mena.identity.presentation.screen.pickLocation
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.anchor
 import mena.identity_presentation.generated.resources.confirm
-import mena.identity_presentation.generated.resources.ic_edit
 import mena.identity_presentation.generated.resources.ic_gps
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
+import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
+import net.thechance.mena.identity.presentation.screen.pickLocation.components.Map
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.maplibre.compose.camera.CameraPosition
-import org.maplibre.compose.camera.rememberCameraState
-import org.maplibre.compose.map.GestureOptions
-import org.maplibre.compose.map.MapOptions
-import org.maplibre.compose.map.MaplibreMap
-import org.maplibre.compose.map.OrnamentOptions
-import org.maplibre.compose.map.RenderOptions
-import org.maplibre.compose.style.BaseStyle
-import org.maplibre.compose.util.ClickResult
 
 class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
         PickLocationScreenUIState,
@@ -74,44 +49,59 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                 )
             }
         ) {
-            Box() {
-                myMap(
-                    cameraPosition = state.cameraPosition,
-                    onCameraMoved = listener::onCameraMoved,
-                    onMapClick = listener::onMapClicked,
-                    anchorLocation = state.pointerLocation, isLocked = state.isMapLocked,
-                    onEditClick = listener::onEditClick
+            Map(
+                cameraPosition = state.cameraPosition,
+                onCameraMoved = listener::onCameraMoved,
+                onMapClick = listener::onClickMap,
+                anchorLocation = state.pointerLocation,
+                isLocked = state.isMapLocked,
+                currentLocation = state.currentLocation,
+                animateToCurrentLocation = state.animateToCurrentLocation
+            ) {
+                Column(
+                    Modifier
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Bottom
                 ) {
-                    Column(Modifier
-                        .padding(bottom = 16.dp , start = 16.dp , end = 16.dp)
-                        .align(alignment = Alignment.BottomStart)){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
                         FabButton(
                             painter = painterResource(Res.drawable.ic_gps),
-                            onClick = listener::onGpsClick,
-                            modifier = Modifier
-                                .padding(bottom = 12.dp)
+                            onClick = listener::onClickGps,
+                            contentPadding = PaddingValues(
+                                horizontal = 16.dp,
+                                vertical = 14.dp
+                            ),
+                            iconSize = 20.dp,
+                            modifier = Modifier.padding(bottom = 12.dp)
                         )
-
-                        PrimaryButton(
-                            text = stringResource(Res.string.confirm),
-                            onClick = listener::onConfirmClicked,
-                            isEnabled = state.isConfirmEnabled,
-                            isLoading = state.isLoading,
-                            contentPadding = PaddingValues(vertical = 13.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-
-
+                        EditMapButton(
+                            anchorLocation = state.pointerLocation,
+                            onEditClick = listener::onClickEdit
                         )
-
                     }
 
+                    PrimaryButton(
+                        text = stringResource(Res.string.confirm),
+                        onClick = listener::onClickConfirm,
+                        isEnabled = state.isConfirmEnabled,
+                        isLoading = state.isLoading,
+                        contentPadding = PaddingValues(vertical = 13.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
+
             }
-
         }
+        ErrorSnackBar(
+            errorMessage = state.errorMessage,
+            onDismiss = listener::onClearErrorMessage,
+            modifier = Modifier.statusBarsPadding()
+        )
     }
-
 
     override fun onEffect(
         effect: PickLocationScreenUIEffect,
@@ -120,113 +110,3 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
         TODO("Not yet implemented")
     }
 }
-
-@Composable
-private fun myMap(
-    anchorLocation: DpOffset?,
-    isLocked: Boolean,
-    cameraPosition: CameraPosition,
-    onMapClick: (PickLocationScreenUIState.CoordinatesUiState, DpOffset) -> Unit,
-    onCameraMoved: (CameraPosition) -> Unit,
-    onEditClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-
-    var locked by rememberSaveable { mutableStateOf(isLocked) }
-    val camera = rememberCameraState(firstPosition = cameraPosition)
-    var screenSize by rememberSaveable { mutableStateOf(Pair(0.dp, 0.dp)) }
-    LaunchedEffect(Unit) {
-        camera.animateTo(
-            finalPosition = cameraPosition,
-        )
-    }
-    LaunchedEffect(camera) {
-        snapshotFlow { camera.position }
-            .collect { position ->
-                onCameraMoved(position)
-            }
-    }
-
-    BoxWithConstraints(
-        modifier = modifier
-    ) {
-
-        LaunchedEffect(maxWidth, maxHeight) {
-            if (maxWidth != screenSize.first || maxHeight != screenSize.second) {
-                screenSize = Pair(maxWidth, maxHeight)
-                onEditClick()
-                locked = false
-            }
-        }
-
-        MaplibreMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraState = camera,
-            baseStyle = BaseStyle.Uri(BRIGHT),
-            onMapClick = { position, offset ->
-                if (locked) {
-                    ClickResult.Consume
-                } else {
-                    onMapClick(
-                        PickLocationScreenUIState.CoordinatesUiState(
-                            position.latitude,
-                            position.longitude
-                        ),
-                        offset,
-                    )
-                    locked = true
-                    ClickResult.Pass
-                }
-            },
-            options =
-                MapOptions(
-                    ornamentOptions = OrnamentOptions.AllDisabled,
-                    renderOptions = RenderOptions.Standard
-                )
-        )
-        Crossfade(
-            targetState = anchorLocation
-        ) {
-            it?.let { offset ->
-                Image(
-                    painter = painterResource(Res.drawable.anchor),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(46.dp, 58.05.dp)
-                        .offset(
-                            x = offset.x - 23.dp,
-                            y = offset.y - 50.05.dp
-                        )
-                )
-            }
-        }
-        Crossfade(
-            modifier = Modifier
-                .align(Alignment.BottomEnd),
-            targetState = anchorLocation != null
-        ) {
-            if (it) {
-                Image(
-                    modifier = Modifier
-                        .padding(Theme.spacing._4)
-                        .clip(RoundedCornerShape(Theme.radius.md))
-                        .clickable {
-                            onEditClick()
-                            locked = false
-                        }
-                        .background(Color.Black)
-                        .padding(
-                            horizontal = Theme.spacing._16,
-                            vertical = Theme.spacing._12
-                        ).size(20.dp),
-                    painter = painterResource(Res.drawable.ic_edit),
-                    contentDescription = null
-                )
-            }
-        }
-        content()
-    }
-}
-
-const val BRIGHT = "https://tiles.openfreemap.org/styles/bright"

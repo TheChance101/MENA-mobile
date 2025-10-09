@@ -36,6 +36,8 @@ kotlin {
             implementation(libs.multiplatform.settings)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.bundles.geoCoder)
+            implementation(libs.bundles.geoLocation)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

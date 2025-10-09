@@ -53,7 +53,7 @@ class ForgetPasswordScreen : BaseScreen<
 
         Scaffold(
             overlays = {
-                bottomSheet(isVisible = state.showCountryBottomSheet) {showBottomSheet ->
+                bottomSheet(isVisible = state.showCountryBottomSheet) { showBottomSheet ->
                     CountryPicker(
                         isVisible = showBottomSheet,
                         currentCountry = state.currentCountry,
@@ -69,7 +69,7 @@ class ForgetPasswordScreen : BaseScreen<
                 )
             }
         ) {
-            AuthScreenContainer() {
+            AuthScreenContainer {
                 PageDescription(
                     title = stringResource(Res.string.forget_password_prompt_title),
                     subtitle = stringResource(Res.string.forget_password_prompt),
@@ -95,7 +95,7 @@ class ForgetPasswordScreen : BaseScreen<
                         .fillMaxWidth()
                         .padding(bottom = 12.dp, top = 24.dp)
                         .imePadding()
-                    )
+                )
             }
         }
         ErrorSnackBar(

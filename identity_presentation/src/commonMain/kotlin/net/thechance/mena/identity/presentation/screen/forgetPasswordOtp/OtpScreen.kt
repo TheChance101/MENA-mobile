@@ -45,13 +45,11 @@ data class OtpScreen(
         OtpScreenInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = {
-            parametersOf(
-                phoneNumber,
-                callingCode,
-                countryCode
-            )
-        }))
+        InitScreen(
+            getScreenModel(parameters = {
+                parametersOf(phoneNumber, callingCode, countryCode)
+            })
+        )
     }
 
     @Composable
