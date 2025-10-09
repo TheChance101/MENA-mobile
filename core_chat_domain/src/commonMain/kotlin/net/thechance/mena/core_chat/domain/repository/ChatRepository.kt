@@ -8,12 +8,22 @@ import kotlin.uuid.Uuid
 
 @ExperimentalUuidApi
 interface ChatRepository {
-    suspend fun sendMessage(message: Message)
     suspend fun loadMessages(chatId: Uuid): List<Message>
-    suspend fun deleteMessage(message: Message)
     fun subscribeToMessages(chatId: Uuid): Flow<Message>
     fun observeReadMessages(): Flow<String>
-    suspend fun getChatByContactUserId(userId : Uuid): Chat
-    suspend fun disconnect()
+    suspend fun sendMessage(message: Message)
+    suspend fun deleteMessage(message: Message)
+
+    suspend fun uploadMessageImages(
+        fileName: List<String>,
+        fileBytes: List<ByteArray>,
+        chatId: Uuid
+    ): List<String>
+
     suspend fun getLocalMessages(chatId: Uuid): List<Message>
+
+    suspend fun getChatByContactUserId(userId : Uuid): Chat
+
+
+    suspend fun disconnect()
 }
