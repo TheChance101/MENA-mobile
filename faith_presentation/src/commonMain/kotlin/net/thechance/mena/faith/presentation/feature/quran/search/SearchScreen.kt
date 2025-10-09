@@ -2,6 +2,7 @@ package net.thechance.mena.faith.presentation.feature.quran.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,15 +54,15 @@ fun SearchScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     ObserveAsEffect(viewModel.uiEffect) {
         when (it) {
-            SearchEffect.NavigateBack -> TODO()
-            is SearchEffect.NavigateToSurah -> TODO()
+            SearchEffect.NavigateBack -> {}
+            is SearchEffect.NavigateToSurah -> {}
         }
     }
-    SearchContent(state, viewModel)
+    Content(state, viewModel)
 }
 
 @Composable
-private fun SearchContent(
+private fun Content(
     state: SearchScreenState,
     interactionListener: SearchInteractionListener
 ) {
@@ -74,7 +75,9 @@ private fun SearchContent(
             hint = state.hint,
             onQueryChange = interactionListener::onQueryChange,
             clearQuery = interactionListener::clearQuery,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp)
+                .clickable(onClick = interactionListener::onBackClick)
         )
         StartOrEmptyState(
             state.query.isBlank(),
@@ -84,7 +87,8 @@ private fun SearchContent(
         ResultList(
             isNotBlankQuery = state.query.isNotBlank(),
             isNotEmptyResult = state.searchResult.isNotEmpty(),
-            result = state.searchResult
+            result = state.searchResult,
+            onSearchClick = interactionListener::onSearchResultClick
         )
     }
 }
@@ -172,7 +176,8 @@ private fun StartOrEmptyState(
 private fun ResultList(
     isNotBlankQuery: Boolean,
     isNotEmptyResult: Boolean,
-    result: List<SearchResult>
+    result: List<SearchResult>,
+    onSearchClick: (surahId: Int, ayahId: Int) -> Unit
 ) {
     if (isNotBlankQuery && isNotEmptyResult) LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -182,7 +187,8 @@ private fun ResultList(
             SearchResultCard(
                 surahName = it.surahName,
                 ayaNumber = it.number,
-                ayaText = it.content
+                ayaText = it.content,
+                modifier = Modifier.clickable { onSearchClick(it.surahId, it.number) }
             )
         }
     }

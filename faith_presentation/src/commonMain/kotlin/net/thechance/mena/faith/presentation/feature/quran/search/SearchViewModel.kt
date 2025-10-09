@@ -22,14 +22,6 @@ class SearchViewModel(
         handleHint()
     }
 
-    private fun handleHint() {
-        tryToExecute({
-            val hintPostfix = uiState.value.surahName ?: getString(Res.string.quran)
-            val hint = getString(Res.string.search_in_surah_hint, hintPostfix)
-            updateState { it.copy(hint = hint) }
-        })
-    }
-
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
         searchJob?.cancel()
@@ -48,13 +40,31 @@ class SearchViewModel(
         )
     }
 
-    private fun onGetSearchResultSuccess(ayat: List<Ayah>) {
-        updateState {
-            it.copy(searchResult = ayat.map { ayah -> ayah.toSearchResult(it.surahName) })
-        }
-    }
-
     override fun clearQuery() {
         updateState { it.copy(query = "") }
+    }
+
+    override fun onBackClick() {
+        sendEffect(SearchEffect.NavigateBack)
+    }
+
+    override fun onSearchResultClick(surahId: Int, ayahId: Int) {
+        sendEffect(SearchEffect.NavigateToSurah(surahId, ayahId))
+    }
+
+    private fun handleHint() {
+        tryToExecute({
+            val hintPostfix = uiState.value.surahName ?: getString(Res.string.quran)
+            val hint = getString(Res.string.search_in_surah_hint, hintPostfix)
+            updateState { it.copy(hint = hint) }
+        })
+    }
+
+    private fun onGetSearchResultSuccess(ayat: List<Ayah>) {
+        updateState {
+            it.copy(searchResult = ayat.map { ayah ->
+                ayah.toSearchResult(it.surahName)
+            })
+        }
     }
 }

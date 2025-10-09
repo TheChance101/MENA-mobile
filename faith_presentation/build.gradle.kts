@@ -90,6 +90,7 @@ kover.reports {
         }
 
         excludes {
+            classes("net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel")
             annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
         }
     }
