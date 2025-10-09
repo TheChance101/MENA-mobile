@@ -79,38 +79,33 @@ class ChatViewModel(
     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
         val chatId = state.value.chatId
         val senderId = state.value.chatRequesterId
-        val now = LocalDateTime.now()
 
-        if (chatId == null || senderId == null) {
+        if (chatId == null || senderId == null || imageByteArrays.isEmpty()) {
             return
         }
 
-        imageByteArrays.forEach { bytes ->
-            processAndSendMessage(chatId, senderId, now, bytes)
-        }
+        val content = MessageContent.ImageByteArray(imageByteArrays)
+
+        sendImageMessage(chatId, senderId, content)
     }
 
-    private fun processAndSendMessage(
-        chatId: Uuid,
-        senderId: Uuid,
-        sendTime: LocalDateTime,
-        bytes: ByteArray
-    ) {
-        val uiMessage = MessageUiState(
+    private fun sendImageMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
+        val message = MessageUiState(
             id = Uuid.random(),
             chatId = chatId,
             senderId = senderId,
-            sendTime = sendTime,
+            sendTime = LocalDateTime.now(),
             isMine = true,
             status = MessageStatus.LOADING,
-            content = MessageContent.ImageByteArray(listOf(bytes))
+            content = content
         )
 
-        updateStateWithNewMessage(uiMessage)
+        updateStateWithNewMessage(message)
+
         tryToExecute(
-            execute = { chatRepository.sendMessage(uiMessage.toEntity()) },
-            onSuccess = { onSendMessageSuccess(uiMessage) },
-            onError = { onSendMessageError(uiMessage) },
+            execute = { chatRepository.sendMessage(message.toEntity()) },
+            onSuccess = { onSendMessageSuccess(message) },
+            onError = { onSendMessageError(message) },
         )
     }
 
