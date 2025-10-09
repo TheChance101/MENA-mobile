@@ -13,15 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
+import mena.trends_presentation.generated.resources.acton_icon_description
 import mena.trends_presentation.generated.resources.arrow_reload_horizontal
-import mena.trends_presentation.generated.resources.error
 import mena.trends_presentation.generated.resources.ic_cancel
 import mena.trends_presentation.generated.resources.ic_delete
 import mena.trends_presentation.generated.resources.ic_video
-import mena.trends_presentation.generated.resources.loading
-import mena.trends_presentation.generated.resources.retry
 import mena.trends_presentation.generated.resources.thumbnail
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
@@ -62,7 +61,12 @@ internal fun VideoLoadingCardItem(
 
             when (videoState) {
                 UploadReelScreenState.UploadingTrendState.UPLOADING -> {
-                    Cancel { onAction(VideoAction.Cancel) }
+                    ActionIcon(
+                        actinIcon = painterResource(Res.drawable.ic_cancel),
+                        modifier = Modifier.padding(top = Theme.spacing._12)
+                    ) {
+                        onAction(VideoAction.Cancel)
+                    }
                 }
 
                 UploadReelScreenState.UploadingTrendState.FAILED -> {
@@ -71,13 +75,20 @@ internal fun VideoLoadingCardItem(
                         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Delete { onAction(VideoAction.Delete) }
-                        Reload { onAction(VideoAction.Retry) }
+                        ActionIcon(actinIcon = painterResource(Res.drawable.ic_delete)) {
+                            onAction(VideoAction.Delete)
+                        }
+                        ActionIcon(actinIcon = painterResource(Res.drawable.arrow_reload_horizontal)) {
+                            onAction(VideoAction.Retry)
+                        }
                     }
                 }
 
                 UploadReelScreenState.UploadingTrendState.SUCCESS -> {
-                    Delete(modifier = Modifier.padding(top = Theme.spacing._24)) {
+                    ActionIcon(
+                        actinIcon = painterResource(Res.drawable.ic_delete),
+                        modifier = Modifier.padding(top = Theme.spacing._24)
+                    ) {
                         onAction(VideoAction.Delete)
                     }
                 }
@@ -155,39 +166,18 @@ private fun VideoInfoSection(
 }
 
 @Composable
-private fun Cancel(onAction: (VideoAction) -> Unit) {
+private fun ActionIcon(
+    actinIcon: Painter,
+    modifier: Modifier = Modifier,
+    onAction: () -> Unit
+) {
     Icon(
-        painter = painterResource(Res.drawable.ic_cancel),
-        contentDescription = stringResource(Res.string.loading),
-        tint = Theme.colorScheme.shadeSecondary,
-        modifier = Modifier
-            .padding(top = Theme.spacing._12)
-            .size(Theme.spacing._16)
-            .clickable { onAction(VideoAction.Cancel) }
-    )
-}
-
-@Composable
-private fun Delete(modifier: Modifier = Modifier, onAction: (VideoAction) -> Unit) {
-    Icon(
-        painter = painterResource(Res.drawable.ic_delete),
-        contentDescription = stringResource(Res.string.error),
+        painter = actinIcon,
+        contentDescription = stringResource(Res.string.acton_icon_description),
         tint = Theme.colorScheme.shadeSecondary,
         modifier = modifier
             .size(Theme.spacing._16)
-            .clickable { onAction(VideoAction.Delete) }
-    )
-}
-
-@Composable
-private fun Reload(onAction: (VideoAction) -> Unit) {
-    Icon(
-        painter = painterResource(Res.drawable.arrow_reload_horizontal),
-        contentDescription = stringResource(Res.string.retry),
-        tint = Theme.colorScheme.shadeSecondary,
-        modifier = Modifier
-            .size(Theme.spacing._16)
-            .clickable { onAction(VideoAction.Retry) }
+            .clickable { onAction() }
     )
 }
 
@@ -200,6 +190,7 @@ private fun UploadVideoSize(videoSize: String, modifier: Modifier = Modifier) {
         modifier = modifier.padding(start = Theme.spacing._8)
     )
 }
+
 
 @Preview
 @Composable
