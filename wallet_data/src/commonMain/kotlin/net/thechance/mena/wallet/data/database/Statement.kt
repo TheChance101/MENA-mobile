@@ -13,6 +13,5 @@ data class Statement(
     val endDate: String,
     val totalInflows: Double,
     val totalOutflows: Double,
-    val pathUrl: String,
     val fileName: String
 )
