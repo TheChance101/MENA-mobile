@@ -149,11 +149,13 @@ fun createChatRepository(
     webSocketManager: WebSocketManager,
     messageDao: MessageDao,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
-        chatResponse = chatResponse
+        chatResponse = chatResponse,
+        chatSummaryResponse = chatSummaryResponse
     )
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
@@ -169,6 +171,7 @@ fun createHttpClient(
     syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
         when (request.url.encodedPath) {
@@ -181,6 +184,8 @@ fun createHttpClient(
                 ?: defaultChatHistoryResponse()
 
             CHAT_ENDPOINT -> chatResponse?.invoke(this) ?: defaultChatResponse()
+
+            CHAT_SUMMARY_ENDPOINT -> chatSummaryResponse?.invoke(this) ?: defaultChatSummaryResponse()
 
             else -> respond(
                 content = "",
@@ -200,7 +205,9 @@ fun createHttpClient(
     }
 }
 
+
 private const val CONTACTS_ENDPOINT = "/chat/contacts"
 private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
 private const val CHAT_ENDPOINT = "/chat"
 private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
+private const val CHAT_SUMMARY_ENDPOINT = "/chat/list"

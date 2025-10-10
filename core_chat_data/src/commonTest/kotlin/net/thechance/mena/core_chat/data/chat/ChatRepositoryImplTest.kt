@@ -147,7 +147,7 @@ class ChatRepositoryImplTest {
     @Test
     fun `should return chat summary when getChatSummary is successful`() = runTest {
         httpClient = createHttpClient(
-            chatHistoryResponse = { defaultChatSummaryResponse() }
+            chatSummaryResponse = { defaultChatSummaryResponse() }
         )
         repository = createChatRepository(
             httpClient = httpClient,
@@ -155,7 +155,7 @@ class ChatRepositoryImplTest {
             messageDao = messageDao
         )
 
-        val result = repository.getChatSummary(userId)
+        val result = repository.getChatSummary(1)
 
         assertThat(result.data).isNotEmpty()
     }
@@ -163,7 +163,7 @@ class ChatRepositoryImplTest {
     @Test
     fun `should throw NotFoundException when getChatSummary returns error`() = runTest {
         httpClient = createHttpClient(
-            chatHistoryResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+            chatSummaryResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
         )
         repository = createChatRepository(
             httpClient = httpClient,
@@ -172,7 +172,7 @@ class ChatRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.getChatSummary(userId)
+            repository.getChatSummary(1)
         }
     }
 
