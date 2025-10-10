@@ -14,8 +14,12 @@ data class Message(
     val content: MessageContent
 )
 
-sealed class MessageContent {
-    data class Text(val text: String) : MessageContent()
-    data class ImageUrls(val urls: List<String>) : MessageContent()
-    data class PendingImages(val byteArrays: List<ByteArray>) : MessageContent()
+sealed interface MessageContent {
+    data class Text(val text: String) : MessageContent
+    data class Images(val source: ImagesSource) : MessageContent
+}
+
+sealed interface ImagesSource {
+    data class Remote(val urls: List<String>) : ImagesSource
+    data class Local(val byteArrays: List<ByteArray>) : ImagesSource
 }
