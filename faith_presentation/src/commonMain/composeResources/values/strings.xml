@@ -81,4 +81,12 @@
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unauthorized">You’re not authorized to perform this action.</string>
     <string name="error_network">Network error. Please try again later.</string>
+    <string name="error_latitude">Latitude must be between -90 and 90 degrees.</string>
+    <string name="error_longitude">Longitude must be between -180 and 180 degrees.</string>
+    <string name="search_in_surah_hint">Search in %1$s...</string>
+    <string name="start_searching_title">Start searching!</string>
+    <string name="start_searching_subtitle">Enter a word from a specific Ayah to view it.</string>
+    <string name="no_results_found_title">No results found!</string>
+    <string name="no_results_found_subtitle">Please try again with another keyword.</string>
+    <string name="back">back</string>
 </resources>
