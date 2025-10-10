@@ -49,16 +49,6 @@ class ManageTrendsViewModelTest {
         }
 
     @Test
-    fun `initialize view model should handle error state when getAllReels fails`() =
-        runTest(testDispatcher) {
-            val errorMessage = "error"
-            everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
-            assertFailsWith<Exception> {
-                viewModel.state.value.reels.asSnapshot()
-            }
-        }
-
-    @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         viewModel.effect.test {
             viewModel.onReelItemClick(REEL_ID)

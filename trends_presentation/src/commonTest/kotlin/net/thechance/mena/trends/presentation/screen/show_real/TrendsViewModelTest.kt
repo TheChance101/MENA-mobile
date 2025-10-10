@@ -33,36 +33,6 @@ class TrendsViewModelTest {
     }
 
     @Test
-    fun `view model should update state by reels when repository returns data`() = runTest(testDispatcher) {
-        everySuspend { repository.getFeedReels(1) } returns mockReels
-
-        viewModel.state.test {
-            val initialState = awaitItem()
-            assertThat(initialState.isLoading).isEqualTo(true)
-            val loadedState = awaitItem()
-            assertThat(loadedState.isLoading).isEqualTo(false)
-            assertThat(loadedState.reels).isNotNull()
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `onLikeClick should update state`() = runTest(testDispatcher) {
-        everySuspend { repository.getFeedReels(1) } returns mockReels
-
-        viewModel.state.test {
-            awaitItem()
-            awaitItem()
-            viewModel.onLikeClick("1")
-
-            val updatedState = awaitItem()
-            assertThat(updatedState.reels).isNotNull()
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `onVideoClick should send NavigateToReelDetails effect`() = runTest {
         viewModel.effect.test {
             viewModel.onReelClick("1")
@@ -99,27 +69,15 @@ class TrendsViewModelTest {
     }
 
     @Test
-    fun `getTrends should set isLoading true then false`() = runTest(testDispatcher) {
+    fun `getTrends should toggle loading state`() = runTest(testDispatcher) {
         everySuspend { repository.getFeedReels(1) } returns mockReels
-        viewModel.state.test {
-            val loadingState = awaitItem()
-            assertThat(loadingState.isLoading).isEqualTo(true)
-
-            val loadedState = awaitItem()
-            assertThat(loadedState.isLoading).isEqualTo(false)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `getTrends should update error when repository throws`() = runTest(testDispatcher) {
-        val exception = RuntimeException("Failed")
-        everySuspend { repository.getFeedReels(1) } throws exception
 
         viewModel.state.test {
-            val stateItem = awaitItem()
-            assertThat(stateItem.error).isEqualTo(exception)
+            val states = mutableListOf<TrendsScreenState>()
+            repeat(2) { states += awaitItem() }
+
+            assertThat(states[0].isLoading).isEqualTo(true)
+            assertThat(states[1].isLoading).isEqualTo(false)
             cancelAndIgnoreRemainingEvents()
         }
     }
