@@ -17,14 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_dots
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_heart
-import mena.trends_presentation.generated.resources.img
 import mena.trends_presentation.generated.resources.just_now
 import mena.trends_presentation.generated.resources.likes
 import mena.trends_presentation.generated.resources.likes_suffix
@@ -35,14 +33,12 @@ import mena.trends_presentation.generated.resources.views
 import mena.trends_presentation.generated.resources.views_suffix
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.show_real.TrendUiState
 import net.thechance.mena.trends.presentation.shared.util.extention.toTimeAgo
 import net.thechance.mena.trends.presentation.shared.util.isValidImageUrl
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun ReelCard(
