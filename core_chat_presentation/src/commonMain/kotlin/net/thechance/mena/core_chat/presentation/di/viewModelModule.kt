@@ -2,8 +2,6 @@
 
 package net.thechance.mena.core_chat.presentation.di
 
-import dev.icerock.moko.permissions.PermissionsController
-import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
 import net.thechance.mena.core_chat.presentation.screen.home.HomeViewModel
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsViewModel
