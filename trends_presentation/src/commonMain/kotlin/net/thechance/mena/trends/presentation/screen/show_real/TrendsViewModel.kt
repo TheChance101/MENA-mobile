@@ -58,11 +58,11 @@ internal class TrendsViewModel(
         sendEffect(TrendsUiEffect.NavigateToChangeTags)
     }
 
-    override fun onManageTrendsClick() {
-        sendEffect(TrendsUiEffect.NavigateToManageTrends)
+    override fun onManageMyTrendsClick() {
+        sendEffect(TrendsUiEffect.NavigateToManageMyTrends)
     }
 
-    override fun onVideoClick(reelId: String) {
+    override fun onReelClick(reelId: String) {
             sendEffect(TrendsUiEffect.NavigateToReelDetails(reelId))
     }
 

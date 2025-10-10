@@ -54,7 +54,7 @@ internal fun TrendsScreen(
                 navController.navigate(Route.UploadReel)
             is TrendsUiEffect.NavigateToChangeTags ->
                 navController.navigate(Route.Categories)
-            is TrendsUiEffect.NavigateToManageTrends ->
+            is TrendsUiEffect.NavigateToManageMyTrends ->
                 navController.navigate(Route.ManageReels)
         }
     }
@@ -77,7 +77,7 @@ private fun TrendsScreenContent(
             AppBar(
                 title = stringResource(Res.string.trends_title),
                 trailingContent = {
-                    AppBarOptionContainer(isBadgeVisible = false, onClick = listener::onManageTrendsClick) {
+                    AppBarOptionContainer(isBadgeVisible = false, onClick = listener::onManageMyTrendsClick) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_account_setting),
                             contentDescription = stringResource(Res.string.manage_trends),
@@ -108,7 +108,7 @@ private fun TrendsScreenContent(
                             trend = reel,
                             onMoreClick = { listener::onMoreClick },
                             onLikeClick = { listener.onLikeClick(reel.id) },
-                            onVideoClick = { listener.onVideoClick(reel.id) }
+                            onVideoClick = { listener.onReelClick(reel.id) }
                         )
                     }
                 }

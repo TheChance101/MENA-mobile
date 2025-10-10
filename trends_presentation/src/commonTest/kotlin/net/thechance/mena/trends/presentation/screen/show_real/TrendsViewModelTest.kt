@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.screen.show_real.TrendsScreenState.TrendUiState
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -66,7 +65,7 @@ class TrendsViewModelTest {
     @Test
     fun `onVideoClick should send NavigateToReelDetails effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onVideoClick("1")
+            viewModel.onReelClick("1")
             assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToReelDetails("1"))
             cancelAndIgnoreRemainingEvents()
         }
@@ -84,8 +83,8 @@ class TrendsViewModelTest {
     @Test
     fun `onManageTrendsClick should send NavigateToManageTrends effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onManageTrendsClick()
-            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToManageTrends)
+            viewModel.onManageMyTrendsClick()
+            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToManageMyTrends)
             cancelAndIgnoreRemainingEvents()
         }
     }

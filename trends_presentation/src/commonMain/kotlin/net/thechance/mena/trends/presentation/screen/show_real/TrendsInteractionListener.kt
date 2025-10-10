@@ -5,6 +5,6 @@ interface TrendsInteractionListener {
     fun onLikeClick(reelId: String)
     fun onAddReelClick()
     fun onEditTagsClick()
-    fun onManageTrendsClick()
-    fun onVideoClick(reelId: String)
+    fun onManageMyTrendsClick()
+    fun onReelClick(reelId: String)
 }

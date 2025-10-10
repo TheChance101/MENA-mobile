@@ -18,12 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.ic_eyee
 import mena.trends_presentation.generated.resources.ic_dots
+import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_heart
 import mena.trends_presentation.generated.resources.just_now
 import mena.trends_presentation.generated.resources.likes
@@ -37,7 +36,6 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.show_real.TrendUiState
-import net.thechance.mena.trends.presentation.screen.show_real.TrendsScreenState
 import net.thechance.mena.trends.presentation.screen.show_real.extention.toTimeAgo
 import net.thechance.mena.trends.presentation.shared.util.isValidImageUrl
 import org.jetbrains.compose.resources.painterResource
@@ -162,7 +160,7 @@ internal fun TrendCard(
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
             ) {
                 Icon(
-                    painter = painterResource(Res.drawable.ic_eyee),
+                    painter = painterResource(Res.drawable.ic_eye),
                     contentDescription = stringResource(Res.string.views),
                     tint = Theme.colorScheme.shadeTertiary,
                     modifier = Modifier.size(24.dp)
