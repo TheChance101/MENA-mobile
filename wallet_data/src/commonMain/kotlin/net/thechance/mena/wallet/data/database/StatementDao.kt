@@ -18,4 +18,7 @@ interface StatementDao {
 
     @Delete
     suspend fun deleteStatement(statement: Statement)
+
+    @Query("SELECT * FROM statement WHERE id = :id")
+    suspend fun getStatementById(id: Long): Statement
 }
