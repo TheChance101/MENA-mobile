@@ -36,6 +36,7 @@ import mena.trends_presentation.generated.resources.views_suffix
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.screen.show_real.TrendUiState
 import net.thechance.mena.trends.presentation.screen.show_real.TrendsScreenState
 import net.thechance.mena.trends.presentation.screen.show_real.extention.toTimeAgo
 import net.thechance.mena.trends.presentation.shared.util.isValidImageUrl
@@ -44,7 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TrendCard(
-    trend: TrendsScreenState.TrendUiState,
+    trend: TrendUiState,
     onMoreClick: () -> Unit,
     onLikeClick: () -> Unit,
     onVideoClick: (String) -> Unit
@@ -83,7 +84,6 @@ internal fun TrendCard(
                     style = Theme.typography.label.medium,
                     color = Theme.colorScheme.shadePrimary,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = timeAgoText,
@@ -97,8 +97,8 @@ internal fun TrendCard(
                 contentDescription = stringResource(Res.string.more_options),
                 tint = Theme.colorScheme.shadeTertiary,
                 modifier = Modifier
-                    .size(20.dp)
-                    .clickable(onClick = onMoreClick)
+                    .size(24.dp)
+                    .clickable{onMoreClick()}
             )
         }
 
@@ -147,7 +147,7 @@ internal fun TrendCard(
                     contentDescription = stringResource(Res.string.likes),
                     tint = Theme.colorScheme.shadeTertiary,
                     modifier = Modifier
-                        .size(18.dp)
+                        .size(24.dp)
                         .clickable { onLikeClick() }
                 )
                 Text(
@@ -165,7 +165,7 @@ internal fun TrendCard(
                     painter = painterResource(Res.drawable.ic_eyee),
                     contentDescription = stringResource(Res.string.views),
                     tint = Theme.colorScheme.shadeTertiary,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = stringResource(Res.string.views_suffix, trend.views),

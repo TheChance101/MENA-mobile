@@ -13,7 +13,7 @@ data class TrendsScreenState(
     val error: ErrorState? = null,
     val reels: Flow<PagingData<TrendUiState>> = flowOf(),
     val errorMessage: StringResource? = null,
-) {
+)
     data class TrendUiState(
         val id: String,
         val profileImageUrl: String = "",
@@ -25,4 +25,3 @@ data class TrendsScreenState(
         val likes: Int = 0,
         val views: Int = 0
     )
-}

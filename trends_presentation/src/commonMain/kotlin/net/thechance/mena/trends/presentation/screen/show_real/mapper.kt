@@ -2,8 +2,8 @@ package net.thechance.mena.trends.presentation.screen.show_real
 
 import net.thechance.mena.trends.domain.entity.Reel
 
-fun Reel.toUiState(): TrendsScreenState.TrendUiState {
-    return TrendsScreenState.TrendUiState(
+fun Reel.toUiState(): TrendUiState {
+    return TrendUiState(
         id = id,
         profileImageUrl = "",//TODO
         userName = "",//TODO
