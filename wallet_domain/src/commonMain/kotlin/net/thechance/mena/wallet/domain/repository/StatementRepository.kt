@@ -2,9 +2,11 @@
 
 package net.thechance.mena.wallet.domain.repository
 
+import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 interface StatementRepository {
     suspend fun getTransactionsPdf(
@@ -24,7 +26,7 @@ interface StatementRepository {
      * something like  statementDao.deleteStatement(id)
      */
 
-    suspend fun deleteStatement(id: String): Boolean {
+    suspend fun deleteStatement(id: Uuid): Boolean {
         return true
     }
 

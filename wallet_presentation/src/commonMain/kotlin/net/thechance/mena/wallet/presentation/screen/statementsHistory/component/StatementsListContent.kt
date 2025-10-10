@@ -150,7 +150,7 @@ private fun AnimatedStatementItem(
         visible = isVisible,
         exit = shrinkVertically(
             animationSpec = tween(
-                durationMillis = 300,
+                durationMillis = 200,
                 easing = FastOutLinearInEasing
             )
         )
@@ -195,7 +195,7 @@ private fun AnimatedStatementCard(
     val scale by animateFloatAsState(
         targetValue = if (isDeleting) 0f else 1f,
         animationSpec = tween(
-            durationMillis = 300,
+            durationMillis = 50,
             easing = FastOutLinearInEasing
         )
     )
@@ -226,7 +226,7 @@ private fun AnimatedDeleteButton(
         val width by animateDpAsState(
             targetValue = if (isDeleting) maxWidth.dp else 48.dp,
             animationSpec = tween(
-                durationMillis = 300,
+                durationMillis = 100,
                 easing = FastOutLinearInEasing
             )
         )

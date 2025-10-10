@@ -1,7 +1,9 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,6 +42,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun StatementHistoryScreen(
     viewModel: StatementsHistoryViewModel = koinViewModel(),
@@ -66,12 +69,11 @@ private fun StatementHistoryContent(
     state: StatementsHistoryScreenState,
     listener: StatementsHistoryInteractionListener
 ) {
-    if (state.isEditModeActivated) {
-        RemoveStatementsContent(
-            state = state,
-            interactionListener = listener
-        )
-    } else {
+    AnimatedVisibility(
+        visible = !state.isEditModeActivated,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300))
+    ) {
         WalletScaffold(
             topBar = {
                 AppBar(
@@ -144,9 +146,20 @@ private fun StatementHistoryContent(
             }
         }
     }
+
+    AnimatedVisibility(
+        visible = state.isEditModeActivated,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300))
+    ) {
+        RemoveStatementsContent(
+            state = state,
+            interactionListener = listener
+        )
+    }
 }
 
-
+@OptIn(ExperimentalUuidApi::class)
 private fun onStatementHistoryEffect(
     effect: StatementsHistoryEffect,
     onNavigateBackClicked: () -> Unit,
