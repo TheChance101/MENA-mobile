@@ -91,7 +91,7 @@ class ReelExtensionTest {
         )
 
         // Expected TrendUiStates
-        val testTrendUiState1 = TrendsScreenState.TrendUiState(
+        val testTrendUiState1 =TrendUiState(
             id = "1",
             profileImageUrl = "",
             userName = "",
@@ -103,7 +103,7 @@ class ReelExtensionTest {
             views = 100
         )
 
-        val testTrendUiState2 = TrendsScreenState.TrendUiState(
+        val testTrendUiState2 = TrendUiState(
             id = "2",
             profileImageUrl = "",
             userName = "",
@@ -115,7 +115,7 @@ class ReelExtensionTest {
             views = 200
         )
 
-        val testTrendUiState3 = TrendsScreenState.TrendUiState(
+        val testTrendUiState3 = TrendUiState(
             id = "3",
             profileImageUrl = "",
             userName = "",
@@ -127,7 +127,7 @@ class ReelExtensionTest {
             views = 300
         )
 
-        val testTrendUiState4 = TrendsScreenState.TrendUiState(
+        val testTrendUiState4 = TrendUiState(
             id = "4",
             profileImageUrl = "",
             userName = "",
