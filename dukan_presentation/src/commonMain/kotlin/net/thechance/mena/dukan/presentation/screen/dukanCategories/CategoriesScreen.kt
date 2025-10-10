@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanCategories
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +27,7 @@ import mena.dukan_presentation.generated.resources.categories
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.Category
 import net.thechance.mena.dukan.presentation.component.SnackBar
@@ -156,8 +158,22 @@ private val categoryItemSize = 76.dp
 @Preview
 @Composable
 private fun CategoriesScreenPreview() {
-    DukanCategoriesContent(
-        categories = listOf(),
-        interactionListener = PreviewDukanCategoriesInteractionListener
-    )
+    MenaTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            DukanCategoriesContent(
+                categories = previewCategories,
+                interactionListener = PreviewDukanCategoriesInteractionListener
+            )
+        }
+    }
 }
+
+private val previewCategories = listOf(
+    CategoryUiState("1", "Electronics", "electronics.jpg"),
+    CategoryUiState("2", "Clothing", "clothing.jpg"),
+    CategoryUiState("3", "Home & Kitchen", "home_kitchen.jpg"),
+    CategoryUiState("4", "Books", "books.jpg"),
+    CategoryUiState("5", "Toys & Games", "toys_games.jpg"),
+)
