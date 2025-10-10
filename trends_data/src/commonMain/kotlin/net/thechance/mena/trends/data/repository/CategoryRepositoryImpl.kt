@@ -10,6 +10,7 @@ import net.thechance.mena.trends.data.mapper.toEntityList
 import net.thechance.mena.trends.data.util.NetworkConstants.CATEGORIES_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
 import net.thechance.mena.trends.data.util.NetworkConstants.USER_STATUS_ENDPOINT
+import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
@@ -24,13 +25,13 @@ internal class CategoryRepositoryImpl(
     override suspend fun getAllCategories(): List<Category> {
         return safeApiCall<CategoriesResponse> {
             networkClient.get("/$TRENDS_PATH/$CATEGORIES_ENDPOINT")
-        }.categories?.toEntityList() ?: emptyList()
+        }.categories?.toEntityList().orEmpty()
     }
 
     override suspend fun isCategoriesAlreadySelectedByUser(): Boolean {
         return safeApiCall<UserStatusResponse> {
             networkClient.get("/$TRENDS_PATH/$USER_STATUS_ENDPOINT")
-        }.hasCategory ?: false
+        }.hasCategory.orFalse()
     }
 
     override suspend fun updateUserInterestedCategories(categoriesIds: List<String>) {
