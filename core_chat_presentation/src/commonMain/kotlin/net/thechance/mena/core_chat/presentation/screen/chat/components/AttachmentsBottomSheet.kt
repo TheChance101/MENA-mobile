@@ -74,7 +74,7 @@ fun AttachmentsBottomSheet(
                     shape = RoundedCornerShape(Theme.spacing._12)
                 )
                 .align(Alignment.End),
-            onClick = attachmentsInteractionListener::onCancelClicked
+            onClick = attachmentsInteractionListener::onCloseAttachmentClicked
         )
     }
 }
@@ -102,7 +102,7 @@ private fun AttachmentBottomSheetContent(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
             onClick = {
-                attachmentsInteractionListener.onPhotoClicked()
+                attachmentsInteractionListener.onGalleryClicked()
                 imagePickerLauncher.launch()
             }
         )
@@ -129,9 +129,9 @@ private fun PreviewAddPhotoBottomSheet() {
                 modifier = Modifier.align(Alignment.BottomCenter),
                 attachmentsInteractionListener = object : AttachmentsInteractionListener {
                     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
-                    override fun onPhotoClicked() {}
+                    override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
-                    override fun onCancelClicked() {}
+                    override fun onCloseAttachmentClicked() {}
                 }
             )
 

@@ -320,7 +320,7 @@ class ChatViewModel(
         updateState { it.copy(isAttachmentsOverlayVisible = true) }
     }
 
-    override fun onPhotoClicked() {
+    override fun onGalleryClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 
@@ -328,7 +328,7 @@ class ChatViewModel(
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 
-    override fun onCancelClicked() {
+    override fun onCloseAttachmentClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 }

@@ -23,7 +23,7 @@ interface MessageListInteractionListener {
 
 interface AttachmentsInteractionListener {
     fun onSendImageClicked(imageByteArrays: List<ByteArray>)
-    fun onPhotoClicked()
+    fun onGalleryClicked()
     fun onCameraClicked()
-    fun onCancelClicked()
+    fun onCloseAttachmentClicked()
 }
