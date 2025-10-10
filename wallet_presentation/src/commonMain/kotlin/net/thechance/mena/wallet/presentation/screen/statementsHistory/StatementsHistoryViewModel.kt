@@ -12,7 +12,6 @@ import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementArgument
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -21,7 +20,6 @@ import kotlin.uuid.Uuid
 
 @KoinViewModel
 class StatementsHistoryViewModel(
-    @Provided private val statementArgument: StatementArgument,
     @Provided private val statementRepository: StatementRepository,
     private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementsHistoryScreenState, StatementsHistoryEffect>
@@ -59,9 +57,9 @@ class StatementsHistoryViewModel(
         updateState { it.copy(isEditModeActivated = false) }
     }
 
-    override fun onDeleteClicked() {
+    override fun onDeleteClicked(id: Uuid) {
         tryToExecute(
-            callee = { statementRepository.deleteStatement(statementArgument.statementId) },
+            callee = { statementRepository.deleteStatement(id) },
             onSuccess = { updateState { it.copy(isStatementDeleted = true) } },
             onError = { errorState -> updateState { it.copy(errorState = errorState) } },
             dispatcher = dispatcherIO
