@@ -20,11 +20,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
+import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingReelState
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
-import net.thechance.mena.trends.presentation.shared.util.VideoUtilities
 import net.thechance.mena.trends.presentation.shared.util.formatBytes
 import net.thechance.mena.trends.presentation.utils.TestExtensions
 import kotlin.test.Test
@@ -35,20 +34,15 @@ class UploadReelViewModelTest : TestExtensions() {
     private val repository: ReelsRepository = mock {
         everySuspend { uploadReel(any(), any(), any()) } returns emptyFlow()
         everySuspend { uploadReelThumbnail(any(), any(), any()) } returns Unit
+        everySuspend { getReelDuration(any()) } returns VALID_DURATION
+        everySuspend { getReelThumbnail(any(), any()) } returns byteArray
     }
-    private val validator: VideoMetaDataValidator = VideoMetaDataValidator()
-
-    private val videoUtilities: VideoUtilities = mock {
-        everySuspend { getDuration(any()) } returns VALID_DURATION
-        everySuspend { extractVideoFrame(any(), any<Long>()) } returns byteArray
-        everySuspend { extractVideoFrame(any(), any<Float>()) } returns byteArray
-    }
+    private val validator: VideoValidator = VideoValidator()
 
     private val viewModel by lazy {
         UploadReelViewModel(
             reelsRepository = repository,
             videoValidator = validator,
-            videoUtilities = videoUtilities,
             defaultDispatcher = testDispatcher
         )
     }
@@ -66,12 +60,12 @@ class UploadReelViewModelTest : TestExtensions() {
         runTest(testDispatcher) {
             viewModel.onRetrieveVideo(invalidFile)
 
-            verifySuspend(exactly(0)) { videoUtilities.getDuration(any()) }
+            verifySuspend(exactly(0)) { repository.getReelDuration(any()) }
         }
 
     @Test
     fun `onRetrieveVideo should not call validateDuration if duration is null`() = runTest(testDispatcher) {
-        everySuspend { videoUtilities.getDuration(any()) } returns null
+        everySuspend { repository.getReelDuration(any()) } returns null
 
         viewModel.onRetrieveVideo(invalidFile)
 
@@ -112,7 +106,7 @@ class UploadReelViewModelTest : TestExtensions() {
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
-        verifySuspend { videoUtilities.extractVideoFrame(any(), any<Long>()) }
+        verifySuspend { repository.getReelThumbnail(any(), any<Long>()) }
     }
 
     @Test
@@ -127,7 +121,7 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onRetrieveVideo should update state with error if extractFrame failed`() = runTest(testDispatcher) {
-        everySuspend { videoUtilities.extractVideoFrame(any(), any<Long>()) } throws Exception("")
+        everySuspend { repository.getReelThumbnail(any(), any<Long>()) } throws Exception("")
 
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()

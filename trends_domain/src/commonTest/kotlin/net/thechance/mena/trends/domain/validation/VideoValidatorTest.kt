@@ -8,8 +8,8 @@ import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededExcepti
 import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import kotlin.test.Test
 
-class VideoMetaDataValidatorTest {
-    private val validator = VideoMetaDataValidator()
+class VideoValidatorTest {
+    private val validator = VideoValidator()
 
     @Test
     fun `validateSize should not throw exception when size is less than Max size allowed`() {
