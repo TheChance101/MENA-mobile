@@ -3,6 +3,8 @@
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,41 +36,59 @@ fun ChatScreenContent(
     state: ChatScreenState,
     interactions: ChatInteractionListener
 ) {
-    Scaffold(
-        topBar = {
-            ChatHeader(
-                chatName = state.chatName,
-                onMenuClick = {},
-                onBackClick = interactions::onBackClicked,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        },
-        bottomBar = {
-            ChatInputBar(
-                userInput = state.inputMessage,
-                onTextChange = interactions::onInputMessageChanged,
-                onSendButtonClick = interactions::onSendMessageClicked,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Theme.colorScheme.background.surface)
-            )
-        },
-        overlays = {
-            ChatScreenOverlays(
-                showResendMessageDialog = state.isResendMessageDialogVisible,
-                onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
-                onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
-                onResendFailedMessageClick = interactions::onResendMessageClicked,
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                ChatHeader(
+                    chatName = state.chatName,
+                    onMenuClick = {},
+                    onBackClick = interactions::onBackClicked,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            },
+            bottomBar = {
+                ChatInputBar(
+                    userInput = state.inputMessage,
+                    onTextChange = interactions::onInputMessageChanged,
+                    onSendButtonClick = interactions::onSendMessageClicked,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Theme.colorScheme.background.surface)
+                )
+            },
+            overlays = {
+                ChatScreenOverlays(
+                    showResendMessageDialog = state.isResendMessageDialogVisible,
+                    onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
+                    onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
+                    onResendFailedMessageClick = interactions::onResendMessageClicked,
+                )
+            }
+        ) {
+            ChatList(
+                items = state.chatListItems,
+                chatAvatarUrl = state.chatAvatarUrl,
+                onMessageClick = interactions::onMessageClicked,
+                onFailedMessageClick = interactions::onFailedMessageClicked,
             )
         }
-    ) {
-        ChatList(
-            items = state.chatListItems,
-            chatAvatarUrl = state.chatAvatarUrl,
-            onMessageClick = interactions::onMessageClicked,
-            onFailedMessageClick = interactions::onFailedMessageClicked,
-        )
-    }
 
+//        AnimatedVisibility(
+//            visible = state.isImagePagerVisible,
+//            modifier = Modifier.fillMaxSize(),
+//        ) {
+//
+//        ImagePager(
+//            images = state,
+//            initialPage = state.currentImageIndexForPreview,
+//            onCloseClick = interactions::onCloseImagePager,
+//            senderName = state.chatName,
+//            senderImageUrl = state.chatAvatarUrl,
+//            time = state.time,
+//            onDownloadClicked = TODO(),
+//        )
+//        }
+
+    }
 }
