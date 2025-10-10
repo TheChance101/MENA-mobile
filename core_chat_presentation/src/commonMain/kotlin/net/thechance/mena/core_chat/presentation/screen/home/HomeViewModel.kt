@@ -8,10 +8,12 @@ import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
+import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
 import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
 import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -22,7 +24,7 @@ class HomeViewModel(
     private val contactsRepository: ContactsRepository,
     private val chatRepository: ChatRepository,
     effector: ChatEffector
-) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector) {
+) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector), HomeScreenInteractionListener {
 
     private val paginator by lazy {
         Paginator(
@@ -68,7 +70,7 @@ class HomeViewModel(
         updateState { it.copy(chats = it.chats + items.map { chat -> chat.toUi() }) }
     }
 
-    fun onNewChatClicked() {
+    override fun onNewChatClicked() {
         tryToExecute(
             onStart = { updateState { it.copy(isLoading = false) } },
             execute = { contactsRepository.getSyncStatus() },
@@ -83,7 +85,18 @@ class HomeViewModel(
         )
     }
 
-    fun onWalletClicked() {
+    override fun onChatClicked(chat: HomeUiState) {
+        navigate(
+            ChatDetailsRoute(
+                chatId = chat.id.toString(),
+                chatName = chat.name,
+                chatImageUrl = chat.imageUrl.toString(),
+                chatRequesterId = chat.id.toString() // TODO : Replace with the actual requester id
+            )
+        )
+    }
+
+    override fun onWalletClicked() {
         navigate(WalletRoute)
     }
 
