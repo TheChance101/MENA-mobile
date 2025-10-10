@@ -13,9 +13,6 @@ import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.TestResult
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -183,7 +180,7 @@ class StatementsHistoryViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertTrue(state.isEditModeActivated)
+            assertTrue(state.isEditMode)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -200,7 +197,7 @@ class StatementsHistoryViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertFalse(state.isEditModeActivated)
+            assertFalse(state.isEditMode)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -278,7 +275,7 @@ class StatementsHistoryViewModelTest {
 
         viewModel.onEditClicked()
         viewModel.state.test {
-            assertTrue(awaitItem().isEditModeActivated)
+            assertTrue(awaitItem().isEditMode)
             cancelAndIgnoreRemainingEvents()
         }
         viewModel.onDeleteClicked(statementId)
@@ -290,7 +287,7 @@ class StatementsHistoryViewModelTest {
         }
         viewModel.onCancelEditClicked()
         viewModel.state.test {
-            assertFalse(awaitItem().isEditModeActivated)
+            assertFalse(awaitItem().isEditMode)
             cancelAndIgnoreRemainingEvents()
         }
     }

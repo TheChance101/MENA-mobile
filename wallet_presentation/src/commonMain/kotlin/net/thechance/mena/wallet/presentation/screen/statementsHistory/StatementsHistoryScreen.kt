@@ -31,8 +31,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.EditStatementsContent
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.EmptyStatementsHistory
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.RemoveStatementsContent
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementsListContent
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -61,100 +61,123 @@ fun StatementHistoryScreen(
         }
     )
 
-    StatementHistoryContent(state = state, listener = viewModel)
+    StatementsContentByState(state = state, listener = viewModel)
 }
 
 @Composable
-private fun StatementHistoryContent(
+private fun StatementsContentByState(
     state: StatementsHistoryScreenState,
     listener: StatementsHistoryInteractionListener
 ) {
     AnimatedVisibility(
-        visible = !state.isEditModeActivated,
+        visible = !state.isEditMode,
         enter = fadeIn(animationSpec = tween(300)),
         exit = fadeOut(animationSpec = tween(300))
     ) {
-        WalletScaffold(
-            topBar = {
-                AppBar(
-                    title = stringResource(Res.string.statements),
-                    contentPadding = PaddingValues(
-                        horizontal = Theme.spacing._16,
-                        vertical = Theme.spacing._8
-                    ),
-                    leadingContent = {
-                        if (state.isEditModeActivated) {
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_cancel),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(
-                                        Theme.colorScheme.background.surfaceLow,
-                                        RoundedCornerShape(Theme.radius.md)
-                                    )
-                                    .clip(RoundedCornerShape(Theme.radius.md))
-                                    .clickable { listener.onCancelEditClicked() }
-                                    .padding(10.dp)
-                            )
-                        } else
-                            Icon(
-                                painter = painterResource(Res.drawable.ic_arrow_left),
-                                contentDescription = stringResource(Res.string.back_button)
-                            )
-                    },
-                    onLeadingClick = listener::onBackClicked,
-                    trailingContent = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_edit),
-                            contentDescription = stringResource(Res.string.edit),
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    Theme.colorScheme.background.surfaceLow,
-                                    RoundedCornerShape(Theme.radius.md)
-                                )
-                                .clip(RoundedCornerShape(Theme.radius.md))
-                                .clickable { listener.onEditClicked() }
-                                .padding(10.dp)
-                        )
-                    }
-                )
-            },
-            snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
-            errorState = state.errorState,
-            onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
-        ) {
-            when {
-                state.isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
-                }
-
-                state.statements.isEmpty() -> {
-                    EmptyStatementsHistory(modifier = Modifier.fillMaxSize())
-                }
-
-                else -> {
-                    StatementsListContent(
-                        modifier = Modifier.fillMaxSize().padding(top = Theme.spacing._8),
-                        listener = listener,
-                        state = state,
-                    )
-                }
-            }
-        }
+        NormalModeContent(state = state, listener = listener)
     }
 
     AnimatedVisibility(
-        visible = state.isEditModeActivated,
+        visible = state.isEditMode,
         enter = fadeIn(animationSpec = tween(300)),
         exit = fadeOut(animationSpec = tween(300))
     ) {
-        RemoveStatementsContent(
+        EditStatementsContent(state = state, interactionListener = listener)
+    }
+}
+
+@Composable
+private fun NormalModeContent(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
+    WalletScaffold(
+        topBar = { StatementHistoryAppBar(state = state, listener = listener) },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        errorState = state.errorState,
+        onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
+    ) {
+        StatementHistoryStates(state = state, listener = listener)
+    }
+}
+
+@Composable
+private fun StatementHistoryAppBar(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
+    AppBar(
+        title = stringResource(Res.string.statements),
+        contentPadding = PaddingValues(
+            horizontal = Theme.spacing._16,
+            vertical = Theme.spacing._8
+        ),
+        leadingContent = { LeadingIcon(state = state, listener = listener) },
+        onLeadingClick = listener::onBackClicked,
+        trailingContent = { TrailingEditIcon(listener = listener) }
+    )
+}
+
+@Composable
+private fun LeadingIcon(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
+    if (state.isEditMode) {
+        Icon(
+            painter = painterResource(Res.drawable.ic_cancel),
+            contentDescription = null,
+            modifier = Modifier
+                .size(40.dp)
+                .background(
+                    Theme.colorScheme.background.surfaceLow,
+                    RoundedCornerShape(Theme.radius.md)
+                )
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .clickable { listener.onCancelEditClicked() }
+                .padding(10.dp)
+        )
+    } else {
+        Icon(
+            painter = painterResource(Res.drawable.ic_arrow_left),
+            contentDescription = stringResource(Res.string.back_button)
+        )
+    }
+}
+
+@Composable
+private fun TrailingEditIcon(listener: StatementsHistoryInteractionListener) {
+    Icon(
+        painter = painterResource(Res.drawable.ic_edit),
+        contentDescription = stringResource(Res.string.edit),
+        modifier = Modifier
+            .size(40.dp)
+            .background(
+                Theme.colorScheme.background.surfaceLow,
+                RoundedCornerShape(Theme.radius.md)
+            )
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .clickable { listener.onEditClicked() }
+            .padding(10.dp)
+    )
+}
+
+@Composable
+private fun StatementHistoryStates(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
+    when {
+        state.isLoading -> Box(modifier = Modifier.fillMaxSize()) {
+            ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+
+        state.statements.isEmpty() -> EmptyStatementsHistory(modifier = Modifier.fillMaxSize())
+
+        else -> StatementsListContent(
+            modifier = Modifier.fillMaxSize().padding(top = Theme.spacing._8),
+            listener = listener,
             state = state,
-            interactionListener = listener
         )
     }
 }

@@ -50,11 +50,11 @@ class StatementsHistoryViewModel(
     }
 
     override fun onEditClicked() {
-        updateState { it.copy(isEditModeActivated = true) }
+        updateState { it.copy(isEditMode = true) }
     }
 
     override fun onCancelEditClicked() {
-        updateState { it.copy(isEditModeActivated = false) }
+        updateState { it.copy(isEditMode = false) }
     }
 
     override fun onDeleteClicked(id: Uuid) {

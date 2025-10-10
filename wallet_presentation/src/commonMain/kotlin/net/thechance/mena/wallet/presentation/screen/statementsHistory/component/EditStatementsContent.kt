@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun RemoveStatementsContent(
+fun EditStatementsContent(
     state: StatementsHistoryScreenState,
     interactionListener: StatementsHistoryInteractionListener
 ) {
