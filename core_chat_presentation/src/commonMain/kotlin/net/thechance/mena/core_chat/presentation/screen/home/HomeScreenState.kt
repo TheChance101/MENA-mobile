@@ -1,8 +1,5 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
-import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState
-import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState.Status
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -28,18 +25,4 @@ data class HomeScreenState(
             data object Received : Status()
         }
     }
-}
-
-@OptIn(ExperimentalUuidApi::class)
-fun ChatSummary.toUi(): HomeUiState{
-    // TODO : I Need To Handle All Possible Status
-    return HomeUiState(
-        id = id,
-        name = name,
-        imageUrl = imageUrl,
-        lastMessage = lastMessage,
-        time = lastMessageTime,
-        status = Status.UnRead(12),
-        isMine = status.isMine
-    )
 }
