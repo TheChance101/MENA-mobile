@@ -38,7 +38,12 @@ fun Map(
     currentLocation: PickLocationScreenUIState.CoordinatesUiState?,
     onMapClick: (PickLocationScreenUIState.CoordinatesUiState, DpOffset) -> Unit,
     onCameraMoved: (CameraPosition) -> Unit,
-    animateToCurrentLocation: Boolean = false,
+    animateToCurrentLocation: Boolean = false
+
+
+
+
+    ,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
