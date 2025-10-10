@@ -3,14 +3,17 @@ package net.thechance.mena.trends.data.repository
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.isSuccess
-import dev.mokkery.verify
+import assertk.assertions.size
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.verifySuspend
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
-import kotlinx.io.RawSource
 import net.thechance.mena.trends.data.client.NetworkClient
-import net.thechance.mena.trends.data.repository.util.FileReaderMock
+import net.thechance.mena.trends.data.repository.util.VideoFileHandlerMock
 import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
@@ -23,16 +26,16 @@ import kotlin.test.assertFails
 
 internal class ReelRepositoryImplTest {
 
-    private lateinit var networkClient: NetworkClient
-    private val fileReader = FileReaderMock()
-    private lateinit var repository: ReelsRepositoryImpl
+    private var networkClient: NetworkClient = createReelsHttpClient { getReelsResponse() }
+    private val videoHandler = VideoFileHandlerMock()
+    private var repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
     @Test
     fun `should return list of reels mapped to entity successfully when the user has already reels`() =
         runTest {
 
             networkClient = createReelsHttpClient { getReelsResponse() }
-            repository = ReelsRepositoryImpl(networkClient, fileReader)
+            repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
             val reels = repository.getAllReels(pageNumber = 1)
 
@@ -43,7 +46,7 @@ internal class ReelRepositoryImplTest {
     fun `should delete reel successfully when valid id provided`() = runTest {
 
         networkClient = createReelsHttpClient { deleteReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
         val result = runCatching { repository.deleteReelById("1") }
 
         assertThat(result).isSuccess()
@@ -54,7 +57,7 @@ internal class ReelRepositoryImplTest {
 
         networkClient =
             createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         val result = runCatching {
             repository.updateReelById(
@@ -71,7 +74,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `uploadReel should emit final progress with reelId when uploading success`() = runTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).test {
             assertThat(awaitItem().reelId).isEqualTo("1")
@@ -82,7 +85,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `uploadReel should emit final progress with number of uploaded bytes equal to size when success`() = runTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).test {
             assertThat(awaitItem().numberOfUploadedBytes).isEqualTo(FAKE_SIZE)
@@ -93,7 +96,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `uploadReel should emit final progress with total size equal to file size when success`() = runTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).test {
             assertThat(awaitItem().totalBytes).isEqualTo(FAKE_SIZE)
@@ -104,11 +107,11 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `uploadReel should call fileReader with correct file path`() = runTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).collect()
 
-        verify { fileReader.readFile(FAKE_FILE_PATH) }
+        verifySuspend { videoHandler.readFile(FAKE_FILE_PATH) }
     }
 
     @Test
@@ -116,7 +119,7 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient {
             uploadReelResponse(status = HttpStatusCode.RequestTimeout)
         }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
             repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).collect()
@@ -128,7 +131,7 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient {
             uploadReelResponse(status = HttpStatusCode.InternalServerError)
         }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
             repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).collect()
@@ -138,7 +141,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should upload reel thumbnail successfully when valid id provided`() = runTest {
         networkClient = createReelsHttpClient { uploadReelThumbnailResponse() }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         val result = runCatching {
             repository.uploadReelThumbnail("1", FAKE_FILE_NAME, FAKE_BYTES)
@@ -152,11 +155,39 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient {
             uploadReelThumbnailResponse(status = HttpStatusCode.InternalServerError)
         }
-        repository = ReelsRepositoryImpl(networkClient, fileReader)
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
             repository.uploadReelThumbnail("1", FAKE_FILE_NAME, FAKE_BYTES)
         }
+    }
+
+    @Test
+    fun `getReelDuration should call getDuration`() = runTest {
+        repository.getReelDuration(FAKE_FILE_PATH)
+
+        verifySuspend { videoHandler.getDuration(FAKE_FILE_PATH)  }
+    }
+
+    @Test
+    fun `getReelDuration should return reel duration exactly as getDuration`() = runTest {
+        val duration = repository.getReelDuration(FAKE_FILE_PATH)
+
+        assertThat(duration).isEqualTo(FAKE_DURATION)
+    }
+
+    @Test
+    fun `getReelThumbnail should call extractVideoFrame`() = runTest {
+        repository.getReelThumbnail(FAKE_FILE_PATH)
+
+        verifySuspend { videoHandler.extractVideoFrame(FAKE_FILE_PATH)  }
+    }
+
+    @Test
+    fun `getReelDuration should return thumbnail bytearray when extractVideoFrame called`() = runTest {
+        val thumbnailByteArray = repository.getReelThumbnail(FAKE_FILE_PATH)
+
+        assertThat(thumbnailByteArray?.size).isEqualTo(2)
     }
 
     private companion object {
@@ -164,5 +195,6 @@ internal class ReelRepositoryImplTest {
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
         const val FAKE_FILE_PATH = "path/to/file"
         const val FAKE_FILE_NAME = "fileName"
+        const val FAKE_DURATION = 1000L
     }
 }

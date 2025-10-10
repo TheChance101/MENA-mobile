@@ -1,29 +1,34 @@
-package net.thechance.mena.trends.presentation.shared.util
+package net.thechance.mena.trends.data.util
 
-import kotlinx.cinterop.BetaInteropApi
-import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlinx.io.RawSource
+import kotlinx.io.asSource
 import platform.AVFoundation.AVAssetImageGenerator
 import platform.AVFoundation.AVURLAsset
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMake
 import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.Foundation.NSData
+import platform.Foundation.NSInputStream
 import platform.Foundation.NSURL
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
 import platform.posix.memcpy
 
-actual fun getVideoUtilities(): VideoUtilities {
-    return VideoUtilitiesImpl()
-}
+actual fun getPlatformFileReader(): VideoFileHandler = VideoFileHandlerImpl()
 
-@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-class VideoUtilitiesImpl : VideoUtilities {
+class VideoFileHandlerImpl : VideoFileHandler {
+
+    override suspend fun readFile(filePath: String): RawSource {
+        return withContext(Dispatchers.IO) {
+            val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
+            NSInputStream(fileUrl).asSource()
+        }
+    }
 
     override suspend fun getDuration(filePath: String): Long? {
         return withContext(Dispatchers.IO) {
@@ -40,7 +45,6 @@ class VideoUtilitiesImpl : VideoUtilities {
         return withContext(Dispatchers.IO) {
             runCatching {
                 val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
-                fileUrl.startAccessingSecurityScopedResource()
                 val asset = AVURLAsset.URLAssetWithURL(fileUrl, options = null)
                 val imageGenerator = createAVAssetImageGenerator(asset)
 
@@ -52,20 +56,8 @@ class VideoUtilitiesImpl : VideoUtilities {
                             UIImageJPEGRepresentation(uiImage, 0.9)?.toByteArray()
                         }
                 } finally {
-                    fileUrl.stopAccessingSecurityScopedResource()
                     imageGenerator.cancelAllCGImageGeneration()
                 }
-            }.getOrNull()
-        }
-    }
-
-    override suspend fun extractVideoFrame(filePath: String, percent: Float): ByteArray? {
-        return withContext(Dispatchers.IO) {
-            val duration = getDuration(filePath) ?: 1L
-            val clamped = percent.coerceIn(0f, 1f)
-            val targetTimeUs = (duration * clamped * 1000).toLong()
-            runCatching {
-                extractVideoFrame(filePath, targetTimeUs)
             }.getOrNull()
         }
     }

@@ -20,7 +20,7 @@ import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.data.util.FileReader
+import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
@@ -42,7 +42,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
     @Provided private val networkClient: NetworkClient,
-    @Provided private val fileReader: FileReader
+    @Provided private val videoFileHandler: VideoFileHandler
 ) : ReelsRepository {
 
     override suspend fun deleteReelById(id: String) {
@@ -104,6 +104,7 @@ internal class ReelsRepositoryImpl(
         onProgress: suspend (sent: Long, total: Long) -> Unit
     ): UploadReelResponse {
         return safeApiCall<UploadReelResponse> {
+            val fileSource = videoFileHandler.readFile(filePath)
             networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT") {
                 setUploadRequestTimeout()
                 setBody(
@@ -111,7 +112,7 @@ internal class ReelsRepositoryImpl(
                         fileName = fileName,
                         key = VIDEO,
                         mimeType = getMediaMimeType(fileName),
-                        input = InputProvider(size) { fileReader.readFile(filePath).buffered() }
+                        input = InputProvider(size) { fileSource.buffered() }
                     )
                 )
                 observeUploading(onProgress)
@@ -136,6 +137,14 @@ internal class ReelsRepositoryImpl(
                 )
             }
         }
+    }
+
+    override suspend fun getReelDuration(filePath: String): Long? {
+        return videoFileHandler.getDuration(filePath)
+    }
+
+    override suspend fun getReelThumbnail(filePath: String, timeMs: Long): ByteArray? {
+        return videoFileHandler.extractVideoFrame(filePath, timeMs)
     }
 
     private fun createRequestBody(

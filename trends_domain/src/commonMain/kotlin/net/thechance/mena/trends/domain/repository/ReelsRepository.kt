@@ -10,4 +10,6 @@ interface ReelsRepository {
     suspend fun updateReelById(id: String, description: String, categoryIds: List<String>)
     fun uploadReel(filePath: String, fileName: String, size: Long): Flow <UploadReelProgress>
     suspend fun uploadReelThumbnail(reelId: String, fileName: String, thumbnail: ByteArray)
+    suspend fun getReelDuration(filePath: String): Long?
+    suspend fun getReelThumbnail(filePath: String, timeMs: Long = 0L): ByteArray?
 }

@@ -6,11 +6,10 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.domain.validation.VideoMetaDataValidator
+import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
-import net.thechance.mena.trends.presentation.shared.util.VideoUtilities
 import net.thechance.mena.trends.presentation.shared.util.formatBytes
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -18,8 +17,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class UploadReelViewModel(
     @Provided private val reelsRepository: ReelsRepository,
-    @Provided private val videoValidator: VideoMetaDataValidator,
-    @Provided private val videoUtilities: VideoUtilities,
+    @Provided private val videoValidator: VideoValidator,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UploadReelScreenState, UploadReelScreenEffect>(
     UploadReelScreenState()
@@ -45,7 +43,7 @@ internal class UploadReelViewModel(
         val selectedFile = state.value.selectedFile
 
         videoValidator.validateSize(selectedFile.size)
-        videoUtilities.getDuration(selectedFile.filePath)?.let { duration ->
+        reelsRepository.getReelDuration(selectedFile.filePath)?.let { duration ->
             videoValidator.validateDuration(duration)
         }
     }
@@ -116,7 +114,7 @@ internal class UploadReelViewModel(
     private fun extractFrame() {
         tryToExecute(
             block = {
-                videoUtilities.extractVideoFrame(
+                reelsRepository.getReelThumbnail(
                     filePath = state.value.selectedFile.filePath,
                     timeMs = 1L
                 )
