@@ -59,7 +59,7 @@ internal class ReelsRepositoryImpl(
             networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT/feed") {
                 parameter(PAGE_PARAMETER, page)
             }
-        }.results?.map { it.toEntity() } ?: emptyList()
+        }.results.orEmpty().map { it.toEntity() }
     }
 
     override suspend fun updateReelById(
