@@ -6,31 +6,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageContent
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageContentUiState
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
 fun MessageContent(
-    messageContent: MessageContent,
+    messageContentUiState: MessageContentUiState,
     shape: Shape,
     onImageClick: (Int) -> Unit = {}
 ) {
-    when (messageContent) {
-        is MessageContent.Text -> Text(
-            text = messageContent.text,
+    when (messageContentUiState) {
+        is MessageContentUiState.Text -> Text(
+            text = messageContentUiState.text,
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
 
-        is MessageContent.ImageUrl -> ImageMessageContent(
-            images = messageContent.imageUrls,
+        is MessageContentUiState.ImageUrl -> ImageMessageContent(
+            images = messageContentUiState.imageUrls,
             modifier = Modifier.size(156.dp, 162.dp).clip(shape),
             onImageClick = onImageClick
         )
 
-        is MessageContent.ImageByteArray -> ImageMessageContent(
-            images = messageContent.images,
+        is MessageContentUiState.ImageByteArray -> ImageMessageContent(
+            images = messageContentUiState.images,
             modifier = Modifier.size(156.dp, 162.dp).clip(shape)
         )
     }

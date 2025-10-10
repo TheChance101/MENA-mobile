@@ -24,12 +24,12 @@ fun Message.toUi(currentUserId: Uuid): MessageUiState {
         sendTime = sendAt,
         status = status,
         isMine = senderId == currentUserId,
-        content = MessageContent.Text(text) // todo temp casting until entity change
+        content = MessageContentUiState.Text(text) // todo temp casting until entity change
     )
 }
 
 fun MessageUiState.toEntity(): Message {
-    val content = content as MessageContent.Text // todo temp casting until entity change
+    val content = content as MessageContentUiState.Text // todo temp casting until entity change
     return Message(
         id = id,
         senderId = senderId,

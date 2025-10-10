@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -28,6 +29,8 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageContentUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -36,15 +39,16 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ImagePager(
+fun FullImagePagerView(
+    message: MessageUiState?,
     senderName: String,
     senderImageUrl: String,
-    images: List<String>,
     initialPage: Int,
-    time: LocalDateTime,
     onCloseClick: () -> Unit,
-    onDownloadClicked: (url: String) -> Unit
+    onDownloadClicked: (url: String) -> Unit,
 ) {
+    if (message == null || message.content !is MessageContentUiState.ImageUrl) return
+    val images = message.content.imageUrls
 
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { images.size })
     Box(
@@ -63,14 +67,14 @@ fun ImagePager(
             modifier = Modifier.padding(
                 vertical = Theme.spacing._8,
                 horizontal = Theme.spacing._16
-            ),
+            ).statusBarsPadding(),
             onClick = onCloseClick
         )
 
         PagerOverlay(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
-            time = time,
+            time = message.sendTime,
             onDownloadClicked = { onDownloadClicked(images[pagerState.currentPage]) },
             modifier = Modifier.align(Alignment.BottomCenter)
         )

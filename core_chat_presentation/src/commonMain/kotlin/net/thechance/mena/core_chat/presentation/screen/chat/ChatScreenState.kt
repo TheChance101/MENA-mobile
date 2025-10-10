@@ -16,7 +16,9 @@ data class ChatScreenState(
     val chatRequesterId: Uuid? = null,
     val inputMessage: String = "",
     val chatListItems: List<ChatListItem> = emptyList(),
-
+    val selectedMessage: MessageUiState? = null,
+    val isImagePagerVisible: Boolean = false,
+    val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
 
     val failedMessageToReSend: MessageUiState? = null
@@ -36,11 +38,11 @@ data class MessageUiState(
     val isMine: Boolean = true,
     val isLastInSeries: Boolean = false,
     val isVisibleMessageInfo: Boolean = false,
-    val content: MessageContent
+    val content: MessageContentUiState
 )
 
-sealed class MessageContent{
-    data class Text(val text: String): MessageContent()
-    data class ImageUrl(val imageUrls: List<String>): MessageContent()
-    data class ImageByteArray(val images: List<ByteArray>): MessageContent()
+sealed class MessageContentUiState {
+    data class Text(val text: String) : MessageContentUiState()
+    data class ImageUrl(val imageUrls: List<String>) : MessageContentUiState()
+    data class ImageByteArray(val images: List<ByteArray>) : MessageContentUiState()
 }

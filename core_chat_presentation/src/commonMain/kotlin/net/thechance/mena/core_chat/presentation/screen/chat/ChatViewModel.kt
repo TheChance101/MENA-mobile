@@ -10,6 +10,9 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
+import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import mena.core_chat_presentation.generated.resources.image_saved_to_gallery
+import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
@@ -87,11 +90,11 @@ class ChatViewModel(
         if (chatId == null || senderId == null || text.isEmpty()) return
 
         // todo temp text content
-        val content = MessageContent.Text(text)
+        val content = MessageContentUiState.Text(text)
         sendMessage(chatId, senderId, content)
     }
 
-    private fun sendMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
+    private fun sendMessage(chatId: Uuid, senderId: Uuid, content: MessageContentUiState) {
         val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
@@ -213,7 +216,7 @@ class ChatViewModel(
             .filter { it.status == MessageStatus.LOADING }
             .forEach {
                 // todo temp text content
-                val content = MessageContent.Text(it.text)
+                val content = MessageContentUiState.Text(it.text)
                 sendMessage(chatId = it.chatId, senderId = senderId, content = content)
             }
     }
@@ -262,6 +265,43 @@ class ChatViewModel(
         updateState { state ->
             state.copy(
                 chatListItems = messages.buildListItems()
+            )
+        }
+    }
+
+    override fun onMessageImageClicked(message: MessageUiState, initialImageIndex: Int) {
+        updateState {
+            it.copy(
+                isImagePagerVisible = true,
+                selectedMessage = message,
+                currentImageIndexForPreview = initialImageIndex
+            )
+        }
+    }
+
+    override fun onDownloadImageClicked(url: String) {
+        tryToExecute(
+            execute = { chatRepository.downloadImage(url) },
+            onSuccess = { onDownloadImageSuccess() },
+            onError = { showErrorSnackBar(Res.string.error_failed_to_download_image) }
+        )
+    }
+
+    private fun onDownloadImageSuccess() {
+        showSnackBar(
+            SnackBarData(
+                title = UiText.StringRes(Res.string.success),
+                message = UiText.StringRes(Res.string.image_saved_to_gallery)
+            )
+        )
+    }
+
+    override fun onCloseClicked() {
+        updateState {
+            it.copy(
+                isImagePagerVisible = false,
+                selectedMessage = null,
+                currentImageIndexForPreview = 0
             )
         }
     }

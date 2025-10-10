@@ -6,12 +6,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-interface ChatInteractionListener : MessageListInteractionListener {
+interface ChatInteractionListener : MessageListInteractionListener, FullImageViewInteractionListener {
 
     fun onBackClicked()
 
     fun onInputMessageChanged(value: String)
     fun onSendMessageClicked()
+
+    fun onMessageImageClicked(message: MessageUiState, initialImageIndex: Int)
 }
 
 interface MessageListInteractionListener {
@@ -29,4 +31,9 @@ interface AttachmentsInteractionListener {
     fun onPhotoClicked()
     fun onCameraClicked()
     fun onCancelClicked()
+}
+
+interface FullImageViewInteractionListener {
+    fun onDownloadImageClicked(url: String)
+    fun onCloseClicked()
 }

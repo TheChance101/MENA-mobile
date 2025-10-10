@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHead
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
+import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,25 +72,23 @@ fun ChatScreenContent(
                 items = state.chatListItems,
                 chatAvatarUrl = state.chatAvatarUrl,
                 onMessageClick = interactions::onMessageClicked,
+                onMessageImageClick = interactions::onMessageImageClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
             )
         }
 
-//        AnimatedVisibility(
-//            visible = state.isImagePagerVisible,
-//            modifier = Modifier.fillMaxSize(),
-//        ) {
-//
-//        ImagePager(
-//            images = state,
-//            initialPage = state.currentImageIndexForPreview,
-//            onCloseClick = interactions::onCloseImagePager,
-//            senderName = state.chatName,
-//            senderImageUrl = state.chatAvatarUrl,
-//            time = state.time,
-//            onDownloadClicked = TODO(),
-//        )
-//        }
-
+        AnimatedVisibility(
+            visible = state.isImagePagerVisible,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            FullImagePagerView(
+                message = state.selectedMessage,
+                senderName = state.chatName,
+                senderImageUrl = state.chatAvatarUrl,
+                initialPage = state.currentImageIndexForPreview,
+                onCloseClick = interactions::onCloseClicked,
+                onDownloadClicked = interactions::onDownloadImageClicked,
+            )
+        }
     }
 }
