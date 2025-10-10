@@ -13,7 +13,7 @@ interface StatementDao {
     @Insert
     suspend fun insertStatement(statement: Statement)
 
-    @Query("SELECT * FROM statement")
+    @Query("SELECT * FROM statement ORDER BY endDate DESC, startDate DESC")
     suspend fun getAllStatement(): List<Statement>
 
     @Delete
