@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
@@ -12,6 +13,8 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.wallet.data.network_client.NetworkClient
@@ -69,6 +72,9 @@ private fun getClient(
                     ignoreUnknownKeys = true
                 }
             )
+        }
+        defaultRequest {
+            contentType(ContentType.Application.Json)
         }
     }
 }

@@ -16,13 +16,13 @@ import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
-import net.thechance.mena.wallet.presentation.utils.formatTransactionDate
+import net.thechance.mena.wallet.presentation.utils.formatLocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 
 fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState(
     id = Constants.ID_PREFIX + id.toString().substring(0,6),
     amount = amount.toString().replace(".",","),
-    date = formatTransactionDate(createdAt),
+    date = formatLocalDateTime(date = createdAt, outputFormat = "dd MMM yyyy, h:mm a"),
     userName = when (type) {
         TransactionType.SENT -> senderName
         TransactionType.RECEIVED -> receiverName

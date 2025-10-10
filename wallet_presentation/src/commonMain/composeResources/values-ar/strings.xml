@@ -93,11 +93,11 @@
     <string name="filter_transactions">تصفية المعاملات</string>
     <string name="reset">إعادة تعيين</string>
     <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
-    <string name="share_button_title">مشاركة</string>">
-    <string name="view_transactions">اظهار المعاملات</string>">
-    <string name="view_transactions_statement_error_message">حدث خطأ اثناء تحميل لملف</string>">
-    <string name="loading_pdf_message">جارٍ تحميل الملف ...</string>">
-    <string name="rendering_pdf_message">اظهار الملف ...</string>">
+    <string name="share_button_title">مشاركة</string>
+    <string name="view_transactions">اظهار المعاملات</string>
+    <string name="view_transactions_statement_error_message">حدث خطأ اثناء تحميل الملف</string>
+    <string name="loading_pdf_message">جارٍ تحميل الملف ...</string>
+    <string name="rendering_pdf_message">اظهار الملف ...</string>
     <string name="start_date_must_be_before_end_date">تاريخ البداية يجب أن يسبق تاريخ النهاية</string>
     <string name="failed_to_load_date_picker">فشل في تحميل التاريخ</string>
     <string name="unknown_error_title">خطأ غير معروف</string>
@@ -107,4 +107,22 @@
     <string name="silvers">فضيات</string>
     <string name="date_range">%1$s - %2$s</string>
     <string name="amount_with_currency">%1$s %2$s</string>
+    <string name="statements">كشوف الحساب</string>
+    <string name="edit">تعديل</string>
+    <string name="no_statements_title">لا توجد كشوفات حتى الآن</string>
+    <string name="no_statements_description">قم بتصدير المعاملات لعرض كشوفاتك المحمّلة هنا.</string>
+    <string name="downloaded_statements">كشوفات الحساب المحمّلة</string>
+    <string name="confirm_payment_header">تأكيد الدفع</string>
+    <string name="confirm_payment_content_success">لديك %1$s فضة في المحفظة</string>
+    <string name="confirm_payment_content_failed">لديك فقط %1$s فضة في محفظتك، وهذا لا يكفي.</string>
+    <string name="You_are_about_to_pay">أنت على وشك الدفع</string>
+    <string name="pay_amount">%1$s ادفع</string>
+
+    <string name="transaction_successful">تمت العملية بنجاح!</string>
+    <string name="show_transaction_details">عرض تفاصيل العملية</string>
+    <string name="close">إغلاق</string>
+    <string name="transaction_failed">فشلت العملية</string>
+    <string name="connection_lost_try_again">انقطع الاتصال. يرجى المحاولة مرة أخرى.</string>
+    <string name="try_again">حاول مرة أخرى</string>
+    <string name="payment_failed_description">تعذر إتمام الدفع. يرجى المحاولة مرة أخرى.</string>
 </resources>
