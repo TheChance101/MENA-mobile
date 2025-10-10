@@ -7,10 +7,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.bilalazzam.contacts_provider.ContactsProvider
 import com.bilalazzam.contacts_provider.ContactsProviderFactory
-import net.thechance.mena.core_chat.data.contacts.utils.createDataStore
-import net.thechance.mena.core_chat.data.contacts.utils.dataStoreName
-import net.thechance.mena.core_chat.data.database.ChatDatabase
-import net.thechance.mena.core_chat.data.database.DatabaseConstants
+import net.thechance.mena.core_chat.data.source.local.database.CHAT_DATABASE_NAME
+import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
+import net.thechance.mena.core_chat.data.source.local.datastore.createDataStore
+import net.thechance.mena.core_chat.data.source.local.datastore.dataStoreName
 import org.koin.core.scope.Scope
 
 actual fun Scope.createContactsProvider(): ContactsProvider {
@@ -27,6 +27,6 @@ actual fun Scope.createSettingsDataStore(): DataStore<Preferences> {
 actual fun Scope.getDatabaseBuilder(): RoomDatabase.Builder<ChatDatabase> {
     val context = this.get<Context>()
     val appContext = context.applicationContext
-    val dbFile = appContext.getDatabasePath(DatabaseConstants.CHAT_DATABASE_NAME)
+    val dbFile = appContext.getDatabasePath(CHAT_DATABASE_NAME)
     return Room.databaseBuilder<ChatDatabase>(context = appContext, name = dbFile.absolutePath)
 }

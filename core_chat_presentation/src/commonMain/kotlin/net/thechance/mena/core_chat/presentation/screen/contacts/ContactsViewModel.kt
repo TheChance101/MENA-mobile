@@ -21,13 +21,13 @@ import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
-import net.thechance.mena.core_chat.presentation.navigation.NavigationConstants.IS_SYNC_SUCCESS
 import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
+import net.thechance.mena.core_chat.presentation.screen.syncContacts.IS_SYNC_SUCCESS
 import net.thechance.mena.core_chat.presentation.shared.BasePagingSource
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
-import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ContactsViewModel(
     private val contactsRepository: ContactsRepository,
@@ -45,10 +45,10 @@ class ContactsViewModel(
     private fun observeSyncSuccess() {
         tryToCollect(
             collect = { popBackStackArgsFlow },
-            onCollect = { args -> // un covered this onCollect {}
+            onCollect = { args ->
                 val success = args?.get(IS_SYNC_SUCCESS) as? Boolean ?: return@tryToCollect
                 if (success) {
-                    onRefreshContacts()
+                    onRefreshContactsClicked()
                     setNavigationArgs(IS_SYNC_SUCCESS to false)
                 }
             }
@@ -59,14 +59,14 @@ class ContactsViewModel(
         tryToCollect(
             collect = ::loadContactsOperation,
             onCollect = ::onLoadContactsSuccess,
-            onError = ::onDataLoadError
+            onError = { onDataLoadError() }
         )
     }
 
     private fun loadContactsOperation(): Flow<PagingData<ContactUiState>> {
         return createPagingFlow(
             pagingSourceFactory = { createContactsPagingSource() },
-            mapper = Contact::toUiModel
+            mapper = Contact::toUi
         )
     }
 
@@ -74,21 +74,20 @@ class ContactsViewModel(
         updateState { it.copy(contacts = flowOf(pagingData ?: PagingData.empty())) }
     }
 
-    override fun onRefreshContacts() {
+    override fun onRefreshContactsClicked() {
         loadContacts()
     }
 
-    override fun onBackClick() {
+    override fun onBackClicked() {
         popBackStack()
     }
 
-    override fun onReSyncClick() {
+    override fun onReSyncClicked() {
         navigate(SyncContactsRoute(forceSync = true))
     }
 
-    override fun onContactClick(contactId: String?) {
-        val id = getUuidOrNull(contactId)
-        if (id == null) {
+    override fun onContactClicked(contactId: Uuid?) {
+        if (contactId == null) {
             showSnackBar(
                 SnackBarData(
                     title = UiText.StringRes(Res.string.something_went_wrong),
@@ -97,10 +96,14 @@ class ContactsViewModel(
             )
             return
         }
+        navigateToChatByContactId(contactId)
+    }
+
+    private fun navigateToChatByContactId(contactId: Uuid) {
         tryToExecute(
-            execute = { chatRepository.getChatByContactUserId(id) },
+            execute = { chatRepository.getChatByContactUserId(contactId) },
             onSuccess = ::onContactClickSuccess,
-            onError = ::onContactClickError,
+            onError = { onContactClickError() },
         )
     }
 
@@ -115,8 +118,7 @@ class ContactsViewModel(
         )
     }
 
-    private fun onContactClickError(throwable: Throwable) { // uncovered
-        println(throwable.stackTraceToString())
+    private fun onContactClickError() {
         showSnackBar(
             SnackBarData(
                 title = UiText.StringRes(Res.string.something_went_wrong),
@@ -125,7 +127,7 @@ class ContactsViewModel(
         )
     }
 
-    private fun onDataLoadError(e: Throwable) { // uncovered
+    private fun onDataLoadError() {
         showSnackBar(
             SnackBarData(
                 title = UiText.StringRes(Res.string.something_went_wrong),
@@ -134,7 +136,7 @@ class ContactsViewModel(
         )
     }
 
-    private fun createContactsPagingSource(onError: ((ChatException) -> Unit)? = ::onDataLoadError)
+    private fun createContactsPagingSource(onError: ((ChatException) -> Unit)? = { onDataLoadError() })
             : PagingSource<Int, Contact> {
         return BasePagingSource(
             onError = onError,
