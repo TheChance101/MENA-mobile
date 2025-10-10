@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.remove_statements
+package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +31,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.wallet_presentation.generated.resources.Res
@@ -42,43 +40,18 @@ import mena.wallet_presentation.generated.resources.ic_trush
 import mena.wallet_presentation.generated.resources.remove_statements
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementHistoryCard
-import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryInteractionListener
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinViewModel
-
 
 @Composable
-fun RemoveStatementsTestScreen(
-    viewModel: RemoveStatementsViewModel = koinViewModel(),
-    onCancelClicked: () -> Unit
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    ObserveAsEffect(
-        effect = viewModel.uiEffect,
-        onEffect = { effect ->
-            onRemoveStatementsEffect(
-                effect = effect,
-                onCancelClicked = onCancelClicked
-            )
-        }
-    )
-    RemoveStatementsTestContent(
-        state = state,
-        interactionListener = viewModel
-    )
-}
-
-@Composable
-fun RemoveStatementsTestContent(
-    state: RemoveStatementsScreenState,
-    interactionListener: RemoveStatementsInteractionListener
+fun RemoveStatementsContent(
+    state: StatementsHistoryScreenState,
+    interactionListener: StatementsHistoryInteractionListener
 ) {
     WalletScaffold(
         topBar = {
@@ -91,23 +64,24 @@ fun RemoveStatementsTestContent(
                         contentDescription = stringResource(Res.string.back_button)
                     )
                 },
-                onLeadingClick = interactionListener::onCancelClicked,
+                onLeadingClick = interactionListener::onCancelEditClicked,
             )
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) }
     ) {
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            items(100) {
-                AnimatedStatementRow()
-            }
-        }
+        AnimatedStatementList(
+            state = state,
+            interactionListener = interactionListener
+        )
     }
 }
 
+
 @Composable
-private fun AnimatedStatementRow() {
+private fun AnimatedStatementList(
+    state: StatementsHistoryScreenState,
+    interactionListener: StatementsHistoryInteractionListener,
+) {
     var isDeleting by remember { mutableStateOf(false) }
     var isVisible by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
@@ -130,7 +104,9 @@ private fun AnimatedStatementRow() {
                 isDeleting = isDeleting,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 48.dp)
+                    .padding(end = 48.dp),
+                state = state,
+                interactionListener = interactionListener
             )
 
             AnimatedDeleteButton(
@@ -140,6 +116,7 @@ private fun AnimatedStatementRow() {
                     scope.launch {
                         delay(300)
                         isVisible = false
+                        interactionListener.onDeleteClicked()
                     }
                 },
                 modifier = Modifier.align(Alignment.CenterEnd)
@@ -151,7 +128,10 @@ private fun AnimatedStatementRow() {
 @Composable
 private fun AnimatedStatementCard(
     isDeleting: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: StatementsHistoryScreenState,
+    interactionListener: StatementsHistoryInteractionListener
+
 ) {
     val scale by animateFloatAsState(
         targetValue = if (isDeleting) 0f else 1f,
@@ -161,13 +141,9 @@ private fun AnimatedStatementCard(
         )
     )
 
-
-    StatementHistoryCard(
-        startDate = "2005",
-        endDate = "2025",
-        totalInflow = "7",
-        totalOutflow = "1",
-        onStatementCardClicked = {},
+    StatementsListContent(
+        listener = interactionListener,
+        state = state,
         modifier = modifier
             .graphicsLayer {
                 scaleX = scale
@@ -239,7 +215,6 @@ private fun AnimatedDeleteButton(
                     cornerRadius = CornerRadius(cornerRadius.dp.toPx())
                 )
             }
-
             Icon(
                 modifier = Modifier
                     .size(24.dp),
@@ -248,28 +223,5 @@ private fun AnimatedDeleteButton(
                 tint = Theme.colorScheme.error
             )
         }
-    }
-}
-
-private fun onRemoveStatementsEffect(
-    effect: RemoveStatementsEffect,
-    onCancelClicked: () -> Unit,
-) {
-    when (effect) {
-        RemoveStatementsEffect.navigateToStatements -> onCancelClicked()
-    }
-}
-
-@Preview
-@Composable
-private fun RemoveStatementsTestScreenPreview() {
-    MenaTheme {
-        RemoveStatementsTestContent(
-            state = RemoveStatementsScreenState(),
-            interactionListener = object : RemoveStatementsInteractionListener {
-                override fun onCancelClicked() {}
-                override fun onDeleteClicked() {}
-            }
-        )
     }
 }
