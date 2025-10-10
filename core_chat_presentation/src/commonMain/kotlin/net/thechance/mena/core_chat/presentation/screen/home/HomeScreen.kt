@@ -106,7 +106,10 @@ fun HomeScreen(
                             items = state.chats,
                             key = { it.id }
                         ) { chat ->
-                            ChatCard(chats = chat)
+                            ChatCard(
+                                chats = chat,
+                                onChatClicked = viewModel::onChatClicked,
+                            )
                         }
 
                         if (state.isLoading) {
