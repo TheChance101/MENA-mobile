@@ -14,6 +14,8 @@ data class StatementsHistoryScreenState(
     val errorState: ErrorState? = null,
     val endOfPages: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
+    val isEditModeActivated: Boolean = false,
+    val isStatementDeleted: Boolean? = null
 ) {
     data class StatementItem(
         val id: Uuid,

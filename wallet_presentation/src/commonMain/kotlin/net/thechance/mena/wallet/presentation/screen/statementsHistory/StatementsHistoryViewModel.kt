@@ -12,6 +12,7 @@ import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementArgument
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -20,6 +21,7 @@ import kotlin.uuid.Uuid
 
 @KoinViewModel
 class StatementsHistoryViewModel(
+    @Provided private val statementArgument: StatementArgument,
     @Provided private val statementRepository: StatementRepository,
     private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementsHistoryScreenState, StatementsHistoryEffect>
@@ -50,7 +52,20 @@ class StatementsHistoryViewModel(
     }
 
     override fun onEditClicked() {
-//        TODO("Not yet implemented")
+        updateState { it.copy(isEditModeActivated = true) }
+    }
+
+    override fun onCancelEditClicked() {
+        updateState { it.copy(isEditModeActivated = false) }
+    }
+
+    override fun onDeleteClicked() {
+        tryToExecute(
+            callee = { statementRepository.deleteStatement(statementArgument.statementId) },
+            onSuccess = { updateState { it.copy(isStatementDeleted = true) } },
+            onError = { errorState -> updateState { it.copy(errorState = errorState) } },
+            dispatcher = dispatcherIO
+        )
     }
 
     private fun onPaginationLoading(isLoading: Boolean) {

@@ -11,4 +11,6 @@ interface StatementsHistoryInteractionListener {
     fun onNextPageRequested()
     fun onStatementCardClicked(id: Uuid)
     fun onEditClicked()
+    fun onCancelEditClicked()
+    fun onDeleteClicked()
 }

@@ -18,4 +18,14 @@ interface StatementRepository {
         return emptyList()
         /*TODO return all statements from local db*/
     }
+
+    /**
+     *we should delete statement from local db and return true if deleted successfully
+     * something like  statementDao.deleteStatement(id)
+     */
+
+    suspend fun deleteStatement(id: String): Boolean {
+        return true
+    }
+
 }
