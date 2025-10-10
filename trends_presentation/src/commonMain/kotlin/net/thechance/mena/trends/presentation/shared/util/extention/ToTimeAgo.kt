@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.show_real.extention
+package net.thechance.mena.trends.presentation.shared.util.extention
 
 import androidx.compose.runtime.Composable
 import kotlinx.datetime.LocalDateTime

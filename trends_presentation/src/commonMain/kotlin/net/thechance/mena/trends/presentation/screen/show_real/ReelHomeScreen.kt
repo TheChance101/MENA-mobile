@@ -33,14 +33,14 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.screen.show_real.component.TrendCard
+import net.thechance.mena.trends.presentation.screen.show_real.component.ReelCard
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun TrendsScreen(
+internal fun ReelHomeScreen(
     viewModel: TrendsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -92,11 +92,11 @@ private fun TrendsScreenContent(
             ) {
                 items(reels.itemSnapshotList.items) { reel ->
                     reel.let { reel ->
-                        TrendCard(
-                            trend = reel,
+                        ReelCard(
+                            reel = reel,
                             onMoreClick = { listener::onMoreClick },
                             onLikeClick = { listener.onLikeClick(reel.id) },
-                            onVideoClick = { listener.onReelClick(reel.id) }
+                            onReelClick = { listener.onReelClick(reel.id) }
                         )
                     }
                 }

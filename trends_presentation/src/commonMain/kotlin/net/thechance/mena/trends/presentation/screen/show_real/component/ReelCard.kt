@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,12 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_dots
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_heart
+import mena.trends_presentation.generated.resources.img
 import mena.trends_presentation.generated.resources.just_now
 import mena.trends_presentation.generated.resources.likes
 import mena.trends_presentation.generated.resources.likes_suffix
@@ -34,21 +35,23 @@ import mena.trends_presentation.generated.resources.views
 import mena.trends_presentation.generated.resources.views_suffix
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.show_real.TrendUiState
-import net.thechance.mena.trends.presentation.screen.show_real.extention.toTimeAgo
+import net.thechance.mena.trends.presentation.shared.util.extention.toTimeAgo
 import net.thechance.mena.trends.presentation.shared.util.isValidImageUrl
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun TrendCard(
-    trend: TrendUiState,
+internal fun ReelCard(
+    reel: TrendUiState,
     onMoreClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onVideoClick: (String) -> Unit
+    onReelClick: (id:String) -> Unit
 ) {
-    val timeAgoText = trend.timeAgo?.toTimeAgo() ?: stringResource(Res.string.just_now)
+    val timeAgoText = reel.timeAgo?.toTimeAgo() ?: stringResource(Res.string.just_now)
 
     Column(
         modifier = Modifier
@@ -64,7 +67,7 @@ internal fun TrendCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = if (isValidImageUrl(trend.profileImageUrl)) trend.profileImageUrl else null,
+                model = if (isValidImageUrl(reel.profileImageUrl)) reel.profileImageUrl else null,
                 contentDescription = stringResource(Res.string.profile_image),
                 modifier = Modifier
                     .size(40.dp)
@@ -78,7 +81,7 @@ internal fun TrendCard(
                     .padding(start = Theme.spacing._8)
             ) {
                 Text(
-                    text = trend.userName,
+                    text = reel.userName,
                     style = Theme.typography.label.medium,
                     color = Theme.colorScheme.shadePrimary,
                     maxLines = 1,
@@ -100,26 +103,21 @@ internal fun TrendCard(
             )
         }
 
-        Box(
+        AsyncImage(
+            model = if (isValidImageUrl(reel.thumbnailUrl)) reel.thumbnailUrl else null,
+            contentDescription = stringResource(Res.string.video_thumbnail),
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(500.dp)
-                .background(Theme.colorScheme.background.surfaceHigh),
-            contentAlignment = Alignment.Center
-        ) {
-            AsyncImage(
-                model = if (isValidImageUrl(trend.thumbnailUrl)) trend.thumbnailUrl else null,
-                contentDescription = stringResource(Res.string.video_thumbnail),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable { onVideoClick(trend.videoUrl) }
-            )
-        }
+                .background(Theme.colorScheme.background.surfaceHigh)
+                .clickable { onReelClick(reel.id) },
+            alignment = Alignment.Center
+        )
 
-        if (trend.description.isNotEmpty()) {
+        if (reel.description.isNotEmpty()) {
             Text(
-                text = trend.description,
+                text = reel.description,
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
@@ -149,7 +147,7 @@ internal fun TrendCard(
                         .clickable { onLikeClick() }
                 )
                 Text(
-                    text = stringResource(Res.string.likes_suffix, trend.likes),
+                    text = stringResource(Res.string.likes_suffix, reel.likes),
                     style = Theme.typography.body.small,
                     color = Theme.colorScheme.shadeSecondary
                 )
@@ -166,7 +164,7 @@ internal fun TrendCard(
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
-                    text = stringResource(Res.string.views_suffix, trend.views),
+                    text = stringResource(Res.string.views_suffix, reel.views),
                     style = Theme.typography.body.small,
                     color = Theme.colorScheme.shadeSecondary
                 )
