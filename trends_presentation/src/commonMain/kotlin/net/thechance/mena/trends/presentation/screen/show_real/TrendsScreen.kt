@@ -76,7 +76,12 @@ private fun TrendsScreenContent(
     val reels = state.reels.collectAsLazyPagingItems()
 
     Scaffold(
-        topBar = { TrendsAppBar(listener) }
+        topBar = {
+            TrendsAppBar(
+                onManageMyTrendsClick = listener::onManageMyTrendsClick,
+                onEditTagsClick = listener::onEditTagsClick
+            )
+        }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
@@ -118,13 +123,16 @@ private fun TrendsScreenContent(
 }
 
 @Composable
-private fun TrendsAppBar(listener: TrendsInteractionListener) {
+private fun TrendsAppBar(
+    onManageMyTrendsClick: () -> Unit,
+    onEditTagsClick: () -> Unit
+) {
     AppBar(
         title = stringResource(Res.string.trends_title),
         trailingContent = {
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = listener::onManageMyTrendsClick
+                onClick = onManageMyTrendsClick
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_account_setting),
@@ -134,7 +142,7 @@ private fun TrendsAppBar(listener: TrendsInteractionListener) {
             }
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = listener::onEditTagsClick
+                onClick = onEditTagsClick
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pencil_edit),
