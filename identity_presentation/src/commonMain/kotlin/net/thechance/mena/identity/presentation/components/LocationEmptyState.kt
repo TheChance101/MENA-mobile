@@ -1,8 +1,6 @@
 package net.thechance.mena.identity.presentation.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,26 +10,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.add_location_button
-import mena.identity_presentation.generated.resources.ic_location_saved_empty
-import mena.identity_presentation.generated.resources.location_saved_empty_desc
-import mena.identity_presentation.generated.resources.no_saved_locations_message
-import mena.identity_presentation.generated.resources.no_saved_locations_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun NoSavedLocationsComponent(
-    onAddLocationClicked: () -> Unit,
+fun LocationEmptyState(
+    iconPainter: Painter,
+    iconContentDescriptionResource: StringResource,
+    titleResource: StringResource,
+    messageResource: StringResource,
+    buttonTextResource: StringResource,
+    onButtonClicked: () -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
 ) {
@@ -39,18 +35,17 @@ fun NoSavedLocationsComponent(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-
     ) {
         Icon(
-            painter = painterResource(Res.drawable.ic_location_saved_empty),
+            painter = iconPainter,
             modifier = Modifier
                 .size(128.dp)
-                .padding(bottom = Theme.spacing._24 ),
-            contentDescription = stringResource(Res.string.location_saved_empty_desc),
+                .padding(bottom = Theme.spacing._24),
+            contentDescription = stringResource(iconContentDescriptionResource),
         )
 
         Text(
-            text = stringResource(Res.string.no_saved_locations_title),
+            text = stringResource(titleResource),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
             textAlign = TextAlign.Center,
@@ -58,7 +53,7 @@ fun NoSavedLocationsComponent(
         )
 
         Text(
-            text = stringResource(Res.string.no_saved_locations_message),
+            text = stringResource(messageResource),
             modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._24),
             textAlign = TextAlign.Center,
             style = Theme.typography.body.small,
@@ -67,27 +62,11 @@ fun NoSavedLocationsComponent(
 
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(Res.string.add_location_button),
-            contentPadding = PaddingValues(horizontal = Theme.spacing._24, vertical = Theme.spacing._16),
-            onClick = onAddLocationClicked,
+            text = stringResource(buttonTextResource),
+            contentPadding = PaddingValues(vertical = Theme.spacing._16, horizontal = Theme.spacing._24),
+            onClick = onButtonClicked,
             isEnabled = !isLoading,
             isLoading = isLoading
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun NoSavedLocationsComponentPreview() {
-    MenaTheme {
-        Box(
-            modifier = Modifier
-            .fillMaxSize()
-            .background(Theme.colorScheme.background.surface)) {
-            NoSavedLocationsComponent(
-                onAddLocationClicked = {},
-                modifier = Modifier.padding(24.dp)
-            )
-        }
     }
 }
