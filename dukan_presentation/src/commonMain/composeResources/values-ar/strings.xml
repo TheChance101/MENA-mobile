@@ -74,4 +74,10 @@
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و 3000 حرف.</string>
 
+    <string name="categories">الفئات</string>
+    <string name="back_to_main_screen_icon">العودة الي الصفحة الرئيسية</string>
+    <string name="category_icon">رمز الفئة</string>
+    <string name="something_went_wrong_while_fetching_categories">حدث خطأ ما اثناء تحميل الفئات المختلفة</string>
+    <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
+
 </resources>
