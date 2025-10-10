@@ -73,27 +73,7 @@ private fun TrendsScreenContent(
     val reels = state.reels.collectAsLazyPagingItems()
 
     Scaffold(
-        topBar = {
-            AppBar(
-                title = stringResource(Res.string.trends_title),
-                trailingContent = {
-                    AppBarOptionContainer(isBadgeVisible = false, onClick = listener::onManageMyTrendsClick) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_account_setting),
-                            contentDescription = stringResource(Res.string.manage_trends),
-                            tint = Theme.colorScheme.shadePrimary
-                        )
-                    }
-                    AppBarOptionContainer(isBadgeVisible = false, onClick = listener::onEditTagsClick) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_pencil_edit),
-                            contentDescription = stringResource(Res.string.edit_tags),
-                            tint = Theme.colorScheme.shadePrimary
-                        )
-                    }
-                }
-            )
-        }
+        topBar = { TrendsAppBar(listener) }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
@@ -132,4 +112,33 @@ private fun TrendsScreenContent(
             }
         }
     }
+}
+
+@Composable
+private fun TrendsAppBar(listener: TrendsInteractionListener) {
+    AppBar(
+        title = stringResource(Res.string.trends_title),
+        trailingContent = {
+            AppBarOptionContainer(
+                isBadgeVisible = false,
+                onClick = listener::onManageMyTrendsClick
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_account_setting),
+                    contentDescription = stringResource(Res.string.manage_trends),
+                    tint = Theme.colorScheme.shadePrimary
+                )
+            }
+            AppBarOptionContainer(
+                isBadgeVisible = false,
+                onClick = listener::onEditTagsClick
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_pencil_edit),
+                    contentDescription = stringResource(Res.string.edit_tags),
+                    tint = Theme.colorScheme.shadePrimary
+                )
+            }
+        }
+    )
 }
