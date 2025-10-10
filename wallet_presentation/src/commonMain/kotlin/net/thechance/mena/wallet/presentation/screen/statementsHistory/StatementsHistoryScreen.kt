@@ -21,6 +21,7 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.edit
 import mena.wallet_presentation.generated.resources.ic_arrow_left
+import mena.wallet_presentation.generated.resources.ic_cancel
 import mena.wallet_presentation.generated.resources.ic_edit
 import mena.wallet_presentation.generated.resources.statements
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -29,6 +30,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.EmptyStatementsHistory
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.RemoveStatementsContent
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementsListContent
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -64,59 +66,81 @@ private fun StatementHistoryContent(
     state: StatementsHistoryScreenState,
     listener: StatementsHistoryInteractionListener
 ) {
-    WalletScaffold(
-        topBar = {
-            AppBar(
-                title = stringResource(Res.string.statements),
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._8
-                ),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_button)
-                    )
-                },
-                onLeadingClick = listener::onBackClicked,
-                trailingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_edit),
-                        contentDescription = stringResource(Res.string.edit),
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(
-                                Theme.colorScheme.background.surfaceLow,
-                                RoundedCornerShape(Theme.radius.md)
+    if (state.isEditModeActivated) {
+        RemoveStatementsContent(
+            state = state,
+            interactionListener = listener
+        )
+    } else {
+        WalletScaffold(
+            topBar = {
+                AppBar(
+                    title = stringResource(Res.string.statements),
+                    contentPadding = PaddingValues(
+                        horizontal = Theme.spacing._16,
+                        vertical = Theme.spacing._8
+                    ),
+                    leadingContent = {
+                        if (state.isEditModeActivated) {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_cancel),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(
+                                        Theme.colorScheme.background.surfaceLow,
+                                        RoundedCornerShape(Theme.radius.md)
+                                    )
+                                    .clip(RoundedCornerShape(Theme.radius.md))
+                                    .clickable { listener.onCancelEditClicked() }
+                                    .padding(10.dp)
                             )
-                            .clip(RoundedCornerShape(Theme.radius.md))
-                            .clickable { listener.onEditClicked() }
-                            .padding(10.dp)
+                        } else
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_arrow_left),
+                                contentDescription = stringResource(Res.string.back_button)
+                            )
+                    },
+                    onLeadingClick = listener::onBackClicked,
+                    trailingContent = {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_edit),
+                            contentDescription = stringResource(Res.string.edit),
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(
+                                    Theme.colorScheme.background.surfaceLow,
+                                    RoundedCornerShape(Theme.radius.md)
+                                )
+                                .clip(RoundedCornerShape(Theme.radius.md))
+                                .clickable { listener.onEditClicked() }
+                                .padding(10.dp)
+                        )
+                    }
+                )
+            },
+            snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+            errorState = state.errorState,
+            onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
+        ) {
+            when {
+                state.isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
+
+                state.statements.isEmpty() -> {
+                    EmptyStatementsHistory(modifier = Modifier.fillMaxSize())
+                }
+
+                else -> {
+                    StatementsListContent(
+                        modifier = Modifier.fillMaxSize().padding(top = Theme.spacing._8),
+                        listener = listener,
+                        state = state,
                     )
                 }
-            )
-        },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
-        errorState = state.errorState,
-        onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
-    ) {
-        when {
-            state.isLoading -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
-
-            state.statements.isEmpty() -> {
-                EmptyStatementsHistory(modifier = Modifier.fillMaxSize())
-            }
-
-            else -> {
-                StatementsListContent(
-                    modifier = Modifier.fillMaxSize().padding(top = Theme.spacing._8),
-                    listener = listener,
-                    state = state,
-                )
             }
         }
     }
