@@ -3,6 +3,7 @@ package net.thechance.mena.wallet.presentation.utils
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import androidx.core.content.FileProvider
@@ -25,24 +26,39 @@ actual class PdfHandler{
 
                 val tempFile = File(context.cacheDir, "statement.pdf")
                     .apply { writeBytes(pdfData) }
+
                 if (!tempFile.exists() || tempFile.length() == 0L)
                     throw RuntimeException("empty file")
+
                 val fileDescriptor =
                     ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)
+
                 val renderer = PdfRenderer(fileDescriptor)
+
                 buildList {
                     repeat(renderer.pageCount) { pageNum ->
-                        var page = renderer.openPage(pageNum)
-                        val bitmap = createBitmap(page.width, page.height)
+                        val page = renderer.openPage(pageNum)
+
+                        val width = (page.width * IMAGE_SCALE).toInt()
+                        val height = (page.height * IMAGE_SCALE).toInt()
+
+                        val bitmap = createBitmap(width, height)
+
+                        val matrix = Matrix().apply {
+                            postScale(IMAGE_SCALE, IMAGE_SCALE)
+                        }
+
                         page.render(
                             bitmap,
                             null,
-                            null,
+                            matrix,
                             PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
                         )
+
                         val output = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
                         add(output.toByteArray())
+
                         bitmap.recycle()
                         page.close()
                     }
@@ -76,6 +92,11 @@ actual class PdfHandler{
         chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
         context.startActivity(chooserIntent)
+    }
+
+    private companion object {
+        // Chosen as a good balance between rendering time and image sharpness
+        const val IMAGE_SCALE = 1.67f
     }
 
 }

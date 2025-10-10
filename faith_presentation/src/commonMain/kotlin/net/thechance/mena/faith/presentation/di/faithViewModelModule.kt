@@ -1,6 +1,8 @@
 package net.thechance.mena.faith.presentation.di
 
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel
+import net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice.CalibrateDeviceViewModel
+import net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel
 import org.koin.core.module.dsl.viewModel
@@ -23,4 +25,12 @@ internal val faithViewModelModule = module {
         )
     }
     viewModelOf(::BookmarkViewModel)
+    viewModelOf(::CalibrateDeviceViewModel)
+    viewModel { (surahId: Int?, surahName: String?) ->
+        SearchViewModel(
+            surahId = surahId,
+            surahName = surahName,
+            repository = get()
+        )
+    }
 }

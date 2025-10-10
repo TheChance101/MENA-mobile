@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,7 +32,6 @@ import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_bismillah
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
@@ -104,7 +104,7 @@ private fun isValidAyahSelection(state: SurahScreenState): Boolean {
 }
 
 @Composable
-private fun getAyahTextStyle() = Theme.typography.quran.large.copy(
+fun getAyahTextStyle() = Theme.typography.quran.large.copy(
     textDirection = TextDirection.Rtl,
     textAlign = TextAlign.Justify
 )
