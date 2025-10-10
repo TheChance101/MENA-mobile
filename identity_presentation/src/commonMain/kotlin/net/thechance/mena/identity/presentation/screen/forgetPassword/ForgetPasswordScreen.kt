@@ -65,7 +65,7 @@ class ForgetPasswordScreen : BaseScreen<
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.reset_password),
-                    onBackClicked = listener::onClickBack
+                    onClickBack = listener::onClickBack
                 )
             }
         ) {

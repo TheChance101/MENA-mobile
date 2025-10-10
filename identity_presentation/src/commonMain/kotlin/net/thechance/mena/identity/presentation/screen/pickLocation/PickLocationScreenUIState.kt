@@ -2,26 +2,37 @@ package net.thechance.mena.identity.presentation.screen.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
 import io.github.dellisd.spatialk.geojson.Position
+import net.thechance.mena.identity.domain.entity.Coordinates
 import org.maplibre.compose.camera.CameraPosition
 
 data class PickLocationScreenUIState(
     val pointerLocation: DpOffset? = null,
     val cameraPosition: CameraPosition = CameraPosition(
         target = Position(20.31852, 20.44519),
-        zoom = 15.0
+        zoom = 1.0
     ),
     val animateToCurrentLocation: Boolean = false,
-    val currentLocation: CoordinatesUiState? = null,
+    val currentLocation: CoordinatesUiState = CoordinatesUiState(),
     val address: String = "",
     val isButtonEnabled: Boolean = false,
     val isMapLocked: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isConfirmEnabled: Boolean = false,
+    val isGpsButtonLoading: Boolean = false
 ) {
     data class CoordinatesUiState(
-        val latitude: Double = 5.0,
-        val longitude: Double = 5.0,
+        val latitude: Double = 0.0,
+        val longitude: Double = 0.0,
     )
 }
 
+fun PickLocationScreenUIState.CoordinatesUiState.toEntity() = Coordinates(
+    latitude = latitude,
+    longitude = longitude
+)
+
+fun Coordinates.toUiState() = PickLocationScreenUIState.CoordinatesUiState(
+    latitude = latitude,
+    longitude = longitude
+)

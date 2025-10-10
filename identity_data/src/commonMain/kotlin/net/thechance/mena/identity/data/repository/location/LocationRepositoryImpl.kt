@@ -4,6 +4,7 @@ import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.MobileGeolocator
 import net.thechance.mena.identity.domain.entity.Coordinates
+import net.thechance.mena.identity.domain.exception.InvalidLocationException
 import net.thechance.mena.identity.domain.repository.LocationRepository
 
 class LocationRepositoryImpl(
@@ -14,7 +15,7 @@ class LocationRepositoryImpl(
         val geolocator: Geolocator = MobileGeolocator()
         return when (val result = geolocator.current()) {
             is GeolocatorResult.Error -> {
-                throw Exception("Failed to get location: ${result.message}")
+                throw InvalidLocationException("Failed to get location: ${result.message}")
             }
 
             is GeolocatorResult.Success -> {

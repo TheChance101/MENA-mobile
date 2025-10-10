@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.mockkery)
     alias(libs.plugins.kover)
-
+    alias(libs.plugins.cocoapods)
 }
 
 kotlin {
@@ -29,11 +29,22 @@ kotlin {
         }
     }
 
+    cocoapods {
+        summary = "IdentityPresentation — internal KMP maps module for Identity. Contains iOS-compatible map composables and shared location logic used across mobile modules."
+        homepage = "https://github.com/TheChance101/MENA-mobile"
+        version = "1.0"
+        ios.deploymentTarget = "15.4"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "IdentityPresentation"
+            isStatic = true
+        }
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
         }
         commonMain.dependencies {
             implementation(projects.identityApi)
@@ -62,7 +73,6 @@ kotlin {
             implementation(libs.turbine)
             implementation(libs.kotlinx.coroutines.test)
         }
-
     }
 }
 

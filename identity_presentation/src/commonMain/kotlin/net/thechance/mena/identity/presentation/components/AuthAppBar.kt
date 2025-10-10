@@ -10,7 +10,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 internal fun AuthAppBar(
     title: String,
-    onBackClicked: () -> Unit
+    onClickBack: () -> Unit
 ) {
     AppBar(
         title = title,
@@ -20,6 +20,6 @@ internal fun AuthAppBar(
                 contentDescription = "Back"
             )
         },
-        onLeadingClick = onBackClicked
+        onLeadingClick = onClickBack
     )
 }

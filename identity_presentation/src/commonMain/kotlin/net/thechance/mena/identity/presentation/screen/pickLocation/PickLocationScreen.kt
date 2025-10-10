@@ -14,16 +14,14 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.confirm
-import mena.identity_presentation.generated.resources.ic_gps
-import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
+import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.Map
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
@@ -44,8 +42,8 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
         Scaffold(
             topBar = {
                 AuthAppBar(
-                    "Pick Location",
-                    {}
+                    title = "Pick Location",
+                    onClickBack = listener::onClickBack
                 )
             }
         ) {
@@ -68,14 +66,9 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        FabButton(
-                            painter = painterResource(Res.drawable.ic_gps),
+                        GpsFabButton(
                             onClick = listener::onClickGps,
-                            contentPadding = PaddingValues(
-                                horizontal = 16.dp,
-                                vertical = 14.dp
-                            ),
-                            iconSize = 20.dp,
+                            isLoading = state.isGpsButtonLoading,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         EditMapButton(
@@ -107,6 +100,9 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
         effect: PickLocationScreenUIEffect,
         navigator: Navigator
     ) {
-        TODO("Not yet implemented")
+        when (effect) {
+            PickLocationScreenUIEffect.NavigateBack -> navigator.pop()
+            is PickLocationScreenUIEffect.NavigateToAddLocation -> TODO("add navigator.push(AddLocationScreen(effect.latitude, effect.longitude,effect.address}) when implement")
+        }
     }
 }

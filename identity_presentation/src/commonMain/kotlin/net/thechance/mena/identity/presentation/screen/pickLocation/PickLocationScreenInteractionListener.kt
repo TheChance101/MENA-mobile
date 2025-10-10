@@ -11,6 +11,7 @@ interface PickLocationScreenInteractionListener : BaseInteractionListener {
     fun onClickGps()
     fun onClickConfirm()
     fun onClearErrorMessage()
+    fun onClickBack()
 }
 
 

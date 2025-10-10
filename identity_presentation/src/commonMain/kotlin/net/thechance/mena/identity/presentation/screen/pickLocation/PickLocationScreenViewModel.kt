@@ -1,7 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import net.thechance.mena.identity.domain.entity.Coordinates
 import net.thechance.mena.identity.domain.repository.LocationRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -38,20 +37,15 @@ class PickLocationScreenViewModel(
         return locationRepository.getLocationName(coordinates.toEntity())
     }
 
-
     private fun onMapClickedSuccess(address: String) {
-        onAddressChanged(address)
-    }
-
-    fun onAddressChanged(address: String) {
         updateState { copy(address = address) }
         changeIsConfirmEnabled()
     }
 
     override fun onCameraMoved(
-        camera: CameraPosition
+        cameraPosition: CameraPosition
     ) {
-        updateState { copy(cameraPosition = camera, animateToCurrentLocation = false) }
+        updateState { copy(cameraPosition = cameraPosition, animateToCurrentLocation = false) }
     }
 
     override fun onClickEdit() {
@@ -69,53 +63,64 @@ class PickLocationScreenViewModel(
 
     override fun onClickGps() {
         tryToExecute(
-            function = { locationRepository.getCurrentLocation() },
+            function = ::onGpsFetch,
             onSuccess = ::onGpsClickSuccess,
             onError = ::onError
         )
     }
 
+    private suspend fun onGpsFetch(): Coordinates? {
+        updateState { copy(isGpsButtonLoading = true) }
+        return locationRepository.getCurrentLocation()
+    }
+
     private fun onError(errorState: ErrorState) {
-        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
+        updateState {
+            copy(
+                errorMessage = mapErrorToMessage(errorState),
+                isGpsButtonLoading = false
+            )
+        }
     }
 
     private fun onGpsClickSuccess(
         coordinates: Coordinates?
     ) {
-        updateState {
-            copy(
-                currentLocation = coordinates?.toUiState(),
-                pointerLocation = DpOffset(150.dp, 300.dp),
-                isMapLocked = true,
-                animateToCurrentLocation = true
-            )
+        if (coordinates != null) {
+            updateState {
+                copy(
+                    currentLocation = coordinates.toUiState(),
+                    isMapLocked = true,
+                    animateToCurrentLocation = true,
+                    isGpsButtonLoading = false
+                )
+            }
         }
     }
 
-    fun Coordinates.toUiState() = PickLocationScreenUIState.CoordinatesUiState(
-        latitude = latitude,
-        longitude = longitude
-    )
-
     override fun onClickConfirm() {
-        TODO("Not yet implemented")
+        sendNewEffect(
+            PickLocationScreenUIEffect.NavigateToAddLocation(
+                latitude = state.value.currentLocation.latitude,
+                longitude = state.value.currentLocation.longitude,
+                address = state.value.address
+            )
+        )
     }
 
     override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }
 
+    override fun onClickBack() {
+        sendNewEffect(PickLocationScreenUIEffect.NavigateBack)
+    }
+
     private fun changeIsConfirmEnabled() {
-        if (state.value.isMapLocked) {
+        if (state.value.isMapLocked && state.value.address.isNotBlank()) {
             updateState { copy(isConfirmEnabled = true) }
         } else {
             updateState { copy(isConfirmEnabled = false) }
         }
     }
 }
-
-fun PickLocationScreenUIState.CoordinatesUiState.toEntity() = Coordinates(
-    latitude = latitude,
-    longitude = longitude
-)
-
