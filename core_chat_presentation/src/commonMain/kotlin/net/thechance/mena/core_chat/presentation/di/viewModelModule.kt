@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.di
 
+import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
 import net.thechance.mena.core_chat.presentation.screen.home.HomeViewModel
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsViewModel
@@ -16,8 +17,7 @@ internal val viewModelModule = module {
         ContactsViewModel(get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
     }
     viewModel {
-        SyncContactsViewModel(get(), get(), get(), get(), get(),
-            dispatcher = get(named(CHAT_IO_DISPATCHER))
-        )
+        SyncContactsViewModel(get(), get(), get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
     }
+    viewModel { ChatViewModel(get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER))) }
 }
