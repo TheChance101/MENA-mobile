@@ -15,15 +15,6 @@ class MessageConverter {
     }
 
     @TypeConverter
-    fun fromMessageContentType(type: MessageLocalDto.MessageContentType): String = type.name
-
-    @TypeConverter
-    fun toMessageContentType(type: String): MessageLocalDto.MessageContentType {
-        return runCatching { MessageLocalDto.MessageContentType.valueOf(type) }
-            .getOrDefault(MessageLocalDto.MessageContentType.TEXT)
-    }
-
-    @TypeConverter
     fun fromByteArrayList(value: List<ByteArray>?): String? {
         return value?.map { Base64.encode(it) }
             ?.let { Json.encodeToString(it) }

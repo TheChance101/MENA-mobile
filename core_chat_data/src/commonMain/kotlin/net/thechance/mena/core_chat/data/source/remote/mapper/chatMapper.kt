@@ -56,7 +56,6 @@ fun MessageContent.toSendMessageRequestDto(chatId: String): SendMessageDto {
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 fun Message.toLocalDto(): MessageLocalDto {
     val content = this.content
-    val contentType = content.toContentType()
     val text = if (content is MessageContent.Text) content.text else null
     val images = if (content is MessageContent.PendingImages) content.byteArrays else null
 
@@ -64,7 +63,6 @@ fun Message.toLocalDto(): MessageLocalDto {
     return MessageLocalDto(
         id = this.id.toString(),
         senderId = this.senderId.toString(),
-        contentType = contentType,
         text = text,
         images = images,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
@@ -73,30 +71,27 @@ fun Message.toLocalDto(): MessageLocalDto {
     )
 }
 
-private fun MessageContent.toContentType(): MessageLocalDto.MessageContentType {
-    return when (this) {
-        is MessageContent.Text -> MessageLocalDto.MessageContentType.TEXT
-        is MessageContent.PendingImages -> MessageLocalDto.MessageContentType.IMAGES
-        else -> error("PendingImages should be uploaded first")
-    }
-}
 
-fun MessageLocalDto.toEntity(): Message {
-    val content = when (contentType) {
-        MessageLocalDto.MessageContentType.TEXT -> MessageContent.Text(text ?: "")
-        MessageLocalDto.MessageContentType.IMAGES -> MessageContent.PendingImages(images.orEmpty())
+fun MessageLocalDto.toDomain(): Message {
+    val content = if (text != null) {
+        MessageContent.Text(text)
+    } else if (images != null) {
+        MessageContent.PendingImages(images)
+    } else {
+        error("Invalid message content")
     }
+
     return Message(
         id = Uuid.parse(this.id),
         senderId = Uuid.parse(this.senderId),
         chatId = Uuid.parse(this.chatId),
         content = content,
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
-        status = status.toEntity()
+        status = status.toDomain()
     )
 }
 
-fun MessageLocalDto.MessageStatus.toEntity(): MessageStatus {
+fun MessageLocalDto.MessageStatus.toDomain(): MessageStatus {
     return when (this) {
         MessageLocalDto.MessageStatus.LOADING -> MessageStatus.LOADING
         MessageLocalDto.MessageStatus.SENT -> MessageStatus.SENT

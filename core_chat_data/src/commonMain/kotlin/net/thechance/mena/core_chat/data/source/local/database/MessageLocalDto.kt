@@ -9,8 +9,6 @@ data class MessageLocalDto(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "sender_id")
     val senderId: String,
-    @ColumnInfo(name = "content_type")
-    val contentType: MessageContentType,
     @ColumnInfo(name = "message_text")
     val text: String? = null,
     @ColumnInfo(name = "images")
@@ -23,5 +21,4 @@ data class MessageLocalDto(
     val status: MessageStatus,
 ) {
     enum class MessageStatus { LOADING, SENT, READ, FAILED }
-    enum class MessageContentType { TEXT, IMAGES }
 }
