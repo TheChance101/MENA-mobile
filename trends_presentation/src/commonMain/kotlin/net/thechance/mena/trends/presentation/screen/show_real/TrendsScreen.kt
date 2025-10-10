@@ -50,10 +50,13 @@ internal fun TrendsScreen(
         when (effect) {
             is TrendsUiEffect.NavigateToReelDetails ->
                 navController.navigate(Route.ReelDetails(effect.trendId))
+
             is TrendsUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)
+
             is TrendsUiEffect.NavigateToChangeTags ->
                 navController.navigate(Route.Categories)
+
             is TrendsUiEffect.NavigateToManageMyTrends ->
                 navController.navigate(Route.ManageReels)
         }
