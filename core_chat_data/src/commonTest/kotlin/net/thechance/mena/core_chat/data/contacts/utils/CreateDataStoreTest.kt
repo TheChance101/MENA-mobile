@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import net.thechance.mena.core_chat.data.source.local.datastore.createDataStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -14,7 +15,7 @@ class DataStoreFactoryTest {
 
     @Test
     fun `createDataStore should create usable DataStore when valid path provided`() = runBlocking {
-        val dataStore: DataStore<Preferences> = createDataStore{DATA_STORE_PATH}
+        val dataStore: DataStore<Preferences> = createDataStore { DATA_STORE_PATH }
 
         assertNotNull(dataStore)
 

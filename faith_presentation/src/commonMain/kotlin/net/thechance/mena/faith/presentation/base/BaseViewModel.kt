@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.error_latitude
+import mena.faith_presentation.generated.resources.error_longitude
 import mena.faith_presentation.generated.resources.error_network
 import mena.faith_presentation.generated.resources.error_no_internet
 import mena.faith_presentation.generated.resources.error_unauthorized
@@ -92,7 +94,8 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        inScope: CoroutineScope = viewModelScope
+        inScope: CoroutineScope = viewModelScope,
+        delayMillis: Long = 0L
     ): Job {
         val handler = CoroutineExceptionHandler { _, throwable ->
             onError(throwable)
@@ -100,6 +103,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
 
         return inScope.launch(dispatcher + handler) {
             onStart()
+            delay(delayMillis)
             runCatching { execute() }
                 .onSuccess { result -> onSuccess?.invoke(result) }
                 .onFailure { throwable -> onError(throwable) }
@@ -119,5 +123,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         FaithException.NoInternetException -> Res.string.error_no_internet
         FaithException.UnauthorizedException -> Res.string.error_unauthorized
         FaithException.UnknownException -> Res.string.error_unknown
+        FaithException.InvalidLatitudeException -> Res.string.error_latitude
+        FaithException.InvalidLongitudeException -> Res.string.error_longitude
     }
 }

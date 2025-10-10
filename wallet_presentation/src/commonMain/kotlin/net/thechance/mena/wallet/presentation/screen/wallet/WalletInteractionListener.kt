@@ -4,4 +4,5 @@ interface WalletInteractionListener {
     fun onBackClicked()
     fun onRetryLoadBalanceClicked()
     fun onTransactionHistoryClicked()
+    fun onStatementHistoryClicked()
 }
