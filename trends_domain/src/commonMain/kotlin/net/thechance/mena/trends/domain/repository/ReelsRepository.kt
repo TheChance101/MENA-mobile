@@ -8,6 +8,7 @@ interface ReelsRepository {
     suspend fun deleteReelById(id: String)
     suspend fun getAllReels(pageNumber: Int): List<Reel>
     suspend fun updateReelById(id: String, description: String, categoryIds: List<String>)
+    suspend fun getFeedReels(page: Int): List<Reel>
     fun uploadReel(
         name: String,
         mimeType: String,

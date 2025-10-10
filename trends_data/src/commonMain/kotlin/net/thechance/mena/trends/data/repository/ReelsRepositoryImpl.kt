@@ -54,6 +54,14 @@ internal class ReelsRepositoryImpl(
         }.results?.map { it.toEntity() } ?: emptyList()
     }
 
+    override suspend fun getFeedReels(page: Int): List<Reel> {
+        return safeApiCall<RemotePaginationResponse<ReelDto>> {
+            networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT/feed") {
+                parameter(PAGE_PARAMETER, page)
+            }
+        }.results?.map { it.toEntity() } ?: emptyList()
+    }
+
     override suspend fun updateReelById(
         id: String,
         description: String,
