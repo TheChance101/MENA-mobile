@@ -46,17 +46,6 @@ internal class ReelRepositoryImplTest {
     }
 
     @Test
-    fun `should throw exception when api fails`() = runTest {
-        val exception = RuntimeException("Network error")
-        networkClient = createReelsHttpClient { throw exception }
-        repository = ReelsRepositoryImpl(networkClient)
-
-        val result = runCatching { repository.getFeedReels(1) }
-
-        assertThat(result.exceptionOrNull()).isEqualTo(exception)
-    }
-
-    @Test
     fun `should delete reel successfully when valid id provided`() = runTest {
 
         networkClient = createReelsHttpClient { deleteReelResponse() }

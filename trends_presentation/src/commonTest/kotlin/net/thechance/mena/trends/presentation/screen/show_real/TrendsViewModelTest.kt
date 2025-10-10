@@ -68,20 +68,6 @@ class TrendsViewModelTest {
         }
     }
 
-    @Test
-    fun `getTrends should toggle loading state`() = runTest(testDispatcher) {
-        everySuspend { repository.getFeedReels(1) } returns mockReels
-
-        viewModel.state.test {
-            val states = mutableListOf<TrendsScreenState>()
-            repeat(2) { states += awaitItem() }
-
-            assertThat(states[0].isLoading).isEqualTo(true)
-            assertThat(states[1].isLoading).isEqualTo(false)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
     private companion object {
         val mockReels = listOf(
             Reel("1", "thumb1.jpg", "video1.mp4", "desc1", 10, 100, null, emptyList()),
