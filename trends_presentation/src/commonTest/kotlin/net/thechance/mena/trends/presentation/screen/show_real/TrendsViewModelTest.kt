@@ -1,0 +1,139 @@
+package net.thechance.mena.trends.presentation.screen.show_real
+
+import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
+import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.screen.show_real.TrendsScreenState.TrendUiState
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class TrendsViewModelTest {
+
+    private val repository: ReelsRepository = mock(MockMode.autofill)
+    private val testDispatcher = StandardTestDispatcher()
+    private lateinit var viewModel: TrendsViewModel
+
+    @BeforeTest
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        viewModel = TrendsViewModel(repository, testDispatcher)
+    }
+
+    @Test
+    fun `view model should update state by reels when repository returns data`() = runTest(testDispatcher) {
+        everySuspend { repository.getFeedReels(1) } returns mockReels
+
+        viewModel.state.test {
+            val initialState = awaitItem()
+            assertThat(initialState.isLoading).isEqualTo(true)
+            val loadedState = awaitItem()
+            assertThat(loadedState.isLoading).isEqualTo(false)
+            assertThat(loadedState.reels).isNotNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should update state`() = runTest(testDispatcher) {
+        everySuspend { repository.getFeedReels(1) } returns mockReels
+
+        viewModel.state.test {
+            awaitItem()
+            awaitItem()
+            viewModel.onLikeClick("1")
+
+            val updatedState = awaitItem()
+            assertThat(updatedState.reels).isNotNull()
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onVideoClick should send NavigateToReelDetails effect`() = runTest {
+        viewModel.effect.test {
+            viewModel.onVideoClick("1")
+            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToReelDetails("1"))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onAddReelClick should send NavigateToAddReel effect`() = runTest {
+        viewModel.effect.test {
+            viewModel.onAddReelClick()
+            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToAddReel)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onManageTrendsClick should send NavigateToManageTrends effect`() = runTest {
+        viewModel.effect.test {
+            viewModel.onManageTrendsClick()
+            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToManageTrends)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onEditTagsClick should send NavigateToChangeTags effect`() = runTest {
+        viewModel.effect.test {
+            viewModel.onEditTagsClick()
+            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToChangeTags)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `getTrends should set isLoading true then false`() = runTest(testDispatcher) {
+        everySuspend { repository.getFeedReels(1) } returns mockReels
+        viewModel.state.test {
+            val loadingState = awaitItem()
+            assertThat(loadingState.isLoading).isEqualTo(true)
+
+            val loadedState = awaitItem()
+            assertThat(loadedState.isLoading).isEqualTo(false)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `getTrends should update error when repository throws`() = runTest(testDispatcher) {
+        val exception = RuntimeException("Failed")
+        everySuspend { repository.getFeedReels(1) } throws exception
+
+        viewModel.state.test {
+            val stateItem = awaitItem()
+            assertThat(stateItem.error).isEqualTo(exception)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private companion object {
+        val mockReels = listOf(
+            Reel("1", "thumb1.jpg", "video1.mp4", "desc1", 10, 100, null, emptyList()),
+            Reel("2", "thumb2.jpg", "video2.mp4", "desc2", 20, 200, null, emptyList())
+        )
+
+        val mockReelsUi = listOf(
+            TrendUiState("1", "thumb1.jpg", "video1.mp4", "desc1", likes = 10, views = 100),
+            TrendUiState("2", "thumb2.jpg", "video2.mp4", "desc2", likes = 20, views = 200)
+        )
+    }
+}
