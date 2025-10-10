@@ -171,7 +171,8 @@ private fun PreviewBaseMessageLayout() {
                     content = MessageContentUiState.Text("Good Morning!")
                 ),
                 showMessageInfo = true,
-                isMarkedLastInSeries = true
+                isMarkedLastInSeries = true,
+                onMessageImageClick = { message,index -> }
             )
         }
     }

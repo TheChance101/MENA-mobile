@@ -90,7 +90,13 @@ class ChatViewModel(
         if (chatId == null || senderId == null || text.isEmpty()) return
 
         // todo temp text content
-        val content = MessageContentUiState.Text(text)
+        val content = MessageContentUiState.ImageUrl(
+            listOf(
+                "https://th.bing.com/th/id/OIP.u6OP9gu-9w_f_QQB-EioUQHaEK?w=279&h=180&c=7&r=0&o=7&cb=12&dpr=1.3&pid=1.7&rm=3",
+                "https://th.bing.com/th/id/OIP.YxvEw4Wl6-91Y0v8ntxuMwHaEK?w=279&h=180&c=7&r=0&o=7&cb=12&dpr=1.3&pid=1.7&rm=3"
+            )
+        )
+
         sendMessage(chatId, senderId, content)
     }
 
@@ -104,11 +110,11 @@ class ChatViewModel(
         updateStateWithNewMessage(message)
         updateState { state -> state.copy(inputMessage = "") }
 
-        tryToExecute(
-            execute = { chatRepository.sendMessage(message.toEntity()) },
-            onSuccess = { onSendMessageSuccess(message) },
-            onError = { onSendMessageError(message) },
-        )
+//        tryToExecute(
+//            execute = { chatRepository.sendMessage(message.toEntity()) },
+//            onSuccess = { onSendMessageSuccess(message) },
+//            onError = { onSendMessageError(message) },
+//        )
     }
 
     private fun onSendMessageSuccess(message: MessageUiState) {
