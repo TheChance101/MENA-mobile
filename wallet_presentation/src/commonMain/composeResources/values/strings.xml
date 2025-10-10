@@ -121,4 +121,12 @@
     <string name="confirm_payment_content_failed">You only have %1$s silvers in your wallet, which isn’t enough.</string>
     <string name="You_are_about_to_pay">You’re about to pay</string>
     <string name="pay_amount">Pay %1$s</string>
+
+    <string name="transaction_successful">Transaction Successful!</string>
+    <string name="show_transaction_details">Show Transaction Details</string>
+    <string name="close">Close</string>
+    <string name="transaction_failed">Transaction Failed</string>
+    <string name="connection_lost_try_again">The connection was lost. Please try again.</string>
+    <string name="try_again">Try Again</string>
+    <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
 </resources>
