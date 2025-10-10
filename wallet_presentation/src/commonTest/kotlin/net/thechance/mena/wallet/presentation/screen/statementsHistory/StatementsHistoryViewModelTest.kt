@@ -13,6 +13,9 @@ import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -23,7 +26,6 @@ import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementArgument
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,7 +39,6 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatementsHistoryViewModelTest {
     private val statementRepository = mock<StatementRepository>(mode = MockMode.autofill)
-    private val statementArgument = mock<StatementArgument>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: StatementsHistoryViewModel
 
@@ -45,8 +46,7 @@ class StatementsHistoryViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        viewModel =
-            StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
+        viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
     }
 
     @AfterTest
@@ -110,8 +110,7 @@ class StatementsHistoryViewModelTest {
 
         everySuspend { statementRepository.getStatements(0, 20) } returns mockStatements
 
-        val viewModel =
-            StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
+        val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
 
         advanceUntilIdle()
 
@@ -130,8 +129,7 @@ class StatementsHistoryViewModelTest {
         runTest(testDispatcher) {
             everySuspend { statementRepository.getStatements(0, 20) } returns emptyList()
 
-            val viewModel =
-                StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
+            val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
 
             advanceUntilIdle()
             viewModel.state.test {
@@ -147,8 +145,7 @@ class StatementsHistoryViewModelTest {
         runTest(testDispatcher) {
             everySuspend { statementRepository.getStatements(0, 20) } throws NoInternetException()
 
-            val viewModel =
-                StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
+            val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
 
             advanceUntilIdle()
             viewModel.state.test {
@@ -164,8 +161,7 @@ class StatementsHistoryViewModelTest {
     fun `paginator should handle UnknownException and set error state`() = runTest(testDispatcher) {
         everySuspend { statementRepository.getStatements(0, 20) } throws UnknownException()
 
-        val viewModel =
-            StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
+        val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
 
         advanceUntilIdle()
         viewModel.state.test {
@@ -176,6 +172,129 @@ class StatementsHistoryViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `onEditClicked should activate edit mode`() = runTest(testDispatcher) {
+        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
+
+        advanceUntilIdle()
+
+        viewModel.onEditClicked()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertTrue(state.isEditModeActivated)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onCancelEditClicked should deactivate edit mode`() = runTest(testDispatcher) {
+        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
+
+        advanceUntilIdle()
+
+        viewModel.onEditClicked()
+
+        viewModel.onCancelEditClicked()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertFalse(state.isEditModeActivated)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onDeleteClicked should delete statement successfully`() = runTest(testDispatcher) {
+        val statementId = Uuid.random()
+        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
+        everySuspend { statementRepository.deleteStatement(statementId) } returns true
+
+        advanceUntilIdle()
+
+        viewModel.onDeleteClicked(statementId)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertTrue(state.isStatementDeleted == true)
+            assertNull(state.errorState)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verifySuspend { statementRepository.deleteStatement(statementId) }
+    }
+
+    @Test
+    fun `onDeleteClicked should handle NoInternetException`() = runTest(testDispatcher) {
+        val statementId = Uuid.random()
+        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
+        everySuspend { statementRepository.deleteStatement(statementId) } throws NoInternetException()
+
+        advanceUntilIdle()
+
+        viewModel.onDeleteClicked(statementId)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals(ErrorState.NoInternet, state.errorState)
+            assertFalse(state.isStatementDeleted == true)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verifySuspend { statementRepository.deleteStatement(statementId) }
+    }
+
+    @Test
+    fun `onDeleteClicked should handle UnknownException`() = runTest(testDispatcher) {
+        val statementId = Uuid.random()
+        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
+        everySuspend { statementRepository.deleteStatement(statementId) } throws UnknownException()
+
+        advanceUntilIdle()
+
+        viewModel.onDeleteClicked(statementId)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals(ErrorState.Unknown, state.errorState)
+            assertFalse(state.isStatementDeleted == true)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        verifySuspend { statementRepository.deleteStatement(statementId) }
+    }
+
+    @Test
+    fun `edit mode flow - activate, delete, then cancel`() = runTest(testDispatcher) {
+        val statementId = Uuid.random()
+        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
+        everySuspend { statementRepository.deleteStatement(statementId) } returns true
+
+        advanceUntilIdle()
+
+        viewModel.onEditClicked()
+        viewModel.state.test {
+            assertTrue(awaitItem().isEditModeActivated)
+            cancelAndIgnoreRemainingEvents()
+        }
+        viewModel.onDeleteClicked(statementId)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            assertTrue(awaitItem().isStatementDeleted == true)
+            cancelAndIgnoreRemainingEvents()
+        }
+        viewModel.onCancelEditClicked()
+        viewModel.state.test {
+            assertFalse(awaitItem().isEditModeActivated)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 
     companion object {
         val statements = listOf(
