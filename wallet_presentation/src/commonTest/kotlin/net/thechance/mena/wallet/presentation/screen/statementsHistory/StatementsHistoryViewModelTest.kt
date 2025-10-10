@@ -23,6 +23,7 @@ import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementArgument
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -36,6 +37,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatementsHistoryViewModelTest {
     private val statementRepository = mock<StatementRepository>(mode = MockMode.autofill)
+    private val statementArgument = mock<StatementArgument>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: StatementsHistoryViewModel
 
@@ -43,7 +45,8 @@ class StatementsHistoryViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+        viewModel =
+            StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
     }
 
     @AfterTest
@@ -107,7 +110,8 @@ class StatementsHistoryViewModelTest {
 
         everySuspend { statementRepository.getStatements(0, 20) } returns mockStatements
 
-        val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+        val viewModel =
+            StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
 
         advanceUntilIdle()
 
@@ -126,7 +130,8 @@ class StatementsHistoryViewModelTest {
         runTest(testDispatcher) {
             everySuspend { statementRepository.getStatements(0, 20) } returns emptyList()
 
-            val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+            val viewModel =
+                StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
 
             advanceUntilIdle()
             viewModel.state.test {
@@ -142,7 +147,8 @@ class StatementsHistoryViewModelTest {
         runTest(testDispatcher) {
             everySuspend { statementRepository.getStatements(0, 20) } throws NoInternetException()
 
-            val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+            val viewModel =
+                StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
 
             advanceUntilIdle()
             viewModel.state.test {
@@ -158,7 +164,8 @@ class StatementsHistoryViewModelTest {
     fun `paginator should handle UnknownException and set error state`() = runTest(testDispatcher) {
         everySuspend { statementRepository.getStatements(0, 20) } throws UnknownException()
 
-        val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+        val viewModel =
+            StatementsHistoryViewModel(statementArgument, statementRepository, testDispatcher)
 
         advanceUntilIdle()
         viewModel.state.test {

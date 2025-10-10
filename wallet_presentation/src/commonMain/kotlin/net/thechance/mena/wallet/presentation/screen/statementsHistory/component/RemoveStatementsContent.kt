@@ -45,6 +45,7 @@ import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryInteractionListener
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
+import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -69,10 +70,24 @@ fun RemoveStatementsContent(
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) }
     ) {
-        AnimatedStatementList(
-            state = state,
-            interactionListener = interactionListener
-        )
+        when {
+            state.isLoading -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+
+            state.statements.isEmpty() -> {
+                EmptyStatementsHistory(modifier = Modifier.fillMaxSize())
+            }
+
+            else -> {
+                AnimatedStatementList(
+                    state = state,
+                    interactionListener = interactionListener
+                )
+            }
+        }
     }
 }
 
