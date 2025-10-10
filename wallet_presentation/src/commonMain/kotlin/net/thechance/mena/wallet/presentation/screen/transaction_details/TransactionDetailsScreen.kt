@@ -45,8 +45,7 @@ fun TransactionDetailsScreen(
     id: String,
     onNavigateBackClicked: () -> Unit,
     viewModel: TransactionDetailsViewModel = koinViewModel(
-        key = id,
-        parameters = { parametersOf(id) }
+        parameters = { parametersOf(TransactionDetailsArgs(id)) }
     ),
     imageSharer: ImageSharer = koinInject(),
 ) {
@@ -170,7 +169,7 @@ private suspend fun onTransactionDetailsEffect(
         TransactionDetailsEffect.CaptureImage -> {
             try {
                 captureImage()
-            }catch (e: Throwable){
+            }catch (_: Throwable){
                 onCaptureError()
             }
         }

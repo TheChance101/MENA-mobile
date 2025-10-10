@@ -117,4 +117,9 @@
     <string name="no_statements_title">No statements yet</string>
     <string name="no_statements_description">Export a transaction history to see your downloaded statements here.</string>
     <string name="downloaded_statements">Downloaded Statements</string>
+    <string name="confirm_payment_header">Confirm Payment</string>
+    <string name="confirm_payment_content_success">You have %1$s silvers in wallet</string>
+    <string name="confirm_payment_content_failed">You only have %1$s silvers in your wallet, which isn’t enough.</string>
+    <string name="You_are_about_to_pay">You’re about to pay</string>
+    <string name="pay_amount">Pay %1$s</string>
 </resources>
