@@ -38,4 +38,7 @@
     <string name="cancel">Cancel</string>
     <string name="photo">Photo</string>
     <string name="camera">Camera</string>
+
+    <string name="no_chats_history_title">You don't have any chats yet!</string>
+    <string name="no_chats_history_desc">Start chatting with your friends by click on start chat button.</string>
 </resources>

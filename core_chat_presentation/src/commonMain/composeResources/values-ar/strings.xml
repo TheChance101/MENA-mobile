@@ -38,4 +38,7 @@
     <string name="cancel">الغاء</string>
     <string name="photo">صوره</string>
     <string name="camera">الكاميرا</string>
+
+    <string name="no_chats_history_title">ليس لديك أي محادثات حتى الآن!</string>
+    <string name="no_chats_history_desc">ابدأ الدردشة مع أصدقائك بالضغط على زر بدء الدردشة.</string>
 </resources>
