@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.arrow_reload_horizontal
+import mena.trends_presentation.generated.resources.ic_arrow_reload_horizontal
 import mena.trends_presentation.generated.resources.error
 import mena.trends_presentation.generated.resources.ic_cancel
 import mena.trends_presentation.generated.resources.ic_delete
@@ -89,7 +89,7 @@ fun VideoLoadingCardItem(
                                 .clickable { onAction(VideoAction.Delete) }
                         )
                         Icon(
-                            painter = painterResource(Res.drawable.arrow_reload_horizontal),
+                            painter = painterResource(Res.drawable.ic_arrow_reload_horizontal),
                             contentDescription = stringResource(Res.string.retry),
                             tint = Theme.colorScheme.shadeSecondary,
                             modifier = Modifier
