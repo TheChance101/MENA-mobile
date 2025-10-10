@@ -15,9 +15,7 @@ import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
-import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class HomeViewModel(
@@ -48,21 +46,12 @@ class HomeViewModel(
         }
     }
 
-    private fun getUserId(): Uuid? {
-        // TODO : I Need The Current LoggedIn UserId
-        return getUuidOrNull("150c97c6-21b7-4e52-b12d-8bbff486022d")
-    }
-
     private fun onLoadChatSummary(isLoading: Boolean) {
         updateState { it.copy(isLoading = isLoading) }
     }
 
     private suspend fun getChatsSummary(page: Int): List<ChatSummary> {
-        val userId = getUserId()
-        return if (userId != null) {
-            val chats = chatRepository.getChatSummary(page, userId)
-            chats.data
-        } else emptyList()
+        return chatRepository.getChatSummary(page).data
     }
 
     private fun onLoadChatsSummaryError(throwable: Throwable?) {

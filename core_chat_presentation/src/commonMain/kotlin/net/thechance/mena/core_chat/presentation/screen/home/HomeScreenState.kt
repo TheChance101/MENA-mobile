@@ -32,7 +32,7 @@ data class HomeScreenState(
 
 @OptIn(ExperimentalUuidApi::class)
 fun ChatSummary.toUi(): HomeUiState{
-    // TODO : I Need To Handle All Possible Status "You will become the ugliest person you have ever seen in your life
+    // TODO : I Need To Handle All Possible Status
     return HomeUiState(
         id = id,
         name = name,
