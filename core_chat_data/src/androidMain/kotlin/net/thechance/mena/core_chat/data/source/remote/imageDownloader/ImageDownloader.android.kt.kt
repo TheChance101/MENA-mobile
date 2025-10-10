@@ -13,19 +13,19 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-actual suspend fun downloadImageToGalleryPlatform(url: String): Boolean {
+actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean {
     val context: Context = getKoin().get()
 
     return withContext(Dispatchers.IO) {
         try {
-            // Download image
+
             val connection = URL(url).openConnection() as HttpURLConnection
             connection.doInput = true
             connection.connect()
             val input: InputStream = connection.inputStream
             val bitmap: Bitmap = BitmapFactory.decodeStream(input)
 
-            // Save to gallery (MediaStore)
+
             val values = ContentValues().apply {
                 put(MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.jpg")
                 put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")

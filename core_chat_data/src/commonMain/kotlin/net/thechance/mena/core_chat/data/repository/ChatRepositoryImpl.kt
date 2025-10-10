@@ -18,6 +18,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
+import net.thechance.mena.core_chat.data.source.remote.imageDownloader.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
@@ -28,6 +29,7 @@ import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import kotlin.uuid.ExperimentalUuidApi
@@ -39,6 +41,7 @@ class ChatRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val messageDao: MessageDao,
     private val json: Json,
+    private val imageDownloader: ImageDownloader,
 ) : ChatRepository, BaseRepository {
 
     private val messageFlows = MutableSharedFlow<Message>()
@@ -74,6 +77,13 @@ class ChatRepositoryImpl(
     override suspend fun getLocalMessages(chatId: Uuid): List<Message> {
         val failedEntities = messageDao.getMessagesByChat(chatId.toString())
         return failedEntities.map { it.toEntity() }
+    }
+
+    override suspend fun downloadImage(url: String) {
+        val success = imageDownloader.downloadImageToGallery(url)
+        if (!success) {
+            throw OperationFailedException("Failed to download image")
+        }
     }
 
     override fun subscribeToMessages(chatId: Uuid): Flow<Message> {

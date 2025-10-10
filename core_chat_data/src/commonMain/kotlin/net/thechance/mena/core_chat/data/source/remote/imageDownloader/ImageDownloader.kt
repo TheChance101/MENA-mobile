@@ -6,8 +6,8 @@ interface ImageDownloader {
 
 class ImageDownloaderImp: ImageDownloader {
     override suspend fun downloadImageToGallery(url: String): Boolean {
-        return downloadImageToGalleryPlatform(url)
+        return downloadImageToGalleryPlatformSpecific(url)
     }
 }
 
-expect suspend fun downloadImageToGalleryPlatform(url: String): Boolean
+expect suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean

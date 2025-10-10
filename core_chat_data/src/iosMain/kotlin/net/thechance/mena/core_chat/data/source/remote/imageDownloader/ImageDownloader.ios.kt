@@ -12,7 +12,7 @@ import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 
 @OptIn(ExperimentalForeignApi::class)
 
-actual suspend fun downloadImageToGalleryPlatform(url: String): Boolean {
+actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean {
     return withContext(Dispatchers.Default) {
         try {
             val nsUrl = NSURL(string = url)
