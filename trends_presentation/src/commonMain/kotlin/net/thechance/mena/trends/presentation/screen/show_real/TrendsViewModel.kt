@@ -31,7 +31,6 @@ internal class TrendsViewModel(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    onError = {throw it},
                     loadPage = { page -> repository.getFeedReels(page) }
                 )
             },
