@@ -12,6 +12,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 fun LocalDateTime.Companion.now(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime {
     return Clock.System.now().toLocalDateTime(timeZone)
@@ -37,4 +38,16 @@ fun LocalDate.format(pattern: String = "dd-MM-yyyy"): String {
         .replace("dd", day.toString().padStart(2, '0'))
         .replace("MM", month.ordinal.toString().padStart(2, '0'))
         .replace("yyyy", year.toString())
+}
+
+@OptIn(ExperimentalTime::class)
+fun parseToLocalDateTime(time: String): LocalDateTime {
+    val timeZone = TimeZone.currentSystemDefault()
+
+    return try {
+        val instant = Instant.parse(time)
+        instant.toLocalDateTime(timeZone)
+    } catch (e: IllegalArgumentException) {
+        LocalDateTime.now()
+    }
 }
