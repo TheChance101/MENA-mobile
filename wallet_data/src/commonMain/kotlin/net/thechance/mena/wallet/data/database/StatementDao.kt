@@ -10,7 +10,7 @@ interface StatementDao {
     @Insert
     suspend fun insertStatement(statement: Statement)
 
-    @Query("SELECT * FROM statement ORDER BY endDate DESC, startDate DESC  LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM statement ORDER BY  createdAt DESC  LIMIT :limit OFFSET :offset")
     suspend fun getAllStatement(limit:Int,offset:Int): List<Statement>
 
     @Delete
