@@ -2,18 +2,15 @@ package net.thechance.mena.faith.presentation.feature.quran.bookmark.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDirection
-import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.aya
 import mena.faith_presentation.generated.resources.history
@@ -22,6 +19,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.component.DotSeparator
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
 import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.TimeAgo
@@ -100,19 +98,6 @@ private fun SurahAndAyaInfo(
             style = Theme.typography.label.medium,
         )
     }
-}
-
-@Composable
-private fun DotSeparator() {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = Theme.spacing._8)
-            .size(3.dp)
-            .background(
-                color = Theme.colorScheme.shadeTertiary,
-                shape = RoundedCornerShape(Theme.radius.full)
-            )
-    )
 }
 
 @Composable

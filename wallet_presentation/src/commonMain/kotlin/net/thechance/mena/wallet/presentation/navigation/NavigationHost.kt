@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementHistoryScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
 import net.thechance.mena.wallet.presentation.screen.view_transactions_statement.ViewTransactionStatementScreen
@@ -52,6 +53,9 @@ fun NavigationHost(
                 onNavigateBackClicked = navigateBack,
                 navigateToTransactionHistory = {
                     navController.navigate(TransactionsHistoryScreenRoute)
+                },
+                navigateToStatementsHistory = {
+                    navController.navigate(StatementsHistoryScreenRoute)
                 }
             )
         }
@@ -86,6 +90,17 @@ fun NavigationHost(
                 onNavigateBackClicked = { navController.popBackStack() },
                 filterParams = filterParams
             )
+        }
+
+        composable<StatementsHistoryScreenRoute> {
+            StatementHistoryScreen(
+                onNavigateBackClicked = { navController.popBackStack() },
+                navigateToStatementDetails = { navController.navigate(StatementDetailsScreenRoute(id = it.toString())) },
+            )
+        }
+
+        composable<StatementDetailsScreenRoute> { backStackEntry ->
+            DummyScreen(title = "Statement Details")
         }
     }
 }

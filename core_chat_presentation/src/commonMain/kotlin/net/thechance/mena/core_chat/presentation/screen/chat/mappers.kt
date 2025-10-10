@@ -14,69 +14,49 @@ import net.thechance.mena.core_chat.presentation.utils.minusDays
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import net.thechance.mena.core_chat.domain.entity.MessageStatus as DomainMessageStatus
 
 
-fun Message.toUi(currentUserId: Uuid): TextMessageUiState {
-    return TextMessageUiState(
+fun Message.toUi(currentUserId: Uuid): MessageUiState {
+    return MessageUiState(
         id = id,
         senderId = senderId,
         chatId = chatId,
         sendTime = sendAt,
-        status = status.toUi(),
+        status = status,
         isMine = senderId == currentUserId,
-        text = text
+        content = MessageContent.Text(text) // todo temp casting until entity change
     )
 }
 
-fun TextMessageUiState.toEntity(): Message {
+fun MessageUiState.toEntity(): Message {
+    val content = content as MessageContent.Text // todo temp casting until entity change
     return Message(
         id = id,
         senderId = senderId,
         chatId = chatId,
-        text = text,
+        text = content.text,
         sendAt = sendTime,
-        status = status.toEntity()
+        status = status
     )
 }
 
-
-private fun DomainMessageStatus.toUi(): MessageStatusUiState {
-    return when (this) {
-        DomainMessageStatus.LOADING -> MessageStatusUiState.SENDING
-        DomainMessageStatus.SENT -> MessageStatusUiState.SENT
-        DomainMessageStatus.READ -> MessageStatusUiState.READ
-        DomainMessageStatus.FAILED -> MessageStatusUiState.FAILED
-    }
-}
-
-private fun MessageStatusUiState.toEntity(): DomainMessageStatus {
-    return when (this) {
-        MessageStatusUiState.SENDING -> DomainMessageStatus.LOADING
-        MessageStatusUiState.SENT -> DomainMessageStatus.SENT
-        MessageStatusUiState.READ -> DomainMessageStatus.READ
-        MessageStatusUiState.FAILED -> DomainMessageStatus.FAILED
-    }
-}
-
-
-fun List<TextMessageUiState>.markLastInSeries(): List<MarkedMessageUiState> {
+fun List<MessageUiState>.markLastInSeries(): List<MessageUiState> {
     return this.mapIndexed { index, message ->
         val nextIsMine = this.getOrNull(index - 1)?.isMine
         val isLastInSeries = nextIsMine != message.isMine
 
-        MarkedMessageUiState(message, isLastInSeries)
+        message.copy(isLastInSeries = isLastInSeries)
     }
 }
 
-fun List<MarkedMessageUiState>.withDateSeparators(): List<ChatListItem> {
+fun List<MessageUiState>.withDateSeparators(): List<ChatListItem> {
     if (isEmpty()) return emptyList()
 
     val today = LocalDateTime.now().date
     val yesterday = today.minusDays(1)
 
     return asReversed()
-        .groupBy { it.message.sendTime.date }
+        .groupBy { it.sendTime.date }
         .flatMap { (date, messages) ->
             val markedMessages = messages.markLastInGroup()
 
@@ -88,10 +68,10 @@ fun List<MarkedMessageUiState>.withDateSeparators(): List<ChatListItem> {
         .asReversed()
 }
 
-private fun List<MarkedMessageUiState>.markLastInGroup(): List<MarkedMessageUiState> {
+private fun List<MessageUiState>.markLastInGroup(): List<MessageUiState> {
     return mapIndexed { index, message ->
         if (index == lastIndex)
-            message.copy(isMarkedLastInSeries = true)
+            message.copy(isLastInSeries = true)
         else
             message
     }
@@ -109,14 +89,13 @@ private fun LocalDate.toLabel(
 }
 
 
-
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
-    if (item is ChatListItem.Message && item.data.message.id == messageId)
-        item.copy(data = item.data.copy(showMessageInfo = !item.data.showMessageInfo))
+    if (item is ChatListItem.Message && item.data.id == messageId)
+        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
     else item
 }
 
 
-fun List<TextMessageUiState>.buildListItems(): List<ChatListItem> {
+fun List<MessageUiState>.buildListItems(): List<ChatListItem> {
     return sortedByDescending { it.sendTime }.markLastInSeries().withDateSeparators()
 }

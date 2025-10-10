@@ -49,6 +49,8 @@ kotlin {
             implementation(libs.androidx.paging.compose)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.gif)
         }
         iosMain.dependencies {
 
@@ -82,7 +84,9 @@ kover.reports {
     filters {
         includes {
             classes(
-                "*ViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel",
                 "*MapperKt",
             )
         }

@@ -17,10 +17,16 @@ interface ChatInteractionListener : MessageListInteractionListener {
 interface MessageListInteractionListener {
     fun onMessageClicked(messageId: Uuid)
 
-    fun onFailedMessageClicked(message: TextMessageUiState)
+    fun onFailedMessageClicked(message: MessageUiState)
 
     fun onDeleteFailedMessageClicked()
 
     fun onResendMessageClicked()
     fun onResendMessageDialogDismissed()
+}
+
+interface AttachmentsInteractionListener {
+    fun onPhotoClicked()
+    fun onCameraClicked()
+    fun onCancelClicked()
 }
