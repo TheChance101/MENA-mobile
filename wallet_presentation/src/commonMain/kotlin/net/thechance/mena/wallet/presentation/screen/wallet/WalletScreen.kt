@@ -14,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
+import mena.wallet_presentation.generated.resources.download
+import mena.wallet_presentation.generated.resources.downloaded_statements
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.my_wallet
@@ -37,6 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun WalletMainScreen(
     onNavigateBackClicked: () -> Unit,
     navigateToTransactionHistory: () -> Unit,
+    navigateToStatementsHistory: () -> Unit,
     viewModel: WalletViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -44,7 +47,12 @@ fun WalletMainScreen(
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onWalletEffect(effect, onNavigateBackClicked, navigateToTransactionHistory)
+            onWalletEffect(
+                effect = effect,
+                onNavigateBackClicked = onNavigateBackClicked,
+                navigateToTransactionHistory = navigateToTransactionHistory,
+                navigateToStatementsHistory = navigateToStatementsHistory
+            )
         }
     )
 
@@ -94,7 +102,17 @@ private fun WalletContent(
                 onClick = interactionListener::onTransactionHistoryClicked,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
+                    .padding(top = Theme.spacing._24)
+            )
+
+            LabeledButtonWithCircularIcon(
+                icon = painterResource(Res.drawable.download),
+                contentDescription = stringResource(Res.string.downloaded_statements),
+                label = stringResource(Res.string.downloaded_statements),
+                onClick = interactionListener::onStatementHistoryClicked,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = Theme.spacing._16)
             )
         }
     }
@@ -103,11 +121,13 @@ private fun WalletContent(
 private fun onWalletEffect(
     effect: WalletEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToTransactionHistory: () -> Unit
+    navigateToTransactionHistory: () -> Unit,
+    navigateToStatementsHistory: () -> Unit
 ) {
     when (effect) {
         WalletEffect.NavigateBack -> onNavigateBackClicked()
         WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
+        WalletEffect.NavigateToStatementHistory -> navigateToStatementsHistory()
     }
 }
 
@@ -123,6 +143,7 @@ private fun WalletScreenPreview() {
                 override fun onBackClicked() {}
                 override fun onRetryLoadBalanceClicked() {}
                 override fun onTransactionHistoryClicked() {}
+                override fun onStatementHistoryClicked() {}
             }
         )
     }

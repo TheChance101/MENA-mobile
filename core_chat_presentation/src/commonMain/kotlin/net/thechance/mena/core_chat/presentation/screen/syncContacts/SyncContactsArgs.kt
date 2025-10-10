@@ -11,3 +11,5 @@ interface SyncContactsScreenArgs {
 class SyncContactsScreenArgsImpl(savedStateHandle: SavedStateHandle): SyncContactsScreenArgs {
     override val forceSync = savedStateHandle.toRoute<SyncContactsRoute>().forceSync
 }
+
+const val IS_SYNC_SUCCESS = "is_sync_success"

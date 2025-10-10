@@ -11,8 +11,8 @@ import mena.wallet_presentation.generated.resources.no_internet_title
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -96,5 +96,9 @@ class WalletViewModel(
 
     override fun onTransactionHistoryClicked() {
         sendEffect(WalletEffect.NavigateToTransactionHistory)
+    }
+
+    override fun onStatementHistoryClicked() {
+        sendEffect(WalletEffect.NavigateToStatementHistory)
     }
 }

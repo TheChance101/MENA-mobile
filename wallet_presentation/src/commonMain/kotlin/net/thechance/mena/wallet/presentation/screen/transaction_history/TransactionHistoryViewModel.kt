@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
@@ -32,7 +33,8 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class TransactionHistoryViewModel(
-    @Provided private val transactionRepository: TransactionRepository
+    @Provided private val transactionRepository: TransactionRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
     TransactionHistoryScreenState()
 ), TransactionHistoryInteractionListener {
@@ -70,24 +72,6 @@ class TransactionHistoryViewModel(
         resetPaginator()
     }
 
-    private fun resetPaginator() {
-        updateState {
-            it.copy(
-                history = emptyList(),
-                isLoading = true
-            )
-        }
-
-        paginator.reset()
-        loadNextTransactions()
-    }
-
-
-    private fun areDatesValid(): Boolean {
-        val startDate = currentState.filterState.startDate
-        val endDate = currentState.filterState.endDate
-        return (startDate != null && endDate != null && startDate > endDate).not()
-    }
 
     override fun onStartDateClicked() {
         val currentStartDate = currentState.filterState.startDate
@@ -156,6 +140,14 @@ class TransactionHistoryViewModel(
         }
     }
 
+    override fun onNextPageRequested() {
+        loadNextTransactions()
+    }
+
+    override fun onRetryLoadTransactionHistoryClicked() {
+        loadNextTransactions()
+    }
+
     private fun openStartDatePickerWithExistingDate(currentStartDate: LocalDate) {
         updateState {
             it.copy(
@@ -173,7 +165,7 @@ class TransactionHistoryViewModel(
             callee = { transactionRepository.getFirstTransactionDate() },
             onSuccess = ::onGetFirstTransactionDateSuccess,
             onError = ::onGetFirstTransactionDateError,
-            dispatcher = Dispatchers.IO
+            dispatcher = ioDispatcher
         )
     }
 
@@ -235,16 +227,31 @@ class TransactionHistoryViewModel(
                 (if (state.startDate != null || state.endDate != null) 1 else 0)
     }
 
-    override fun onNextPageRequested() {
+
+    private fun resetPaginator() {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    isLoading = true
+                ),
+                history = emptyList(),
+                isLoading = true
+            )
+        }
+
+        paginator.reset()
         loadNextTransactions()
     }
 
-    override fun onRetryLoadTransactionHistoryClicked() {
-        loadNextTransactions()
+
+    private fun areDatesValid(): Boolean {
+        val startDate = currentState.filterState.startDate
+        val endDate = currentState.filterState.endDate
+        return (startDate != null && endDate != null && startDate > endDate).not()
     }
 
     private fun loadNextTransactions() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             paginator.loadNextItems()
         }
     }
@@ -257,7 +264,9 @@ class TransactionHistoryViewModel(
             )
         }
 
-        if(isLoading) { updateState { it.copy(errorState = null) } }
+        if (isLoading) {
+            updateState { it.copy(errorState = null) }
+        }
     }
 
     private suspend fun getPagedTransactions(page: Int): List<Transaction> =

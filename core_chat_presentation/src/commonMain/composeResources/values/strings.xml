@@ -27,6 +27,12 @@
     <string name="confirm_delete_chat_message">Are you sure you want to delete this shelf?</string>
     <string name="error_cant_subscribe_to_new_messages">Not Connected!</string>
     <string name="error_cant_get_messages">Couldn't Get Messages!</string>
+    <string name="error_cant_load_messages_history">Couldn't Load Messages History!</string>
+    <string name="error_cant_send_messages">Couldn't Send Messages!</string>
     <string name="contact_not_mena_user">This Contact Is Not Mena User!</string>
-
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="cancel">Cancel</string>
+    <string name="photo">Photo</string>
+    <string name="camera">Camera</string>
 </resources>

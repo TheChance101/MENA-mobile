@@ -111,4 +111,9 @@
     <string name="silvers">Silvers</string>
     <string name="date_range">%1$s - %2$s</string>
     <string name="amount_with_currency">%1$s %2$s</string>
+    <string name="statements">Statements</string>
+    <string name="edit">edit</string>
+    <string name="no_statements_title">No statements yet</string>
+    <string name="no_statements_description">Export a transaction history to see your downloaded statements here.</string>
+    <string name="downloaded_statements">Downloaded Statements</string>
 </resources>
