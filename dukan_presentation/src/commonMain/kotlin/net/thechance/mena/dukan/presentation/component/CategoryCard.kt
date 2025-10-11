@@ -57,7 +57,7 @@ fun CategoryCard(
         Box(
             modifier = Modifier
                 .padding(bottom = Theme.spacing._4)
-                .size(ContainerBoxSize)
+                .size(size = 60.dp)
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
                     shape = RoundedCornerShape(Theme.radius.full)
@@ -106,8 +106,6 @@ fun CategoryCard(
         )
     }
 }
-
-private val ContainerBoxSize = 60.dp
 
 @Preview
 @Composable
