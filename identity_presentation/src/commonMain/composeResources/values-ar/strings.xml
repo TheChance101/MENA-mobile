@@ -52,4 +52,17 @@
     <string name="profile_profile_picture_content_description">صورة الملف الشخصي</string>
     <string name="profile_share_icon_content_description">أيقونة المشاركة</string>
     <string name="profile_invite_friends_icon_content_description">أيقونة دعوة الأصدقاء</string>
+
+    <!-- Add Edit Location Screen -->
+    <string name="add_location">إضافة موقع</string>
+    <string name="edit_location">تعديل الموقع</string>
+    <string name="save">حفظ</string>
+    <string name="location">الموقع</string>
+    <string name="pick_on_map">( اختر على الخريطة )</string>
+    <string name="address">العنوان</string>
+    <string name="type">النوع</string>
+    <string name="home">المنزل</string>
+    <string name="office">العمل</string>
+    <string name="other">أخرى</string>
+    <string name="address_type">نوع العنوان</string>
 </resources>
