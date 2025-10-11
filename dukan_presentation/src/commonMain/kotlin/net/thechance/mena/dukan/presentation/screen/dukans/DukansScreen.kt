@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukans
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -24,9 +25,7 @@ fun DukansScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
-    LaunchedEffect(categoryId) {
-        viewModel.initialize(categoryId)
-    }
+    val pager = remember { viewModel.initialize(categoryId) }
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
@@ -40,7 +39,7 @@ fun DukansScreen(
     DukansContent(
         state = state,
         listener = viewModel,
-        pager = viewModel.pager,
+        pager = pager,
         categoryTitle = categoryTitle
     )
 }

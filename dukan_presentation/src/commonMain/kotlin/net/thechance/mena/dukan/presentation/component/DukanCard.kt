@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -26,35 +28,43 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DukanCard(
     dukan: DukanUiState,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     isFavorite: Boolean = false,
     onFavoriteClick: () -> Unit = {},
-    modifier: Modifier = Modifier,
     isLoading: Boolean = false
 ) {
-    val cardModifier = modifier
-        .fillMaxWidth()
-        .height(156.dp)
-        .clip(RoundedCornerShape(Theme.radius.lg))
-        .then(
-            if (isLoading) {
-                Modifier.background(Theme.colorScheme.background.surfaceHigh)
-            } else {
-                Modifier.clickable(
-                    interactionSource = null,
-                    indication = null
-                ) { onClick() }
-            }
-        )
-
-    Box(modifier = cardModifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(156.dp)
+            .clip(RoundedCornerShape(Theme.radius.lg))
+            .background(Theme.colorScheme.background.surfaceHigh)
+            .clickable(
+                enabled = !isLoading,
+                interactionSource = null,
+                indication = null,
+                onClick = onClick
+            )
+    ) {
         if (!isLoading) {
             AsyncImage(
                 model = dukan.imageUrl,
                 contentDescription = dukan.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Theme.colorScheme.background.surfaceHigh),
-                contentScale = ContentScale.Crop
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0x00000000),
+                                Color(0xFF000000)
+                            )
+                        )
+                    )
             )
 
             FavoriteIcon(
@@ -102,8 +112,7 @@ private fun DukanCardFavoritePreview() {
                 imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400"
             ),
             onClick = {},
-            isFavorite = true,
-            onFavoriteClick = {}
+            isFavorite = true
         )
     }
 }
