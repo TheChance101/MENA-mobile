@@ -7,8 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -75,12 +76,13 @@ private fun Content(
                         modifier = Modifier.background(
                             shape = RoundedCornerShape(Theme.radius.full),
                             color = Theme.colorScheme.primary.onPrimary
-                        ).height(24.dp)
+                        ).height(Theme.spacing._24)
                     ) {
                         Image(
                             painter = painterResource(Res.drawable.ic_location),
                             contentDescription = null,
-                            modifier = Modifier.padding(start = 4.dp).padding(4.dp)
+                            modifier = Modifier.padding(start = Theme.spacing._4)
+                                .padding(Theme.spacing._4)
                                 .size(16.dp)
                                 .align(Alignment.CenterVertically)
                         )
@@ -90,7 +92,7 @@ private fun Content(
                             color = Theme.colorScheme.shadePrimary,
                             style = Theme.typography.label.small,
                             modifier = Modifier.align(Alignment.CenterVertically)
-                                .padding(end = 8.dp)
+                                .padding(end = Theme.spacing._8)
                         )
                     }
                 }
@@ -102,9 +104,12 @@ private fun Content(
                 .background(color = Theme.colorScheme.background.surface)
                 .padding(horizontal = Theme.spacing._16), verticalArrangement = Arrangement.Center
         ) {
-            CompassView(
+            CompassView(azimuth = uiState.azimuth, qiblahDirection = uiState.qiblahDirection)
+
+            TextAngleToQiblah(
                 azimuth = uiState.azimuth,
-                qiblahDirection = uiState.qiblahDirection
+                uiState.qiblahDirection,
+                modifier = Modifier.padding(top = Theme.spacing._16)
             )
         }
 
@@ -112,140 +117,131 @@ private fun Content(
 }
 
 @Composable
-private fun CompassView(
+private fun ColumnScope.CompassView(
     azimuth: Float,
     qiblahDirection: Float
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.wrapContentSize().align(Alignment.CenterHorizontally),
         contentAlignment = Alignment.Center
     ) {
-        CompassContent(azimuth = azimuth, qiblahDirection = qiblahDirection)
-
-    }
-}
-
-@Composable
-private fun CompassContent(
-    azimuth: Float, qiblahDirection: Float
-) {
-    val animatedBearing by animateFloatAsState(
-        targetValue = azimuth,
-        animationSpec = tween(durationMillis = 300),
-        label = "compass_rotation"
-    )
-    Box(
-        modifier = Modifier.size(224.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .border(
-                    width = 3.dp,
-                    color = Theme.colorScheme.secondary.secondary,
-                    shape = CircleShape
-                )
+        val animatedBearing by animateFloatAsState(
+            targetValue = azimuth,
+            animationSpec = tween(durationMillis = 300),
+            label = "compass_rotation"
         )
-
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.size(224.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "N",
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary,
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(y = 16.dp)
+                    .fillMaxSize()
+                    .border(
+                        width = 3.dp,
+                        color = Theme.colorScheme.secondary.secondary,
+                        shape = CircleShape
+                    )
             )
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "N",
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .offset(y = Theme.spacing._16)
+                )
+
+                Image(
+                    painter = painterResource(Res.drawable.ic_circle),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .offset(x = (-48).dp, y = (-64).dp)
+                )
+
+                Text(
+                    text = "S",
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .offset(y = (-16).dp)
+                )
+
+                Image(
+                    painter = painterResource(Res.drawable.ic_circle),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = (48).dp, y = (-64).dp)
+                )
+
+                Text(
+                    text = "E",
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .offset(x = (-20).dp)
+                )
+
+                Image(
+                    painter = painterResource(Res.drawable.ic_circle),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .offset(x = (-48).dp, y = (64).dp)
+                )
+
+                Text(
+                    text = "W",
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = 20.dp)
+                )
+
+                Image(
+                    painter = painterResource(Res.drawable.ic_circle),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .offset(x = (48).dp, y = (64).dp)
+                )
+            }
 
             Image(
-                painter = painterResource(Res.drawable.ic_circle),
+                painter = painterResource(Res.drawable.ic_direction),
                 contentDescription = null,
                 modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .offset(x = (-48).dp, y = (-64).dp)
+                    .size(128.dp)
+                    .rotate(animatedBearing)
             )
 
-            Text(
-                text = "S",
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(y = (-16).dp)
-            )
 
-            Image(
-                painter = painterResource(Res.drawable.ic_circle),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .offset(x = (48).dp, y = (-64).dp)
-            )
-
-            Text(
-                text = "E",
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .offset(x = (-20).dp)
-            )
-
-            Image(
-                painter = painterResource(Res.drawable.ic_circle),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .offset(x = (-48).dp, y = (64).dp)
-            )
-
-            Text(
-                text = "W",
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .offset(x = 20.dp)
-            )
-
-            Image(
-                painter = painterResource(Res.drawable.ic_circle),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .offset(x = (48).dp, y = (64).dp)
-            )
         }
 
-        Image(
-            painter = painterResource(Res.drawable.ic_direction),
-            contentDescription = null,
-            modifier = Modifier
-                .size(128.dp)
-                .rotate(animatedBearing)
-        )
+        QiblahImage(qiblahDirection)
 
-        TextAngleToQiblah(azimuth, qiblahDirection)
     }
-
-    QiblahImage(qiblahDirection)
 }
 
 @Composable
-private fun BoxScope.TextAngleToQiblah(
+private fun TextAngleToQiblah(
     azimuth: Float,
     qiblahDirection: Float,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
-            .align(Alignment.BottomCenter)
-            .fillMaxWidth()
-            .offset(y = 64.dp),
+            .fillMaxWidth(),
         Arrangement.Center
     ) {
         Text(
