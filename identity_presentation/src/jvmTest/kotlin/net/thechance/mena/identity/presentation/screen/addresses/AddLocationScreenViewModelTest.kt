@@ -1,12 +1,14 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
 import app.cash.turbine.test
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -16,13 +18,14 @@ import kotlin.test.assertTrue
 class AddLocationScreenViewModelTest {
 
     private lateinit var viewModel: AddLocationScreenViewModel
+    private val addressesRepository: AddressesRepository = mockk()
     private val testDispatcher = StandardTestDispatcher()
 
 
     @BeforeTest
     fun setup(){
         Dispatchers.setMain(testDispatcher)
-        viewModel = AddLocationScreenViewModel(testDispatcher)
+        viewModel = AddLocationScreenViewModel(addressesRepository,testDispatcher)
     }
 
     @AfterTest
