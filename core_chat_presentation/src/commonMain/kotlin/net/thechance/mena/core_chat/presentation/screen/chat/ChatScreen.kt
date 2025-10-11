@@ -86,7 +86,7 @@ fun ChatScreenContent(
                 senderName = state.chatName,
                 senderImageUrl = state.chatAvatarUrl,
                 initialPage = state.currentImageIndexForPreview,
-                onCloseClick = interactions::onCloseClicked,
+                onCloseClick = interactions::onCloseImageViewClicked,
                 onDownloadClicked = interactions::onDownloadImageClicked,
             )
         }

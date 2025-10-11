@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +33,7 @@ import mena.core_chat_presentation.generated.resources.ic_download
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageContentUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
+import net.thechance.mena.core_chat.presentation.utils.formatAsPastDateTime
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -62,13 +64,15 @@ fun FullImagePagerView(
         FabButton(
             painter = painterResource(Res.drawable.ic_cancel),
             shape = RoundedCornerShape(Theme.spacing._12),
+            iconSize = 20.dp,
+            contentPadding = PaddingValues(10.dp),
             containerColor = Theme.colorScheme.background.surfaceLow,
             contentColor = Theme.colorScheme.primary.primary,
+            onClick = onCloseClick,
             modifier = Modifier.padding(
                 vertical = Theme.spacing._8,
                 horizontal = Theme.spacing._16
             ).statusBarsPadding(),
-            onClick = onCloseClick
         )
 
         PagerOverlay(
@@ -122,8 +126,9 @@ private fun PagerOverlay(
         modifier = modifier
             .fillMaxWidth()
             .height(130.dp)
-            .background(bgGradientColor),
-        verticalAlignment = Alignment.CenterVertically,
+            .background(bgGradientColor)
+            .padding(16.dp),
+        verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.spacedBy(
             Theme.spacing._8,
             Alignment.CenterHorizontally
@@ -145,7 +150,7 @@ private fun PagerOverlay(
                 color = Theme.colorScheme.primary.onPrimary
             )
             Text(
-                text = time.toString(),
+                text = time.formatAsPastDateTime(),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.primary.onPrimaryBody
             )
@@ -154,8 +159,10 @@ private fun PagerOverlay(
         FabButton(
             onClick = onDownloadClicked,
             painter = painterResource(Res.drawable.ic_download),
+            iconSize = 32.dp,
             containerColor = Color.Transparent,
             contentColor = Theme.colorScheme.primary.onPrimary,
+            contentPadding= PaddingValues(0.dp)
         )
     }
 }

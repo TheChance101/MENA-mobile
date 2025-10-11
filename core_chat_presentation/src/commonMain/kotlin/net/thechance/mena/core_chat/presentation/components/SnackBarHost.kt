@@ -13,7 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.ic_warning
+import mena.core_chat_presentation.generated.resources.ic_snackbar_error
+import mena.core_chat_presentation.generated.resources.ic_snackbar_success
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.asString
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
@@ -27,6 +28,9 @@ fun AnimatedSnackBarHost(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    val iconId = if (data.isError) Res.drawable.ic_snackbar_error else Res.drawable.ic_snackbar_success
+
     AnimatedVisibility(
         visible = isVisible,
         enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
@@ -47,7 +51,7 @@ fun AnimatedSnackBarHost(
             ),
             title = data.title.asString(),
             message = data.message.asString(),
-            leadingIcon = painterResource(Res.drawable.ic_warning),
+            leadingIcon = painterResource(iconId),
         )
     }
 }
@@ -55,5 +59,6 @@ fun AnimatedSnackBarHost(
 data class SnackBarData(
     val title: UiText,
     val message: UiText,
+    val isError: Boolean = true,
     val duration: Long = 2500
 )
