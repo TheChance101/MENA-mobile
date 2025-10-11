@@ -46,14 +46,11 @@ fun ChatDto.toDomain(): Chat? {
     )
 }
 
-fun MessageContent.toSendMessageRequestDto(chatId: String): SendMessageDto {
-    return when (this) {
-        is MessageContent.Text -> SendMessageDto(chatId = chatId, text = text)
-        is MessageContent.Images -> {
-            val source = this.source
-            val urls = if (source is ImagesSource.Remote) source.urls else emptyList()
-            SendMessageDto(chatId = chatId, images = urls)
-        }
+fun Message.toSendMessageRequestDto(): SendMessageDto {
+    val content = this.content
+    return when (content) {
+        is MessageContent.Text -> SendMessageDto(chatId = chatId.toString(), text = content.text)
+        is MessageContent.Images -> { SendMessageDto(chatId = chatId.toString(), messageId = id.toString()) }
     }
 }
 

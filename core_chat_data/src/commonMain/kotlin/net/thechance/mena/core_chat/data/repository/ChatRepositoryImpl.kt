@@ -3,6 +3,8 @@ package net.thechance.mena.core_chat.data.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.util.reflect.typeInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +25,11 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toSendMessageRequestDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
+import net.thechance.mena.core_chat.data.utils.buildMultiPartFormData
 import net.thechance.mena.core_chat.domain.entity.Chat
+import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -85,11 +90,12 @@ class ChatRepositoryImpl(
     override suspend fun sendMessage(message: Message) {
         val updatedMessage = message.copy(status = MessageStatus.LOADING).toLocalDto()
         messageDao.insertMessage(updatedMessage)
+        val content = message.getContentToSend()
         try {
             if (webSocketManager.isConnected()) {
                 val messageJson = json.encodeToString(
                     SendMessageDto.serializer(),
-                    message.content.toSendMessageRequestDto(message.chatId.toString())
+                    content
                 )
                 webSocketManager.sendTextFrame(
                     destination = SEND_MESSAGE_DESTINATION,
@@ -107,6 +113,42 @@ class ChatRepositoryImpl(
             )
             throw SendMessageFailedException("Failed to send message: ${e.message}")
         }
+    }
+
+    private suspend fun Message.getContentToSend(): SendMessageDto {
+        val content = this.content
+        return when(content) {
+            is MessageContent.Images -> {
+                val source = content.source
+                val byteArrays = if (source is ImagesSource.Local) source.byteArrays else emptyList()
+                uploadImagesMessage(
+                    imageNames = byteArrays.mapIndexed { index, _ -> "chat_${chatId}_${sendAt}_image_$index" },
+                    images = byteArrays,
+                    chatId = chatId.toString()
+                ).toDomain()?.toSendMessageRequestDto() ?: error("Invalid message content")
+            }
+            else -> toSendMessageRequestDto()
+        }
+    }
+
+    private suspend fun uploadImagesMessage(
+        imageNames: List<String>,
+        images: List<ByteArray>,
+        chatId: String
+    ): MessageDto {
+        require(imageNames.size == images.size) {
+            "imageNames and images must have the same size."
+        }
+
+        val files = imageNames.zip(images)
+
+        return tryNetworkCall<MessageDto>(
+            bodyType = typeInfo<MessageDto>()
+        ) {
+            client.post("/chat/image") {
+                setBody(files.buildMultiPartFormData(fieldName = "images", chatId = chatId))
+            }
+        } ?: error("Failed to upload images")
     }
 
     override fun observeReadMessages(): Flow<String> {
@@ -150,14 +192,6 @@ class ChatRepositoryImpl(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId))
         )
-    }
-
-    override suspend fun uploadMessageImages(
-        fileName: List<String>,
-        fileBytes: List<ByteArray>,
-        chatId: Uuid
-    ): List<String> {
-        TODO("Not yet implemented")
     }
 
     override suspend fun disconnect() {

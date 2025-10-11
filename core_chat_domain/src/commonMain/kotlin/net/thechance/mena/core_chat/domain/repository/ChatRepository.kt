@@ -14,16 +14,9 @@ interface ChatRepository {
     suspend fun sendMessage(message: Message)
     suspend fun deleteMessage(message: Message)
 
-    suspend fun uploadMessageImages(
-        fileName: List<String>,
-        fileBytes: List<ByteArray>,
-        chatId: Uuid
-    ): List<String>
-
     suspend fun getLocalMessages(chatId: Uuid): List<Message>
 
     suspend fun getChatByContactUserId(userId : Uuid): Chat
-
 
     suspend fun disconnect()
 }
