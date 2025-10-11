@@ -41,4 +41,5 @@
 
     <string name="no_chats_history_title">You don't have any chats yet!</string>
     <string name="no_chats_history_desc">Start chatting with your friends by click on start chat button.</string>
+    <string name="you">You:</string>
 </resources>

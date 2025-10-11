@@ -21,12 +21,14 @@ import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
+import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ChatCard(
@@ -103,6 +105,8 @@ private fun TimeAndStatus(chats: HomeUiState) {
 
 @Composable
 private fun RowScope.NameAndLastMessage(chats: HomeUiState) {
+    val lastMessage =
+        if (chats.isMine) "${stringResource(Res.string.you)} ${chats.lastMessage}" else chats.lastMessage
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4).weight(1f)
             .padding(end = Theme.spacing._4),
@@ -116,7 +120,7 @@ private fun RowScope.NameAndLastMessage(chats: HomeUiState) {
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = chats.lastMessage,
+            text = lastMessage,
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeTertiary,
             maxLines = 1,
