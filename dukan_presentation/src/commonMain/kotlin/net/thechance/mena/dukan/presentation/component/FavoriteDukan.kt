@@ -34,7 +34,10 @@ fun FavoriteIcon(
                 color = Theme.colorScheme.primary.primary,
                 shape = CircleShape
             )
-            .clickable { onClick() },
+            .clickable(
+                interactionSource = null,
+                indication = null
+            ) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -56,21 +59,6 @@ private fun FavoriteIconSelectedPreview() {
         ) {
             FavoriteIcon(
                 isFavorite = true,
-                onClick = {}
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun FavoriteIconPreview() {
-    MenaTheme {
-        Box(
-            modifier = Modifier.padding(Theme.spacing._16)
-        ) {
-            FavoriteIcon(
-                isFavorite = false,
                 onClick = {}
             )
         }

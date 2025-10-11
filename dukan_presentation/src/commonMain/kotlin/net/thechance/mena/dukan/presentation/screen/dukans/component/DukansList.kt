@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.manageDukan.compnent
+package net.thechance.mena.dukan.presentation.screen.dukans.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,23 +11,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.productCard.EditProductIcon
-import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
+import net.thechance.mena.dukan.presentation.component.DukanCard
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeProductPagingSource
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductUiState
+import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeDukanPagingSource
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
+import net.thechance.mena.dukan.presentation.viewModel.dukans.DukanUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-
 @Composable
-fun ProductsList(
-    products: List<ProductUiState>,
-    pager: Pager<Int, ProductUiState>,
+fun DukansList(
+    dukans: List<DukanUiState>,
+    pager: Pager<Int, DukanUiState>,
     modifier: Modifier = Modifier,
-    onProductClick: (ProductUiState) -> Unit = {},
+    onDukanClick: (DukanUiState) -> Unit = {},
+    isLoading: Boolean = false
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -43,15 +42,12 @@ fun ProductsList(
         ),
         state = lazyListState
     ) {
-        items(products) { product ->
-            ProductCard(
+        items(dukans) { dukan ->
+            DukanCard(
                 modifier = Modifier.animateItem(),
-                productUiState = product,
-                productAction = {
-                    EditProductIcon(onClick = {
-                        onProductClick(product)
-                    })
-                }
+                dukan = dukan,
+                onClick = { onDukanClick(dukan) },
+                isLoading = isLoading
             )
         }
     }
@@ -59,13 +55,13 @@ fun ProductsList(
 
 @Preview
 @Composable
-private fun ProductsLayoutPreview() {
+private fun DukansListPreview() {
     MenaTheme {
-        ProductsList(
-            fakeProducts(),
+        DukansList(
+            fakeDukans(),
             pager = Pager(
                 config = PagingConfig(),
-                pagingSourceFactory = { FakeProductPagingSource() }
+                pagingSourceFactory = { FakeDukanPagingSource() }
             ),
         )
     }

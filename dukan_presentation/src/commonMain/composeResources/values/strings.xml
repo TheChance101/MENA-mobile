@@ -96,7 +96,6 @@
     <string name="one_selection_for_each_product">One selection for each product</string>
     <string name="add_product_success">Add product successfully.</string>
     <string name="image_size_mb">%1$d MB</string>
-
     <string name="error_image_max_limit">You can upload a maximum of 10 images.</string>
     <string name="error_image_size">Image size should be less than 5 MB.</string>
     <string name="error_upload_failed">Upload failed, please try again.</string>
@@ -105,5 +104,7 @@
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
     <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
     <string name="favorites">Favorites</string>
+    <string name="no_dukans_title">No dukans found</string>
+    <string name="no_dukans_body">There are no dukans available in this category at the moment.</string>
 
 </resources>
