@@ -55,7 +55,7 @@ class StatementRemoteDataSourceImplTest {
         }
     }
     @Test
-    fun `test extract statement headers`() = runTest {
+    fun `extract statement headers should extract statement successfully`() = runTest {
         val mockEngine = MockEngine { _ ->
             respond(
                 content = "PDF binary or placeholder content",
@@ -86,7 +86,7 @@ class StatementRemoteDataSourceImplTest {
 
 }
     @Test
-    fun `insert and retrieve statement successfully`() = runTest {
+    fun `statementDao should insert and retrieve statement successfully`() = runTest {
         val statement = Statement(
             totalInflows = 99.80,
             totalOutflows = 520.75,
