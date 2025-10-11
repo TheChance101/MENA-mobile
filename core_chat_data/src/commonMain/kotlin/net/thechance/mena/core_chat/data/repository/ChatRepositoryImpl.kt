@@ -152,14 +152,6 @@ class ChatRepositoryImpl(
         )
     }
 
-    override suspend fun uploadMessageImages(
-        fileName: List<String>,
-        fileBytes: List<ByteArray>,
-        chatId: Uuid
-    ): List<String> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun disconnect() {
         webSocketManager.disconnect()
     }
