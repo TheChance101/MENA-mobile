@@ -30,6 +30,7 @@ import mena.core_chat_presentation.generated.resources.ic_add
 import mena.core_chat_presentation.generated.resources.message_holder
 import mena.core_chat_presentation.generated.resources.ic_mic
 import mena.core_chat_presentation.generated.resources.ic_telegram
+import mena.core_chat_presentation.generated.resources.ic_warning
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.textField.MultiLineTextField
