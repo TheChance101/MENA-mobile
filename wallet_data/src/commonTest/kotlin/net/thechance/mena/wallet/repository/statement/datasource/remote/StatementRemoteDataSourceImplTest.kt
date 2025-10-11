@@ -33,13 +33,12 @@ class StatementRemoteDataSourceImplTest {
 
     lateinit var statementRemoteDataSourceImpl: StatementRemoteDataSourceImpl
     lateinit var networkClient: NetworkClient
-    lateinit var statementDao: StatementDao
 
-
+    val fakeDao = FakeStatementDao()
     @Test
     fun `getTransactionPdf returns byte array when API call is successful with partial filters`() = runTest {
         networkClient = createNetworkClient(getRespond = successPdfResponse)
-        statementRemoteDataSourceImpl = StatementRemoteDataSourceImpl(networkClient,statementDao)
+        statementRemoteDataSourceImpl = StatementRemoteDataSourceImpl(networkClient,fakeDao)
 
         val result = statementRemoteDataSourceImpl.getTransactionPdf(transactionFilterParams1)
 
@@ -49,7 +48,7 @@ class StatementRemoteDataSourceImplTest {
     @Test
     fun `getTransactionPdf throws exception when API call fails with server error`() = runTest {
         networkClient = createNetworkClient(getRespond = errorResponse)
-        statementRemoteDataSourceImpl = StatementRemoteDataSourceImpl(networkClient,statementDao)
+        statementRemoteDataSourceImpl = StatementRemoteDataSourceImpl(networkClient,fakeDao)
 
         assertFailsWith<UnknownException> {
             statementRemoteDataSourceImpl.getTransactionPdf(null)
@@ -94,7 +93,7 @@ class StatementRemoteDataSourceImplTest {
             startDate = "2025-09-25",
             endDate = "2025-10-06"
         )
-        val fakeDao = FakeStatementDao()
+
 
         fakeDao.insertStatement(statement)
 
