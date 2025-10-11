@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,16 +39,12 @@ fun CategoryCard(
     title: String,
     imageUrl: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     iconSize: Dp = 24.dp,
-    modifier: Modifier = Modifier
+    iconContainerSize: Dp = 60.dp
 ) {
-    val isLoading = remember { mutableStateOf(true) }
-    val isError = remember { mutableStateOf(false) }
-    val isCategoryButtonEnabled = when {
-        isLoading.value -> false
-        isError.value -> false
-        else -> true
-    }
+    val imageState = rememberSaveable { mutableStateOf(CategoryImageState.Loading) }
+    val isCategoryButtonEnabled = imageState.value == CategoryImageState.Success
 
     Column(
         modifier = modifier,
@@ -57,38 +54,28 @@ fun CategoryCard(
         Box(
             modifier = Modifier
                 .padding(bottom = Theme.spacing._4)
-                .size(size = 60.dp)
+                .size(size = iconContainerSize)
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
                     shape = RoundedCornerShape(Theme.radius.full)
                 ).clip(shape = RoundedCornerShape(Theme.radius.full))
                 .clickable(onClick = onClick, enabled = isCategoryButtonEnabled)
-                .skeletonLoading(isLoading = isLoading.value),
+                .skeletonLoading(isLoading = imageState.value == CategoryImageState.Loading),
             contentAlignment = Alignment.Center
         ) {
-            val imageRequest = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(imageUrl)
-                .diskCachePolicy(CachePolicy.DISABLED)
-                .build()
 
-            val iconTintColor = when {
-                isError.value -> Theme.colorScheme.error
+            val iconTintColor = when(imageState.value){
+                CategoryImageState.Error -> Theme.colorScheme.error
                 else -> Theme.colorScheme.primary.primary
             }
 
             AsyncImage(
-                model = imageRequest,
+                model = imageUrl,
                 contentDescription = stringResource(resource = Res.string.category_icon),
                 modifier = Modifier.size(iconSize),
                 colorFilter = ColorFilter.tint(color = iconTintColor),
-                onSuccess = {
-                    isLoading.value = false
-                    isError.value = false
-                },
-                onError = {
-                    isLoading.value = false
-                    isError.value = true
-                },
+                onSuccess = { imageState.value = CategoryImageState.Success },
+                onError = { imageState.value = CategoryImageState.Error },
                 error = painterResource(Res.drawable.ic_error),
             )
         }
@@ -102,10 +89,12 @@ fun CategoryCard(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(horizontal = Theme.spacing._8)
-                .skeletonLoading(isLoading =isLoading.value)
+                .skeletonLoading(isLoading = imageState.value == CategoryImageState.Loading )
         )
     }
 }
+
+private enum class CategoryImageState { Loading, Success, Error }
 
 @Preview
 @Composable
