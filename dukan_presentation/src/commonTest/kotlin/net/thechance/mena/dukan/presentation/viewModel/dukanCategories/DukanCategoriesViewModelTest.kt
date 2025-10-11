@@ -54,7 +54,7 @@ class DukanCategoriesViewModelTest {
         viewModel.state.test {
             val firstEmit = awaitItem()
             assertEquals(
-                expected = dummyCategories.toCategoriesUiState(),
+                expected = dummyCategories.map { it.toUiState() },
                 actual = firstEmit.categories
             )
         }

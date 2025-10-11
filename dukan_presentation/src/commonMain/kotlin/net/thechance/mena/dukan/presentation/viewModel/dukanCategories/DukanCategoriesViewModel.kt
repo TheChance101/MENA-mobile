@@ -35,7 +35,7 @@ class DukanCategoriesViewModel(
     }
 
     private suspend fun getCategoriesBlock(): List<CategoryUiState> {
-        return dukanRepository.getCategories().toCategoriesUiState()
+        return dukanRepository.getCategories().map { it.toUiState() }
     }
 
     private fun onGetCategoriesSuccess(categories: List<CategoryUiState>) {
