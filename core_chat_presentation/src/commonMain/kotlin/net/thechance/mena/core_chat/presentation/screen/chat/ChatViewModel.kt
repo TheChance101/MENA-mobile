@@ -68,7 +68,7 @@ class ChatViewModel(
     }
 
     private fun showSnackBarAndNavigateBack() {
-        showErrorSnackBar(Res.string.error_cant_get_messages)
+        showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         popBackStack()
     }
@@ -179,7 +179,7 @@ class ChatViewModel(
         tryToCollect(
             collect = { chatRepository.subscribeToMessages(chatId) },
             onCollect = ::onCollectNewMessage,
-            onError = { showErrorSnackBar(Res.string.error_cant_subscribe_to_new_messages) },
+            onError = { showSnackBar(Res.string.error, Res.string.error_cant_subscribe_to_new_messages, true) },
         )
     }
 
@@ -187,7 +187,7 @@ class ChatViewModel(
         if (message == null) return
 
         val senderId = state.value.chatRequesterId
-            ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
+            ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         updateStateWithNewMessage(message.toUi(senderId))
     }
@@ -200,14 +200,13 @@ class ChatViewModel(
                 (messagesHistory + pendingMessages)
             },
             onSuccess = ::onLoadChatHistorySuccess,
-            onError = { showErrorSnackBar(Res.string.error_cant_get_messages) }
+            onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) }
         )
     }
 
     private fun onLoadChatHistorySuccess(messages: List<Message>) {
         val senderId = state.value.chatRequesterId
-            ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
-
+            ?: return  showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         val uiMessages = messages.map { it.toUi(senderId) }
         updateChatListItems(uiMessages)
@@ -283,19 +282,12 @@ class ChatViewModel(
         tryToExecute(
             execute = { chatRepository.downloadImage(url) },
             onSuccess = { onDownloadImageSuccess() },
-            onError = { showErrorSnackBar(Res.string.error_failed_to_download_image) }
+            onError = { showSnackBar(Res.string.error, Res.string.error_failed_to_download_image, true) }
         )
     }
 
     private fun onDownloadImageSuccess() {
-        showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.success),
-                message = UiText.StringRes(Res.string.image_saved_successfully),
-                isError = false
-            )
-        )
-    }
+        showSnackBar(Res.string.success, Res.string.image_saved_successfully,isError = false)    }
 
     override fun onCloseImageViewClicked() {
         updateState {
@@ -307,12 +299,16 @@ class ChatViewModel(
         }
     }
 
-    private fun showErrorSnackBar(stringRes: StringResource) {
+    private fun showSnackBar(
+        titleStringResource: StringResource,
+        messageStringResource: StringResource,
+        isError: Boolean = false
+    ) {
         showSnackBar(
             SnackBarData(
-                title = UiText.StringRes(Res.string.error),
-                message = UiText.StringRes(stringRes),
-                isError = true
+                title = UiText.StringRes(titleStringResource),
+                message = UiText.StringRes(messageStringResource),
+                isError = isError
             )
         )
     }
