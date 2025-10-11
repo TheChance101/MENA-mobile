@@ -31,6 +31,8 @@
     <string name="error_cant_send_messages">Couldn't Send Messages!</string>
     <string name="error_failed_to_download_image">Couldn't download image!</string>
     <string name="contact_not_mena_user">This Contact Is Not Mena User!</string>
+    <string name="mena">MENA</string>
+    <string name="chats">Chats</string>
     <string name="success">Success</string>
     <string name="image_saved_successfully">Download photo to your device successfully.</string>
     <string name="today">Today</string>
