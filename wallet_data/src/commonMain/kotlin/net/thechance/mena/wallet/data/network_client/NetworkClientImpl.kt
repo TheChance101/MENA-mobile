@@ -14,11 +14,14 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.accept
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
@@ -66,7 +69,11 @@ class NetworkClientImpl(
 
     private fun buildClient(): HttpClient {
         return HttpClient(platformHttpClientEngineFactory) {
-            defaultRequest { url(baseUrl) }
+            defaultRequest {
+                url(baseUrl)
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+            }
 
             install(Logging) {
                 logger = Logger.SIMPLE

@@ -52,4 +52,15 @@
     <string name="profile_profile_picture_content_description">صورة الملف الشخصي</string>
     <string name="profile_share_icon_content_description">أيقونة المشاركة</string>
     <string name="profile_invite_friends_icon_content_description">أيقونة دعوة الأصدقاء</string>
+
+    <string name="enable_location_title">تفعيل الموقع</string>
+    <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
+    <string name="enable_location_permission_button">تفعيل إذن الموقع</string>
+    <string name="location_icon_desc">أيقونة خدمة الموقع</string>
+
+    <string name="no_saved_locations_title">لا توجد مواقع محفوظة بعد!</string>
+    <string name="no_saved_locations_message">انقر على الزر أدناه للبدء بإضافة ومتابعة حالة مواقعك المفضلة.</string>
+    <string name="add_location_button">إضافة موقع</string>
+    <string name="location_saved_empty_desc">أيقونة عدم وجود مواقع محفوظة</string>
+
 </resources>
