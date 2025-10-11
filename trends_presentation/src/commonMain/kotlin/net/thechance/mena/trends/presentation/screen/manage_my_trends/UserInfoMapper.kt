@@ -1,8 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
-import net.thechance.mena.trends.domain.entity.UserInfo
+import net.thechance.mena.trends.domain.entity.User
 
-internal fun UserInfo.toUiState(): UserInfoUiState {
+internal fun User.toUiState(): UserInfoUiState {
     return UserInfoUiState(
         userName = username,
         profileImageUrl = profileImageUrl

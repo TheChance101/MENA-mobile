@@ -1,7 +1,7 @@
 package net.thechance.mena.trends.domain.repository
 
-import net.thechance.mena.trends.domain.entity.UserInfo
+import net.thechance.mena.trends.domain.entity.User
 
 interface UserRepository {
-    suspend fun getCurrentUserProfile(): UserInfo
+    suspend fun getCurrentUserInfo(): User
 }

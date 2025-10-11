@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.data.dto
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,5 +13,4 @@ internal data class UserInfoDto(
     val lastName: String? = null,
     @SerialName("profileImageUrl")
     val profileImageUrl: String? = null
-
 )

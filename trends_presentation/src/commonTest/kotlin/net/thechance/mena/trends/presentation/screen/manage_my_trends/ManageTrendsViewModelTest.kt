@@ -17,7 +17,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.entity.UserInfo
+import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.repository.UserRepository
 import kotlin.test.BeforeTest
@@ -36,7 +36,7 @@ class ManageTrendsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         viewModel = ManageTrendsViewModel(repository,userRepository ,testDispatcher)
-        everySuspend { userRepository.getCurrentUserProfile() } returns userInfo
+        everySuspend { userRepository.getCurrentUserInfo() } returns user
 
     }
 
@@ -44,7 +44,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `getCurrentUserProfile should update state with profile when userRepository returns data`() =
         runTest(testDispatcher) {
-            viewModel.getCurrentUserProfile()
+            viewModel.getCurrentUserInfo()
 
             viewModel.state.test {
                 skipItems(1)
@@ -130,7 +130,7 @@ class ManageTrendsViewModelTest {
                 thumbnailUrl = "thumb2.jpg",
             )
         )
-        val userInfo = UserInfo(
+        val user = User(
             username = "nour",
             firstName = "nour",
             lastName = "nour",

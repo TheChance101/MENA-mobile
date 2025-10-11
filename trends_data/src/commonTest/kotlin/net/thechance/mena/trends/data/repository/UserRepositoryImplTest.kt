@@ -7,7 +7,7 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.UserInfoDto
 import net.thechance.mena.trends.data.repository.util.mockUserInfoHttpClient
-import net.thechance.mena.trends.domain.entity.UserInfo
+import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.UserRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -29,12 +29,12 @@ class UserRepositoryImplTest {
             val testNetworkClient = mockUserInfoHttpClient(userInfoDto)
             repository = UserRepositoryImpl(testNetworkClient)
 
-            val actualProfile = repository.getCurrentUserProfile()
+            val actualProfile = repository.getCurrentUserInfo()
 
-            assertThat(actualProfile).isEqualTo(expectedUserInfo)
+            assertThat(actualProfile).isEqualTo(expectedUser)
         }
     private companion object {
-        val expectedUserInfo = UserInfo(
+        val expectedUser = User(
             username = "nour",
             firstName = "nour",
             lastName = "nour",

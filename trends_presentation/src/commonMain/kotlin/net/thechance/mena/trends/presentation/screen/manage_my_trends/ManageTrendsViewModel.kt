@@ -28,7 +28,7 @@ internal class ManageTrendsViewModel(
 
     init {
         getReels()
-        getCurrentUserProfile()
+        getCurrentUserInfo()
     }
 
     fun getReels() {
@@ -48,9 +48,9 @@ internal class ManageTrendsViewModel(
         )
     }
 
-    fun getCurrentUserProfile() {
+    fun getCurrentUserInfo() {
         tryToExecute(
-            block = { userRepository.getCurrentUserProfile() },
+            block = { userRepository.getCurrentUserInfo() },
             onSuccess = { profile ->
                 updateState { copy(profile = profile.toUiState()) }
             },
