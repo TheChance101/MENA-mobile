@@ -14,8 +14,5 @@ interface StatementRepository {
     suspend fun getStatements(
         page: Int,
         pageSize: Int,
-    ): List<Statement> {
-        return emptyList()
-        /*TODO return all statements from local db*/
-    }
+    ): List<Statement>
 }
