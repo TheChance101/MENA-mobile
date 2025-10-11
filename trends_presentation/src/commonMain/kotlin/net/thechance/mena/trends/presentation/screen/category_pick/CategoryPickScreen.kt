@@ -81,7 +81,7 @@ private fun CategoryPickScreenContent(
                     state.categories.forEach { category ->
                         CategoryItem(
                             category = category,
-                            onClick = { id -> listener::onCategoryClick.invoke(id) },
+                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
                             modifier = Modifier.padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
                         )
                     }
