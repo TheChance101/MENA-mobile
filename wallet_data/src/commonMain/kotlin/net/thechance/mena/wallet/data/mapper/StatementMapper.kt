@@ -36,7 +36,7 @@ fun StatementEntity.toDomainEntity(): Statement {
         endDate = LocalDate.parse(this.endDate),
         totalInflows = totalInflows,
         totalOutflows = totalOutflows,
-        id = Uuid.parse(this.id.toString()),
+        id = id,
         fileName = fileName,
     )
 }
