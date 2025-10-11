@@ -36,7 +36,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.show_real.ReelUiState
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.extention.asString
-import net.thechance.mena.trends.presentation.shared.util.isValidImageUrl
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -83,7 +82,7 @@ private fun ReelHeaderSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = if (isValidImageUrl(reel.profileImageUrl)) reel.profileImageUrl else null,
+                model =  reel.profileImageUrl,
                 contentDescription = stringResource(Res.string.profile_image),
                 modifier = Modifier
                     .size(40.dp)
@@ -120,7 +119,7 @@ private fun ReelHeaderSection(
         }
 
         AsyncImage(
-            model = if (isValidImageUrl(reel.thumbnailUrl)) reel.thumbnailUrl else null,
+            model =  reel.thumbnailUrl,
             contentDescription = stringResource(Res.string.video_thumbnail),
             contentScale = ContentScale.Crop,
             modifier = Modifier
