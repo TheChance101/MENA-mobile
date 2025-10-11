@@ -121,7 +121,7 @@ private fun CompassView(
         contentAlignment = Alignment.Center
     ) {
         CompassContent(azimuth = azimuth, qiblahDirection = qiblahDirection)
-        QiblahImage(qiblahDirection)
+
     }
 }
 
@@ -231,12 +231,18 @@ private fun CompassContent(
 
         TextAngleToQiblah(azimuth, qiblahDirection)
     }
+
+    QiblahImage(qiblahDirection)
 }
 
 @Composable
-private fun BoxScope.TextAngleToQiblah(azimuth: Float, qiblahDirection: Float) {
+private fun BoxScope.TextAngleToQiblah(
+    azimuth: Float,
+    qiblahDirection: Float,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .align(Alignment.BottomCenter)
             .fillMaxWidth()
             .offset(y = 64.dp),

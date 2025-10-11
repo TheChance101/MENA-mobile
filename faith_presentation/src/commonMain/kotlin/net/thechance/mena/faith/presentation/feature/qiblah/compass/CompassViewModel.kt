@@ -7,5 +7,4 @@ class CompassViewModel() : BaseViewModel<CompassScreenState, CompassEffect>(Comp
 
 
     override fun onBackClick() {}
-
 }
