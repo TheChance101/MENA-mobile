@@ -7,7 +7,7 @@ import kotlin.time.ExperimentalTime
 
 @Entity(tableName = "statement")
 data class Statement @OptIn(ExperimentalTime::class) constructor(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long=0,
     val startDate: String,
     val endDate: String,
     val totalInflows: Double,
