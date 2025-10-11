@@ -73,5 +73,6 @@
     <string name="error_price_invalid">السعر غير صالح.</string>
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و 3000 حرف.</string>
+    <string name="favorites">المفضلة</string>
 
 </resources>
