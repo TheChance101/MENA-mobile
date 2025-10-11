@@ -14,13 +14,17 @@ internal class BasePagingSource<T : Any>(
 ) : PagingSource<Int, T>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
-        val nextPage = params.key ?: 1
-        val result = fetch(nextPage)
-        return LoadResult.Page(
-            data = result,
-            prevKey = if (nextPage == 1) null else nextPage - 1,
-            nextKey = if (result.size < 10) null else nextPage + 1
-        )
+        return try {
+            val nextPage = params.key ?: 1
+            val result = fetch(nextPage)
+            LoadResult.Page(
+                data = result,
+                prevKey = if (nextPage == 1) null else nextPage - 1,
+                nextKey = if (result.size < 10) null else nextPage + 1
+            )
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        }
     }
     override fun getRefreshKey(state: PagingState<Int, T>) = state.anchorPosition
 }

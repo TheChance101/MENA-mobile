@@ -131,6 +131,50 @@ internal class ReelRepositoryImplTest {
         assertThat(result).isSuccess()
     }
 
+    @Test
+    fun `should throw exception when API fails in getAllReels`() = runTest {
+        networkClient = createReelsHttpClient { throw Exception("Network Error") }
+        repository = ReelsRepositoryImpl(networkClient)
+
+        val result = runCatching { repository.getAllReels(pageNumber = 1) }
+
+        assertThat(result.isFailure).isEqualTo(true)
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Network Error")
+    }
+
+    @Test
+    fun `should emit no progress and fail when uploadReel throws`() = runTest {
+        networkClient = createReelsHttpClient { throw Exception("Upload Failed") }
+        repository = ReelsRepositoryImpl(networkClient)
+
+        val result = runCatching {
+            repository.uploadReel(
+                name = FAKE_NAME,
+                mimeType = FAKE_MIME_TYPE,
+                size = FAKE_SIZE,
+                bytes = FAKE_BYTES,
+                extension = FAKE_EXTENSION
+            ).toList()
+        }
+
+        assertThat(result.isFailure).isEqualTo(true)
+    }
+
+    @Test
+    fun `should emit increasing progress during upload`() = runTest {
+        networkClient = createReelsHttpClient { uploadReelResponse() }
+        repository = ReelsRepositoryImpl(networkClient)
+
+        val progressList = repository.uploadReel(
+            name = FAKE_NAME,
+            mimeType = FAKE_MIME_TYPE,
+            size = FAKE_SIZE,
+            bytes = FAKE_BYTES,
+            extension = FAKE_EXTENSION
+        ).toList()
+        assertThat(progressList.zipWithNext { a, b -> b.numberOfUploadedBytes >= a.numberOfUploadedBytes }
+            .all { it }).isEqualTo(true)
+    }
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }

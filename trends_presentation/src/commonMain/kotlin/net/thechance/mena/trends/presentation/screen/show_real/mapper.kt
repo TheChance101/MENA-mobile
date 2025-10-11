@@ -1,13 +1,14 @@
 package net.thechance.mena.trends.presentation.screen.show_real
 
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.presentation.shared.util.extention.timeAgoValue
 
-fun Reel.toUiState(): TrendUiState {
-    return TrendUiState(
+fun Reel.toUiState(): ReelUiState {
+    return ReelUiState(
         id = id,
         profileImageUrl = "",//TODO
         userName = "",//TODO
-        timeAgo = createdAt,
+        timeAgo = createdAt?.timeAgoValue(),
         thumbnailUrl = thumbnailUrl,
         videoUrl = videoUrl,
         description = description,

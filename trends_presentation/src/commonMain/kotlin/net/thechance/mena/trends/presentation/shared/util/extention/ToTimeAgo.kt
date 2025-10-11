@@ -17,24 +17,46 @@ import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-@Composable
 @OptIn(ExperimentalTime::class)
-fun LocalDateTime.toTimeAgo(): String {
+fun LocalDateTime.timeAgoValue(): TimeAgoValue {
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    val duration = now.toInstant(TimeZone.currentSystemDefault()) -
-            this.toInstant(TimeZone.currentSystemDefault())
+    val duration =
+        now.toInstant(TimeZone.currentSystemDefault()) - this.toInstant(TimeZone.currentSystemDefault())
 
     val minutes = duration.inWholeMinutes
     val hours = duration.inWholeHours
     val days = duration.inWholeDays
 
     return when {
-        minutes < 1 -> stringResource(Res.string.just_now)
-        minutes < 60 -> stringResource(Res.string.minutes_ago, minutes)
-        hours < 24 -> stringResource(Res.string.hours_ago, hours)
-        days < 7 -> stringResource(Res.string.days_ago, days)
-        days < 30 -> stringResource(Res.string.weeks_ago, days / 7)
-        days < 365 -> stringResource(Res.string.months_ago, days / 30)
-        else -> stringResource(Res.string.years_ago, days / 365)
+        minutes < 1 -> TimeAgoValue.JustNow
+        minutes < 60 -> TimeAgoValue.Minutes(minutes)
+        hours < 24 -> TimeAgoValue.Hours(hours)
+        days < 7 -> TimeAgoValue.Days(days)
+        days < 30 -> TimeAgoValue.Weeks(days / 7)
+        days < 365 -> TimeAgoValue.Months(days / 30)
+        else -> TimeAgoValue.Years(days / 365)
+    }
+}
+
+sealed interface TimeAgoValue {
+    data object JustNow : TimeAgoValue
+    data class Minutes(val value: Long) : TimeAgoValue
+    data class Hours(val value: Long) : TimeAgoValue
+    data class Days(val value: Long) : TimeAgoValue
+    data class Weeks(val value: Long) : TimeAgoValue
+    data class Months(val value: Long) : TimeAgoValue
+    data class Years(val value: Long) : TimeAgoValue
+}
+
+@Composable
+fun TimeAgoValue.asString(): String {
+    return when (this) {
+        is TimeAgoValue.JustNow -> stringResource(Res.string.just_now)
+        is TimeAgoValue.Minutes -> stringResource(Res.string.minutes_ago, value)
+        is TimeAgoValue.Hours -> stringResource(Res.string.hours_ago, value)
+        is TimeAgoValue.Days -> stringResource(Res.string.days_ago, value)
+        is TimeAgoValue.Weeks -> stringResource(Res.string.weeks_ago, value)
+        is TimeAgoValue.Months -> stringResource(Res.string.months_ago, value)
+        is TimeAgoValue.Years -> stringResource(Res.string.years_ago, value)
     }
 }

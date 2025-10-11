@@ -6,7 +6,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
@@ -20,8 +19,6 @@ import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageTrendsViewModelTest {

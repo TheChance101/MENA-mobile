@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,21 +35,20 @@ import mena.trends_presentation.generated.resources.views_suffix
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.trends.presentation.screen.show_real.TrendUiState
-import net.thechance.mena.trends.presentation.shared.util.extention.toTimeAgo
+import net.thechance.mena.trends.presentation.screen.show_real.ReelUiState
+import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
+import net.thechance.mena.trends.presentation.shared.util.extention.asString
 import net.thechance.mena.trends.presentation.shared.util.isValidImageUrl
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ReelCard(
-    reel: TrendUiState,
+internal fun FeedReelCard(
+    reel: ReelUiState,
     onMoreClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onReelClick: (id:String) -> Unit
+    onReelClick: (String) -> Unit
 ) {
-    val timeAgoText = reel.timeAgo?.toTimeAgo() ?: stringResource(Res.string.just_now)
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,6 +56,28 @@ internal fun ReelCard(
             .background(Theme.colorScheme.background.surfaceLow)
             .padding(bottom = Theme.spacing._12)
     ) {
+        ReelHeaderSection(
+            reel = reel,
+            timeAgoText = reel.timeAgo?.asString() ?: stringResource(Res.string.just_now),
+            onMoreClick = onMoreClick,
+            onReelClick = onReelClick
+        )
+
+        ReelFooterSection(
+            reel = reel,
+            onLikeClick = onLikeClick
+        )
+    }
+}
+
+@Composable
+private fun ReelHeaderSection(
+    reel: ReelUiState,
+    timeAgoText: String,
+    onMoreClick: () -> Unit,
+    onReelClick: (String) -> Unit
+) {
+    Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -95,7 +117,7 @@ internal fun ReelCard(
                 tint = Theme.colorScheme.shadeTertiary,
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable{onMoreClick()}
+                    .noRippleClickable { onMoreClick() }
             )
         }
 
@@ -107,7 +129,7 @@ internal fun ReelCard(
                 .fillMaxWidth()
                 .height(500.dp)
                 .background(Theme.colorScheme.background.surfaceHigh)
-                .clickable { onReelClick(reel.id) },
+                .noRippleClickable { onReelClick(reel.id) },
             alignment = Alignment.Center
         )
 
@@ -120,51 +142,57 @@ internal fun ReelCard(
                     .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
             )
         } else {
-            Box(modifier = Modifier.height(Theme.spacing._12))
+            Spacer(modifier = Modifier.height(Theme.spacing._12))
+        }
+    }
+}
+
+@Composable
+private fun ReelFooterSection(
+    reel: ReelUiState,
+    onLikeClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing._16),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_heart),
+                contentDescription = stringResource(Res.string.likes),
+                tint = Theme.colorScheme.shadeTertiary,
+                modifier = Modifier
+                    .size(24.dp)
+                    .noRippleClickable { onLikeClick() }
+            )
+            Text(
+                text = stringResource(Res.string.likes_suffix, reel.likes),
+                style = Theme.typography.body.small,
+                color = Theme.colorScheme.shadeSecondary
+            )
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Theme.spacing._16),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_heart),
-                    contentDescription = stringResource(Res.string.likes),
-                    tint = Theme.colorScheme.shadeTertiary,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { onLikeClick() }
-                )
-                Text(
-                    text = stringResource(Res.string.likes_suffix, reel.likes),
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadeSecondary
-                )
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_eye),
-                    contentDescription = stringResource(Res.string.views),
-                    tint = Theme.colorScheme.shadeTertiary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = stringResource(Res.string.views_suffix, reel.views),
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadeSecondary
-                )
-            }
+            Icon(
+                painter = painterResource(Res.drawable.ic_eye),
+                contentDescription = stringResource(Res.string.views),
+                tint = Theme.colorScheme.shadeTertiary,
+                modifier = Modifier.size(24.dp)
+            )
+            Text(
+                text = stringResource(Res.string.views_suffix, reel.views),
+                style = Theme.typography.body.small,
+                color = Theme.colorScheme.shadeSecondary
+            )
         }
     }
 }

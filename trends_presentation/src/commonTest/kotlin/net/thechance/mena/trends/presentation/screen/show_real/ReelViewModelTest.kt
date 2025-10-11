@@ -1,17 +1,17 @@
 package net.thechance.mena.trends.presentation.screen.show_real
 
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNotNull
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.entity.Reel
@@ -20,23 +20,34 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TrendsViewModelTest {
+class ReelViewModelTest {
 
     private val repository: ReelsRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel: TrendsViewModel
+    private lateinit var viewModel: ReelViewModel
+
+    private val testReel = Reel(
+        id = "1",
+        thumbnailUrl = "thumb.jpg",
+        videoUrl = "video.mp4",
+        description = "description",
+        likesCount = 5,
+        viewsCount = 50,
+        createdAt = null,
+        categories = emptyList()
+    )
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = TrendsViewModel(repository, testDispatcher)
+        viewModel = ReelViewModel(repository, testDispatcher)
     }
 
     @Test
     fun `onVideoClick should send NavigateToReelDetails effect`() = runTest {
         viewModel.effect.test {
             viewModel.onReelClick("1")
-            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToReelDetails("1"))
+            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToReelDetails("1"))
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -45,7 +56,7 @@ class TrendsViewModelTest {
     fun `onAddReelClick should send NavigateToAddReel effect`() = runTest {
         viewModel.effect.test {
             viewModel.onAddReelClick()
-            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToAddReel)
+            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToAddReel)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -54,7 +65,7 @@ class TrendsViewModelTest {
     fun `onManageTrendsClick should send NavigateToManageTrends effect`() = runTest {
         viewModel.effect.test {
             viewModel.onManageMyTrendsClick()
-            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToManageMyTrends)
+            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToManageMyTrends)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -63,20 +74,28 @@ class TrendsViewModelTest {
     fun `onEditTagsClick should send NavigateToChangeTags effect`() = runTest {
         viewModel.effect.test {
             viewModel.onEditTagsClick()
-            assertThat(awaitItem()).isEqualTo(TrendsUiEffect.NavigateToChangeTags)
+            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToChangeTags)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
-    private companion object {
-        val mockReels = listOf(
-            Reel("1", "thumb1.jpg", "video1.mp4", "desc1", 10, 100, null, emptyList()),
-            Reel("2", "thumb2.jpg", "video2.mp4", "desc2", 20, 200, null, emptyList())
-        )
+    @Test
+    fun `getTrends should update state when success`() = runTest {
+        everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
+        viewModel = ReelViewModel(repository, testDispatcher)
+        advanceUntilIdle()
+        val items = viewModel.state.value.reels?.asSnapshot()
+        assertThat(items?.first()?.id).isEqualTo(testReel.id)
+    }
 
-        val mockReelsUi = listOf(
-            TrendUiState("1", "thumb1.jpg", "video1.mp4", "desc1", likes = 10, views = 100),
-            TrendUiState("2", "thumb2.jpg", "video2.mp4", "desc2", likes = 20, views = 200)
-        )
+    @Test
+    fun `onLikeClick should increment likes count`() = runTest {
+        everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
+        viewModel = ReelViewModel(repository, testDispatcher)
+        advanceUntilIdle()
+        val initial = viewModel.state.value.reels?.asSnapshot()?.first()
+        viewModel.onLikeClick("1")
+        val updated = viewModel.state.value.reels?.asSnapshot()?.first()
+        assertThat(updated?.likes).isEqualTo(initial!!.likes + 1)
     }
 }

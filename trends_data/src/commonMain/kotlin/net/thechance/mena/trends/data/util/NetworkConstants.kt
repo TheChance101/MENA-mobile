@@ -15,4 +15,5 @@ internal object NetworkConstants {
     //keys
     const val VIDEO = "video"
     const val THUMBNAIL = "thumbnail"
+    const val FEED_ENDPOINT = "feed"
 }

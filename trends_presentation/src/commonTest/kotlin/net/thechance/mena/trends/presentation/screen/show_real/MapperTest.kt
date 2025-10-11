@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.presentation.shared.util.extention.timeAgoValue
 import kotlin.test.Test
 
 class ReelExtensionTest {
@@ -91,11 +92,11 @@ class ReelExtensionTest {
         )
 
         // Expected TrendUiStates
-        val testTrendUiState1 =TrendUiState(
+        val testTrendUiState1 =ReelUiState(
             id = "1",
             profileImageUrl = "",
             userName = "",
-            timeAgo = testCreatedAt,
+            timeAgo = testCreatedAt.timeAgoValue(),
             thumbnailUrl = "thumb1.jpg",
             videoUrl = "video1.mp4",
             description = "Test description",
@@ -103,7 +104,7 @@ class ReelExtensionTest {
             views = 100
         )
 
-        val testTrendUiState2 = TrendUiState(
+        val testTrendUiState2 = ReelUiState(
             id = "2",
             profileImageUrl = "",
             userName = "",
@@ -115,11 +116,11 @@ class ReelExtensionTest {
             views = 200
         )
 
-        val testTrendUiState3 = TrendUiState(
+        val testTrendUiState3 = ReelUiState(
             id = "3",
             profileImageUrl = "",
             userName = "",
-            timeAgo = testCreatedAt,
+            timeAgo = testCreatedAt.timeAgoValue(),
             thumbnailUrl = "thumb3.jpg",
             videoUrl = "video3.mp4",
             description = "Description with categories",
@@ -127,7 +128,7 @@ class ReelExtensionTest {
             views = 300
         )
 
-        val testTrendUiState4 = TrendUiState(
+        val testTrendUiState4 = ReelUiState(
             id = "4",
             profileImageUrl = "",
             userName = "",

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -16,17 +17,17 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
-internal class TrendsViewModel(
+internal class ReelViewModel(
     @Provided private val repository: ReelsRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<TrendsScreenState, TrendsUiEffect>(TrendsScreenState()),
-    TrendsInteractionListener {
+) : BaseViewModel<ReelScreenState, ReelUiEffect>(ReelScreenState()),
+    ReelInteractionListener {
 
     init {
-        getTrends()
+        getFeedReels()
     }
 
-    private fun getTrends() {
+    private fun getFeedReels() {
         tryToExecute(
             block = {
                 createPager(
@@ -34,7 +35,7 @@ internal class TrendsViewModel(
                     loadPage = { page -> repository.getFeedReels(page) }
                 )
             },
-            onSuccess = ::onTrendsLoaded,
+            onSuccess = ::onReelLoaded,
             onError = { error -> updateState { copy(error = error) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
@@ -42,27 +43,37 @@ internal class TrendsViewModel(
         )
     }
 
-    private fun onTrendsLoaded(reelsFlow: Flow<PagingData<Reel>>) {
-        val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
-            pagingData.map { reel -> reel.toUiState() }
+    private  fun onReelLoaded(reelsFlow: Flow<PagingData<Reel>>) {
+        try {
+            val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
+                pagingData.map { reel -> reel.toUiState() }
+            }
+            updateState { copy(isLoading = false, reels = uiReelsFlow) }
+        }catch(e: Throwable){
+            viewModelScope.launch {
+                mapExceptionToErrorState(
+                    throwable = e,
+                ){
+                    updateState { copy(error = it) }
+                }
+            }
         }
-        updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
     override fun onAddReelClick() {
-        sendEffect(TrendsUiEffect.NavigateToAddReel)
+        sendEffect(ReelUiEffect.NavigateToAddReel)
     }
 
     override fun onEditTagsClick() {
-        sendEffect(TrendsUiEffect.NavigateToChangeTags)
+        sendEffect(ReelUiEffect.NavigateToChangeTags)
     }
 
     override fun onManageMyTrendsClick() {
-        sendEffect(TrendsUiEffect.NavigateToManageMyTrends)
+        sendEffect(ReelUiEffect.NavigateToManageMyTrends)
     }
 
     override fun onReelClick(reelId: String) {
-            sendEffect(TrendsUiEffect.NavigateToReelDetails(reelId))
+            sendEffect(ReelUiEffect.NavigateToReelDetails(reelId))
     }
 
     override fun onLikeClick(reelId: String) {

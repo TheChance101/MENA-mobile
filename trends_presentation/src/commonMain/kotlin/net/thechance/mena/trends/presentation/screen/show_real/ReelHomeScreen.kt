@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.PagingData
 import app.cash.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.flowOf
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_account_setting
 import mena.trends_presentation.generated.resources.ic_add_real
@@ -30,51 +32,52 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.screen.show_real.component.ReelCard
+import net.thechance.mena.trends.presentation.screen.show_real.component.FeedReelCard
+import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun ReelHomeScreen(
-    viewModel: TrendsViewModel = koinViewModel()
+    viewModel: ReelViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            is TrendsUiEffect.NavigateToReelDetails ->
+            is ReelUiEffect.NavigateToReelDetails ->
                 navController.navigate(Route.ReelDetails(effect.trendId))
 
-            is TrendsUiEffect.NavigateToAddReel ->
+            is ReelUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)
 
-            is TrendsUiEffect.NavigateToChangeTags ->
+            is ReelUiEffect.NavigateToChangeTags ->
                 navController.navigate(Route.Categories)
 
-            is TrendsUiEffect.NavigateToManageMyTrends ->
+            is ReelUiEffect.NavigateToManageMyTrends ->
                 navController.navigate(Route.ManageReels)
         }
     }
 
-    TrendsScreenContent(
+    ReelScreenContent(
         state = state,
         listener = viewModel,
     )
 }
 
 @Composable
-private fun TrendsScreenContent(
-    state: TrendsScreenState,
-    listener: TrendsInteractionListener,
+private fun ReelScreenContent(
+    state: ReelScreenState,
+    listener: ReelInteractionListener,
 ) {
-    val reels = state.reels.collectAsLazyPagingItems()
-
     Scaffold(
         topBar = {
             TrendsAppBar(
@@ -84,6 +87,7 @@ private fun TrendsScreenContent(
         }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+            val reels = state.reels.collectAsLazyPagingItems()
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -92,32 +96,27 @@ private fun TrendsScreenContent(
             ) {
                 items(reels.itemSnapshotList.items) { reel ->
                     reel.let { reel ->
-                        ReelCard(
+                        FeedReelCard(
                             reel = reel,
-                            onMoreClick = { listener::onMoreClick },
+                            onMoreClick =  listener::onMoreClick,
                             onLikeClick = { listener.onLikeClick(reel.id) },
                             onReelClick = { listener.onReelClick(reel.id) }
                         )
                     }
                 }
             }
-
-            Box(
+            Icon(
+                painter = painterResource(Res.drawable.ic_add_real),
+                contentDescription = stringResource(Res.string.add_reel),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
                     .size(56.dp)
                     .clip(RoundedCornerShape(Theme.radius.lg))
                     .background(Theme.colorScheme.primary.primary)
-                    .clickable { listener.onAddReelClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_add_real),
-                    contentDescription = stringResource(Res.string.add_reel),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+                    .noRippleClickable { listener.onAddReelClick() }
+                    .padding(Theme.spacing._16),
+            )
         }
     }
 }
