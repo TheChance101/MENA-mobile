@@ -18,6 +18,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,10 +30,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
+import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageContentUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
@@ -99,11 +105,24 @@ fun HorizontalImagePager(
         state = state,
         modifier = Modifier.fillMaxSize(),
     ) { page ->
-        AsyncImage(
-            model = images[page],
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize()
-        )
+
+        var showLoadingIndicator by remember { mutableStateOf(true) }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                model = images[page],
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                onState = { state ->
+                    showLoadingIndicator = (state is AsyncImagePainter.State.Loading)
+                }
+            )
+            if (showLoadingIndicator) {
+                CustomInfiniteCircularLoader()
+            }
+        }
     }
 }
 
@@ -162,7 +181,7 @@ private fun PagerOverlay(
             iconSize = 32.dp,
             containerColor = Color.Transparent,
             contentColor = Theme.colorScheme.primary.onPrimary,
-            contentPadding= PaddingValues(0.dp)
+            contentPadding = PaddingValues(0.dp)
         )
     }
 }
