@@ -15,4 +15,7 @@ interface StatementRepository {
         page: Int,
         pageSize: Int,
     ): List<Statement>
+    suspend fun insertStatement(statement: Statement)
+    suspend fun deleteStatement(statement: Statement):Boolean
+    suspend fun getStatementById(id:Long): Statement
 }
