@@ -47,6 +47,7 @@ import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import net.thechance.mena.trends.presentation.shared.util.getFilePath
+import net.thechance.mena.trends.presentation.shared.util.isIdle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -119,7 +120,7 @@ private fun UploadReelScreenContent(
                 onEditClick = launcher::launch
             )
 
-            if (state.uploadingState != UploadReelScreenState.UploadingReelState.IDLE) {
+            if (!state.uploadingState.isIdle) {
                 VideoLoadingCardItem(
                     modifier = Modifier.padding(
                         top = state.thumbnail?.let {
@@ -129,7 +130,7 @@ private fun UploadReelScreenContent(
                     title = state.selectedFile.name,
                     sizeUploaded = state.sizeUploaded,
                     videoSize = state.selectedFile.sizeText,
-                    videoState = state.uploadingState,
+                    uploadingState = state.uploadingState,
                     progress = state.uploadingProgress,
                     onAction = { action ->
                         when (action) {

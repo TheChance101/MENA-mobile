@@ -37,6 +37,9 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
+import net.thechance.mena.trends.presentation.shared.util.isFailed
+import net.thechance.mena.trends.presentation.shared.util.isSuccess
+import net.thechance.mena.trends.presentation.shared.util.isUploading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -45,7 +48,7 @@ fun VideoLoadingCardItem(
     title: String,
     sizeUploaded: String,
     videoSize: String,
-    videoState: UploadReelScreenState.UploadingReelState,
+    uploadingState: UploadReelScreenState.UploadingReelState,
     progress: Float,
     modifier: Modifier = Modifier,
     onAction: (VideoAction) -> Unit
@@ -84,17 +87,17 @@ fun VideoLoadingCardItem(
                     title = title,
                     sizeUploaded = sizeUploaded,
                     videoSize = videoSize,
-                    videoState = videoState
+                    uploadingState = uploadingState
                 )
 
                 VideoActionsSection(
                     modifier = Modifier.fillMaxHeight(),
-                    videoState = videoState,
+                    uploadingState = uploadingState,
                     onAction = onAction
                 )
             }
 
-            if(videoState == UploadReelScreenState.UploadingReelState.UPLOADING) {
+            if(uploadingState.isUploading) {
                 ProgressBar(
                     modifier = Modifier
                         .padding(top = Theme.spacing._4)
@@ -112,7 +115,7 @@ private fun VideoInfoSection(
     title: String,
     sizeUploaded: String,
     videoSize: String,
-    videoState: UploadReelScreenState.UploadingReelState,
+    uploadingState: UploadReelScreenState.UploadingReelState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -127,7 +130,7 @@ private fun VideoInfoSection(
             overflow = TextOverflow.Ellipsis
         )
 
-        when (videoState) {
+        when (uploadingState) {
             UploadReelScreenState.UploadingReelState.UPLOADING,
             UploadReelScreenState.UploadingReelState.SUCCESS -> {
                 Text(
@@ -152,13 +155,13 @@ private fun VideoInfoSection(
 
 @Composable
 private fun VideoActionsSection(
-    videoState: UploadReelScreenState.UploadingReelState,
+    uploadingState: UploadReelScreenState.UploadingReelState,
     modifier: Modifier = Modifier,
     onAction: (VideoAction) -> Unit
 ) {
     Box(modifier = modifier) {
         AnimatedVisibility (
-            visible = videoState == UploadReelScreenState.UploadingReelState.UPLOADING,
+            visible = uploadingState.isUploading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -178,8 +181,7 @@ private fun VideoActionsSection(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
         ) {
             AnimatedVisibility (
-                visible = videoState == UploadReelScreenState.UploadingReelState.FAILED
-                    || videoState == UploadReelScreenState.UploadingReelState.SUCCESS,
+                visible = uploadingState.isFailed || uploadingState.isSuccess,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -193,7 +195,7 @@ private fun VideoActionsSection(
                 )
             }
             AnimatedVisibility (
-                visible = videoState == UploadReelScreenState.UploadingReelState.FAILED,
+                visible = uploadingState.isFailed,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {

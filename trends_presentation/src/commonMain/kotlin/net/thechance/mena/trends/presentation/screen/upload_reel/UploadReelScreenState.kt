@@ -2,6 +2,8 @@ package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
+import net.thechance.mena.trends.presentation.shared.util.isFailed
+import net.thechance.mena.trends.presentation.shared.util.isIdle
 
 data class UploadReelScreenState(
     val reelId: String? = null,
@@ -15,7 +17,7 @@ data class UploadReelScreenState(
     val errorState: ErrorState? = null
 ) {
     val isUploadVideoCardEnabled: Boolean
-        get() = uploadingState == UploadingReelState.IDLE || uploadingState == UploadingReelState.FAILED
+        get() = uploadingState.isIdle || uploadingState.isFailed
 
     enum class UploadingReelState {
         IDLE,
