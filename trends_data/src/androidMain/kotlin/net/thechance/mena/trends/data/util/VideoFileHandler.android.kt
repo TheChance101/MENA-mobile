@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.RawSource
 import kotlinx.io.asSource
+import net.thechance.mena.trends.domain.exception.FileNotFoundException
 import org.koin.java.KoinJavaComponent.getKoin
 import java.io.ByteArrayOutputStream
 
@@ -19,13 +20,10 @@ class VideoFileHandlerImpl(
 ): VideoFileHandler {
 
     override suspend fun readFile(filePath: String): RawSource {
-        return withContext(Dispatchers.IO){
-            context
-                .contentResolver
-                .openInputStream(filePath.toUri())
-                ?.asSource()
-                ?: throw Exception("Failed to open input stream")
-        }
+        return context.contentResolver
+            .openInputStream(filePath.toUri())
+            ?.asSource()
+            ?: throw FileNotFoundException()
     }
 
     override suspend fun getDuration(filePath: String): Long? {
@@ -46,7 +44,7 @@ class VideoFileHandlerImpl(
                 MediaMetadataRetriever()
                     .use(filePath.toUri(), context) {
                         this.getFrameAtTime(
-                            timeMs * MILLISECOND_SECOND_CONVERSION,
+                            timeMs * MILLE_SECOND_CONVERSION,
                             MediaMetadataRetriever.OPTION_CLOSEST_SYNC
                         )?.let { bitmap ->
                             val frameData = bitmapToByteArray(bitmap)
@@ -61,7 +59,7 @@ class VideoFileHandlerImpl(
     private fun bitmapToByteArray(
         bitmap: Bitmap,
         format: Bitmap.CompressFormat= Bitmap.CompressFormat.JPEG,
-        quality: Int = 100
+        quality: Int = COMPRESS_QUALITY
     ): ByteArray {
         val stream = ByteArrayOutputStream()
         bitmap.compress(format, quality, stream)
@@ -83,6 +81,7 @@ class VideoFileHandlerImpl(
     }
 
     private companion object{
-        private const val MILLISECOND_SECOND_CONVERSION = 1000
+        const val MILLE_SECOND_CONVERSION = 1000
+        const val COMPRESS_QUALITY = 100
     }
 }

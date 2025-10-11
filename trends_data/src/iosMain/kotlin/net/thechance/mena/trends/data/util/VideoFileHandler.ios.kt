@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.data.util
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +22,7 @@ import platform.posix.memcpy
 
 actual fun getPlatformFileReader(): VideoFileHandler = VideoFileHandlerImpl()
 
+@OptIn(ExperimentalForeignApi::class)
 class VideoFileHandlerImpl : VideoFileHandler {
 
     override suspend fun readFile(filePath: String): RawSource {
@@ -31,14 +33,13 @@ class VideoFileHandlerImpl : VideoFileHandler {
     }
 
     override suspend fun getDuration(filePath: String): Long? {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
-                val asset = AVURLAsset.URLAssetWithURL(fileUrl, options = null)
-                val duration = asset.duration
-                (CMTimeGetSeconds(duration) * 1000).toLong().takeIf { it > 0 }
-            }.getOrNull()
-        }
+        return runCatching {
+            val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
+            val asset = AVURLAsset.URLAssetWithURL(fileUrl, options = null)
+            val duration = asset.duration
+            (CMTimeGetSeconds(duration) * ONE_SECOND).toLong()
+                .takeIf { duration -> duration > 0 }
+        }.getOrNull()
     }
 
     override suspend fun extractVideoFrame(filePath: String, timeMs: Long): ByteArray? {
@@ -49,11 +50,11 @@ class VideoFileHandlerImpl : VideoFileHandler {
                 val imageGenerator = createAVAssetImageGenerator(asset)
 
                 try {
-                    val time = CMTimeMakeWithSeconds(timeMs / 1000.0, 600)
+                    val time = CMTimeMakeWithSeconds(timeMs / ONE_SECOND, TIME_SCALE)
                     imageGenerator.copyCGImageAtTime(time, actualTime = null, error = null)
                         .let { cgImage ->
                             val uiImage = UIImage.imageWithCGImage(cgImage)
-                            UIImageJPEGRepresentation(uiImage, 0.9)?.toByteArray()
+                            UIImageJPEGRepresentation(uiImage, COMPRESS_QUALITY)?.toByteArray()
                         }
                 } finally {
                     imageGenerator.cancelAllCGImageGeneration()
@@ -65,8 +66,8 @@ class VideoFileHandlerImpl : VideoFileHandler {
     private fun createAVAssetImageGenerator(asset: AVURLAsset): AVAssetImageGenerator {
         return AVAssetImageGenerator(asset = asset).apply {
             appliesPreferredTrackTransform = true
-            requestedTimeToleranceBefore = CMTimeMake(0, 600)
-            requestedTimeToleranceAfter = CMTimeMake(0, 600)
+            requestedTimeToleranceBefore = CMTimeMake(0, TIME_SCALE)
+            requestedTimeToleranceAfter = CMTimeMake(0, TIME_SCALE)
         }
     }
 
@@ -80,5 +81,11 @@ class VideoFileHandlerImpl : VideoFileHandler {
                 )
             }
         }
+    }
+
+    private companion object {
+        const val ONE_SECOND = 1000.0
+        const val TIME_SCALE = 600
+        const val COMPRESS_QUALITY = 1.0
     }
 }
