@@ -69,21 +69,20 @@ private fun CategoryPickScreenContent(
             }
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().verticalScroll(state = rememberScrollState())
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16)
             ) {
                 ChooseInterestsMessage()
                 FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._24),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
                 ) {
                     state.categories.forEach { category ->
                         CategoryItem(
                             category = category,
                             onClick = { id -> listener::onCategoryClick.invoke(id) },
-                            modifier = Modifier
-                                .padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
+                            modifier = Modifier.padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
                         )
                     }
                 }
@@ -100,18 +99,14 @@ private fun ChooseInterestsMessage() {
         text = stringResource(resource = Res.string.choose_interests),
         style = Theme.typography.title.medium,
         color = Theme.colorScheme.shadePrimary,
-        modifier = Modifier
-            .padding(horizontal = Theme.spacing._16)
-            .padding(bottom = Theme.spacing._4, top = 72.dp)
+        modifier = Modifier.padding(bottom = Theme.spacing._4, top = 72.dp)
     )
 
     Text(
         text = stringResource(resource = Res.string.help_text),
         style = Theme.typography.body.small,
         color = Theme.colorScheme.shadeSecondary,
-        modifier = Modifier
-            .padding(bottom = Theme.spacing._24)
-            .padding(horizontal = Theme.spacing._16)
+        modifier = Modifier.padding(bottom = Theme.spacing._24)
     )
 }
 
