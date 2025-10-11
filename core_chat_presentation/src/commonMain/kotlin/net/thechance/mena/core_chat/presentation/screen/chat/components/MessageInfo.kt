@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalTime::class)
-
 package net.thechance.mena.core_chat.presentation.screen.chat.components
+
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +17,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_close_circle
 import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageStatusUiState
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.formatAsTime
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
@@ -34,12 +34,12 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun MessageInfo(
     messageTime: LocalDateTime,
-    messageStatus: MessageStatusUiState,
+    messageStatus: MessageStatus,
     messageIsMine: Boolean,
     onFailClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val messageInfoColor = if (messageStatus == MessageStatusUiState.FAILED)
+    val messageInfoColor = if (messageStatus == MessageStatus.FAILED)
         Theme.colorScheme.error
     else
         Theme.colorScheme.shadeTertiary
@@ -49,7 +49,7 @@ fun MessageInfo(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         modifier = modifier.noHoverClickable(
             onClick = onFailClick,
-            enabled = messageIsMine && messageStatus == MessageStatusUiState.FAILED
+            enabled = messageIsMine && messageStatus == MessageStatus.FAILED
         ),
     ) {
         Text(
@@ -60,7 +60,7 @@ fun MessageInfo(
 
         if (messageIsMine) {
             when (messageStatus) {
-                MessageStatusUiState.SENDING -> {
+                MessageStatus.LOADING -> {
                     DotsProgressIndicator(
                         numberOfDots = 3,
                         colors = listOf(
@@ -71,7 +71,7 @@ fun MessageInfo(
                     )
                 }
 
-                MessageStatusUiState.SENT -> {
+                MessageStatus.SENT -> {
                     Icon(
                         painter = painterResource(Res.drawable.ic_message_sent),
                         contentDescription = "Sent",
@@ -80,7 +80,7 @@ fun MessageInfo(
                     )
                 }
 
-                MessageStatusUiState.READ -> {
+                MessageStatus.READ -> {
                     Icon(
                         painter = painterResource(Res.drawable.ic_message_read),
                         contentDescription = "Read",
@@ -89,7 +89,7 @@ fun MessageInfo(
                     )
                 }
 
-                MessageStatusUiState.FAILED -> {
+                MessageStatus.FAILED -> {
                     Icon(
                         painter = painterResource(Res.drawable.ic_close_circle),
                         contentDescription = "Failed",
@@ -115,7 +115,7 @@ private fun PreviewReadMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatusUiState.READ,
+                messageStatus = MessageStatus.READ,
                 messageIsMine = true
             )
         }
@@ -134,7 +134,7 @@ private fun PreviewSentMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatusUiState.SENT,
+                messageStatus = MessageStatus.SENT,
                 messageIsMine = true
             )
         }
@@ -153,7 +153,7 @@ private fun PreviewFailedMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatusUiState.FAILED,
+                messageStatus = MessageStatus.FAILED,
                 messageIsMine = true
             )
         }
@@ -172,7 +172,7 @@ private fun PreviewSendingMessageInfo() {
         ) {
             MessageInfo(
                 messageTime = LocalDateTime.now(),
-                messageStatus = MessageStatusUiState.SENDING,
+                messageStatus = MessageStatus.LOADING,
                 messageIsMine = true
             )
         }

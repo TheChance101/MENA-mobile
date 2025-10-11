@@ -3,12 +3,12 @@
 package net.thechance.mena.core_chat.data.contacts.fakes
 
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.core_chat.data.chat.dto.ChatDto
-import net.thechance.mena.core_chat.data.chat.dto.MessageDto
-import net.thechance.mena.core_chat.data.chat.utils.now
-import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
-import net.thechance.mena.core_chat.data.contacts.toDomain
-import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import kotlin.uuid.ExperimentalUuidApi

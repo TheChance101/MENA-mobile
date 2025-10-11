@@ -87,7 +87,7 @@ private fun SyncContactsContent(
                     tint = Theme.colorScheme.primary.primary,
                 )
             },
-            onLeadingClick = interactionListener::onBackClick,
+            onLeadingClick = interactionListener::onBackClicked,
         )
         AnimatedContent(
             targetState = state.isPermissionDeniedPermanently,
@@ -105,7 +105,7 @@ private fun SyncContactsContent(
                 when {
                     isDeniedPermanently -> {
                         GoToSettingsView(
-                            onGoToSettingClick = interactionListener::onGoToSettingsClick,
+                            onGoToSettingClick = interactionListener::onGoToSettingsClicked,
                             modifier = Modifier.padding(top = Theme.spacing._12)
                         )
                     }
@@ -117,7 +117,7 @@ private fun SyncContactsContent(
                     state.showSyncView -> {
                         NoContactsSyncView(
                             modifier = Modifier.padding(top = Theme.spacing._12),
-                            onSyncClick = interactionListener::onSyncClick,
+                            onSyncClick = interactionListener::onSyncClicked,
                         )
                     }
                 }
@@ -134,9 +134,9 @@ private fun SyncContactsScreenPreview() {
             state = SyncContactsScreenState(showSyncView = true, isLoading = false),
             interactionListener = object :
                 SyncContactsInteractionListener {
-                override fun onBackClick() {}
-                override fun onSyncClick() {}
-                override fun onGoToSettingsClick() {}
+                override fun onBackClicked() {}
+                override fun onSyncClicked() {}
+                override fun onGoToSettingsClicked() {}
             }
         )
     }

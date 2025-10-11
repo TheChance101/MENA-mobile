@@ -20,21 +20,17 @@ import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import net.thechance.mena.core_chat.data.chat.ChatRepositoryImpl
-import net.thechance.mena.core_chat.data.chat.dto.ChatDto
-import net.thechance.mena.core_chat.data.chat.dto.MessageDto
-import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
-import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
-import net.thechance.mena.core_chat.data.database.dao.MessageDao
-import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_ENDPOINT
-import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_HISTORY_ENDPOINT
-import net.thechance.mena.core_chat.data.network.ApiConstants.CONTACTS_ENDPOINT
-import net.thechance.mena.core_chat.data.network.ApiConstants.SYNC_CONTACTS_ENDPOINT
-import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
-import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
+import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -116,7 +112,6 @@ fun MockRequestHandleScope.defaultChatResponse() = respond(
 fun createRepository(
     contactsProvider: ContactsProvider,
     contactsDataStore: DataStore<Preferences>,
-    authenticationRepository: AuthenticationRepository,
     contactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ContactsRepositoryImpl {
@@ -125,7 +120,6 @@ fun createRepository(
             contactsResponse = contactsResponse,
             syncContactsResponse = syncContactsResponse
         ),
-        authenticationRepository = authenticationRepository,
         contactsProvider = contactsProvider,
         dataStore = contactsDataStore
     )
@@ -134,7 +128,6 @@ fun createRepository(
 fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
-    authenticationRepository: AuthenticationRepository,
     messageDao: MessageDao,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
@@ -146,7 +139,6 @@ fun createChatRepository(
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
         webSocketManager = webSocketManager,
-        authenticationRepository = authenticationRepository,
         messageDao = messageDao,
         json = jsonSerialization,
     )
@@ -188,3 +180,8 @@ fun createHttpClient(
         }
     }
 }
+
+private const val CONTACTS_ENDPOINT = "/chat/contacts"
+private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
+private const val CHAT_ENDPOINT = "/chat"
+private const val CHAT_HISTORY_ENDPOINT = "/chat/history"

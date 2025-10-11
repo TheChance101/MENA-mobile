@@ -33,6 +33,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
@@ -45,6 +46,7 @@ fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun ContactsContent(
     state: ContactsScreenState,
@@ -73,11 +75,11 @@ private fun ContactsContent(
                     tint = Theme.colorScheme.primary.primary,
                 )
             },
-            onLeadingClick = interactionListener::onBackClick,
+            onLeadingClick = interactionListener::onBackClicked,
             trailingContent = {
                 AppBarOptionContainer(
                     badgeColor = Theme.colorScheme.primary.primary,
-                    onClick = interactionListener::onReSyncClick
+                    onClick = interactionListener::onReSyncClicked
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_resync),
@@ -110,13 +112,13 @@ private fun ContactsContent(
                     ErrorView(
                         title = stringResource(Res.string.something_went_wrong),
                         message = stringResource(Res.string.could_not_load_contacts),
-                        onRetry = interactionListener::onRefreshContacts
+                        onRetry = interactionListener::onRefreshContactsClicked
                     )
                 }
 
                 else -> ContactsList(
                     contacts = contacts,
-                    onContactClick = interactionListener::onContactClick
+                    onContactClick = interactionListener::onContactClicked
                 )
             }
         }
