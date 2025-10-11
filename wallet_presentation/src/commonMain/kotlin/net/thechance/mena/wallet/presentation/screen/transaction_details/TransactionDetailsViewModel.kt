@@ -4,12 +4,15 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.error
+import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -84,13 +87,16 @@ class TransactionDetailsViewModel(
         getTransactionDetails()
     }
 
-    override fun onCaptureError() {
-        sendEffect(TransactionDetailsEffect.showErrorSnackBar)
+    override suspend fun onCaptureError() {
+        showSnackBar(
+            title = getString(Res.string.error),
+            message = getString(Res.string.share_transaction_details_error_msg),
+            isSuccess = false)
     }
 
-    suspend fun showSnackBar(
-        titleRes: StringResource,
-        messageRes: StringResource,
+    private suspend fun showSnackBar(
+        title: String,
+        message: String,
         isSuccess: Boolean,
         durationMillis: Long = 3000L
     ) {
@@ -98,8 +104,8 @@ class TransactionDetailsViewModel(
             oldState.copy(
                 snackBar = SnackBarState(
                     isVisible = true,
-                    titleRes = titleRes,
-                    messageRes = messageRes,
+                    title = title,
+                    message = message,
                     isSuccess = isSuccess
                 )
             )
