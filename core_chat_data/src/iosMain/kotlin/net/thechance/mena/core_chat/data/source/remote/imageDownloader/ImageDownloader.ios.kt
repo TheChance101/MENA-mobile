@@ -1,7 +1,5 @@
 package net.thechance.mena.core_chat.data.source.remote.imageDownloader
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.Foundation.dataWithContentsOfURL
@@ -16,40 +14,39 @@ import platform.darwin.dispatch_semaphore_signal
 import platform.darwin.dispatch_semaphore_wait
 
 
-actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean =
-    withContext(Dispatchers.Default) {
-        try {
-            val nsUrl = NSURL.URLWithString(url) ?: return@withContext false
-            val data = NSData.dataWithContentsOfURL(nsUrl) ?: return@withContext false
-            val image = UIImage(data = data)
+actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean {
+    return try {
+        val nsUrl = NSURL.URLWithString(url) ?: return false
+        val data = NSData.dataWithContentsOfURL(nsUrl) ?: return false
+        val image = UIImage(data = data)
 
-            val jpegData = UIImageJPEGRepresentation(image, 1.0) ?: return@withContext false
+        val jpegData = UIImageJPEGRepresentation(image, 1.0) ?: return false
 
-            var success = false
+        var success = false
 
-            val semaphore = dispatch_semaphore_create(0)
+        val semaphore = dispatch_semaphore_create(0)
 
-            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-                val request = PHAssetCreationRequest.creationRequestForAsset()
-                request.addResourceWithType(
-                    type = PHAssetResourceTypePhoto,
-                    data = jpegData,
-                    options = null
-                )
-            }, completionHandler = { ok, error ->
-                if (ok) {
-                    success = true
-                } else {
-                    println("❌ Save failed: ${error?.localizedDescription}")
-                }
-                dispatch_semaphore_signal(semaphore)
-            })
+        PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+            val request = PHAssetCreationRequest.creationRequestForAsset()
+            request.addResourceWithType(
+                type = PHAssetResourceTypePhoto,
+                data = jpegData,
+                options = null
+            )
+        }, completionHandler = { ok, error ->
+            if (ok) {
+                success = true
+            } else {
+                println("❌ Save failed: ${error?.localizedDescription}")
+            }
+            dispatch_semaphore_signal(semaphore)
+        })
 
-            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
 
-            success
-        } catch (e: Exception) {
-            println("❌ iOS save failed: $e")
-            false
-        }
+        success
+    } catch (e: Exception) {
+        println("❌ iOS save failed: $e")
+        false
     }
+}
