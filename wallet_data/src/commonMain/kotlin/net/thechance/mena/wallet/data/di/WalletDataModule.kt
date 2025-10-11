@@ -12,10 +12,6 @@ import org.koin.core.annotation.Single
 @ComponentScan("net.thechance.mena.wallet.data")
 class WalletDataModule{
     @Single
-    fun provideWalletDatabaseBuilder(): WalletDatabaseBuilder {
-        return WalletDatabaseBuilder()
-    }
-    @Single
     fun provideWalletDatabase(builder: WalletDatabaseBuilder): WalletDatabase {
         return getWalletDataBase(builder.getBuilder())
     }
