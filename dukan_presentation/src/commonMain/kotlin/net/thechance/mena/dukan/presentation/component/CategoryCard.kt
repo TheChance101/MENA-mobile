@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun Category(
+fun CategoryCard(
     title: String,
     imageUrl: String,
     onClick: () -> Unit,
@@ -119,7 +119,7 @@ private fun CategoryPreview() {
                 .size(140.dp),
             contentAlignment = Alignment.Center
         ) {
-            Category(
+            CategoryCard(
                 title = "Category",
                 imageUrl = "",
                 onClick = {}

@@ -29,7 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.Category
+import net.thechance.mena.dukan.presentation.component.CategoryCard
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -145,7 +145,7 @@ private fun LazyGridScope.categoriesList(
         items = categories,
         key = { it.id },
     ) { category ->
-        Category(
+        CategoryCard(
             title = category.name,
             imageUrl = category.imageUrl,
             onClick = { onCategoryClick(category.id) },
