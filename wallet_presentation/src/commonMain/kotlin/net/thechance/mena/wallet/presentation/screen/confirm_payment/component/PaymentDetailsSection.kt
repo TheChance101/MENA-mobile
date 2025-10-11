@@ -27,6 +27,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.ReceiverUiState
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.PaymentUiState
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.GetUserMessage
 import org.jetbrains.compose.resources.painterResource
@@ -36,6 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun PaymentDetailsSection(
     paymentUiState: PaymentUiState,
+    receiverUiState: ReceiverUiState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -46,8 +48,8 @@ internal fun PaymentDetailsSection(
 
         PaymentInfoSection(
             amount = paymentUiState.amount,
-            receiverName = paymentUiState.receiverName,
-            receiverImage = paymentUiState.receiverImage
+            receiverName = receiverUiState.name,
+            receiverImage = receiverUiState.profileImg
         )
 
         Text(
@@ -166,7 +168,7 @@ private fun ReceiverInfo(
 private fun PaymentDetailsSectionPreview() {
     MenaTheme {
         Scaffold {
-            PaymentDetailsSection(paymentUiState = PaymentUiState())
+            PaymentDetailsSection(paymentUiState = PaymentUiState(), receiverUiState = ReceiverUiState())
         }
     }
 }

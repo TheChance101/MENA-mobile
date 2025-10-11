@@ -3,10 +3,12 @@ package net.thechance.mena.wallet.presentation.screen.confirm_payment
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.wallet.domain.model.PaymentConfirmation
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
+import net.thechance.mena.wallet.domain.entity.User
+import net.thechance.mena.wallet.domain.repository.BalanceRepository
+import net.thechance.mena.wallet.domain.repository.UserRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.utils.formatAmount
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -16,7 +18,8 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class ConfirmPaymentViewModel(
     @Provided private val args: ConfirmPaymentArgs,
-    @Provided private val paymentRepository: PaymentRepository,
+    @Provided private val balanceRepository: BalanceRepository,
+    @Provided private val userRepository: UserRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
@@ -26,19 +29,29 @@ class ConfirmPaymentViewModel(
 
     init {
         getPaymentConfirmation()
+        getReceiverInfo()
     }
 
-    private fun getPaymentConfirmation(){
+    private fun getPaymentConfirmation() {
         tryToExecute(
             callee = {
-                paymentRepository.getPaymentConfirmation(
-                    receiverId = Uuid.parse(receiverId),
-                    amount = amount
-                )
+                balanceRepository.getBalance()
             },
             onSuccess = ::onGetPaymentConfirmationSuccess,
-            onError = ::onGetPaymentConfirmationError,
-            onStart = ::onGetPaymentConfirmationStart,
+            onError = ::onError,
+            onStart = ::onStart,
+            dispatcher = ioDispatcher
+        )
+    }
+
+    private fun getReceiverInfo() {
+        tryToExecute(
+            callee = {
+                userRepository.getUserById(Uuid.parse(receiverId))
+            },
+            onSuccess = ::onGetReceiverInfoSuccess,
+            onError = ::onError,
+            onStart = ::onStart,
             dispatcher = ioDispatcher
         )
     }
@@ -57,17 +70,30 @@ class ConfirmPaymentViewModel(
         getPaymentConfirmation()
     }
 
-    private fun onGetPaymentConfirmationSuccess(paymentConfirmation: PaymentConfirmation){
+    private fun onGetPaymentConfirmationSuccess(balance: Double) {
         updateState {
-            it.copy(isLoading = false, paymentUiState = paymentConfirmation.toUi(amount))
+            it.copy(
+                isLoading = false,
+                paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
+                    amount = formatAmount(amount),
+                    status = balance >= amount,
+                    balance = formatAmount(balance)
+                )
+            )
         }
     }
 
-    private fun onGetPaymentConfirmationError(errorState: ErrorState){
+    private fun onError(errorState: ErrorState) {
         updateState { it.copy(isLoading = false, errorState = errorState) }
     }
 
-    private fun onGetPaymentConfirmationStart(){
+    private fun onStart() {
         updateState { it.copy(isLoading = true) }
+    }
+
+    private fun onGetReceiverInfoSuccess(userInfo: User) {
+        updateState {
+            it.copy(isLoading = false, receiverUiState = userInfo.toUi())
+        }
     }
 }

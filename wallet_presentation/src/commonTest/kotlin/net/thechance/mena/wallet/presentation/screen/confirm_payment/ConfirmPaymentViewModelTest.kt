@@ -15,8 +15,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.wallet.domain.model.PaymentConfirmation
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
