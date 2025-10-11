@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +11,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -132,14 +131,13 @@ private fun UploadReelScreenContent(
                     videoSize = state.selectedFile.sizeText,
                     uploadingState = state.uploadingState,
                     progress = state.uploadingProgress,
-                    onAction = { action ->
-                        when (action) {
-                            VideoAction.Cancel -> listener.onCancelUploadClick()
-                            VideoAction.Retry -> listener.onRetryUploadClick()
-                            VideoAction.Delete -> listener.onDeleteVideoClick()
-                        }
+                ) { action ->
+                    when (action) {
+                        VideoAction.Cancel -> listener.onCancelUploadClick()
+                        VideoAction.Retry -> listener.onRetryUploadClick()
+                        VideoAction.Delete -> listener.onDeleteVideoClick()
                     }
-                )
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -185,19 +183,16 @@ private fun UploadReelScreenTopBar(
         },
         title = stringResource(Res.string.new_trend),
         trailingContent = {
-            Box(
+            Text(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Theme.radius.full))
                     .background(Theme.colorScheme.background.surfaceLow)
                     .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = stringResource(Res.string.page_number, 1, 3),
-                    style = Theme.typography.label.small,
-                    color = Theme.colorScheme.shadePrimary
-                )
-            }
+                text = stringResource(Res.string.page_number, 1, 3),
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center
+            )
         }
     )
 }
