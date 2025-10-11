@@ -12,6 +12,5 @@ data class Statement @OptIn(ExperimentalTime::class) constructor(
     val endDate: String,
     val totalInflows: Double,
     val totalOutflows: Double,
-    val fileName: String,
     val createdAt: Long= Clock.System.now().toEpochMilliseconds()
 )
