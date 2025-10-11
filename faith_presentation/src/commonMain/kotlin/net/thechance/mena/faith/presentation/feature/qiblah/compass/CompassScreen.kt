@@ -50,6 +50,7 @@ fun CompassScreen(
     viewModel: CompassViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
     Content(
         uiState = state,
         listener = viewModel
@@ -61,7 +62,6 @@ private fun Content(
     uiState: CompassScreenState,
     listener: CompassViewModel
 ) {
-
     Scaffold(
         topBar = {
             AppBar(
@@ -224,8 +224,6 @@ private fun ColumnScope.CompassView(
                     .size(128.dp)
                     .rotate(animatedBearing)
             )
-
-
         }
 
         QiblahImage(qiblahDirection)
