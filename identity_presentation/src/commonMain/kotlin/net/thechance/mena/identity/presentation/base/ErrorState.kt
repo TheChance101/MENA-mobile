@@ -9,6 +9,7 @@ import net.thechance.mena.identity.domain.exception.InvalidPasswordException
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
+import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 
 sealed interface ErrorState {
@@ -26,6 +27,7 @@ sealed interface ErrorState {
     data object TooManyRequests : ErrorState
     object NoNetwork : ErrorState
     data object OTPExpired : ErrorState
+    data object NoLocationPermission : ErrorState
     // endregion
     data class SomethingWentWrong(val message: String?) : ErrorState
 }
@@ -44,6 +46,7 @@ fun handelAuthorizationException(
         is TooManyRequestsException -> onError(ErrorState.TooManyRequests)
         is OtpExpiredException -> onError(ErrorState.OTPExpired)
         is NoNetworkException -> onError(ErrorState.NoNetwork)
+        is UnableToFindLocationException -> onError(ErrorState.NoLocationPermission)
         else -> onError(ErrorState.SomethingWentWrong(exception.message))
     }
 }

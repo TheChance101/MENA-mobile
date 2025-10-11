@@ -75,12 +75,20 @@ class PickLocationScreenViewModel(
     }
 
     private fun onError(errorState: ErrorState) {
-        updateState {
-            copy(
-                errorMessage = mapErrorToMessage(errorState),
-                isGpsButtonLoading = false
-            )
+        when (errorState) {
+            is ErrorState.NoLocationPermission -> navigateToEnableLocation()
+            else -> updateState {
+                copy(
+                    errorMessage = mapErrorToMessage(errorState),
+                    isGpsButtonLoading = false
+                )
+            }
         }
+    }
+
+    private fun navigateToEnableLocation(){
+        sendNewEffect(PickLocationScreenUIEffect.NavigateToEnableLocation)
+        updateState { copy(isGpsButtonLoading = false) }
     }
 
     private fun onGpsClickSuccess(

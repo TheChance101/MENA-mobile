@@ -1,5 +1,8 @@
 package net.thechance.mena.identity.presentation.di
 
+import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreenViewModel
+import net.thechance.mena.identity.presentation.components.util.settingsOpener.SettingsOpener
+import net.thechance.mena.identity.presentation.components.util.settingsOpener.SettingsOpenerImpl
 import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
@@ -9,6 +12,7 @@ import net.thechance.mena.identity.presentation.screen.register.RegisterScreenMo
 import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 const val APP_VERSION = "appVersion"
@@ -16,6 +20,7 @@ const val APP_VERSION = "appVersion"
 val identityScreensModule = module {
 
     single { get<String>(named(APP_VERSION)) }
+    factoryOf(::SettingsOpenerImpl) bind SettingsOpener::class
     factoryOf(::LoginScreenViewModel)
     factoryOf(::RegisterScreenModel)
     factoryOf(::ForgetPasswordScreenViewModel)
@@ -23,4 +28,5 @@ val identityScreensModule = module {
     factoryOf(::ProfileScreenViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
     factoryOf(::PickLocationScreenViewModel)
+    factoryOf(::EnableLocationScreenViewModel)
 }

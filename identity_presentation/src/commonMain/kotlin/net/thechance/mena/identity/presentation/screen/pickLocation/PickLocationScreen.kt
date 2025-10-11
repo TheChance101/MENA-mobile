@@ -19,6 +19,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.Map
@@ -102,7 +103,10 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
     ) {
         when (effect) {
             PickLocationScreenUIEffect.NavigateBack -> navigator.pop()
-            is PickLocationScreenUIEffect.NavigateToAddLocation -> TODO("add navigator.push(AddLocationScreen(effect.latitude, effect.longitude,effect.address}) when implement")
+            is PickLocationScreenUIEffect.NavigateToAddLocation -> TODO("add navigator.replace(AddLocationScreen(effect.latitude, effect.longitude,effect.address}) when implement")
+            PickLocationScreenUIEffect.NavigateToEnableLocation -> navigator.push(
+                EnableLocationScreen()
+            )
         }
     }
 }

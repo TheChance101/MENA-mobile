@@ -44,6 +44,8 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.bundles.geoCoder)
+            implementation(libs.bundles.geoLocation)
         }
         jvmTest.dependencies {
             implementation(libs.bundles.jvm.test)

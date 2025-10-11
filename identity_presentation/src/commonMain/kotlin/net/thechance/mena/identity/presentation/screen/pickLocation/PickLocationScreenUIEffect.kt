@@ -7,4 +7,6 @@ sealed interface PickLocationScreenUIEffect {
         val longitude: Double,
         val address: String
     ) : PickLocationScreenUIEffect
+
+    data object NavigateToEnableLocation : PickLocationScreenUIEffect
 }
