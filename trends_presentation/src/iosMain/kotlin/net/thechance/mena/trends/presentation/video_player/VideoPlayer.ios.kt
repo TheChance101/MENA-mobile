@@ -34,7 +34,7 @@ import platform.UIKit.UIApplicationWillResignActiveNotification
 actual fun VideoPlayer(
     url: String,
     playWhenVisible: Boolean,
-    autoPlay: Boolean
+    onControllerVisibilityChanged: (Boolean) -> Unit
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
     val player = remember { AVPlayer() }
@@ -54,13 +54,17 @@ actual fun VideoPlayer(
                 val controller = AVPlayerViewController().apply {
                     this.player = player
                     this.showsPlaybackControls = true
+                    this.updatesNowPlayingInfoCenter = false
+                    this.requiresLinearPlayback = false
+                    this.allowsPictureInPicturePlayback = false
+
                 }
 
                 controller.view
             },
             modifier = Modifier.fillMaxSize(),
             update = { _ ->
-                if (autoPlay && playWhenVisible) {
+                if (playWhenVisible) {
                     player.seekToTime(CMTimeMakeWithSeconds(lastPosition, 600))
                     player.play()
                 } else {
@@ -69,12 +73,12 @@ actual fun VideoPlayer(
                     player.pause()
                 }
             },
-            onRelease = {
-                val current = player.currentTime()
-                lastPosition = CMTimeGetSeconds(current)
-                player.pause()
-                player.replaceCurrentItemWithPlayerItem(null)
-            }
+//            onRelease = {
+//                val current = player.currentTime()
+//                lastPosition = CMTimeGetSeconds(current)
+//                player.pause()
+//                player.replaceCurrentItemWithPlayerItem(null)
+//            }
         )
     }
 
@@ -97,7 +101,7 @@ actual fun VideoPlayer(
             queue = null
         ) { _ ->
             player.seekToTime(CMTimeMakeWithSeconds(lastPosition, 600))
-            if (playWhenVisible && autoPlay) {
+            if (playWhenVisible) {
                 player.play()
             }
         }

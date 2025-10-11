@@ -7,5 +7,5 @@ import androidx.compose.runtime.Composable
 expect fun VideoPlayer(
     url : String,
     playWhenVisible: Boolean,
-    autoPlay: Boolean,
+    onControllerVisibilityChanged: (Boolean) -> Unit
 )
