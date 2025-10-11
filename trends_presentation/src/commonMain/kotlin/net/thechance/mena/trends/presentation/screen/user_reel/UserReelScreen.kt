@@ -1,6 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,13 +21,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cash.paging.compose.collectAsLazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
@@ -86,7 +93,8 @@ private fun UserReelScreenContent(
     listener: UserReelInteractionListener
 ) {
     val reels = state.reels.collectAsLazyPagingItems()
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { reels.itemCount })
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { reelss.size })
+    var currentReel: UserReelUiState? by remember { mutableStateOf(UserReelUiState()) }
 
     Scaffold(
         overlays = {
@@ -144,48 +152,22 @@ private fun UserReelScreenContent(
                     contentPadding = PaddingValues(16.dp)
                 )
             }
-        },
+        }
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            TopAppBar(onBackClick = listener::onBackClick)
-            VerticalPager(
-                state = pagerState,
-                modifier = Modifier
-            )
-            { page ->
-                val isCurrentPage = (pagerState.currentPage == page)
 
-                VideoPlayer(
-                    url = net.thechance.mena.trends.presentation.screen.user_reel.reels[page].videoUrl,
-                        //reels[page]?.videoUrl ?: "",
-                    playWhenVisible = isCurrentPage,
-                    autoPlay = true
-                )
+        VerticalPager(
+            state = pagerState,
+            modifier = Modifier
+        )
+        { page ->
+            val isCurrentPage = (pagerState.currentPage == page)
+            currentReel = reelss[page]
 
-            }
-            UsersReAct(
-                viewCount = state.viewsCount.toString(),
-                likeCount = state.likesCount.toString(),
-                isCurrentUserOwner = false,
-                onDeleteClick = listener::onDeleteClick,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = Theme.spacing._16, bottom = 140.dp)
-            )
-
-            PublisherInfo(
-                userName = state.username,
-                timeOfPublish = state.createdAt,
-                description = state.description,
-                avatar = state.thumbnail,
-                modifier = Modifier.align(Alignment.BottomCenter),
-                isDescriptionExpanded = state.isDescriptionExpanded,
-                onDescriptionClick = listener::onDescriptionClick,
-                onPublisherInfoClick = listener::onPublisherInfoClick
-            )
-
-            Box(
-                modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow()
+            ReelPage(
+                reel = currentReel ?: UserReelUiState(),
+                isCurrentPage = isCurrentPage,
+                state = state,
+                listener = listener
             )
         }
     }
@@ -214,6 +196,51 @@ private fun TopAppBar(
 }
 
 @Composable
+private fun ReelPage(
+    reel: UserReelUiState,
+    isCurrentPage: Boolean,
+    state: UserReelState,
+    listener: UserReelInteractionListener,
+) {
+    var isControllerVisible by remember { mutableStateOf(false) }
+    val offsetY by animateDpAsState(
+        targetValue = if (isControllerVisible) 50.dp else 0.dp,
+    )
+
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+        TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
+
+        VideoPlayer(
+            url = reel.videoUrl,
+            playWhenVisible = isCurrentPage,
+            onControllerVisibilityChanged = { isControllerVisible = it }
+        )
+
+        UsersReAct(
+            viewCount = reel.viewsCount.toString(),
+            likeCount = reel.likesCount.toString(),
+            isCurrentUserOwner = reel.isCurrentUserOwner,
+            onDeleteClick = listener::onDeleteClick,
+            modifier = Modifier.align(Alignment.BottomEnd).padding(end = Theme.spacing._16, bottom = 140.dp)
+        )
+
+        PublisherInfo(
+            userName = reel.username,
+            timeOfPublish = reel.createdAt.orEmpty(),
+            description = reel.description,
+            avatar = reel.profileImage,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = offsetY),
+            isDescriptionExpanded = state.isDescriptionExpanded,
+            onDescriptionClick = listener::onDescriptionClick,
+            onPublisherInfoClick = listener::onPublisherInfoClick
+        )
+
+        Box(modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow())
+    } // need store the video to not load it every time + ios code
+}
+
+
+@Composable
 private fun PublisherInfo(
     avatar: String,
     userName: String,
@@ -230,18 +257,17 @@ private fun PublisherInfo(
             .fillMaxWidth()
             .padding(bottom = Theme.spacing._32)
             .padding(horizontal = Theme.spacing._16)
-            .clickable { onPublisherInfoClick() }
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._8),
-            modifier = Modifier
-                .padding(top = Theme.spacing._8)
+            modifier = Modifier.padding(top = Theme.spacing._8)
         ) {
 
             Image(
                 painter = rememberAsyncImagePainter(avatar),
                 modifier = Modifier.size(size = 40.dp).clip(shape = CircleShape)
-                    .border(shape = CircleShape, width = 0.5.dp, color = Theme.colorScheme.stroke),
+                    .border(shape = CircleShape, width = 0.5.dp, color = Theme.colorScheme.stroke)
+                    .clickable { onPublisherInfoClick() },
                 contentScale = ContentScale.Crop,
                 contentDescription = "avatar image"
             )
@@ -252,6 +278,7 @@ private fun PublisherInfo(
                     color = Theme.colorScheme.primary.onPrimary,
                     style = Theme.typography.label.medium,
                     modifier = Modifier.padding(vertical = Theme.spacing._2)
+                        .clickable { onPublisherInfoClick() },
                 )
 
                 Text(
@@ -353,33 +380,39 @@ private fun Preview() {
     }
 }
 
-val reels = listOf(
+val reelss = listOf(
     UserReelUiState(
         id = "12",
         videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        description = "Description",
+        description = "Description is very useful",
         likesCount = 2,
         viewsCount = 4,
         createdAt = "25-11",
-        isCurrentUserOwner = false
+        isCurrentUserOwner = false,
+        username = "Hend",
+        profileImage = "https://static.vecteezy.com/system/resources/previews/042/332/066/original/person-photo-placeholder-woman-default-avatar-profile-icon-grey-photo-placeholder-female-no-photo-images-for-unfilled-user-profile-greyscale-illustration-for-social-media-free-vector.jpg"
     ),
 
     UserReelUiState(
-        id = "12",
-        videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", 
-        description = "Description",
-        likesCount = 2,
-        viewsCount = 4,
-        createdAt = "25-11",
-        isCurrentUserOwner = false
-    ),
-    UserReelUiState(
-        id = "12",
+        id = "13",
         videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         description = "Description",
-        likesCount = 2,
-        viewsCount = 4,
-        createdAt = "25-11",
-        isCurrentUserOwner = false
+        likesCount = 5,
+        viewsCount = 10,
+        createdAt = "2-11",
+        isCurrentUserOwner = false,
+        username = "Ahmed",
+        profileImage = "https://www.bing.com/ck/a?!&&p=5164f87f101a6e605c32022a4e013c24b699dc1bb0782c7c91d09e9b489e2c28JmltdHM9MTc2MDE0MDgwMA&ptn=3&ver=2&hsh=4&fclid=1434bab1-96f1-6582-15f3-ac84974a6473&u=a1L2ltYWdlcy9zZWFyY2g_cT1pbWFnZSUyMHBsYWNlaG9sZGVyJTIwcHJvZmlsZSZGT1JNPUlRRlJCQSZpZD0zODJFOTlERkM0MzI4REQzRDY4OUI4NTVBRUQxRTFFRTA1NjM3MEJE"
+    ),
+    UserReelUiState(
+        id = "14",
+        videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        description = "Watch This Reel , it's very Interesting",
+        likesCount = 0,
+        viewsCount = 1,
+        createdAt = "25-10",
+        isCurrentUserOwner = true,
+        username = "Fatima",
+        profileImage = "https://static.vecteezy.com/system/resources/previews/042/332/066/original/person-photo-placeholder-woman-default-avatar-profile-icon-grey-photo-placeholder-female-no-photo-images-for-unfilled-user-profile-greyscale-illustration-for-social-media-free-vector.jpg"
     )
 )
