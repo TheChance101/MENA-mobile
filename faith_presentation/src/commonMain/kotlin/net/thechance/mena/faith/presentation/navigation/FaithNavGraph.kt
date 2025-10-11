@@ -11,6 +11,7 @@ import androidx.navigation.toRoute
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScreen
+import net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice.CalibrateDeviceScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
 
@@ -35,6 +36,9 @@ fun FaithNavigation() {
                 }
                 composable<BookmarksRoute> {
                     BookmarkScreen()
+                }
+                composable<CalibrateDeviceRoute> {
+                    CalibrateDeviceScreen()
                 }
 
                 composable<SurahDetailsRoute> { backStackEntry ->

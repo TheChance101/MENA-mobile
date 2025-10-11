@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
     alias(libs.plugins.mockkery)
 }
 
@@ -37,11 +38,13 @@ kotlin {
             //Koin
             implementation(libs.koin.core)
             api(libs.koin.annotations)
-            //data time
-            implementation(libs.kotlinx.datetime)
 
             //datetime
             implementation(libs.kotlinx.datetime)
+
+            //room
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -67,6 +70,11 @@ ksp {
 
 dependencies {
     add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+
 }
 
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
@@ -75,6 +83,12 @@ project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
     }
 }
 
+
+tasks.matching {
+    it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata"
+}.configureEach {
+    dependsOn("kspCommonMainKotlinMetadata")
+}
 android {
     namespace = "net.thechance.mena.wallet.data"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -82,6 +96,9 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 kover.reports {

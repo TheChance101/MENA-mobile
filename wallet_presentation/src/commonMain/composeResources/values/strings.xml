@@ -111,4 +111,22 @@
     <string name="silvers">Silvers</string>
     <string name="date_range">%1$s - %2$s</string>
     <string name="amount_with_currency">%1$s %2$s</string>
+    <string name="statements">Statements</string>
+    <string name="edit">edit</string>
+    <string name="no_statements_title">No statements yet</string>
+    <string name="no_statements_description">Export a transaction history to see your downloaded statements here.</string>
+    <string name="downloaded_statements">Downloaded Statements</string>
+    <string name="confirm_payment_header">Confirm Payment</string>
+    <string name="confirm_payment_content_success">You have %1$s silvers in wallet</string>
+    <string name="confirm_payment_content_failed">You only have %1$s silvers in your wallet, which isn’t enough.</string>
+    <string name="You_are_about_to_pay">You’re about to pay</string>
+    <string name="pay_amount">Pay %1$s</string>
+
+    <string name="transaction_successful">Transaction Successful!</string>
+    <string name="show_transaction_details">Show Transaction Details</string>
+    <string name="close">Close</string>
+    <string name="transaction_failed">Transaction Failed</string>
+    <string name="connection_lost_try_again">The connection was lost. Please try again.</string>
+    <string name="try_again">Try Again</string>
+    <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
 </resources>

@@ -1,0 +1,27 @@
+package net.thechance.mena.core_chat.presentation.screen.chat.components
+
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.dp
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageContent
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+
+@Composable
+fun MessageContent(
+    messageContent: MessageContent,
+    shape: Shape
+) {
+    when (messageContent) {
+        is MessageContent.Text -> Text(
+            text = messageContent.text,
+            style = Theme.typography.body.small,
+            color = Theme.colorScheme.shadeSecondary
+        )
+        is MessageContent.ImageUrl -> ImageMessageContent(images = messageContent.imageUrls, modifier = Modifier.size(156.dp, 162.dp).clip(shape))
+        is MessageContent.ImageByteArray -> ImageMessageContent(images = messageContent.images, modifier = Modifier.size(156.dp, 162.dp).clip(shape))
+    }
+}
