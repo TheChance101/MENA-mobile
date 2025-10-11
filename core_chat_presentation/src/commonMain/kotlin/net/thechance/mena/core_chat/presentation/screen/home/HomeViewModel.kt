@@ -91,7 +91,7 @@ class HomeViewModel(
                 chatId = chat.id.toString(),
                 chatName = chat.name,
                 chatImageUrl = chat.imageUrl.toString(),
-                chatRequesterId = chat.id.toString() // TODO : Replace with the actual requester id
+                chatRequesterId = chat.id.toString() // TODO("Replace with the actual requester id")
             )
         )
     }
