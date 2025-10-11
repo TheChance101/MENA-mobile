@@ -3,12 +3,17 @@ package net.thechance.mena.dukan.presentation.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -47,46 +53,66 @@ fun DukanCard(
             )
     ) {
         if (!isLoading) {
-            AsyncImage(
-                model = dukan.imageUrl,
-                contentDescription = dukan.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0x00000000),
-                                Color(0xFF000000)
-                            )
-                        )
-                    )
-            )
-
-            FavoriteIcon(
+            DukanCardContent(
+                dukan = dukan,
                 isFavorite = isFavorite,
-                onClick = onFavoriteClick,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(Theme.spacing._8)
-            )
-
-            Text(
-                text = dukan.name,
-                color = Theme.colorScheme.primary.onPrimary,
-                style = Theme.typography.title.small,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(Theme.spacing._8)
+                onFavoriteClick = onFavoriteClick
             )
         }
     }
+}
+
+@Composable
+private fun BoxScope.DukanCardContent(
+    dukan: DukanUiState,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit
+) {
+    var isImageLoaded by remember { mutableStateOf(false) }
+
+    AsyncImage(
+        model = dukan.imageUrl,
+        contentDescription = dukan.name,
+        contentScale = ContentScale.Crop,
+        onState = { state ->
+            isImageLoaded = state is AsyncImagePainter.State.Success
+        },
+        modifier = Modifier.fillMaxSize()
+    )
+
+    if (isImageLoaded) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0x00000000),
+                            Color(0xFF000000)
+                        )
+                    )
+                )
+        )
+    }
+
+    FavoriteIcon(
+        isFavorite = isFavorite,
+        onClick = onFavoriteClick,
+        modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(Theme.spacing._8)
+    )
+
+    Text(
+        text = dukan.name,
+        color = Theme.colorScheme.primary.onPrimary,
+        style = Theme.typography.title.small,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .align(Alignment.BottomStart)
+            .padding(Theme.spacing._8)
+    )
 }
 
 @Preview
@@ -113,6 +139,21 @@ private fun DukanCardFavoritePreview() {
             ),
             onClick = {},
             isFavorite = true
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DukanCardEmptyImagePreview() {
+    MenaTheme {
+        DukanCard(
+            dukan = DukanUiState(
+                id = "dukan2",
+                name = "Dukan Without Image",
+                imageUrl = ""
+            ),
+            onClick = {}
         )
     }
 }
