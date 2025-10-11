@@ -23,7 +23,8 @@ import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
-import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -31,48 +32,48 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ChatCard(
-    chats: HomeUiState,
-    onChatClicked: (HomeUiState) -> Unit,
+fun ChatItem(
+    chat: HomeScreenState.ChatUiState,
+    onChatClicked: (ChatUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onChatClicked(chats) },
+            .clickable { onChatClicked(chat) },
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         CircularAvatar(
-            contactImageUri = chats.imageUrl,
+            contactImageUri = chat.imageUrl,
             size = 48.dp,
             modifier = Modifier.padding(end = Theme.spacing._8)
         )
-        NameAndLastMessage(chats)
-        TimeAndStatus(chats)
+        NameAndLastMessage(chat)
+        TimeAndStatus(chat)
     }
 
 }
 
 @Composable
-private fun TimeAndStatus(chats: HomeUiState) {
+private fun TimeAndStatus(chat: HomeScreenState.ChatUiState) {
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4),
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2, Alignment.Top)
     ) {
         Text(
-            text = chats.time,
+            text = chat.lastMessage.time,
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )
-        if (chats.isMine) {
-            if (chats.status is HomeUiState.Status.Sent) {
+        if (chat.lastMessage.isMine) {
+            if (chat.status is HomeScreenState.ChatUiState.Status.Sent) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_message_sent),
                     contentDescription = null,
                     tint = Theme.colorScheme.shadeTertiary
                 )
-            } else if (chats.status is HomeUiState.Status.Read) {
+            } else if (chat.status is HomeScreenState.ChatUiState.Status.Read) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_message_read),
                     contentDescription = null,
@@ -80,7 +81,7 @@ private fun TimeAndStatus(chats: HomeUiState) {
                 )
             }
         } else {
-            if (chats.status is HomeUiState.Status.UnRead) {
+            if (chat.status is HomeScreenState.ChatUiState.Status.UnRead) {
                 Box(
                     modifier = Modifier
                         .size(20.dp)
@@ -92,8 +93,8 @@ private fun TimeAndStatus(chats: HomeUiState) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = chats.status.count.toString(),
-                        style = Theme.typography.label.small,
+                        text = chat.status.count.toString(),
+                        style = Theme.typography.label.extraSmall,
                         color = Theme.colorScheme.primary.onPrimary,
                         textAlign = TextAlign.Center,
                     )
@@ -104,24 +105,24 @@ private fun TimeAndStatus(chats: HomeUiState) {
 }
 
 @Composable
-private fun RowScope.NameAndLastMessage(chats: HomeUiState) {
+private fun RowScope.NameAndLastMessage(chat: HomeScreenState.ChatUiState) {
     val lastMessage =
-        if (chats.isMine) "${stringResource(Res.string.you)} ${chats.lastMessage}" else chats.lastMessage
+        if (chat.lastMessage.isMine) "${stringResource(Res.string.you)} ${chat.lastMessage}" else chat.lastMessage
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4).weight(1f)
             .padding(end = Theme.spacing._4),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2)
     ) {
         Text(
-            text = chats.name,
+            text = chat.name,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = lastMessage,
-            style = Theme.typography.label.small,
+            text = chat.lastMessage.text,
+            style = Theme.typography.label.extraSmall,
             color = Theme.colorScheme.shadeTertiary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

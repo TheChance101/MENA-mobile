@@ -6,4 +6,5 @@ import org.koin.core.annotation.Single
 expect class PdfHandler() {
     suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray>
     suspend fun sharePdf(pdfData: ByteArray, fileName: String)
+    suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String
 }

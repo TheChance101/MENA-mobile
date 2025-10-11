@@ -78,6 +78,30 @@ class QuranRepositoryImplTest {
         assertTrue(result.isEmpty())
     }
 
+    @Test
+    fun `searchForAyahInQuran Should return empty list when no ayah match the query`() = runTest {
+        // Given
+        everySuspend { mockDao.searchForAyahInQuran("nonexistent") } returns emptyList()
+
+        // When
+        val result = repository.searchForAyahInQuran("nonexistent")
+
+        // Then
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `searchForAyahInSurah Should return empty list when no ayah match the query in the specified surah`() = runTest {
+        // Given
+        everySuspend { mockDao.searchForAyahInSurah(1, "nonexistent") } returns emptyList()
+
+        // When
+        val result = repository.searchForAyahInSurah(1, "nonexistent")
+
+        // Then
+        assertTrue(result.isEmpty())
+    }
+
     private companion object {
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         const val AL_BAQARAH_NAME = "Al-Baqarah"

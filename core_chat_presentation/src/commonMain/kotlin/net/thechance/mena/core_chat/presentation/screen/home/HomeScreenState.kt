@@ -1,28 +1,56 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
+import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.core_chat.domain.entity.ChatSummary
+import net.thechance.mena.core_chat.domain.entity.ChatSummaryStatus
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState.Status
+import net.thechance.mena.core_chat.presentation.utils.format
+import net.thechance.mena.core_chat.presentation.utils.formatAsTime
+import net.thechance.mena.core_chat.presentation.utils.minusDays
+import net.thechance.mena.core_chat.presentation.utils.now
+import net.thechance.mena.core_chat.presentation.utils.parseToLocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-data class HomeScreenState(
-    val isLoading: Boolean = false,
-    val isSynced: Boolean = false,
-    val balance: Double = 0.0,
-    val chats: List<HomeUiState> = emptyList()
-) {
-    data class HomeUiState @OptIn(ExperimentalUuidApi::class) constructor(
-        val id: Uuid,
-        val name: String,
-        val imageUrl: String?,
-        val lastMessage: String,
-        val time: String,
-        val status: Status,
-        val isMine: Boolean,
-    ) {
-        sealed class Status {
-            data class UnRead(val count: Int) : Status()
-            data object Read : Status()
-            data object Sent : Status()
-            data object Received : Status()
-        }
+@OptIn(ExperimentalUuidApi::class)
+fun ChatSummary.toUi(): HomeScreenState.ChatUiState {
+    val statusMessages = getStatusMessages(status)
+
+    val messageDateTime = parseToLocalDateTime(lastMessageTime)
+    val formattedTime = getFormattedTime(messageDateTime)
+
+    return ChatUiState(
+        id = id,
+        name = name,
+        imageUrl = imageUrl,
+        lastMessage = ChatUiState.MessageUiState(
+            text = lastMessage,
+            time = formattedTime,
+            isMine = status.isMine
+        ),
+        status = statusMessages
+    )
+}
+
+private fun getStatusMessages(status: ChatSummaryStatus): Status = when {
+    !status.isMine && status.unReadMessagesCount > 0 ->
+        Status.UnRead(status.unReadMessagesCount)
+
+    !status.isMine ->
+        Status.Received
+
+    else ->
+        Status.Sent
+}
+
+private fun getFormattedTime(messageDateTime: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val today = now.date
+    val messageDate = messageDateTime.date
+
+    return when (messageDate) {
+        today -> messageDateTime.formatAsTime()
+        today.minusDays(1) -> "Yesterday"
+        else -> messageDate.format("dd-MM-yyyy")
     }
 }

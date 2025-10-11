@@ -94,7 +94,8 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        inScope: CoroutineScope = viewModelScope
+        inScope: CoroutineScope = viewModelScope,
+        delayMillis: Long = 0L
     ): Job {
         val handler = CoroutineExceptionHandler { _, throwable ->
             onError(throwable)
@@ -102,6 +103,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
 
         return inScope.launch(dispatcher + handler) {
             onStart()
+            delay(delayMillis)
             runCatching { execute() }
                 .onSuccess { result -> onSuccess?.invoke(result) }
                 .onFailure { throwable -> onError(throwable) }
