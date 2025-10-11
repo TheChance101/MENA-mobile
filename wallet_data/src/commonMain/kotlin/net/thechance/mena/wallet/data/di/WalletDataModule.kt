@@ -1,9 +1,11 @@
 package net.thechance.mena.wallet.data.di
 
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.database.WalletDatabase
 import net.thechance.mena.wallet.data.database.WalletDatabaseBuilder
-import net.thechance.mena.wallet.data.database.getWalletDataBase
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
@@ -13,7 +15,10 @@ import org.koin.core.annotation.Single
 class WalletDataModule{
     @Single
     fun provideWalletDatabase(builder: WalletDatabaseBuilder): WalletDatabase {
-        return getWalletDataBase(builder.getBuilder())
+        return builder.getBuilder()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
     }
 
     @Single
