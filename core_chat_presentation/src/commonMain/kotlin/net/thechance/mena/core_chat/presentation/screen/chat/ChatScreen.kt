@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
@@ -18,6 +20,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScre
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -81,13 +84,17 @@ fun ChatScreenContent(
             visible = state.isImagePagerVisible,
             modifier = Modifier.fillMaxSize(),
         ) {
+            val isMine = state.selectedMessage?.isMine == true
+            val senderName = if (isMine) stringResource(Res.string.you) else state.chatName
+            val senderImageUrl = if (isMine) "" else state.chatAvatarUrl // todo: add user image
+
             FullImagePagerView(
                 message = state.selectedMessage,
-                senderName = state.chatName,
-                senderImageUrl = state.chatAvatarUrl,
+                senderName = senderName,
+                senderImageUrl = senderImageUrl,
                 initialPage = state.currentImageIndexForPreview,
                 onCloseClick = interactions::onCloseImageViewClicked,
-                onDownloadClicked = interactions::onDownloadImageClicked,
+                onDownloadClick = interactions::onDownloadImageClicked,
             )
         }
     }

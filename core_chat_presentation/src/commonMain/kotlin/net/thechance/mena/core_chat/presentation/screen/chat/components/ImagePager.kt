@@ -47,7 +47,7 @@ fun FullImagePagerView(
     senderImageUrl: String,
     initialPage: Int,
     onCloseClick: () -> Unit,
-    onDownloadClicked: (url: String) -> Unit,
+    onDownloadClick: (url: String) -> Unit,
 ) {
     if (message == null || message.content !is MessageContentUiState.ImageUrl) return
     val images = message.content.imageUrls
@@ -79,7 +79,7 @@ fun FullImagePagerView(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
             time = message.sendTime,
-            onDownloadClicked = { onDownloadClicked(images[pagerState.currentPage]) },
+            onDownloadClicked = { onDownloadClick(images[pagerState.currentPage]) },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
