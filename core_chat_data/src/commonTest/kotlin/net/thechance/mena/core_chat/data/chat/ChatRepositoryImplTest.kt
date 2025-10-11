@@ -6,6 +6,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.everySuspend
@@ -15,9 +16,8 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.core_chat.data.chat.dto.MessageDto
-import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
 import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
@@ -25,6 +25,11 @@ import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
+import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
@@ -41,6 +46,7 @@ class ChatRepositoryImplTest {
     private lateinit var httpClient: HttpClient
     private lateinit var repository: ChatRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
+    private lateinit var messageDao: MessageDao
     private val authRepository = mock<AuthenticationRepository>()
 
     private val chatId = Uuid.random()
@@ -51,11 +57,12 @@ class ChatRepositoryImplTest {
         everySuspend { authRepository.getAccessToken() } returns "token"
         httpClient = createHttpClient()
         webSocketManager = mock<WebSocketManager>()
+        messageDao = mock<MessageDao>()
 
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
-            webSocketManager = webSocketManager
+            webSocketManager = webSocketManager,
+            messageDao = messageDao
         )
     }
 
@@ -66,13 +73,26 @@ class ChatRepositoryImplTest {
         )
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
-            webSocketManager = webSocketManager
+            webSocketManager = webSocketManager,
+            messageDao = messageDao
         )
 
         val result = repository.loadMessages(chatId)
 
         assertThat(result).isNotEmpty()
+    }
+
+    @Test
+    fun `should delete message from local database when deleteMessage is called`() = runTest {
+        val message = createMessage(
+            senderId = userId,
+            chatId = chatId,
+        )
+        everySuspend { messageDao.deleteMessage(any()) } returns Unit
+
+        repository.deleteMessage(message)
+
+        verifySuspend { messageDao.deleteMessage(message.id.toString()) }
     }
 
     @Test
@@ -82,8 +102,8 @@ class ChatRepositoryImplTest {
         )
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
-            webSocketManager = webSocketManager
+            webSocketManager = webSocketManager,
+            messageDao = messageDao
         )
 
         assertFailsWith<NotFoundException> {
@@ -97,8 +117,8 @@ class ChatRepositoryImplTest {
         httpClient = createHttpClient(chatResponse = { defaultChatResponse() })
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
-            webSocketManager = webSocketManager
+            webSocketManager = webSocketManager,
+            messageDao = messageDao
         )
 
         val result = repository.getChatByContactUserId(userId)
@@ -113,8 +133,8 @@ class ChatRepositoryImplTest {
         )
         repository = createChatRepository(
             httpClient = httpClient,
-            authenticationRepository = authRepository,
-            webSocketManager = webSocketManager
+            webSocketManager = webSocketManager,
+            messageDao = messageDao
         )
 
         assertFailsWith<NotFoundException> {
@@ -126,6 +146,8 @@ class ChatRepositoryImplTest {
     fun `should send message successfully when websocket is connected`() = runTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
+        everySuspend { messageDao.insertMessage(any()) } returns Unit
+        everySuspend { messageDao.deleteMessage(any()) } returns Unit
 
         val message = createMessage(
             senderId = userId,
@@ -145,6 +167,8 @@ class ChatRepositoryImplTest {
     @Test
     fun `should throw SendMessageFailedException when websocket is not connected`() = runTest {
         every { webSocketManager.isConnected() } returns false
+        everySuspend { messageDao.insertMessage(any()) } returns Unit
+        everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
 
         val message = createMessage(
             senderId = userId,
@@ -168,5 +192,44 @@ class ChatRepositoryImplTest {
         val flow = repository.observeReadMessages()
         assertThat(flow).isNotNull()
     }
+    @Test
+    fun `should return local messages from database when getLocalMessages is called`() = runTest {
+        val message1 = createMessage(senderId = userId, chatId = chatId)
+        val message2 = createMessage(senderId = userId, chatId = chatId)
+        val messageEntities = listOf(
+            message1.toLocalDto(),
+            message2.toLocalDto()
+        )
 
+        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns messageEntities
+
+        val result = repository.getLocalMessages(chatId)
+
+        assertThat(result).isNotEmpty()
+        assertThat(result.size).isEqualTo(2)
+        verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
+    }
+
+    @Test
+    fun `should return empty list when no local messages exist for chat`() = runTest {
+        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns emptyList()
+
+        val result = repository.getLocalMessages(chatId)
+
+        assertThat(result.isEmpty()).isTrue()
+        verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
+    }
+
+    @Test
+    fun `should return flow when subscribeToMessages is called`() = runTest {
+        everySuspend { authRepository.getAccessToken() } returns "test-token"
+        everySuspend { webSocketManager.connect(any()) } returns Unit
+        everySuspend { webSocketManager.subscribe(any()) } returns Unit
+        everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
+        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply { tryEmit("test-message") }
+
+        val flow = repository.subscribeToMessages(chatId)
+
+        assertThat(flow).isNotNull()
+    }
 }

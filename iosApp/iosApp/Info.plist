@@ -8,5 +8,7 @@
     <string>$(BASE_URL)</string>
     <key>CFBundleShortVersionString</key>
     <string>$(CFBundleShortVersionString)</string>
+    <key>NSContactsUsageDescription</key>
+    <string>We need access to your contacts.</string>
 </dict>
 </plist>

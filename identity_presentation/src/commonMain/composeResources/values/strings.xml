@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">MENA</string>
     <string name="welcome_back">Welcome Back to MENA</string>
     <string name="login_prompt">Fill your information to login</string>
@@ -81,18 +82,14 @@
     <string name="profile_share_icon_content_description">Share Icon</string>
     <string name="profile_invite_friends_icon_content_description">Invite Friends Icon</string>
 
-    <string name="address_type_home">Home</string>
-    <string name="address_type_office">Office</string>
-    <string name="address_type_other">Other</string>
+    <string name="enable_location_title">Enable location</string>
+    <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
+    <string name="enable_location_permission_button">Enable location permission</string>
+    <string name="location_icon_desc">Location service icon</string>
 
-    <string name="address_priority_main">Main</string>
-    <string name="address_edit">Edit</string>
-
-    <string name="delete_address_description">Are you sure you want to delete this location?</string>
-    <string name="delete_address_title">Delete Location</string>
-    <string name="confirmation_dialog_delete">Delete</string>
-
-    <string name="my_location_app_bar_title">My locations</string>
-
+    <string name="no_saved_locations_title">No saved locations yet!</string>
+    <string name="no_saved_locations_message">Click on button below to start add and have your favorite locations status ups.</string>
+    <string name="add_location_button">Add location</string>
+    <string name="location_saved_empty_desc">No saved locations icon</string>
 
 </resources>

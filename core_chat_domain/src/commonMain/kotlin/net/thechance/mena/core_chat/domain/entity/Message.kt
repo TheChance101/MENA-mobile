@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 @ExperimentalUuidApi
 data class Message(
     val id: Uuid,
-    val senderId: Uuid?,
+    val senderId: Uuid,
     val chatId: Uuid,
     val text: String,
     val sendAt: LocalDateTime,

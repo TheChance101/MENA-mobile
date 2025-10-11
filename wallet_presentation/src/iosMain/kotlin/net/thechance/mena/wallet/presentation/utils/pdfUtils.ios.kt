@@ -21,6 +21,7 @@ import platform.CoreGraphics.CGColorSpaceRelease
 import platform.CoreGraphics.CGContextDrawPDFPage
 import platform.CoreGraphics.CGContextFillRect
 import platform.CoreGraphics.CGContextRelease
+import platform.CoreGraphics.CGContextScaleCTM
 import platform.CoreGraphics.CGContextSetRGBFillColor
 import platform.CoreGraphics.CGDataProviderCreateWithCFData
 import platform.CoreGraphics.CGDataProviderRelease
@@ -42,6 +43,7 @@ import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
+import platform.UIKit.UIScreen
 import platform.posix.memcpy
 
 @Single
@@ -64,19 +66,24 @@ actual class PdfHandler {
             for (pageNumber in 1..pageCount.toInt()) {
                 val page = CGPDFDocumentGetPage(document, pageNumber.toULong()) ?: continue
                 val pageRect = CGPDFPageGetBoxRect(page, kCGPDFMediaBox)
-                val width = pageRect.useContents { size.width }
-                val height = pageRect.useContents { size.height }
+
+                val scale = UIScreen.mainScreen.scale * IMAGE_SCALE
+                val scaledWidth = (pageRect.useContents { size.width } * scale).toULong()
+                val scaledHeight = (pageRect.useContents { size.height } * scale).toULong()
+
                 val colorSpace = CGColorSpaceCreateDeviceRGB()
                 val bitmapInfo = kCGBitmapByteOrder32Big or kCGImageAlphaPremultipliedLast.value
                 val context = CGBitmapContextCreate(
                     null,
-                    width.toULong(),
-                    height.toULong(),
+                    scaledWidth,
+                    scaledHeight,
                     8uL,
                     0uL,
                     colorSpace,
                     bitmapInfo
                 ) ?: continue
+
+                CGContextScaleCTM(context, scale, scale)
 
                 CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
                 CGContextFillRect(context, pageRect)
@@ -129,5 +136,10 @@ actual class PdfHandler {
             nsData.writeToFile(sharedFile, true)
         }
         return if (saved) NSURL.fileURLWithPath(sharedFile) else null
+    }
+    private companion object {
+        // Chosen as a good balance between rendering time and image sharpness
+        const val IMAGE_SCALE = 1.67f
+
     }
 }

@@ -10,8 +10,10 @@ import kotlin.uuid.Uuid
 interface ChatRepository {
     suspend fun sendMessage(message: Message)
     suspend fun loadMessages(chatId: Uuid): List<Message>
+    suspend fun deleteMessage(message: Message)
     fun subscribeToMessages(chatId: Uuid): Flow<Message>
     fun observeReadMessages(): Flow<String>
     suspend fun getChatByContactUserId(userId : Uuid): Chat
     suspend fun disconnect()
+    suspend fun getLocalMessages(chatId: Uuid): List<Message>
 }
