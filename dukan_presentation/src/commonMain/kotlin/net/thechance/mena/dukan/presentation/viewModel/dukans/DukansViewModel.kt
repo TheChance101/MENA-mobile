@@ -28,8 +28,14 @@ class DukansViewModel(
     }
 
     fun initialize(categoryId: String): Pager<Int, DukanUiState> {
-        val pager = createPagingSource(
-            mapper = { it.toUiState() },
+        val pager = createPager(categoryId)
+        loadDukans(pager)
+        return pager
+    }
+
+    private fun createPager(categoryId: String): Pager<Int, DukanUiState> {
+        return createPagingSource(
+            mapper = { it.toUiState() }
         ) { pageNumber ->
             dukanRepository.getDukansByCategory(
                 categoryId = categoryId,
@@ -37,50 +43,57 @@ class DukansViewModel(
                 size = 20
             )
         }
-        loadDukans(pager)
-        return pager
     }
 
     private fun loadDukans(pager: Pager<Int, DukanUiState>) {
-        viewModelScope.launch {
-            pager.refresh()
-        }
-        loadDukansFromRepository(pager)
+        refreshPager(pager)
+        collectDukans(pager)
+        loadNextPage(pager)
+    }
+
+    private fun refreshPager(pager: Pager<Int, DukanUiState>) {
         viewModelScope.launch {
             pager.refresh()
         }
     }
 
-    private fun loadDukansFromRepository(pager: Pager<Int, DukanUiState>) {
+    private fun collectDukans(pager: Pager<Int, DukanUiState>) {
         tryToCollect(
-            onStart = {
-                updateState {
-                    copy(
-                        dukansState = DukansState.LOADING,
-                        dukans = PagingData()
-                    )
-                }
-            },
+            onStart = ::onLoadingStart,
             block = { pager.flow },
-            onCollect = ::onDukansLoaded,
+            onCollect = ::onDukansLoaded
         )
+    }
+
+    private fun loadNextPage(pager: Pager<Int, DukanUiState>) {
         viewModelScope.launch {
             pager.load()
         }
     }
 
-    private fun onDukansLoaded(dukans: PagingData<DukanUiState>) {
-        val newState = when {
-            dukans.isLoading && dukans.items.isEmpty() -> DukansState.LOADING
-            dukans.items.isEmpty() -> DukansState.EMPTY
-            else -> DukansState.LOADED
-        }
+    private fun onLoadingStart() {
         updateState {
             copy(
-                dukans = dukans,
-                dukansState = newState
+                dukansState = DukansState.LOADING,
+                dukans = PagingData()
             )
         }
     }
 
+    private fun onDukansLoaded(dukans: PagingData<DukanUiState>) {
+        updateState {
+            copy(
+                dukans = dukans,
+                dukansState = getDukansState(dukans)
+            )
+        }
+    }
+
+    private fun getDukansState(dukans: PagingData<DukanUiState>): DukansState {
+        return when {
+            dukans.isLoading && dukans.items.isEmpty() -> DukansState.LOADING
+            dukans.items.isEmpty() -> DukansState.EMPTY
+            else -> DukansState.LOADED
+        }
+    }
 }
