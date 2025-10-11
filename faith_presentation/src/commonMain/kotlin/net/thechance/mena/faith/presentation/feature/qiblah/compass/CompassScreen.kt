@@ -72,7 +72,8 @@ private fun Content(
                 leadingContent = { BackIcon() },
                 onLeadingClick = listener::onBackClick,
                 trailingContent = {
-                    Row(
+
+                Row(
                         modifier = Modifier.background(
                             shape = RoundedCornerShape(Theme.radius.full),
                             color = Theme.colorScheme.primary.onPrimary
