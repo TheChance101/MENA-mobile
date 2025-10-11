@@ -23,7 +23,9 @@ class StatementRemoteDataSourceImpl(
                 block = filterRequestParams?.toStatementRequest() ?: {}
             )
         }
+        statementDao.insertStatement(extractStatementInfoFromHeaders(response))
         return response.readRawBytes()
+
 
     }
 }
