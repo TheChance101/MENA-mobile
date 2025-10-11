@@ -58,10 +58,13 @@ kotlin {
 
             implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.media3.ui)
-        }
-        iosMain.dependencies {
+            implementation(libs.androidx.media3.exoplayer.dash)
 
+            implementation(libs.kotlinx.datetime)
         }
+
+        iosMain.dependencies {}
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
