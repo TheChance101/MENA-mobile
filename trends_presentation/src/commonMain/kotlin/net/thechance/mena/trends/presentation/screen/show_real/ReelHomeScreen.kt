@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.show_real
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,22 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.PagingData
 import app.cash.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.flow.flowOf
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.ic_account_setting
-import mena.trends_presentation.generated.resources.ic_add_real
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
-import mena.trends_presentation.generated.resources.manage_trends
+import mena.trends_presentation.generated.resources.ic_account_setting
+import mena.trends_presentation.generated.resources.ic_add_real
 import mena.trends_presentation.generated.resources.ic_pencil_edit
+import mena.trends_presentation.generated.resources.manage_trends
 import mena.trends_presentation.generated.resources.trends_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -41,7 +37,6 @@ import net.thechance.mena.trends.presentation.shared.component.modifier.noRipple
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -98,7 +93,7 @@ private fun ReelScreenContent(
                     reel.let { reel ->
                         FeedReelCard(
                             reel = reel,
-                            onMoreClick =  listener::onMoreClick,
+                            onMoreClick = listener::onMoreClick,
                             onLikeClick = { listener.onLikeClick(reel.id) },
                             onReelClick = { listener.onReelClick(reel.id) }
                         )
