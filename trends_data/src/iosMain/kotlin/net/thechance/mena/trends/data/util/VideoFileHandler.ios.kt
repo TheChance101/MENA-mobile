@@ -26,10 +26,8 @@ actual fun getPlatformFileReader(): VideoFileHandler = VideoFileHandlerImpl()
 class VideoFileHandlerImpl : VideoFileHandler {
 
     override suspend fun readFile(filePath: String): RawSource {
-        return withContext(Dispatchers.IO) {
-            val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
-            NSInputStream(fileUrl).asSource()
-        }
+        val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
+        return NSInputStream(fileUrl).asSource()
     }
 
     override suspend fun getDuration(filePath: String): Long? {
@@ -43,24 +41,22 @@ class VideoFileHandlerImpl : VideoFileHandler {
     }
 
     override suspend fun extractVideoFrame(filePath: String, timeMs: Long): ByteArray? {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
-                val asset = AVURLAsset.URLAssetWithURL(fileUrl, options = null)
-                val imageGenerator = createAVAssetImageGenerator(asset)
+        return runCatching {
+            val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
+            val asset = AVURLAsset.URLAssetWithURL(fileUrl, options = null)
+            val imageGenerator = createAVAssetImageGenerator(asset)
 
-                try {
-                    val time = CMTimeMakeWithSeconds(timeMs / ONE_SECOND, TIME_SCALE)
-                    imageGenerator.copyCGImageAtTime(time, actualTime = null, error = null)
-                        .let { cgImage ->
-                            val uiImage = UIImage.imageWithCGImage(cgImage)
-                            UIImageJPEGRepresentation(uiImage, COMPRESS_QUALITY)?.toByteArray()
-                        }
-                } finally {
-                    imageGenerator.cancelAllCGImageGeneration()
-                }
-            }.getOrNull()
-        }
+            try {
+                val time = CMTimeMakeWithSeconds(timeMs / ONE_SECOND, TIME_SCALE)
+                imageGenerator.copyCGImageAtTime(time, actualTime = null, error = null)
+                    .let { cgImage ->
+                        val uiImage = UIImage.imageWithCGImage(cgImage)
+                        UIImageJPEGRepresentation(uiImage, COMPRESS_QUALITY)?.toByteArray()
+                    }
+            } finally {
+                imageGenerator.cancelAllCGImageGeneration()
+            }
+        }.getOrNull()
     }
 
     private fun createAVAssetImageGenerator(asset: AVURLAsset): AVAssetImageGenerator {

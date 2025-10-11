@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.core.net.toUri
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.io.RawSource
 import kotlinx.io.asSource
 import net.thechance.mena.trends.domain.exception.FileNotFoundException
@@ -27,32 +25,28 @@ class VideoFileHandlerImpl(
     }
 
     override suspend fun getDuration(filePath: String): Long? {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                MediaMetadataRetriever()
-                    .use(filePath.toUri(), context) {
-                        this.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                            ?.toLongOrNull()
-                    }
-            }.getOrNull()
-        }
+        return runCatching {
+            MediaMetadataRetriever()
+                .use(filePath.toUri(), context) {
+                    this.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                        ?.toLongOrNull()
+                }
+        }.getOrNull()
     }
 
     override suspend fun extractVideoFrame(filePath: String, timeMs: Long): ByteArray? {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                MediaMetadataRetriever()
-                    .use(filePath.toUri(), context) {
-                        this.getFrameAtTime(
-                            timeMs * MILLE_SECOND_CONVERSION,
-                            MediaMetadataRetriever.OPTION_CLOSEST_SYNC
-                        )?.let { bitmap ->
-                            val frameData = bitmapToByteArray(bitmap)
-                            bitmap.recycle()
-                            frameData
-                        }
+        return runCatching {
+            MediaMetadataRetriever()
+                .use(filePath.toUri(), context) {
+                    this.getFrameAtTime(
+                        timeMs * MILLE_SECOND_CONVERSION,
+                        MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                    )?.let { bitmap ->
+                        val frameData = bitmapToByteArray(bitmap)
+                        bitmap.recycle()
+                        frameData
                     }
-            }
+                }
         }.getOrNull()
     }
 
