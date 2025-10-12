@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.screen.dukans.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -34,8 +33,7 @@ fun DukansList(
     lazyListState.LoadMoreOnScroll(pager)
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth()
-            .padding(top = Theme.spacing._8),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._16,

@@ -12,11 +12,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.empty_shelf
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.no_dukans_body
 import mena.dukan_presentation.generated.resources.no_dukans_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.EmptyStateContent
 import net.thechance.mena.dukan.presentation.screen.dukans.component.DukansList
@@ -30,6 +32,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansInteractionL
 import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansState
 import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansUiState
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -49,9 +52,9 @@ fun DukansContent(
                 title = categoryTitle,
                 onLeadingClick = listener::onBackClick,
                 leadingContent = {
-                    net.thechance.mena.designsystem.presentation.component.icon.Icon(
+                    Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = "Back"
+                        contentDescription = stringResource(Res.string.back_arrow)
                     )
                 }
             )
