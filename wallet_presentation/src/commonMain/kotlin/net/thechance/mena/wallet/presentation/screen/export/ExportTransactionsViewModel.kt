@@ -330,11 +330,30 @@ class ExportTransactionsViewModel(
 
     private suspend fun onDownloadSuccess(filePath: String) {
         resetDownloadState()
+        val fileName = filePath.substringAfterLast("/")
+        saveStatementToDatabase(fileName)
         showSnackBar(
             title = getString(Res.string.download_complete),
             message = getString(Res.string.download_success, filePath),
             isSuccess = true
         )
+    }
+
+    private suspend fun saveStatementToDatabase(fileName: String) {
+        try {
+            val filterParams = if (currentState.isCustomFilterCardSelected) {
+                getTransactionFilterParams()
+            } else {
+                null
+            }
+
+            statementRepository.insertStatementWithFileName(
+                fileName = fileName,
+                filterRequestParams = filterParams
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private suspend fun onDownloadFailure(error: ErrorState) {
