@@ -41,13 +41,13 @@ fun LocalDate.format(pattern: String = "dd-MM-yyyy"): String {
 }
 
 @OptIn(ExperimentalTime::class)
-fun parseToLocalDateTime(time: String): LocalDateTime {
+fun parseToLocalDateTime(time: String): LocalDateTime? {
     val timeZone = TimeZone.currentSystemDefault()
 
     return try {
         val instant = Instant.parse(time)
         instant.toLocalDateTime(timeZone)
     } catch (e: IllegalArgumentException) {
-        LocalDateTime.now()
+        null
     }
 }

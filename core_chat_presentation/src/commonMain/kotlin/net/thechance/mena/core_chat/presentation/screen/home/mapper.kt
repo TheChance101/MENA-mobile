@@ -43,7 +43,9 @@ private fun getStatusMessages(status: ChatSummaryStatus): Status = when {
         Status.Sent
 }
 
-private fun getFormattedTime(messageDateTime: LocalDateTime): String {
+private fun getFormattedTime(messageDateTime: LocalDateTime?): String {
+    if (messageDateTime == null) return ""
+
     val now = LocalDateTime.now()
     val today = now.date
     val messageDate = messageDateTime.date
