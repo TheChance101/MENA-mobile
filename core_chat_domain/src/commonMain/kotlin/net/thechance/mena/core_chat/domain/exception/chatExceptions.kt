@@ -26,6 +26,4 @@ class SendMessageFailedException(logMessage: String, cause: Throwable? = null) :
 
 class NotFoundException(logMessage: String, cause: Throwable? = null) : ChatException(logMessage, cause)
 
-class NotMenaMemberException(logMessage: String, cause: Throwable? = null) : ChatException(logMessage, cause)
-
-class ConnectionFailedException(logMessage: String, cause: Throwable? = null): ChatException(logMessage, cause)
+class OperationFailedException(logMessage: String, cause: Throwable? = null) : ChatException(logMessage, cause)

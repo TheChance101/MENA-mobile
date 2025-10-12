@@ -73,6 +73,10 @@ kotlin {
 
             // back handler
             implementation(libs.compose.ui.backhandler)
+
+            //peekaboo
+            implementation(libs.peekaboo.ui)
+            implementation(libs.peekaboo.image.picker)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

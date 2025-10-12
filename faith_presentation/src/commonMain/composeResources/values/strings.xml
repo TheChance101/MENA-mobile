@@ -1,6 +1,7 @@
 <resources>
     <string name="sur">Sur</string>
     <string name="quran">Quran</string>
+    <string name="qiblah">Qiblah</string>
     <string name="makki">Makki</string>
     <string name="madani">Madani</string>
     <string name="ayat">Ayat</string>
@@ -18,6 +19,8 @@
     <string name="al_baqarah">Al-Baqarah</string>
     <string name="snack_bar_title">Success</string>
     <string name="app_name">MENA</string>
+    <string name="device_angle_to_qiblah">Device’s angle to qiblah</string>
+    <string name="qibla_direction">Qibla direction</string>
     <string name="back_icon">Back Icon</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="calibrate_device">Calibrate device</string>
@@ -89,4 +92,25 @@
     <string name="no_results_found_title">No results found!</string>
     <string name="no_results_found_subtitle">Please try again with another keyword.</string>
     <string name="back">back</string>
+    <string name="faith_title">Faith</string>
+    <string name="sunrise_time_label">Sunrise time</string>
+    <string name="location">location</string>
+    <string name="am_label">AM</string>
+    <string name="pm_label">PM</string>
+    <string name="tilawah">Tilawah</string>
+    <string name="quran_kareem">Quran Kareem</string>
+    <string name="qiblah_direction">Qiblah Direction</string>
+    <string name="nearby_mosques">Nearby Mosques</string>
+    <string name="continue_tilawah">Continue Tilawah</string>
+    <string name="fajr">Fajr</string>
+    <string name="dhuhr">Dhuhr</string>
+    <string name="asr">Asr</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isha">Isha</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="unknown_surah">Unknown Surah</string>
+    <string name="ayah_number">Aya No %1$d</string>
+    <string name="navigate_next">Navigate to next screen</string>
+    <string name="surah_al_fatiha">Al-Fatiha</string>
+    <string name="mosque_image_description">Mosque icon</string>
 </resources>

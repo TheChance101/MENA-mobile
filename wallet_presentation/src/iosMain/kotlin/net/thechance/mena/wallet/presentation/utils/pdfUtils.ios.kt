@@ -35,9 +35,15 @@ import platform.CoreGraphics.CGPDFPageGetBoxRect
 import platform.CoreGraphics.kCGBitmapByteOrder32Big
 import platform.CoreGraphics.kCGPDFMediaBox
 import platform.Foundation.NSData
+import platform.Foundation.NSDate
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
 import platform.Foundation.dataWithBytes
+import platform.Foundation.timeIntervalSince1970
 import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
@@ -108,7 +114,7 @@ actual class PdfHandler {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    fun NSData.toByteArray(): ByteArray {
+    private fun NSData.toByteArray(): ByteArray {
         val length = length.toInt()
         val byteArray = ByteArray(length)
         if (length > 0) {
@@ -137,9 +143,59 @@ actual class PdfHandler {
         }
         return if (saved) NSURL.fileURLWithPath(sharedFile) else null
     }
+
+    @OptIn(ExperimentalForeignApi::class)
+    actual suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
+        return withContext(Dispatchers.IO) {
+            val specialFileName = generateSpecialFileName(fileName)
+
+            val fileManager = NSFileManager.defaultManager
+            val paths = NSSearchPathForDirectoriesInDomains(
+                NSDocumentDirectory,
+                NSUserDomainMask,
+                true
+            )
+            val documentsPath = paths.first() as String
+            val menaFolderPath = "$documentsPath/$APP_DOWNLOADS_FOLDER"
+
+            if (!fileManager.fileExistsAtPath(menaFolderPath)) {
+                val created = fileManager.createDirectoryAtPath(
+                    menaFolderPath,
+                    withIntermediateDirectories = true,
+                    attributes = null,
+                    error = null
+                )
+                if (!created) {
+                    throw Exception()
+                }
+            }
+
+            val filePath = "$menaFolderPath/$specialFileName.pdf"
+
+            val saved = pdfData.usePinned { pinned ->
+                val nsData = NSData.dataWithBytes(
+                    pinned.addressOf(0),
+                    pdfData.size.toULong()
+                )
+                nsData.writeToFile(filePath, atomically = true)
+            }
+
+            if (!saved) {
+                throw Exception()
+            }
+
+            "$APP_DOWNLOADS_FOLDER/$specialFileName.pdf"
+        }
+    }
+
+    private fun generateSpecialFileName(baseName: String): String {
+        val timestamp = NSDate().timeIntervalSince1970.toLong() * 1000
+        return "${baseName}_$timestamp"
+    }
+
     private companion object {
         // Chosen as a good balance between rendering time and image sharpness
         const val IMAGE_SCALE = 1.67f
-
+        const val APP_DOWNLOADS_FOLDER = "MENA"
     }
 }
