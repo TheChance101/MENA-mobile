@@ -87,8 +87,8 @@ private fun BoxScope.DukanCardContent(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0x00000000),
-                            Color(0xFF000000)
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.7f)
                         )
                     )
                 )
