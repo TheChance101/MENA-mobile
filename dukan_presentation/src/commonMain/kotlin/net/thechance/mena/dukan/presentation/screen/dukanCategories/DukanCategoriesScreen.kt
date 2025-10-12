@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,7 @@ import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanCateg
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.CategoryUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -60,29 +62,15 @@ fun DukanCategoriesScreen(
     }
 
     DukanCategoriesContent(
-        categories = state.categories,
+        state = state,
         interactionListener = viewModel
     )
-
-    state.snackBarUiState?.let { snackBarState ->
-        SnackBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(top = Theme.spacing._24)
-                .clip(RoundedCornerShape(Theme.radius.md))
-                .clickable(onClick = viewModel::onDismissSnackBar),
-            onDismiss = viewModel::onDismissSnackBar,
-            snackBarUiState = snackBarState
-        )
-    }
-
 }
 
 
 @Composable
 private fun DukanCategoriesContent(
-    categories: List<CategoryUiState>,
+    state: DukanCategoriesUiState,
     interactionListener: DukanCategoriesInteractionListener
 ) {
     Column(
@@ -95,23 +83,22 @@ private fun DukanCategoriesContent(
             onBackClick = interactionListener::onBackClicked
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = categoryItemSize),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = Theme.spacing._16,
-                end = Theme.spacing._16,
-                top = Theme.spacing._12,
-                bottom = Theme.spacing._16
-            ),
-            verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._16),
-            horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
-        ) {
-            categoriesList(
-                categories = categories,
-                onCategoryClick = interactionListener::onCategoryClicked
-            )
-        }
+        CategoriesList(
+            categories = state.categories,
+            onCategoryClick = interactionListener::onCategoryClicked
+        )
+    }
+
+    state.snackBarUiState?.let { snackBarState ->
+        SnackBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = Theme.spacing._24)
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .clickable(onClick = interactionListener::onDismissSnackBar),
+            onDismiss = interactionListener::onDismissSnackBar,
+            snackBarUiState = snackBarState
+        )
     }
 }
 
@@ -137,19 +124,34 @@ private fun CategoriesTopAppBar(
     )
 }
 
-private fun LazyGridScope.categoriesList(
+@Composable
+private fun ColumnScope.CategoriesList(
     categories: List<CategoryUiState>,
     onCategoryClick: (categoryId: String) -> Unit
 ) {
-    items(
-        items = categories,
-        key = { it.id },
-    ) { category ->
-        CategoryCard(
-            title = category.name,
-            imageUrl = category.imageUrl,
-            onClick = { onCategoryClick(category.id) },
-        )
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = categoryItemSize),
+        modifier = Modifier.weight(1f),
+        contentPadding = PaddingValues(
+            start = Theme.spacing._16,
+            end = Theme.spacing._16,
+            top = Theme.spacing._12,
+            bottom = Theme.spacing._16
+        ),
+        verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._16),
+        horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
+    ) {
+        items(
+            items = categories,
+            key = { it.id },
+            contentType = { "CategoryCard" }
+        ) { category ->
+            CategoryCard(
+                title = category.name,
+                imageUrl = category.imageUrl,
+                onClick = { onCategoryClick(category.id) },
+            )
+        }
     }
 }
 
@@ -163,7 +165,9 @@ private fun CategoriesScreenPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             DukanCategoriesContent(
-                categories = previewCategories,
+                state = DukanCategoriesUiState(
+                    categories = previewCategories
+                ),
                 interactionListener = PreviewDukanCategoriesInteractionListener
             )
         }
