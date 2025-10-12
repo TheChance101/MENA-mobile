@@ -7,13 +7,13 @@ import mena.wallet_presentation.generated.resources.confirm_payment_content_succ
 import net.thechance.mena.wallet.domain.entity.User
 import org.jetbrains.compose.resources.stringResource
 
-fun User.toUi() = ConfirmPaymentScreenState.ReceiverUiState(
+fun User.toUiState() = ConfirmPaymentScreenState.ReceiverUiState(
     name = name,
     profileImg = imgUrl
 )
 
 @Composable
-fun GetUserMessage(paymentStatus: Boolean, balance: String): String {
+fun GetUserMessage(paymentStatus: Boolean, balance: String) : String{
     return if (paymentStatus) {
         stringResource(
             Res.string.confirm_payment_content_success,

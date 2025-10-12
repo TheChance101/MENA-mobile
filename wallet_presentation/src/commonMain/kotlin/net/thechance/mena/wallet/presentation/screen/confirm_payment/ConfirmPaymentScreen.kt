@@ -102,8 +102,8 @@ private fun ConfirmPaymentScreenContent(
                 ) {
                     PaymentDetailsSection(
                         modifier = Modifier.fillMaxWidth().weight(1f),
-                        paymentUiState = state.paymentUiState,
-                        receiverUiState = state.receiverUiState
+                        payment = state.paymentUiState,
+                        receiver = state.receiverUiState
                     )
 
                     PayButton(

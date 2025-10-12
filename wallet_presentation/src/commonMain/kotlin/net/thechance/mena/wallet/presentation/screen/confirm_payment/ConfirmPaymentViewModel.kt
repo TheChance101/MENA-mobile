@@ -1,8 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.confirm_payment
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.domain.entity.User
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.UserRepository
@@ -28,8 +32,7 @@ class ConfirmPaymentViewModel(
     private val amount = args.amount
 
     init {
-        getUserBalance()
-        getReceiverInfo()
+        loadData()
     }
 
     override fun onBackButtonClicked() {
@@ -43,8 +46,18 @@ class ConfirmPaymentViewModel(
 
     override fun onRefresh() {
         updateState { it.copy(isLoading = true, errorState = null) }
-        getUserBalance()
-        getReceiverInfo()
+        loadData()
+    }
+
+    private fun loadData(){
+        viewModelScope.launch {
+            onStart()
+            listOf(
+                async { getUserBalance() },
+                async { getReceiverInfo() }
+            ).awaitAll()
+            onEnd()
+        }
     }
 
     private fun getUserBalance() {
@@ -52,7 +65,6 @@ class ConfirmPaymentViewModel(
             callee = { balanceRepository.getBalance() },
             onSuccess = ::onGetPaymentConfirmationSuccess,
             onError = ::onError,
-            onStart = ::onStart,
             dispatcher = ioDispatcher
         )
     }
@@ -62,7 +74,6 @@ class ConfirmPaymentViewModel(
             callee = { userRepository.getUserById(Uuid.parse(receiverId)) },
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onError,
-            onStart = ::onStart,
             dispatcher = ioDispatcher
         )
     }
@@ -70,7 +81,6 @@ class ConfirmPaymentViewModel(
     private fun onGetPaymentConfirmationSuccess(balance: Double) {
         updateState {
             it.copy(
-                isLoading = false,
                 paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
                     amount = formatAmount(amount),
                     status = balance >= amount,
@@ -87,10 +97,13 @@ class ConfirmPaymentViewModel(
     private fun onStart() {
         updateState { it.copy(isLoading = true) }
     }
+    private fun onEnd() {
+        updateState { it.copy(isLoading = true) }
+    }
 
     private fun onGetReceiverInfoSuccess(userInfo: User) {
         updateState {
-            it.copy(isLoading = false, receiverUiState = userInfo.toUi())
+            it.copy(receiverUiState = userInfo.toUiState())
         }
     }
 }
