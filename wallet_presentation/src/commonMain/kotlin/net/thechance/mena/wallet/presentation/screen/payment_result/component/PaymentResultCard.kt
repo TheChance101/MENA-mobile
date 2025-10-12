@@ -45,7 +45,7 @@ fun PaymentResultCard(
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.title.small,
         )
-        if (paymentStatus == SubmitTransactionResultStatus.FAILURE) {
+        if (paymentStatus == SubmitTransactionResultStatus.UNKNOWN_ERORR) {
             Text(
                 text = description,
                 color = Theme.colorScheme.shadeSecondary,

@@ -91,10 +91,12 @@ class ConfirmPaymentViewModel(
                 receiverId,
                 amount,
                 dummyTransactionId,
-                SubmitTransactionResultStatus.SUCCESS
+                submitTransactionResultStatus = when(error){
+                    ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
+                    else -> SubmitTransactionResultStatus.UNKNOWN_ERORR
+                }
             )
         )
-
     }
 
     private fun submitTransaction(transactionId: Uuid) {
