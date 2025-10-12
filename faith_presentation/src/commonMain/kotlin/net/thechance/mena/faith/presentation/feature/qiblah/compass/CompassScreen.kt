@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -98,7 +99,8 @@ private fun Content(
                 contentDescription = "ic_islamic_pattern",
                 modifier = Modifier
                     .align(Alignment.BottomStart),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(Theme.colorScheme.secondary.secondary)
             )
 
             Column(
