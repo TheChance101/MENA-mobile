@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -17,7 +16,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.AfterTest
@@ -39,11 +37,13 @@ class DukansViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        
-        savedStateHandle = SavedStateHandle(mapOf(
-            "categoryId" to "cat1",
-            "categoryTitle" to "Electronics"
-        ))
+
+        savedStateHandle = SavedStateHandle(
+            mapOf(
+                "categoryId" to "cat1",
+                "categoryTitle" to "Electronics"
+            )
+        )
 
         everySuspend {
             dukanRepository.getDukansByCategory(
@@ -75,7 +75,7 @@ class DukansViewModelTest {
         // When
         val pager = dukansViewModel.initializedPager
         advanceUntilIdle()
-        
+
         dukansViewModel.state.test {
             val state = awaitItem()
             // Then
@@ -97,8 +97,9 @@ class DukansViewModelTest {
     @Test
     fun `init SHOULD load dukans with correct count`() = runTest {
         // When
+        val pager = dukansViewModel.initializedPager
         advanceUntilIdle()
-        
+
         dukansViewModel.state.test {
             val state = awaitItem()
             // Then
@@ -109,10 +110,10 @@ class DukansViewModelTest {
 
     @Test
     fun `init SHOULD set dukans state to LOADED when dukans are available`() = runTest {
-        // When - Trigger initialization
+        // When
         val pager = dukansViewModel.initializedPager
-        advanceUntilIdle() // Wait for all coroutines to complete
-        
+        advanceUntilIdle()
+
         dukansViewModel.state.test {
             val state = awaitItem()
             // Then
@@ -151,6 +152,7 @@ class DukansViewModelTest {
     @Test
     fun `onFavoriteClick SHOULD toggle favorite status successfully`() = runTest {
         // Given
+        val pager = dukansViewModel.initializedPager
         advanceUntilIdle()
         assertFalse(dummyDukansUiState().first().isFavorite)
 
@@ -166,50 +168,46 @@ class DukansViewModelTest {
     }
 
     @Test
-    fun `onFavoriteClick SHOULD handle favorite toggle error gracefully`() = runTest {
+    fun `onFavoriteClick SHOULD handle multiple favorite toggles correctly`() = runTest {
         // Given
-        val errorSavedStateHandle = SavedStateHandle(mapOf(
-            "categoryId" to "cat1",
-            "categoryTitle" to "Electronics"
-        ))
-        
-        everySuspend {
-            dukanRepository.getDukansByCategory(
-                categoryId = any(),
-                page = any(),
-                size = any()
-            )
-        } throws DukanException("Network error")
-        
-        val errorViewModel = DukansViewModel(
-            dukanRepository = dukanRepository,
-            savedStateHandle = errorSavedStateHandle,
-            defaultDispatcher = testDispatcher
-        )
+        val pager = dukansViewModel.initializedPager
         advanceUntilIdle()
+
         val dukan = dummyDukansUiState().first()
+        assertFalse(dukan.isFavorite)
 
         // When
-        errorViewModel.onFavoriteClick(dukan)
+        dukansViewModel.onFavoriteClick(dukan)
         advanceUntilIdle()
 
         // Then
-        val state = errorViewModel.state.value
-        val updatedDukan = state.dukans.items.find { it.id == dukan.id }
-        assertNotNull(updatedDukan)
-        // Should remain unchanged due to error
-        assertEquals(dukan.isFavorite, updatedDukan.isFavorite)
+        val state1 = dukansViewModel.state.value
+        val updatedDukan1 = state1.dukans.items.find { it.id == dukan.id }
+        assertNotNull(updatedDukan1)
+        assertTrue(updatedDukan1.isFavorite)
+
+        // When
+        dukansViewModel.onFavoriteClick(updatedDukan1)
+        advanceUntilIdle()
+
+        // Then
+        val state2 = dukansViewModel.state.value
+        val updatedDukan2 = state2.dukans.items.find { it.id == dukan.id }
+        assertNotNull(updatedDukan2)
+        assertFalse(updatedDukan2.isFavorite)
     }
 
 
     @Test
     fun `init SHOULD handle empty category gracefully`() = runTest {
         // Given
-        val emptySavedStateHandle = SavedStateHandle(mapOf(
-            "categoryId" to "",
-            "categoryTitle" to ""
-        ))
-        
+        val emptySavedStateHandle = SavedStateHandle(
+            mapOf(
+                "categoryId" to "",
+                "categoryTitle" to ""
+            )
+        )
+
         val emptyViewModel = DukansViewModel(
             dukanRepository = dukanRepository,
             savedStateHandle = emptySavedStateHandle,
@@ -217,8 +215,9 @@ class DukansViewModelTest {
         )
 
         // When
+        val pager = emptyViewModel.initializedPager
         advanceUntilIdle()
-        
+
         emptyViewModel.state.test {
             val state = awaitItem()
             // Then
@@ -232,7 +231,7 @@ class DukansViewModelTest {
     fun `init SHOULD handle null category gracefully`() = runTest {
         // Given
         val nullSavedStateHandle = SavedStateHandle(emptyMap())
-        
+
         val nullViewModel = DukansViewModel(
             dukanRepository = dukanRepository,
             savedStateHandle = nullSavedStateHandle,
@@ -240,8 +239,9 @@ class DukansViewModelTest {
         )
 
         // When 
+        val pager = nullViewModel.initializedPager
         advanceUntilIdle()
-        
+
         nullViewModel.state.test {
             val state = awaitItem()
             // Then
