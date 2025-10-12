@@ -15,15 +15,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.dukan_image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun BestNearDukanItem(
+fun BestNearDukanCard(
     dukanName: String,
-    dukanImage: Any,
+    imageUrl: Any,
     onClick: () -> Unit
 ) {
     Column(
@@ -35,8 +38,8 @@ fun BestNearDukanItem(
         )
     ) {
         AsyncImage(
-            model = dukanImage,
-            contentDescription = "dukanImage",
+            model = imageUrl,
+            contentDescription = stringResource(Res.string.dukan_image),
             modifier = Modifier
                 .size(size = 60.dp)
                 .clip(RoundedCornerShape(Theme.radius.full))
@@ -55,11 +58,11 @@ fun BestNearDukanItem(
 
 @Preview
 @Composable
-private fun BestNearDukanItemPreview() {
+private fun BestNearDukanCardPreview() {
     MenaTheme {
-        BestNearDukanItem(
+        BestNearDukanCard(
             dukanName = "DeFacto",
-            dukanImage = "https://www.ascenciamalls.com/media/3lncwwzl/the-faceshop-2-_1.jpg?anchor=center&mode=crop&width=784&height=650&rnd=133027033116700000",
+            imageUrl = "https://www.ascenciamalls.com/media/3lncwwzl/the-faceshop-2-_1.jpg?anchor=center&mode=crop&width=784&height=650&rnd=133027033116700000",
             onClick = {}
         )
     }

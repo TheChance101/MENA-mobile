@@ -30,8 +30,8 @@ fun EditorPickDukanItemsSection(
 ) {
     AnimatedContent(
         targetState = state.editorPickDukanState,
-    ) { editorPickDukanState ->
-        when (state.editorPickDukanState) {
+    ) {
+        when (it) {
             MainScreenUiState.EditorPickDukanStatus.LOADING -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth()

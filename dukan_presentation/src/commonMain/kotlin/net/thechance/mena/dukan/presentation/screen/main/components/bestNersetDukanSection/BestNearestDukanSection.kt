@@ -31,7 +31,7 @@ fun BestNearestDukanSection(
     AnimatedContent(
         targetState = state.bestNearestDukanState,
     ) {
-        when (state.bestNearestDukanState) {
+        when (it) {
             MainScreenUiState.BestNearestDukanStatus.LOADING -> {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth()
@@ -79,9 +79,9 @@ private fun BestNearestDukanList(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(dukans.items) { dukan ->
-            BestNearDukanItem(
+            BestNearDukanCard(
                 dukanName = dukan.name,
-                dukanImage = dukan.imageUrl,
+                imageUrl = dukan.imageUrl,
                 onClick = { onDukanClick(dukan.id) }
             )
         }
