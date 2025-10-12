@@ -11,7 +11,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.menu_circle
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.CategoryItem
+import net.thechance.mena.dukan.presentation.component.CategoryCard
 import net.thechance.mena.dukan.presentation.util.getScreenWidth
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
 import org.jetbrains.compose.resources.painterResource
@@ -41,17 +41,17 @@ fun CategorySection(
         modifier = modifier
     ) {
         items(gridLayout.itemsToShow) { category ->
-            CategoryItem(
-                categoryName = category.name,
-                categoryImage = category.imageUrl,
+            CategoryCard(
+                title = category.name,
+                imageUrl = category.imageUrl,
                 onClick = { onCategoryClick(category.id) }
             )
         }
         if (gridLayout.hasMoreItems) {
             item {
-                CategoryItem(
-                    categoryName = "View more",
-                    categoryImage = painterResource(Res.drawable.menu_circle),
+                CategoryCard(
+                    title = "View more",
+                    image = painterResource(Res.drawable.menu_circle),
                     onClick = onViewMoreClick
                 )
             }

@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -90,6 +92,53 @@ fun CategoryCard(
     }
 }
 
+@Composable
+fun CategoryCard(
+    title: String,
+    image: Painter,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    iconSize: Dp = 24.dp,
+    iconContainerSize: Dp = 60.dp
+) {
+
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(bottom = Theme.spacing._4)
+                .size(size = iconContainerSize)
+                .background(
+                    color = Theme.colorScheme.background.surfaceLow,
+                    shape = RoundedCornerShape(Theme.radius.full)
+                ).clip(shape = RoundedCornerShape(Theme.radius.full))
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Image(
+                painter = image,
+                contentDescription = stringResource(resource = Res.string.category_icon),
+                modifier = Modifier.size(iconSize),
+            )
+        }
+
+        Text(
+            text = title,
+            style = Theme.typography.label.small,
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 2,
+            minLines = 1,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(horizontal = Theme.spacing._8)
+        )
+    }
+}
 private enum class CategoryImageState { Loading, Success, Error }
 
 @Preview
