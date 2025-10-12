@@ -1,6 +1,8 @@
 package net.thechance.mena.dukan.presentation.screen.dukans.content
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -64,14 +66,12 @@ fun DukansContent(
                 transitionSpec = {
                     fadeIn(
                         animationSpec = tween(
-                            durationMillis = 300,
-                            easing = androidx.compose.animation.core.EaseOutCubic
+                            easing = EaseOutCubic
                         )
                     ) togetherWith
                             fadeOut(
                                 animationSpec = tween(
-                                    durationMillis = 200,
-                                    easing = androidx.compose.animation.core.EaseInCubic
+                                    easing = EaseInCubic
                                 )
                             )
                 },
