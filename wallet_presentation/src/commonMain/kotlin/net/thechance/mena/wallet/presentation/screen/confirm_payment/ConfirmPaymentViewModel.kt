@@ -32,6 +32,20 @@ class ConfirmPaymentViewModel(
         getReceiverInfo()
     }
 
+    override fun onBackButtonClicked() {
+        sendEffect(ConfirmPaymentEffect.NavigateBack)
+    }
+
+    override fun onPayButtonClicked() {
+        updateState { it.copy(isPayBtnLoading = true) }
+        sendEffect(ConfirmPaymentEffect.NavigateToPaymentResultScreen(receiverId, amount))
+    }
+
+    override fun onRefresh() {
+        updateState { it.copy(isLoading = true, errorState = null) }
+        getPaymentConfirmation()
+    }
+
     private fun getPaymentConfirmation() {
         tryToExecute(
             callee = {
@@ -54,20 +68,6 @@ class ConfirmPaymentViewModel(
             onStart = ::onStart,
             dispatcher = ioDispatcher
         )
-    }
-
-    override fun onBackButtonClicked() {
-        sendEffect(ConfirmPaymentEffect.NavigateBack)
-    }
-
-    override fun onPayButtonClicked() {
-        updateState { it.copy(isPayBtnLoading = true) }
-        sendEffect(ConfirmPaymentEffect.NavigateToPaymentResultScreen(receiverId, amount))
-    }
-
-    override fun onRefresh() {
-        updateState { it.copy(isLoading = true, errorState = null) }
-        getPaymentConfirmation()
     }
 
     private fun onGetPaymentConfirmationSuccess(balance: Double) {
