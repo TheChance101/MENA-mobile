@@ -3,6 +3,8 @@
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -106,10 +108,11 @@ fun ChatScreenContent(
 
         AnimatedVisibility(
             visible = state.isAttachmentsOverlayVisible,
-            modifier = Modifier.fillMaxSize(),
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit= slideOutVertically(targetOffsetY = { it }),
+            modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             AttachmentsBottomSheet(
-                modifier = Modifier.align(Alignment.BottomCenter),
                 attachmentsInteractionListener = interactions
             )
         }
