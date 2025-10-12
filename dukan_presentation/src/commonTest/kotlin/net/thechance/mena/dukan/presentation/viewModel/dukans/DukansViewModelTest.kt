@@ -168,11 +168,10 @@ class DukansViewModelTest {
     }
 
     @Test
-    fun `onFavoriteClick SHOULD handle multiple favorite toggles correctly`() = runTest {
+    fun `onFavoriteClick SHOULD toggle favorite from false to true`() = runTest {
         // Given
         val pager = dukansViewModel.initializedPager
         advanceUntilIdle()
-
         val dukan = dummyDukansUiState().first()
         assertFalse(dukan.isFavorite)
 
@@ -181,20 +180,31 @@ class DukansViewModelTest {
         advanceUntilIdle()
 
         // Then
-        val state1 = dukansViewModel.state.value
-        val updatedDukan1 = state1.dukans.items.find { it.id == dukan.id }
-        assertNotNull(updatedDukan1)
-        assertTrue(updatedDukan1.isFavorite)
+        val state = dukansViewModel.state.value
+        val updatedDukan = state.dukans.items.find { it.id == dukan.id }
+        assertNotNull(updatedDukan)
+        assertTrue(updatedDukan.isFavorite)
+    }
+
+    @Test
+    fun `onFavoriteClick SHOULD toggle favorite from true to false`() = runTest {
+        // Given
+        val pager = dukansViewModel.initializedPager
+        advanceUntilIdle()
+
+        dukansViewModel.onFavoriteClick(dummyDukansUiState().first())
+        advanceUntilIdle()
+
+        val favoriteDukan = dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
+        assertTrue(favoriteDukan.isFavorite)
 
         // When
-        dukansViewModel.onFavoriteClick(updatedDukan1)
+        dukansViewModel.onFavoriteClick(favoriteDukan)
         advanceUntilIdle()
 
         // Then
-        val state2 = dukansViewModel.state.value
-        val updatedDukan2 = state2.dukans.items.find { it.id == dukan.id }
-        assertNotNull(updatedDukan2)
-        assertFalse(updatedDukan2.isFavorite)
+        val updatedDukan = dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
+        assertFalse(updatedDukan.isFavorite)
     }
 
 
