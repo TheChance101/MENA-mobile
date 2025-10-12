@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AddAddressResponseDto(
+data class AddressResponseDto(
     @SerialName("id")
     val id: String,
     @SerialName("latitude")
