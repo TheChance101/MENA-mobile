@@ -1,116 +1,68 @@
 package net.thechance.mena.trends.presentation.video_player
 
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.UIKitView
+import androidx.compose.ui.interop.UIKitView
+import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFoundation.AVPlayer
-import platform.AVFoundation.AVPlayerItem
-import platform.AVFoundation.currentTime
-import platform.AVFoundation.pause
+import platform.AVFoundation.AVPlayerLayer
 import platform.AVFoundation.play
-import platform.AVFoundation.replaceCurrentItemWithPlayerItem
-import platform.AVFoundation.seekToTime
 import platform.AVKit.AVPlayerViewController
-import platform.CoreMedia.CMTimeGetSeconds
-import platform.CoreMedia.CMTimeMakeWithSeconds
-import platform.Foundation.NSNotificationCenter
+import platform.CoreGraphics.CGRect
 import platform.Foundation.NSURL
-import platform.UIKit.UIApplicationDidBecomeActiveNotification
-import platform.UIKit.UIApplicationWillResignActiveNotification
+import platform.QuartzCore.CATransaction
+import platform.QuartzCore.kCATransactionDisableActions
+import platform.UIKit.UIView
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun VideoPlayer(
     url: String,
     playWhenVisible: Boolean,
-    onControllerVisibilityChanged: (Boolean) -> Unit
 ) {
-    var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
-    val player = remember { AVPlayer() }
-    val videoUrl = NSURL.URLWithString(url)
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        UIKitView(
-            factory = {
-                if (videoUrl != null) {
-                    val item = AVPlayerItem(uRL = videoUrl)
-                    player.replaceCurrentItemWithPlayerItem(item)
-                }
+    val player = remember { AVPlayer(uRL = NSURL.URLWithString(url)!!) }
+    val playerLayer = remember { AVPlayerLayer() }
+    val avPlayerViewController = remember { AVPlayerViewController() }
+    avPlayerViewController.player = player
+    avPlayerViewController.showsPlaybackControls = true
+    playerLayer.player = player
 
-                val controller = AVPlayerViewController().apply {
-                    this.player = player
-                    this.showsPlaybackControls = true
-                    this.updatesNowPlayingInfoCenter = false
-                    this.requiresLinearPlayback = false
-                    this.allowsPictureInPicturePlayback = false
 
-                }
+    UIKitView(
+        factory = {
+            // Create a UIView to hold the AVPlayerLayer
+            val playerContainer = UIView()
+            playerContainer.addSubview(avPlayerViewController.view)
+            // Return the playerContainer as the root UIView
+            playerContainer
+        },
+        onResize = { view: UIView, rect: CValue<CGRect> ->
+            CATransaction.begin()
+            CATransaction.setValue(true, kCATransactionDisableActions)
+            view.layer.setFrame(rect)
+            playerLayer.setFrame(rect)
+            avPlayerViewController.view.layer.frame = rect
+            CATransaction.commit()
+        },
+        update = { view ->
+            player.play()
+            avPlayerViewController.player!!.play()
+        },
+        modifier = Modifier.fillMaxSize()
+    )
 
-                controller.view
-            },
-            modifier = Modifier.fillMaxSize(),
-            update = { _ ->
-                if (playWhenVisible) {
-                    player.seekToTime(CMTimeMakeWithSeconds(lastPosition, 600))
-                    player.play()
-                } else {
-                    val current = player.currentTime()
-                    lastPosition = CMTimeGetSeconds(current)
-                    player.pause()
-                }
-            },
-//            onRelease = {
-//                val current = player.currentTime()
-//                lastPosition = CMTimeGetSeconds(current)
-//                player.pause()
-//                player.replaceCurrentItemWithPlayerItem(null)
-//            }
-        )
-    }
 
-    DisposableEffect(Unit) {
-        val center = NSNotificationCenter.defaultCenter
+    /*
+    I need handle like android :
+       1- loading
+       2- custom progress bar
+       3- remove any controllers (play, next ,..) and stop the video when click to any place in screen
+       4- stop video when being in background and when return resume when stop using seek to
+     */
 
-        val willResignObserver = center.addObserverForName(
-            name = UIApplicationWillResignActiveNotification,
-            `object` = null,
-            queue = null
-        ) { _ ->
-            val current = player.currentTime()
-            lastPosition = CMTimeGetSeconds(current)
-            player.pause()
-        }
-
-        val didBecomeActiveObserver = center.addObserverForName(
-            name = UIApplicationDidBecomeActiveNotification,
-            `object` = null,
-            queue = null
-        ) { _ ->
-            player.seekToTime(CMTimeMakeWithSeconds(lastPosition, 600))
-            if (playWhenVisible) {
-                player.play()
-            }
-        }
-
-        onDispose {
-            center.removeObserver(willResignObserver)
-            center.removeObserver(didBecomeActiveObserver)
-            player.pause()
-            player.replaceCurrentItemWithPlayerItem(null)
-        }
-    }
 }

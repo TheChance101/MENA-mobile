@@ -1,14 +1,18 @@
 package net.thechance.mena.trends.presentation.video_player
 
-
 import android.view.View
 import androidx.annotation.OptIn
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,7 +20,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -28,7 +35,9 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.ui.PlayerView
+import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @OptIn(UnstableApi::class)
@@ -36,7 +45,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 actual fun VideoPlayer(
     url: String,
     playWhenVisible: Boolean,
-    onControllerVisibilityChanged: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -47,6 +55,11 @@ actual fun VideoPlayer(
         .build()
 
     var isLoading by remember { mutableStateOf(true) }
+    var isPause by remember { mutableStateOf(false) }
+
+    var currentProgress by remember { mutableStateOf(0f) }
+    var duration by remember { mutableStateOf(1L) }
+    var barWidth by remember { mutableFloatStateOf(1f) }
 
 
     val exoPlayer = remember {
@@ -82,6 +95,76 @@ actual fun VideoPlayer(
         }
     }
 
+    LaunchedEffect(exoPlayer.isPlaying) {
+        while (true) {
+            duration = exoPlayer.duration.coerceAtLeast(1L)
+            val position = exoPlayer.currentPosition
+            currentProgress = position.toFloat() / duration.toFloat()
+            delay(1000)
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AndroidView(
+            factory = { ctx ->
+                PlayerView(ctx).apply {
+                    player = exoPlayer
+                    useController = false
+
+                    post {
+                        findViewById<View>(
+                            androidx.media3.ui.R.id.exo_settings
+                        ).visibility = View.GONE
+                    }
+                }
+            },
+            update = { playerView ->
+                if (isPause) exoPlayer.pause()
+                else exoPlayer.play()
+
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { isPause = !isPause }
+        )
+
+        if (isLoading) {
+            DotsProgressIndicator(
+                colors = listOf(
+                    Theme.colorScheme.stroke,
+                    Theme.colorScheme.shadeTertiary,
+                    Theme.colorScheme.primary.primary
+                )
+            )
+        }
+
+        ProgressBar(
+            progress = { currentProgress },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .fillMaxWidth()
+                .padding(bottom = 5.dp, start = 2.dp, end = 2.dp)
+                .onGloballyPositioned {
+                    barWidth = it.size.width.toFloat()
+                }
+                .pointerInput(barWidth) {
+                    detectTapGestures { offset ->
+                        if (duration > 0L && barWidth > 0f) {
+                            val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
+                            val seekPosition = (newProgress * duration).toLong()
+                            exoPlayer.seekTo(seekPosition)
+                            exoPlayer.playWhenReady = true
+                        }
+                    }
+                },
+            trackColor = Theme.colorScheme.primary.onPrimaryHint,
+            color = Theme.colorScheme.border.brand
+        )
+    }
+
     DisposableEffect(lifecycleOwner, exoPlayer) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -106,56 +189,6 @@ actual fun VideoPlayer(
         onDispose {
             lastPosition = exoPlayer.currentPosition
             lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        AndroidView(
-            factory = { ctx ->
-                PlayerView(ctx).apply {
-                    player = exoPlayer
-                    controllerShowTimeoutMs = 0
-                    controllerAutoShow = false
-
-                    setControllerVisibilityListener(
-                        PlayerView.ControllerVisibilityListener { visibility ->
-                            val visible = visibility == View.VISIBLE
-                            onControllerVisibilityChanged(visible)
-                        }
-                    )
-
-                    post {
-                        findViewById<View>(
-                            androidx.media3.ui.R.id.exo_settings
-                        ).visibility = View.GONE
-                    }
-
-                    setShowNextButton(false)
-                    setShowPreviousButton(false)
-                    setShowRewindButton(false)
-                    setShowFastForwardButton(false)
-                    setShowSubtitleButton(false)
-                    setShowVrButton(false)
-                }
-            },
-            update = { playerView ->
-                playerView.useController = !isLoading
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-
-        if (isLoading) {
-            DotsProgressIndicator(
-                colors = listOf(
-                    Theme.colorScheme.stroke,
-                    Theme.colorScheme.shadeTertiary,
-                    Theme.colorScheme.primary.primary
-                )
-            )
         }
     }
 }
