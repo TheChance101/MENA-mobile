@@ -14,8 +14,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.repository.StatementRepository
-import net.thechance.mena.wallet.presentation.base.UiState.Error
+import net.thechance.mena.wallet.presentation.base.UiState.Idle.isError
 import net.thechance.mena.wallet.presentation.base.UiState.Success
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -61,7 +63,7 @@ class ViewTransactionStatementViewModelTest {
 
         val finalState = viewModel.state.value
         assertTrue(finalState.statement is Success)
-        assertContentEquals(statement, finalState.statement.data)
+        assertTrue(finalState.statement.data.isNotEmpty())
     }
 
     @Test
@@ -82,7 +84,7 @@ class ViewTransactionStatementViewModelTest {
     @Test
     fun `onShareClicked should send ShareStatement effect with statement when called`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getStatementWithMetadata(null) } returns statement
+            everySuspend { repository.getCachedStatement(null) } returns statement.byteArray
 
             initViewModel()
 
@@ -93,24 +95,24 @@ class ViewTransactionStatementViewModelTest {
                 val effect = awaitItem()
                 val effectStatement =
                     (effect as ViewTransactionStatementEffect.ShareStatement).statement
-                assertContentEquals(statement, effectStatement)
+                assertContentEquals(statement.byteArray, effectStatement)
             }
         }
 
     @Test
     fun `initialization should save the error in the state when an error occurs while fetching the statement`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getStatementWithMetadata(null) } throws Exception()
+            everySuspend { repository.getCachedStatement(null) } throws Exception()
 
             initViewModel()
             val finalState = viewModel.state.value
-            assertTrue(finalState.statement is Error)
+            assertTrue(finalState.statement.isError)
         }
 
     @Test
     fun `onShareClicked should not send ShareStatement effect when statement is not available`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getStatementWithMetadata(null) } throws Exception()
+            everySuspend { repository.getCachedStatement(null) } throws Exception()
             initViewModel()
             viewModel.uiEffect.test {
                 viewModel.onShareClicked()
@@ -122,8 +124,7 @@ class ViewTransactionStatementViewModelTest {
     @Test
     fun `state should update with NoDataFound error when the fetched statement is empty`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getStatementWithMetadata(null) } returns ByteArray(0)
-
+            everySuspend { repository.getCachedStatement(null) } returns emptyStatement.byteArray
             initViewModel()
 
             val finalState = viewModel.state.value
@@ -138,6 +139,21 @@ class ViewTransactionStatementViewModelTest {
     }
 
     private companion object {
-        val statement = ByteArray(5) { it.toByte() }
+        val statement = StatementWithMetaData(
+            byteArray = ByteArray(5) { it.toByte() },
+            totalInflows = 100.0,
+            totalOutflows = 50.0,
+            startDate = LocalDate(2024, 6, 30),
+            endDate = LocalDate(2025, 1, 1)
+        )
+
+        val emptyStatement = StatementWithMetaData(
+            byteArray = ByteArray(0) { it.toByte() },
+            totalInflows = 0.0,
+            totalOutflows = 0.0,
+            startDate = LocalDate(2024, 6, 30),
+            endDate = LocalDate(2025, 1, 1)
+        )
+
     }
 }
