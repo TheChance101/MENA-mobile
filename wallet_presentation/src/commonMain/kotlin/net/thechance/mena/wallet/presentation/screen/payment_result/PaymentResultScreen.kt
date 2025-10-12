@@ -88,5 +88,6 @@ private fun onPaymentResultEffect(
     when (effect) {
         is PaymentResultEffect.NavigateBack -> onNavigateBackClicked()
         is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(receiverId)
+        is PaymentResultEffect.NavigateToPreviousScreen -> TODO()
     }
 }
