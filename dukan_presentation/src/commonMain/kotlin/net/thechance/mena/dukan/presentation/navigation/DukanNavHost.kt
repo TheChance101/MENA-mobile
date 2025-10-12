@@ -69,16 +69,11 @@ fun DukanNavHost() {
                 val route: DukanRoute.ShelfDetails = backStackEntry.toRoute()
                 ShelfDetailsScreen(route.shelfId, route.shelfName)
             }
-            composable<DukanRoute.DukanCategoriesScreenRoute>  {
+            composable<DukanRoute.DukanCategoriesScreenRoute> {
                 DukanCategoriesScreen()
             }
-            composable<DukanRoute.DukansScreenRoute> { backStackEntry ->
-                val route: DukanRoute.DukansScreenRoute = backStackEntry.toRoute()
-                DukansScreen(
-                    categoryId = route.categoryId,
-                    categoryTitle = route.categoryTitle,
-                    onBackClick = { navController.popBackStack() }
-                )
+            composable<DukanRoute.DukansScreenRoute> {
+                DukansScreen()
             }
         }
     }

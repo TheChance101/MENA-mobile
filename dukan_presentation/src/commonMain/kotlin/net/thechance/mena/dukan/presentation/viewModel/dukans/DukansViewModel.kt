@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukans
 
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -13,11 +14,44 @@ import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class DukansViewModel(
     private val dukanRepository: DukanRepository,
+    private val savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<DukansUiState, DukansEffects>(
     initialState = DukansUiState(),
     defaultDispatcher = defaultDispatcher
 ), DukansInteractionListener {
+
+    private var pager: Pager<Int, DukanUiState>? = null
+
+    val initializedPager: Pager<Int, DukanUiState> by lazy {
+        initializePager()
+    }
+
+    private fun initializePager(): Pager<Int, DukanUiState> {
+        val categoryId = savedStateHandle.get<String>("categoryId") ?: ""
+        val categoryTitle = savedStateHandle.get<String>("categoryTitle") ?: ""
+
+        updateState {
+            copy(
+                categoryId = categoryId,
+                categoryTitle = categoryTitle
+            )
+        }
+
+        val pager = createPagingSource(
+            mapper = { it.toUiState() }
+        ) { pageNumber ->
+            dukanRepository.getDukansByCategory(
+                categoryId = categoryId,
+                page = pageNumber,
+                size = 20
+            )
+        }
+
+        this.pager = pager
+        loadDukans(pager)
+        return pager
+    }
 
     override fun onBackClick() {
         emitEffect(DukansEffects.NavigateBack)
@@ -59,24 +93,6 @@ class DukansViewModel(
             } else {
                 item
             }
-        }
-    }
-
-    fun initialize(categoryId: String): Pager<Int, DukanUiState> {
-        val pager = createPager(categoryId)
-        loadDukans(pager)
-        return pager
-    }
-
-    private fun createPager(categoryId: String): Pager<Int, DukanUiState> {
-        return createPagingSource(
-            mapper = { it.toUiState() }
-        ) { pageNumber ->
-            dukanRepository.getDukansByCategory(
-                categoryId = categoryId,
-                page = pageNumber,
-                size = 20
-            )
         }
     }
 
@@ -131,4 +147,5 @@ class DukansViewModel(
             else -> DukansState.LOADED
         }
     }
+
 }

@@ -41,8 +41,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DukansContent(
     state: DukansUiState,
     listener: DukansInteractionListener,
-    pager: Pager<Int, DukanUiState>,
-    categoryTitle: String
+    pager: Pager<Int, DukanUiState>
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -51,7 +50,7 @@ fun DukansContent(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             AppBar(
-                title = categoryTitle,
+                title = state.categoryTitle,
                 onLeadingClick = listener::onBackClick,
                 leadingContent = {
                     Icon(
@@ -109,13 +108,12 @@ fun DukansContent(
 private fun DukansContentPreview() {
     MenaTheme {
         DukansContent(
-            state = DukansUiState(),
+            state = DukansUiState(categoryTitle = "Dukan"),
             listener = PreviewDukansInteractionListener,
             pager = Pager(
                 config = PagingConfig(),
                 pagingSourceFactory = { FakeDukanPagingSource() }
-            ),
-            categoryTitle = "Dukan"
+            )
         )
     }
 }
