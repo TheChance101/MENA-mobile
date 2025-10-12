@@ -1,7 +1,6 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -32,6 +32,7 @@ import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -61,103 +62,35 @@ private fun HomeContent(
 ) {
     val listState = rememberLazyListState()
 
-    Box(
-        modifier = modifier.fillMaxSize()
+    Scaffold(
+        topBar = { HomeScreenAppBar(interactionListener) }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Theme.colorScheme.background.surface)
-        ) {
-            AppBar(
-                title = stringResource(Res.string.mena),
-                trailingContent = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "134", // TODO : Replace with the actual balance from wallet feature
-                            color = Theme.colorScheme.shadeSecondary,
-                            style = Theme.typography.label.small,
-                        )
-                        Image(
-                            painter = painterResource(Res.drawable.ic_coin),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                                .clickable { interactionListener.onWalletClicked() })
-                    }
-                }
-            )
-            when {
-                state.chats.isEmpty() && state.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        DotsProgressIndicator()
-                    }
-                }
+        Box(modifier = modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
 
-                state.chats.isEmpty() && !state.isLoading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        NoChatsHistoryView(modifier = Modifier.padding(Theme.spacing._24))
+                when {
+                    state.chats.isEmpty() && state.isLoading -> {
+                        LoadingView()
                     }
-                }
 
-                else -> {
-                    Text(
-                        text = stringResource(Res.string.chats),
-                        color = Theme.colorScheme.shadePrimary,
-                        style = Theme.typography.title.small,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = Theme.spacing._16)
-                    )
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier
-                            .padding(horizontal = Theme.spacing._16)
-                            .fillMaxWidth(),
-                        contentPadding = PaddingValues(vertical = Theme.spacing._12),
-                        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-                    ) {
-                        items(
-                            items = state.chats,
-                            key = { it.id }
-                        ) { chat ->
-                            ChatItem(
-                                chat = chat,
-                                onChatClicked = interactionListener::onChatClicked,
-                            )
-                        }
+                    state.chats.isEmpty() && !state.isLoading -> {
+                        EmptyView()
+                    }
 
-                        if (state.isLoading) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = Theme.spacing._16),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    DotsProgressIndicator()
-                                }
-                            }
-                        }
+                    else -> {
+                        ChatsSummaryList(listState, state, interactionListener)
                     }
                 }
             }
+            FabButton(
+                painter = painterResource(Res.drawable.ic_plus),
+                onClick = interactionListener::onNewChatClicked,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(Theme.spacing._16)
+            )
         }
-        FabButton(
-            painter = painterResource(Res.drawable.ic_plus),
-            onClick = interactionListener::onNewChatClicked,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(Theme.spacing._16)
-        )
+
     }
 
     PaginationTrigger(
@@ -166,4 +99,89 @@ private fun HomeContent(
         buffer = 5, // Load next page when 5 items are left
         loadNextItems = interactionListener::onLoadChatsSummaryRequested
     )
+}
+
+@Composable
+private fun HomeScreenAppBar(interactionListener: HomeScreenInteractionListener) {
+    AppBar(
+        title = stringResource(Res.string.mena),
+        trailingContent = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "134", // TODO : Replace with the actual balance from wallet feature
+                    color = Theme.colorScheme.shadeSecondary,
+                    style = Theme.typography.label.small,
+                )
+                Image(
+                    painter = painterResource(Res.drawable.ic_coin),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                        .clickable { interactionListener.onWalletClicked() })
+            }
+        }
+    )
+}
+
+@Composable
+private fun LoadingView(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        DotsProgressIndicator()
+    }
+}
+
+@Composable
+private fun EmptyView() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        NoChatsHistoryView(modifier = Modifier.padding(Theme.spacing._24))
+    }
+}
+
+@Composable
+@OptIn(ExperimentalUuidApi::class)
+private fun ChatsSummaryList(
+    listState: LazyListState,
+    state: HomeScreenState,
+    interactionListener: HomeScreenInteractionListener
+) {
+    Text(
+        text = stringResource(Res.string.chats),
+        color = Theme.colorScheme.shadePrimary,
+        style = Theme.typography.title.small,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing._16)
+    )
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .padding(horizontal = Theme.spacing._16)
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(vertical = Theme.spacing._12),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+    ) {
+        items(
+            items = state.chats,
+            key = { it.id }
+        ) { chat ->
+            ChatItem(
+                chat = chat,
+                onChatClicked = interactionListener::onChatClicked,
+            )
+        }
+
+        if (state.isLoading) {
+            item {
+                LoadingView(Modifier.padding(vertical = Theme.spacing._16))
+            }
+        }
+    }
 }
