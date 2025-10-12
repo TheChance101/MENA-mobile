@@ -3,8 +3,8 @@ package net.thechance.mena.core_chat.presentation.screen.home
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.ChatSummaryStatus
-import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState
-import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState.Status
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState.Status
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.formatAsTime
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -13,19 +13,21 @@ import net.thechance.mena.core_chat.presentation.utils.parseToLocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-fun ChatSummary.toUi(): HomeUiState {
+fun ChatSummary.toUi(): ChatUiState {
     val statusMessages = getStatusMessages(status)
 
     val messageDateTime = parseToLocalDateTime(lastMessageTime)
     val formattedTime = getFormattedTime(messageDateTime)
 
-    return HomeUiState(
+    return ChatUiState(
         id = id,
         name = name,
         imageUrl = imageUrl,
-        lastMessage = lastMessage,
-        time = formattedTime,
-        isMine = status.isMine,
+        lastMessage = ChatUiState.MessageUiState(
+            text = lastMessage,
+            time = formattedTime,
+            isMine = status.isMine
+        ),
         status = statusMessages
     )
 }

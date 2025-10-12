@@ -13,7 +13,7 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
 import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
 import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
-import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.HomeUiState
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -85,7 +85,7 @@ class HomeViewModel(
         )
     }
 
-    override fun onChatClicked(chat: HomeUiState) {
+    override fun onChatClicked(chat: ChatUiState) {
         navigate(
             ChatDetailsRoute(
                 chatId = chat.id.toString(),
