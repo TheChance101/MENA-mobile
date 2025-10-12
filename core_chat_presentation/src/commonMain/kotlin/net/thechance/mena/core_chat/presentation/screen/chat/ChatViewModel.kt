@@ -6,10 +6,15 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
+import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import mena.core_chat_presentation.generated.resources.image_saved_successfully
+import mena.core_chat_presentation.generated.resources.success
+import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -19,10 +24,10 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
+import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
@@ -66,7 +71,7 @@ class ChatViewModel(
     }
 
     private fun showSnackBarAndNavigateBack() {
-        showErrorSnackBar(Res.string.error_cant_get_messages)
+        showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         popBackStack()
     }
@@ -74,6 +79,39 @@ class ChatViewModel(
 
     override fun onBackClicked() {
         popBackStack()
+    }
+
+    override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
+        val chatId = state.value.chatId
+        val senderId = state.value.chatRequesterId
+
+        if (chatId == null || senderId == null || imageByteArrays.isEmpty()) {
+            return
+        }
+
+        val content = MessageContent.Images(ImagesSource.Local(imageByteArrays))
+
+        sendImageMessage(chatId, senderId, content)
+    }
+
+    private fun sendImageMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
+        val message = MessageUiState(
+            id = Uuid.random(),
+            chatId = chatId,
+            senderId = senderId,
+            sendTime = LocalDateTime.now(),
+            isMine = true,
+            status = MessageStatus.LOADING,
+            content = content
+        )
+
+        updateStateWithNewMessage(message)
+
+        tryToExecute(
+            execute = { chatRepository.sendMessage(message.toEntity()) },
+            onSuccess = { onSendMessageSuccess(message) },
+            onError = { onSendMessageError(message) },
+        )
     }
 
     override fun onInputMessageChanged(value: String) {
@@ -177,7 +215,7 @@ class ChatViewModel(
         tryToCollect(
             collect = { chatRepository.subscribeToMessages(chatId) },
             onCollect = ::onCollectNewMessage,
-            onError = { showErrorSnackBar(Res.string.error_cant_subscribe_to_new_messages) },
+            onError = { showSnackBar(Res.string.error, Res.string.error_cant_subscribe_to_new_messages, true) },
         )
     }
 
@@ -185,7 +223,7 @@ class ChatViewModel(
         if (message == null) return
 
         val senderId = state.value.chatRequesterId
-            ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
+            ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         updateStateWithNewMessage(message.toUi(senderId))
     }
@@ -198,14 +236,13 @@ class ChatViewModel(
                 (messagesHistory + pendingMessages)
             },
             onSuccess = ::onLoadChatHistorySuccess,
-            onError = { showErrorSnackBar(Res.string.error_cant_get_messages) }
+            onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) }
         )
     }
 
     private fun onLoadChatHistorySuccess(messages: List<Message>) {
         val senderId = state.value.chatRequesterId
-            ?: return showErrorSnackBar(Res.string.error_cant_get_messages)
-
+            ?: return  showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         val uiMessages = messages.map { it.toUi(senderId) }
         updateChatListItems(uiMessages)
@@ -263,11 +300,47 @@ class ChatViewModel(
         }
     }
 
-    private fun showErrorSnackBar(stringRes: StringResource) {
+    override fun onMessageImageClicked(message: MessageUiState, initialImageIndex: Int) {
+        updateState {
+            it.copy(
+                isImagePagerVisible = true,
+                selectedMessage = message,
+                currentImageIndexForPreview = initialImageIndex
+            )
+        }
+    }
+
+    override fun onDownloadImageClicked(url: String) {
+        tryToExecute(
+            execute = { chatRepository.downloadImage(url) },
+            onSuccess = { onDownloadImageSuccess() },
+            onError = { showSnackBar(Res.string.error, Res.string.error_failed_to_download_image, true) }
+        )
+    }
+
+    private fun onDownloadImageSuccess() {
+        showSnackBar(Res.string.success, Res.string.image_saved_successfully,isError = false)    }
+
+    override fun onCloseImageViewClicked() {
+        updateState {
+            it.copy(
+                isImagePagerVisible = false,
+                selectedMessage = null,
+                currentImageIndexForPreview = 0
+            )
+        }
+    }
+
+    private fun showSnackBar(
+        titleStringResource: StringResource,
+        messageStringResource: StringResource,
+        isError: Boolean = false
+    ) {
         showSnackBar(
             SnackBarData(
-                title = UiText.StringRes(Res.string.error),
-                message = UiText.StringRes(stringRes)
+                title = UiText.StringRes(titleStringResource),
+                message = UiText.StringRes(messageStringResource),
+                isError = isError
             )
         )
     }
@@ -278,5 +351,21 @@ class ChatViewModel(
             coroutineScope = CoroutineScope(Dispatchers.IO), // Required to avoid cancellation
             execute = { chatRepository.disconnect() }
         )
+    }
+
+    override fun onAttachmentClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = true) }
+    }
+
+    override fun onGalleryClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onCameraClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onCloseAttachmentClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 }
