@@ -165,7 +165,7 @@ class ChatRepositoryImplTest {
             messageDao = messageDao
         )
 
-        val result = repository.getChatByContactChatId(testChatId)
+        val result = repository.getChatById(testChatId)
 
         assertThat(result.id).isEqualTo(testChatId)
         assertThat(result.name).isEqualTo("Chat By Id")
@@ -187,7 +187,7 @@ class ChatRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.getChatByContactChatId(testChatId)
+            repository.getChatById(testChatId)
         }
     }
 

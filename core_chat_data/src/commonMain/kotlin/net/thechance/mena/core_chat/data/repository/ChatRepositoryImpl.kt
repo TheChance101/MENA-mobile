@@ -70,7 +70,7 @@ class ChatRepositoryImpl(
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
-    override suspend fun getChatByContactChatId(chatId: Uuid): Chat {
+    override suspend fun getChatById(chatId: Uuid): Chat {
         return tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
             client.get("$CHAT_ENDPOINT/$chatId")
         }?.toDomain() ?: throw NotFoundException("Chat not found")

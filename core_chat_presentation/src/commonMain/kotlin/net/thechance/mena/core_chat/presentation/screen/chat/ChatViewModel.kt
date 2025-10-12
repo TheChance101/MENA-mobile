@@ -43,7 +43,7 @@ class ChatViewModel(
             onGetChatError()
         } else {
             tryToExecute(
-                execute = { chatRepository.getChatByContactChatId(chatId) },
+                execute = { chatRepository.getChatById(chatId) },
                 onSuccess = ::onGetChatSuccess,
                 onError = { onGetChatError() }
             )

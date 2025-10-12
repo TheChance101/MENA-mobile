@@ -53,7 +53,7 @@ class ChatViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { chatArgs.chatId } returns chatId.toString()
 
-        everySuspend { repository.getChatByContactChatId(chatId) } returns mockChat
+        everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns emptyList()
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
         every { repository.subscribeToMessages(chatId) } returns flowOf()
@@ -70,7 +70,7 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update chat list when its loaded messages successfully`() {
-        everySuspend { repository.getChatByContactChatId(chatId) } returns mockChat
+        everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns messages
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
         every { repository.subscribeToMessages(chatId) } returns flowOf()
@@ -88,7 +88,7 @@ class ChatViewModelTest {
 
     @Test
     fun `init should send snack bar effect when its LOADING the messages failed`() {
-        everySuspend { repository.getChatByContactChatId(chatId) } returns mockChat
+        everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } throws Exception()
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
         every { repository.subscribeToMessages(chatId) } returns flowOf()
@@ -109,7 +109,7 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update uiMessage and chatListItems when receive new message`() {
-        everySuspend { repository.getChatByContactChatId(chatId) } returns mockChat
+        everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns emptyList()
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
         every { repository.subscribeToMessages(chatId) } returns flowOf(messages.first())
