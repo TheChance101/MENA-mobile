@@ -7,7 +7,9 @@ import mena.identity_presentation.generated.resources.error
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import org.jetbrains.compose.resources.StringResource
-
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+@OptIn(ExperimentalUuidApi::class)
 data class AddressesScreenUIState(
     val addresses: List<AddressUIState> = emptyList(),
     val addressToDelete: Long? = null,
@@ -16,19 +18,21 @@ data class AddressesScreenUIState(
     val snackBarUiState :SnackBarUiState= SnackBarUiState()
 )
 
-data class DeleteAddressDialogUIState(
+@OptIn(ExperimentalUuidApi::class)
+data class DeleteAddressDialogUIState (
     val title: StringResource = Res.string.delete_address_title,
     val description: StringResource = Res.string.delete_address_description,
-    val addressId: Long = -1,
+    val addressId: Uuid? = null,
     val isVisible: Boolean = false
 )
 
+@OptIn(ExperimentalUuidApi::class)
 data class AddressUIState(
-    val id: Long,
+    val id: Uuid,
     val addressType: AddressType = AddressType.HOME,
     val isMainAddress: Boolean = false,
     val addressDetails: String = "",
-    val currentLocation: CoordinatesUiState = CoordinatesUiState(),
+    val coordinates: CoordinatesUiState = CoordinatesUiState(),
 )
 
 data class CoordinatesUiState(
@@ -44,13 +48,14 @@ enum class SnackBarType {
     ERROR,
     SUCCESS,
 }
+@OptIn(ExperimentalUuidApi::class)
 fun Address.toUiState(): AddressUIState {
     return AddressUIState(
         id = this.id,
         addressType = this.addressType,
         isMainAddress = this.isMainAddress,
         addressDetails = this.addressDetails,
-        currentLocation = CoordinatesUiState(this.latitude, this.longitude),
+        coordinates = CoordinatesUiState(this.latitude, this.longitude),
     )
 }
 

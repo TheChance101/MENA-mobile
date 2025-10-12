@@ -101,8 +101,7 @@
 
     <string name="no_saved_locations_message">Click on button below to start add and have your favorite locations status ups.</string>
     <string name="add_location_button">Add location</string>
-    <string name="delete_address_description">Are you sure you want to delete this
-location?</string>
+    <string name="delete_address_description">Are you sure you want to delete this location?</string>
     <string name="delete_address_title">Delete Location</string>
     <string name="confirmation_dialog_delete">Delete</string>
 

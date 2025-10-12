@@ -9,50 +9,38 @@ import net.thechance.mena.identity.domain.repository.AddressRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-
+@OptIn(ExperimentalUuidApi::class)
 class AddressesScreenViewModel(
     private val addressRepository: AddressRepository,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
-) :
-    BaseScreenModel<AddressesScreenUIState, AddressesScreenUIEffect>(AddressesScreenUIState()),
+) : BaseScreenModel<AddressesScreenUIState, AddressesScreenUIEffect>(AddressesScreenUIState()),
     AddressesScreenInteractionListener {
     init {
         getUserAddresses()
     }
 
-    private fun getUserAddresses() {
-        tryToExecute(
-            function = { addressRepository.getUserAddresses().map { it.toUiState() } },
-            onSuccess = { ::onGetUserAddressesSuccess },
-            onError = { ::onErrorOccurred },
-        )
-    }
 
-    private fun onGetUserAddressesSuccess(addresses: List<AddressUIState>) = updateState {
-        copy(addresses = addresses)
-    }
-
-    override fun onBackButtonClicked() {
-        sendNewEffect(AddressesScreenUIEffect.NavigateBack)
-    }
+    override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
 
     override fun onAddButtonClicked() = sendNewEffect(
-        AddressesScreenUIEffect.NavigateToDetailsScreen(null)
+        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(null)
     )
 
     override fun onEditAddressClicked(addressId: AddressUIState) =
-        sendNewEffect(AddressesScreenUIEffect.NavigateToDetailsScreen(addressId))
+        sendNewEffect(AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressId))
 
-    override fun onAddressClicked(addressId: Long) {
+
+    override fun onAddressClicked(addressId: Uuid) {
     }
 
-    override fun onDeleteAddressClicked(addressId: Long) = updateState {
+    override fun onDeleteAddressClicked(addressId: Uuid) = updateState {
         copy(
             deleteAddressDialogUIState = DeleteAddressDialogUIState(
-                isVisible = true,
-                addressId = addressId
+                isVisible = true, addressId = addressId
             ),
         )
     }
@@ -72,27 +60,36 @@ class AddressesScreenViewModel(
                     )
                 }
             },
-            onError = { ::onErrorOccurred }
+            onError = { ::onErrorOccurred })
+    }
+
+    override fun onDismissDeleteDialog() = updateState {
+        copy(
+            deleteAddressDialogUIState = DeleteAddressDialogUIState(
+                isVisible = false,
+            )
         )
     }
 
-    override fun onDismissDeleteDialog() =
-        updateState {
-            copy(
-                deleteAddressDialogUIState = DeleteAddressDialogUIState(
-                    isVisible = false,
-                )
+    override fun onDismissSnackBar() = updateState {
+        copy(
+            snackBarUiState = SnackBarUiState(
+                isVisible = false,
             )
-        }
+        )
+    }
 
-    override fun onDismissSnackBar() =
-        updateState {
-            copy(
-                snackBarUiState = SnackBarUiState(
-                    isVisible = false,
-                )
-            )
-        }
+    private fun getUserAddresses() {
+        tryToExecute(
+            function = { addressRepository.getUserAddresses().map { it.toUiState() } },
+            onSuccess = { ::onGetUserAddressesSuccess },
+            onError = { ::onErrorOccurred },
+        )
+    }
+
+    private fun onGetUserAddressesSuccess(addresses: List<AddressUIState>) = updateState {
+        copy(addresses = addresses)
+    }
 
     private fun onErrorOccurred(errorState: ErrorState) {
         updateState {

@@ -26,6 +26,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.component.Addre
 import net.thechance.mena.identity.presentation.screen.addresses.component.MyAddressesAppBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
 
 class AddressesScreen :
     BaseScreen<AddressesScreenViewModel, AddressesScreenUIState, AddressesScreenUIEffect, AddressesScreenInteractionListener>() {
@@ -34,6 +35,7 @@ class AddressesScreen :
         InitScreen(getScreenModel())
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun OnRender(
         state: AddressesScreenUIState, listener: AddressesScreenInteractionListener
@@ -64,14 +66,17 @@ class AddressesScreen :
                     )
                 }
             },
+            snakeBar = {
+                AddressSnackBar(
+                    snackBarState = state.snackBarUiState,
+                    onDismiss = listener::onDismissSnackBar,
+                )
+            }
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16),
-
-                ) {
                 LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = Theme.spacing._16),
                     verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
                 ) {
                     item {
@@ -92,28 +97,23 @@ class AddressesScreen :
                     }
                 }
             }
-            AddressSnackBar(
-                snackBarState = state.snackBarUiState,
-                onDismiss = listener::onDismissSnackBar,
-            )
-            if(state.addresses.isEmpty()){
-               NoSavedLocationsLayout(
-                   modifier = Modifier
-                       .fillMaxSize()
-                       .padding(horizontal = 28.dp)
-                   ,
-                    onAddLocationClicked = {listener::onAddButtonClicked}
+
+            if (state.addresses.isEmpty()) {
+                NoSavedLocationsLayout(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 28.dp),
+                    onAddLocationClicked = { listener::onAddButtonClicked }
                 )
             }
         }
-    }
 
     override fun onEffect(
         effect: AddressesScreenUIEffect, navigator: Navigator
     ) {
         when (effect) {
             AddressesScreenUIEffect.NavigateBack -> navigator.pop()
-            is AddressesScreenUIEffect.NavigateToDetailsScreen -> {}
+            is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {}
         }
     }
 }
