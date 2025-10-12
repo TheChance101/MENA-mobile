@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukans
 
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

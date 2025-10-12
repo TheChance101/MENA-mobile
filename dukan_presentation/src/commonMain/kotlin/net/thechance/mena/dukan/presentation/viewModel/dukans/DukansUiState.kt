@@ -5,6 +5,8 @@ import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 data class DukansUiState(
     val dukans: PagingData<DukanUiState> = PagingData(),
     val dukansState: DukansState = DukansState.LOADING,
+    val categoryId: String = "",
+    val categoryTitle: String = ""
 )
 
 enum class DukansState {
