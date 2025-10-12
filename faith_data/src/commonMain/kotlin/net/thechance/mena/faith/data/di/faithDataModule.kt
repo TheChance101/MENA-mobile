@@ -8,8 +8,10 @@ import net.thechance.mena.faith.data.remote.client.NetworkClient
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
 import net.thechance.mena.faith.data.remote.service.createBookmarkApiService
 import net.thechance.mena.faith.data.repository.BookmarkRepositoryImpl
+import net.thechance.mena.faith.data.repository.PrayerTimeRepositoryImpl
 import net.thechance.mena.faith.data.repository.QuranRepositoryImpl
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
+import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -20,6 +22,7 @@ val faithDataModule = module {
     includes(platformModule())
     single<AyahDao> { get<QuranDatabase>().getAyaDao() }
     singleOf(::QuranRepositoryImpl) bind QuranRepository::class
+    singleOf(::PrayerTimeRepositoryImpl) bind PrayerTimeRepository::class
 
     single<HttpClient>(named("faithHttpClient")) {
         NetworkClient(
