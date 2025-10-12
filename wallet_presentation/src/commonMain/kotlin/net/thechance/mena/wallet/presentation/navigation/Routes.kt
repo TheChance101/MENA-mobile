@@ -42,3 +42,14 @@ data class ViewTransactionsStatementScreenRoute(
     val startDate: String? = null,
     val endDate: String? = null,
 ): WalletRoute()
+
+@OptIn(ExperimentalUuidApi::class)
+@Serializable
+data class ConfirmPaymentScreenRoute(
+    val id: String,
+    val amount: Double
+): WalletRoute() {
+    init {
+        Uuid.parse(id)
+    }
+}
