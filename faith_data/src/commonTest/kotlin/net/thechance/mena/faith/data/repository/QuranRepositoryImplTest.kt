@@ -2,11 +2,18 @@ package net.thechance.mena.faith.data.repository
 
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.sequentiallyReturns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
+import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.database.SurahDto
+import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -73,6 +80,30 @@ class QuranRepositoryImplTest {
 
         // When
         val result = repository.getAyatOfSurah(0)
+
+        // Then
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `searchForAyahInQuran Should return empty list when no ayah match the query`() = runTest {
+        // Given
+        everySuspend { mockDao.searchForAyahInQuran("nonexistent") } returns emptyList()
+
+        // When
+        val result = repository.searchForAyahInQuran("nonexistent")
+
+        // Then
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `searchForAyahInSurah Should return empty list when no ayah match the query in the specified surah`() = runTest {
+        // Given
+        everySuspend { mockDao.searchForAyahInSurah(1, "nonexistent") } returns emptyList()
+
+        // When
+        val result = repository.searchForAyahInSurah(1, "nonexistent")
 
         // Then
         assertTrue(result.isEmpty())

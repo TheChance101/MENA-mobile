@@ -81,4 +81,15 @@
     <string name="profile_profile_picture_content_description">Profile Picture</string>
     <string name="profile_share_icon_content_description">Share Icon</string>
     <string name="profile_invite_friends_icon_content_description">Invite Friends Icon</string>
+
+    <string name="enable_location_title">Enable location</string>
+    <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
+    <string name="enable_location_permission_button">Enable location permission</string>
+    <string name="location_icon_desc">Location service icon</string>
+
+    <string name="no_saved_locations_title">No saved locations yet!</string>
+    <string name="no_saved_locations_message">Click on button below to start add and have your favorite locations status ups.</string>
+    <string name="add_location_button">Add location</string>
+    <string name="location_saved_empty_desc">No saved locations icon</string>
+
 </resources>

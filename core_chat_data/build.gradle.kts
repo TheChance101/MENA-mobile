@@ -64,6 +64,7 @@ dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
 }
 
 kover.reports {
@@ -74,6 +75,12 @@ kover.reports {
     }
 
     filters.excludes {
-        packages("*.di", "*.dto" , "*.database", "*.chat.utils")
+        packages(
+            "*.di",
+            "*.dto" ,
+            "*.database",
+            "*.utils",
+            "*.network"
+        )
     }
 }

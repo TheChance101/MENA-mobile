@@ -14,13 +14,15 @@ import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.IOException
-import net.thechance.mena.core_chat.data.contacts.dto.ContactDto
 import net.thechance.mena.core_chat.data.contacts.fakes.FakeContactsProvider
 import net.thechance.mena.core_chat.data.contacts.fakes.FakeDataStore
 import net.thechance.mena.core_chat.data.contacts.fakes.createPagedDataDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContact
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleDeviceContact
-import net.thechance.mena.core_chat.data.shared.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
+import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.domain.exception.ContactSyncFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException
@@ -49,7 +51,7 @@ class ContactsRepositoryImplTest {
 
         everySuspend { authenticationRepository.getAccessToken() } returns "token"
 
-        repository = createRepository(mockContactsProvider, mockDataStore, authenticationRepository,)
+        repository = createRepository(mockContactsProvider, mockDataStore)
     }
 
     @Test
@@ -71,7 +73,6 @@ class ContactsRepositoryImplTest {
         repository = createRepository(
             contactsProvider = mockContactsProvider,
             contactsDataStore = mockDataStore,
-            authenticationRepository = authenticationRepository,
             contactsResponse = {
                 mockSuccessPagedResponse<PagedDataDto<ContactDto>>(
                     body = PagedDataDto(
@@ -99,7 +100,6 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
-                authenticationRepository = authenticationRepository,
                 contactsResponse = {
                     mockErrorPagedResponse<PagedDataDto<ContactDto>>(
                         status = HttpStatusCode.Unauthorized
@@ -118,7 +118,6 @@ class ContactsRepositoryImplTest {
         repository = createRepository(
             contactsProvider = mockContactsProvider,
             contactsDataStore = mockDataStore,
-            authenticationRepository = authenticationRepository,
             contactsResponse = {
                 mockErrorPagedResponse<PagedDataDto<ContactDto>>(
                     status = HttpStatusCode.InternalServerError
@@ -139,7 +138,6 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
-                authenticationRepository = authenticationRepository,
                 contactsResponse = {
                     throw IOException()
                 }
@@ -174,7 +172,6 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
-                authenticationRepository = authenticationRepository,
                 syncContactsResponse = {
                     throw IOException()
                 }
@@ -193,7 +190,6 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
-                authenticationRepository = authenticationRepository,
                 syncContactsResponse = {
                     mockErrorPagedResponse<PagedDataDto<ContactDto>>(
                         status = HttpStatusCode.Unauthorized
@@ -368,7 +364,6 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
-                authenticationRepository = authenticationRepository,
                 contactsResponse = {
                     mockSuccessPagedResponse(
                         body = page1Contacts
@@ -387,7 +382,6 @@ class ContactsRepositoryImplTest {
             repository = createRepository(
                 contactsProvider = mockContactsProvider,
                 contactsDataStore = mockDataStore,
-                authenticationRepository = authenticationRepository,
                 contactsResponse = {
                     mockSuccessPagedResponse<PagedDataDto<ContactDto>>(
                         body = PagedDataDto(

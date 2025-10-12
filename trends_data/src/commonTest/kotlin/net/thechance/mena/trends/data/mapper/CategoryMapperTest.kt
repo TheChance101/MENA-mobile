@@ -1,9 +1,11 @@
 package net.thechance.mena.trends.data.mapper
 
 import assertk.assertThat
+import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import net.thechance.mena.trends.data.dto.CategoryDto
+import net.thechance.mena.trends.domain.entity.Category
 import kotlin.test.Test
 
 internal class CategoryMapperTest {
@@ -18,27 +20,31 @@ internal class CategoryMapperTest {
     }
 
     @Test
-    fun `categoryDto with null values toEntity() should map to default values`() {
-        val dto = CategoryDto()
+    fun `categoryDto with null values and valid id toEntity() should map to default values`() {
+        val dto =  CategoryDto(id = "uuid 1")
         val category = dto.toEntity()
 
-        assertThat(category?.id).isNull()
-        assertThat(category?.name).isNull()
-        assertThat(category?.emoji).isNull()
+        assertThat(category?.id).isEqualTo("uuid 1")
+        assertThat(category?.name).isEqualTo("")
+        assertThat(category?.emoji).isEqualTo("")
+    }
+
+    @Test
+    fun `categoryDto with null id toEntity() should return null`() {
+        val dto =  CategoryDto(id = null, name = "Sport", emoji = "⚽")
+        val category = dto.toEntity()
+
+        assertThat(category).isNull()
     }
 
     @Test
     fun `List of categoryDto toEntity() should map to List of Category correctly`() {
         val categories = categoriesDto.toEntityList()
+        val expectedLast = Category(id = "uuid 2", name = "Music", emoji = "🎵")
 
-        assertThat(categories.first().id).isEqualTo(categoriesDto.first().id)
-        assertThat(categories.first().name).isEqualTo(categoriesDto.first().name)
-        assertThat(categories.first().emoji).isEqualTo(categoriesDto.first().emoji)
-
-        assertThat(categories.last().id).isEqualTo(categoriesDto.last().id)
-        assertThat(categories.last().name).isEqualTo(categoriesDto.last().name)
-        assertThat(categories.last().emoji).isEqualTo(categoriesDto.last().emoji)
-        assertThat(categories.size).isEqualTo(2)
+        assertThat(categories.first()).isEqualTo(expectedFirst)
+        assertThat(categories.last()).isEqualTo(expectedLast)
+        assertThat(categories).hasSize(2)
     }
 
     private companion object {

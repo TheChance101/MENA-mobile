@@ -1,0 +1,31 @@
+package net.thechance.mena.core_chat.data.source.remote.dto
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class MessageDto(
+    val id: String,
+    val senderId: String,
+    val chatId: String,
+    val text: String? = null, // temp null until handling multiple image types in backend
+    val images: List<String>? = null,
+    val sendAt: String,
+    val isRead: Boolean
+)
+
+@Serializable
+data class SendMessageDto(
+    val chatId: String,
+    val text: String? = null,
+    val images: List<String>? = null
+)
+
+@Serializable
+data class MarkAsReadRequest(
+    val chatId: String
+)
+
+@Serializable
+data class MarkAsReadResponse(
+    val readBy: String
+)
