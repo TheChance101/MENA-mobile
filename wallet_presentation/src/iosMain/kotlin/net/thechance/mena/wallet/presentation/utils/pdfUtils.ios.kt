@@ -8,7 +8,6 @@ import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Single
 import platform.CoreFoundation.CFDataCreateWithBytesNoCopy
@@ -51,11 +50,9 @@ import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIScreen
 import platform.posix.memcpy
-
-@Single
-actual class PdfHandler {
+class PdfHandlerImpl : PdfHandler {
     @OptIn(ExperimentalForeignApi::class)
-    actual suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
+    override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
         val pages = mutableListOf<ByteArray>()
         val cfData = pdfData.usePinned { pinned ->
             CFDataCreateWithBytesNoCopy(
@@ -123,7 +120,7 @@ actual class PdfHandler {
         return byteArray
     }
 
-    actual suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
+    override suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
         val url = withContext(Dispatchers.IO) {
             saveFile(pdfData, fileName)
         }
@@ -145,7 +142,7 @@ actual class PdfHandler {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    actual suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
+    override suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
         return withContext(Dispatchers.IO) {
             val specialFileName = generateSpecialFileName(fileName)
 
@@ -194,8 +191,9 @@ actual class PdfHandler {
     }
 
     private companion object {
-        // Chosen as a good balance between rendering time and image sharpness
         const val IMAGE_SCALE = 1.67f
         const val APP_DOWNLOADS_FOLDER = "MENA"
     }
 }
+
+actual fun getPdfHandler(): PdfHandler = PdfHandlerImpl()
