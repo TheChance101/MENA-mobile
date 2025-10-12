@@ -7,4 +7,19 @@ import org.koin.android.annotation.KoinViewModel
 class PaymentResultViewModel() : BaseViewModel<PaymentResultScreenState, PaymentResultEffect>(
     PaymentResultScreenState()
 ), PaymentResultInteractionListener {
+    override fun onBackClicked() {
+        sendEffect(PaymentResultEffect.NavigateBack)
+    }
+
+    override fun onCancelClicked() {
+        sendEffect(PaymentResultEffect.NavigateToPreviousScreen)
+    }
+
+    override fun onTryAgainClicked() {
+
+    }
+
+    override fun onShowTransactionDetailsClicked() {
+        sendEffect(PaymentResultEffect.NavigateToTransactionDetails)
+    }
 }
