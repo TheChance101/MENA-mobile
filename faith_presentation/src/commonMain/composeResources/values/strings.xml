@@ -19,6 +19,8 @@
     <string name="al_baqarah">Al-Baqarah</string>
     <string name="snack_bar_title">Success</string>
     <string name="app_name">MENA</string>
+    <string name="device_angle_to_qiblah">Device’s angle to qiblah</string>
+    <string name="qibla_direction">Qibla direction</string>
     <string name="back_icon">Back Icon</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="remove_bookmark_icon">Remove Bookmark Icon</string>

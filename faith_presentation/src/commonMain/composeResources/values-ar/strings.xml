@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="qiblah">قبله</string>
     <plurals name="time_seconds_ago">
         <item quantity="zero">منذ أقل من ثانية</item>
@@ -68,4 +67,7 @@
     <string name="error_no_internet">لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.</string>
     <string name="error_unauthorized">لست مخولاً للقيام بهذا الإجراء.</string>
     <string name="error_network">خطأ في الشبكة. يرجى المحاولة لاحقاً.</string>
+    <string name="device_angle_to_qiblah">زاوية الجهاز إلى القبله</string>
+    <string name="qibla_direction">اتجاه القبله</string>
+
 </resources>

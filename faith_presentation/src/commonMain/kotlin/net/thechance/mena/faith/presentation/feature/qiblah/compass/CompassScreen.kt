@@ -8,15 +8,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,17 +28,20 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.ic_circle
+import mena.faith_presentation.generated.resources.device_angle_to_qiblah
 import mena.faith_presentation.generated.resources.ic_direction
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_qiblah
+import mena.faith_presentation.generated.resources.qibla_direction
 import mena.faith_presentation.generated.resources.qiblah
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.component.BackIcon
+import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -50,6 +52,13 @@ fun CompassScreen(
     viewModel: CompassViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
+
+    ObserveAsEffect(viewModel.uiEffect) { effect ->
+        when (effect) {
+            is CompassEffect.NavigateBack -> navController.navigateUp()
+        }
+    }
 
     Content(
         uiState = state,
@@ -72,30 +81,7 @@ private fun Content(
                 leadingContent = { BackIcon() },
                 onLeadingClick = listener::onBackClick,
                 trailingContent = {
-
-                Row(
-                        modifier = Modifier.background(
-                            shape = RoundedCornerShape(Theme.radius.full),
-                            color = Theme.colorScheme.primary.onPrimary
-                        ).height(Theme.spacing._24)
-                    ) {
-                        Image(
-                            painter = painterResource(Res.drawable.ic_location),
-                            contentDescription = null,
-                            modifier = Modifier.padding(start = Theme.spacing._4)
-                                .padding(Theme.spacing._4)
-                                .size(16.dp)
-                                .align(Alignment.CenterVertically)
-                        )
-
-                        Text(
-                            text = uiState.currentLocation.cityName,
-                            color = Theme.colorScheme.shadePrimary,
-                            style = Theme.typography.label.small,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                                .padding(end = Theme.spacing._8)
-                        )
-                    }
+                    QiblahTopBar(uiState)
                 }
             )
         },
@@ -103,7 +89,9 @@ private fun Content(
         Column(
             modifier = Modifier.fillMaxSize()
                 .background(color = Theme.colorScheme.background.surface)
-                .padding(horizontal = Theme.spacing._16), verticalArrangement = Arrangement.Center
+                .padding(horizontal = Theme.spacing._16),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CompassView(azimuth = uiState.azimuth, qiblahDirection = uiState.qiblahDirection)
 
@@ -118,12 +106,12 @@ private fun Content(
 }
 
 @Composable
-private fun ColumnScope.CompassView(
+private fun CompassView(
     azimuth: Float,
     qiblahDirection: Float
 ) {
     Box(
-        modifier = Modifier.wrapContentSize().align(Alignment.CenterHorizontally),
+        modifier = Modifier.wrapContentSize(),
         contentAlignment = Alignment.Center
     ) {
         val animatedBearing by animateFloatAsState(
@@ -132,95 +120,18 @@ private fun ColumnScope.CompassView(
             label = "compass_rotation"
         )
         Box(
-            modifier = Modifier.size(224.dp),
+            modifier = Modifier.size(224.dp).border(
+                width = 3.dp,
+                color = Theme.colorScheme.secondary.secondary,
+                shape = CircleShape
+            ),
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .border(
-                        width = 3.dp,
-                        color = Theme.colorScheme.secondary.secondary,
-                        shape = CircleShape
-                    )
-            )
-
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "N",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .offset(y = Theme.spacing._16)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .offset(x = (-48).dp, y = (-64).dp)
-                )
-
-                Text(
-                    text = "S",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = (-16).dp)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .offset(x = (48).dp, y = (-64).dp)
-                )
-
-                Text(
-                    text = "E",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .offset(x = (-20).dp)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .offset(x = (-48).dp, y = (64).dp)
-                )
-
-                Text(
-                    text = "W",
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .offset(x = 20.dp)
-                )
-
-                Image(
-                    painter = painterResource(Res.drawable.ic_circle),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .offset(x = (48).dp, y = (64).dp)
-                )
-            }
+            DirectionPlaceHolder()
 
             Image(
                 painter = painterResource(Res.drawable.ic_direction),
-                contentDescription = null,
+                contentDescription = "direction_arrow",
                 modifier = Modifier
                     .size(128.dp)
                     .rotate(animatedBearing)
@@ -229,6 +140,63 @@ private fun ColumnScope.CompassView(
 
         QiblahImage(qiblahDirection)
 
+    }
+}
+
+
+@Composable
+private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "N",
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 20.dp)
+        )
+
+        Text(
+            text = "S",
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 20.dp)
+        )
+
+        Text(
+            text = "E",
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 20.dp)
+        )
+
+        Text(
+            text = "W",
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 20.dp)
+        )
+        CirclesPlaceHolder()
+    }
+}
+
+
+@Composable
+private fun CirclesPlaceHolder(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.height(116.dp).width(116.dp)) {
+        BrownCircle(modifier = Modifier.align(Alignment.TopStart))
+        BrownCircle(modifier = Modifier.align(Alignment.TopEnd))
+        BrownCircle(modifier = Modifier.align(Alignment.BottomStart))
+        BrownCircle(modifier = Modifier.align(Alignment.BottomEnd))
     }
 }
 
@@ -250,13 +218,14 @@ private fun TextAngleToQiblah(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Text(
-            text = "Device’s angle to qiblah",
+            text = stringResource(Res.string.device_angle_to_qiblah),
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadeSecondary,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
     }
 }
+
 
 @Composable
 private fun QiblahImage(qiblahDirection: Float) {
@@ -270,16 +239,52 @@ private fun QiblahImage(qiblahDirection: Float) {
     ) {
         Image(
             painter = painterResource(Res.drawable.ic_qiblah),
-            contentDescription = "Qibla direction",
+            contentDescription = stringResource(Res.string.qibla_direction),
             modifier = Modifier
                 .size(40.dp)
                 .background(
                     shape = CircleShape,
-                    color = Theme.colorScheme.primary.onPrimary
+                    color = Theme.colorScheme.background.surfaceLow
                 )
                 .padding(10.dp)
         )
     }
+}
+
+@Composable
+private fun QiblahTopBar(uiState: CompassScreenState) {
+
+    Row(
+        modifier = Modifier.background(
+            shape = RoundedCornerShape(Theme.radius.full),
+            color = Theme.colorScheme.background.surfaceLow
+        ).height(Theme.spacing._24),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.ic_location),
+            contentDescription = "icon_location",
+            modifier = Modifier
+                .padding(start = Theme.spacing._4)
+                .size(16.dp)
+        )
+
+        Text(
+            text = uiState.currentLocation.cityName,
+            color = Theme.colorScheme.shadePrimary,
+            style = Theme.typography.label.small,
+            modifier = Modifier.padding(end = Theme.spacing._8)
+        )
+    }
+}
+
+@Composable
+private fun BrownCircle(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.size(6.dp)
+            .background(color = Theme.colorScheme.secondary.secondaryText, shape = CircleShape)
+    )
 }
 
 @Preview(showBackground = true)
