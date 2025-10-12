@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="qiblah">قبله</string>
     <plurals name="time_seconds_ago">
         <item quantity="zero">منذ أقل من ثانية</item>
         <item quantity="one">منذ ثانية واحدة</item>
@@ -74,7 +75,6 @@
     <string name="no_results_found_title">لم يتم العثور على نتائج!</string>
     <string name="no_results_found_subtitle">يرجى المحاولة مرة أخرى بكلمة بحث أخرى.</string>
     <string name="back">رجوع</string>
-
     <string name="faith_title">الإيمان</string>
     <string name="sunrise_time_label">وقت الشروق</string>
     <string name="location">الموقع</string>
@@ -95,7 +95,7 @@
     <string name="navigate_next">الانتقال للشاشة التالية</string>
     <string name="surah_al_fatiha">الفاتحة</string>
     <string name="mosque_image_description">أيقونة المسجد</string>
-
-
+    <string name="device_angle_to_qiblah">زاوية الجهاز إلى القبله</string>
+    <string name="qibla_direction">اتجاه القبله</string>
 
 </resources>

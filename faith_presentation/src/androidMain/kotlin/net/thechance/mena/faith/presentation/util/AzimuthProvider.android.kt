@@ -1,5 +1,4 @@
-package net.thechance.mena.faith.presentation.qibla
-
+package net.thechance.mena.faith.presentation.util
 
 import android.content.Context
 import android.hardware.Sensor
@@ -9,9 +8,7 @@ import android.hardware.SensorManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-
-actual class AzimuthProvider(private val context: Context) : SensorEventListener {
-
+actual class AzimuthProvider(context: Context) : SensorEventListener {
     private val _azimuth = MutableStateFlow(0f)
     actual val azimuthFlow: Flow<Float> = _azimuth
 
