@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.components.util.settingsOpener
+package net.thechance.mena.identity.presentation.util.settingsOpener
 
 import android.content.Context
 import android.content.Intent

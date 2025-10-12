@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.components.util.settingsOpener
+package net.thechance.mena.identity.presentation.util.settingsOpener
 
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication

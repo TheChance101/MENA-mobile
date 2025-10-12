@@ -1,8 +1,6 @@
 package net.thechance.mena.identity.presentation.di
 
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreenViewModel
-import net.thechance.mena.identity.presentation.components.util.settingsOpener.SettingsOpener
-import net.thechance.mena.identity.presentation.components.util.settingsOpener.SettingsOpenerImpl
 import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
@@ -10,6 +8,8 @@ import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocation
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreenModel
 import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
+import net.thechance.mena.identity.presentation.util.settingsOpener.SettingsOpener
+import net.thechance.mena.identity.presentation.util.settingsOpener.SettingsOpenerImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind

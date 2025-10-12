@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.pickLocation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -8,21 +10,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.confirm
+import mena.identity_presentation.generated.resources.ic_arrow_left
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.Map
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
@@ -42,7 +49,7 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
     ) {
         Scaffold(
             topBar = {
-                AuthAppBar(
+                AppBar(
                     title = "Pick Location",
                     onClickBack = listener::onClickBack
                 )
@@ -108,5 +115,26 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                 EnableLocationScreen()
             )
         }
+    }
+}
+
+@Composable
+private fun AppBar(title: String, onClickBack: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Theme.colorScheme.background.surfaceLow),
+        contentAlignment = Alignment.Center
+    ) {
+        AppBar(
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_arrow_left),
+                    contentDescription = null
+                )
+            },
+            title = title,
+            onLeadingClick = onClickBack::invoke
+        )
     }
 }

@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.enableLocationScreen
 
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.components.util.settingsOpener.SettingsOpener
+import net.thechance.mena.identity.presentation.util.settingsOpener.SettingsOpener
 
 class EnableLocationScreenViewModel(
     private val settingsOpener: SettingsOpener
