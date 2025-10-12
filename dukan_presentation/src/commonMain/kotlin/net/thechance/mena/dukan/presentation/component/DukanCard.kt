@@ -26,6 +26,7 @@ import coil3.compose.AsyncImagePainter
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.animation.skeletonLoading
 import net.thechance.mena.dukan.presentation.viewModel.dukans.DukanUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -76,7 +77,9 @@ private fun BoxScope.DukanCardContent(
         onState = { state ->
             isImageLoaded = state is AsyncImagePainter.State.Success
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .skeletonLoading(isLoading = !isImageLoaded)
     )
 
     if (isImageLoaded) {
