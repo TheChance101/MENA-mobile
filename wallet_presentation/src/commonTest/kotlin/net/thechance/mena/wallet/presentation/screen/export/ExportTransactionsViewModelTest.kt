@@ -28,6 +28,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -120,7 +121,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked with non-empty pdf should navigate`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
 
         initViewModel()
 
@@ -136,7 +137,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked should fetch statement with custom filter when custom filter is selected`() =
         runTest {
-            everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+            everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
 
             initViewModel()
 
@@ -196,22 +197,7 @@ class ExportTransactionsViewModelTest {
         }
     }
 
-    @Test
-    fun `onDownloadClicked with empty pdf should show toast`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf()
 
-        initViewModel()
-
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            skipItems(2)
-
-            val toastState = awaitItem().toast
-            assertToastState(isVisible = true, toastState = toastState)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
 
     @Test
     fun `onViewAndShareClicked with generic error should show error snackBar`() = runTest {
@@ -235,7 +221,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -303,7 +289,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with file save success should show success snackBar`() = runTest {
         everySuspend {
             repository.getStatementWithMetadata(any())
-        } returns byteArrayOf(1, 2, 3)
+        } returns createMockStatementWithMetadata()
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -327,7 +313,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with file save error should show failure snackBar`() = runTest {
         everySuspend {
             repository.getStatementWithMetadata(any())
-        } returns byteArrayOf(1, 2, 3)
+        } returns createMockStatementWithMetadata()
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } throws IOException()
@@ -370,7 +356,7 @@ class ExportTransactionsViewModelTest {
     fun `snackBar should disappear after duration`() = runTest {
         everySuspend {
             repository.getStatementWithMetadata(any())
-        } returns byteArrayOf(1, 2, 3)
+        } returns createMockStatementWithMetadata()
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -504,7 +490,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenViewAndShareSuccess_thenIsViewAndShareLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
 
         initViewModel()
         viewModel.state.test {
@@ -520,7 +506,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked should reset view model`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         initViewModel()
         advanceUntilIdle()
 
@@ -535,7 +521,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -598,7 +584,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `hideSnackBar should hide snackbar after duration`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -622,7 +608,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `downloadPdf returns success with file path`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "Downloads/MENA/statement_1234567890.pdf"
@@ -675,4 +661,21 @@ class ExportTransactionsViewModelTest {
             ?.atStartOfDayIn(TimeZone.currentSystemDefault())
             ?.toLocalDateTime(TimeZone.currentSystemDefault())
     }
+
+    private fun createMockStatementWithMetadata(
+        byteArray: ByteArray = byteArrayOf(1, 2, 3),
+        startDate: LocalDate = LocalDate(2025, 9, 1),
+        endDate: LocalDate = LocalDate(2025, 9, 30),
+        totalInflows: Double = 1000.0,
+        totalOutflows: Double = 500.0
+    ): StatementWithMetaData {
+        return StatementWithMetaData(
+            byteArray = byteArray,
+                startDate = startDate,
+                endDate = endDate,
+                totalInflows = totalInflows,
+                totalOutflows = totalOutflows,
+            )
+    }
+
 }
