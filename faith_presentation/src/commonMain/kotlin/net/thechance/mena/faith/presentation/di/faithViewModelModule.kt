@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.presentation.di
 
+import net.thechance.mena.faith.presentation.feature.main.MainViewModel
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel
 import net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice.CalibrateDeviceViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel
@@ -33,4 +34,6 @@ internal val faithViewModelModule = module {
             repository = get()
         )
     }
+    viewModelOf(::MainViewModel)
+
 }

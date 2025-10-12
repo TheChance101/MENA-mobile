@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
+import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
@@ -29,19 +31,22 @@ fun ChatScreen(
     viewModel: ChatViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     ChatScreenContent(
         state = state,
         interactions = viewModel
     )
 }
 
-
 @Composable
 fun ChatScreenContent(
     state: ChatScreenState,
     interactions: ChatInteractionListener
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         Scaffold(
             topBar = {
                 ChatHeader(
@@ -57,6 +62,7 @@ fun ChatScreenContent(
                     userInput = state.inputMessage,
                     onTextChange = interactions::onInputMessageChanged,
                     onSendButtonClick = interactions::onSendMessageClicked,
+                    onAttachButtonClick = interactions::onAttachmentClicked,
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Theme.colorScheme.background.surface)
@@ -95,6 +101,16 @@ fun ChatScreenContent(
                 initialPage = state.currentImageIndexForPreview,
                 onCloseClick = interactions::onCloseImageViewClicked,
                 onDownloadClick = interactions::onDownloadImageClicked,
+            )
+        }
+
+        AnimatedVisibility(
+            visible = state.isAttachmentsOverlayVisible,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            AttachmentsBottomSheet(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                attachmentsInteractionListener = interactions
             )
         }
     }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
@@ -13,6 +14,7 @@ import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_n
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.success
+import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -22,10 +24,10 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
+import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
@@ -77,6 +79,39 @@ class ChatViewModel(
 
     override fun onBackClicked() {
         popBackStack()
+    }
+
+    override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
+        val chatId = state.value.chatId
+        val senderId = state.value.chatRequesterId
+
+        if (chatId == null || senderId == null || imageByteArrays.isEmpty()) {
+            return
+        }
+
+        val content = MessageContent.Images(ImagesSource.Local(imageByteArrays))
+
+        sendImageMessage(chatId, senderId, content)
+    }
+
+    private fun sendImageMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
+        val message = MessageUiState(
+            id = Uuid.random(),
+            chatId = chatId,
+            senderId = senderId,
+            sendTime = LocalDateTime.now(),
+            isMine = true,
+            status = MessageStatus.LOADING,
+            content = content
+        )
+
+        updateStateWithNewMessage(message)
+
+        tryToExecute(
+            execute = { chatRepository.sendMessage(message.toEntity()) },
+            onSuccess = { onSendMessageSuccess(message) },
+            onError = { onSendMessageError(message) },
+        )
     }
 
     override fun onInputMessageChanged(value: String) {
@@ -316,5 +351,21 @@ class ChatViewModel(
             coroutineScope = CoroutineScope(Dispatchers.IO), // Required to avoid cancellation
             execute = { chatRepository.disconnect() }
         )
+    }
+
+    override fun onAttachmentClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = true) }
+    }
+
+    override fun onGalleryClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onCameraClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onCloseAttachmentClicked() {
+        updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 }

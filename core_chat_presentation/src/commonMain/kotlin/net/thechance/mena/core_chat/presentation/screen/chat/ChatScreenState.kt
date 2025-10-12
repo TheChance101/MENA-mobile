@@ -21,7 +21,7 @@ data class ChatScreenState(
     val isImagePagerVisible: Boolean = false,
     val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
-
+    val isAttachmentsOverlayVisible: Boolean = false,
     val failedMessageToReSend: MessageUiState? = null
 )
 

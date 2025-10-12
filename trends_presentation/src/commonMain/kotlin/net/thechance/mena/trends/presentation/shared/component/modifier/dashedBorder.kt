@@ -49,8 +49,8 @@ internal fun Modifier.dashedBorder(
             style =
                 Stroke(
                     width = strokeWidth.toPx(),
-                    pathEffect = dashPath,
-                ),
+                    pathEffect = dashPath
+                )
         )
-    },
+    }
 )

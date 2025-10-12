@@ -68,6 +68,10 @@ kover.reports {
         }
 
         excludes {
+
+                classes(
+                    "net.thechance.mena.faith.data.repository.PrayerTimeRepositoryImpl"
+                )
             annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
         }
     }

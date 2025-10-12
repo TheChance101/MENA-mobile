@@ -33,6 +33,8 @@
     <string name="available_video_format">MP4، MOV حتى 100 ميجابايت</string>
     <string name="thumbnail_description">الصورة المصغرة للفيديو المرفوع</string>
     <string name="edit_button_description">أيقونة زر التعديل</string>
+    <string name="upload_video_card_description">ايقونة رفع التريند</string>
+    <string name="acton_icon_description">أيقونة إجراء</string>
 
     <!-- Video Description Screen  -->
     <string name="new_trend">ترند جديد</string>
