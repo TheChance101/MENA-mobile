@@ -15,6 +15,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.wallet.domain.entity.User
+import net.thechance.mena.wallet.domain.repository.BalanceRepository
+import net.thechance.mena.wallet.domain.repository.UserRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -26,7 +29,8 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConfirmPaymentViewModelTest {
-    private val paymentRepository = mock<PaymentRepository>(mode = MockMode.autofill)
+    private val userRepository = mock<UserRepository>(mode = MockMode.autofill)
+    private val balanceRepository = mock<BalanceRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -42,11 +46,13 @@ class ConfirmPaymentViewModelTest {
     @Test
     fun `getPaymentConfirmation should set state with loading when initially called`() =
         runTest {
-            everySuspend { paymentRepository.getPaymentConfirmation(any(), any()) } returns paymentConfirmation1
+            everySuspend { balanceRepository.getBalance() } returns balance1
+            everySuspend { userRepository.getUserById(receiver1Id) } returns receiver1
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                paymentRepository = paymentRepository,
+                balanceRepository = balanceRepository,
+                userRepository = userRepository,
                 ioDispatcher = testDispatcher
             )
 
@@ -59,13 +65,15 @@ class ConfirmPaymentViewModelTest {
         }
 
     @Test
-    fun `ConfirmPaymentViewModel should update payment ui state when repository returns value`() =
+    fun `ConfirmPaymentViewModel should update payment ui state when balance repository returns value`() =
         runTest {
-            everySuspend { paymentRepository.getPaymentConfirmation(any(), any()) } returns paymentConfirmation1
+            everySuspend { balanceRepository.getBalance() } returns balance1
+            everySuspend { userRepository.getUserById(receiver1Id) } returns receiver1
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                paymentRepository = paymentRepository,
+                balanceRepository = balanceRepository,
+                userRepository = userRepository,
                 ioDispatcher = testDispatcher
             )
 
@@ -81,19 +89,69 @@ class ConfirmPaymentViewModelTest {
         }
 
     @Test
-    fun `ConfirmPaymentViewModel should update error state when repository fails`() =
+    fun `ConfirmPaymentViewModel should update payment ui state when user repository returns value`() =
         runTest {
-            val expectedError = Exception()
-            everySuspend { paymentRepository.getPaymentConfirmation(any(), any()) } throws expectedError
+            everySuspend { balanceRepository.getBalance() } returns balance1
+            everySuspend { userRepository.getUserById(any()) } returns receiver1
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                paymentRepository = paymentRepository,
+                balanceRepository = balanceRepository,
+                userRepository = userRepository,
                 ioDispatcher = testDispatcher
             )
 
             viewModel.state.test {
-                skipItems(2)
+                skipItems(4)
+                val successState = awaitItem()
+                assertEquals(
+                    receiverUiState1,
+                    successState.receiverUiState
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `ConfirmPaymentViewModel should update error state when balance repository fails`() =
+        runTest {
+            val expectedError = Exception()
+
+            everySuspend { balanceRepository.getBalance() } throws expectedError
+            everySuspend { userRepository.getUserById(receiver1Id) } returns receiver1
+
+            val viewModel = ConfirmPaymentViewModel(
+                args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
+                balanceRepository = balanceRepository,
+                userRepository = userRepository,
+                ioDispatcher = testDispatcher
+            )
+
+            viewModel.state.test {
+                skipItems(3)
+                val errorState = awaitItem()
+                assertEquals(ErrorState.Unknown, errorState.errorState)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `ConfirmPaymentViewModel should update error state when user repository fails`() =
+        runTest {
+            val expectedError = Exception()
+
+            everySuspend { balanceRepository.getBalance() } returns balance1
+            everySuspend { userRepository.getUserById(receiver1Id) } throws expectedError
+
+            val viewModel = ConfirmPaymentViewModel(
+                args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
+                balanceRepository = balanceRepository,
+                userRepository = userRepository,
+                ioDispatcher = testDispatcher
+            )
+
+            viewModel.state.test {
+                skipItems(4)
                 val errorState = awaitItem()
                 assertEquals(ErrorState.Unknown, errorState.errorState)
                 cancelAndIgnoreRemainingEvents()
@@ -102,11 +160,13 @@ class ConfirmPaymentViewModelTest {
 
     @Test
     fun `onBackButtonClicked should send NavigateBack effect`() = runTest {
-        everySuspend { paymentRepository.getPaymentConfirmation(any(), any()) } returns paymentConfirmation1
+        everySuspend { balanceRepository.getBalance() } returns balance1
+        everySuspend { userRepository.getUserById(receiver1Id) } returns receiver1
 
         val viewModel = ConfirmPaymentViewModel(
             args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-            paymentRepository = paymentRepository,
+            balanceRepository = balanceRepository,
+            userRepository = userRepository,
             ioDispatcher = testDispatcher
         )
 
@@ -118,11 +178,13 @@ class ConfirmPaymentViewModelTest {
 
     @Test
     fun `onRefresh should set state with loading when initially called`() = runTest {
-        everySuspend { paymentRepository.getPaymentConfirmation(any(), any()) } returns paymentConfirmation1
+        everySuspend { balanceRepository.getBalance() } returns balance1
+        everySuspend { userRepository.getUserById(receiver1Id) } returns receiver1
 
         val viewModel = ConfirmPaymentViewModel(
             args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-            paymentRepository = paymentRepository,
+            balanceRepository = balanceRepository,
+            userRepository = userRepository,
             ioDispatcher = testDispatcher
         )
 
@@ -146,17 +208,19 @@ class ConfirmPaymentViewModelTest {
         val status1 = true
         const val receiverImg1 = "https://media.istockphoto.com/id/469738422/photo/large-boulders-on-lake-shore-at-sunset-minnesota-usa.jpg?s=612x612&w=0&k=20&c=4FzViDygZ8CgixTqt3VOudLJUP8uoSeh2UlD_qHYkAw="
 
-        val paymentConfirmation1 = PaymentConfirmation(
-            balance = balance1,
-            receiverName = receiverName1,
-            receiverImg = receiverImg1,
-            status = status1
+        val receiver1 = User(
+            id = receiver1Id,
+            name = receiverName1,
+            imgUrl = receiverImg1
+        )
+
+        val receiverUiState1 = ConfirmPaymentScreenState.ReceiverUiState(
+            name = receiverName1,
+            profileImg = receiverImg1
         )
 
         val paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
             amount = amount1_ui,
-            receiverName = receiverName1,
-            receiverImage = receiverImg1,
             status = status1,
             balance = balance1_ui
         )
