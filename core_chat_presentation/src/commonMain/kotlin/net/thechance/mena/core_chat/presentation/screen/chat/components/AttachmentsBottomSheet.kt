@@ -74,7 +74,7 @@ fun AttachmentsBottomSheet(
                     shape = RoundedCornerShape(Theme.spacing._12)
                 )
                 .align(Alignment.End),
-            onClick = attachmentsInteractionListener::onCancelClicked
+            onClick = attachmentsInteractionListener::onCloseAttachmentClicked
         )
     }
 }
@@ -91,7 +91,7 @@ private fun AttachmentBottomSheetContent(
         scope = scope,
         onResult = { byteArrays ->
             attachmentsInteractionListener.onSendImageClicked(byteArrays)
-            attachmentsInteractionListener.onPhotoClicked()
+            attachmentsInteractionListener.onGalleryClicked()
         }
     )
 
@@ -130,9 +130,9 @@ private fun PreviewAddPhotoBottomSheet() {
                 modifier = Modifier.align(Alignment.BottomCenter),
                 attachmentsInteractionListener = object : AttachmentsInteractionListener {
                     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
-                    override fun onPhotoClicked() {}
+                    override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
-                    override fun onCancelClicked() {}
+                    override fun onCloseAttachmentClicked() {}
                 }
             )
 

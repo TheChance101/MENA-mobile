@@ -15,15 +15,18 @@ interface ChatInteractionListener : MessageListInteractionListener, AttachmentsI
 
 interface MessageListInteractionListener {
     fun onMessageClicked(messageId: Uuid)
+
     fun onFailedMessageClicked(message: MessageUiState)
+
     fun onDeleteFailedMessageClicked()
+
     fun onResendMessageClicked()
     fun onResendMessageDialogDismissed()
 }
 
 interface AttachmentsInteractionListener {
     fun onSendImageClicked(imageByteArrays: List<ByteArray>)
-    fun onPhotoClicked()
+    fun onGalleryClicked()
     fun onCameraClicked()
-    fun onCancelClicked()
+    fun onCloseAttachmentClicked()
 }

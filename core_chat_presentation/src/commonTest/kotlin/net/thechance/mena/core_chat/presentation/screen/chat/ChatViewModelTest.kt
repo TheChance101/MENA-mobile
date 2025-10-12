@@ -305,6 +305,22 @@ class ChatViewModelTest {
     }
 
 
+
+    @Test
+    fun `onSendImageClicked should update message to FAILED status after failed repository call`() {
+
+
+        val imageByteArray = byteArrayOf(1, 2, 3)
+        val imageByteArrays = listOf(imageByteArray)
+        everySuspend { repository.sendMessage(any()) } throws Exception("Failed to send")
+
+        chatViewModel.onSendImageClicked(imageByteArrays)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val firstMessage = chatViewModel.state.value.chatListItems.currentUiMessages().first()
+        assertThat(firstMessage.status).isEqualTo(MessageStatus.FAILED)
+    }
+
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.Message>()
             .map { it.data }

@@ -6,12 +6,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -21,10 +19,10 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
-import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
@@ -87,6 +85,7 @@ class ChatViewModel(
         }
 
         val content = MessageContent.Images(ImagesSource.Local(imageByteArrays))
+
         sendImageMessage(chatId, senderId, content)
     }
 
@@ -318,7 +317,7 @@ class ChatViewModel(
         updateState { it.copy(isAttachmentsOverlayVisible = true) }
     }
 
-    override fun onPhotoClicked() {
+    override fun onGalleryClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 
@@ -326,7 +325,7 @@ class ChatViewModel(
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 
-    override fun onCancelClicked() {
+    override fun onCloseAttachmentClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
 }
