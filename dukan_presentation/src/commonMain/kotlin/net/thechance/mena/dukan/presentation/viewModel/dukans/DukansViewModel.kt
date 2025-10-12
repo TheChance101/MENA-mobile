@@ -27,6 +27,37 @@ class DukansViewModel(
         emitEffect(DukansEffects.NavigateToDukanDetails(dukan.id))
     }
 
+    override fun onFavoriteClick(dukan: DukanUiState) {
+        tryToExecute(
+            block = { toggleFavoriteStatus(dukan) },
+            onSuccess = { updateFavoriteState(dukan) }
+        )
+    }
+
+    private suspend fun toggleFavoriteStatus(dukan: DukanUiState) {
+        if (dukan.isFavorite) {
+            dukanRepository.removeDukanFromFavorites(dukan.id)
+        } else {
+            dukanRepository.addDukanToFavorites(dukan.id)
+        }
+    }
+
+    private fun updateFavoriteState(dukan: DukanUiState) {
+        updateState {
+            copy(
+                dukans = dukans.copy(
+                    items = dukans.items.map { item ->
+                        if (item.id == dukan.id) {
+                            item.copy(isFavorite = !item.isFavorite)
+                        } else {
+                            item
+                        }
+                    }
+                )
+            )
+        }
+    }
+
     fun initialize(categoryId: String): Pager<Int, DukanUiState> {
         val pager = createPager(categoryId)
         loadDukans(pager)

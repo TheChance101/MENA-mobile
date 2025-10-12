@@ -69,13 +69,15 @@ fun DukansContent(
                         dukans = state.dukans.items,
                         pager = pager,
                         onDukanClick = listener::onDukanClick,
+                        onFavoriteClick = listener::onFavoriteClick,
                         isLoading = true
                     )
 
                     DukansState.LOADED -> DukansList(
                         dukans = state.dukans.items,
                         pager = pager,
-                        onDukanClick = listener::onDukanClick
+                        onDukanClick = listener::onDukanClick,
+                        onFavoriteClick = listener::onFavoriteClick
                     )
 
                     DukansState.EMPTY -> EmptyStateContent(

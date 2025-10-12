@@ -26,6 +26,7 @@ fun DukansList(
     pager: Pager<Int, DukanUiState>,
     modifier: Modifier = Modifier,
     onDukanClick: (DukanUiState) -> Unit = {},
+    onFavoriteClick: (DukanUiState) -> Unit = {},
     isLoading: Boolean = false
 ) {
     val lazyListState = rememberLazyListState()
@@ -47,6 +48,8 @@ fun DukansList(
                 modifier = Modifier.animateItem(),
                 dukan = dukan,
                 onClick = { onDukanClick(dukan) },
+                isFavorite = dukan.isFavorite,
+                onFavoriteClick = { onFavoriteClick(dukan) },
                 isLoading = isLoading
             )
         }

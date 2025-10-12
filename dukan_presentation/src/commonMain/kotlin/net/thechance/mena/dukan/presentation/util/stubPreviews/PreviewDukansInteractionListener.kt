@@ -6,4 +6,5 @@ import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansInteractionL
 object PreviewDukansInteractionListener : DukansInteractionListener {
     override fun onBackClick() {}
     override fun onDukanClick(dukan: DukanUiState) {}
+    override fun onFavoriteClick(dukan: DukanUiState) {}
 }
