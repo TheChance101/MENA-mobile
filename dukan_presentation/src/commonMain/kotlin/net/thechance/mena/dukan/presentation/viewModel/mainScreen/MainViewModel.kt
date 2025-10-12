@@ -31,6 +31,7 @@ class MainViewModel(
 
     private fun getEditorPicksDukans() {
         tryToCollect(
+            onStart = ::onEditorPickDukanLoading,
             block = { editorPickDukanPager.flow },
             onCollect = ::onLoadedEditorPicksDukan
         )
@@ -39,8 +40,32 @@ class MainViewModel(
         }
     }
 
+
+    private fun onEditorPickDukanLoading() {
+        updateState {
+            copy(
+                editorPickDukanState = MainScreenUiState.EditorPickDukanStatus.LOADING,
+                editorPickDukans = PagingData()
+            )
+        }
+    }
+
+    private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+        val loadedBestNearestDukans = when {
+            dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.EditorPickDukanStatus.LOADING
+            else -> MainScreenUiState.EditorPickDukanStatus.LOADED
+        }
+        updateState {
+            copy(
+                editorPickDukans = dukans,
+                editorPickDukanState = loadedBestNearestDukans
+            )
+        }
+    }
+
     private fun getBestNearestDukans() {
         tryToCollect(
+            onStart = ::onBestNearestDukanLoading,
             block = { bestNearestDukanPager.flow },
             onCollect = ::onLoadedBestNearestDukans
         )
@@ -49,23 +74,28 @@ class MainViewModel(
         }
     }
 
-    private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+    private fun onBestNearestDukanLoading() {
         updateState {
             copy(
-                editorPickDukans = dukans
+                bestNearestDukans = PagingData(),
+                bestNearestDukanState = MainScreenUiState.BestNearestDukanStatus.LOADING
             )
         }
     }
-
 
     private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
+        val loadedBestNearestDukans = when {
+            dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.BestNearestDukanStatus.LOADING
+            dukans.items.isEmpty() -> MainScreenUiState.BestNearestDukanStatus.EMPTY
+            else -> MainScreenUiState.BestNearestDukanStatus.LOADED
+        }
         updateState {
             copy(
-                bestNearestDukans = dukans
+                bestNearestDukans = dukans,
+                bestNearestDukanState = loadedBestNearestDukans
             )
         }
     }
-
 
     private fun getCategories() {
         tryToExecute(

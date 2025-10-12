@@ -1,6 +1,10 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,7 +22,46 @@ import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiSt
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun EditorPickDukanItemsList(
+fun EditorPickDukanItemsSection(
+    state: MainScreenUiState,
+    pager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>,
+    onDukanClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedContent(
+        targetState = state.editorPickDukanState,
+    ) { editorPickDukanState ->
+        when (state.editorPickDukanState) {
+            MainScreenUiState.EditorPickDukanStatus.LOADING -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(top = Theme.spacing._8),
+                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+                    contentPadding = PaddingValues(
+                        horizontal = Theme.spacing._16,
+                        vertical = Theme.spacing._8
+                    ),
+                ) {
+                    items(8) {
+                        LoadingEditorPickDukanItem()
+                    }
+                }
+            }
+
+            MainScreenUiState.EditorPickDukanStatus.LOADED -> {
+                EditorPickDukanItemsList(
+                    dukans = state.editorPickDukans,
+                    pager = pager,
+                    onDukanClick = onDukanClick,
+                    modifier = modifier
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun EditorPickDukanItemsList(
     dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>,
     pager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>,
     onDukanClick: (String) -> Unit,

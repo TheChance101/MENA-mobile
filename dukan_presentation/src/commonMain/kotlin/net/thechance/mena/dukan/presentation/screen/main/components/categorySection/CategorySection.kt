@@ -49,7 +49,7 @@ fun CategorySection(
         }
         if (gridLayout.hasMoreItems) {
             item {
-                CategoryCard(
+                MoreCategoryCard(
                     title = "View more",
                     image = painterResource(Res.drawable.menu_circle),
                     onClick = onViewMoreClick

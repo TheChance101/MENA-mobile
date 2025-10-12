@@ -26,7 +26,7 @@ import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.BestNearestDukanSection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.CategorySection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
-import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.EditorPickDukanItemsList
+import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.EditorPickDukanItemsSection
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
@@ -61,21 +61,17 @@ fun MainScreen(
 
             MainEffect.NavigateToManageDukanScreen -> navController.navigate(ManageDukanScreenRoute)
 
-            MainEffect.NavigateCategoryToScreen -> {
-                //ToDO: navigate to category screen
-            }
+            MainEffect.NavigateCategoryToScreen ->
+                navController.navigate(DukanRoute.DukanCategoriesScreenRoute)
 
             is MainEffect.NavigateToDukansScreenByCategory -> {
                 //ToDO: navigate to dukan screen by category
             }
 
-            is MainEffect.NavigateSelectedEditorPickDukan -> {
-                //ToDO: navigate to editor pick dukan
-            }
+            is MainEffect.NavigateSelectedEditorPickDukan -> DukanRoute.DukanDetails(effect.dukanId)
 
-            is MainEffect.NavigateSelectedNearsetDukan -> {
-                //ToDo: navigate to nearest dukan
-            }
+
+            is MainEffect.NavigateSelectedNearsetDukan -> DukanRoute.DukanDetails(effect.dukanId)
         }
     }
 
@@ -131,7 +127,7 @@ private fun MainContent(
             )
 
             BestNearestDukanSection(
-                dukans = state.bestNearestDukans,
+                state = state,
                 onDukanClick = listener::onNearestDukanClick,
                 pager = bestNearestDukanPager,
                 modifier = Modifier
@@ -152,10 +148,10 @@ private fun MainContent(
                 )
             )
 
-            EditorPickDukanItemsList(
-                dukans = state.editorPickDukans,
+            EditorPickDukanItemsSection(
+                state = state,
                 onDukanClick = listener::onEditorPickDukanClick,
-                pager = editorPickDukaPager
+                pager = editorPickDukaPager,
             )
         }
     }

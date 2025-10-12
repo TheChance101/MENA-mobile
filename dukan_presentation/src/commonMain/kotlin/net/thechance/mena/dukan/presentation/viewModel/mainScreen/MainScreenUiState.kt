@@ -8,7 +8,9 @@ data class MainScreenUiState(
     val dukanState: DukanState = DukanState(),
     val categories: List<DukanCategoryUiState> = emptyList(),
     val bestNearestDukans: PagingData<BestNearestDukanUiState> = PagingData(),
+    val bestNearestDukanState: BestNearestDukanStatus = BestNearestDukanStatus.LOADING,
     val editorPickDukans: PagingData<EditorPickDukanUiState> = PagingData(),
+    val editorPickDukanState: EditorPickDukanStatus = EditorPickDukanStatus.LOADING,
 ) {
     data class DukanState(
         val name: String = "",
@@ -31,5 +33,15 @@ data class MainScreenUiState(
         Pending,
         None,
         Approved
+    }
+    enum class BestNearestDukanStatus {
+        LOADING,
+        LOADED,
+        EMPTY
+    }
+
+    enum class EditorPickDukanStatus {
+        LOADING,
+        LOADED
     }
 }
