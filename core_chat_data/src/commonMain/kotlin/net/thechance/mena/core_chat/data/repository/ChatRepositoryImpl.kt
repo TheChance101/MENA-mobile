@@ -61,7 +61,7 @@ class ChatRepositoryImpl(
         }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
     }
 
-    override suspend fun getChatSummary(pageNumber: Int): PagedData<ChatSummary> {
+    override suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
         return tryNetworkCall<PagedDataDto<ChatSummaryDto>>(
             bodyType = typeInfo<PagedDataDto<ChatSummaryDto>>()
         ) {

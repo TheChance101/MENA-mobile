@@ -53,7 +53,7 @@ class HomeViewModel(
     }
 
     private suspend fun getChatsSummary(page: Int): List<ChatSummary> {
-        return chatRepository.getChatSummary(page).data
+        return chatRepository.getChatsSummary(page).data
     }
 
     private fun onLoadChatsSummaryError(throwable: Throwable?) {
