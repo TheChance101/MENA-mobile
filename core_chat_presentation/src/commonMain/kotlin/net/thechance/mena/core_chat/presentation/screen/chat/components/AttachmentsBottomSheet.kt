@@ -91,6 +91,7 @@ private fun AttachmentBottomSheetContent(
         scope = scope,
         onResult = { byteArrays ->
             attachmentsInteractionListener.onSendImageClicked(byteArrays)
+            attachmentsInteractionListener.onGalleryClicked()
         }
     )
     Row(
@@ -102,7 +103,6 @@ private fun AttachmentBottomSheetContent(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
             onClick = {
-                attachmentsInteractionListener.onGalleryClicked()
                 imagePickerLauncher.launch()
             }
         )
