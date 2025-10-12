@@ -1,31 +1,20 @@
 package net.thechance.mena.identity.data.repository
 
 import io.ktor.client.HttpClient
-import net.thechance.mena.identity.data.dto.addresses.AddAddressRequestDto
+import net.thechance.mena.identity.data.mapper.toAddressRequestDto
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
+import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 
 class AddressesRepositoryImpl(
     val client: HttpClient
 ): AddressesRepository {
 
-    override suspend fun createAddress(
-        latitude: Double,
-        longitude: Double,
-        addressLine: String,
-        addressType: String,
-        otherAddressType: String?
-    ) {
+    override suspend fun createAddress(address: Address) {
         return safeWrapper {
             client.postJson(
-                AddAddressRequestDto(
-                    latitude,
-                    longitude,
-                    addressLine,
-                    addressType,
-                    otherAddressType
-                ),
+                requestDto = address.toAddressRequestDto(),
                 path = ADDRESS_ENDPOINT
             )
 
@@ -33,23 +22,13 @@ class AddressesRepositoryImpl(
     }
 
     override suspend fun editAddress(
-        id: String,
-        latitude: Double,
-        longitude: Double,
-        addressLine: String,
-        addressType: String,
-        otherAddressType: String?
+        addressID: String,
+        address: Address
     ) {
         return safeWrapper {
            client.postJson(
-                AddAddressRequestDto(
-                    latitude,
-                    longitude,
-                    addressLine,
-                    addressType,
-                    otherAddressType
-                ),
-                path = "$ADDRESS_ENDPOINT/$id"
+                requestDto = address.toAddressRequestDto(),
+                path = "$ADDRESS_ENDPOINT/$addressID"
            )
         }
 

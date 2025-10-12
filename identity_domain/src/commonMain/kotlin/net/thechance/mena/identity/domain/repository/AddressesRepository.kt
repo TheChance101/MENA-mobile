@@ -1,21 +1,10 @@
 package net.thechance.mena.identity.domain.repository
 
+import net.thechance.mena.identity.domain.entity.Address
+
 interface AddressesRepository {
 
-    suspend fun createAddress(
-         latitude: Double,
-         longitude: Double,
-         addressLine: String,
-         addressType: String,
-         otherAddressType: String?
-    )
+    suspend fun createAddress(address: Address)
 
-    suspend fun editAddress(
-         id: String,
-         latitude: Double,
-         longitude: Double,
-         addressLine: String,
-         addressType: String,
-         otherAddressType: String?,
-    )
+    suspend fun editAddress(addressID:String, address: Address)
 }
