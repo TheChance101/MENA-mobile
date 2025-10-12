@@ -8,7 +8,8 @@ sealed class MainEffect {
     object NavigateCategoryToScreen : MainEffect()
 
 
-    data class NavigateToDukansScreenByCategory(val categoryId: String) : MainEffect()
+    data class NavigateToDukansScreenByCategory(val categoryId: String, val categoryName: String) :
+        MainEffect()
 
     data class NavigateSelectedNearsetDukan(val dukanId: String) : MainEffect()
 

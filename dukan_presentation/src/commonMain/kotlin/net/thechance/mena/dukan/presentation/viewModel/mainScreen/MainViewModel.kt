@@ -173,8 +173,8 @@ class MainViewModel(
         emitEffect(MainEffect.NavigateCategoryToScreen)
     }
 
-    override fun onCategorySelectedClick(categoryId: String) {
-        emitEffect(MainEffect.NavigateToDukansScreenByCategory(categoryId))
+    override fun onCategorySelectedClick(categoryId: String, categoryName: String) {
+        emitEffect(MainEffect.NavigateToDukansScreenByCategory(categoryId, categoryName))
     }
 
     override fun onNearestDukanClick(dukanId: String) {

@@ -187,11 +187,12 @@ class MainViewModelTest {
     fun `onCategorySelectedClick SHOULD emit NavigateToDukansScreenByCategory with correct categoryId`() =
         runTest {
             val categoryId = "1"
+            val categoryName = "Category 1"
 
-
-            mainViewModel.onCategorySelectedClick(categoryId)
+            mainViewModel.onCategorySelectedClick(categoryId, categoryName)
             val actualEffect = mainViewModel.effect.first()
-            val expectedEffect = MainEffect.NavigateToDukansScreenByCategory(categoryId)
+            val expectedEffect =
+                MainEffect.NavigateToDukansScreenByCategory(categoryId, categoryName)
             assertEquals(expectedEffect, actualEffect)
         }
 

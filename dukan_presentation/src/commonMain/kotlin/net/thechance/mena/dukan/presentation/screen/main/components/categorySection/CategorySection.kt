@@ -23,7 +23,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun CategorySection(
     categories: List<DukanCategoryUiState>,
     rows: Int = 2,
-    onCategoryClick: (categoryID: String) -> Unit,
+    onCategoryClick: (categoryID: String, categoryName: String) -> Unit,
     onViewMoreClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,7 +46,7 @@ fun CategorySection(
             CategoryCard(
                 title = category.name,
                 imageUrl = category.imageUrl,
-                onClick = { onCategoryClick(category.id) }
+                onClick = { onCategoryClick(category.id, category.name) }
             )
         }
         if (gridLayout.hasMoreItems) {
@@ -67,7 +67,7 @@ private fun CategorySectionPreview() {
     MenaTheme {
         CategorySection(
             fakeCategories(),
-            onCategoryClick = {},
+            onCategoryClick = { _, _ -> },
             onViewMoreClick = {},
             modifier = Modifier.padding(horizontal = Theme.spacing._16)
         )

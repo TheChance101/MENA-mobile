@@ -31,7 +31,7 @@ fun LoadingEditorPickDukanItem(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(Theme.radius.lg))
-                .background(Theme.colorScheme.disabled)
+                .background(Theme.colorScheme.background.surfaceHigh)
         )
     }
 }

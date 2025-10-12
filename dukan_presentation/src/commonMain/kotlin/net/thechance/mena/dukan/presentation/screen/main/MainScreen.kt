@@ -70,7 +70,6 @@ fun MainScreen(
 
             is MainEffect.NavigateSelectedEditorPickDukan -> DukanRoute.DukanDetails(effect.dukanId)
 
-
             is MainEffect.NavigateSelectedNearsetDukan -> DukanRoute.DukanDetails(effect.dukanId)
         }
     }

@@ -28,7 +28,7 @@ fun LoadingBestNearDukanItem(
             modifier = Modifier
                 .size(60.dp)
                 .clip(RoundedCornerShape(Theme.radius.full))
-                .background(Theme.colorScheme.disabled)
+                .background(Theme.colorScheme.background.surfaceHigh)
         )
 
         Box(
@@ -37,7 +37,7 @@ fun LoadingBestNearDukanItem(
                 .width(56.dp)
                 .size(height = Theme.spacing._16, width = 56.dp)
                 .clip(RoundedCornerShape(Theme.radius.full))
-                .background(Theme.colorScheme.disabled)
+                .background(Theme.colorScheme.background.surfaceHigh)
         )
     }
 }

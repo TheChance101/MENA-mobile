@@ -49,7 +49,6 @@ fun BestNearDukanCard(
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadePrimary,
             maxLines = 1,
-            minLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = Theme.spacing._4)
         )
