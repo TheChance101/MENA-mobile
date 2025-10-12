@@ -10,10 +10,10 @@ import kotlin.uuid.Uuid
 sealed class WalletRoute
 
 @Serializable
-data object WalletMainScreenRoute: WalletRoute()
+data object WalletMainScreenRoute : WalletRoute()
 
 @Serializable
-data object TransactionsHistoryScreenRoute: WalletRoute()
+data object TransactionsHistoryScreenRoute : WalletRoute()
 
 @Serializable
 data object StatementsHistoryScreenRoute : WalletRoute()
@@ -26,14 +26,14 @@ data class StatementDetailsScreenRoute(val id: String) : WalletRoute()
 @Serializable
 data class TransactionDetailsScreenRoute(
     val id: String
-): WalletRoute() {
+) : WalletRoute() {
     init {
         Uuid.parse(id)
     }
 }
 
 @Serializable
-data object ExportTransactionsScreenRoute: WalletRoute()
+data object ExportTransactionsScreenRoute : WalletRoute()
 
 @Serializable
 data class ViewTransactionsStatementScreenRoute(
@@ -41,15 +41,20 @@ data class ViewTransactionsStatementScreenRoute(
     val status: TransactionStatus? = null,
     val startDate: String? = null,
     val endDate: String? = null,
-): WalletRoute()
+) : WalletRoute()
 
 @OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class ConfirmPaymentScreenRoute(
     val id: String,
     val amount: Double
-): WalletRoute() {
+) : WalletRoute() {
     init {
         Uuid.parse(id)
     }
 }
+
+data class PaymentResultScreenRoute(
+    val receiverId: String,
+    val amount: Double
+) : WalletRoute()
