@@ -41,5 +41,5 @@
 
     <string name="no_chats_history_title">ليس لديك أي محادثات حتى الآن!</string>
     <string name="no_chats_history_desc">ابدأ الدردشة مع أصدقائك بالضغط على زر بدء الدردشة.</string>
-    <string name="you">أنت:</string>
+    <string name="you">أنت</string>
 </resources>

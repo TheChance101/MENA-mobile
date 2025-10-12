@@ -106,7 +106,7 @@ private fun TimeAndStatus(chat: ChatUiState) {
 @Composable
 private fun RowScope.NameAndLastMessage(chat: ChatUiState) {
     val lastMessage =
-        if (chat.lastMessage.isMine) "${stringResource(Res.string.you)} ${chat.lastMessage.text}"
+        if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
         else chat.lastMessage.text
 
     Column(
