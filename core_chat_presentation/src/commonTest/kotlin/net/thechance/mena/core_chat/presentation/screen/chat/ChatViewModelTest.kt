@@ -25,6 +25,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
@@ -304,6 +305,22 @@ class ChatViewModelTest {
     }
 
 
+
+    @Test
+    fun `onSendImageClicked should update message to FAILED status after failed repository call`() {
+
+
+        val imageByteArray = byteArrayOf(1, 2, 3)
+        val imageByteArrays = listOf(imageByteArray)
+        everySuspend { repository.sendMessage(any()) } throws Exception("Failed to send")
+
+        chatViewModel.onSendImageClicked(imageByteArrays)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val firstMessage = chatViewModel.state.value.chatListItems.currentUiMessages().first()
+        assertThat(firstMessage.status).isEqualTo(MessageStatus.FAILED)
+    }
+
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.Message>()
             .map { it.data }
@@ -328,17 +345,17 @@ class ChatViewModelTest {
                     message1Id,
                     chatRequesterId,
                     chatId,
-                    "Hello, World",
                     LocalDateTime.now(),
-                    MessageStatus.SENT
+                    MessageStatus.SENT,
+                    MessageContent.Text("Hello, World")
                 ),
                 Message(
                     message2Id,
                     chatRequesterId,
                     chatId,
-                    "Hello, World2",
                     LocalDateTime.now(),
-                    MessageStatus.SENT
+                    MessageStatus.SENT,
+                    MessageContent.Text("Hello, World2")
                 )
             )
     }

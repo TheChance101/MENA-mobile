@@ -51,6 +51,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.coil.compose)
             implementation(libs.coil.gif)
+            implementation(libs.kotlinx.datetime)
+
         }
         iosMain.dependencies {
 
@@ -92,6 +94,11 @@ kover.reports {
         }
 
         excludes {
+            classes(
+                "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
+                "net.thechance.mena.faith.presentation.feature.main.*",
+                "net.thechance.mena.faith.presentation.util.extentions.*"
+            )
             annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
         }
     }

@@ -19,7 +19,6 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
-import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toSendMessageRequestDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -73,7 +72,7 @@ class ChatRepositoryImpl(
 
     override suspend fun getLocalMessages(chatId: Uuid): List<Message> {
         val failedEntities = messageDao.getMessagesByChat(chatId.toString())
-        return failedEntities.map { it.toEntity() }
+        return failedEntities.map { it.toDomain() }
     }
 
     override fun subscribeToMessages(chatId: Uuid): Flow<Message> {
@@ -90,7 +89,7 @@ class ChatRepositoryImpl(
             if (webSocketManager.isConnected()) {
                 val messageJson = json.encodeToString(
                     SendMessageDto.serializer(),
-                    message.toSendMessageRequestDto()
+                    message.content.toSendMessageRequestDto(message.chatId.toString())
                 )
                 webSocketManager.sendTextFrame(
                     destination = SEND_MESSAGE_DESTINATION,

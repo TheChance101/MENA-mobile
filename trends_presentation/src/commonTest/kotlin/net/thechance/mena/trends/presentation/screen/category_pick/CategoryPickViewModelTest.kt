@@ -115,7 +115,7 @@ class CategoryPickViewModelTest : TestExtensions() {
     fun `onNextClick should called updateUserInterestedCategories from repository with success`() =
         runTest(testDispatcher) {
             val selectedIds = listOf(demoCategories.first().id)
-            everySuspend { repository.updateUserInterestedCategories(selectedIds) } returns Unit
+            everySuspend { repository.updateUserCategories(selectedIds) } returns Unit
 
             viewModel.onNextClick()
 
@@ -129,7 +129,7 @@ class CategoryPickViewModelTest : TestExtensions() {
     @Test
     fun `onNextClick should throw exception when called`() =
         runTest(testDispatcher) {
-            everySuspend { repository.updateUserInterestedCategories(any()) } throws Exception()
+            everySuspend { repository.updateUserCategories(any()) } throws Exception()
 
             viewModel.onNextClick()
             testDispatcher.scheduler.advanceUntilIdle()

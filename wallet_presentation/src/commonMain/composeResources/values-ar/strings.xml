@@ -63,7 +63,7 @@
     <string name="all_transactions">جميع المعاملات</string>
     <string name="export_transactions">تصدير المعاملات</string>
     <string name="downloading_started">جارٍ بدء التنزيل...</string>
-    <string name="download_success">تم حفظ معاملاتك بنجاح.</string>
+    <string name="download_success">تم حفظ معاملاتك في %1$s.</string>
     <string name="download_complete">اكتمل التنزيل</string>
     <string name="download_failed">فشل التنزيل</string>
     <string name="something_went_wrong">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>

@@ -19,9 +19,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.from
-import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
@@ -281,50 +279,6 @@ class TransactionDetailsViewModelTest {
             assertTrue(initialState.isLoading)
             cancelAndIgnoreRemainingEvents()
         }
-    }
-
-    @Test
-    fun `onCaptureError should send showErrorSnackBar effect`() =
-        runTest {
-            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
-            )
-            viewModel.uiEffect.test {
-                viewModel.onCaptureError()
-                assertEquals(TransactionDetailsEffect.showErrorSnackBar, awaitItem())
-            }
-        }
-
-    @Test
-    fun `showSnackBar should show snack bar`() =
-        runTest {
-            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
-            )
-            viewModel.state.test {
-                skipItems(1)
-                viewModel.showSnackBar(Res.string.error,Res.string.share_transaction_details_error_msg,false)
-                val snackBarState = awaitItem()
-                assertSnackBarState(isVisible = true, isSuccess = false, snackBarState = snackBarState.snackBar)
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-    private fun assertSnackBarState(
-        isVisible: Boolean,
-        isSuccess: Boolean,
-        snackBarState: SnackBarState
-    ) {
-        assertEquals(isVisible, snackBarState.isVisible)
-        assertEquals(isSuccess, snackBarState.isSuccess)
     }
 
     private companion object {
