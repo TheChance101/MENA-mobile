@@ -72,8 +72,8 @@ fun DukanNavHost() {
             composable<DukanRoute.DukanCategoriesScreenRoute>  {
                 DukanCategoriesScreen()
             }
-            composable<DukanRoute.DukansUnderCategory> { backStackEntry ->
-                val route: DukanRoute.DukansUnderCategory = backStackEntry.toRoute()
+            composable<DukanRoute.DukansScreenRoute> { backStackEntry ->
+                val route: DukanRoute.DukansScreenRoute = backStackEntry.toRoute()
                 DukansScreen(
                     categoryId = route.categoryId,
                     categoryTitle = route.categoryTitle,
