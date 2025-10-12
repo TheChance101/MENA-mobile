@@ -14,9 +14,16 @@ interface DukanRepository {
     suspend fun isDukanNameTaken(name: String): Boolean
     suspend fun getMyDukanStatus(): MyDukanStatus?
     suspend fun uploadDukanImage(fileName: String, fileBytes: ByteArray): String
+
+    suspend fun getEditorPicksDukans(
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview>
+
+
+    suspend fun getBestAroundDukans(
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview>
     suspend fun getDukansByCategory(categoryId: String, page: Int, size: Int): PagedResult<Dukan>
-    suspend fun addDukanToFavorites(dukanId: String)
-    suspend fun removeDukanFromFavorites(dukanId: String)
-    suspend fun getFavoriteDukans(): List<Dukan>
-    suspend fun isDukanFavorite(dukanId: String): Boolean
 }

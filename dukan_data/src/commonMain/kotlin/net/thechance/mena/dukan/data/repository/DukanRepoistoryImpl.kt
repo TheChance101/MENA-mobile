@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -20,6 +19,7 @@ import net.thechance.mena.dukan.data.repository.mapper.toColorsList
 import net.thechance.mena.dukan.data.repository.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.repository.mapper.toDomain
 import net.thechance.mena.dukan.data.repository.mapper.toMyDukanStatus
+import net.thechance.mena.dukan.data.repository.mockData.MockDukanData
 import net.thechance.mena.dukan.data.repository.util.buildSinglePartFormData
 import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
@@ -32,6 +32,9 @@ import net.thechance.mena.dukan.domain.util.PagedResult
 class DukanRepositoryImpl(
     private val client: HttpClient
 ) : DukanRepository {
+    
+    // Use mock data instead of real API calls
+    private val useMockData = true
     override suspend fun createDukan(dukan: Dukan) {
         safeApiCall<Unit> {
             client.post(
@@ -81,10 +84,43 @@ class DukanRepositoryImpl(
         return safeApiCall {
             client.post("$BASE_URL/image") {
                 setBody(
-                    buildSinglePartFormData(fileName, fileBytes, "file")
+                    buildSinglePartFormData(fileName, fileBytes,"file")
                 )
             }
         }
+    }
+
+    override suspend fun getEditorPicksDukans(
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview> {
+        val dukansResponse = safeApiCall<PageResponseDto<DukanResponseDto>> {
+            client.get("$BASE_URL/editor_picks") {
+                parameter("page", page)
+                parameter("size", size)
+            }
+        }
+        return dukansResponse.toDomain { it.toDomainPreview() }
+    }
+
+    override suspend fun getBestAroundDukans(
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview> {
+        //todo inject user active location here ......
+        val lat = 33.3128
+        val lng = 44.3615
+        val range = 30000
+        val dukansResponse = safeApiCall < PageResponseDto<DukanResponseDto>>{
+            client.get("$BASE_URL/best_around"){
+                parameter("page", page)
+                parameter("size", size)
+                parameter("lat", lat)
+                parameter("lng", lng)
+                parameter("range", range)
+            }
+        }
+        return dukansResponse.toDomain { it.toDomainPreview()}
     }
 
     override suspend fun isDukanNameTaken(name: String): Boolean {
@@ -93,11 +129,7 @@ class DukanRepositoryImpl(
         }.available.not()
     }
 
-    override suspend fun getDukansByCategory(
-        categoryId: String,
-        page: Int,
-        size: Int
-    ): PagedResult<Dukan> {
+    override suspend fun getDukansByCategory(categoryId: String, page: Int, size: Int): PagedResult<Dukan> {
         val response: PageResponseDto<DukanDto> = safeApiCall {
             client.get("$BASE_URL/category/$categoryId") {
                 parameter("page", page)
@@ -105,30 +137,6 @@ class DukanRepositoryImpl(
             }
         }
         return response.toDomain(mapper = DukanDto::toDomain)
-    }
-
-    override suspend fun addDukanToFavorites(dukanId: String) {
-        safeApiCall<Unit> {
-            client.post("$BASE_URL/favorites/$dukanId")
-        }
-    }
-
-    override suspend fun removeDukanFromFavorites(dukanId: String) {
-        safeApiCall<Unit> {
-            client.delete("$BASE_URL/favorites/$dukanId")
-        }
-    }
-
-    override suspend fun getFavoriteDukans(): List<Dukan> {
-        return safeApiCall<List<DukanDto>> {
-            client.get("$BASE_URL/favorites")
-        }.map { it.toDomain() }
-    }
-
-    override suspend fun isDukanFavorite(dukanId: String): Boolean {
-        return safeApiCall<Boolean> {
-            client.get("$BASE_URL/favorites/$dukanId/status").body()
-        }
     }
 
     companion object {
