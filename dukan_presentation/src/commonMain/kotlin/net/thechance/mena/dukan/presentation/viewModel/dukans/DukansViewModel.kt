@@ -36,9 +36,9 @@ class DukansViewModel(
 
     private suspend fun toggleFavoriteStatus(dukan: DukanUiState) {
         if (dukan.isFavorite) {
-            dukanRepository.removeDukanFromFavorites(dukan.id)
+            // TODO remove dukan from favorites
         } else {
-            dukanRepository.addDukanToFavorites(dukan.id)
+            // TODO add dukan to favorites
         }
     }
 

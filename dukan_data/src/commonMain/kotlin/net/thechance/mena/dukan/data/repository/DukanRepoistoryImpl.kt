@@ -19,10 +19,8 @@ import net.thechance.mena.dukan.data.repository.mapper.toCategoryList
 import net.thechance.mena.dukan.data.repository.mapper.toColorsList
 import net.thechance.mena.dukan.data.repository.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.repository.mapper.toDomain
-import net.thechance.mena.dukan.data.repository.mapper.toDomain
 import net.thechance.mena.dukan.data.repository.mapper.toDomainPreview
 import net.thechance.mena.dukan.data.repository.mapper.toMyDukanStatus
-import net.thechance.mena.dukan.data.repository.mockData.MockDukanData
 import net.thechance.mena.dukan.data.repository.util.buildSinglePartFormData
 import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
@@ -112,8 +110,8 @@ class DukanRepositoryImpl(
         val lat = 33.3128
         val lng = 44.3615
         val range = 30000
-        val dukansResponse = safeApiCall < PageResponseDto<DukanResponseDto>>{
-            client.get("$BASE_URL/best_around"){
+        val dukansResponse = safeApiCall<PageResponseDto<DukanResponseDto>> {
+            client.get("$BASE_URL/best_around") {
                 parameter("page", page)
                 parameter("size", size)
                 parameter("lat", lat)
@@ -121,7 +119,7 @@ class DukanRepositoryImpl(
                 parameter("range", range)
             }
         }
-        return dukansResponse.toDomain { it.toDomainPreview()}
+        return dukansResponse.toDomain { it.toDomainPreview() }
     }
 
     override suspend fun isDukanNameTaken(name: String): Boolean {
@@ -130,7 +128,11 @@ class DukanRepositoryImpl(
         }.available.not()
     }
 
-    override suspend fun getDukansByCategory(categoryId: String, page: Int, size: Int): PagedResult<Dukan> {
+    override suspend fun getDukansByCategory(
+        categoryId: String,
+        page: Int,
+        size: Int
+    ): PagedResult<Dukan> {
         val response: PageResponseDto<DukanDto> = safeApiCall {
             client.get("$BASE_URL/category/$categoryId") {
                 parameter("page", page)
