@@ -26,6 +26,7 @@ import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
@@ -385,17 +386,17 @@ class ChatViewModelTest {
                     message1Id,
                     chatRequesterId,
                     chatId,
-                    "Hello, World",
                     LocalDateTime.now(),
-                    MessageStatus.SENT
+                    MessageStatus.SENT,
+                    MessageContent.Text("Hello, World")
                 ),
                 Message(
                     message2Id,
                     chatRequesterId,
                     chatId,
-                    "Hello, World2",
                     LocalDateTime.now(),
-                    MessageStatus.SENT
+                    MessageStatus.SENT,
+                    MessageContent.Text("Hello, World2")
                 )
             )
     }

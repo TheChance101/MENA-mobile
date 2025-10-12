@@ -14,6 +14,7 @@ import mena.core_chat_presentation.generated.resources.error_failed_to_download_
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
@@ -90,11 +91,11 @@ class ChatViewModel(
         if (chatId == null || senderId == null || text.isEmpty()) return
 
         // todo temp text content
-        val content = MessageContentUiState.Text(text)
+        val content = MessageContent.Text(text)
         sendMessage(chatId, senderId, content)
     }
 
-    private fun sendMessage(chatId: Uuid, senderId: Uuid, content: MessageContentUiState) {
+    private fun sendMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
         val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
@@ -213,11 +214,7 @@ class ChatViewModel(
 
         messages
             .filter { it.status == MessageStatus.LOADING }
-            .forEach {
-                // todo temp text content
-                val content = MessageContentUiState.Text(it.text)
-                sendMessage(chatId = it.chatId, senderId = senderId, content = content)
-            }
+            .forEach { sendMessage(chatId = it.chatId, senderId = senderId, content = it.content) }
     }
 
     private fun observeReadMessages() {
