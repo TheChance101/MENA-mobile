@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import net.thechance.mena.dukan.presentation.screen.createDukan.CreateDukanScreen
 import net.thechance.mena.dukan.presentation.screen.createProduct.CreateProductScreen
 import net.thechance.mena.dukan.presentation.screen.createShelf.CreateShelfScreen
+import net.thechance.mena.dukan.presentation.screen.dukanCategories.DukanCategoriesScreen
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.DukanDetailsScreen
 import net.thechance.mena.dukan.presentation.screen.dukans.DukansScreen
 import net.thechance.mena.dukan.presentation.screen.main.MainScreen
@@ -67,6 +68,9 @@ fun DukanNavHost() {
             composable<DukanRoute.ShelfDetails> { backStackEntry ->
                 val route: DukanRoute.ShelfDetails = backStackEntry.toRoute()
                 ShelfDetailsScreen(route.shelfId, route.shelfName)
+            }
+            composable<DukanRoute.DukanCategoriesScreenRoute>  {
+                DukanCategoriesScreen()
             }
             composable<DukanRoute.DukansUnderCategory> { backStackEntry ->
                 val route: DukanRoute.DukansUnderCategory = backStackEntry.toRoute()
