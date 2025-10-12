@@ -37,7 +37,7 @@ fun DukansList(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._16,
-            vertical = Theme.spacing._8
+            vertical = Theme.spacing._12
         ),
         state = lazyListState
     ) {
