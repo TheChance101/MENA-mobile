@@ -23,7 +23,8 @@ fun ChatList(
     items: List<ChatListItem>,
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
-    onFailedMessageClick: (MessageUiState) -> Unit
+    onMessageImageClick: (MessageUiState, Int) -> Unit,
+    onFailedMessageClick: (MessageUiState) -> Unit,
 ) {
 
     val chatListState = rememberLazyListState()
@@ -61,6 +62,7 @@ fun ChatList(
                 item = item,
                 chatAvatarUrl = chatAvatarUrl,
                 onMessageClick = onMessageClick,
+                onMessageImageClick= onMessageImageClick,
                 onFailedMessageClick = onFailedMessageClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
