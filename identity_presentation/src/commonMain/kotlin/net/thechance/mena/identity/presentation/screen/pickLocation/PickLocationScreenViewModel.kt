@@ -1,6 +1,9 @@
 package net.thechance.mena.identity.presentation.screen.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.Coordinates
 import net.thechance.mena.identity.domain.repository.LocationRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -9,7 +12,8 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import org.maplibre.compose.camera.CameraPosition
 
 class PickLocationScreenViewModel(
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(PickLocationScreenUIState()),
     PickLocationScreenInteractionListener {
     override fun onClickMap(
@@ -17,13 +21,14 @@ class PickLocationScreenViewModel(
         pointerLocation: DpOffset
     ) {
         tryToExecute(
-            function = { onMapClickedBlock(coordinates, pointerLocation) },
-            onSuccess = ::onMapClickedSuccess,
-            onError = ::onError
+            function = { onClickMapBlock(coordinates, pointerLocation) },
+            onSuccess = ::onMapClickedSuccess ,
+            onError = ::onError,
+            dispatcher = dispatcher
         )
     }
 
-    private suspend fun onMapClickedBlock(
+    private suspend fun onClickMapBlock(
         coordinates: PickLocationScreenUIState.CoordinatesUiState,
         pointerLocation: DpOffset
     ): String {
@@ -65,7 +70,8 @@ class PickLocationScreenViewModel(
         tryToExecute(
             function = ::onGpsFetch,
             onSuccess = ::onGpsClickSuccess,
-            onError = ::onError
+            onError = ::onError,
+            dispatcher = dispatcher
         )
     }
 
