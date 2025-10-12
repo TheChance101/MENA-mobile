@@ -65,7 +65,6 @@
     <string name="edit_product_pencil">تحرير قلم المنتج</string>
     <string name="koin_icon">أيقونة الفلوس</string>
     <string name="discount_icon">أيقونة الخصم</string>
-
     <string name="error_image_max_limit">يمكنك رفع 10 صور كحد أقصى.</string>
     <string name="error_image_size">يجب أن يكون حجم الصورة أقل من 5 ميجابايت.</string>
     <string name="error_upload_failed">فشل الرفع، يرجى المحاولة مرة أخرى.</string>
@@ -73,5 +72,12 @@
     <string name="error_price_invalid">السعر غير صالح.</string>
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و 3000 حرف.</string>
+    <string name="all">الجميع</string>
+    <string name="arrow_right_icon">أيقونة السهم الأيمن</string>
+    <string name="best_selling">الأكثر مبيعا</string>
+    <string name="shopping_basket_icon">shopping basket icon</string>
+    <string name="favorite_icon">الأيقونة المفضلة</string>
+    <string name="share_icon">أيقونة المشاركة</string>
+    <string name="remove_product">حذف المنتج</string>
 
 </resources>

@@ -38,7 +38,7 @@ fun LoadingProductCard(
     ) {
         Box(
             modifier = Modifier.background(
-                color = Theme.colorScheme.background.surfaceLow,
+                color = Theme.colorScheme.background.surfaceHigh,
                 shape = RoundedCornerShape(
                     topStart = Theme.radius.md,
                     bottomStart = Theme.radius.md
@@ -49,7 +49,7 @@ fun LoadingProductCard(
                 modifier = Modifier
                     .size(96.dp)
                     .clip(RoundedCornerShape(Theme.radius.sm))
-                    .background(Theme.colorScheme.disabled),
+                    .background(Theme.colorScheme.background.surfaceHigh),
             )
         }
         Column(
@@ -66,7 +66,7 @@ fun LoadingProductCard(
                     .height(Theme.spacing._16)
                     .fillMaxWidth(0.33f)
                     .clip(RoundedCornerShape(Theme.radius.full))
-                    .background(Theme.colorScheme.disabled)
+                    .background(Theme.colorScheme.background.surfaceHigh)
             )
             Box(
                 modifier = Modifier
@@ -74,7 +74,7 @@ fun LoadingProductCard(
                     .height(Theme.spacing._32)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(Theme.radius.md))
-                    .background(Theme.colorScheme.disabled)
+                    .background(Theme.colorScheme.background.surfaceHigh)
             )
             Spacer(modifier = Modifier.weight(1f))
             Row(
@@ -92,7 +92,7 @@ fun LoadingProductCard(
                             .height(Theme.spacing._24)
                             .fillMaxWidth(0.25f)
                             .clip(RoundedCornerShape(Theme.radius.full))
-                            .background(Theme.colorScheme.disabled)
+                            .background(Theme.colorScheme.background.surfaceHigh)
                     )
 
                     Image(

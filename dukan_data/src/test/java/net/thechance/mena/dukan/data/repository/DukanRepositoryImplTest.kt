@@ -1,16 +1,21 @@
 package net.thechance.mena.dukan.data.repository
 
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultCreateResponse
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultDukanDetailsResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultNameAvailableResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultStatusResponse
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -115,5 +120,118 @@ class DukanRepositoryImplTest {
             fileBytes = ByteArray(0)
         )
         assertEquals("https://cdn.example.com/dukan/image.png", url)
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId should call the underlying service`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        var called = false
+        val repo = createDukanRepository(
+            dukanDetailsResponse = {
+                called = true
+                defaultDukanDetailsResponse()
+            }
+        )
+
+        // Act
+        repo.getDukanDetailsByDukanId(dukanId)
+
+        // Assert
+        assertTrue(called, "The service should have been called.")
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId should map id correctly`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
+
+        // Act
+        val details = repo.getDukanDetailsByDukanId(dukanId)
+
+        // Assert
+        assertEquals("dukan123", details.id)
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId should map name correctly`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
+
+        // Act
+        val details = repo.getDukanDetailsByDukanId(dukanId)
+
+        // Assert
+        assertEquals("Test Dukan", details.name)
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId should map address correctly`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
+
+        // Act
+        val details = repo.getDukanDetailsByDukanId(dukanId)
+
+        // Assert
+        assertEquals("123 Test St, Cairo, Egypt", details.address)
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId should map color correctly`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
+
+        // Act
+        val details = repo.getDukanDetailsByDukanId(dukanId)
+
+        // Assert
+        assertEquals(Color("Red", "#FF0000"), details.color)
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId should map style correctly`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
+
+        // Act
+        val details = repo.getDukanDetailsByDukanId(dukanId)
+
+        // Assert
+        assertEquals(Dukan.Style.WIDE_IMAGE, details.style)
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId should map latitude correctly`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
+
+        // Act
+        val details = repo.getDukanDetailsByDukanId(dukanId)
+
+        // Assert
+        assertEquals(30.0444, details.coordinates.latitude)
+    }
+
+    @Test
+    fun `getDukanDetailsByDukanId throws exception on error response`() = runTest {
+        // Arrange
+        val dukanId = "dukan123"
+        val repo = createDukanRepository(
+            dukanDetailsResponse = {
+                respond(content = "", status = HttpStatusCode.NotFound, headers = jsonHeaders)
+            }
+        )
+
+        // Act & Assert
+        assertFailsWith<Exception> {
+            repo.getDukanDetailsByDukanId(dukanId)
+        }
     }
 }
