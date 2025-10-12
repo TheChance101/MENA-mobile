@@ -100,6 +100,26 @@ class ExportTransactionsViewModelTest {
             assertTrue(state.isCustomFilterCardSelected)
         }
     }
+    @Test
+    fun `onDownloadClicked with empty pdf should show toast`() = runTest {
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata(
+            byteArray = byteArrayOf()
+        )
+
+
+        initViewModel()
+
+        viewModel.state.test {
+            viewModel.onDownloadClicked()
+            skipItems(2)
+
+            val toastState = awaitItem().toast
+            assertToastState(isVisible = true, toastState = toastState)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 
     @Test
     fun `should toggle type in state when onTypeSelected is called`() = runTest {
@@ -111,11 +131,11 @@ class ExportTransactionsViewModelTest {
             viewModel.onTypeSelected(type)
 
             val stateWithType = awaitItem()
-            assertTrue(stateWithType.selectedTransactionsTypes!!.contains(type))
+            assertTrue(stateWithType.selectedTransactionsTypes.contains(type))
 
             viewModel.onTypeSelected(type)
             val stateWithoutType = awaitItem()
-            assertFalse(stateWithoutType.selectedTransactionsTypes!!.contains(type))
+            assertFalse(stateWithoutType.selectedTransactionsTypes.contains(type))
         }
     }
 
