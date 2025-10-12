@@ -2,7 +2,7 @@ package net.thechance.mena.wallet.data.repository.statement.datasource.remote
 
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readRawBytes
-import net.thechance.mena.wallet.data.database.Statement
+import net.thechance.mena.wallet.data.database.StatementEntity
 import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toStatementRequest
@@ -14,27 +14,38 @@ import org.koin.core.annotation.Single
 @Single(binds = [StatementRemoteDataSource::class])
 class StatementRemoteDataSourceImpl(
     private val networkClient: NetworkClient,
-    private val statementDao : StatementDao
-): StatementRemoteDataSource {
+) : StatementRemoteDataSource {
     override suspend fun getTransactionPdf(filterRequestParams: TransactionFilterParams?): ByteArray {
-        val response =safeApiCall<HttpResponse> {
+        val response = safeApiCall<HttpResponse> {
             networkClient.get(
                 urlString = STATEMENT_PATH,
                 block = filterRequestParams?.toStatementRequest() ?: {}
             )
         }
-        statementDao.insertStatement(extractStatementInfoFromHeaders(response))
         return response.readRawBytes()
 
 
     }
-}
-private fun extractStatementInfoFromHeaders(response : HttpResponse): Statement{
-    return Statement(
-        totalInflows = response.headers["X-Statement-Total-Inflows"]?.toDoubleOrNull() ?: 0.0,
-        totalOutflows = response.headers["X-Statement-Total-Outflows"]?.toDoubleOrNull() ?: 0.0,
-        startDate = response.headers["X-Statement-Start-Date"].orEmpty(),
-        endDate = response.headers["X-Statement-End-Date"].orEmpty()
-    )
+
+    override suspend fun getStatementFromTransactionResponse(filterRequestParams: TransactionFilterParams?): StatementEntity {
+        val response = safeApiCall<HttpResponse> {
+            networkClient.get(
+                urlString = STATEMENT_PATH,
+                block = filterRequestParams?.toStatementRequest() ?: {}
+            )
+        }
+        return extractStatementInfoFromHeaders(response)
+    }
+
+    fun extractStatementInfoFromHeaders(response: HttpResponse): StatementEntity {
+        return StatementEntity(
+            totalInflows = response.headers["X-Statement-Total-Inflows"]?.toDoubleOrNull() ?: 0.0,
+            totalOutflows = response.headers["X-Statement-Total-Outflows"]?.toDoubleOrNull() ?: 0.0,
+            startDate = response.headers["X-Statement-Start-Date"].orEmpty(),
+            endDate = response.headers["X-Statement-End-Date"].orEmpty(),
+            fileName = ""
+
+        )
+    }
 
 }

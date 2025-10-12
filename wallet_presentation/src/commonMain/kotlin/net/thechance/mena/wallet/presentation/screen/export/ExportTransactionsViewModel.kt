@@ -327,11 +327,13 @@ class ExportTransactionsViewModel(
             )
             resetDownloadState()
             if (isFileSaved) {
+                saveStatementToDatabase()
                 showSnackBar(
                     titleRes = Res.string.download_complete,
                     messageRes = Res.string.download_success,
                     isSuccess = true
                 )
+
             } else {
                 showSnackBar(
                     titleRes = Res.string.download_failed,
@@ -463,5 +465,19 @@ class ExportTransactionsViewModel(
         return this
             ?.takeIf { it.isNotEmpty() }
             ?.let { LocalDate.parse(it, formatter) }
+    }
+
+    private suspend fun saveStatementToDatabase(
+        fileName: String
+    ) {
+        val filterParams = if (currentState.isCustomFilterCardSelected) {
+            getTransactionFilterParams()
+        } else {
+            null
+        }
+        statementRepository.insertStatementWithFileName(
+            fileName = fileName,
+            filterRequestParams = filterParams
+        )
     }
 }

@@ -12,7 +12,6 @@ import org.koin.core.annotation.Single
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
-import kotlin.uuid.Uuid
 
 @Single
 class StatementRepositoryImpl(
@@ -30,27 +29,45 @@ class StatementRepositoryImpl(
                 .also { pdf -> cacheRequest(pdf, filterRequestParams) }
     }
 
+    override suspend fun insertStatementWithFileName(
+        fileName: String,
+        filterRequestParams: TransactionFilterParams?
+    ): Statement {
+        val statementEntity = statementRemoteDataSource
+            .getStatementFromTransactionResponse(filterRequestParams)
+            .copy(fileName = fileName)
+        statementDao.insertStatement(statementEntity)
+
+        return statementEntity.toDomainEntity()
+    }
+
     override suspend fun getStatements(
         page: Int,
         pageSize: Int
     ): List<Statement> {
         val offset = (page - 1) * pageSize
-        return statementDao.getAllStatement(limit = pageSize, offset = offset).map{it.toDomainEntity()}
+        return statementDao.getAllStatement(limit = pageSize, offset = offset)
+            .map { it.toDomainEntity() }
     }
 
     override suspend fun insertStatement(statement: Statement) {
+        statementRemoteDataSource
         statementDao.insertStatement(statement.toDaoEntity())
     }
+
 
     override suspend fun deleteStatement(statement: Statement): Boolean {
         return statementDao.deleteStatement(statement.toDaoEntity())
     }
 
     override suspend fun getStatementById(id: Long): Statement {
-       return statementDao.getStatementById(id).toDomainEntity()
+        return statementDao.getStatementById(id).toDomainEntity()
     }
 
-    private suspend fun cacheRequest(pdf: ByteArray, filterRequestParams: TransactionFilterParams?) {
+    private suspend fun cacheRequest(
+        pdf: ByteArray,
+        filterRequestParams: TransactionFilterParams?
+    ) {
         statementLocalDataSource.saveStatement(
             pdf.toCachedTransactionsPdfDto(
                 filterRequestParams.key()
@@ -66,7 +83,7 @@ class StatementRepositoryImpl(
     }
 
 
-   private companion object {
+    companion object {
         const val EXPIRATION_TIME_INTERVAL_IN_MILLIS = 30_000L
         const val STATEMENT_PATH = "wallet/transactions/statement"
     }

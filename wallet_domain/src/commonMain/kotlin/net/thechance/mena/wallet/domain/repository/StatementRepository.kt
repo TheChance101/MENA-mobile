@@ -18,4 +18,9 @@ interface StatementRepository {
     suspend fun insertStatement(statement: Statement)
     suspend fun deleteStatement(statement: Statement):Boolean
     suspend fun getStatementById(id:Long): Statement
+    suspend fun insertStatementWithFileName(
+        fileName: String,
+        filterRequestParams: TransactionFilterParams?
+    ): Statement
+
 }
