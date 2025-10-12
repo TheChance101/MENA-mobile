@@ -28,7 +28,7 @@ class ViewTransactionStatementViewModel(
                     )
                 }
             },
-            callee = { statementRepository.getTransactionPdfWithMetaData(filterParams) },
+            callee = { statementRepository.getCachedStatement(filterParams) },
             onSuccess = ::onSuccessFetchPdf,
             onError = ::onErrorFetchPdf,
             dispatcher = dispatcherIO

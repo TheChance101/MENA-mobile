@@ -1,11 +1,11 @@
 package net.thechance.mena.wallet.domain.model
 
-import net.thechance.mena.wallet.domain.entity.Statement
+import kotlinx.datetime.LocalDate
 
 data class StatementWithMetaData(
     val byteArray: ByteArray,
-    val startDate: String,
-    val endDate: String,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
     val totalInflows: Double,
     val totalOutflows: Double
 )

@@ -120,7 +120,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked with non-empty pdf should navigate`() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
 
@@ -136,7 +136,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked should fetch statement with custom filter when custom filter is selected`() =
         runTest {
-            everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+            everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
 
             initViewModel()
 
@@ -145,7 +145,7 @@ class ExportTransactionsViewModelTest {
             advanceUntilIdle()
 
             verifySuspend {
-                repository.getTransactionPdfWithMetaData(
+                repository.getStatementWithMetadata(
                     TransactionFilterParams(
                         emptyList(),
                         null,
@@ -198,7 +198,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with empty pdf should show toast`() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf()
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf()
 
         initViewModel()
 
@@ -216,7 +216,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked with generic error should show error snackBar`() = runTest {
         everySuspend {
-            repository.getTransactionPdfWithMetaData(any())
+            repository.getStatementWithMetadata(any())
         } throws Exception("Unknown")
         initViewModel()
 
@@ -235,7 +235,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -260,7 +260,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with NoInternetException should update noInternetConnection state`() =
         runTest {
             everySuspend {
-                repository.getTransactionPdfWithMetaData(any())
+                repository.getStatementWithMetadata(any())
             } throws NoInternetException()
 
             initViewModel()
@@ -279,7 +279,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onDownloadClicked with generic error should show failure snackBar`() = runTest {
         everySuspend {
-            repository.getTransactionPdfWithMetaData(any())
+            repository.getStatementWithMetadata(any())
         } throws Exception("Unknown")
 
         initViewModel()
@@ -302,7 +302,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onDownloadClicked with file save success should show success snackBar`() = runTest {
         everySuspend {
-            repository.getTransactionPdfWithMetaData(any())
+            repository.getStatementWithMetadata(any())
         } returns byteArrayOf(1, 2, 3)
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
@@ -326,7 +326,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onDownloadClicked with file save error should show failure snackBar`() = runTest {
         everySuspend {
-            repository.getTransactionPdfWithMetaData(any())
+            repository.getStatementWithMetadata(any())
         } returns byteArrayOf(1, 2, 3)
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
@@ -369,7 +369,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `snackBar should disappear after duration`() = runTest {
         everySuspend {
-            repository.getTransactionPdfWithMetaData(any())
+            repository.getStatementWithMetadata(any())
         } returns byteArrayOf(1, 2, 3)
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
@@ -396,7 +396,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked with NoInternetException should update noInternetConnection`() =
         runTest {
-            everySuspend { repository.getTransactionPdfWithMetaData(any()) } throws NoInternetException()
+            everySuspend { repository.getStatementWithMetadata(any()) } throws NoInternetException()
 
             initViewModel()
             viewModel.state.test {
@@ -430,7 +430,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue_andToastShown() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } throws NoDataFoundException()
+        everySuspend { repository.getStatementWithMetadata(any()) } throws NoDataFoundException()
         initViewModel()
 
         viewModel.state.test {
@@ -445,7 +445,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadFails_thenIsDownloadLoadingResetsToFalse() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } throws RuntimeException("error")
+        everySuspend { repository.getStatementWithMetadata(any()) } throws RuntimeException("error")
         initViewModel()
 
         val state = viewModel.state.first()
@@ -455,7 +455,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun whenViewAndShareFails_thenIsViewAndShareLoadingResetsToFalse() = runTest {
         everySuspend {
-            repository.getTransactionPdfWithMetaData(any())
+            repository.getStatementWithMetadata(any())
         } throws RuntimeException("error")
         initViewModel()
 
@@ -473,7 +473,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun whenViewAndShareThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue() = runTest {
         everySuspend {
-            repository.getTransactionPdfWithMetaData(any())
+            repository.getStatementWithMetadata(any())
         } throws NoDataFoundException()
 
         initViewModel()
@@ -504,7 +504,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenViewAndShareSuccess_thenIsViewAndShareLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
 
         initViewModel()
         viewModel.state.test {
@@ -520,7 +520,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked should reset view model`() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
         initViewModel()
         advanceUntilIdle()
 
@@ -535,7 +535,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -598,7 +598,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `hideSnackBar should hide snackbar after duration`() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "MENA/statement_123.pdf"
@@ -622,7 +622,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `downloadPdf returns success with file path`() = runTest {
-        everySuspend { repository.getTransactionPdfWithMetaData(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns byteArrayOf(1, 2, 3)
         everySuspend {
             pdfHandler.downloadPdf(any(), any())
         } returns "Downloads/MENA/statement_1234567890.pdf"

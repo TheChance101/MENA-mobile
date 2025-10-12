@@ -51,7 +51,7 @@ class ExportTransactionsViewModel(
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
     ExportTransactionsState()
 ), ExportTransactionsListener {
- private var statement:Statement?=null
+
     override fun onBackClicked() {
         sendEffect(ExportTransactionsEffect.NavigateBack)
     }
@@ -141,8 +141,8 @@ class ExportTransactionsViewModel(
         }
         tryToExecute(
             onStart = ::onViewAndShareStart,
-            callee = ::generateTransactionsFile,
-            onSuccess = { pdfBytes -> onViewAndShareSuccess(pdfBytes) },
+            callee = ::getStatement,
+            onSuccess = { onViewAndShareSuccess() },
             onError = { error -> onViewAndShareError(error) },
             dispatcher = ioDispatcher
         )
@@ -156,8 +156,8 @@ class ExportTransactionsViewModel(
         }
         tryToExecute(
             onStart = ::onDownloadStart,
-            callee = ::generateTransactionsFile,
-            onSuccess = { pdfBytes -> downloadFile(pdfBytes) },
+            callee = ::getStatement,
+            onSuccess = { statement -> downloadStatement(statement) },
             onError = { error -> handleDownloadError(error) },
             dispatcher = ioDispatcher
         )
@@ -256,7 +256,7 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun onViewAndShareSuccess(pdfBytes: ByteArray) {
+    private fun onViewAndShareSuccess() {
         resetViewAndShareState()
         sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(getTransactionFilterParams()))
     }
@@ -283,29 +283,19 @@ class ExportTransactionsViewModel(
         showToast(messageRes = Res.string.downloading_started)
     }
     @OptIn(ExperimentalTime::class)
-    private suspend fun generateTransactionsFile(): StatementWithMetaData{
-        val metadata = if (currentState.isCustomFilterCardSelected) {
-            statementRepository.getTransactionPdfWithMetaData(
+    private suspend fun getStatement(): StatementWithMetaData{
+        return if (currentState.isCustomFilterCardSelected) {
+            statementRepository.getStatementWithMetadata(
                 getTransactionFilterParams()
             )
         } else {
-            statementRepository.getTransactionPdfWithMetaData()
+            statementRepository.getStatementWithMetadata()
         }
-
-        statement = Statement(
-            id = 1,
-            startDate = metadata.startDate,
-            endDate = metadata.endDate,
-            totalInflows = metadata.totalInflows,
-            totalOutflows = metadata.totalOutflows
-        )
-
-        return metadata.byteArray
     }
 
     private fun getTransactionFilterParams(): TransactionFilterParams {
         val formatter = LocalDate.Format {
-            year(); char('-'); monthNumber(); char('-');
+            year(); char('-'); monthNumber(); char('-')
             day(padding = Padding.ZERO)
         }
         val startDateTime = currentState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
@@ -329,33 +319,46 @@ class ExportTransactionsViewModel(
         )
     }
 
-    private fun downloadFile(pdfBytes: ByteArray) {
+    private fun downloadStatement(statement: StatementWithMetaData) {
         tryToExecute(
-            callee = { pdfHandler.downloadPdf(pdfData = pdfBytes, fileName = "statement") },
-            onSuccess = ::onDownloadSuccess,
+            callee = { pdfHandler.downloadPdf(pdfData = statement.byteArray, fileName = "statement") },
+            onSuccess = { filePath -> onDownloadSuccess(filePath, statement) },
             onError = ::onDownloadFailure,
             dispatcher = ioDispatcher
         )
     }
 
-    private suspend fun onDownloadSuccess(filePath: String) {
+    private fun onDownloadSuccess(filePath: String, statement: StatementWithMetaData) {
         resetDownloadState()
+
         val fileName = filePath.substringAfterLast("/")
-        saveStatementToDatabase(fileName)
+        saveStatementToDatabase(
+            filePath = filePath,
+            statement = Statement(
+                id = 0L,
+                startDate = statement.startDate,
+                endDate = statement.endDate,
+                totalInflows = statement.totalInflows,
+                totalOutflows = statement.totalOutflows,
+                fileName = fileName
+            )
+        )
+    }
+
+    private fun saveStatementToDatabase(filePath: String, statement: Statement) {
+        tryToExecute(
+            callee = { statementRepository.insertStatement(statement) },
+            onSuccess = { onSaveStatementSuccess(filePath) },
+            onError = ::onDownloadFailure
+        )
+    }
+
+    private suspend fun onSaveStatementSuccess(filePath: String) {
         showSnackBar(
             title = getString(Res.string.download_complete),
             message = getString(Res.string.download_success, filePath),
             isSuccess = true
         )
-    }
-
-    private suspend fun saveStatementToDatabase(fileName: String) {
-            statement?.let {
-                statementRepository.insertStatementWithFileName(
-                    fileName = fileName,
-                    statement = it,
-                )
-            }
     }
     private suspend fun onDownloadFailure(error: ErrorState) {
         resetDownloadState()

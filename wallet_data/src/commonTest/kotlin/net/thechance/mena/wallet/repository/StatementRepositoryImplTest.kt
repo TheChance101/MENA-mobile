@@ -40,9 +40,9 @@ class StatementRepositoryImplTest {
     fun `TransactionsPdf should return statement when API call is successful`() =
         runTest(testDispatcher) {
             everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
-            everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
+            everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statement
 
-            val result = statementRepository.getTransactionPdfWithMetaData()
+            val result = statementRepository.getStatementWithMetadata()
 
             assertContentEquals(statement, result)
         }
@@ -51,10 +51,10 @@ class StatementRepositoryImplTest {
     fun `TransactionsPdf should return last statement when TransactionsPdf has been called before`() =
         runTest(testDispatcher) {
             everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
-            everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
+            everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statement
 
-            statementRepository.getTransactionPdfWithMetaData()
-            val result = statementRepository.getTransactionPdfWithMetaData()
+            statementRepository.getStatementWithMetadata()
+            val result = statementRepository.getStatementWithMetadata()
 
             assertContentEquals(statement, result)
         }
@@ -63,10 +63,10 @@ class StatementRepositoryImplTest {
     @Test
     fun `getTransactionsPdf should return cached statement`() = runTest(testDispatcher) {
         everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
-        everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
+        everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statement
 
-        statementRepository.getTransactionPdfWithMetaData()
-        val result = statementRepository.getTransactionPdfWithMetaData()
+        statementRepository.getStatementWithMetadata()
+        val result = statementRepository.getStatementWithMetadata()
 
         assertContentEquals(statement, result)
     }
@@ -75,10 +75,10 @@ class StatementRepositoryImplTest {
     @Test
     fun `getTransactionsPdf should return null after expiration time`() = runTest(testDispatcher) {
         everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
-        everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
+        everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statement
 
-        statementRepository.getTransactionPdfWithMetaData()
-        val result = statementRepository.getTransactionPdfWithMetaData()
+        statementRepository.getStatementWithMetadata()
+        val result = statementRepository.getStatementWithMetadata()
         advanceUntilIdle()
 
         assertContentEquals(statement, result)

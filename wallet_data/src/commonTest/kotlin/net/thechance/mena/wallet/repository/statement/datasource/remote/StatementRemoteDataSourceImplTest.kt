@@ -15,18 +15,17 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.database.Statement
 import net.thechance.mena.wallet.data.database.StatementDao
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSourceImpl
+import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
-import kotlin.test.assertEquals
-
 
 
 class StatementRemoteDataSourceImplTest {
@@ -40,7 +39,7 @@ class StatementRemoteDataSourceImplTest {
         networkClient = createNetworkClient(getRespond = successPdfResponse)
         statementRemoteDataSourceImpl = StatementRemoteDataSourceImpl(networkClient,fakeDao)
 
-        val result = statementRemoteDataSourceImpl.getTransactionPdf(transactionFilterParams1)
+        val result = statementRemoteDataSourceImpl.getStatementWithMetaData(transactionFilterParams1)
 
         assertTrue(result.contentEquals(pdf1))
     }
@@ -51,7 +50,7 @@ class StatementRemoteDataSourceImplTest {
         statementRemoteDataSourceImpl = StatementRemoteDataSourceImpl(networkClient,fakeDao)
 
         assertFailsWith<UnknownException> {
-            statementRemoteDataSourceImpl.getTransactionPdf(null)
+            statementRemoteDataSourceImpl.getStatementWithMetaData(null)
         }
     }
     @Test

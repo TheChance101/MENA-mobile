@@ -1,7 +1,6 @@
 package net.thechance.mena.wallet.data.database
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 
@@ -13,8 +12,8 @@ interface StatementDao {
     @Query("SELECT * FROM statement ORDER BY  createdAt DESC  LIMIT :limit OFFSET :offset")
     suspend fun getAllStatement(limit:Int,offset:Int): List<LocalStatement>
 
-    @Delete
-    suspend fun deleteStatement(localStatement: LocalStatement):Boolean
+    @Query("DELETE FROM statement WHERE id = :id")
+    suspend fun deleteStatementById(id: Long)
 
     @Query("SELECT * FROM statement WHERE id = :id")
     suspend fun getStatementById(id: Long): LocalStatement

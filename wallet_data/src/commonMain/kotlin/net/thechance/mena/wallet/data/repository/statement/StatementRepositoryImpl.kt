@@ -1,8 +1,8 @@
 package net.thechance.mena.wallet.data.repository.statement
 
 import net.thechance.mena.wallet.data.database.StatementDao
-import net.thechance.mena.wallet.data.mapper.toLocal
 import net.thechance.mena.wallet.data.mapper.toEntity
+import net.thechance.mena.wallet.data.mapper.toLocal
 import net.thechance.mena.wallet.data.mapper.toStatementWithMetaData
 import net.thechance.mena.wallet.data.repository.statement.datasource.local.StatementLocalDataSource
 import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSource
@@ -22,24 +22,14 @@ class StatementRepositoryImpl(
     private val statementDao: StatementDao
 ) : StatementRepository {
 
-    override suspend fun getTransactionPdfWithMetaData(
+    override suspend fun getStatementWithMetadata(
         filterRequestParams: TransactionFilterParams?
     ): StatementWithMetaData {
         clearExpiredCachedStatements()
-        val dto = statementRemoteDataSource.getTransactionPdf(filterRequestParams)
+        val dto = statementRemoteDataSource.getStatementWithMetaData(filterRequestParams)
         return dto.toStatementWithMetaData().also {
             cacheRequest(it.byteArray, filterRequestParams)
         }
-    }
-
-
-    override suspend fun insertStatementWithFileName(
-        fileName: String,
-        statement: Statement
-    ) {
-        statement.copy(fileName = fileName)
-        statementDao.insertStatement(statement.toLocal())
-
     }
 
     override suspend fun getStatements(
@@ -52,17 +42,20 @@ class StatementRepositoryImpl(
     }
 
     override suspend fun insertStatement(statement: Statement) {
-        statementRemoteDataSource
         statementDao.insertStatement(statement.toLocal())
     }
 
 
-    override suspend fun deleteStatement(statement: Statement): Boolean {
-        return statementDao.deleteStatement(statement.toLocal())
+    override suspend fun deleteStatementById(id: Long) {
+        statementDao.deleteStatementById(id)
     }
 
     override suspend fun getStatementById(id: Long): Statement {
         return statementDao.getStatementById(id).toEntity()
+    }
+
+    override suspend fun getCachedStatement(filterParams: TransactionFilterParams?): ByteArray? {
+        return statementLocalDataSource.getStatement(filterParams.key())
     }
 
     private suspend fun cacheRequest(

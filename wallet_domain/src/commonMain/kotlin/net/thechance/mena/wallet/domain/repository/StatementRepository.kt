@@ -8,7 +8,7 @@ import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.uuid.ExperimentalUuidApi
 
 interface StatementRepository {
-    suspend fun getTransactionPdfWithMetaData(
+    suspend fun getStatementWithMetadata(
         filterRequestParams: TransactionFilterParams? = null
     ): StatementWithMetaData
 
@@ -17,11 +17,9 @@ interface StatementRepository {
         pageSize: Int,
     ): List<Statement>
     suspend fun insertStatement(statement: Statement)
-    suspend fun deleteStatement(statement: Statement):Boolean
+    suspend fun deleteStatementById(id: Long)
     suspend fun getStatementById(id:Long): Statement
-    suspend fun insertStatementWithFileName(
-        fileName: String,
-        statement: Statement
-    )
+
+    suspend fun getCachedStatement(filterParams: TransactionFilterParams?=null): ByteArray?
 
 }
