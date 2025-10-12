@@ -39,10 +39,10 @@ class HomeViewModel(
     }
 
     init {
-        loadChatsSummary()
+        onLoadChatsSummaryRequested()
     }
 
-    fun loadChatsSummary() {
+    override fun onLoadChatsSummaryRequested() {
         viewModelScope.launch {
             paginator.loadNextItems()
         }

@@ -16,11 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.chats
 import mena.core_chat_presentation.generated.resources.ic_coin
@@ -44,16 +44,21 @@ import kotlin.uuid.ExperimentalUuidApi
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel<HomeViewModel>()
 ) {
-    HomeContent(viewModel)
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    HomeContent(
+        state = state,
+        interactionListener = viewModel
+    )
 }
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun HomeContent(
-    viewModel: HomeViewModel,
+    state: HomeScreenState,
+    interactionListener: HomeScreenInteractionListener,
     modifier: Modifier = Modifier
 ) {
-    val state by viewModel.state.collectAsState()
     val listState = rememberLazyListState()
 
     Box(
@@ -80,7 +85,7 @@ private fun HomeContent(
                             painter = painterResource(Res.drawable.ic_coin),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp)
-                                .clickable { viewModel.onWalletClicked() })
+                                .clickable { interactionListener.onWalletClicked() })
                     }
                 }
             )
@@ -126,7 +131,7 @@ private fun HomeContent(
                         ) { chat ->
                             ChatItem(
                                 chat = chat,
-                                onChatClicked = viewModel::onChatClicked,
+                                onChatClicked = interactionListener::onChatClicked,
                             )
                         }
 
@@ -148,7 +153,7 @@ private fun HomeContent(
         }
         FabButton(
             painter = painterResource(Res.drawable.ic_plus),
-            onClick = viewModel::onNewChatClicked,
+            onClick = interactionListener::onNewChatClicked,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(Theme.spacing._16)
@@ -159,6 +164,6 @@ private fun HomeContent(
         list = state.chats,
         listState = listState,
         buffer = 5, // Load next page when 5 items are left
-        loadNextItems = viewModel::loadChatsSummary
+        loadNextItems = interactionListener::onLoadChatsSummaryRequested
     )
 }
