@@ -3,6 +3,7 @@
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
@@ -38,9 +39,3 @@ data class MessageUiState(
     val isVisibleMessageInfo: Boolean = false,
     val content: MessageContent
 )
-
-sealed class MessageContent{
-    data class Text(val text: String): MessageContent()
-    data class ImageUrl(val imageUrls: List<String>): MessageContent()
-    data class ImageByteArray(val images: List<ByteArray>): MessageContent()
-}

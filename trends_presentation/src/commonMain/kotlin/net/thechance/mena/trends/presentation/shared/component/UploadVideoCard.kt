@@ -78,7 +78,7 @@ internal fun UploadVideoCard(
                     color = Theme.colorScheme.shadeSecondary
                 )
             }
-            thumbnail?.let{
+            thumbnail?.let {
                 AsyncImage(
                     modifier = Modifier.fillMaxWidth(),
                     model = thumbnail,
@@ -87,7 +87,7 @@ internal fun UploadVideoCard(
                 )
             }
         }
-        thumbnail?.let{
+        thumbnail?.let {
             EditButton(
                 modifier = Modifier
                     .offset(y = 16.dp)
@@ -98,16 +98,8 @@ internal fun UploadVideoCard(
     }
 }
 
-@Composable
 @Preview
+@Composable
 private fun UploadVideoCardPreview() {
-    MenaTheme {
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .background(Color.White)
-                .padding(16.dp)
-        ) {
-            UploadVideoCard()
-        }
-    }
+    MenaTheme { UploadVideoCard() }
 }
