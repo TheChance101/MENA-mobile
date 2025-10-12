@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +25,6 @@ import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
-import mena.dukan_presentation.generated.resources.ic_store_location
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -180,9 +180,13 @@ private fun DukanIconButton(
                     Modifier.shimmerLoading(true, Theme.radius.full)
                 } else {
                     Modifier.background(iconColor.copy(alpha = 0.04f))
+                        .clickable(
+                            onClick = onIconClick,
+                            indication = null,
+                            interactionSource = MutableInteractionSource()
+                        )
                 }
-                    .padding(vertical = Theme.spacing._12+Theme.spacing._2, horizontal = 43.dp)
-                    .clickable(onClick = onIconClick)
+                    .padding(vertical = Theme.spacing._12 + Theme.spacing._2, horizontal = 43.dp)
             )
     )
 }
