@@ -24,8 +24,8 @@ import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
-import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
@@ -128,7 +128,7 @@ fun MessageLayout(
                     )
             ) {
                 MessageContent(
-                    messageContentUiState = message.content,
+                    messageContent = message.content,
                     shape = messageShape,
                     onImageClick = { index ->
                         onMessageImageClick(message, index)

@@ -35,8 +35,9 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
+import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageContentUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.utils.formatAsPastDateTime
@@ -55,8 +56,11 @@ fun FullImagePagerView(
     onCloseClick: () -> Unit,
     onDownloadClick: (url: String) -> Unit,
 ) {
-    if (message == null || message.content !is MessageContentUiState.ImageUrl) return
-    val images = message.content.imageUrls
+    if (message == null || message.content !is MessageContent.Images) return
+    val imagesSource = message.content.source
+    if (imagesSource !is ImagesSource.Remote) return
+
+    val images = imagesSource.urls
 
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { images.size })
     Box(

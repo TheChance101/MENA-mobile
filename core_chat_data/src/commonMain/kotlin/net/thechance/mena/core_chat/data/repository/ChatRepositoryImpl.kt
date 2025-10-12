@@ -18,10 +18,10 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
-import net.thechance.mena.core_chat.data.source.remote.imageDownloader.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toSendMessageRequestDto
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.domain.entity.Chat

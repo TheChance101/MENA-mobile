@@ -28,8 +28,8 @@ import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
-import net.thechance.mena.core_chat.data.source.remote.imageDownloader.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException

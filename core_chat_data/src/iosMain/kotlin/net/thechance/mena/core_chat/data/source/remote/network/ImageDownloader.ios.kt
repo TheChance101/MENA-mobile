@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.data.source.remote.imageDownloader
+package net.thechance.mena.core_chat.data.source.remote.network
 
 import platform.Foundation.NSData
 import platform.Foundation.NSURL

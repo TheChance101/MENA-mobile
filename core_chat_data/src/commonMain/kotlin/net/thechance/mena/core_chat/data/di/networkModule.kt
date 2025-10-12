@@ -1,8 +1,8 @@
 package net.thechance.mena.core_chat.data.di
 
 import kotlinx.serialization.json.Json
-import net.thechance.mena.core_chat.data.source.remote.imageDownloader.ImageDownloader
-import net.thechance.mena.core_chat.data.source.remote.imageDownloader.ImageDownloaderImp
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
 import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient

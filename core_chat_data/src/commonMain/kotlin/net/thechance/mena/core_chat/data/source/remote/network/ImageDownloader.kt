@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.data.source.remote.imageDownloader
+package net.thechance.mena.core_chat.data.source.remote.network
 
 interface ImageDownloader {
     suspend fun downloadImageToGallery(url: String): Boolean
