@@ -30,6 +30,8 @@ import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
+import net.thechance.mena.identity.data.utils.mockHttpClient
+import net.thechance.mena.identity.data.utils.mockHttpClientError
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -55,40 +57,6 @@ class UserRepositoryImplTest {
     @After
     fun tearDown() {
         Dispatchers.resetMain()
-    }
-
-    private fun mockHttpClient(response: ProfileResponseDto): HttpClient {
-        return HttpClient(MockEngine) {
-            install(ContentNegotiation) {
-                json()
-            }
-            engine {
-                addHandler { request ->
-                    respond(
-                        content = Json.encodeToString(response),
-                        status = HttpStatusCode.OK,
-                        headers = headersOf(
-                            HttpHeaders.ContentType, ContentType.Application.Json.toString()
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun mockHttpClientError(status: HttpStatusCode): HttpClient {
-        return HttpClient(MockEngine) {
-            install(ContentNegotiation) {
-                json()
-            }
-            engine {
-                addHandler {
-                    respondError(
-                        status = status
-                    )
-                }
-            }
-        }
     }
 
     @Test
