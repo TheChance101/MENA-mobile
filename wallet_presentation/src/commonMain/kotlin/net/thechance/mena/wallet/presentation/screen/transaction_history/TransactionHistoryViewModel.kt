@@ -21,7 +21,6 @@ import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.Paginator
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -177,8 +176,8 @@ class TransactionHistoryViewModel(
         }
 
         showSnackBar(
-            titleRes = Res.string.error,
-            messageRes = Res.string.failed_to_load_date_picker,
+            title = getString(Res.string.error),
+            message = getString(Res.string.failed_to_load_date_picker),
             isSuccess = false
         )
     }
@@ -304,18 +303,17 @@ class TransactionHistoryViewModel(
 
     private fun showInvalidDatesSnackBar() {
         viewModelScope.launch {
-            val x = getString(Res.string.start_date_must_be_before_end_date)
             showSnackBar(
-                titleRes = Res.string.error,
-                messageRes = Res.string.start_date_must_be_before_end_date,
+                title = getString(Res.string.error),
+                message = getString(Res.string.start_date_must_be_before_end_date),
                 isSuccess = false
             )
         }
     }
 
     private suspend fun showSnackBar(
-        titleRes: StringResource,
-        messageRes: StringResource,
+        title: String,
+        message: String,
         isSuccess: Boolean,
         durationMillis: Long = 3000L
     ) {
@@ -323,8 +321,8 @@ class TransactionHistoryViewModel(
             oldState.copy(
                 snackBar = SnackBarState(
                     isVisible = true,
-                    titleRes = titleRes,
-                    messageRes = messageRes,
+                    title = title,
+                    message = message,
                     isSuccess = isSuccess
                 )
             )
