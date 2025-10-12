@@ -210,7 +210,8 @@ private fun AnimatedStatementCard(
             scaleX = scale
             scaleY = scale
             transformOrigin = TransformOrigin(0f, 0f)
-        }
+        },
+        isEditMode = true,
     )
 }
 

@@ -42,6 +42,7 @@ fun StatementHistoryCard(
     totalOutflow: String,
     onStatementCardClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    isEditMode: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -52,13 +53,16 @@ fun StatementHistoryCard(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
-        StatementHistoryIcon()
+        if (!isEditMode) {
+            StatementHistoryIcon()
+        }
 
         StatementHistoryContent(
             startDate = startDate,
             endDate = endDate,
             totalInflow = totalInflow,
-            totalOutflow = totalOutflow
+            totalOutflow = totalOutflow,
+            isEditMode = isEditMode
         )
     }
 }
@@ -82,8 +86,11 @@ private fun StatementHistoryContent(
     endDate: String,
     totalInflow: String,
     totalOutflow: String,
+    isEditMode: Boolean = false,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
+    Column(
+        modifier = Modifier.padding(start = if (isEditMode) 4.dp else 0.dp),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
         Text(
             text = stringResource(Res.string.date_range, startDate, endDate),
             style = Theme.typography.body.small,
