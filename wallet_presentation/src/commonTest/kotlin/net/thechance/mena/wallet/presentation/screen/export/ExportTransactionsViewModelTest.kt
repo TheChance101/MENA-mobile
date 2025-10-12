@@ -228,7 +228,7 @@ class ExportTransactionsViewModelTest {
 
         viewModel.state.test {
             viewModel.onViewAndShareClicked()
-            skipItems(3)
+            //skipItems(3)
 
             val state = awaitItem()
             assertSnackBarState(
@@ -683,7 +683,7 @@ class ExportTransactionsViewModelTest {
     }
 
     private fun createMockStatementWithMetadata(
-        byteArray: ByteArray = byteArrayOf(1, 2, 3),
+        byteArray: ByteArray = byteArrayOf(0),
         startDate: LocalDate = LocalDate(2025, 9, 1),
         endDate: LocalDate = LocalDate(2025, 9, 30),
         totalInflows: Double = 1000.0,

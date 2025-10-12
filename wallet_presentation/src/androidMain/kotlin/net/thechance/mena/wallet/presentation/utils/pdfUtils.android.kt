@@ -20,16 +20,11 @@ import org.koin.core.context.GlobalContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-
 @Single
-actual class PdfHandler{
-
-    private val context = GlobalContext.get().get<Context>()
-
-    actual suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
+class PdfHandlerImpl(private val context: Context) : PdfHandler {
+    override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
         return withContext(Dispatchers.IO) {
             try {
-
                 val tempFile = File(context.cacheDir, "statement.pdf")
                     .apply { writeBytes(pdfData) }
 
@@ -44,27 +39,16 @@ actual class PdfHandler{
                 buildList {
                     repeat(renderer.pageCount) { pageNum ->
                         val page = renderer.openPage(pageNum)
-
                         val width = (page.width * IMAGE_SCALE).toInt()
                         val height = (page.height * IMAGE_SCALE).toInt()
-
                         val bitmap = createBitmap(width, height)
-
                         val matrix = Matrix().apply {
                             postScale(IMAGE_SCALE, IMAGE_SCALE)
                         }
-
-                        page.render(
-                            bitmap,
-                            null,
-                            matrix,
-                            PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
-                        )
-
+                        page.render(bitmap, null, matrix, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                         val output = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
                         add(output.toByteArray())
-
                         bitmap.recycle()
                         page.close()
                     }
@@ -77,7 +61,7 @@ actual class PdfHandler{
         }
     }
 
-    actual suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
+    override suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
         val contentUri = withContext(Dispatchers.IO) {
             val file = File(context.cacheDir, fileName)
             file.writeBytes(pdfData)
@@ -96,11 +80,10 @@ actual class PdfHandler{
 
         val chooserIntent = Intent.createChooser(shareIntent, "Share PDF file")
         chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
         context.startActivity(chooserIntent)
     }
 
-    actual suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
+    override suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
         return withContext(Dispatchers.IO) {
             val specialFileName = generateSpecialFileName(fileName)
 
@@ -163,4 +146,9 @@ actual class PdfHandler{
         const val APP_DOWNLOADS_FOLDER = "MENA"
         const val MIME_TYPE = "application/pdf"
     }
+}
+
+actual fun getPdfHandler(): PdfHandler {
+    val context = GlobalContext.get().get<Context>()
+    return PdfHandlerImpl(context)
 }
