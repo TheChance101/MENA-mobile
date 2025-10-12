@@ -91,8 +91,10 @@ private fun AttachmentBottomSheetContent(
         scope = scope,
         onResult = { byteArrays ->
             attachmentsInteractionListener.onSendImageClicked(byteArrays)
+            attachmentsInteractionListener.onPhotoClicked()
         }
     )
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -102,7 +104,6 @@ private fun AttachmentBottomSheetContent(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
             onClick = {
-                attachmentsInteractionListener.onPhotoClicked()
                 imagePickerLauncher.launch()
             }
         )

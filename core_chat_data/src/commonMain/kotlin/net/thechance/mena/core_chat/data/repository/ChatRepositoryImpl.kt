@@ -124,7 +124,7 @@ class ChatRepositoryImpl(
                 uploadImagesMessage(
                     imageNames = byteArrays.mapIndexed { index, _ -> "chat_${chatId}_${sendAt}_image_$index" },
                     images = byteArrays,
-                    chatId = chatId.toString()
+                    chatId = chatId
                 ).toDomain()?.toSendMessageRequestDto() ?: error("Invalid message content")
             }
             else -> toSendMessageRequestDto()
@@ -134,7 +134,7 @@ class ChatRepositoryImpl(
     private suspend fun uploadImagesMessage(
         imageNames: List<String>,
         images: List<ByteArray>,
-        chatId: String
+        chatId: Uuid
     ): MessageDto {
         require(imageNames.size == images.size) {
             "imageNames and images must have the same size."
@@ -145,8 +145,8 @@ class ChatRepositoryImpl(
         return tryNetworkCall<MessageDto>(
             bodyType = typeInfo<MessageDto>()
         ) {
-            client.post("/chat/image") {
-                setBody(files.buildMultiPartFormData(fieldName = "images", chatId = chatId))
+            client.post("$IMAGES_ENDPOINT/$chatId") {
+                setBody(files.buildMultiPartFormData(fieldName = IMAGES_FILES_PARAM))
             }
         } ?: error("Failed to upload images")
     }
@@ -210,6 +210,8 @@ class ChatRepositoryImpl(
         const val WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
+        const val IMAGES_ENDPOINT = "/chat/image"
+        const val IMAGES_FILES_PARAM = "images"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
     }
 }

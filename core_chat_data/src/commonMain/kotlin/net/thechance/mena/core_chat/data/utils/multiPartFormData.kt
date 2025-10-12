@@ -7,13 +7,11 @@ import io.ktor.http.HttpHeaders
 
 
 fun List<Pair<String, ByteArray>>.buildMultiPartFormData(
-    fieldName: String,
-    chatId: String
+    fieldName: String
 ): MultiPartFormDataContent {
     return MultiPartFormDataContent(
         formData {
 
-            append("chatId", chatId)
             forEach { (name, byteArray) ->
                 val extension = byteArray.getExtension()
                 val formattedFileName = formatFileName(name, extension)

@@ -11,7 +11,9 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
+import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
@@ -84,8 +86,7 @@ class ChatViewModel(
             return
         }
 
-        val content = MessageContent.ImageByteArray(imageByteArrays)
-
+        val content = MessageContent.Images(ImagesSource.Local(imageByteArrays))
         sendImageMessage(chatId, senderId, content)
     }
 
@@ -245,10 +246,7 @@ class ChatViewModel(
 
         messages
             .filter { it.status == MessageStatus.LOADING }
-            .forEach {
-                val content = MessageContent.Text(it.text)
-                sendMessage(chatId = it.chatId, senderId = senderId, content = content)
-            }
+            .forEach { sendMessage(chatId = it.chatId, senderId = senderId, content = it.content) }
     }
 
     private fun observeReadMessages() {
