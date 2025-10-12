@@ -25,7 +25,7 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now

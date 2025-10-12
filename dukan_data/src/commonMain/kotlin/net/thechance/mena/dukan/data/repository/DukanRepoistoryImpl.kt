@@ -12,12 +12,15 @@ import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanDto
 import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
+import net.thechance.mena.dukan.data.repository.dto.DukanResponseDto
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
 import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
 import net.thechance.mena.dukan.data.repository.mapper.toCategoryList
 import net.thechance.mena.dukan.data.repository.mapper.toColorsList
 import net.thechance.mena.dukan.data.repository.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.repository.mapper.toDomain
+import net.thechance.mena.dukan.data.repository.mapper.toDomain
+import net.thechance.mena.dukan.data.repository.mapper.toDomainPreview
 import net.thechance.mena.dukan.data.repository.mapper.toMyDukanStatus
 import net.thechance.mena.dukan.data.repository.mockData.MockDukanData
 import net.thechance.mena.dukan.data.repository.util.buildSinglePartFormData
@@ -25,6 +28,7 @@ import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.DukanPreview
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
