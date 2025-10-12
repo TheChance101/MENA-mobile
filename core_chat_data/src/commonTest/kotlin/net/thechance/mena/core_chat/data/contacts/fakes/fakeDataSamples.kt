@@ -10,6 +10,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -73,7 +74,7 @@ fun createMessage(
     id = id,
     senderId = senderId,
     chatId = chatId,
-    text = text,
+    content = MessageContent.Text(text),
     sendAt = sendAt,
     status = status
 )
