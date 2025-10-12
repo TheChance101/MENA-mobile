@@ -29,6 +29,7 @@ import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_gallery
 import mena.core_chat_presentation.generated.resources.photo
 import net.thechance.mena.core_chat.presentation.screen.chat.AttachmentsInteractionListener
+import net.thechance.mena.core_chat.presentation.utils.camera.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -94,6 +95,16 @@ private fun AttachmentBottomSheetContent(
             attachmentsInteractionListener.onGalleryClicked()
         }
     )
+
+    val cameraManager = rememberCameraManager(
+        onResult = { sharedImage ->
+            sharedImage?.toByteArray()?.let { byteArray ->
+                attachmentsInteractionListener.onSendImageClicked(listOf(byteArray))
+                attachmentsInteractionListener.onCameraClicked()
+            }
+        }
+    )
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -102,15 +113,13 @@ private fun AttachmentBottomSheetContent(
         AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
-            onClick = {
-                imagePickerLauncher.launch()
-            }
+            onClick = { imagePickerLauncher.launch() }
         )
 
         AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_camera,
             titleRes = Res.string.camera,
-            onClick = attachmentsInteractionListener::onCameraClicked
+            onClick = { cameraManager.launch() }
         )
     }
 }
@@ -118,7 +127,6 @@ private fun AttachmentBottomSheetContent(
 @Composable
 @Preview()
 private fun PreviewAddPhotoBottomSheet() {
-
     MenaTheme {
         Box(
             modifier = Modifier
@@ -134,7 +142,6 @@ private fun PreviewAddPhotoBottomSheet() {
                     override fun onCloseAttachmentClicked() {}
                 }
             )
-
         }
     }
 }
