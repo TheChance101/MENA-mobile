@@ -16,6 +16,7 @@ import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun PaymentResultScreen(
@@ -25,28 +26,26 @@ fun PaymentResultScreen(
     amount: Double,
     onNavigateBackClicked: () -> Unit,
     onNavigateToTransactionDetailsClicked: (String) -> Unit,
-    viewModel: PaymentResultViewModel = koinViewModel()
+    viewModel: PaymentResultViewModel = koinViewModel(parameters = {
+        parametersOf(
+            transactionId, submitTransactionResultStatus
+        )
+    })
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEffect(
-        effect = viewModel.uiEffect,
-        onEffect = { effect ->
+        effect = viewModel.uiEffect, onEffect = { effect ->
             onPaymentResultEffect(
                 effect,
                 receiverName,
                 onNavigateBackClicked = onNavigateBackClicked,
-                onNavigateToTransactionDetailsClicked = { receiverId ->
-                    onNavigateToTransactionDetailsClicked(receiverId)
-                }
-            )
-        }
-    )
+                onNavigateToTransactionDetailsClicked = { transactionId ->
+                    onNavigateToTransactionDetailsClicked(transactionId)
+                })
+        })
     PaymentResultScreenContent(
-        receiverName=receiverName,
-        amount = amount,
-        state = state,
-        interactionListener = viewModel
+        receiverName = receiverName, amount = amount, state = state, interactionListener = viewModel
     )
 }
 
@@ -72,8 +71,7 @@ private fun PaymentResultScreenContent(
                     onLeadingClick = interactionListener::onBackClicked
                 )
             }
-        }
-    ) {
+        }) {
         PaymentStatusBody(
             receiverName = receiverName,
             amount = amount,
@@ -83,7 +81,6 @@ private fun PaymentResultScreenContent(
     }
 }
 
-
 private fun onPaymentResultEffect(
     effect: PaymentResultEffect,
     receiverId: String,
@@ -92,7 +89,10 @@ private fun onPaymentResultEffect(
 ) {
     when (effect) {
         is PaymentResultEffect.NavigateBack -> onNavigateBackClicked()
-        is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(receiverId)
+        is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
+            receiverId
+        )
+
         is PaymentResultEffect.NavigateToPreviousScreen -> TODO()
     }
 }

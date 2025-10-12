@@ -93,7 +93,7 @@ class ConfirmPaymentViewModel(
                 dummyTransactionId,
                 submitTransactionResultStatus = when(error){
                     ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
-                    else -> SubmitTransactionResultStatus.UNKNOWN_ERORR
+                    else -> SubmitTransactionResultStatus.UNKNOWN_ERROR
                 }
             )
         )

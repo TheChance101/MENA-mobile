@@ -22,7 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PaymentStatusBody(
     interactionListener: PaymentResultInteractionListener,
-    paymentStatus: SubmitTransactionResultStatus = SubmitTransactionResultStatus.UNKNOWN_ERORR,
+    paymentStatus: SubmitTransactionResultStatus = SubmitTransactionResultStatus.UNKNOWN_ERROR,
     description: String = stringResource(Res.string.connection_lost_try_again),
     receiverName: String = "",
     amount: Double = 0.0
@@ -32,7 +32,7 @@ fun PaymentStatusBody(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (paymentStatus == SubmitTransactionResultStatus.UNKNOWN_ERORR) {
+        if (paymentStatus == SubmitTransactionResultStatus.UNKNOWN_ERROR) {
             PaymentResultCard(
                 image = painterResource(Res.drawable.transaction_failed),
                 title = stringResource(Res.string.transaction_failed),
