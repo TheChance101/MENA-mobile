@@ -252,8 +252,6 @@ class ChatViewModelTest {
 
         val finalMessages = chatViewModel.state.value.chatListItems.currentUiMessages()
         assertThat(finalMessages.isNotEmpty()).isTrue()
-        // After successful send, the message should be removed from UI (handled by onSendMessageSuccess)
-        // or status should be updated. Check that sendMessage was called.
         verifySuspend { repository.sendMessage(any()) }
     }
 

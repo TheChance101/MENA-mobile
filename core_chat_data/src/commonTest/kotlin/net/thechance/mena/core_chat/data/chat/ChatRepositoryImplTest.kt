@@ -153,7 +153,7 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should return chat when getChatByContactChatId is successful`() = runTest {
+    fun `should return chat when getChatById is successful`() = runTest {
         val testChatId = Uuid.random()
         val chatDto = createChatDto(id = testChatId.toString(), name = "Chat By Id")
 
@@ -180,7 +180,7 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should throw NotFoundException when getChatByContactChatId returns 404`() = runTest {
+    fun `should throw NotFoundException when getChatById returns 404`() = runTest {
         val testChatId = Uuid.random()
 
         httpClient = createHttpClient(
