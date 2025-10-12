@@ -46,15 +46,19 @@ class DukansViewModel(
         updateState {
             copy(
                 dukans = dukans.copy(
-                    items = dukans.items.map { item ->
-                        if (item.id == dukan.id) {
-                            item.copy(isFavorite = !item.isFavorite)
-                        } else {
-                            item
-                        }
-                    }
+                    items = dukans.items.toggleFavoriteBest(dukan.id)
                 )
             )
+        }
+    }
+
+    private fun List<DukanUiState>.toggleFavoriteBest(dukanId: String): List<DukanUiState> {
+        return map { item ->
+            if (item.id == dukanId) {
+                item.copy(isFavorite = !item.isFavorite)
+            } else {
+                item
+            }
         }
     }
 
