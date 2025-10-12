@@ -17,4 +17,5 @@ interface ChatRepository {
     suspend fun getChatById(chatId : Uuid): Chat
     suspend fun disconnect()
     suspend fun getLocalMessages(chatId: Uuid): List<Message>
+    suspend fun downloadImage(url: String)
 }

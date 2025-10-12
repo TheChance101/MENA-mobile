@@ -2,21 +2,29 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
+import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -30,21 +38,25 @@ fun ChatScreen(
         state = state,
         interactions = viewModel
     )
-
 }
+
 @Composable
 fun ChatScreenContent(
     state: ChatScreenState,
     interactions: ChatInteractionListener
 ) {
-    Box(contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         Scaffold(
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,
                     onMenuClick = {},
                     onBackClick = interactions::onBackClicked,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                 )
             },
             bottomBar = {
@@ -57,7 +69,6 @@ fun ChatScreenContent(
                         .fillMaxWidth()
                         .background(Theme.colorScheme.background.surface)
                 )
-
             },
             overlays = {
                 ChatScreenOverlays(
@@ -72,17 +83,38 @@ fun ChatScreenContent(
                 items = state.chatListItems,
                 chatAvatarUrl = state.chatAvatarUrl,
                 onMessageClick = interactions::onMessageClicked,
+                onMessageImageClick = interactions::onMessageImageClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
             )
-
         }
 
-        if (state.isAttachmentsOverlayVisible) {
+        AnimatedVisibility(
+            visible = state.isImagePagerVisible,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            val isMine = state.selectedMessage?.isMine == true
+            val senderName = if (isMine) stringResource(Res.string.you) else state.chatName
+            val senderImageUrl = if (isMine) "" else state.chatAvatarUrl // todo: add user image
+
+            FullImagePagerView(
+                message = state.selectedMessage,
+                senderName = senderName,
+                senderImageUrl = senderImageUrl,
+                initialPage = state.currentImageIndexForPreview,
+                onCloseClick = interactions::onCloseImageViewClicked,
+                onDownloadClick = interactions::onDownloadImageClicked,
+            )
+        }
+
+        AnimatedVisibility(
+            visible = state.isAttachmentsOverlayVisible,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit= slideOutVertically(targetOffsetY = { it }),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
             AttachmentsBottomSheet(
-                modifier = Modifier.align(Alignment.BottomCenter),
                 attachmentsInteractionListener = interactions
             )
         }
     }
-
 }
