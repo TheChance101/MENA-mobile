@@ -7,7 +7,8 @@ data class MessageDto(
     val id: String,
     val senderId: String,
     val chatId: String,
-    val text: String,
+    val text: String? = null, // temp null until handling multiple image types in backend
+    val images: List<String>? = null,
     val sendAt: String,
     val isRead: Boolean
 )
@@ -15,7 +16,8 @@ data class MessageDto(
 @Serializable
 data class SendMessageDto(
     val chatId: String,
-    val text: String,
+    val text: String? = null,
+    val images: List<String>? = null
 )
 
 @Serializable
