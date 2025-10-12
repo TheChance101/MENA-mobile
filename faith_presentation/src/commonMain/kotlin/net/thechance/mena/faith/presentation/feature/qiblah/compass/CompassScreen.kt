@@ -25,11 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.device_angle_to_qiblah
 import mena.faith_presentation.generated.resources.ic_direction
+import mena.faith_presentation.generated.resources.ic_islamic_pattern
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_qiblah
 import mena.faith_presentation.generated.resources.qibla_direction
@@ -86,22 +89,32 @@ private fun Content(
             )
         },
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .background(color = Theme.colorScheme.background.surface)
-                .padding(horizontal = Theme.spacing._16),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CompassView(azimuth = uiState.azimuth, qiblahDirection = uiState.qiblahDirection)
-
-            TextAngleToQiblah(
-                azimuth = uiState.azimuth,
-                uiState.qiblahDirection,
-                modifier = Modifier.padding(top = Theme.spacing._16)
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(Res.drawable.ic_islamic_pattern),
+                contentDescription = "ic_islamic_pattern",
+                modifier = Modifier.zIndex(2f)
+                    .align(Alignment.BottomStart),
+                contentScale = ContentScale.Fit
             )
-        }
 
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Theme.colorScheme.background.surface)
+                    .padding(horizontal = Theme.spacing._16),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CompassView(azimuth = uiState.azimuth, qiblahDirection = uiState.qiblahDirection)
+
+                TextAngleToQiblah(
+                    azimuth = uiState.azimuth,
+                    uiState.qiblahDirection,
+                    modifier = Modifier.padding(top = Theme.spacing._16)
+                )
+            }
+        }
     }
 }
 
