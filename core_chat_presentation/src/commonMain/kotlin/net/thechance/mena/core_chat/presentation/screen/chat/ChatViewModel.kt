@@ -11,6 +11,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
+import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
@@ -37,22 +38,38 @@ class ChatViewModel(
     private var uiMessages: List<MessageUiState> = emptyList()
 
     init {
+        val chatId = getUuidOrNull(chatArgs.chatId)
+        if (chatId == null) {
+            onGetChatError()
+        } else {
+            tryToExecute(
+                execute = { chatRepository.getChatByContactChatId(chatId) },
+                onSuccess = ::onGetChatSuccess,
+                onError = { onGetChatError() }
+            )
+        }
+    }
+
+    private fun onGetChatSuccess(chat: Chat) {
         updateInitialState(
-            chatId = getUuidOrNull(chatArgs.chatId),
-            requesterUserId = getUuidOrNull(chatArgs.chatRequesterId),
-            chatName = chatArgs.chatName,
-            chatAvatarUrl = chatArgs.chatImageUrl
+            chatId = chat.id,
+            requesterUserId = chat.requesterId,
+            chatName = chat.name,
+            chatAvatarUrl = chat.imageUrl.orEmpty()
         )
     }
 
+    private fun onGetChatError() {
+        showErrorSnackBar(Res.string.error_cant_get_messages)
+        popBackStack()
+    }
+
     private fun updateInitialState(
-        chatId: Uuid?,
-        requesterUserId: Uuid?,
+        chatId: Uuid,
+        requesterUserId: Uuid,
         chatName: String,
         chatAvatarUrl: String
     ) {
-        if (chatId == null || requesterUserId == null) return showSnackBarAndNavigateBack()
-
         updateState { state ->
             state.copy(
                 chatId = chatId,
@@ -66,13 +83,6 @@ class ChatViewModel(
         loadChatHistory(chatId)
         observeReadMessages()
     }
-
-    private fun showSnackBarAndNavigateBack() {
-        showErrorSnackBar(Res.string.error_cant_get_messages)
-
-        popBackStack()
-    }
-
 
     override fun onBackClicked() {
         popBackStack()
@@ -267,7 +277,6 @@ class ChatViewModel(
         }
 
     }
-
 
     private fun updateStateWithNewMessage(newMessage: MessageUiState) {
         val messages = uiMessages.toMutableList()
