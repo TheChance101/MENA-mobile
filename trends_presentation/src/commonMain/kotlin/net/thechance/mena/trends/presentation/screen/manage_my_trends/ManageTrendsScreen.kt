@@ -106,7 +106,7 @@ private fun ManageTrendsScreenContent(
         ) {
 
         AsyncImage(
-            model =  state.profile.profileImageUrl.ifEmpty {  } ,
+            model =  state.profile.profileImageUrl,
             contentDescription = stringResource(Res.string.profile_image_desc),
             error = painterResource(Res.drawable.ic_placeholder_profile),
             modifier = Modifier
