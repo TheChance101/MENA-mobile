@@ -83,7 +83,7 @@ class DukanRepositoryImpl(
         return safeApiCall {
             client.post("$BASE_URL/image") {
                 setBody(
-                    buildSinglePartFormData(fileName, fileBytes,"file")
+                    buildSinglePartFormData(fileName, fileBytes, "file")
                 )
             }
         }
