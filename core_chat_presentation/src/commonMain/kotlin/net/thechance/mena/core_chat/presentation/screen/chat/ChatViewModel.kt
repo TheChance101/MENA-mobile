@@ -42,6 +42,14 @@ class ChatViewModel(
 
     init {
         val chatId = getUuidOrNull(chatArgs.chatId)
+
+        updateState { state ->
+            state.copy(
+                chatId = chatId,
+                chatName = chatArgs.chatName
+            )
+        }
+
         if (chatId == null) {
             onGetChatError()
         } else {
@@ -57,7 +65,6 @@ class ChatViewModel(
         updateInitialState(
             chatId = chat.id,
             requesterUserId = chat.requesterId,
-            chatName = chat.name,
             chatAvatarUrl = chat.imageUrl.orEmpty()
         )
     }
@@ -70,13 +77,11 @@ class ChatViewModel(
     private fun updateInitialState(
         chatId: Uuid,
         requesterUserId: Uuid,
-        chatName: String,
         chatAvatarUrl: String
     ) {
         updateState { state ->
             state.copy(
                 chatId = chatId,
-                chatName = chatName,
                 chatAvatarUrl = chatAvatarUrl,
                 chatRequesterId = requesterUserId,
             )

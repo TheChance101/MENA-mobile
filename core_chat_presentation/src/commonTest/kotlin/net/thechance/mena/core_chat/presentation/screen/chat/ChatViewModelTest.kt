@@ -53,6 +53,7 @@ class ChatViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { chatArgs.chatId } returns chatId.toString()
+        every { chatArgs.chatName } returns chatName
 
         everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns emptyList()
