@@ -23,6 +23,7 @@ import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,7 +35,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class TransactionHistoryViewModelTest {
-
+    private val stringProvider = FakeStringProvider()
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: TransactionHistoryViewModel
@@ -272,6 +273,7 @@ class TransactionHistoryViewModelTest {
     private fun TestScope.initViewModel() {
         viewModel = TransactionHistoryViewModel(
             transactionRepository = transactionRepository,
+            stringProvider = stringProvider,
             ioDispatcher = testDispatcher
         )
         advanceUntilIdle()

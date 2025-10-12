@@ -13,7 +13,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -25,9 +24,6 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.io.IOException
-import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
-import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
@@ -35,6 +31,7 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -47,6 +44,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ExportTransactionsViewModelTest {
+    val stringProvider = FakeStringProvider()
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
@@ -653,7 +651,8 @@ class ExportTransactionsViewModelTest {
             transactionRepository = transactionRepository,
             statementRepository = repository,
             pdfHandler = pdfHandler,
-            ioDispatcher = testDispatcher
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
         )
         advanceUntilIdle()
     }

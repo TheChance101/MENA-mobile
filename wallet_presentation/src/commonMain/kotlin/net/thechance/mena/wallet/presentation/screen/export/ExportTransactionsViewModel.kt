@@ -35,8 +35,8 @@ import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.time.Clock
@@ -47,6 +47,7 @@ class ExportTransactionsViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val statementRepository: StatementRepository,
     @Provided private val pdfHandler: PdfHandler,
+    private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
     ExportTransactionsState()
@@ -172,8 +173,8 @@ class ExportTransactionsViewModel(
     private fun showInvalidDatesSnackBar() {
         viewModelScope.launch {
             showSnackBar(
-                title = getString(Res.string.error),
-                message = getString(Res.string.start_date_must_be_before_end_date),
+                title = stringProvider.getString(Res.string.error),
+                message = stringProvider.getString(Res.string.start_date_must_be_before_end_date),
                 isSuccess = false
             )
         }
@@ -226,8 +227,8 @@ class ExportTransactionsViewModel(
     private suspend fun onGetFirstTransactionDateError(throwable: ErrorState) {
         handleError(
             error = throwable,
-            title = getString(Res.string.error),
-            message = getString(Res.string.failed_to_load_date_picker),
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(Res.string.failed_to_load_date_picker),
             isSuccess = false
         )
     }
@@ -265,8 +266,8 @@ class ExportTransactionsViewModel(
         resetViewAndShareState()
         handleError(
             error = error,
-            title = getString(Res.string.error),
-            message = getString(Res.string.error_failed_view),
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(Res.string.error_failed_view),
             isSuccess = false
         )
     }
@@ -313,8 +314,8 @@ class ExportTransactionsViewModel(
         resetDownloadState()
         handleError(
             error = error,
-            title = getString(Res.string.download_failed),
-            message = getString(Res.string.something_went_wrong),
+            title = stringProvider.getString(Res.string.download_failed),
+            message = stringProvider.getString(Res.string.something_went_wrong),
             isSuccess = false
         )
     }
@@ -355,16 +356,16 @@ class ExportTransactionsViewModel(
 
     private suspend fun onSaveStatementSuccess(filePath: String) {
         showSnackBar(
-            title = getString(Res.string.download_complete),
-            message = getString(Res.string.download_success, filePath),
+            title = stringProvider.getString(Res.string.download_complete),
+            message = stringProvider.getString(Res.string.download_success, filePath),
             isSuccess = true
         )
     }
     private suspend fun onDownloadFailure(error: ErrorState) {
         resetDownloadState()
         showSnackBar(
-            title = getString(Res.string.download_failed),
-            message = getString(Res.string.something_went_wrong),
+            title = stringProvider.getString(Res.string.download_failed),
+            message = stringProvider.getString(Res.string.something_went_wrong),
             isSuccess = false
         )
     }
@@ -386,8 +387,8 @@ class ExportTransactionsViewModel(
                     )
                 }
                 showSnackBar(
-                    title = getString(Res.string.download_failed),
-                    message = getString(Res.string.no_internet_title),
+                    title = stringProvider.getString(Res.string.download_failed),
+                    message = stringProvider.getString(Res.string.no_internet_title),
                     isSuccess = false
                 )
             }
