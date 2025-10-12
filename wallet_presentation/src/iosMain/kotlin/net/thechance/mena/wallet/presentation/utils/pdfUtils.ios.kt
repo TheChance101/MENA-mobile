@@ -50,7 +50,6 @@ import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIScreen
 import platform.posix.memcpy
-@Single
 class PdfHandlerImpl : PdfHandler {
     @OptIn(ExperimentalForeignApi::class)
     override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {

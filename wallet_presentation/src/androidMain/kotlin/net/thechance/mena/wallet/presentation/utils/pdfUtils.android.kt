@@ -20,7 +20,6 @@ import org.koin.core.context.GlobalContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-@Single
 class PdfHandlerImpl(private val context: Context) : PdfHandler {
     override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
         return withContext(Dispatchers.IO) {
