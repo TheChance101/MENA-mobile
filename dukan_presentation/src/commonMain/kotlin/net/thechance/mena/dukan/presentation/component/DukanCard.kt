@@ -20,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -108,7 +107,6 @@ private fun BoxScope.DukanCardContent(
         color = Theme.colorScheme.primary.onPrimary,
         style = Theme.typography.title.small,
         maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .align(Alignment.BottomStart)
             .padding(Theme.spacing._8)

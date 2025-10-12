@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -47,57 +46,55 @@ fun DukansContent(
 
     lazyListState.LoadMoreOnScroll(pager)
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            AppBar(
-                title = state.categoryTitle,
-                onLeadingClick = listener::onBackClick,
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow)
-                    )
-                }
-            )
+    Column(modifier = Modifier.fillMaxSize()) {
+        AppBar(
+            title = state.categoryTitle,
+            onLeadingClick = listener::onBackClick,
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_arrow_left),
+                    contentDescription = stringResource(Res.string.back_arrow)
+                )
+            }
+        )
 
-            AnimatedContent(
-                targetState = state.dukansState,
-                transitionSpec = {
-                    fadeIn(
-                        animationSpec = tween(
-                            easing = EaseOutCubic
-                        )
-                    ) togetherWith
-                            fadeOut(
-                                animationSpec = tween(
-                                    easing = EaseInCubic
-                                )
+        AnimatedContent(
+            targetState = state.dukansState,
+            transitionSpec = {
+                fadeIn(
+                    animationSpec = tween(
+                        easing = EaseOutCubic
+                    )
+                ) togetherWith
+                        fadeOut(
+                            animationSpec = tween(
+                                easing = EaseInCubic
                             )
-                },
-                label = "ContentAnimation"
-            ) { target ->
-                when (target) {
-                    DukansState.LOADING -> DukansList(
-                        dukans = state.dukans.items,
-                        pager = pager,
-                        onDukanClick = listener::onDukanClick,
-                        onFavoriteClick = listener::onFavoriteClick,
-                        isLoading = true
-                    )
+                        )
+            },
+            label = "Dukans Animation"
+        ) { target ->
+            when (target) {
+                DukansState.LOADING -> DukansList(
+                    dukans = state.dukans.items,
+                    pager = pager,
+                    onDukanClick = listener::onDukanClick,
+                    onFavoriteClick = listener::onFavoriteClick,
+                    isLoading = true
+                )
 
-                    DukansState.LOADED -> DukansList(
-                        dukans = state.dukans.items,
-                        pager = pager,
-                        onDukanClick = listener::onDukanClick,
-                        onFavoriteClick = listener::onFavoriteClick
-                    )
+                DukansState.LOADED -> DukansList(
+                    dukans = state.dukans.items,
+                    pager = pager,
+                    onDukanClick = listener::onDukanClick,
+                    onFavoriteClick = listener::onFavoriteClick
+                )
 
-                    DukansState.EMPTY -> EmptyStateContent(
-                        image = Res.drawable.empty_shelf,
-                        title = Res.string.no_dukans_title,
-                        body = Res.string.no_dukans_body
-                    )
-                }
+                DukansState.EMPTY -> EmptyStateContent(
+                    image = Res.drawable.empty_shelf,
+                    title = Res.string.no_dukans_title,
+                    body = Res.string.no_dukans_body
+                )
             }
         }
     }
