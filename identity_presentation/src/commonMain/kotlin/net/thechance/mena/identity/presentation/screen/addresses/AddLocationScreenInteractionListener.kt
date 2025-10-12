@@ -9,7 +9,7 @@ interface AddLocationScreenInteractionListener: BaseInteractionListener{
     fun onClickBack()
     fun onClickAddressType(addressType: AddressType)
     fun onClickSave()
-    fun onAddressChanged(newAddress:String)
-    fun onOtherAddressTypeChanged(newType:String)
+    fun onChangeAddress(newAddress:String)
+    fun onChangeOtherAddressType(newType:String)
 
 }
