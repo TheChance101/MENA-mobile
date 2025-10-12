@@ -75,8 +75,16 @@ class DukanCategoriesViewModel(
         emitEffect(effect = DukanCategoriesEffects.NavigateBack)
     }
 
-    override fun onCategoryClicked(categoryId: String) {
-        emitEffect(effect = DukanCategoriesEffects.NavigateToDukansOfCategory(categoryId))
+    override fun onCategoryClicked(
+        categoryName: String,
+        categoryId: String
+    ) {
+        emitEffect(
+            effect = DukanCategoriesEffects.NavigateToDukansOfCategory(
+                categoryName = categoryName,
+                categoryId = categoryId
+            )
+        )
     }
 
     override fun onDismissSnackBar() {

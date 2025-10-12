@@ -4,6 +4,6 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCate
 
 object PreviewDukanCategoriesInteractionListener: DukanCategoriesInteractionListener {
     override fun onBackClicked() {}
-    override fun onCategoryClicked(categoryId: String) {}
+    override fun onCategoryClicked(categoryName: String, categoryId: String) {}
     override fun onDismissSnackBar() {}
 }

@@ -109,14 +109,14 @@ class DukanCategoriesViewModelTest {
 
     @Test
     fun `onCategoryClicked - emit NavigateToDukanCategoryDetails effect `() = scope.runTest {
-
+        val fakeCategoryName = "Electronics"
         val fakeCategoryId = "14"
 
         viewModel.effect.test {
-            viewModel.onCategoryClicked(fakeCategoryId)
+            viewModel.onCategoryClicked(fakeCategoryName,fakeCategoryId)
             val currentEffect = awaitItem()
             assertEquals(
-                expected = DukanCategoriesEffects.NavigateToDukansOfCategory(fakeCategoryId),
+                expected = DukanCategoriesEffects.NavigateToDukansOfCategory(fakeCategoryName,fakeCategoryId),
                 actual = currentEffect
             )
         }

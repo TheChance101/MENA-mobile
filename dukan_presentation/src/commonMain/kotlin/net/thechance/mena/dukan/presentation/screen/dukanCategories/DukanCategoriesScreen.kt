@@ -126,7 +126,7 @@ private fun CategoriesTopAppBar(
 @Composable
 private fun ColumnScope.CategoriesList(
     categories: List<CategoryUiState>,
-    onCategoryClick: (categoryId: String) -> Unit
+    onCategoryClick: (categoryName: String,categoryId: String) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = categoryItemSize),
@@ -148,7 +148,7 @@ private fun ColumnScope.CategoriesList(
             CategoryCard(
                 title = category.name,
                 imageUrl = category.imageUrl,
-                onClick = { onCategoryClick(category.id) },
+                onClick = { onCategoryClick(category.name,category.id) },
             )
         }
     }
