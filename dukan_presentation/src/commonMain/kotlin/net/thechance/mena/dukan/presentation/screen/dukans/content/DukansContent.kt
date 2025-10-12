@@ -62,8 +62,18 @@ fun DukansContent(
             AnimatedContent(
                 targetState = state.dukansState,
                 transitionSpec = {
-                    fadeIn(animationSpec = tween(300)) togetherWith
-                            fadeOut(animationSpec = tween(300))
+                    fadeIn(
+                        animationSpec = tween(
+                            durationMillis = 300,
+                            easing = androidx.compose.animation.core.EaseOutCubic
+                        )
+                    ) togetherWith
+                            fadeOut(
+                                animationSpec = tween(
+                                    durationMillis = 200,
+                                    easing = androidx.compose.animation.core.EaseInCubic
+                                )
+                            )
                 },
                 label = "ContentAnimation"
             ) { target ->
