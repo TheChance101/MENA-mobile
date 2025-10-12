@@ -16,6 +16,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DukanDetailsScreen(
+    dukanId: String,
     viewModel: DukanDetailsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -34,7 +35,7 @@ fun DukanDetailsScreen(
         }
     }
 
-    when (state.dukanInfo.style) {
+    when (state.style) {
         DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetails(state, viewModel)
         DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(state, viewModel)
         DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(state, viewModel)

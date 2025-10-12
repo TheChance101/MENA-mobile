@@ -1,11 +1,9 @@
 package net.thechance.mena.dukan.data.repository.dto
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
+
 @Serializable
-data class ShelfDto(
-    @SerialName("id")
+data class ShelfResponse(
     val id: String,
-    @SerialName("title")
-    val name: String
+    val title: String
 )

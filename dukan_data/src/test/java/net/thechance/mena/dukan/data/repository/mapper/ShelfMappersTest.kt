@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
-import net.thechance.mena.dukan.data.repository.dto.ShelfDto
+import net.thechance.mena.dukan.data.repository.dto.ShelfResponse
 import net.thechance.mena.dukan.domain.entity.Shelf
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -50,7 +50,7 @@ class ShelfMappersTest {
         val shelfResponses = fakeShelfResponses()
 
         // When
-        val shelves = shelfResponses.map { it.toShelf() }
+        val shelves = shelfResponses.toShelfList()
 
         // Then
         assertEquals(3, shelves.size)
@@ -62,7 +62,7 @@ class ShelfMappersTest {
         val shelfResponses = fakeShelfResponses()
 
         // When
-        val shelves = shelfResponses.map { it.toShelf() }
+        val shelves = shelfResponses.toShelfList()
 
         // Then
         assertEquals("1", shelves[0].id)
@@ -74,7 +74,7 @@ class ShelfMappersTest {
         val shelfResponses = fakeShelfResponses()
 
         // When
-        val shelves = shelfResponses.map { it.toShelf() }
+        val shelves = shelfResponses.toShelfList()
 
         // Then
         assertEquals("Shelf 1", shelves[0].name)
@@ -84,10 +84,10 @@ class ShelfMappersTest {
     @Test
     fun `List of ShelfResponse to ShelfList maps empty list correctly`() {
         // Given
-        val shelfResponses = emptyList<ShelfDto>()
+        val shelfResponses = emptyList<ShelfResponse>()
 
         // When
-        val shelves = shelfResponses.map { it.toShelf() }
+        val shelves = shelfResponses.toShelfList()
 
         // Then
         assertEquals(0, shelves.size)
@@ -99,13 +99,13 @@ private fun fakeShelf() = Shelf(
     name = "Test Shelf"
 )
 
-private fun fakeShelfResponse() = ShelfDto(
+private fun fakeShelfResponse() = ShelfResponse(
     id = "1",
     title = "Shelf 1"
 )
 
 private fun fakeShelfResponses() = listOf(
-    ShelfDto(id = "1", title = "Shelf 1"),
-    ShelfDto(id = "2", title = "Shelf 2"),
-    ShelfDto(id = "3", title = "Shelf 3")
+    ShelfResponse(id = "1", title = "Shelf 1"),
+    ShelfResponse(id = "2", title = "Shelf 2"),
+    ShelfResponse(id = "3", title = "Shelf 3")
 )

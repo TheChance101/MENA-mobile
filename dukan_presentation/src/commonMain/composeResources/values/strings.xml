@@ -96,6 +96,7 @@
     <string name="one_selection_for_each_product">One selection for each product</string>
     <string name="add_product_success">Add product successfully.</string>
     <string name="image_size_mb">%1$d MB</string>
+
     <string name="error_image_max_limit">You can upload a maximum of 10 images.</string>
     <string name="error_image_size">Image size should be less than 5 MB.</string>
     <string name="error_upload_failed">Upload failed, please try again.</string>
@@ -103,14 +104,6 @@
     <string name="error_price_invalid">Price is invalid.</string>
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
     <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
-    <string name="all">All</string>
-    <string name="arrow_right_icon">arrow right icon</string>
-    <string name="best_selling">Best Selling</string>
-    <string name="shopping_basket_icon">shopping basket icon</string>
-    <string name="favorite_icon">favorite icon</string>
-    <string name="share_icon">share icon</string>
-    <string name="remove_product">remove_product</string>
-
 
 
 </resources>

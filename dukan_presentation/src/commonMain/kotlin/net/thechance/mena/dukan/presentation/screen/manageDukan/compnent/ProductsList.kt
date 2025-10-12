@@ -46,11 +46,7 @@ fun ProductsList(
         items(products) { product ->
             ProductCard(
                 modifier = Modifier.animateItem(),
-                productName = product.name,
-                productImageUrl = product.imageUrl,
-                productDescription = product.description ?: "",
-                productPrice = product.price,
-                productCardBackground = Theme.colorScheme.background.surfaceLow,
+                productUiState = product,
                 productAction = {
                     EditProductIcon(onClick = {
                         onProductClick(product)
