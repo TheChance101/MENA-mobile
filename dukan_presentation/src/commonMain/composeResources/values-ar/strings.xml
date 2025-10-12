@@ -80,8 +80,8 @@
     <string name="something_went_wrong_while_fetching_categories">حدث خطأ ما اثناء تحميل الفئات المختلفة</string>
     <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
 
-    <string name="best_dukans_around_you">Best Dukans around you</string>
-    <string name="editor_pick_dukans">Editor Pick Dukans</string>
-    <string name="what_do_you_need">what do you need?</string>
+    <string name="best_dukans_around_you">أفضل الدكاكين من حولك</string>
+    <string name="editor_pick_dukans">اختيارات المحرر من الدكاكين</string>
+    <string name="what_do_you_need">ماذا تحتاج؟</string>
 
 </resources>
