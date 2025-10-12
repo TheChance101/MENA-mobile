@@ -32,9 +32,6 @@ import net.thechance.mena.dukan.domain.util.PagedResult
 class DukanRepositoryImpl(
     private val client: HttpClient
 ) : DukanRepository {
-    
-    // Use mock data instead of real API calls
-    private val useMockData = true
     override suspend fun createDukan(dukan: Dukan) {
         safeApiCall<Unit> {
             client.post(
