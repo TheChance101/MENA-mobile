@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -48,17 +48,35 @@ fun SmallImageProductContent(
 
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(vertical = 16.dp),
         state = lazyListState
     ) {
-        items(shelves.items) { shelf ->
-            ProductsShelf(
-                state = state,
-                shelf = shelf,
-                listener = listener
-            )
+        shelves.items.forEach { shelf ->
+            stickyHeader {
+                ShelfHeader(
+                    isLoading = state.shelvesState == DukanDetailsUiState.ShelvesState.LOADING,
+                    state = state,
+                    shelfName = shelf.name,
+                    onViewAllClicked = {
+                        listener.onViewAllShelfProductsClicked(
+                            shelf.id,
+                            shelf.name
+                        )
+                    },
+                    modifier = Modifier
+                        .background(Theme.colorScheme.background.surface)
+                        .padding(horizontal = Theme.spacing._16)
+                )
+            }
+            item {
+                ProductsShelf(
+                    state = state,
+                    shelf = shelf,
+                )
+            }
         }
+
     }
 }
 
@@ -66,31 +84,8 @@ fun SmallImageProductContent(
 private fun ProductsShelf(
     state: DukanDetailsUiState,
     shelf: DukanDetailsUiState.ShelfUiState,
-    listener: DukanDetailsInteractionListener,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
-
-        when (state.shelvesState) {
-            DukanDetailsUiState.ShelvesState.LOADING -> {
-                ShelfHeader(
-                    isLoading = true,
-                    state = state,
-                    shelfName = shelf.name,
-                    onViewAllClicked = {listener.onViewAllShelfProductsClicked(shelf.id, shelf.name)},
-                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
-                )
-            }
-            DukanDetailsUiState.ShelvesState.LOADED -> {
-                ShelfHeader(
-                    isLoading = false,
-                    state = state,
-                    shelfName = shelf.name,
-                    onViewAllClicked = {listener.onViewAllShelfProductsClicked(shelf.id, shelf.name)},
-                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
-                )
-            }
-            DukanDetailsUiState.ShelvesState.EMPTY -> {}
-        }
 
         LazyRow(
             contentPadding = PaddingValues(Theme.spacing._16),
@@ -105,12 +100,14 @@ private fun ProductsShelf(
                         productPairs = productPairs
                     )
                 }
+
                 DukanDetailsUiState.ProductsState.LOADED -> {
                     productCardState(
                         isLoading = false,
                         productPairs = productPairs
                     )
                 }
+
                 DukanDetailsUiState.ProductsState.EMPTY -> {}
             }
         }
@@ -124,7 +121,7 @@ private fun LazyListScope.productCardState(
     modifier: Modifier = Modifier
 ) {
     if (isLoading) {
-        items(productPairs.size) {index->
+        items(productPairs.size) { index ->
             Column(
                 modifier = modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -134,7 +131,7 @@ private fun LazyListScope.productCardState(
             }
         }
     } else {
-        itemsIndexed(productPairs) {index, pair ->
+        itemsIndexed(productPairs) { index, pair ->
             Column(
                 modifier = Modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -159,7 +156,7 @@ private fun ShelfHeader(
     isLoading: Boolean,
     state: DukanDetailsUiState,
     shelfName: String,
-    onViewAllClicked:() -> Unit,
+    onViewAllClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -168,7 +165,7 @@ private fun ShelfHeader(
             interactionSource = remember { MutableInteractionSource() }
         ) {
             onViewAllClicked()
-          },
+        },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

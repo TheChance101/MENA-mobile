@@ -125,6 +125,7 @@ fun SmallImageDukanDetails(
                 state = state,
                 listener = listener,
                 pager = pager,
+                modifier = Modifier.padding(top = Theme.spacing._16)
             )
         }
     }
