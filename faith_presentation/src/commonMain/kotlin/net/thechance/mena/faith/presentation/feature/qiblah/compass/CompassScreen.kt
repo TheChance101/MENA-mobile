@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.device_angle_to_qiblah
@@ -89,11 +88,15 @@ private fun Content(
             )
         },
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Theme.colorScheme.background.surface)
+        ) {
             Image(
                 painter = painterResource(Res.drawable.ic_islamic_pattern),
                 contentDescription = "ic_islamic_pattern",
-                modifier = Modifier.zIndex(2f)
+                modifier = Modifier
                     .align(Alignment.BottomStart),
                 contentScale = ContentScale.Fit
             )
@@ -101,7 +104,6 @@ private fun Content(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color = Theme.colorScheme.background.surface)
                     .padding(horizontal = Theme.spacing._16),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
