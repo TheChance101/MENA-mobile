@@ -13,13 +13,13 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.domain.model.PaymentStatus
+import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 
 @Composable
 fun PaymentResultCard(
     image: Painter,
     title: String,
-    paymentStatus: PaymentStatus,
+    paymentStatus: SubmitTransactionResultStatus,
     modifier: Modifier = Modifier,
     amount: Double = 0.0,
     description: String = "",
@@ -45,7 +45,7 @@ fun PaymentResultCard(
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.title.small,
         )
-        if (paymentStatus == PaymentStatus.FAILED) {
+        if (paymentStatus == SubmitTransactionResultStatus.FAILURE) {
             Text(
                 text = description,
                 color = Theme.colorScheme.shadeSecondary,

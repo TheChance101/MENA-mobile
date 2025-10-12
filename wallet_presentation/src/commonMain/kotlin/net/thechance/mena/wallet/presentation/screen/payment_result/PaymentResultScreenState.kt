@@ -1,9 +1,9 @@
 package net.thechance.mena.wallet.presentation.screen.payment_result
 
-import net.thechance.mena.wallet.domain.model.PaymentStatus
+import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 
 data class PaymentResultScreenState(
-    val paymentStatus: PaymentStatus = PaymentStatus.SUCCESS,
+    val paymentStatus: SubmitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS,
     val isLoading: Boolean = false,
     val error: String? = null,
     val receiverName: String = "",

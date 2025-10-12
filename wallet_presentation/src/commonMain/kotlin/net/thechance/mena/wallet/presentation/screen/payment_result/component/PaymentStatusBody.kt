@@ -14,7 +14,7 @@ import mena.wallet_presentation.generated.resources.transaction_failed
 import mena.wallet_presentation.generated.resources.transaction_success
 import mena.wallet_presentation.generated.resources.transaction_successful
 import mena.wallet_presentation.generated.resources.try_again
-import net.thechance.mena.wallet.domain.model.PaymentStatus
+import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultInteractionListener
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -22,9 +22,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PaymentStatusBody(
     interactionListener: PaymentResultInteractionListener,
-    paymentStatus: PaymentStatus = PaymentStatus.FAILED,
+    paymentStatus: SubmitTransactionResultStatus = SubmitTransactionResultStatus.FAILURE,
     description: String = stringResource(Res.string.connection_lost_try_again),
-    name: String = "",
+    receiverName: String = "",
     amount: Double = 0.0
 ) {
     Box(
@@ -32,7 +32,7 @@ fun PaymentStatusBody(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (paymentStatus == PaymentStatus.FAILED) {
+        if (paymentStatus == SubmitTransactionResultStatus.FAILURE) {
             PaymentResultCard(
                 image = painterResource(Res.drawable.transaction_failed),
                 title = stringResource(Res.string.transaction_failed),
@@ -50,7 +50,7 @@ fun PaymentStatusBody(
             PaymentResultCard(
                 image = painterResource(Res.drawable.transaction_success),
                 title = stringResource(Res.string.transaction_successful),
-                name = name,
+                name = receiverName,
                 amount = amount,
                 paymentStatus = paymentStatus,
                 modifier = Modifier.align(Alignment.Center)

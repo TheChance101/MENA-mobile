@@ -19,7 +19,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PaymentResultScreen(
-    receiverId: String,
+    transactionId: String,
+    submitTransactionResultStatus: String,
+    receiverName: String,
     amount: Double,
     onNavigateBackClicked: () -> Unit,
     onNavigateToTransactionDetailsClicked: (String) -> Unit,
@@ -32,7 +34,7 @@ fun PaymentResultScreen(
         onEffect = { effect ->
             onPaymentResultEffect(
                 effect,
-                receiverId,
+                receiverName,
                 onNavigateBackClicked = onNavigateBackClicked,
                 onNavigateToTransactionDetailsClicked = { receiverId ->
                     onNavigateToTransactionDetailsClicked(receiverId)
@@ -41,6 +43,7 @@ fun PaymentResultScreen(
         }
     )
     PaymentResultScreenContent(
+        receiverName=receiverName,
         amount = amount,
         state = state,
         interactionListener = viewModel
@@ -49,6 +52,7 @@ fun PaymentResultScreen(
 
 @Composable
 private fun PaymentResultScreenContent(
+    receiverName: String,
     amount: Double,
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
@@ -71,6 +75,7 @@ private fun PaymentResultScreenContent(
         }
     ) {
         PaymentStatusBody(
+            receiverName = receiverName,
             amount = amount,
             paymentStatus = state.paymentStatus,
             interactionListener = interactionListener

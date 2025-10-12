@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.navigation
 
 import kotlinx.serialization.Serializable
@@ -18,11 +20,9 @@ data object TransactionsHistoryScreenRoute : WalletRoute()
 @Serializable
 data object StatementsHistoryScreenRoute : WalletRoute()
 
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class StatementDetailsScreenRoute(val id: String) : WalletRoute()
 
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class TransactionDetailsScreenRoute(
     val id: String
@@ -43,7 +43,6 @@ data class ViewTransactionsStatementScreenRoute(
     val endDate: String? = null,
 ) : WalletRoute()
 
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class ConfirmPaymentScreenRoute(
     val id: String,
@@ -55,6 +54,13 @@ data class ConfirmPaymentScreenRoute(
 }
 
 data class PaymentResultScreenRoute(
-    val receiverId: String,
+    val transactionId: String,
+    val submitTransactionResultStatus: String,
+    val receiverName: String,
     val amount: Double
-) : WalletRoute()
+) : WalletRoute() {
+    init {
+        Uuid.parse(transactionId)
+        TransactionStatus.valueOf(submitTransactionResultStatus)
+    }
+}
