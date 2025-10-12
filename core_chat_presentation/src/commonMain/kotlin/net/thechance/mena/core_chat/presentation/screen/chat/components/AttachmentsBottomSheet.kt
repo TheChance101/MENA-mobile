@@ -94,7 +94,6 @@ private fun AttachmentBottomSheetContent(
             attachmentsInteractionListener.onGalleryClicked()
         }
     )
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,

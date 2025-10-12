@@ -50,7 +50,10 @@ fun Message.toSendMessageRequestDto(): SendMessageDto {
     val content = this.content
     return when (content) {
         is MessageContent.Text -> SendMessageDto(chatId = chatId.toString(), text = content.text)
-        is MessageContent.Images -> { SendMessageDto(chatId = chatId.toString(), messageId = id.toString()) }
+        is MessageContent.Images -> SendMessageDto(
+            chatId = chatId.toString(),
+            messageId = id.toString()
+        )
     }
 }
 

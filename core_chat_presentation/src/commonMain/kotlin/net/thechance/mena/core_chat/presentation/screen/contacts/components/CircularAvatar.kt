@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.Dp
 import coil3.compose.AsyncImage
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 
@@ -30,14 +31,19 @@ fun CircularAvatar(
             .background(color = Theme.colorScheme.background.surfaceLow),
         contentAlignment = Alignment.Center
     ) {
-        AsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = contactImageUri,
-            error = painterResource(Res.drawable.ic_profile_placeholder),
-            placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-            contentScale = ContentScale.Crop,
-            contentDescription = "Contact photo",
+        Icon(
+            painter = painterResource(Res.drawable.ic_profile_placeholder),
+            contentDescription = null,
         )
+
+        if (!contactImageUri.isNullOrBlank()) {
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = contactImageUri,
+                contentScale = ContentScale.Crop,
+                contentDescription = "Contact photo",
+            )
+        }
     }
 }
 
