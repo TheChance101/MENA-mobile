@@ -23,6 +23,11 @@
     <string name="qibla_direction">Qibla direction</string>
     <string name="back_icon">Back Icon</string>
     <string name="bookmarks">Bookmarks</string>
+    <string name="calibrate_device">Calibrate device</string>
+    <string name="continue_btn">Continue</string>
+    <string name="islamic_decoration">islamic decoration</string>
+    <string name="calibrate_device_animation">calibrate device animation</string>
+    <string name="motion_configuration">Move your phone in a figure-8 motion, as shown in the animation above</string>
     <string name="remove_bookmark_icon">Remove Bookmark Icon</string>
     <string name="time_icon">Time Icon</string>
     <string name="swipe_animation">SwipeAnimation</string>
@@ -79,4 +84,38 @@
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unauthorized">You’re not authorized to perform this action.</string>
     <string name="error_network">Network error. Please try again later.</string>
+    <string name="error_latitude">Latitude must be between -90 and 90 degrees.</string>
+    <string name="error_longitude">Longitude must be between -180 and 180 degrees.</string>
+    <string name="search_in_surah_hint">Search in %1$s...</string>
+    <string name="start_searching_title">Start searching!</string>
+    <string name="start_searching_subtitle">Enter a word from a specific Ayah to view it.</string>
+    <string name="no_results_found_title">No results found!</string>
+    <string name="no_results_found_subtitle">Please try again with another keyword.</string>
+    <string name="back">back</string>
+
+    <string name="faith_title">Faith</string>
+    <string name="sunrise_time_label">Sunrise time</string>
+    <string name="location">location</string>
+    <string name="am_label">AM</string>
+    <string name="pm_label">PM</string>
+    <string name="tilawah">Tilawah</string>
+    <string name="quran_kareem">Quran Kareem</string>
+    <string name="qiblah_direction">Qiblah Direction</string>
+    <string name="nearby_mosques">Nearby Mosques</string>
+    <string name="continue_tilawah">Continue Tilawah</string>
+    <string name="fajr">Fajr</string>
+    <string name="dhuhr">Dhuhr</string>
+    <string name="asr">Asr</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isha">Isha</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="unknown_surah">Unknown Surah</string>
+    <string name="ayah_number">Aya No %1$d</string>
+    <string name="navigate_next">Navigate to next screen</string>
+    <string name="surah_al_fatiha">Al-Fatiha</string>
+    <string name="mosque_image_description">Mosque icon</string>
+
+
+
+
 </resources>

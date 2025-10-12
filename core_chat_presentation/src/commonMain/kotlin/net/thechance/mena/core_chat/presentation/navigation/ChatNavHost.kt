@@ -16,7 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.core_chat.presentation.components.AnimatedSnackBarHost
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
-import net.thechance.mena.core_chat.presentation.screen.chats.ChatsScreen
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreen
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
@@ -75,9 +75,9 @@ fun ChatNavHost(
         NavHost(
             modifier = Modifier.fillMaxSize(),
             navController = navController,
-            startDestination = ChatsRoute,
+            startDestination = HomeRoute,
         ) {
-            composable<ChatsRoute> { ChatsScreen() }
+            composable<HomeRoute> { HomeScreen() }
             composable<ContactsRoute> { ContactsScreen() }
             composable<SyncContactsRoute> { SyncContactsScreen() }
             composable<ChatDetailsRoute> { ChatScreen() }

@@ -25,6 +25,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.io.IOException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
@@ -33,20 +34,20 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.screen.export.file_saver.FileSaver
+import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
-
 class ExportTransactionsViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
-    private val fileSaver = mock<FileSaver>(mode = MockMode.autofill)
+    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ExportTransactionsViewModel
@@ -156,14 +157,24 @@ class ExportTransactionsViewModelTest {
         }
 
     @Test
-    fun `should update startDate when onFromDateClicked is called`() = runTest {
+    fun `should update startDate when user picks start date`() = runTest {
+        everySuspend {
+            transactionRepository.getFirstTransactionDate()
+        } returns LocalDate(2025, 9, 1)
         initViewModel()
 
         viewModel.state.test {
             skipItems(1)
             viewModel.onStartDateClicked()
+            advanceUntilIdle()
+            skipItems(1)
+
+            val selectedDate = LocalDate(2025, 9, 15)
+            viewModel.onPickDateClicked(selectedDate)
+
             val state = awaitItem()
-            assertEquals(LocalDate.parse("2025/09/01"), state.startDate)
+            assertEquals(selectedDate, state.startDate)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -174,11 +185,16 @@ class ExportTransactionsViewModelTest {
         viewModel.state.test {
             skipItems(1)
             viewModel.onEndDateClicked()
+
             val state = awaitItem()
-            assertEquals(LocalDate.parse("2025/09/27"), state.endDate)
+            assertTrue(state.isDateBottomSheetVisible)
+            assertEquals(
+                ExportTransactionsState.DatePickerMode.END_DATE,
+                state.datePickerMode
+            )
+            assertNotNull(state.defaultEndDate)
         }
     }
-
 
     @Test
     fun `onDownloadClicked with empty pdf should show toast`() = runTest {
@@ -220,6 +236,9 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
         everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend {
+            pdfHandler.downloadPdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
         initViewModel()
 
@@ -232,6 +251,7 @@ class ExportTransactionsViewModelTest {
                 isVisible = true,
                 snackBarState = state.snackBar
             )
+            assertTrue(state.snackBar.isSuccess)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -250,7 +270,6 @@ class ExportTransactionsViewModelTest {
                 skipItems(5)
 
                 val state = awaitItem()
-
                 assertTrue(state.noInternetConnection)
 
                 cancelAndIgnoreRemainingEvents()
@@ -281,83 +300,55 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun `onDownloadClicked with non-empty pdf and file saved should show success snackBar`() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } returns byteArrayOf(1, 2, 3)
-            everySuspend {
-                fileSaver.saveFile(any(), any(), any())
-            } returns true
+    fun `onDownloadClicked with file save success should show success snackBar`() = runTest {
+        everySuspend {
+            repository.getTransactionsPdf(any())
+        } returns byteArrayOf(1, 2, 3)
+        everySuspend {
+            pdfHandler.downloadPdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
-            initViewModel()
+        initViewModel()
 
-            viewModel.state.test {
-                viewModel.onDownloadClicked()
-                advanceUntilIdle()
-                skipItems(5)
+        viewModel.state.test {
+            viewModel.onDownloadClicked()
+            advanceUntilIdle()
+            skipItems(5)
 
-                val state = awaitItem()
-                assertSnackBarState(true, state.snackBar)
-                assertTrue(state.snackBar.isSuccess)
+            val state = awaitItem()
+            assertSnackBarState(true, state.snackBar)
+            assertTrue(state.snackBar.isSuccess)
 
-                cancelAndIgnoreRemainingEvents()
-            }
+            cancelAndIgnoreRemainingEvents()
         }
+    }
 
     @Test
-    fun `onDownloadClicked with non-empty pdf but file not saved should show failure snackBar`() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } returns byteArrayOf(1, 2, 3)
-            everySuspend {
-                fileSaver.saveFile(any(), any(), any())
-            } returns false
+    fun `onDownloadClicked with file save error should show failure snackBar`() = runTest {
+        everySuspend {
+            repository.getTransactionsPdf(any())
+        } returns byteArrayOf(1, 2, 3)
+        everySuspend {
+            pdfHandler.downloadPdf(any(), any())
+        } throws IOException()
 
-            initViewModel()
+        initViewModel()
 
-            viewModel.state.test {
-                viewModel.onDownloadClicked()
-                advanceUntilIdle()
-                skipItems(5)
+        viewModel.state.test {
+            viewModel.onDownloadClicked()
+            advanceUntilIdle()
+            skipItems(5)
 
-                val state = awaitItem()
-                assertSnackBarState(true, state.snackBar)
-                assertFalse(state.snackBar.isSuccess)
+            val state = awaitItem()
+            assertSnackBarState(true, state.snackBar)
+            assertFalse(state.snackBar.isSuccess)
 
-                cancelAndIgnoreRemainingEvents()
-            }
+            cancelAndIgnoreRemainingEvents()
         }
-
-    @Test
-    fun `onDownloadClicked with saveFile throwing exception should show failure snackBar`() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } returns byteArrayOf(1, 2, 3)
-            everySuspend {
-                fileSaver.saveFile(any(), any(), any())
-            } throws Exception("IO Error")
-
-            initViewModel()
-
-            viewModel.state.test {
-                viewModel.onDownloadClicked()
-                advanceUntilIdle()
-                skipItems(5)
-
-                val state = awaitItem()
-                assertSnackBarState(true, state.snackBar)
-                assertFalse(state.snackBar.isSuccess)
-
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
+    }
 
     @Test
     fun `toast should disappear after duration`() = runTest {
-
         initViewModel()
 
         viewModel.state.test {
@@ -381,8 +372,8 @@ class ExportTransactionsViewModelTest {
             repository.getTransactionsPdf(any())
         } returns byteArrayOf(1, 2, 3)
         everySuspend {
-            fileSaver.saveFile(any(), any(), any())
-        } returns true
+            pdfHandler.downloadPdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
         initViewModel()
 
@@ -458,7 +449,6 @@ class ExportTransactionsViewModelTest {
         initViewModel()
 
         val state = viewModel.state.first()
-
         assertFalse(state.isDownloadLoading)
     }
 
@@ -471,7 +461,6 @@ class ExportTransactionsViewModelTest {
 
         viewModel.state.test {
             viewModel.onViewAndShareClicked()
-
             skipItems(4)
 
             val state = awaitItem()
@@ -482,32 +471,28 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun whenViewAndShareThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } throws NoDataFoundException()
-
-            initViewModel()
-            viewModel.state.test {
-                viewModel.onViewAndShareClicked()
-
-                skipItems(4)
-
-                val state = awaitItem()
-                assertTrue(state.hasNoTransactionsError)
-
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-    @Test
-    fun whenCustomFilterSelectedWithNoTypesOrDates_thenButtonsDisabled() = runTest {
+    fun whenViewAndShareThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue() = runTest {
+        everySuspend {
+            repository.getTransactionsPdf(any())
+        } throws NoDataFoundException()
 
         initViewModel()
         viewModel.state.test {
-            viewModel.onCustomFilteringClicked()
+            viewModel.onViewAndShareClicked()
+            skipItems(4)
 
+            val state = awaitItem()
+            assertTrue(state.hasNoTransactionsError)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun whenCustomFilterSelectedWithNoTypesOrDates_thenButtonsDisabled() = runTest {
+        initViewModel()
+        viewModel.state.test {
+            viewModel.onCustomFilteringClicked()
             skipItems(1)
 
             val state = awaitItem()
@@ -551,6 +536,9 @@ class ExportTransactionsViewModelTest {
     @Test
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
         everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend {
+            pdfHandler.downloadPdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
         initViewModel()
         viewModel.state.test {
@@ -611,7 +599,9 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `hideSnackBar should hide snackbar after duration`() = runTest {
         everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
-        everySuspend { fileSaver.saveFile(any(), any(), any()) } returns true
+        everySuspend {
+            pdfHandler.downloadPdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
         initViewModel()
         viewModel.state.test {
@@ -630,12 +620,33 @@ class ExportTransactionsViewModelTest {
         }
     }
 
+    @Test
+    fun `downloadPdf returns success with file path`() = runTest {
+        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend {
+            pdfHandler.downloadPdf(any(), any())
+        } returns "Downloads/MENA/statement_1234567890.pdf"
+
+        initViewModel()
+
+        viewModel.state.test {
+            viewModel.onDownloadClicked()
+            skipItems(5)
+
+            val state = awaitItem()
+            assertSnackBarState(true, state.snackBar)
+            assertTrue(state.snackBar.isSuccess)
+            assertNotNull(state.snackBar.message)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 
     private fun TestScope.initViewModel() {
         viewModel = ExportTransactionsViewModel(
             transactionRepository = transactionRepository,
             statementRepository = repository,
-            fileSaver = fileSaver,
+            pdfHandler = pdfHandler,
             ioDispatcher = testDispatcher
         )
         advanceUntilIdle()

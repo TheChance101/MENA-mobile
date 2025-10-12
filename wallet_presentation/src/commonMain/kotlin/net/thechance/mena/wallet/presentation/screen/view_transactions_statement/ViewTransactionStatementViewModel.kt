@@ -20,24 +20,19 @@ class ViewTransactionStatementViewModel(
 
     fun getStatementPdf(filterParams: TransactionFilterParams?) {
         tryToExecute(
-            onStart = { updateState { currentState.copy(statement = UiState.Loading, filterParams = filterParams) } },
+            onStart = {
+                updateState {
+                    currentState.copy(
+                        statement = UiState.Loading,
+                        filterParams = filterParams
+                    )
+                }
+            },
             callee = { statementRepository.getTransactionsPdf(filterParams) },
             onSuccess = ::onSuccessFetchPdf,
             onError = ::onErrorFetchPdf,
             dispatcher = dispatcherIO
         )
-    }
-
-    private fun onSuccessFetchPdf(pdf: ByteArray?) {
-        if (pdf == null) {
-            updateState { it.copy(statement = UiState.Error(ErrorState.NoDataFound)) }
-        } else {
-            updateState { it.copy(statement = UiState.Success(pdf)) }
-        }
-    }
-
-    private fun onErrorFetchPdf(error: ErrorState) {
-        updateState { it.copy(statement = UiState.Error(error)) }
     }
 
     override fun onNavigateBackClicked() {
@@ -53,5 +48,17 @@ class ViewTransactionStatementViewModel(
 
     override fun onRetryClicked() {
         getStatementPdf(currentState.filterParams)
+    }
+
+    private fun onSuccessFetchPdf(pdf: ByteArray?) {
+        if (pdf == null) {
+            updateState { it.copy(statement = UiState.Error(ErrorState.NoDataFound)) }
+        } else {
+            updateState { it.copy(statement = UiState.Success(pdf)) }
+        }
+    }
+
+    private fun onErrorFetchPdf(error: ErrorState) {
+        updateState { it.copy(statement = UiState.Error(error)) }
     }
 }

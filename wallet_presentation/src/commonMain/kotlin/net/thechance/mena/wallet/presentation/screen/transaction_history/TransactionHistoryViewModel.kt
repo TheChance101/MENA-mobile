@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
@@ -20,7 +21,6 @@ import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.Paginator
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -32,7 +32,8 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class TransactionHistoryViewModel(
-    @Provided private val transactionRepository: TransactionRepository
+    @Provided private val transactionRepository: TransactionRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
     TransactionHistoryScreenState()
 ), TransactionHistoryInteractionListener {
@@ -70,24 +71,6 @@ class TransactionHistoryViewModel(
         resetPaginator()
     }
 
-    private fun resetPaginator() {
-        updateState {
-            it.copy(
-                history = emptyList(),
-                isLoading = true
-            )
-        }
-
-        paginator.reset()
-        loadNextTransactions()
-    }
-
-
-    private fun areDatesValid(): Boolean {
-        val startDate = currentState.filterState.startDate
-        val endDate = currentState.filterState.endDate
-        return (startDate != null && endDate != null && startDate > endDate).not()
-    }
 
     override fun onStartDateClicked() {
         val currentStartDate = currentState.filterState.startDate
@@ -156,6 +139,14 @@ class TransactionHistoryViewModel(
         }
     }
 
+    override fun onNextPageRequested() {
+        loadNextTransactions()
+    }
+
+    override fun onRetryLoadTransactionHistoryClicked() {
+        loadNextTransactions()
+    }
+
     private fun openStartDatePickerWithExistingDate(currentStartDate: LocalDate) {
         updateState {
             it.copy(
@@ -173,7 +164,7 @@ class TransactionHistoryViewModel(
             callee = { transactionRepository.getFirstTransactionDate() },
             onSuccess = ::onGetFirstTransactionDateSuccess,
             onError = ::onGetFirstTransactionDateError,
-            dispatcher = Dispatchers.IO
+            dispatcher = ioDispatcher
         )
     }
 
@@ -185,8 +176,8 @@ class TransactionHistoryViewModel(
         }
 
         showSnackBar(
-            titleRes = Res.string.error,
-            messageRes = Res.string.failed_to_load_date_picker,
+            title = getString(Res.string.error),
+            message = getString(Res.string.failed_to_load_date_picker),
             isSuccess = false
         )
     }
@@ -235,16 +226,31 @@ class TransactionHistoryViewModel(
                 (if (state.startDate != null || state.endDate != null) 1 else 0)
     }
 
-    override fun onNextPageRequested() {
+
+    private fun resetPaginator() {
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    isLoading = true
+                ),
+                history = emptyList(),
+                isLoading = true
+            )
+        }
+
+        paginator.reset()
         loadNextTransactions()
     }
 
-    override fun onRetryLoadTransactionHistoryClicked() {
-        loadNextTransactions()
+
+    private fun areDatesValid(): Boolean {
+        val startDate = currentState.filterState.startDate
+        val endDate = currentState.filterState.endDate
+        return (startDate != null && endDate != null && startDate > endDate).not()
     }
 
     private fun loadNextTransactions() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             paginator.loadNextItems()
         }
     }
@@ -257,7 +263,9 @@ class TransactionHistoryViewModel(
             )
         }
 
-        if(isLoading) { updateState { it.copy(errorState = null) } }
+        if (isLoading) {
+            updateState { it.copy(errorState = null) }
+        }
     }
 
     private suspend fun getPagedTransactions(page: Int): List<Transaction> =
@@ -295,18 +303,17 @@ class TransactionHistoryViewModel(
 
     private fun showInvalidDatesSnackBar() {
         viewModelScope.launch {
-            val x = getString(Res.string.start_date_must_be_before_end_date)
             showSnackBar(
-                titleRes = Res.string.error,
-                messageRes = Res.string.start_date_must_be_before_end_date,
+                title = getString(Res.string.error),
+                message = getString(Res.string.start_date_must_be_before_end_date),
                 isSuccess = false
             )
         }
     }
 
     private suspend fun showSnackBar(
-        titleRes: StringResource,
-        messageRes: StringResource,
+        title: String,
+        message: String,
         isSuccess: Boolean,
         durationMillis: Long = 3000L
     ) {
@@ -314,8 +321,8 @@ class TransactionHistoryViewModel(
             oldState.copy(
                 snackBar = SnackBarState(
                     isVisible = true,
-                    titleRes = titleRes,
-                    messageRes = messageRes,
+                    title = title,
+                    message = message,
                     isSuccess = isSuccess
                 )
             )

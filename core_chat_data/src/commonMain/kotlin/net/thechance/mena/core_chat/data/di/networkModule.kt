@@ -1,14 +1,10 @@
 package net.thechance.mena.core_chat.data.di
 
-import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
 import kotlinx.serialization.json.Json
-import net.thechance.mena.core_chat.data.chat.utils.WebSocketManager
-import net.thechance.mena.core_chat.data.chat.utils.WebSocketManagerImpl
-import net.thechance.mena.core_chat.data.network.ApiConstants.BASE_URL
-import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_CLIENT
-import net.thechance.mena.core_chat.data.network.ApiConstants.CHAT_JSON
-import net.thechance.mena.core_chat.data.network.createHttpClient
+import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
+import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
+import net.thechance.mena.core_chat.data.source.remote.network.httpClientEngineFactory
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -20,9 +16,14 @@ internal val networkModule = module {
             isLenient = true
         }
     }
-
-    single { createHttpClientEngine() }
-    single(named(CHAT_CLIENT)) { createHttpClient(get(named(BASE_URL)), get()) }
+    single(named(CHAT_CLIENT)) {
+        createHttpClient(
+            get(named(BASE_URL)),
+            get(),
+            httpClientEngineFactory,
+            get(named(CHAT_JSON))
+        )
+    }
     single<WebSocketManager> {
         WebSocketManagerImpl(
             baseUrl = get(named(BASE_URL)),
@@ -31,4 +32,6 @@ internal val networkModule = module {
     }
 }
 
-expect fun createHttpClientEngine(): HttpClientEngineFactory<HttpClientEngineConfig>
+private const val BASE_URL = "baseUrl"
+const val CHAT_CLIENT = "chatClient"
+const val CHAT_JSON = "chatJson"
