@@ -1,8 +1,17 @@
 package net.thechance.mena.identity.data.repository
 
+import dev.jordond.compass.Coordinates
+import dev.jordond.compass.Place
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
 import net.thechance.mena.identity.data.repository.location.LocationRepositoryImpl
-import net.thechance.mena.identity.domain.entity.Coordinates
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import net.thechance.mena.identity.domain.entity.Coordinates as DomainCoordinates
 
 class LocationRepositoryImplTest {
 
@@ -12,8 +21,8 @@ class LocationRepositoryImplTest {
     @Test
     fun `getLocationName should return formatted address when the place is not valid`() =
         runTest {
-            val domainCoordinates = Coordinates(28.0, 29.0)
-            coEvery { geocoder.placeOrNull(any()) } returns Place(
+            val domainCoordinates = DomainCoordinates(28.0, 29.0)
+            everySuspend { geocoder.placeOrNull(any()) } returns Place(
                 subAdministrativeArea = "Basra",
                 administrativeArea = "Basra Governorate",
                 country = "Basra",
@@ -35,8 +44,8 @@ class LocationRepositoryImplTest {
 
     @Test
     fun `getLocationName should return empty address when the place is null`() = runTest {
-        val domainCoordinates = Coordinates(28.0, 29.0)
-        coEvery { geocoder.placeOrNull(any()) } returns null
+        val domainCoordinates = DomainCoordinates(28.0, 29.0)
+        everySuspend { geocoder.placeOrNull(any()) } returns null
 
         val result = locationRepositoryImpl.getLocationName(domainCoordinates)
 

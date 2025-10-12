@@ -20,7 +20,10 @@ class LocationRepositoryImpl(
 
             is GeolocatorResult.Success -> {
                 val location = result.data
-                Coordinates(location.coordinates.latitude, location.coordinates.longitude)
+                Coordinates(
+                    latitude = location.coordinates.latitude,
+                    longitude = location.coordinates.longitude
+                )
             }
         }
     }

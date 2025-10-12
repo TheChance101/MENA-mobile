@@ -25,13 +25,13 @@ import kotlin.test.Test
 class PickLocationScreenViewModelTest {
     private val locationRepository = mockk<LocationRepository>()
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel : PickLocationScreenViewModel
+    private lateinit var viewModel: PickLocationScreenViewModel
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = PickLocationScreenViewModel(locationRepository , testDispatcher)
+        viewModel = PickLocationScreenViewModel(locationRepository, testDispatcher)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -110,7 +110,7 @@ class PickLocationScreenViewModelTest {
     }
 
     @Test
-    fun `onClickGps should update state with error message when location repository throws`(){
+    fun `onClickGps should update state with error message when location repository throws`() {
         coEvery { locationRepository.getCurrentLocation() } throws Exception()
 
         viewModel.onClickGps()
@@ -121,15 +121,16 @@ class PickLocationScreenViewModelTest {
     }
 
     @Test
-    fun `onClickGps should update state with error message and navigate to enable location when location repository throws UnableToFindLocationException`() =runTest {
-        coEvery { locationRepository.getCurrentLocation() } throws UnableToFindLocationException()
-        viewModel.effect.test {
-            viewModel.onClickGps()
-            testDispatcher.scheduler.advanceUntilIdle()
-            val emittedEffect = awaitItem()
-            assert(emittedEffect is PickLocationScreenUIEffect.NavigateToEnableLocation)
-            cancelAndConsumeRemainingEvents()
+    fun `onClickGps should update state with error message and navigate to enable location when location repository throws UnableToFindLocationException`() =
+        runTest {
+            coEvery { locationRepository.getCurrentLocation() } throws UnableToFindLocationException()
+            viewModel.effect.test {
+                viewModel.onClickGps()
+                testDispatcher.scheduler.advanceUntilIdle()
+                val emittedEffect = awaitItem()
+                assert(emittedEffect is PickLocationScreenUIEffect.NavigateToEnableLocation)
+                cancelAndConsumeRemainingEvents()
+            }
         }
-    }
 
 }
