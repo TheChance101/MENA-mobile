@@ -41,7 +41,11 @@ fun DukansList(
         ),
         state = lazyListState
     ) {
-        items(dukans) { dukan ->
+        items(
+            items = dukans,
+            key = { dukan -> dukan.id },
+            contentType = { dukan -> dukan::class }
+        ) { dukan ->
             DukanCard(
                 modifier = Modifier.animateItem(),
                 dukan = dukan,
