@@ -1,8 +1,8 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukans
 
-import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.DukanPreview
 
-fun Dukan.toUiState() = DukanUiState(
+fun DukanPreview.toUiState() = DukanUiState(
     id = id,
     name = name,
     imageUrl = imageUrl,

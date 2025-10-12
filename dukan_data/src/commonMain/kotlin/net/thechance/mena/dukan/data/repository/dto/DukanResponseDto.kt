@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class DukanResponseDto(
+data class DukanResponseDto(
     @SerialName("id")
     val id: String,
     @SerialName("name")

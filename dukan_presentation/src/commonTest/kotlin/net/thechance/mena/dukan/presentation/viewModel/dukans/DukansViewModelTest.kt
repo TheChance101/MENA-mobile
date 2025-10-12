@@ -14,8 +14,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.dukan.domain.entity.Color
-import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.DukanPreview
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.AfterTest
@@ -52,10 +51,10 @@ class DukansViewModelTest {
                 size = any()
             )
         } returns PagedResult(
-            items = dummyDukans,
+            items = dummyDukanPreviews,
             currentPage = 1,
             totalPages = 1,
-            totalItems = dummyDukans.size.toLong()
+            totalItems = dummyDukanPreviews.size.toLong()
         )
 
         dukansViewModel = DukansViewModel(
@@ -195,7 +194,8 @@ class DukansViewModelTest {
         dukansViewModel.onFavoriteClick(dummyDukansUiState().first())
         advanceUntilIdle()
 
-        val favoriteDukan = dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
+        val favoriteDukan =
+            dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
         assertTrue(favoriteDukan.isFavorite)
 
         // When
@@ -203,7 +203,8 @@ class DukansViewModelTest {
         advanceUntilIdle()
 
         // Then
-        val updatedDukan = dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
+        val updatedDukan =
+            dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
         assertFalse(updatedDukan.isFavorite)
     }
 
@@ -287,38 +288,20 @@ private fun dummyDukansUiState(): List<DukanUiState> {
     )
 }
 
-private val dummyDukans = listOf(
-    Dukan(
+private val dummyDukanPreviews = listOf(
+    DukanPreview(
         id = "dukan1",
         name = "Electronics Store",
-        imageUrl = "https://example.com/electronics.jpg",
-        categories = emptySet(),
-        coordinates = Dukan.Coordinates(0.0, 0.0),
-        address = "Test Address",
-        status = Dukan.Status.APPROVED,
-        color = Color("blue", "#0000FF"),
-        style = Dukan.Style.WIDE_IMAGE
+        imageUrl = "https://example.com/electronics.jpg"
     ),
-    Dukan(
+    DukanPreview(
         id = "dukan2",
         name = "Tech Hub",
-        imageUrl = "https://example.com/tech.jpg",
-        categories = emptySet(),
-        coordinates = Dukan.Coordinates(0.0, 0.0),
-        address = "Test Address",
-        status = Dukan.Status.APPROVED,
-        color = Color("green", "#00FF00"),
-        style = Dukan.Style.SMALL_IMAGE
+        imageUrl = "https://example.com/tech.jpg"
     ),
-    Dukan(
+    DukanPreview(
         id = "dukan3",
         name = "Gadget World",
-        imageUrl = "https://example.com/gadget.jpg",
-        categories = emptySet(),
-        coordinates = Dukan.Coordinates(0.0, 0.0),
-        address = "Test Address",
-        status = Dukan.Status.APPROVED,
-        color = Color("red", "#FF0000"),
-        style = Dukan.Style.NO_IMAGE
+        imageUrl = "https://example.com/gadget.jpg"
     )
 )

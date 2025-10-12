@@ -10,7 +10,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
-import net.thechance.mena.dukan.data.repository.dto.DukanDto
 import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanResponseDto
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
@@ -132,14 +131,14 @@ class DukanRepositoryImpl(
         categoryId: String,
         page: Int,
         size: Int
-    ): PagedResult<Dukan> {
-        val response: PageResponseDto<DukanDto> = safeApiCall {
+    ): PagedResult<DukanPreview> {
+        val response: PageResponseDto<DukanResponseDto> = safeApiCall {
             client.get("$BASE_URL/category/$categoryId") {
                 parameter("page", page)
                 parameter("size", size)
             }
         }
-        return response.toDomain(mapper = DukanDto::toDomain)
+        return response.toDomain(mapper = DukanResponseDto::toDomainPreview)
     }
 
     companion object {

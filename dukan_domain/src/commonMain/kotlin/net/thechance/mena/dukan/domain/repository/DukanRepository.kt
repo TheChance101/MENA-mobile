@@ -26,5 +26,10 @@ interface DukanRepository {
         page: Int,
         size: Int
     ): PagedResult<DukanPreview>
-    suspend fun getDukansByCategory(categoryId: String, page: Int, size: Int): PagedResult<Dukan>
+
+    suspend fun getDukansByCategory(
+        categoryId: String,
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview>
 }
