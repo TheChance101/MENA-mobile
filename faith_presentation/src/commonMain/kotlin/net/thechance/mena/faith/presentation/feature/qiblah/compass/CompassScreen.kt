@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -162,9 +161,9 @@ private fun CompassView(
 
 
 @Composable
-private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
+private fun DirectionPlaceHolder() {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -173,7 +172,6 @@ private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 20.dp)
         )
 
         Text(
@@ -182,7 +180,6 @@ private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 20.dp)
         )
 
         Text(
@@ -191,7 +188,6 @@ private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 20.dp)
         )
 
         Text(
@@ -200,7 +196,6 @@ private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = 20.dp)
         )
         CirclesPlaceHolder()
     }
@@ -208,8 +203,8 @@ private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
 
 
 @Composable
-private fun CirclesPlaceHolder(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.height(116.dp).width(116.dp)) {
+private fun CirclesPlaceHolder() {
+    Box(modifier = Modifier.size(116.dp)) {
         BrownCircle(modifier = Modifier.align(Alignment.TopStart))
         BrownCircle(modifier = Modifier.align(Alignment.TopEnd))
         BrownCircle(modifier = Modifier.align(Alignment.BottomStart))
