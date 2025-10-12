@@ -28,7 +28,7 @@ class ConfirmPaymentViewModel(
     private val amount = args.amount
 
     init {
-        getPaymentConfirmation()
+        getUserBalance()
         getReceiverInfo()
     }
 
@@ -43,14 +43,13 @@ class ConfirmPaymentViewModel(
 
     override fun onRefresh() {
         updateState { it.copy(isLoading = true, errorState = null) }
-        getPaymentConfirmation()
+        getUserBalance()
+        getReceiverInfo()
     }
 
-    private fun getPaymentConfirmation() {
+    private fun getUserBalance() {
         tryToExecute(
-            callee = {
-                balanceRepository.getBalance()
-            },
+            callee = { balanceRepository.getBalance() },
             onSuccess = ::onGetPaymentConfirmationSuccess,
             onError = ::onError,
             onStart = ::onStart,
@@ -60,9 +59,7 @@ class ConfirmPaymentViewModel(
 
     private fun getReceiverInfo() {
         tryToExecute(
-            callee = {
-                userRepository.getUserById(Uuid.parse(receiverId))
-            },
+            callee = { userRepository.getUserById(Uuid.parse(receiverId)) },
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onError,
             onStart = ::onStart,
