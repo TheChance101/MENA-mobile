@@ -7,6 +7,7 @@ internal object NetworkConstants {
     const val REELS_ENDPOINT = "reels"
     const val USER_STATUS_ENDPOINT = "user/categories/status"
     const val THUMBNAIL_ENDPOINT = "thumbnail"
+    const val FEED_ENDPOINT = "feed"
 
     const val IDENTITY_PATH = "identity"
     const val PROFILE_ENDPOINT = "profile/me"
@@ -17,5 +18,4 @@ internal object NetworkConstants {
     //key
     const val VIDEO = "video"
     const val THUMBNAIL = "thumbnail"
-    const val FEED_ENDPOINT = "feed"
 }

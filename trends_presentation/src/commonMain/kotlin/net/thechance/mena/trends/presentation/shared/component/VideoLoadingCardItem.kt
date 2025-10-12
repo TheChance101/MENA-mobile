@@ -17,9 +17,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.acton_icon_description
-import mena.trends_presentation.generated.resources.arrow_reload_horizontal
 import mena.trends_presentation.generated.resources.ic_arrow_reload_horizontal
-import mena.trends_presentation.generated.resources.error
 import mena.trends_presentation.generated.resources.ic_cancel
 import mena.trends_presentation.generated.resources.ic_delete
 import mena.trends_presentation.generated.resources.ic_video

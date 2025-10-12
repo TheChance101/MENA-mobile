@@ -103,7 +103,7 @@ internal abstract class BaseViewModel<State, Effect>(
         }
     }
 
-    protected suspend fun mapExceptionToErrorState(
+    private suspend fun mapExceptionToErrorState(
         throwable: Throwable,
         onError: suspend (ErrorState) -> Unit,
     ) {

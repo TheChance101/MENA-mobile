@@ -35,7 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.show_real.ReelUiState
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
-import net.thechance.mena.trends.presentation.shared.util.extention.asString
+import net.thechance.mena.trends.presentation.shared.util.asString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -44,7 +44,7 @@ internal fun FeedReelCard(
     reel: ReelUiState,
     onMoreClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onReelClick: (String) -> Unit
+    onReelClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -72,7 +72,7 @@ private fun ReelHeaderSection(
     reel: ReelUiState,
     timeAgoText: String,
     onMoreClick: () -> Unit,
-    onReelClick: (String) -> Unit
+    onReelClick: () -> Unit
 ) {
     Column {
         Row(
@@ -126,11 +126,11 @@ private fun ReelHeaderSection(
                 .fillMaxWidth()
                 .height(500.dp)
                 .background(Theme.colorScheme.background.surfaceHigh)
-                .noRippleClickable { onReelClick(reel.id) },
+                .noRippleClickable { onReelClick() },
             alignment = Alignment.Center
         )
 
-        if (reel.description.isNotEmpty()) {
+        if (reel.description.isBlank()) {
             Text(
                 text = reel.description,
                 style = Theme.typography.body.small,

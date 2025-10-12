@@ -5,7 +5,7 @@ import assertk.assertions.isEqualTo
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.presentation.shared.util.extention.timeAgoValue
+import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 import kotlin.test.Test
 
 class ReelExtensionTest {

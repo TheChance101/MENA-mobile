@@ -43,21 +43,11 @@ internal class ReelViewModel(
         )
     }
 
-    private  fun onReelLoaded(reelsFlow: Flow<PagingData<Reel>>) {
-        try {
-            val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
-                pagingData.map { reel -> reel.toUiState() }
-            }
-            updateState { copy(isLoading = false, reels = uiReelsFlow) }
-        }catch(e: Throwable){
-            viewModelScope.launch {
-                mapExceptionToErrorState(
-                    throwable = e,
-                ){
-                    updateState { copy(error = it) }
-                }
-            }
+    private fun onReelLoaded(reelsFlow: Flow<PagingData<Reel>>) {
+        val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
+            pagingData.map { reel -> reel.toUiState() }
         }
+        updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
     override fun onAddReelClick() {
