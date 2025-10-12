@@ -1,10 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiState
@@ -21,7 +25,47 @@ class MainViewModel(
     init {
         getDukanState()
         getCategories()
+        getEditorPicksDukans()
+        getBestNearestDukans()
     }
+
+    private fun getEditorPicksDukans() {
+        tryToCollect(
+            block = { editorPickDukanPager.flow },
+            onCollect = ::onLoadedEditorPicksDukan
+        )
+        viewModelScope.launch {
+            editorPickDukanPager.load()
+        }
+    }
+
+    private fun getBestNearestDukans() {
+        tryToCollect(
+            block = { bestNearestDukanPager.flow },
+            onCollect = ::onLoadedBestNearestDukans
+        )
+        viewModelScope.launch {
+            bestNearestDukanPager.load()
+        }
+    }
+
+    private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+        updateState {
+            copy(
+                editorPickDukans = dukans
+            )
+        }
+    }
+
+
+    private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
+        updateState {
+            copy(
+                bestNearestDukans = dukans
+            )
+        }
+    }
+
 
     private fun getCategories() {
         tryToExecute(
@@ -109,5 +153,23 @@ class MainViewModel(
 
     override fun onEditorPickDukanClick(dukanId: String) {
         emitEffect(MainEffect.NavigateSelectedEditorPickDukan(dukanId))
+    }
+
+    val bestNearestDukanPager = createPagingSource(
+        mapper = { it.toBestNearestUiState() }
+    ) { currentPage ->
+        dukanRepository.getBestAroundDukans(
+            page = currentPage,
+            size = 20
+        )
+    }
+
+    val editorPickDukanPager = createPagingSource(
+        mapper = { it.toEditorPickUiState() }
+    ) { currentPage ->
+        dukanRepository.getEditorPicksDukans(
+            page = currentPage,
+            size = 20
+        )
     }
 }

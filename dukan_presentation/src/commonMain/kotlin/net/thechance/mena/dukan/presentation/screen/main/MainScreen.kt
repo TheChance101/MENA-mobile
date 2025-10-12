@@ -24,13 +24,18 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreen
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.BestNearestDukanSection
-import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.fakeBestNearestDuknas
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.CategorySection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.EditorPickDukanItemsList
-import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.fakeDukans
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
+import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.stubPreviews.BestNearestDukanPagingSource
+import net.thechance.mena.dukan.presentation.util.stubPreviews.EditorPickDukanItemsListPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewMainScreenInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
@@ -76,14 +81,18 @@ fun MainScreen(
 
     MainContent(
         listener = viewModel,
-        state = state.value
+        state = state.value,
+        editorPickDukaPager = viewModel.editorPickDukanPager,
+        bestNearestDukanPager = viewModel.bestNearestDukanPager
     )
 }
 
 @Composable
 private fun MainContent(
     listener: MainInteractionListener,
-    state: MainScreenUiState
+    state: MainScreenUiState,
+    editorPickDukaPager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>,
+    bestNearestDukanPager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>
 ) {
     Scaffold(
         topBar = {
@@ -124,11 +133,12 @@ private fun MainContent(
             BestNearestDukanSection(
                 dukans = state.bestNearestDukans,
                 onDukanClick = listener::onNearestDukanClick,
+                pager = bestNearestDukanPager,
                 modifier = Modifier
                     .padding(
                         start = Theme.spacing._16,
                         top = Theme.spacing._8
-                    )
+                    ),
             )
 
             Text(
@@ -144,7 +154,8 @@ private fun MainContent(
 
             EditorPickDukanItemsList(
                 dukans = state.editorPickDukans,
-                onDukanClick = listener::onEditorPickDukanClick
+                onDukanClick = listener::onEditorPickDukanClick,
+                pager = editorPickDukaPager
             )
         }
     }
@@ -164,8 +175,16 @@ private fun MainScreenPreview() {
                 listener = PreviewMainScreenInteractionListener,
                 state = MainScreenUiState(
                     categories = fakeCategories(),
-                    bestNearestDukans = fakeBestNearestDuknas(),
-                    editorPickDukans = fakeDukans()
+                    bestNearestDukans = PagingData(items = fakeBestNearestDuknas()),
+                    editorPickDukans = PagingData(items = fakeDukans())
+                ),
+                editorPickDukaPager = Pager(
+                    config = PagingConfig(),
+                    pagingSourceFactory = { EditorPickDukanItemsListPagingSource }
+                ),
+                bestNearestDukanPager = Pager(
+                    config = PagingConfig(),
+                    pagingSourceFactory = { BestNearestDukanPagingSource }
                 )
             )
         }
