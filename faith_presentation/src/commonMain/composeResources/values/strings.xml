@@ -92,7 +92,6 @@
     <string name="no_results_found_title">No results found!</string>
     <string name="no_results_found_subtitle">Please try again with another keyword.</string>
     <string name="back">back</string>
-
     <string name="faith_title">Faith</string>
     <string name="sunrise_time_label">Sunrise time</string>
     <string name="location">location</string>
@@ -114,8 +113,4 @@
     <string name="navigate_next">Navigate to next screen</string>
     <string name="surah_al_fatiha">Al-Fatiha</string>
     <string name="mosque_image_description">Mosque icon</string>
-
-
-
-
 </resources>
