@@ -3,13 +3,14 @@
 package net.thechance.mena.wallet.domain.repository
 
 import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.uuid.ExperimentalUuidApi
 
 interface StatementRepository {
-    suspend fun getTransactionsPdf(
+    suspend fun getTransactionPdfWithMetaData(
         filterRequestParams: TransactionFilterParams? = null
-    ): ByteArray
+    ): StatementWithMetaData
 
     suspend fun getStatements(
         page: Int,
@@ -20,7 +21,7 @@ interface StatementRepository {
     suspend fun getStatementById(id:Long): Statement
     suspend fun insertStatementWithFileName(
         fileName: String,
-        filterRequestParams: TransactionFilterParams?
-    ): Statement
+        statement: Statement
+    )
 
 }

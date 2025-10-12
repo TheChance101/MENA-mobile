@@ -42,7 +42,7 @@ class StatementRepositoryImplTest {
             everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
             everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
 
-            val result = statementRepository.getTransactionsPdf()
+            val result = statementRepository.getTransactionPdfWithMetaData()
 
             assertContentEquals(statement, result)
         }
@@ -53,8 +53,8 @@ class StatementRepositoryImplTest {
             everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
             everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
 
-            statementRepository.getTransactionsPdf()
-            val result = statementRepository.getTransactionsPdf()
+            statementRepository.getTransactionPdfWithMetaData()
+            val result = statementRepository.getTransactionPdfWithMetaData()
 
             assertContentEquals(statement, result)
         }
@@ -65,8 +65,8 @@ class StatementRepositoryImplTest {
         everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
         everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
 
-        statementRepository.getTransactionsPdf()
-        val result = statementRepository.getTransactionsPdf()
+        statementRepository.getTransactionPdfWithMetaData()
+        val result = statementRepository.getTransactionPdfWithMetaData()
 
         assertContentEquals(statement, result)
     }
@@ -77,8 +77,8 @@ class StatementRepositoryImplTest {
         everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
         everySuspend { statementRemoteDataSource.getTransactionPdf(null) } returns statement
 
-        statementRepository.getTransactionsPdf()
-        val result = statementRepository.getTransactionsPdf()
+        statementRepository.getTransactionPdfWithMetaData()
+        val result = statementRepository.getTransactionPdfWithMetaData()
         advanceUntilIdle()
 
         assertContentEquals(statement, result)

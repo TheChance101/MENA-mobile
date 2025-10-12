@@ -1,11 +1,13 @@
 package net.thechance.mena.wallet.data.repository.statement
 
 import net.thechance.mena.wallet.data.database.StatementDao
-import net.thechance.mena.wallet.data.mapper.toDaoEntity
-import net.thechance.mena.wallet.data.mapper.toDomainEntity
+import net.thechance.mena.wallet.data.mapper.toLocal
+import net.thechance.mena.wallet.data.mapper.toEntity
+import net.thechance.mena.wallet.data.mapper.toStatementWithMetaData
 import net.thechance.mena.wallet.data.repository.statement.datasource.local.StatementLocalDataSource
 import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSource
 import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import org.koin.core.annotation.Single
@@ -20,25 +22,24 @@ class StatementRepositoryImpl(
     private val statementDao: StatementDao
 ) : StatementRepository {
 
-    override suspend fun getTransactionsPdf(
-        filterRequestParams: TransactionFilterParams?,
-    ): ByteArray {
+    override suspend fun getTransactionPdfWithMetaData(
+        filterRequestParams: TransactionFilterParams?
+    ): StatementWithMetaData {
         clearExpiredCachedStatements()
-        return statementLocalDataSource.getStatement(filterRequestParams.key())
-            ?: statementRemoteDataSource.getTransactionPdf(filterRequestParams)
-                .also { pdf -> cacheRequest(pdf, filterRequestParams) }
+        val dto = statementRemoteDataSource.getTransactionPdf(filterRequestParams)
+        return dto.toStatementWithMetaData().also {
+            cacheRequest(it.byteArray, filterRequestParams)
+        }
     }
+
 
     override suspend fun insertStatementWithFileName(
         fileName: String,
-        filterRequestParams: TransactionFilterParams?
-    ): Statement {
-        val statementEntity = statementRemoteDataSource
-            .getStatementFromTransactionResponse(filterRequestParams)
-            .copy(fileName = fileName)
-        statementDao.insertStatement(statementEntity)
+        statement: Statement
+    ) {
+        statement.copy(fileName = fileName)
+        statementDao.insertStatement(statement.toLocal())
 
-        return statementEntity.toDomainEntity()
     }
 
     override suspend fun getStatements(
@@ -47,21 +48,21 @@ class StatementRepositoryImpl(
     ): List<Statement> {
         val offset = (page - 1) * pageSize
         return statementDao.getAllStatement(limit = pageSize, offset = offset)
-            .map { it.toDomainEntity() }
+            .map { it.toEntity() }
     }
 
     override suspend fun insertStatement(statement: Statement) {
         statementRemoteDataSource
-        statementDao.insertStatement(statement.toDaoEntity())
+        statementDao.insertStatement(statement.toLocal())
     }
 
 
     override suspend fun deleteStatement(statement: Statement): Boolean {
-        return statementDao.deleteStatement(statement.toDaoEntity())
+        return statementDao.deleteStatement(statement.toLocal())
     }
 
     override suspend fun getStatementById(id: Long): Statement {
-        return statementDao.getStatementById(id).toDomainEntity()
+        return statementDao.getStatementById(id).toEntity()
     }
 
     private suspend fun cacheRequest(

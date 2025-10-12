@@ -8,14 +8,14 @@ import androidx.room.Query
 @Dao
 interface StatementDao {
     @Insert
-    suspend fun insertStatement(statementEntity: StatementEntity)
+    suspend fun insertStatement(localStatement: LocalStatement)
 
     @Query("SELECT * FROM statement ORDER BY  createdAt DESC  LIMIT :limit OFFSET :offset")
-    suspend fun getAllStatement(limit:Int,offset:Int): List<StatementEntity>
+    suspend fun getAllStatement(limit:Int,offset:Int): List<LocalStatement>
 
     @Delete
-    suspend fun deleteStatement(statementEntity: StatementEntity):Boolean
+    suspend fun deleteStatement(localStatement: LocalStatement):Boolean
 
     @Query("SELECT * FROM statement WHERE id = :id")
-    suspend fun getStatementById(id: Long): StatementEntity
+    suspend fun getStatementById(id: Long): LocalStatement
 }

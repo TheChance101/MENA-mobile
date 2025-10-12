@@ -24,6 +24,8 @@ import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.something_went_wrong
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
+import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -49,7 +51,7 @@ class ExportTransactionsViewModel(
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
     ExportTransactionsState()
 ), ExportTransactionsListener {
-
+ private var statement:Statement?=null
     override fun onBackClicked() {
         sendEffect(ExportTransactionsEffect.NavigateBack)
     }
@@ -280,17 +282,25 @@ class ExportTransactionsViewModel(
         }
         showToast(messageRes = Res.string.downloading_started)
     }
-
     @OptIn(ExperimentalTime::class)
-    private suspend fun generateTransactionsFile(): ByteArray {
-        return if (currentState.isCustomFilterCardSelected) {
-
-            statementRepository.getTransactionsPdf(
+    private suspend fun generateTransactionsFile(): StatementWithMetaData{
+        val metadata = if (currentState.isCustomFilterCardSelected) {
+            statementRepository.getTransactionPdfWithMetaData(
                 getTransactionFilterParams()
             )
         } else {
-            statementRepository.getTransactionsPdf()
+            statementRepository.getTransactionPdfWithMetaData()
         }
+
+        statement = Statement(
+            id = 1,
+            startDate = metadata.startDate,
+            endDate = metadata.endDate,
+            totalInflows = metadata.totalInflows,
+            totalOutflows = metadata.totalOutflows
+        )
+
+        return metadata.byteArray
     }
 
     private fun getTransactionFilterParams(): TransactionFilterParams {
@@ -340,22 +350,13 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun saveStatementToDatabase(fileName: String) {
-        try {
-            val filterParams = if (currentState.isCustomFilterCardSelected) {
-                getTransactionFilterParams()
-            } else {
-                null
+            statement?.let {
+                statementRepository.insertStatementWithFileName(
+                    fileName = fileName,
+                    statement = it,
+                )
             }
-
-            statementRepository.insertStatementWithFileName(
-                fileName = fileName,
-                filterRequestParams = filterParams
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
-
     private suspend fun onDownloadFailure(error: ErrorState) {
         resetDownloadState()
         showSnackBar(

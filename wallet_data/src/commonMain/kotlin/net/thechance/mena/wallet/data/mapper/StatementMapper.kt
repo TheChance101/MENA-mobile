@@ -7,11 +7,12 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 
 import kotlinx.datetime.LocalDate
-import net.thechance.mena.wallet.data.database.StatementEntity
+import net.thechance.mena.wallet.data.database.LocalStatement
 import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.data.database.StatementWithMetaDataDto
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 fun TransactionFilterParams.toStatementRequest(): HttpRequestBuilder.() -> Unit = {
     header(HttpHeaders.Accept, ContentType.Application.Pdf)
@@ -20,8 +21,8 @@ fun TransactionFilterParams.toStatementRequest(): HttpRequestBuilder.() -> Unit 
     endDate?.let { parameter("endDate", it.toString()) }
 }
 @OptIn(ExperimentalUuidApi::class)
-fun Statement.toDaoEntity(): StatementEntity {
-    return StatementEntity(
+fun Statement.toLocal(): LocalStatement {
+    return LocalStatement(
         startDate=startDate.toString(),
         endDate=endDate.toString(),
         totalInflows=totalInflows,
@@ -30,7 +31,7 @@ fun Statement.toDaoEntity(): StatementEntity {
     )
 }
 @OptIn(ExperimentalUuidApi::class)
-fun StatementEntity.toDomainEntity(): Statement {
+fun LocalStatement.toEntity(): Statement {
     return Statement(
         startDate = LocalDate.parse(this.startDate),
         endDate = LocalDate.parse(this.endDate),
@@ -40,3 +41,22 @@ fun StatementEntity.toDomainEntity(): Statement {
         fileName = fileName,
     )
 }
+fun StatementWithMetaDataDto.toStatementWithMetaData(): StatementWithMetaData {
+    return StatementWithMetaData(
+        byteArray = this.byteArray,
+            startDate = this.startDate,
+            endDate = this.endDate,
+            totalInflows = this.totalInflows,
+            totalOutflows = this.totalOutflows,
+    )
+}
+fun StatementWithMetaData.toStatementWithMetaDataDto(): StatementWithMetaDataDto {
+    return StatementWithMetaDataDto(
+        byteArray = this.byteArray,
+        startDate = this.startDate,
+        endDate = this.endDate,
+        totalInflows = this.totalInflows,
+        totalOutflows = this.totalOutflows,
+    )
+}
+

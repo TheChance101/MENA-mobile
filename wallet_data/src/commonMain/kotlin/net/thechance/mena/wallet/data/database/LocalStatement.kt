@@ -6,7 +6,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Entity(tableName = "statement")
-data class StatementEntity @OptIn(ExperimentalTime::class) constructor(
+data class LocalStatement @OptIn(ExperimentalTime::class) constructor(
     @PrimaryKey(autoGenerate = true) val id: Long=0,
     val startDate: String,
     val endDate: String,
