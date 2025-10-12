@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -75,8 +76,7 @@ private fun ProductsShelf(
                     isLoading = true,
                     state = state,
                     shelfName = shelf.name,
-                    listener = listener,
-                    shelfId = shelf.id,
+                    onViewAllClicked = {listener.onViewAllShelfProductsClicked(shelf.id, shelf.name)},
                     modifier = Modifier.padding(horizontal = Theme.spacing._16)
                 )
             }
@@ -85,8 +85,7 @@ private fun ProductsShelf(
                     isLoading = false,
                     state = state,
                     shelfName = shelf.name,
-                    listener = listener,
-                    shelfId = shelf.id,
+                    onViewAllClicked = {listener.onViewAllShelfProductsClicked(shelf.id, shelf.name)},
                     modifier = Modifier.padding(horizontal = Theme.spacing._16)
                 )
             }
@@ -125,9 +124,9 @@ private fun LazyListScope.productCardState(
     modifier: Modifier = Modifier
 ) {
     if (isLoading) {
-        items(productPairs.size) {
+        items(productPairs.size) {index->
             Column(
-                modifier = modifier.fillParentMaxWidth(if (it == productPairs.lastIndex) 1f else 0.95f),
+                modifier = modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 LoadingProductCard()
@@ -135,9 +134,9 @@ private fun LazyListScope.productCardState(
             }
         }
     } else {
-        items(productPairs) { pair ->
+        itemsIndexed(productPairs) {index, pair ->
             Column(
-                modifier = Modifier.fillParentMaxWidth(if (pair.size == productPairs.lastIndex) 1f else 0.95f),
+                modifier = Modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 pair.forEach { product ->
@@ -160,8 +159,7 @@ private fun ShelfHeader(
     isLoading: Boolean,
     state: DukanDetailsUiState,
     shelfName: String,
-    listener: DukanDetailsInteractionListener,
-    shelfId: String,
+    onViewAllClicked:() -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -169,8 +167,8 @@ private fun ShelfHeader(
             indication = null,
             interactionSource = remember { MutableInteractionSource() }
         ) {
-            listener.onViewAllShelfProductsClicked(shelfId, shelfName)
-        },
+            onViewAllClicked()
+          },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
