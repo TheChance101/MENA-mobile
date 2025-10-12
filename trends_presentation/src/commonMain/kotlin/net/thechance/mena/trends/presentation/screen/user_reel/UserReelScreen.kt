@@ -202,18 +202,12 @@ private fun ReelPage(
     state: UserReelState,
     listener: UserReelInteractionListener,
 ) {
-    var isControllerVisible by remember { mutableStateOf(false) }
-    val offsetY by animateDpAsState(
-        targetValue = if (isControllerVisible) 50.dp else 0.dp,
-    )
-
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
 
         VideoPlayer(
             url = reel.videoUrl,
             playWhenVisible = isCurrentPage,
-            onControllerVisibilityChanged = { isControllerVisible = it }
         )
 
         UsersReAct(
@@ -229,14 +223,14 @@ private fun ReelPage(
             timeOfPublish = reel.createdAt.orEmpty(),
             description = reel.description,
             avatar = reel.profileImage,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = offsetY),
+            modifier = Modifier.align(Alignment.BottomCenter),
             isDescriptionExpanded = state.isDescriptionExpanded,
             onDescriptionClick = listener::onDescriptionClick,
             onPublisherInfoClick = listener::onPublisherInfoClick
         )
 
         Box(modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow())
-    } // need store the video to not load it every time + ios code
+    }
 }
 
 
