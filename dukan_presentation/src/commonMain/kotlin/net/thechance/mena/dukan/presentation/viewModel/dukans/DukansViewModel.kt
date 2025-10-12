@@ -27,6 +27,21 @@ class DukansViewModel(
         initializePager()
     }
 
+    override fun onBackClick() {
+        emitEffect(DukansEffects.NavigateBack)
+    }
+
+    override fun onDukanClick(dukan: DukanUiState) {
+        emitEffect(DukansEffects.NavigateToDukanDetails(dukan.id))
+    }
+
+    override fun onFavoriteClick(dukan: DukanUiState) {
+        tryToExecute(
+            block = { toggleFavoriteStatus(dukan) },
+            onSuccess = { updateFavoriteState(dukan) }
+        )
+    }
+
     private fun initializePager(): Pager<Int, DukanUiState> {
         val categoryId = savedStateHandle.get<String>("categoryId") ?: ""
         val categoryTitle = savedStateHandle.get<String>("categoryTitle") ?: ""
@@ -51,21 +66,6 @@ class DukansViewModel(
         this.pager = pager
         loadDukans(pager)
         return pager
-    }
-
-    override fun onBackClick() {
-        emitEffect(DukansEffects.NavigateBack)
-    }
-
-    override fun onDukanClick(dukan: DukanUiState) {
-        emitEffect(DukansEffects.NavigateToDukanDetails(dukan.id))
-    }
-
-    override fun onFavoriteClick(dukan: DukanUiState) {
-        tryToExecute(
-            block = { toggleFavoriteStatus(dukan) },
-            onSuccess = { updateFavoriteState(dukan) }
-        )
     }
 
     private suspend fun toggleFavoriteStatus(dukan: DukanUiState) {
