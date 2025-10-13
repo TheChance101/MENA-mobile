@@ -17,25 +17,12 @@ class PickLocationScreenViewModel(
     private val locationRepository: LocationRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val locationForegroundHandler: PermissionHandler,
-    private val locationServiceHandler: PermissionHandler
 ) : BaseScreenModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(PickLocationScreenUIState()),
     PickLocationScreenInteractionListener {
     override fun onClickMap(
         coordinates: PickLocationScreenUIState.CoordinatesUiState,
         pointerLocation: DpOffset
     ) {
-        tryToExecute(
-            function = { onClickMapBlock(coordinates, pointerLocation) },
-            onSuccess = ::onMapClickedSuccess,
-            onError = ::onError,
-            dispatcher = dispatcher
-        )
-    }
-
-    private suspend fun onClickMapBlock(
-        coordinates: PickLocationScreenUIState.CoordinatesUiState,
-        pointerLocation: DpOffset
-    ): String {
         updateState {
             copy(
                 currentLocation = coordinates,
@@ -43,10 +30,19 @@ class PickLocationScreenViewModel(
                 isMapLocked = true
             )
         }
-        return locationRepository.getLocationName(coordinates.toEntity())
+        getLocationName()
     }
 
-    private fun onMapClickedSuccess(address: String) {
+    private fun getLocationName() {
+        tryToExecute(
+            function = { locationRepository.getLocationName(state.value.currentLocation.toEntity()) },
+            onSuccess = ::onGetLocationNameSuccess,
+            onError = ::onError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onGetLocationNameSuccess(address: String) {
         updateState { copy(address = address) }
         changeIsConfirmEnabled()
     }
@@ -96,6 +92,7 @@ class PickLocationScreenViewModel(
                     isGpsButtonLoading = false
                 )
             }
+            getLocationName()
         }
     }
 
@@ -103,22 +100,24 @@ class PickLocationScreenViewModel(
         checkLocationEnable()
     }
 
-    private fun checkLocationEnable(){
+    private fun checkLocationEnable() {
         tryToExecute(
-            function = {locationForegroundHandler.checkPermission()},
+            function = { locationForegroundHandler.checkPermission() },
             onSuccess = ::checkLocationEnableSuccess,
             ::onError
         )
     }
 
-    private fun checkLocationEnableSuccess(permissionState: PermissionState){
-        when (permissionState){
+    private fun checkLocationEnableSuccess(permissionState: PermissionState) {
+        when (permissionState) {
             PermissionState.GRANTED -> {
-                updateState { copy(errorMessage = "GPS is off") }
+                updateState { copy(errorMessage = "Location is turned off") }
             }
+
             PermissionState.DENIED -> {
                 navigateToEnableLocation()
             }
+
             PermissionState.NOT_DETERMINED -> {
                 navigateToEnableLocation()
             }
