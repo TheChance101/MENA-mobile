@@ -22,6 +22,8 @@ class SurViewModel(
     override fun onBackClick() = sendEffect(SurEffect.NavigateBack)
 
     override fun onBookmarkClick() = sendEffect(SurEffect.NavigateToBookmark)
+    override fun onSearchClick() = sendEffect(SurEffect.NavigateToSearch)
+
 
     private fun initializeSur() {
         tryToExecute(

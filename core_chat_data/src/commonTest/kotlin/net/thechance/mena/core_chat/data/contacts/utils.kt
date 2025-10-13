@@ -152,12 +152,14 @@ fun createChatRepository(
     imageDownloader: ImageDownloader,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
         chatResponse = chatResponse,
-        chatSummaryResponse = chatSummaryResponse
+        chatSummaryResponse = chatSummaryResponse,
+        chatByIdResponse = chatByIdResponse
     )
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
@@ -174,19 +176,25 @@ fun createHttpClient(
     syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
-        when (request.url.encodedPath) {
-            CONTACTS_ENDPOINT -> contactsResponse?.invoke(this) ?: defaultContactsResponse()
+        when {
+            request.url.encodedPath == CONTACTS_ENDPOINT ->
+                contactsResponse?.invoke(this) ?: defaultContactsResponse()
 
-            SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
-                ?: defaultSyncContactsResponse()
+            request.url.encodedPath == SYNC_CONTACTS_ENDPOINT ->
+                syncContactsResponse?.invoke(this) ?: defaultSyncContactsResponse()
 
-            CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
-                ?: defaultChatHistoryResponse()
+            request.url.encodedPath == CHAT_HISTORY_ENDPOINT ->
+                chatHistoryResponse?.invoke(this) ?: defaultChatHistoryResponse()
 
-            CHAT_ENDPOINT -> chatResponse?.invoke(this) ?: defaultChatResponse()
+            request.url.encodedPath == CHAT_ENDPOINT ->
+                chatResponse?.invoke(this) ?: defaultChatResponse()
+
+            request.url.encodedPath.startsWith("$CHAT_ENDPOINT/") ->
+                chatByIdResponse?.invoke(this) ?: defaultChatResponse()
 
             CHAT_SUMMARY_ENDPOINT -> chatSummaryResponse?.invoke(this) ?: defaultChatSummaryResponse()
 

@@ -68,7 +68,7 @@ class StatementsHistoryViewModelTest {
             everySuspend {
                 statementRepository.getStatements(PAGE, PAGE_SIZE)
             } returns emptyList()
-            val id = Uuid.random()
+            val id = 1L
             advanceUntilIdle()
             viewModel.uiEffect.test {
                 viewModel.onStatementCardClicked(id)
@@ -173,7 +173,7 @@ class StatementsHistoryViewModelTest {
     companion object {
         val statements = listOf(
             Statement(
-                Uuid.random(),
+                1,
                 LocalDate(2025, 3, 1),
                 LocalDate(2025, 3, 31),
                 1410.0,
@@ -181,7 +181,7 @@ class StatementsHistoryViewModelTest {
                 "/storage/statements/mar_2025.pdf"
             ),
             Statement(
-                Uuid.random(),
+                2,
                 LocalDate(2025, 4, 1),
                 LocalDate(2025, 4, 30),
                 1600.3,
@@ -189,7 +189,7 @@ class StatementsHistoryViewModelTest {
                 "/storage/statements/apr_2025.pdf"
             ),
             Statement(
-                Uuid.random(),
+                3,
                 LocalDate(2025, 5, 1),
                 LocalDate(2025, 5, 31),
                 1555.0,
