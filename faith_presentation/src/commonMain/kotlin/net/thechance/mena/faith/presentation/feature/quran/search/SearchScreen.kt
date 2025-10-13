@@ -70,11 +70,11 @@ fun SearchScreen(
             }
 
             is SearchEffect.NavigateBack -> {
-                effect
-                if (effect.ayahNumber != null)
+                if (effect.ayahNumber != null) {
                     navController.previousBackStackEntry
                         ?.savedStateHandle
                         ?.set("ayahNumber", effect.ayahNumber)
+                }
                 navController.navigateUp()
             }
         }
