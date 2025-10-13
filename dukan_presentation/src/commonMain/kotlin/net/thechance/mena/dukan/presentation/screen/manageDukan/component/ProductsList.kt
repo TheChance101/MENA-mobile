@@ -65,7 +65,7 @@ private fun ProductsLayoutPreview() {
             fakeProducts(),
             pager = Pager(
                 config = PagingConfig(),
-                pagingSourceFactory = { FakeProductPagingSource() }
+                pagingSourceFactory = { FakeProductPagingSource }
             ),
         )
     }

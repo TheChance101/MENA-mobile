@@ -35,16 +35,16 @@ internal fun CategoryItem(
         targetValue = if (category.isSelected) Theme.colorScheme.shadePrimary else Theme.colorScheme.shadeSecondary
     )
     Row(
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._8),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(shape = RoundedCornerShape(size = Theme.radius.full))
             .background(color = Theme.colorScheme.primary.onPrimary)
             .noRippleClickable { category.value.id?.let { onClick(it) } }
-            .padding(10.dp)
+            .padding(all = 10.dp)
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+            horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(

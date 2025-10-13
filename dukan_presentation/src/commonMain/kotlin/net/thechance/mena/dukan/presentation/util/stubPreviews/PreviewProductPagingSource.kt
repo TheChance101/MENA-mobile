@@ -4,7 +4,7 @@ import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagingSource
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductUiState
 
-class FakeProductPagingSource : BasePagingSource<ProductUiState>() {
+object FakeProductPagingSource : BasePagingSource<ProductUiState>() {
     override suspend fun onFetchPage(pageNumber: Int): PagedResult<ProductUiState> {
         return PagedResult(
             items = fakeProducts(),

@@ -103,11 +103,16 @@
     <string name="error_price_invalid">Price is invalid.</string>
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
     <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
+    <string name="best_dukans_around_you">Best Dukans around you</string>
+    <string name="editor_pick_dukans">Editor Pick Dukans</string>
+    <string name="what_do_you_need">what do you need?</string>
     <string name="categories">Categories</string>
     <string name="back_to_main_screen_icon">Back to main screen icon</string>
     <string name="category_icon">Category Icon</string>
     <string name="something_went_wrong_while_fetching_categories">Something went wrong while fetching categories</string>
     <string name="no_internet_connection">No Internet Connection</string>
+    <string name="view_more">View more</string>
+    <string name="heart_icon">Heart Icon</string>
     <string name="favorites">Favorites</string>
     <string name="no_dukans_title">No dukans found</string>
     <string name="no_dukans_body">There are no dukans available in this category at the moment.</string>

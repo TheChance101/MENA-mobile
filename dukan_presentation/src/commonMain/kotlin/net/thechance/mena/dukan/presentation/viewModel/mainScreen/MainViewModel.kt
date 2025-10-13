@@ -1,11 +1,17 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 
 class MainViewModel(
@@ -18,6 +24,105 @@ class MainViewModel(
 
     init {
         getDukanState()
+        getCategories()
+        getEditorPicksDukans()
+        getBestNearestDukans()
+    }
+
+    private fun getEditorPicksDukans() {
+        tryToCollect(
+            onStart = ::onEditorPickDukanLoading,
+            block = { editorPickDukanPager.flow },
+            onCollect = ::onLoadedEditorPicksDukan
+        )
+        viewModelScope.launch(defaultDispatcher) {
+            editorPickDukanPager.load()
+        }
+    }
+
+
+    private fun onEditorPickDukanLoading() {
+        updateState {
+            copy(
+                editorPickDukanState = MainScreenUiState.EditorPickDukanStatus.LOADING,
+                editorPickDukans = PagingData()
+            )
+        }
+    }
+
+    private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+        val loadedBestNearestDukans = when {
+            dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.EditorPickDukanStatus.LOADING
+            else -> MainScreenUiState.EditorPickDukanStatus.LOADED
+        }
+        updateState {
+            copy(
+                editorPickDukans = dukans,
+                editorPickDukanState = loadedBestNearestDukans
+            )
+        }
+    }
+
+    private fun getBestNearestDukans() {
+        tryToCollect(
+            onStart = ::onBestNearestDukanLoading,
+            block = { bestNearestDukanPager.flow },
+            onCollect = ::onLoadedBestNearestDukans
+        )
+        viewModelScope.launch(defaultDispatcher) {
+            bestNearestDukanPager.load()
+        }
+    }
+
+    private fun onBestNearestDukanLoading() {
+        updateState {
+            copy(
+                bestNearestDukans = PagingData(),
+                bestNearestDukanState = MainScreenUiState.BestNearestDukanStatus.LOADING
+            )
+        }
+    }
+
+    private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
+        val loadedBestNearestDukans = when {
+            dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.BestNearestDukanStatus.LOADING
+            else -> MainScreenUiState.BestNearestDukanStatus.LOADED
+        }
+        updateState {
+            copy(
+                bestNearestDukans = dukans,
+                bestNearestDukanState = loadedBestNearestDukans
+            )
+        }
+    }
+
+    private fun getCategories() {
+        tryToExecute(
+            onStart = { updateState { copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Loading)) } },
+            block = ::getCategoriesBlock,
+            onSuccess = ::onGetCategoriesSuccess,
+            onError = ::onGetCategoriesError
+        )
+    }
+
+    private fun onGetCategoriesError(error: Throwable) {
+        updateState {
+            copy(
+                errorMessage = error.message
+            )
+        }
+    }
+
+    private suspend fun getCategoriesBlock(): List<DukanCategoryUiState> {
+        return dukanRepository.getCategories().toUiState()
+    }
+
+    private fun onGetCategoriesSuccess(categoryUiState: List<DukanCategoryUiState>) {
+        updateState {
+            copy(
+                categories = categoryUiState
+            )
+        }
     }
 
     private fun getDukanState() {
@@ -61,5 +166,39 @@ class MainViewModel(
             DukanStatusUi.Approved -> emitEffect(MainEffect.NavigateToManageDukanScreen)
             DukanStatusUi.Loading -> {}
         }
+    }
+
+    override fun onViewMoreButtonClick() {
+        emitEffect(MainEffect.NavigateCategoryToScreen)
+    }
+
+    override fun onCategorySelectedClick(categoryId: String, categoryName: String) {
+        emitEffect(MainEffect.NavigateToDukansScreenByCategory(categoryId, categoryName))
+    }
+
+    override fun onNearestDukanClick(dukanId: String) {
+        emitEffect(MainEffect.NavigateSelectedDukan(dukanId))
+    }
+
+    override fun onEditorPickDukanClick(dukanId: String) {
+        emitEffect(MainEffect.NavigateSelectedDukan(dukanId))
+    }
+
+    val bestNearestDukanPager = createPagingSource(
+        mapper = { it.toBestNearestUiState() }
+    ) { currentPage ->
+        dukanRepository.getBestAroundDukans(
+            page = currentPage,
+            size = 20
+        )
+    }
+
+    val editorPickDukanPager = createPagingSource(
+        mapper = { it.toEditorPickUiState() }
+    ) { currentPage ->
+        dukanRepository.getEditorPicksDukans(
+            page = currentPage,
+            size = 20
+        )
     }
 }

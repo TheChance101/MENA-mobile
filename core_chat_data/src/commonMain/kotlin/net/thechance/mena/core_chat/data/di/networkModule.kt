@@ -1,6 +1,8 @@
 package net.thechance.mena.core_chat.data.di
 
 import kotlinx.serialization.json.Json
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
 import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
@@ -30,6 +32,8 @@ internal val networkModule = module {
             client = get(named(CHAT_CLIENT))
         )
     }
+
+    single<ImageDownloader> { ImageDownloaderImp() }
 }
 
 private const val BASE_URL = "baseUrl"

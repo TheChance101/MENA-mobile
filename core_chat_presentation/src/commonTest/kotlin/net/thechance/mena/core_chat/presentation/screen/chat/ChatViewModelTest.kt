@@ -24,6 +24,7 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
+import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -304,6 +305,76 @@ class ChatViewModelTest {
         assertThat(result.data.isVisibleMessageInfo).isEqualTo(messageUiState.isVisibleMessageInfo)
     }
 
+    @Test
+    fun `onMessageImageClicked should update state to show image pager with correct message and index`() {
+        val message = messages.first().toUi(chatRequesterId)
+        val index = 2
+
+        chatViewModel.onMessageImageClicked(message, index)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isImagePagerVisible).isTrue()
+        assertThat(chatViewModel.state.value.selectedMessage).isEqualTo(message)
+        assertThat(chatViewModel.state.value.currentImageIndexForPreview).isEqualTo(index)
+    }
+
+    @Test
+    fun `onDownloadImageClicked should call repository and show success snackbar on success`() {
+        everySuspend { repository.downloadImage(imageUrl) } returns Unit
+
+        chatViewModel.onDownloadImageClicked(imageUrl)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verifySuspend { repository.downloadImage(imageUrl) }
+        verifySuspend { effector.showSnackBar(any()) }
+    }
+
+    @Test
+    fun `onDownloadImageClicked should show error snackbar on failure`() {
+
+        everySuspend { repository.downloadImage(imageUrl) } throws Exception()
+
+        chatViewModel.onDownloadImageClicked(imageUrl)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verifySuspend {
+            effector.showSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(Res.string.error),
+                    message = UiText.StringRes(Res.string.error_failed_to_download_image),
+                    isError = true
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `onCloseImageViewClicked should reset image pager state`() {
+
+        chatViewModel.onCloseImageViewClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isImagePagerVisible).isFalse()
+        assertThat(chatViewModel.state.value.selectedMessage).isEqualTo(null)
+        assertThat(chatViewModel.state.value.currentImageIndexForPreview).isEqualTo(0)
+    }
+
+
+
+    @Test
+    fun `onSendImageClicked should update message to FAILED status after failed repository call`() {
+
+
+        val imageByteArray = byteArrayOf(1, 2, 3)
+        val imageByteArrays = listOf(imageByteArray)
+        everySuspend { repository.sendMessage(any()) } throws Exception("Failed to send")
+
+        chatViewModel.onSendImageClicked(imageByteArrays)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val firstMessage = chatViewModel.state.value.chatListItems.currentUiMessages().first()
+        assertThat(firstMessage.status).isEqualTo(MessageStatus.FAILED)
+    }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.Message>()
@@ -322,6 +393,8 @@ class ChatViewModelTest {
 
         val message1Id = Uuid.parse("22222222-2222-2222-2222-222222222222")
         val message2Id = Uuid.parse("33333333-3333-3333-3333-333333333333")
+
+        const val imageUrl = "https://test.com/image.jpg"
 
         val messages =
             listOf(
