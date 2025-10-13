@@ -6,8 +6,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-fun UserDto.toEntity(id: Uuid) = User(
-    id = id,
+fun UserDto.toEntity() = User(
     name = name ?: "",
     imgUrl = imageUrl
 )

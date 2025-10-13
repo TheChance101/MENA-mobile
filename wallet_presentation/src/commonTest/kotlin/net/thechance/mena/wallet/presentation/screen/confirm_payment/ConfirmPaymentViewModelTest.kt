@@ -209,7 +209,6 @@ class ConfirmPaymentViewModelTest {
         const val receiverImg1 = "https://media.istockphoto.com/id/469738422/photo/large-boulders-on-lake-shore-at-sunset-minnesota-usa.jpg?s=612x612&w=0&k=20&c=4FzViDygZ8CgixTqt3VOudLJUP8uoSeh2UlD_qHYkAw="
 
         val receiver1 = User(
-            id = receiver1Id,
             name = receiverName1,
             imgUrl = receiverImg1
         )

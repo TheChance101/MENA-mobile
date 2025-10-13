@@ -26,33 +26,32 @@ class UserRepositoryImplTest {
     lateinit var networkClient: NetworkClient
 
     @Test
-    fun `getUserById returns user when API call is successful`() = runTest()
+    fun `getReceiverByTransactionId returns user when API call is successful`() = runTest()
     {
         networkClient = createNetworkClient(userResponse)
         userRepository = UserRepositoryImpl(networkClient)
 
-        val result = userRepository.getReceiverByTransactionId(receiverId)
+        val result = userRepository.getReceiverByTransactionId(transactionId)
 
         assertEquals(receiver, result)
     }
 
     @Test
-    fun `getUserById returns throw exception when API call is fails`() = runTest()
+    fun `getReceiverByTransactionId returns throw exception when API call is fails`() = runTest()
     {
         networkClient = createNetworkClient(userErrorResponse)
         userRepository = UserRepositoryImpl(networkClient)
 
         assertFailsWith<Exception> {
-            userRepository.getReceiverByTransactionId(receiverId)
+            userRepository.getReceiverByTransactionId(transactionId)
         }
     }
 
     companion object {
-        val receiverId = Uuid.random()
+        val transactionId = Uuid.random()
         const val receiverName = "username1"
         const val receiverImg = "userimg1.png"
         val receiver = User(
-            id = receiverId,
             name = receiverName,
             imgUrl = receiverImg
         )

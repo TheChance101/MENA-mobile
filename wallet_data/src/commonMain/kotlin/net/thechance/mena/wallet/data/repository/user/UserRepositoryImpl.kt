@@ -21,7 +21,7 @@ class UserRepositoryImpl (
             networkClient.get("$TRANSACTION_PATH$RECEIVER_DETAILS"){
                 parameter(TRANSACTION_ID_PARAM, id)
             }
-        }.toEntity(id)
+        }.toEntity()
     }
 
     private companion object {
