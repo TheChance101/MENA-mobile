@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,11 +20,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.all
 import mena.dukan_presentation.generated.resources.ic_arrow_right
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.productCard.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
@@ -34,6 +32,7 @@ import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SmallImageProductContent(
@@ -55,7 +54,6 @@ fun SmallImageProductContent(
         shelves.items.forEach { shelf ->
             stickyHeader {
                 ShelfHeader(
-                    isLoading = state.shelvesState == DukanDetailsUiState.ShelvesState.LOADING,
                     state = state,
                     shelfName = shelf.name,
                     onViewAllClicked = {
@@ -71,66 +69,25 @@ fun SmallImageProductContent(
             }
             item {
                 ProductsShelf(
-                    state = state,
                     shelf = shelf,
+                    listener = listener
                 )
             }
         }
-
     }
 }
 
 @Composable
 private fun ProductsShelf(
-    state: DukanDetailsUiState,
     shelf: DukanDetailsUiState.ShelfUiState,
+    listener: DukanDetailsInteractionListener
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
+    val productPairs = shelf.products.chunked(2)
+    LazyRow(
+        contentPadding = PaddingValues(Theme.spacing._16),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+    ) {
 
-        LazyRow(
-            contentPadding = PaddingValues(Theme.spacing._16),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-        ) {
-            val productPairs = shelf.products.chunked(2)
-
-            when (state.productsState) {
-                DukanDetailsUiState.ProductsState.LOADING -> {
-                    productCardState(
-                        isLoading = true,
-                        productPairs = productPairs
-                    )
-                }
-
-                DukanDetailsUiState.ProductsState.LOADED -> {
-                    productCardState(
-                        isLoading = false,
-                        productPairs = productPairs
-                    )
-                }
-
-                DukanDetailsUiState.ProductsState.EMPTY -> {}
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-private fun LazyListScope.productCardState(
-    isLoading: Boolean,
-    productPairs: List<List<DukanDetailsUiState.ProductUiState>>,
-    modifier: Modifier = Modifier
-) {
-    if (isLoading) {
-        items(productPairs.size) { index ->
-            Column(
-                modifier = modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-            ) {
-                LoadingProductCard()
-                LoadingProductCard()
-            }
-        }
-    } else {
         itemsIndexed(productPairs) { index, pair ->
             Column(
                 modifier = Modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
@@ -143,7 +100,14 @@ private fun LazyListScope.productCardState(
                         productDescription = product.description,
                         productPrice = product.price,
                         productCardBackground = Theme.colorScheme.background.surfaceLow,
-                        productAction = {}
+                        productAction = {
+                            CartOrQuantityProductComponent(
+                                showProductQuantity = product.showProductQuantity,
+                                onCartClick = {
+                                    listener.onCartClick(product.id)
+                                }
+                            )
+                        }
                     )
                 }
             }
@@ -153,7 +117,6 @@ private fun LazyListScope.productCardState(
 
 @Composable
 private fun ShelfHeader(
-    isLoading: Boolean,
     state: DukanDetailsUiState,
     shelfName: String,
     onViewAllClicked: () -> Unit,
@@ -175,12 +138,11 @@ private fun ShelfHeader(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .shimmerLoading(isLoading, Theme.radius.lg)
                 .weight(1f)
         )
 
         Text(
-            text = "All",
+            text = stringResource(Res.string.all),
             style = Theme.typography.label.medium,
             color = Color(state.dukanInfo.color),
             overflow = TextOverflow.Ellipsis,

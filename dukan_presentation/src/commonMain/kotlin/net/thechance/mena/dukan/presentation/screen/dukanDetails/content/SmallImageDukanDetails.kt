@@ -30,20 +30,14 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptio
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.FakeDukanPagingSource
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageProductContent
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.shimmerLoading
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SmallImageDukanDetails(
@@ -89,7 +83,6 @@ fun SmallImageDukanDetails(
         Column {
             DukanImageAndTitle(
                 state.dukanInfo,
-                state.isDukanInfoLoading,
                 modifier = Modifier.padding(
                     start = Theme.spacing._16,
                     end = Theme.spacing._16,
@@ -104,19 +97,16 @@ fun SmallImageDukanDetails(
                 DukanIconButton(
                     icon = painterResource(Res.drawable.ic_favorite),
                     iconColor = Color(state.dukanInfo.color),
-                    isLoading = state.isDukanInfoLoading,
                     modifier = Modifier.weight(1f)
                 )
                 DukanIconButton(
                     icon = painterResource(Res.drawable.ic_share),
                     iconColor = Color(state.dukanInfo.color),
-                    isLoading = state.isDukanInfoLoading,
                     modifier = Modifier.weight(1f)
                 )
                 DukanIconButton(
                     icon = painterResource(Res.drawable.dukan_location),
                     iconColor = Color(state.dukanInfo.color),
-                    isLoading = state.isDukanInfoLoading,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -135,7 +125,6 @@ fun SmallImageDukanDetails(
 @Composable
 private fun DukanImageAndTitle(
     state: DukanDetailsUiState.DukanInfo,
-    isLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -149,7 +138,6 @@ private fun DukanImageAndTitle(
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(56.dp)
                 .clip(RoundedCornerShape(Theme.radius.full))
-                .shimmerLoading(isLoading, Theme.radius.full)
         )
         Text(
             text = state.name,
@@ -158,7 +146,6 @@ private fun DukanImageAndTitle(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
-                .shimmerLoading(isLoading, Theme.radius.lg)
         )
     }
 }
@@ -167,7 +154,6 @@ private fun DukanImageAndTitle(
 private fun DukanIconButton(
     icon: Painter,
     iconColor: Color,
-    isLoading: Boolean,
     onIconClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -176,22 +162,15 @@ private fun DukanIconButton(
         contentDescription = "dukan details icon",
         tint = iconColor,
         modifier = modifier.clip(RoundedCornerShape(Theme.radius.full))
-            .then(
-                if (isLoading) {
-                    Modifier.shimmerLoading(true, Theme.radius.full)
-                } else {
-                    Modifier.background(iconColor.copy(alpha = 0.04f))
-                        .clickable(
-                            onClick = onIconClick,
-                            indication = null,
-                            interactionSource = MutableInteractionSource()
-                        )
-                }
-                    .padding(vertical = Theme.spacing._12 + Theme.spacing._2, horizontal = 43.dp)
+            .background(iconColor.copy(alpha = 0.04f))
+            .clickable(
+                onClick = onIconClick,
+                indication = null,
+                interactionSource = MutableInteractionSource()
             )
+            .padding(vertical = Theme.spacing._12 + Theme.spacing._2, horizontal = 43.dp)
     )
 }
-
 
 @Composable
 private fun DukanHeaderIcon(
@@ -206,154 +185,6 @@ private fun DukanHeaderIcon(
         Icon(
             painter = icon,
             contentDescription = "header icon"
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun SmallImageDukanDetailsPreview() {
-    MenaTheme {
-        SmallImageDukanDetails(
-            state = DukanDetailsUiState(
-                dukanInfo = DukanDetailsUiState.DukanInfo(
-                    name = "Fashion House",
-                    imageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-                    style = DukanDetailsUiState.Style.WIDE_IMAGE,
-                    color = 0xFFFB5B5D,
-                    coordinates = DukanDetailsUiState.Coordinates(
-                        latitude = 30.0444,
-                        longitude = 31.2357
-                    )
-                ),
-                isDukanInfoLoading = false,
-                shelvesState = DukanDetailsUiState.ShelvesState.LOADED,
-                productsState = DukanDetailsUiState.ProductsState.LOADED,
-                shelves = PagingData(
-                    items = listOf(
-                        DukanDetailsUiState.ShelfUiState(
-                            id = "s1",
-                            name = "Dresses",
-                            products = listOf(
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p1",
-                                    name = "Black Maxi Dress",
-                                    imageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-                                    price = 89.99,
-                                    description = "A perfect fit for formal occasions."
-                                ),
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p2",
-                                    name = "Floral Summer Dress",
-                                    imageUrl = "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400",
-                                    price = 69.99,
-                                    description = "Light and colorful summer dress."
-                                ),
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p1",
-                                    name = "Black Maxi Dress",
-                                    imageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-                                    price = 89.99,
-                                    description = "A perfect fit for formal occasions."
-                                ),
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p2",
-                                    name = "Floral Summer Dress",
-                                    imageUrl = "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400",
-                                    price = 69.99,
-                                    description = "Light and colorful summer dress."
-                                ), DukanDetailsUiState.ProductUiState(
-                                    id = "p1",
-                                    name = "Black Maxi Dress",
-                                    imageUrl = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-                                    price = 89.99,
-                                    description = "A perfect fit for formal occasions."
-                                ),
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p2",
-                                    name = "Floral Summer Dress",
-                                    imageUrl = "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400",
-                                    price = 69.99,
-                                    description = "Light and colorful summer dress."
-                                )
-                            )
-                        ),
-                        DukanDetailsUiState.ShelfUiState(
-                            id = "s2",
-                            name = "Shoes",
-                            products = listOf(
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p3",
-                                    name = "Leather Sandals",
-                                    imageUrl = "https://images.unsplash.com/photo-1544441893-675973e31985?w=400",
-                                    price = 49.99,
-                                    description = "Handmade brown leather sandals."
-                                ),
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p4",
-                                    name = "Sport Trainers",
-                                    imageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-                                    price = 89.99,
-                                    description = "Durable sports trainers for daily wear."
-                                )
-                            )
-                        ),
-                        DukanDetailsUiState.ShelfUiState(
-                            id = "s2",
-                            name = "Shoes",
-                            products = listOf(
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p3",
-                                    name = "Leather Sandals",
-                                    imageUrl = "https://images.unsplash.com/photo-1544441893-675973e31985?w=400",
-                                    price = 49.99,
-                                    description = "Handmade brown leather sandals."
-                                ),
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p4",
-                                    name = "Sport Trainers",
-                                    imageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-                                    price = 89.99,
-                                    description = "Durable sports trainers for daily wear."
-                                )
-                            )
-                        ),
-                        DukanDetailsUiState.ShelfUiState(
-                            id = "s2",
-                            name = "Shoes",
-                            products = listOf(
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p3",
-                                    name = "Leather Sandals",
-                                    imageUrl = "https://images.unsplash.com/photo-1544441893-675973e31985?w=400",
-                                    price = 49.99,
-                                    description = "Handmade brown leather sandals."
-                                ),
-                                DukanDetailsUiState.ProductUiState(
-                                    id = "p4",
-                                    name = "Sport Trainers",
-                                    imageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-                                    price = 89.99,
-                                    description = "Durable sports trainers for daily wear."
-                                )
-                            )
-                        ),
-                    )
-                )
-            ),
-            listener = object : DukanDetailsInteractionListener {
-                override fun onBackClicked() {}
-                override fun onShelfClicked(id: String) {}
-                override fun onViewAllShelfProductsClicked(id: String, name: String) {}
-                override fun onViewDukanOnMapClicked(
-                    latitude: Double,
-                    longitude: Double
-                ) {
-                }
-            },
-            pager = Pager(
-                PagingConfig()
-            ) { FakeDukanPagingSource() }
         )
     }
 }
