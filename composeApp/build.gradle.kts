@@ -86,6 +86,9 @@ kotlin {
 
             // File kit
             implementation(libs.bundles.filekit)
+
+            implementation("network.chaintech:compose-multiplatform-media-player:1.0.47")
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

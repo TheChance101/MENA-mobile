@@ -55,6 +55,8 @@ kotlin {
             implementation(libs.resources)
             implementation(libs.kermit)
             implementation(libs.bundles.filekit)
+            implementation("network.chaintech:compose-multiplatform-media-player:1.0.47")
+
         }
         iosMain.dependencies {
 

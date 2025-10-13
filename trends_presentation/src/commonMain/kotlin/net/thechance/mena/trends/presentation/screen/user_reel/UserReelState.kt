@@ -2,7 +2,7 @@ package net.thechance.mena.trends.presentation.screen.user_reel
 
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 
-internal data class UserReelState(
+data class UserReelState(
     val isLoading: Boolean = false,
     val error: ErrorState? = null,
     val id: String? = null,
@@ -16,3 +16,6 @@ internal data class UserReelState(
     val isReelDeleted: Boolean? = null,
     val isDescriptionExpanded: Boolean = false
 )
+
+fun UserReelState.shouldShowSuccessfulDeletionDialogue(): Boolean =
+    isReelDeleted == true && error == null

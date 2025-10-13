@@ -6,17 +6,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,22 +23,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import chaintech.videoplayer.host.MediaPlayerHost
+import chaintech.videoplayer.model.ScreenResize
+import chaintech.videoplayer.model.VideoPlayerConfig
+import chaintech.videoplayer.ui.reel.ReelsPlayerComposable
+import chaintech.videoplayer.util.ComposeResourceDrawable
 import coil3.compose.rememberAsyncImagePainter
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.confirmation_message
 import mena.trends_presentation.generated.resources.delete
-import mena.trends_presentation.generated.resources.delete_reel
-import mena.trends_presentation.generated.resources.fail_delete_message
-import mena.trends_presentation.generated.resources.fail_delete_title
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_delete
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_like
+import mena.trends_presentation.generated.resources.ic_play
 import mena.trends_presentation.generated.resources.react
-import mena.trends_presentation.generated.resources.success_delete_message
-import mena.trends_presentation.generated.resources.success_delete_title
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -48,8 +45,8 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
+import net.thechance.mena.trends.presentation.screen.user_reel.components.userReelScreenOverlays
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
-import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -79,66 +76,68 @@ private fun UserReelScreenContent(
     state: UserReelState,
     listener: UserReelInteractionListener
 ) {
-    Scaffold(
-        overlays = {
-            dialog(isVisible = state.isConfirmationDialogVisible) {
-                Dialog(
-                    title = stringResource(Res.string.delete_reel),
-                    message = stringResource(Res.string.confirmation_message),
-                    buttonText = stringResource(Res.string.delete),
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true,
-                    isVisible = state.isConfirmationDialogVisible,
-                    onDismiss = { listener.onDismissConfirmationDialog() },
-                    onActionClick = { listener.onConfirmDeleteClick() },
-                    onCancelClick = { listener.onDismissConfirmationDialog() },
-                    dialogCornerShape = RoundedCornerShape(12.dp),
-                    cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(16.dp)
-                )
-            }
+    Scaffold(overlays = { userReelScreenOverlays(state, listener) }) {
 
-            dialog(state.isReelDeleted == true && state.error == null) {
-                Dialog(
-                    title = stringResource(Res.string.success_delete_title),
-                    message = stringResource(Res.string.success_delete_message),
-                    buttonText = "",
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true,
-                    isVisible = state.isReelDeleted == true && state.error == null,
-                    onDismiss = {
-                        listener.onDismissSuccessDialog()
-                        listener.onBackClick()
-                    },
-                    onCancelClick = {
-                        listener.onDismissSuccessDialog()
-                        listener.onBackClick()
-                    },
-                    dialogCornerShape = RoundedCornerShape(12.dp),
-                    cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(16.dp)
-                )
-            }
+        val reelPlayerHost = remember {
+            MediaPlayerHost(
+                mediaUrl = "https://www.youtube.com/shorts/3dx1dBzM7ZY",
+                initialVideoFitMode = ScreenResize.FIT,
+            )
+        }
+        val seekBarThumbColor = Theme.colorScheme.primary.onPrimaryHint
+        val seekBarActiveTrackColor = Theme.colorScheme.border.brand
+        val seekBarInactiveTrackColor = Theme.colorScheme.primary.onPrimaryHint
 
-            dialog(state.error != null) {
-                Dialog(
-                    title = stringResource(Res.string.fail_delete_title),
-                    message = stringResource(Res.string.fail_delete_message),
-                    buttonText = "",
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true,
-                    isVisible = state.error != null,
-                    onDismiss = { listener.onDismissErrorDialog() },
-                    onCancelClick = { listener.onDismissErrorDialog() },
-                    dialogCornerShape = RoundedCornerShape(12.dp),
-                    cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(16.dp)
-                )
-            }
-        },
-        topBar = { TopAppBar(onBackClick = listener::onBackClick) }
-    ) {
+        val reelPlayerConfig = remember {
+            VideoPlayerConfig(
+                isPauseResumeEnabled = true,
+                isSeekBarVisible = true,
+                isDurationVisible = false,
+                isSpeedControlEnabled = false,
+                isFastForwardBackwardEnabled = false,
+                isScreenLockEnabled = false,
+                isZoomEnabled = false,
+                isMuteControlEnabled = false,
+                isGestureVolumeControlEnabled = false,
+                isScreenResizeEnabled = false,
+                isAutoHideControlEnabled = true,
+                isFullScreenEnabled = false,
+                seekBarThumbColor = seekBarThumbColor,
+                seekBarActiveTrackColor = seekBarActiveTrackColor,
+                seekBarInactiveTrackColor = seekBarInactiveTrackColor,
+                seekBarBottomPadding = 0.dp,
+                seekBarThumbRadius = 8.dp,
+                playIconResource = ComposeResourceDrawable(Res.drawable.ic_play),
+                pauseResumeIconSize = 48.dp,
+            )
+        }
+
+
         Box(modifier = Modifier.fillMaxSize()) {
+
+            AppBarOptionContainer(
+                modifier = Modifier.align(Alignment.TopStart).padding(16.dp),
+                onClick = listener::onBackClick,
+            ) {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.ic_arrow_left),
+                    contentDescription = "Back Icon",
+                )
+            }
+
+
+            ReelsPlayerComposable(
+                modifier = Modifier.fillMaxSize(),
+                urls = listOf(
+                    "https://www.youtube.com/shorts/3dx1dBzM7ZY",
+//                    "https://www.youtube.com/shorts/4eVyJFcROUA",
+//                    "https://www.youtube.com/shorts/_V9ClifEIcE",
+//                    "https://www.youtube.com/shorts/XkYJm1SzeG8",
+//                    "https://www.youtube.com/shorts/q0eHKMOhx-4"
+                ),
+                playerConfig = reelPlayerConfig,
+            )
+
             UsersReAct(
                 viewCount = state.viewsCount.toString(),
                 likeCount = state.likesCount.toString(),
@@ -157,34 +156,8 @@ private fun UserReelScreenContent(
                 isDescriptionExpanded = state.isDescriptionExpanded,
                 onDescriptionClick = listener::onDescriptionClick
             )
-
-            Box(
-                modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow()
-            )
         }
     }
-}
-
-@Composable
-private fun TopAppBar(
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AppBar(
-        title = "",
-        modifier = modifier
-            .fillMaxWidth()
-            .gradientShadow()
-            .padding(horizontal = Theme.spacing._16).padding(top = 8.dp),
-        contentPadding = PaddingValues(0.dp),
-        leadingContent = {
-            Icon(
-                painter = painterResource(resource = Res.drawable.ic_arrow_left),
-                contentDescription = "Back Icon",
-            )
-        },
-        onLeadingClick = { onBackClick() }
-    )
 }
 
 @Composable

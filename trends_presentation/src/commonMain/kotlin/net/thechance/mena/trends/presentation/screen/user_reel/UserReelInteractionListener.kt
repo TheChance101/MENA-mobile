@@ -1,6 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
-internal interface UserReelInteractionListener {
+interface UserReelInteractionListener {
     fun onBackClick()
     fun onDeleteClick()
     fun onConfirmDeleteClick()
