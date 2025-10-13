@@ -13,19 +13,19 @@ actual class AzimuthProvider(context: Context) {
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
     actual fun startListening(): Flow<Float> = callbackFlow {
-        var accelValues = FloatArray(3)
+        var accelerateValues = FloatArray(3)
         var magnetValues = FloatArray(3)
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
                 when (event?.sensor?.type) {
-                    Sensor.TYPE_ACCELEROMETER -> accelValues = event.values.clone()
+                    Sensor.TYPE_ACCELEROMETER -> accelerateValues = event.values.clone()
                     Sensor.TYPE_MAGNETIC_FIELD -> magnetValues = event.values.clone()
                     else -> return
                 }
                 val rotationMatrix = FloatArray(9)
                 val orientationValues = FloatArray(3)
                 val isRotationMatrixValid = SensorManager.getRotationMatrix(
-                    rotationMatrix, null, accelValues, magnetValues
+                    rotationMatrix, null, accelerateValues, magnetValues
                 )
                 if (isRotationMatrixValid) {
                     SensorManager.getOrientation(rotationMatrix, orientationValues)
