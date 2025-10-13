@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.presentation.di
 
-import net.thechance.mena.faith.presentation.qibla.AzimuthProvider
+import net.thechance.mena.faith.presentation.util.AzimuthProvider
 import net.thechance.mena.faith.presentation.util.ClipboardManager
 import net.thechance.mena.faith.presentation.util.ClipboardManagerImp
 import org.koin.core.module.Module

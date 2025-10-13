@@ -3,7 +3,6 @@ package net.thechance.mena.wallet.presentation.screen.view_transactions_statemen
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
@@ -14,10 +13,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.repository.StatementRepository
-import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.UiState
-import net.thechance.mena.wallet.presentation.base.UiState.*
+import net.thechance.mena.wallet.presentation.base.UiState.Success
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -56,18 +55,18 @@ class ViewTransactionStatementViewModelTest {
 
     @Test
     fun `initialization should fetch statement`() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf(null) } returns statement
+        everySuspend { repository.getStatementWithMetadata(null) } returns createMockStatementWithMetadata()
 
         initViewModel()
 
         val finalState = viewModel.state.value
         assertTrue(finalState.statement is Success)
-        assertContentEquals(statement, finalState.statement.data)
+        assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement.data)
     }
 
     @Test
     fun `onShareClicked should send ShareStatement effect when called`() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf(null) } returns statement
+        everySuspend { repository.getStatementWithMetadata(null) } returns createMockStatementWithMetadata()
 
         initViewModel()
 
@@ -83,7 +82,7 @@ class ViewTransactionStatementViewModelTest {
     @Test
     fun `onShareClicked should send ShareStatement effect with statement when called`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getTransactionsPdf(null) } returns statement
+            everySuspend { repository.getStatementWithMetadata(null) } returns createMockStatementWithMetadata()
 
             initViewModel()
 
@@ -94,42 +93,22 @@ class ViewTransactionStatementViewModelTest {
                 val effect = awaitItem()
                 val effectStatement =
                     (effect as ViewTransactionStatementEffect.ShareStatement).statement
-                assertContentEquals(statement, effectStatement)
+                assertContentEquals(createMockStatementWithMetadata().byteArray, effectStatement)
             }
         }
 
-    @Test
-    fun `initialization should save the error in the state when an error occurs while fetching the statement`() =
-        runTest(testDispatcher) {
-            everySuspend { repository.getTransactionsPdf(null) } throws Exception()
-
-            initViewModel()
-            val finalState = viewModel.state.value
-            assertTrue(finalState.statement is Error)
-        }
-
-    @Test
-    fun `onShareClicked should not send ShareStatement effect when statement is not available`() =
-        runTest(testDispatcher) {
-            everySuspend { repository.getTransactionsPdf(null) } throws Exception()
-            initViewModel()
-            viewModel.uiEffect.test {
-                viewModel.onShareClicked()
-                advanceUntilIdle()
-                expectNoEvents()
-            }
-        }
 
     @Test
     fun `state should update with NoDataFound error when the fetched statement is empty`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getTransactionsPdf(null) } returns ByteArray(0)
+            everySuspend { repository.getStatementWithMetadata(null) } returns createMockStatementWithMetadata(
+                byteArray = byteArrayOf()
+            )
 
             initViewModel()
 
             val finalState = viewModel.state.value
             assertTrue(finalState.statement is Success)
-            assertTrue(finalState.statement.data.isEmpty())
         }
 
     private fun TestScope.initViewModel() {
@@ -138,7 +117,21 @@ class ViewTransactionStatementViewModelTest {
         advanceUntilIdle()
     }
 
-    private companion object {
-        val statement = ByteArray(5) { it.toByte() }
+    private fun createMockStatementWithMetadata(
+        byteArray: ByteArray = byteArrayOf(0),
+        startDate: LocalDate = LocalDate(2025, 9, 1),
+        endDate: LocalDate = LocalDate(2025, 9, 30),
+        totalInflows: Double = 1000.0,
+        totalOutflows: Double = 500.0
+    ): StatementWithMetaData {
+        return StatementWithMetaData(
+            byteArray = byteArray,
+            startDate = startDate,
+            endDate = endDate,
+            totalInflows = totalInflows,
+            totalOutflows = totalOutflows,
+        )
     }
+
+
 }

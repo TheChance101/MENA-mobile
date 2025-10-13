@@ -15,18 +15,15 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.createBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Single
 import org.koin.core.context.GlobalContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 
-@Single
-actual class PdfHandler{
-
+class PdfHandlerImpl : PdfHandler {
     private val context = GlobalContext.get().get<Context>()
 
-    actual suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
+    override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
         return withContext(Dispatchers.IO) {
             try {
 
@@ -77,7 +74,7 @@ actual class PdfHandler{
         }
     }
 
-    actual suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
+    override suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
         val contentUri = withContext(Dispatchers.IO) {
             val file = File(context.cacheDir, fileName)
             file.writeBytes(pdfData)
@@ -100,7 +97,7 @@ actual class PdfHandler{
         context.startActivity(chooserIntent)
     }
 
-    actual suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
+    override suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
         return withContext(Dispatchers.IO) {
             val specialFileName = generateSpecialFileName(fileName)
 
@@ -163,4 +160,8 @@ actual class PdfHandler{
         const val APP_DOWNLOADS_FOLDER = "MENA"
         const val MIME_TYPE = "application/pdf"
     }
+}
+
+actual fun getPdfHandler(): PdfHandler {
+    return PdfHandlerImpl()
 }
