@@ -172,16 +172,7 @@ class PdfHandlerImpl : PdfHandler {
     override suspend fun checkIfStatementExists(location: StorageLocation): Boolean {
         return withContext(Dispatchers.IO) {
             val fileManager = NSFileManager.defaultManager
-            val path = when (location) {
-                is StorageLocation.Cache -> {
-                    val tempDir = NSTemporaryDirectory()
-                    "$tempDir${location.fileName}"
-                }
-                is StorageLocation.Downloads -> {
-                    val documentsPath = getDocumentsDirectory()
-                    "$documentsPath/$APP_DOWNLOADS_FOLDER/${location.fileName}.pdf"
-                }
-            }
+            val path = getFilePath(location)
 
             fileManager.fileExistsAtPath(path)
         }
