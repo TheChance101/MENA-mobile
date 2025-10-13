@@ -52,26 +52,29 @@ fun SmallImageProductContent(
         state = lazyListState
     ) {
         shelves.items.forEach { shelf ->
-            stickyHeader {
-                ShelfHeader(
-                    state = state,
-                    shelfName = shelf.name,
-                    onViewAllClicked = {
-                        listener.onViewAllShelfProductsClicked(
-                            shelf.id,
-                            shelf.name
-                        )
-                    },
-                    modifier = Modifier
-                        .background(Theme.colorScheme.background.surface)
-                        .padding(horizontal = Theme.spacing._16)
-                )
-            }
-            item {
-                ProductsShelf(
-                    shelf = shelf,
-                    listener = listener
-                )
+            if (shelf.products.isNotEmpty()) {
+                stickyHeader {
+                    ShelfHeader(
+                        state = state,
+                        shelfName = shelf.name,
+                        onViewAllClicked = {
+                            listener.onViewAllShelfProductsClicked(
+                                shelf.id,
+                                shelf.name
+                            )
+                        },
+                        modifier = Modifier
+                            .background(Theme.colorScheme.background.surface)
+                            .padding(horizontal = Theme.spacing._16)
+                    )
+                }
+                item {
+                    ProductsShelf(
+                        shelf = shelf,
+                        state = state,
+                        listener = listener
+                    )
+                }
             }
         }
     }
@@ -80,9 +83,13 @@ fun SmallImageProductContent(
 @Composable
 private fun ProductsShelf(
     shelf: DukanDetailsUiState.ShelfUiState,
+    state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener
 ) {
-    val productPairs = shelf.products.chunked(2)
+    val productPairs = remember(shelf.products) {
+        shelf.products.chunked(2)
+    }
+
     LazyRow(
         contentPadding = PaddingValues(Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -103,6 +110,7 @@ private fun ProductsShelf(
                         productAction = {
                             CartOrQuantityProductComponent(
                                 showProductQuantity = product.showProductQuantity,
+                                state = state,
                                 onCartClick = {
                                     listener.onCartClick(product.id)
                                 }
