@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.qibla
+package net.thechance.mena.faith.presentation.util
 
 import kotlinx.coroutines.flow.Flow
 
