@@ -34,7 +34,8 @@ data class DukanDetailsUiState(
     data class ShelfUiState(
         val id: String = "",
         val name: String = "",
-        val products: List<ProductUiState> = emptyList()
+        val products: List<ProductUiState> = emptyList(),
+        val showProductQuantity: Boolean = false
     )
 
     enum class ShelvesState {

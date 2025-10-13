@@ -24,6 +24,16 @@ class ShelfDetailsViewModel(
     val shelfId: String = requireNotNull(savedStateHandle[SHELF_ID])
     val shelfNamee: String = requireNotNull(savedStateHandle[SHELF_NAME])
 
+    val pagerProduct = createPagingSource(
+        mapper = { it.toUiState() }
+    ) {
+        productRepository.getProductsByShelfId(
+            shelfId = shelfId,
+            page = it,
+            size = 20
+        )
+    }
+
     init {
         updateState { copy(shelfName = shelfNamee) }
         loadProductsFromRepository()
@@ -72,7 +82,7 @@ class ShelfDetailsViewModel(
         updateState {
             copy(
                 productsShelf = productsShelf.copy(
-                    items = productsShelf.items.map {product->
+                    items = productsShelf.items.map { product ->
                         if (product.id == productId) {
                             product.copy(showProductQuantity = true)
                         } else {
@@ -82,15 +92,5 @@ class ShelfDetailsViewModel(
                 )
             )
         }
-    }
-
-    val pagerProduct = createPagingSource(
-        mapper = { it.toUiState() }
-    ) {
-        productRepository.getProductsByShelfId(
-            shelfId = shelfId,
-            page = it,
-            size = 20
-        )
     }
 }

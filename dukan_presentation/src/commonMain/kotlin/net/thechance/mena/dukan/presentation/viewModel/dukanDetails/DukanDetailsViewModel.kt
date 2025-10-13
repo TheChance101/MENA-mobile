@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanRepository
@@ -27,6 +29,25 @@ class DukanDetailsViewModel(
 ),
     DukanDetailsInteractionListener {
     val dukanId: String = requireNotNull(savedStateHandle[DUKAN_ID])
+
+    val pagerShelf = createPagingSource(
+        mapper = { it.toUiState() }
+    ) {
+        shelfRepository.getShelvesByDukanId(
+            dukanId = dukanId,
+            pageNumber = it,
+            pageSize = 20
+        )
+    }
+    val pagerProduct = createPagingSource(
+        mapper = { it.toUiState() }
+    ) {
+        productRepository.getProductsByShelfId(
+            shelfId = state.value.shelfIdSelected.toString(),
+            page = it,
+            size = 20
+        )
+    }
 
     init {
         loadDukanDetails()
@@ -82,38 +103,36 @@ class DukanDetailsViewModel(
                 shelfIdSelected = shelves.items.firstOrNull()?.id.orEmpty()
             )
         }
-        loadProductsForSelectedShelf()
+        loadProductsFromRepository()
     }
 
     private fun updateProductsShelves(shelves: PagingData<DukanDetailsUiState.ShelfUiState>) {
         if (state.value.dukanInfo.style != DukanDetailsUiState.Style.WIDE_IMAGE) {
             viewModelScope.launch {
-                shelves.copy(
-                    items = shelves.items.map {
-                        it.copy(
-                            products = getInitialProductsForShelf(it.id)
-                        )
+                val updatedShelves = shelves.items
+                    .map { shelf ->
+                        async {
+                            val products = getInitialProductsForShelf(shelf.id)
+                            shelf.copy(products = products)
+                        }
                     }
-                )
+                    .awaitAll()
+                updateState {
+                    copy(
+                        shelves = shelves.copy(
+                            items = updatedShelves
+                        )
+                    )
+                }
             }
         }
     }
 
     private suspend fun getInitialProductsForShelf(shelfId: String): List<DukanDetailsUiState.ProductUiState> {
         val maxProducts = 6
-        val page = 1
+        val page = 0
         val product = productRepository.getProductsByShelfId(shelfId, page, maxProducts).items
         return product.map { it.toUiState() }
-    }
-
-    private fun loadProductsForSelectedShelf() {
-        viewModelScope.launch {
-            pagerProduct.refresh()
-        }
-        loadProductsFromRepository()
-        viewModelScope.launch {
-            pagerProduct.refresh()
-        }
     }
 
     private fun loadProductsFromRepository() {
@@ -163,7 +182,7 @@ class DukanDetailsViewModel(
             )
         }
         if (state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE) {
-            loadProductsForSelectedShelf()
+            loadProductsFromRepository()
         }
     }
 
@@ -176,7 +195,7 @@ class DukanDetailsViewModel(
                 productsShelf = PagingData()
             )
         }
-        loadProductsForSelectedShelf()
+        loadProductsFromRepository()
     }
 
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {
@@ -187,7 +206,7 @@ class DukanDetailsViewModel(
         updateState {
             copy(
                 shelves = shelves.copy(
-                    items = shelves.items.map {shelf->
+                    items = shelves.items.map { shelf ->
                         shelf.copy(
                             products = shelf.products.map { product ->
                                 if (product.id == productId) {
@@ -201,24 +220,5 @@ class DukanDetailsViewModel(
                 )
             )
         }
-    }
-
-    val pagerShelf = createPagingSource(
-        mapper = { it.toUiState() }
-    ) {
-        shelfRepository.getShelvesByDukanId(
-            dukanId = dukanId,
-            pageNumber = it,
-            pageSize = 20
-        )
-    }
-    val pagerProduct = createPagingSource(
-        mapper = { it.toUiState() }
-    ) {
-        productRepository.getProductsByShelfId(
-            shelfId = state.value.shelfIdSelected.toString(),
-            page = it,
-            size = 20
-        )
     }
 }

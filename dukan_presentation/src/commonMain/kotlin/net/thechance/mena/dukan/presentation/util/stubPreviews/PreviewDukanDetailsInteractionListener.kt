@@ -14,4 +14,8 @@ object PreviewDukanDetailsInteractionListener : DukanDetailsInteractionListener 
 
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {
     }
+
+    override fun onCartClick(productId: String) {
+
+    }
 }
