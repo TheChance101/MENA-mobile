@@ -103,7 +103,7 @@ class DukanDetailsViewModel(
                 shelfIdSelected = shelves.items.firstOrNull()?.id.orEmpty()
             )
         }
-        loadProductsForSelectedShelf()
+        loadProductsFromRepository()
     }
 
     private fun updateProductsShelves(shelves: PagingData<DukanDetailsUiState.ShelfUiState>) {
@@ -117,28 +117,22 @@ class DukanDetailsViewModel(
                         }
                     }
                     .awaitAll()
-                shelves.copy(
-                    items = updatedShelves
-                )
+                updateState {
+                    copy(
+                        shelves = shelves.copy(
+                            items = updatedShelves
+                        )
+                    )
+                }
             }
         }
     }
 
     private suspend fun getInitialProductsForShelf(shelfId: String): List<DukanDetailsUiState.ProductUiState> {
         val maxProducts = 6
-        val page = 1
+        val page = 0
         val product = productRepository.getProductsByShelfId(shelfId, page, maxProducts).items
         return product.map { it.toUiState() }
-    }
-
-    private fun loadProductsForSelectedShelf() {
-        viewModelScope.launch {
-            pagerProduct.refresh()
-        }
-        loadProductsFromRepository()
-        viewModelScope.launch {
-            pagerProduct.refresh()
-        }
     }
 
     private fun loadProductsFromRepository() {
@@ -188,7 +182,7 @@ class DukanDetailsViewModel(
             )
         }
         if (state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE) {
-            loadProductsForSelectedShelf()
+            loadProductsFromRepository()
         }
     }
 
@@ -201,10 +195,30 @@ class DukanDetailsViewModel(
                 productsShelf = PagingData()
             )
         }
-        loadProductsForSelectedShelf()
+        loadProductsFromRepository()
     }
 
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
+    }
+
+    override fun onCartClick(productId: String) {
+        updateState {
+            copy(
+                shelves = shelves.copy(
+                    items = shelves.items.map { shelf ->
+                        shelf.copy(
+                            products = shelf.products.map { product ->
+                                if (product.id == productId) {
+                                    product.copy(showProductQuantity = true)
+                                } else {
+                                    product
+                                }
+                            }
+                        )
+                    }
+                )
+            )
+        }
     }
 }

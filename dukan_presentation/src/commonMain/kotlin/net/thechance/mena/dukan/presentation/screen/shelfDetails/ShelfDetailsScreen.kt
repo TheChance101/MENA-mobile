@@ -91,6 +91,7 @@ private fun ShelfDetailsContent(
         ShelfProducts(
             state = state,
             pager = pager,
+            listener = listener
         )
     }
 
@@ -104,6 +105,7 @@ private fun ShelfDetailsPreview() {
             state = ShelfDetailsUiState(),
             listener = object : ShelfDetailsInteractionListener {
                 override fun onBackClicked() {}
+                override fun onCartClick(productId: String) {}
             },
             pager = Pager(
                 config = PagingConfig(),

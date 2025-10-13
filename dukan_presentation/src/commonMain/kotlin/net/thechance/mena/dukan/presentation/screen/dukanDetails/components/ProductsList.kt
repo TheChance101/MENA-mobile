@@ -21,7 +21,7 @@ import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetails
 fun ProductsList(
     products: PagingData<ShelfDetailsUiState.ProductUiState>,
     pager: Pager<Int, ShelfDetailsUiState.ProductUiState>,
-    cartProductIcon: @Composable () -> Unit,
+    cartProductIcon: @Composable (productId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -46,7 +46,7 @@ fun ProductsList(
                 productDescription = product.description,
                 productCardBackground = Theme.colorScheme.background.surfaceLow,
                 productPrice = product.price,
-                productAction = { cartProductIcon() },
+                productAction = { cartProductIcon(product.id) },
             )
         }
     }

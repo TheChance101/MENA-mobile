@@ -10,7 +10,6 @@ data class DukanDetailsUiState(
     val shelvesState: ShelvesState = ShelvesState.LOADING,
     val productsShelf: PagingData<ProductUiState> = PagingData(),
     val productsState: ProductsState = ProductsState.LOADING,
-    val showProductQuantity: Boolean = false,
     val shelfIdSelected: String? = null
 ) {
     data class DukanInfo(
@@ -35,7 +34,8 @@ data class DukanDetailsUiState(
     data class ShelfUiState(
         val id: String = "",
         val name: String = "",
-        val products: List<ProductUiState> = emptyList()
+        val products: List<ProductUiState> = emptyList(),
+        val showProductQuantity: Boolean = false
     )
 
     enum class ShelvesState {
@@ -50,6 +50,7 @@ data class DukanDetailsUiState(
         val imageUrl: String = "",
         val price: Double = 0.0,
         val description: String = "",
+        val showProductQuantity: Boolean = false
     )
 
     enum class ProductsState {

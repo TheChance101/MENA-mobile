@@ -21,12 +21,6 @@ class ShelfDetailsUiStateTest {
 
 
     @Test
-    fun `default state SHOULD have false showProductQuantity`() = runTest {
-        val state = ShelfDetailsUiState()
-        assertEquals(false, state.showProductQuantity)
-    }
-
-    @Test
     fun `ProductUiState SHOULD store its properties correctly`() = runTest {
         val product = ShelfDetailsUiState.ProductUiState(
             id = "p1",
