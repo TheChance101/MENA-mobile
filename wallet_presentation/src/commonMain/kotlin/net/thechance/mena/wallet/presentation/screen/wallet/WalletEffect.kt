@@ -11,6 +11,6 @@ sealed interface WalletEffect {
     data object NavigateToStatementHistory : WalletEffect
     data class NavigateToPaymentScreen(
         val amount: Double,
-        val receiverId: Uuid
+        val TransactionId: Uuid
     ): WalletEffect
 }

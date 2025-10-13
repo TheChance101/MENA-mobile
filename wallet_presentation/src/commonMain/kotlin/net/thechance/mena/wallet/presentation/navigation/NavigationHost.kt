@@ -62,7 +62,7 @@ fun NavigationHost(
                     navController.navigate(
                         ConfirmPaymentScreenRoute(
                             amount = amount,
-                            id = receiverId.toString()
+                            transactionId = receiverId.toString()
                         )
                     )
                 }
@@ -115,7 +115,7 @@ fun NavigationHost(
         composable<ConfirmPaymentScreenRoute> { backStackEntry ->
             ConfirmPaymentScreen(
                 onNavigateBackClicked = navController::popBackStack,
-                receiverId = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().id,
+                transactionId = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().transactionId,
                 amount = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().amount,
                 navigateToPaymentResultScreen = { receiverId, amount ->
 

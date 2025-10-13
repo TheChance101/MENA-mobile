@@ -8,7 +8,9 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.balance_fetch_error_description
 import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.no_internet_title
+import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.base.UiState
@@ -23,6 +25,7 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class WalletViewModel(
     @Provided private val balanceRepository: BalanceRepository,
+    @Provided private val transactionRepository: TransactionRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<WalletScreenState, WalletEffect>(WalletScreenState()), WalletInteractionListener {
 
@@ -106,6 +109,23 @@ class WalletViewModel(
     }
 
     override fun onPaymentClicked(amount: Double, receiverId: Uuid) {
-        sendEffect(WalletEffect.NavigateToPaymentScreen(amount, receiverId))
+        addPendingTransaction(amount, receiverId)
+    }
+
+    private fun addPendingTransaction(amount: Double, receiverId: Uuid) {
+        tryToExecute(
+            callee = {
+                transactionRepository.addPendingTransaction(
+                    transactionType = PendingTransactionType.P2P,
+                    receiverId = receiverId,
+                    amount = amount
+                )
+            },
+            onSuccess = { transactionId ->
+                sendEffect(WalletEffect.NavigateToPaymentScreen(amount, transactionId))
+            },
+            onError = {},
+            dispatcher = ioDispatcher
+        )
     }
 }

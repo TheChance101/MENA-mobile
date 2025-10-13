@@ -1,14 +1,17 @@
 package net.thechance.mena.wallet.data.repository.transaction
 
+import io.ktor.client.request.setBody
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.dto.FirstTransactionDateDto
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
+import net.thechance.mena.wallet.data.dto.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.TransactionDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.koin.core.annotation.Single
@@ -20,7 +23,7 @@ import kotlin.uuid.Uuid
 class TransactionRepositoryImpl(
     private val networkClient: NetworkClient
 ) : TransactionRepository {
-  override suspend fun getTransactionHistory(
+    override suspend fun getTransactionHistory(
         page: Int,
         pageSize: Int,
         transactionFilterParams: TransactionFilterParams?
@@ -32,6 +35,7 @@ class TransactionRepositoryImpl(
             )
         }.transactions.orEmpty().map { it.toEntity() }
     }
+
     override suspend fun getTransactionById(transactionId: Uuid): Transaction {
         return safeApiCall<TransactionDto> {
             networkClient.get("$TRANSACTION_PATH/$transactionId")
@@ -44,9 +48,30 @@ class TransactionRepositoryImpl(
         }.firstTransactionDate
     }
 
+    override suspend fun addPendingTransaction(
+        transactionType: PendingTransactionType,
+        receiverId: Uuid,
+        amount: Double
+    ): Uuid {
+        return safeApiCall<Uuid> {
+            networkClient.post("$TRANSACTION_PATH$ADD_TRANSACTION") {
+                setBody(
+                    PendingTransactionRequestBody(
+                        amount = amount,
+                        receiverId = receiverId.toString(),
+                        type = transactionType.name
+                    )
+                )
+            }
+        }
+    }
+
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
+        const val ADD_TRANSACTION = "/add"
+        const val P2P_TRANSACTION_TYPE = "P2P"
+        const val ONLINE_PURCHASE_TRANSACTION_TYPE = "ONLINE_PURCHASE"
     }
 
 }

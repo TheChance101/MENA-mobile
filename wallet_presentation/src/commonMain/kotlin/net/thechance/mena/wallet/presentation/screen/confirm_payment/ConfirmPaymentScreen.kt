@@ -34,11 +34,11 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ConfirmPaymentScreen(
     onNavigateBackClicked: () -> Unit,
-    receiverId: String,
+    transactionId: String,
     amount: Double,
     navigateToPaymentResultScreen: (String, Double) -> Unit,
     viewModel: ConfirmPaymentViewModel = koinViewModel(
-        parameters = { parametersOf(ConfirmPaymentArgs(receiverId, amount)) }
+        parameters = { parametersOf(ConfirmPaymentArgs(transactionId, amount)) }
     )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

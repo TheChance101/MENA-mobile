@@ -147,7 +147,7 @@ private fun onWalletEffect(
         WalletEffect.NavigateBack -> onNavigateBackClicked()
         WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
         WalletEffect.NavigateToStatementHistory -> navigateToStatementsHistory()
-        is WalletEffect.NavigateToPaymentScreen -> navigateToPaymentScreen(effect.amount, effect.receiverId)
+        is WalletEffect.NavigateToPaymentScreen -> navigateToPaymentScreen(effect.amount, effect.TransactionId)
     }
 }
 

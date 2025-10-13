@@ -16,17 +16,17 @@ import kotlin.uuid.Uuid
 class UserRepositoryImpl (
     private val networkClient: NetworkClient
 ) : UserRepository{
-    override suspend fun getUserById(id: Uuid): User {
+    override suspend fun getReceiverByTransactionId(id: Uuid): User {
         return safeApiCall<UserDto> {
-            networkClient.get("$USER_PATH$USER_DETAILS"){
-                parameter(USER_ID_PARAM, id)
+            networkClient.get("$TRANSACTION_PATH$RECEIVER_DETAILS"){
+                parameter(TRANSACTION_ID_PARAM, id)
             }
         }.toEntity(id)
     }
 
     private companion object {
-        const val USER_PATH = "wallet/user"
-        const val USER_DETAILS = "/details"
-        const val USER_ID_PARAM = "userId"
+        const val TRANSACTION_PATH = "wallet/transactions"
+        const val RECEIVER_DETAILS = "/receiver-details"
+        const val TRANSACTION_ID_PARAM = "transactionId"
     }
 }

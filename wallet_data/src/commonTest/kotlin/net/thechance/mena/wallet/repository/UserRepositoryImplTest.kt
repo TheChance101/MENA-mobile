@@ -31,7 +31,7 @@ class UserRepositoryImplTest {
         networkClient = createNetworkClient(userResponse)
         userRepository = UserRepositoryImpl(networkClient)
 
-        val result = userRepository.getUserById(receiverId)
+        val result = userRepository.getReceiverByTransactionId(receiverId)
 
         assertEquals(receiver, result)
     }
@@ -43,7 +43,7 @@ class UserRepositoryImplTest {
         userRepository = UserRepositoryImpl(networkClient)
 
         assertFailsWith<Exception> {
-            userRepository.getUserById(receiverId)
+            userRepository.getReceiverByTransactionId(receiverId)
         }
     }
 

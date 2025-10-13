@@ -2,6 +2,7 @@ package net.thechance.mena.wallet.domain.repository
 
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -16,4 +17,9 @@ interface TransactionRepository {
 
     suspend fun getTransactionById(transactionId: Uuid): Transaction
     suspend fun getFirstTransactionDate(): LocalDate?
+    suspend fun addPendingTransaction(
+        transactionType: PendingTransactionType,
+        receiverId: Uuid,
+        amount: Double
+    ): Uuid
 }

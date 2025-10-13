@@ -28,7 +28,7 @@ class ConfirmPaymentViewModel(
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
-    private val receiverId = args.receiverId
+    private val transactionId = args.transactionId
     private val amount = args.amount
 
     init {
@@ -41,7 +41,7 @@ class ConfirmPaymentViewModel(
 
     override fun onPayButtonClicked() {
         updateState { it.copy(isPayBtnLoading = true) }
-        sendEffect(ConfirmPaymentEffect.NavigateToPaymentResultScreen(receiverId, amount))
+        sendEffect(ConfirmPaymentEffect.NavigateToPaymentResultScreen(transactionId, amount))
     }
 
     override fun onRefresh() {
@@ -71,7 +71,7 @@ class ConfirmPaymentViewModel(
 
     private fun getReceiverInfo() {
         tryToExecute(
-            callee = { userRepository.getUserById(Uuid.parse(receiverId)) },
+            callee = { userRepository.getReceiverByTransactionId(Uuid.parse(transactionId)) },
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onError,
             dispatcher = ioDispatcher
