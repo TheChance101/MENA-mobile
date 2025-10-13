@@ -78,7 +78,11 @@ private fun BestNearestDukanList(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        items(dukans.items) { dukan ->
+        items(
+            items = dukans.items,
+            key = { it.id },
+            contentType = { "BestNearDukanCard" }
+        ) { dukan ->
             BestNearDukanCard(
                 dukanName = dukan.name,
                 imageUrl = dukan.imageUrl,

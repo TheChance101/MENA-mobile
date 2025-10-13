@@ -17,12 +17,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.heart_angle
+import mena.dukan_presentation.generated.resources.heart_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -45,7 +48,7 @@ fun EditorPickDukanItem(
     ) {
         AsyncImage(
             model = dukanImage,
-            contentDescription = "dukan image",
+            contentDescription = stringResource(Res.string.dukan_image),
             modifier = Modifier.fillMaxSize()
         )
         Text(
@@ -57,7 +60,7 @@ fun EditorPickDukanItem(
         )
         Icon(
             painter = painterResource(Res.drawable.heart_angle),
-            contentDescription = "heart",
+            contentDescription = stringResource(Res.string.heart_icon),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .background(

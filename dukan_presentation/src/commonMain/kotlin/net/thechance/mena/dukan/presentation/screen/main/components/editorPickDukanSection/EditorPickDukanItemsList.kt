@@ -76,7 +76,11 @@ private fun EditorPickDukanItemsList(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         modifier = modifier
     ) {
-        items(dukans.items) { dukan ->
+        items(
+            items = dukans.items,
+            key = { it.id },
+            contentType = { "EditorPickDukanItem" }
+        ) { dukan ->
             EditorPickDukanItem(
                 dukanName = dukan.name,
                 dukanImage = dukan.imageUrl,
