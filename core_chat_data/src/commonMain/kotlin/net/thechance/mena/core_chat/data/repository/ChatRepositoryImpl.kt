@@ -200,6 +200,6 @@ class ChatRepositoryImpl(
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
-        const val CHAT_SUMMARY_ENDPOINT = "/chat/list"
+        const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
     }
 }
