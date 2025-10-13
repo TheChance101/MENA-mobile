@@ -4,5 +4,6 @@ interface ISurahArgs {
     val surahId: Int
     val surahName: String
     val ayahNumber: Int?
+        get() = null
 
 }

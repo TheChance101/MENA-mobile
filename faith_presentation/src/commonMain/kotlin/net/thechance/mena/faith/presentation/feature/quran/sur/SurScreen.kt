@@ -73,8 +73,7 @@ fun SurScreen(
                 navController.navigate(
                     Route.SurahDetailsRoute(
                         surahId = effect.surahId,
-                        surahName = effect.surahName,
-                        ayahNumber = null
+                        surahName = effect.surahName
                     )
                 )
             }
