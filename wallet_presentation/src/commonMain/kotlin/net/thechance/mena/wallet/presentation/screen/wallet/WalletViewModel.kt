@@ -8,6 +8,7 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.balance_fetch_error_description
 import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.no_internet_title
+import mena.wallet_presentation.generated.resources.payment_failed_description
 import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -124,7 +125,17 @@ class WalletViewModel(
             onSuccess = { transactionId ->
                 sendEffect(WalletEffect.NavigateToConfirmPaymentScreen(amount, transactionId))
             },
-            onError = {},
+            onError = { error ->
+                val errorMessage = when (error) {
+                    ErrorState.NoInternet -> Res.string.no_internet_title
+                    else -> Res.string.payment_failed_description
+                }
+                showSnackBar(
+                    titleRes = Res.string.error,
+                    messageRes = errorMessage,
+                    isSuccess = false
+                )
+            },
             dispatcher = ioDispatcher
         )
     }
