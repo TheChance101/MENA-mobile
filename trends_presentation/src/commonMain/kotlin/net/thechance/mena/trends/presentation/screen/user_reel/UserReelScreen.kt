@@ -33,7 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.cash.paging.compose.collectAsLazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.confirmation_message
@@ -91,8 +90,12 @@ private fun UserReelScreenContent(
     state: UserReelState,
     listener: UserReelInteractionListener
 ) {
-    val reels = state.reels.collectAsLazyPagingItems()
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { reelss.size })
+//    val reels = state.reels.collectAsLazyPagingItems()
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { reelss.count() },
+    )
+
     var currentReel: UserReelUiState? by remember { mutableStateOf(UserReelUiState()) }
 
     Scaffold(
@@ -156,16 +159,14 @@ private fun UserReelScreenContent(
 
         VerticalPager(
             state = pagerState,
-            modifier = Modifier,
+            modifier = Modifier.fillMaxSize(),
             key = { page -> reelss[page].id },
         )
         { page ->
-            val isCurrentPage = (pagerState.currentPage == page)
-            currentReel = reelss[page]
 
             ReelPage(
-                reel = currentReel ?: UserReelUiState(),
-                isCurrentPage = isCurrentPage,
+                reel = reelss[page] ,
+                shouldRender = pagerState.currentPage == page,
                 state = state,
                 listener = listener
             )
@@ -198,17 +199,19 @@ private fun TopAppBar(
 @Composable
 private fun ReelPage(
     reel: UserReelUiState,
-    isCurrentPage: Boolean,
+    shouldRender: Boolean,
     state: UserReelState,
     listener: UserReelInteractionListener,
 ) {
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
 
-        VideoPlayer(
-            url = reel.videoUrl,
-            playWhenVisible = isCurrentPage,
-        )
+        if (shouldRender) {
+            VideoPlayer(
+                url = reel.videoUrl,
+                playWhenVisible = true,
+            )
+        }
 
         UsersReAct(
             viewCount = reel.viewsCount.toString(),
