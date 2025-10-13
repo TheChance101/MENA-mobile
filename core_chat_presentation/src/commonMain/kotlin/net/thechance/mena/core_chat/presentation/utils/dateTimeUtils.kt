@@ -79,15 +79,3 @@ fun LocalTime.toHoursMinutesAgo(): String {
             "1 hour ago"
         } else "$hoursAgo hours ago"
 }
-
-@OptIn(ExperimentalTime::class)
-fun parseToLocalDateTime(time: String): LocalDateTime? {
-    val timeZone = TimeZone.currentSystemDefault()
-
-    return try {
-        val instant = Instant.parse(time)
-        instant.toLocalDateTime(timeZone)
-    } catch (e: IllegalArgumentException) {
-        null
-    }
-}
