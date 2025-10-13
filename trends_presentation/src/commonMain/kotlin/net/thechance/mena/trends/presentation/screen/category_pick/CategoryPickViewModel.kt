@@ -56,7 +56,7 @@ internal class CategoryPickViewModel(
         val selectedIds = state.value.categories
             .filter { it.isSelected }
             .mapNotNull { it.value.id }
-        repository.updateUserInterestedCategories(selectedIds)
+        repository.updateUserCategories(selectedIds)
     }
 
     override fun onBackClick() = sendEffect(CategoryPickScreenEffect.NavigateBack)

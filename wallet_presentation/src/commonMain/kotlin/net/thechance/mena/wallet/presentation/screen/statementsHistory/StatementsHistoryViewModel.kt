@@ -45,7 +45,7 @@ class StatementsHistoryViewModel(
         loadNextStatements()
     }
 
-    override fun onStatementCardClicked(id: Uuid) {
+    override fun onStatementCardClicked(id: Long) {
         sendEffect(effect = StatementsHistoryEffect.NavigateToStatementDetails(id))
     }
 

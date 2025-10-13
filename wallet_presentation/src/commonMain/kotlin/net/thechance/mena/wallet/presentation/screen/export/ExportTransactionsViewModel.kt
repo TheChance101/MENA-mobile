@@ -24,6 +24,8 @@ import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.something_went_wrong
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
+import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -32,7 +34,8 @@ import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.screen.export.file_saver.FileSaver
+import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -43,7 +46,8 @@ import kotlin.time.ExperimentalTime
 class ExportTransactionsViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val statementRepository: StatementRepository,
-    @Provided private val fileSaver: FileSaver,
+    @Provided private val pdfHandler: PdfHandler,
+    private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
     ExportTransactionsState()
@@ -138,8 +142,8 @@ class ExportTransactionsViewModel(
         }
         tryToExecute(
             onStart = ::onViewAndShareStart,
-            callee = ::generateTransactionsFile,
-            onSuccess = { pdfBytes -> onViewAndShareSuccess(pdfBytes) },
+            callee = ::getStatement,
+            onSuccess = { onViewAndShareSuccess() },
             onError = { error -> onViewAndShareError(error) },
             dispatcher = ioDispatcher
         )
@@ -153,8 +157,8 @@ class ExportTransactionsViewModel(
         }
         tryToExecute(
             onStart = ::onDownloadStart,
-            callee = ::generateTransactionsFile,
-            onSuccess = { pdfBytes -> saveFile(pdfBytes) },
+            callee = ::getStatement,
+            onSuccess = { statement -> downloadStatement(statement) },
             onError = { error -> handleDownloadError(error) },
             dispatcher = ioDispatcher
         )
@@ -169,8 +173,8 @@ class ExportTransactionsViewModel(
     private fun showInvalidDatesSnackBar() {
         viewModelScope.launch {
             showSnackBar(
-                titleRes = Res.string.error,
-                messageRes = Res.string.start_date_must_be_before_end_date,
+                title = stringProvider.getString(Res.string.error),
+                message = stringProvider.getString(Res.string.start_date_must_be_before_end_date),
                 isSuccess = false
             )
         }
@@ -223,8 +227,8 @@ class ExportTransactionsViewModel(
     private suspend fun onGetFirstTransactionDateError(throwable: ErrorState) {
         handleError(
             error = throwable,
-            titleRes = Res.string.error,
-            messageRes = Res.string.failed_to_load_date_picker,
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(Res.string.failed_to_load_date_picker),
             isSuccess = false
         )
     }
@@ -253,7 +257,7 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun onViewAndShareSuccess(pdfBytes: ByteArray) {
+    private fun onViewAndShareSuccess() {
         resetViewAndShareState()
         sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(getTransactionFilterParams()))
     }
@@ -262,8 +266,8 @@ class ExportTransactionsViewModel(
         resetViewAndShareState()
         handleError(
             error = error,
-            titleRes = Res.string.error,
-            messageRes = Res.string.error_failed_view,
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(Res.string.error_failed_view),
             isSuccess = false
         )
     }
@@ -279,22 +283,20 @@ class ExportTransactionsViewModel(
         }
         showToast(messageRes = Res.string.downloading_started)
     }
-
     @OptIn(ExperimentalTime::class)
-    private suspend fun generateTransactionsFile(): ByteArray {
+    private suspend fun getStatement(): StatementWithMetaData{
         return if (currentState.isCustomFilterCardSelected) {
-
-            statementRepository.getTransactionsPdf(
+            statementRepository.getStatementWithMetadata(
                 getTransactionFilterParams()
             )
         } else {
-            statementRepository.getTransactionsPdf()
+            statementRepository.getStatementWithMetadata()
         }
     }
 
     private fun getTransactionFilterParams(): TransactionFilterParams {
         val formatter = LocalDate.Format {
-            year(); char('-'); monthNumber(); char('-');
+            year(); char('-'); monthNumber(); char('-')
             day(padding = Padding.ZERO)
         }
         val startDateTime = currentState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
@@ -312,48 +314,67 @@ class ExportTransactionsViewModel(
         resetDownloadState()
         handleError(
             error = error,
-            titleRes = Res.string.download_failed,
-            messageRes = Res.string.something_went_wrong,
+            title = stringProvider.getString(Res.string.download_failed),
+            message = stringProvider.getString(Res.string.something_went_wrong),
             isSuccess = false
         )
     }
 
-    private suspend fun saveFile(pdfBytes: ByteArray) {
-        try {
-            val isFileSaved = fileSaver.saveFile(
-                suggestedName = "transactions",
-                extension = "pdf",
-                bytes = pdfBytes
-            )
-            resetDownloadState()
-            if (isFileSaved) {
-                showSnackBar(
-                    titleRes = Res.string.download_complete,
-                    messageRes = Res.string.download_success,
-                    isSuccess = true
-                )
-            } else {
-                showSnackBar(
-                    titleRes = Res.string.download_failed,
-                    messageRes = Res.string.something_went_wrong,
-                    isSuccess = false
-                )
-            }
-        } catch (_: Exception) {
-            resetDownloadState()
-            handleError(
-                error = ErrorState.Unknown,
-                titleRes = Res.string.download_failed,
-                messageRes = Res.string.something_went_wrong,
-                isSuccess = false
-            )
-        }
+    private fun downloadStatement(statement: StatementWithMetaData) {
+        tryToExecute(
+            callee = { pdfHandler.downloadPdf(pdfData = statement.byteArray, fileName = "statement") },
+            onSuccess = { filePath -> onDownloadSuccess(filePath, statement) },
+            onError = ::onDownloadFailure,
+            dispatcher = ioDispatcher
+        )
     }
+
+    private fun onDownloadSuccess(filePath: String, statement: StatementWithMetaData) {
+        resetDownloadState()
+
+        val fileName = filePath.substringAfterLast("/")
+        saveStatementToDatabase(
+            filePath = filePath,
+            statement = Statement(
+                id = 0L,
+                startDate = statement.startDate,
+                endDate = statement.endDate,
+                totalInflows = statement.totalInflows,
+                totalOutflows = statement.totalOutflows,
+                fileName = fileName
+            )
+        )
+    }
+
+    private fun saveStatementToDatabase(filePath: String, statement: Statement) {
+        tryToExecute(
+            callee = { statementRepository.insertStatement(statement) },
+            onSuccess = { onSaveStatementSuccess(filePath) },
+            onError = ::onDownloadFailure
+        )
+    }
+
+    private suspend fun onSaveStatementSuccess(filePath: String) {
+        showSnackBar(
+            title = stringProvider.getString(Res.string.download_complete),
+            message = stringProvider.getString(Res.string.download_success, filePath),
+            isSuccess = true
+        )
+    }
+    private suspend fun onDownloadFailure(error: ErrorState) {
+        resetDownloadState()
+        showSnackBar(
+            title = stringProvider.getString(Res.string.download_failed),
+            message = stringProvider.getString(Res.string.something_went_wrong),
+            isSuccess = false
+        )
+    }
+
 
     private suspend fun handleError(
         error: ErrorState,
-        titleRes: StringResource,
-        messageRes: StringResource,
+        title: String,
+        message: String,
         isSuccess: Boolean = false
     ) {
         when (error) {
@@ -366,8 +387,8 @@ class ExportTransactionsViewModel(
                     )
                 }
                 showSnackBar(
-                    titleRes = Res.string.download_failed,
-                    messageRes = Res.string.no_internet_title,
+                    title = stringProvider.getString(Res.string.download_failed),
+                    message = stringProvider.getString(Res.string.no_internet_title),
                     isSuccess = false
                 )
             }
@@ -385,8 +406,8 @@ class ExportTransactionsViewModel(
 
             else -> {
                 showSnackBar(
-                    titleRes = titleRes,
-                    messageRes = messageRes,
+                    title = title,
+                    message = message,
                     isSuccess = isSuccess
                 )
             }
@@ -394,8 +415,8 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun showSnackBar(
-        titleRes: StringResource,
-        messageRes: StringResource,
+        title: String,
+        message: String,
         isSuccess: Boolean,
         durationMillis: Long = 3000L
     ) {
@@ -403,8 +424,8 @@ class ExportTransactionsViewModel(
             oldState.copy(
                 snackBar = SnackBarState(
                     isVisible = true,
-                    titleRes = titleRes,
-                    messageRes = messageRes,
+                    title = title,
+                    message = message,
                     isSuccess = isSuccess
                 )
             )

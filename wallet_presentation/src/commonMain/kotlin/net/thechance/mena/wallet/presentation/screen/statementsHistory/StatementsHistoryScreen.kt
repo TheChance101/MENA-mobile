@@ -20,7 +20,7 @@ import kotlin.uuid.Uuid
 fun StatementHistoryScreen(
     viewModel: StatementsHistoryViewModel = koinViewModel(),
     onNavigateBackClicked: () -> Unit,
-    navigateToStatementDetails: (id: Uuid) -> Unit
+    navigateToStatementDetails: (id: Long) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -51,7 +51,7 @@ fun StatementHistoryScreen(
 private fun onStatementHistoryEffect(
     effect: StatementsHistoryEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToStatementDetails: (id: Uuid) -> Unit
+    navigateToStatementDetails: (id: Long) -> Unit
 ) {
     when (effect) {
         StatementsHistoryEffect.NavigateBack -> onNavigateBackClicked()

@@ -22,6 +22,7 @@ import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.trends.data.client.NetworkClient
+import net.thechance.mena.trends.data.dto.UserInfoDto
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -132,5 +133,57 @@ internal fun createCategoryHttpClient(
         ): HttpResponse {
             return client.delete(urlString, block)
         }
+    }
+}
+internal fun mockUserInfoHttpClient(
+    response: UserInfoDto,
+    respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
+        respond(
+            content = Json.encodeToString(UserInfoDto.serializer(), response),
+            status = HttpStatusCode.OK,
+            headers = headersOf(
+                HttpHeaders.ContentType,
+                ContentType.Application.Json.toString()
+            )
+        )
+    }
+): NetworkClient {
+
+    val mockEngine = MockEngine { request ->
+        respond(request)
+    }
+
+    val client = HttpClient(mockEngine) {
+        install(ContentNegotiation) {
+            json(Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
+        }
+        install(DefaultRequest) {
+            contentType(ContentType.Application.Json)
+        }
+    }
+
+    return object : NetworkClient {
+        override suspend fun get(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.get(urlString, block)
+
+        override suspend fun post(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.post(urlString, block)
+
+        override suspend fun put(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.put(urlString, block)
+
+        override suspend fun delete(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.delete(urlString, block)
     }
 }

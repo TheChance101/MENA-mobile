@@ -18,7 +18,7 @@ data class StatementsHistoryScreenState(
     val isStatementDeleted: Boolean? = null
 ) {
     data class StatementItem(
-        val id: Uuid,
+        val id: Long,
         val startDate: String,
         val endDate: String,
         val totalInflow: Double,

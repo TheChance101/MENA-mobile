@@ -17,7 +17,9 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.repository.UserRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -26,14 +28,31 @@ import kotlin.test.assertFailsWith
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageTrendsViewModelTest {
     private val repository: ReelsRepository = mock(MockMode.autofill)
+    private val userRepository: UserRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ManageTrendsViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = ManageTrendsViewModel(repository, testDispatcher)
+        viewModel = ManageTrendsViewModel(repository,userRepository ,testDispatcher)
+        everySuspend { userRepository.getCurrentUserInfo() } returns user
+
     }
+
+
+    @Test
+    fun `getCurrentUserProfile should update state with profile when userRepository returns data`() =
+        runTest(testDispatcher) {
+            viewModel.getCurrentUserInfo()
+
+            viewModel.state.test {
+                skipItems(1)
+                val successState = awaitItem()
+                assertThat(successState.profile).isEqualTo(userInfoUiState)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =
@@ -110,6 +129,16 @@ class ManageTrendsViewModelTest {
                 id = "2",
                 thumbnailUrl = "thumb2.jpg",
             )
+        )
+        val user = User(
+            username = "nour",
+            firstName = "nour",
+            lastName = "nour",
+            profileImageUrl = "img.jpg"
+        )
+        val userInfoUiState = UserInfoUiState(
+            userName = "nour",
+            profileImageUrl = "img.jpg"
         )
     }
 }
