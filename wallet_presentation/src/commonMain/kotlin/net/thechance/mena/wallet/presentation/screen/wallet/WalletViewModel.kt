@@ -116,7 +116,7 @@ class WalletViewModel(
         tryToExecute(
             callee = {
                 transactionRepository.addPendingTransaction(
-                    transactionType = PendingTransactionType.P2P,
+                    pendingTransactionType = PendingTransactionType.P2P,
                     receiverId = receiverId,
                     amount = amount
                 )
