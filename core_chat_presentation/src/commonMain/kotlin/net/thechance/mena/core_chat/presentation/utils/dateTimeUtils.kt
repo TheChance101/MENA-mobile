@@ -36,7 +36,7 @@ fun LocalDateTime.formatAsTime(): String {
 fun LocalDate.format(pattern: String = "dd-MM-yyyy"): String {
     return pattern
         .replace("dd", day.toString().padStart(2, '0'))
-        .replace("MM", month.ordinal.toString().padStart(2, '0'))
+        .replace("MM", month.ordinal.plus(1).toString().padStart(2, '0'))
         .replace("yyyy", year.toString())
 }
 
