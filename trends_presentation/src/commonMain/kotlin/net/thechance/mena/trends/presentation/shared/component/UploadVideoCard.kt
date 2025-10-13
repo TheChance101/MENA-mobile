@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -20,7 +22,6 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.available_video_format
 import mena.trends_presentation.generated.resources.ic_trend_upload
 import mena.trends_presentation.generated.resources.thumbnail_description
-import mena.trends_presentation.generated.resources.upload_video_card_description
 import mena.trends_presentation.generated.resources.upload_your_video
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -41,44 +42,37 @@ internal fun UploadVideoCard(
     onEditClick: () -> Unit = {}
 ) {
 
-    Box(
-        modifier = modifier
-    ) {
+    Box(modifier = modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1.3f)
-                .clip(shape = RoundedCornerShape(Theme.radius.xl))
+                .clip(RoundedCornerShape(Theme.radius.xl))
                 .background(color = Theme.colorScheme.background.surfaceLow)
-                .then(
-                    thumbnail?.let {
-                        Modifier.dashedBorder(
-                            color = Theme.colorScheme.brand.brand,
-                            cornerRadius = Theme.radius.xl
-                        )
-                    } ?: Modifier
-                )
-                .noRippleClickable(enabled = isEnabled, onClick = onCardClick),
+                .dashedBorder(color = Theme.colorScheme.brand.brand, cornerRadius = Theme.radius.xl)
+                .noRippleClickable(
+                    enabled = isEnabled,
+                    onClick = onCardClick
+                ),
             contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = Modifier.padding(vertical = 71.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
+                    modifier = Modifier.size(40.dp),
                     painter = painterResource(Res.drawable.ic_trend_upload),
-                    contentDescription = stringResource(Res.string.upload_video_card_description),
-                    modifier = Modifier
-                        .padding(bottom = Theme.spacing._12)
-                        .size(size = 40.dp)
+                    contentDescription = null,
+                    tint = Theme.colorScheme.brand.brand
                 )
                 Text(
+                    modifier = Modifier.padding(top = Theme.spacing._12),
                     text = stringResource(Res.string.upload_your_video),
                     style = Theme.typography.label.medium,
-                    color = Theme.colorScheme.primary.primary,
-                    modifier = Modifier.padding(bottom = Theme.spacing._4)
+                    color = Theme.colorScheme.primary.primary
                 )
                 Text(
+                    modifier = Modifier.padding(top = Theme.spacing._4),
                     text = stringResource(Res.string.available_video_format),
                     style = Theme.typography.label.extraSmall,
                     color = Theme.colorScheme.shadeSecondary
@@ -86,9 +80,9 @@ internal fun UploadVideoCard(
             }
             thumbnail?.let {
                 AsyncImage(
+                    modifier = Modifier.fillMaxWidth(),
                     model = thumbnail,
                     contentDescription = stringResource(Res.string.thumbnail_description),
-                    modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.Crop
                 )
             }

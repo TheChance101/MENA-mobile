@@ -11,6 +11,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
+import net.thechance.mena.core_chat.domain.entity.Chat
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.success
@@ -40,26 +41,47 @@ class ChatViewModel(
     private var uiMessages: List<MessageUiState> = emptyList()
 
     init {
-        updateInitialState(
-            chatId = getUuidOrNull(chatArgs.chatId),
-            requesterUserId = getUuidOrNull(chatArgs.chatRequesterId),
-            chatName = chatArgs.chatName,
-            chatAvatarUrl = chatArgs.chatImageUrl
-        )
-    }
-
-    private fun updateInitialState(
-        chatId: Uuid?,
-        requesterUserId: Uuid?,
-        chatName: String,
-        chatAvatarUrl: String
-    ) {
-        if (chatId == null || requesterUserId == null) return showSnackBarAndNavigateBack()
+        val chatId = getUuidOrNull(chatArgs.chatId)
 
         updateState { state ->
             state.copy(
                 chatId = chatId,
-                chatName = chatName,
+                chatName = chatArgs.chatName
+            )
+        }
+
+        if (chatId == null) {
+            onGetChatError()
+        } else {
+            tryToExecute(
+                execute = { chatRepository.getChatById(chatId) },
+                onSuccess = ::onGetChatSuccess,
+                onError = { onGetChatError() }
+            )
+        }
+    }
+
+    private fun onGetChatSuccess(chat: Chat) {
+        updateInitialState(
+            chatId = chat.id,
+            requesterUserId = chat.requesterId,
+            chatAvatarUrl = chat.imageUrl.orEmpty()
+        )
+    }
+
+    private fun onGetChatError() {
+        showSnackBar(titleStringResource = Res.string.error, messageStringResource = Res.string.error_cant_get_messages, isError = true)
+        popBackStack()
+    }
+
+    private fun updateInitialState(
+        chatId: Uuid,
+        requesterUserId: Uuid,
+        chatAvatarUrl: String
+    ) {
+        updateState { state ->
+            state.copy(
+                chatId = chatId,
                 chatAvatarUrl = chatAvatarUrl,
                 chatRequesterId = requesterUserId,
             )
@@ -69,13 +91,6 @@ class ChatViewModel(
         loadChatHistory(chatId)
         observeReadMessages()
     }
-
-    private fun showSnackBarAndNavigateBack() {
-        showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
-
-        popBackStack()
-    }
-
 
     override fun onBackClicked() {
         popBackStack()
@@ -269,7 +284,6 @@ class ChatViewModel(
         }
 
     }
-
 
     private fun updateStateWithNewMessage(newMessage: MessageUiState) {
         val messages = uiMessages.toMutableList()

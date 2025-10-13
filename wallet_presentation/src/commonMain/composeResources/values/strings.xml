@@ -129,4 +129,5 @@
     <string name="connection_lost_try_again">The connection was lost. Please try again.</string>
     <string name="try_again">Try Again</string>
     <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
+    <string name="you_paid">You paid</string>
 </resources>
