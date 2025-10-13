@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -157,7 +156,8 @@ private fun UserReelScreenContent(
 
         VerticalPager(
             state = pagerState,
-            modifier = Modifier
+            modifier = Modifier,
+            key = { page -> reelss[page].id },
         )
         { page ->
             val isCurrentPage = (pagerState.currentPage == page)
