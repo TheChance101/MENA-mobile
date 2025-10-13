@@ -14,7 +14,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 @Composable
 fun MessageContent(
     messageContent: MessageContent,
-    shape: Shape
+    shape: Shape,
+    onImageClick: (Int) -> Unit = {}
 ) {
     when (messageContent) {
         is MessageContent.Text -> Text(
@@ -31,7 +32,8 @@ fun MessageContent(
             }
             ImageMessageContent(
                 images = images,
-                modifier = Modifier.size(156.dp, 162.dp).clip(shape)
+                modifier = Modifier.size(156.dp, 162.dp).clip(shape),
+                onImageClick = onImageClick
             )
         }
     }
