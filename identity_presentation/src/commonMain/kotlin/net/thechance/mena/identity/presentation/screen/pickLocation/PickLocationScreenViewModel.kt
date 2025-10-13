@@ -26,7 +26,7 @@ class PickLocationScreenViewModel(
     ) {
         tryToExecute(
             function = { onClickMapBlock(coordinates, pointerLocation) },
-            onSuccess = ::onMapClickedSuccess ,
+            onSuccess = ::onMapClickedSuccess,
             onError = ::onError,
             dispatcher = dispatcher
         )
@@ -71,60 +71,58 @@ class PickLocationScreenViewModel(
     }
 
     override fun onClickGps() {
-        checkLocationPermission()
-    }
-
-    fun checkLocationPermission() {
         tryToExecute(
-            function = { locationForegroundHandler.checkPermission() },
-            onSuccess = ::onCheckForegroundPermissionsSuccess,
-            onError = {}
+            function = ::onGpsFetch,
+            onSuccess = ::onClickGpsSuccess,
+            onError = ::onClickGpsError,
+            dispatcher = dispatcher
         )
-    }
-    private fun onCheckForegroundPermissionsSuccess(permissionState: PermissionState) {
-        when (permissionState) {
-            PermissionState.NOT_DETERMINED -> {
-
-            }
-            PermissionState.GRANTED -> {
-                checkLocationServicePermission()
-            }
-
-            PermissionState.DENIED -> {
-                navigateToEnableLocation()
-            }
-        }
-    }
-
-    private fun checkLocationServicePermission() {
-        tryToExecute(
-            function = { locationServiceHandler.checkPermission() },
-            onSuccess = ::onCheckPermissionsSuccess ,
-            onError = {}
-        )
-    }
-
-    private fun onCheckPermissionsSuccess(permissionState: PermissionState) {
-        when (permissionState) {
-            PermissionState.NOT_DETERMINED -> {
-            }
-            PermissionState.GRANTED -> {
-                tryToExecute(
-                    function = ::onGpsFetch,
-                    onSuccess = ::onGpsClickSuccess,
-                    onError = ::onError,
-                    dispatcher = dispatcher
-                )
-            }
-            PermissionState.DENIED -> {
-                updateState { copy(errorMessage = "GPS is off") }
-            }
-        }
     }
 
     private suspend fun onGpsFetch(): Coordinates? {
         updateState { copy(isGpsButtonLoading = true) }
         return locationRepository.getCurrentLocation()
+    }
+
+    private fun onClickGpsSuccess(
+        coordinates: Coordinates?
+    ) {
+        if (coordinates != null) {
+            updateState {
+                copy(
+                    currentLocation = coordinates.toUiState(),
+                    isMapLocked = true,
+                    animateToCurrentLocation = true,
+                    isGpsButtonLoading = false
+                )
+            }
+        }
+    }
+
+    private fun onClickGpsError(errorState: ErrorState) {
+        checkLocationEnable()
+    }
+
+    private fun checkLocationEnable(){
+        tryToExecute(
+            function = {locationForegroundHandler.checkPermission()},
+            onSuccess = ::checkLocationEnableSuccess,
+            ::onError
+        )
+    }
+
+    private fun checkLocationEnableSuccess(permissionState: PermissionState){
+        when (permissionState){
+            PermissionState.GRANTED -> {
+                updateState { copy(errorMessage = "GPS is off") }
+            }
+            PermissionState.DENIED -> {
+                navigateToEnableLocation()
+            }
+            PermissionState.NOT_DETERMINED -> {
+                navigateToEnableLocation()
+            }
+        }
     }
 
     private fun onError(errorState: ErrorState) {
@@ -139,25 +137,11 @@ class PickLocationScreenViewModel(
         }
     }
 
-    private fun navigateToEnableLocation(){
+    private fun navigateToEnableLocation() {
         sendNewEffect(PickLocationScreenUIEffect.NavigateToEnableLocation)
         updateState { copy(isGpsButtonLoading = false) }
     }
 
-    private fun onGpsClickSuccess(
-        coordinates: Coordinates?
-    ) {
-        if (coordinates != null) {
-            updateState {
-                copy(
-                    currentLocation = coordinates.toUiState(),
-                    isMapLocked = true,
-                    animateToCurrentLocation = true,
-                    isGpsButtonLoading = false
-                )
-            }
-        }
-    }
 
     override fun onClickConfirm() {
         sendNewEffect(

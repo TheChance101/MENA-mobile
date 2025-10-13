@@ -1,32 +1,26 @@
 package net.thechance.mena.identity.presentation.util.permissionHandler
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.app.ActivityCompat
-import net.thechance.mena.identity.presentation.util.permissionHandler.util.checkPermissions
 import net.thechance.mena.identity.presentation.util.permissionHandler.util.openAppSettingsPage
-import net.thechance.mena.identity.domain.exception.FailedToRequestPermissionException
 
 internal class LocationForegroundPermission(
     private val context: Context,
-    private val activity: Lazy<Activity>,
 
 
-) : PermissionController {
+    ) : PermissionController {
     override fun getPermissionState(): PermissionState {
-        return checkPermissions(context, activity, fineLocationPermissions)
+        if (fineLocationPermissions.isEmpty()) return PermissionState.GRANTED
+        val allGranted = fineLocationPermissions.all {
+            context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+        }
+        return if (allGranted) PermissionState.GRANTED else PermissionState.DENIED
     }
 
     override suspend fun providePermission() {
-        try {
-            ActivityCompat.requestPermissions(
-                activity.value, fineLocationPermissions.toTypedArray(), 100
-            )
-        } catch (_: Throwable) {
-            throw FailedToRequestPermissionException()
-        }
+        TODO("not implemented")
     }
 
     override fun openSettingPage() {

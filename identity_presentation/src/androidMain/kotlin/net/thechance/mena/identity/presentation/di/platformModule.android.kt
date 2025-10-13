@@ -18,6 +18,6 @@ internal actual fun platformModule(): Module = module {
     }
 
     single<PermissionController>(named("LOCATION_FOREGROUND")) {
-        LocationForegroundPermission(context = get(), activity = inject())
+        LocationForegroundPermission(context = get())
     }
 }
