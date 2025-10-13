@@ -26,6 +26,7 @@ import mena.core_chat_presentation.generated.resources.chats
 import mena.core_chat_presentation.generated.resources.ic_coin
 import mena.core_chat_presentation.generated.resources.ic_plus
 import mena.core_chat_presentation.generated.resources.mena
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.screen.home.components.ChatItem
 import net.thechance.mena.core_chat.presentation.screen.home.components.NoChatsHistoryView
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
@@ -63,7 +64,7 @@ private fun HomeContent(
     val listState = rememberLazyListState()
 
     Scaffold(
-        topBar = { HomeScreenAppBar(interactionListener) }
+        topBar = { HomeScreenAppBar(interactionListener::onWalletClicked) }
     ) {
         Box(modifier = modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -78,7 +79,7 @@ private fun HomeContent(
                     }
 
                     else -> {
-                        ChatsSummaryList(listState, state, interactionListener)
+                        ChatsSummaryList(listState, state, interactionListener::onChatClicked)
                     }
                 }
             }
@@ -102,7 +103,7 @@ private fun HomeContent(
 }
 
 @Composable
-private fun HomeScreenAppBar(interactionListener: HomeScreenInteractionListener) {
+private fun HomeScreenAppBar(onWalletClicked: () -> Unit) {
     AppBar(
         title = stringResource(Res.string.mena),
         trailingContent = {
@@ -119,7 +120,8 @@ private fun HomeScreenAppBar(interactionListener: HomeScreenInteractionListener)
                     painter = painterResource(Res.drawable.ic_coin),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
-                        .clickable { interactionListener.onWalletClicked() })
+                        .clickable { onWalletClicked() }
+                )
             }
         }
     )
@@ -150,7 +152,7 @@ private fun EmptyView() {
 private fun ChatsSummaryList(
     listState: LazyListState,
     state: HomeScreenState,
-    interactionListener: HomeScreenInteractionListener
+    onChatClicked: (ChatUiState) -> Unit
 ) {
     Text(
         text = stringResource(Res.string.chats),
@@ -174,7 +176,7 @@ private fun ChatsSummaryList(
         ) { chat ->
             ChatItem(
                 chat = chat,
-                onChatClicked = interactionListener::onChatClicked,
+                onChatClicked = onChatClicked
             )
         }
 
