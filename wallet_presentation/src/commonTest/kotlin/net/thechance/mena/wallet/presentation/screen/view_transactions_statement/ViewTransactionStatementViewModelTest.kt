@@ -17,6 +17,8 @@ import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.UiState.Success
+import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,6 +29,8 @@ import kotlin.test.assertTrue
 class ViewTransactionStatementViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
+    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
+    private val statementLocation = StorageLocation.Cache("test_statement.pdf")
     private lateinit var viewModel: ViewTransactionStatementViewModel
 
     @BeforeTest
@@ -42,7 +46,7 @@ class ViewTransactionStatementViewModelTest {
     @Test
     fun `onNavigateBackClicked should send NavigateBack effect when called`() =
         runTest(testDispatcher) {
-            viewModel = ViewTransactionStatementViewModel(repository, testDispatcher)
+            viewModel = ViewTransactionStatementViewModel(pdfHandler,statementLocation, testDispatcher)
 
             viewModel.uiEffect.test {
                 viewModel.onNavigateBackClicked()
@@ -112,8 +116,8 @@ class ViewTransactionStatementViewModelTest {
         }
 
     private fun TestScope.initViewModel() {
-        viewModel = ViewTransactionStatementViewModel(repository, testDispatcher)
-        viewModel.getStatementPdf(null)
+        viewModel = ViewTransactionStatementViewModel(pdfHandler,statementLocation, testDispatcher)
+        viewModel.getStatementPdf(statementLocation)
         advanceUntilIdle()
     }
 
