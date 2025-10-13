@@ -20,10 +20,6 @@ val identityScreensModule = module {
     includes(platformModule())
     single { get<String>(named(APP_VERSION)) }
 
-    factory(named("LOCATION_SERVICE_HANDLER")) {
-        PermissionHandler(get(named("LOCATION_SERVICE_ON")))
-    }
-
     factory(named("LOCATION_FOREGROUND_HANDLER")) {
         PermissionHandler(get(named("LOCATION_FOREGROUND")))
     }
@@ -39,7 +35,6 @@ val identityScreensModule = module {
             locationRepository = get(),
             dispatcher = get(),
             locationForegroundHandler = get(named("LOCATION_FOREGROUND_HANDLER")),
-            locationServiceHandler = get(named("LOCATION_SERVICE_HANDLER"))
         )
     }
     factory {

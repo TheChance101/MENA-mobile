@@ -9,12 +9,7 @@ class PermissionHandler(
 ) {
 
     fun checkPermission(): PermissionState {
-        return try {
-            permissionController.getPermissionState()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            PermissionState.NOT_DETERMINED
-        }
+        return permissionController.getPermissionState()
     }
 
     fun checkPermissionFlow(): Flow<PermissionState> = flow {

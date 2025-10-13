@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.util.permissionHandler.util
+package net.thechance.mena.identity.presentation.util
 
 import android.content.Context
 import android.content.Intent

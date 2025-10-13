@@ -1,6 +1,7 @@
-package net.thechance.mena.identity.presentation.util.permissionHandler
+package net.thechance.mena.identity.presentation.util
 
-import net.thechance.mena.identity.presentation.util.permissionHandler.util.openAppSettingsPage
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import platform.CoreLocation.CLLocationManager
 import platform.CoreLocation.kCLAuthorizationStatusAuthorizedAlways
 import platform.CoreLocation.kCLAuthorizationStatusAuthorizedWhenInUse

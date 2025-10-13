@@ -1,10 +1,11 @@
-package net.thechance.mena.identity.presentation.util.permissionHandler
+package net.thechance.mena.identity.presentation.util
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import net.thechance.mena.identity.presentation.util.permissionHandler.util.openAppSettingsPage
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 
 internal class LocationForegroundPermission(
     private val context: Context,

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.util.permissionHandler.util
+package net.thechance.mena.identity.presentation.util
 
 import net.thechance.mena.identity.domain.exception.CannotOpenSettingsException
 import platform.Foundation.NSURL
