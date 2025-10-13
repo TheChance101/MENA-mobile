@@ -9,7 +9,6 @@ import net.thechance.mena.identity.presentation.util.permissionHandler.util.open
 internal class LocationForegroundPermission(
     private val context: Context,
 
-
     ) : PermissionController {
     override fun getPermissionState(): PermissionState {
         if (fineLocationPermissions.isEmpty()) return PermissionState.GRANTED
@@ -17,10 +16,6 @@ internal class LocationForegroundPermission(
             context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
         }
         return if (allGranted) PermissionState.GRANTED else PermissionState.DENIED
-    }
-
-    override suspend fun providePermission() {
-        TODO("not implemented")
     }
 
     override fun openSettingPage() {

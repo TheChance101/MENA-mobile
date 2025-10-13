@@ -22,10 +22,6 @@ internal class LocationForegroundPermission : PermissionController {
         }
     }
 
-    override suspend fun providePermission() {
-        locationManager.requestWhenInUseAuthorization()
-    }
-
     override fun openSettingPage() {
         openAppSettingsPage()
     }

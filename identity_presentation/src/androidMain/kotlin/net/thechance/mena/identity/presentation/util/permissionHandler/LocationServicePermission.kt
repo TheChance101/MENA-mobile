@@ -17,10 +17,6 @@ internal class LocationServicePermission(
             PermissionState.GRANTED else PermissionState.DENIED
     }
 
-    override suspend fun providePermission() {
-        openSettingPage()
-    }
-
     override fun openSettingPage() {
         context.openPage(
             action = Settings.ACTION_LOCATION_SOURCE_SETTINGS,

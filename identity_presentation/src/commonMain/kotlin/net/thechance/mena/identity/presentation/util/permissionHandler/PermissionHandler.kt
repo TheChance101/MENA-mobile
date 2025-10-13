@@ -26,10 +26,6 @@ class PermissionHandler(
         }
     }
 
-    suspend fun providePermission() {
-        permissionController.providePermission()
-    }
-
     fun openSettingPage() {
         permissionController.openSettingPage()
     }

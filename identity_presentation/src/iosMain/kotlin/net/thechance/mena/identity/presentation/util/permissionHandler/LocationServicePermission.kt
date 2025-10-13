@@ -11,10 +11,6 @@ internal class LocationServicePermission : PermissionController {
             PermissionState.GRANTED else PermissionState.DENIED
     }
 
-    override suspend fun providePermission() {
-        openSettingPage()
-    }
-
     override fun openSettingPage() {
         openNSUrl("App-Prefs:Privacy&path=LOCATION")
     }

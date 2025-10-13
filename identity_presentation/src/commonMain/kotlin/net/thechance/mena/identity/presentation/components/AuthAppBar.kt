@@ -20,7 +20,6 @@ internal fun AuthAppBar(
     onClickBack: () -> Unit,
     modifier: Modifier = Modifier,
     backgroundColor: Color = Theme.colorScheme.background.surface
-
 ) {
     Box(
         modifier = modifier
