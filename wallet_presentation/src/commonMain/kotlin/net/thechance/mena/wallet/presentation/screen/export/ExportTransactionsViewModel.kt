@@ -265,7 +265,7 @@ class ExportTransactionsViewModel(
             callee = {
                 pdfHandler.saveStatement(
                     byteArray = statement.byteArray,
-                    location = StorageLocation.Cache("statement")
+                    location = StorageLocation.Cache(getUniqueStatementFileName())
                 )
             },
             onSuccess = ::onSaveStatementToCacheSuccess,
@@ -345,7 +345,7 @@ class ExportTransactionsViewModel(
             callee = {
                 pdfHandler.saveStatement(
                     byteArray = statement.byteArray,
-                    location = StorageLocation.Downloads("statement")
+                    location = StorageLocation.Downloads(getUniqueStatementFileName())
                 )
             },
             onSuccess = { filePath -> onDownloadSuccess(filePath, statement) },
@@ -501,6 +501,12 @@ class ExportTransactionsViewModel(
         updateState { oldState ->
             oldState.copy(isViewAndShareLoading = false, isDownloadButtonEnabled = true)
         }
+    }
+
+
+    @OptIn(ExperimentalTime::class)
+    private fun getUniqueStatementFileName(): String {
+        return "statement_${Clock.System.now().epochSeconds}.pdf"
     }
 
     @OptIn(ExperimentalTime::class)

@@ -13,15 +13,16 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 
-class StatementFileManager(private val context: Context) {
+class FileManager(private val context: Context) {
 
     suspend fun saveFile(
         data: ByteArray,
-        location: StorageLocation
+        location: StorageLocation,
+        mimeType: String
     ): String = withContext(Dispatchers.IO) {
         when (location) {
             is StorageLocation.Cache -> saveToCache(data, location.fileName)
-            is StorageLocation.Downloads -> saveToDownloads(data, location.fileName)
+            is StorageLocation.Downloads -> saveToDownloads(data, location.fileName, mimeType)
         }
     }
 
@@ -56,23 +57,23 @@ class StatementFileManager(private val context: Context) {
 
     private fun saveToDownloads(
         data: ByteArray,
-        fileName: String
+        fileName: String,
+        mimeType: String
     ): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveToMediaStore(fileName, data)
+            saveToMediaStore(fileName, data, mimeType)
         } else {
             saveToLegacyStorage(fileName, data)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun saveToMediaStore(fileName: String, data: ByteArray): String {
+    private fun saveToMediaStore(fileName: String, data: ByteArray, mimeType: String): String {
         val resolver = context.contentResolver
 
-        val uniqueFileName = getUniqueFileName(fileName)
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, "$uniqueFileName.pdf")
-            put(MediaStore.MediaColumns.MIME_TYPE, MIME_TYPE)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
             put(MediaStore.MediaColumns.RELATIVE_PATH, "$DOWNLOAD_DIR_BASE/$APP_DOWNLOADS_FOLDER")
         }
 
@@ -86,7 +87,7 @@ class StatementFileManager(private val context: Context) {
             Environment.DIRECTORY_DOWNLOADS
         ).name
 
-        return "$localizedDownloads/$APP_DOWNLOADS_FOLDER/$uniqueFileName.pdf"
+        return "$localizedDownloads/$APP_DOWNLOADS_FOLDER/$fileName"
     }
 
     @Suppress("DEPRECATION")
@@ -100,7 +101,7 @@ class StatementFileManager(private val context: Context) {
             throw IOException("Failed to create downloads folder")
         }
 
-        val file = File(appFolder, "${getUniqueFileName(fileName)}.pdf")
+        val file = File(appFolder, fileName)
         file.writeBytes(data)
         return file.absolutePath
     }
@@ -221,7 +222,6 @@ class StatementFileManager(private val context: Context) {
     }
 
     companion object {
-        private const val MIME_TYPE = "application/pdf"
         private const val DOWNLOAD_DIR_BASE = "Download"
         private const val APP_DOWNLOADS_FOLDER = "MENA"
     }

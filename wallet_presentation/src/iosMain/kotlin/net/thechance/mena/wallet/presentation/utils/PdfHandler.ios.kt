@@ -186,7 +186,7 @@ class PdfHandlerImpl : PdfHandler {
             }
             is StorageLocation.Downloads -> {
                 val documentsPath = getDocumentsDirectory()
-                "$documentsPath/$APP_DOWNLOADS_FOLDER/${location.fileName}.pdf"
+                "$documentsPath/$APP_DOWNLOADS_FOLDER/${location.fileName}"
             }
         }
     }
@@ -226,7 +226,7 @@ class PdfHandlerImpl : PdfHandler {
             }
         }
 
-        val filePath = "$appFolderPath/$uniqueFileName.pdf"
+        val filePath = "$appFolderPath/$uniqueFileName"
 
         val saved = pdfData.usePinned { pinned ->
             val nsData = NSData.dataWithBytes(
@@ -240,7 +240,7 @@ class PdfHandlerImpl : PdfHandler {
             throw IOException("Failed to save file")
         }
 
-        return "$APP_DOWNLOADS_FOLDER/$uniqueFileName.pdf"
+        return "$APP_DOWNLOADS_FOLDER/$uniqueFileName"
     }
 
     @OptIn(ExperimentalForeignApi::class)

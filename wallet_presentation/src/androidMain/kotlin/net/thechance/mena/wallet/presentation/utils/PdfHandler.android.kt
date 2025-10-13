@@ -16,8 +16,8 @@ import java.io.File
 
 class PdfHandlerImpl() : PdfHandler {
     private val context: Context = GlobalContext.get().get()
-    private val fileManager: StatementFileManager by lazy {
-        StatementFileManager(context)
+    private val fileManager: FileManager by lazy {
+        FileManager(context)
     }
 
     override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
@@ -73,7 +73,8 @@ class PdfHandlerImpl() : PdfHandler {
     override suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
         val path = fileManager.saveFile(
             pdfData,
-            StorageLocation.Cache(fileName)
+            StorageLocation.Cache(fileName),
+            PDF_MIME_TYPE
         )
 
         val contentUri = FileProvider.getUriForFile(
@@ -95,10 +96,7 @@ class PdfHandlerImpl() : PdfHandler {
     }
 
     override suspend fun saveStatement(byteArray: ByteArray, location: StorageLocation): String {
-        return fileManager.saveFile(
-            byteArray,
-            location
-        )
+        return fileManager.saveFile(byteArray, location, PDF_MIME_TYPE)
     }
 
     override suspend fun deleteStatement(location: StorageLocation) {
@@ -114,6 +112,7 @@ class PdfHandlerImpl() : PdfHandler {
     }
 
     companion object {
+        private const val PDF_MIME_TYPE = "application/pdf"
         private const val IMAGE_SCALE = 2f
     }
 }
