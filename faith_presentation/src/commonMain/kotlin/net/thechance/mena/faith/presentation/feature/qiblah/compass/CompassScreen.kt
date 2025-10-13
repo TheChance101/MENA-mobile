@@ -112,7 +112,6 @@ private fun Content(
                     azimuth = uiState.continuousAzimuth,
                     qiblahDirection = uiState.qiblahAngleValue
                 )
-
                 TextAngleToQiblah(
                     qiblahDirection = uiState.angleToQiblah.toInt().toString(),
                     modifier = Modifier.padding(top = Theme.spacing._16)

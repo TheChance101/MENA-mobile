@@ -15,6 +15,8 @@ class CompassViewModel(
         getQiblahAngle()
     }
 
+    override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
+
     private fun getQiblahAngle() {
         tryToExecute(
             execute = bearingCalculatorUseCase::calculateQiblahAngle,
@@ -35,24 +37,34 @@ class CompassViewModel(
     }
 
     private fun onAzimuthValueChange(rawAzimuth: Float) {
-        val oldAngleOnCircle = currentContinuousAzimuth % 360
-        var diff = rawAzimuth - oldAngleOnCircle
-        if (diff > 180f) {
-            diff -= 360f
-        } else if (diff < -180f) {
-            diff += 360f
-        }
-        currentContinuousAzimuth += diff
-        var relativeAngle = uiState.value.qiblahAngleValue - rawAzimuth
-        while (relativeAngle <= -180) relativeAngle += 360
-        while (relativeAngle > 180) relativeAngle -= 360
+        val continuousAzimuth = calculateContinuousAzimuth(rawAzimuth)
+        val relativeAngle =
+            calculateRelativeAngleToQiblah(rawAzimuth, uiState.value.qiblahAngleValue)
         updateState {
             it.copy(
-                continuousAzimuth = currentContinuousAzimuth,
+                continuousAzimuth = continuousAzimuth,
                 angleToQiblah = relativeAngle
             )
         }
     }
 
-    override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
+    private fun calculateContinuousAzimuth(rawAzimuth: Float): Float {
+        val oldAngleOnCircle = currentContinuousAzimuth % 360
+        val diff = getShortestAngleDifference(from = oldAngleOnCircle, to = rawAzimuth)
+        currentContinuousAzimuth += diff
+        return currentContinuousAzimuth
+    }
+
+    private fun calculateRelativeAngleToQiblah(rawAzimuth: Float, qiblahAngle: Float): Float {
+        return getShortestAngleDifference(from = rawAzimuth, to = qiblahAngle)
+    }
+
+    private fun getShortestAngleDifference(from: Float, to: Float): Float {
+        val diff = (to - from) % 360
+        return when {
+            diff > 180f -> diff - 360f
+            diff < -180f -> diff + 360f
+            else -> diff
+        }
+    }
 }
