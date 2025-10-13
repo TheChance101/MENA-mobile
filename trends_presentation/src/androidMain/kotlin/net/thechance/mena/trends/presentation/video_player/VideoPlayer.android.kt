@@ -36,9 +36,13 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
+import mena.trends_presentation.generated.resources.Res
+import mena.trends_presentation.generated.resources.ic_pause
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -131,7 +135,16 @@ actual fun VideoPlayer(
                 .clickable { isPause = !isPause }
         )
 
-        if (isLoading) {
+        if (isPause) {
+            Box(modifier = Modifier.align(Alignment.Center)) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_pause),
+                    contentDescription = "Pause Icon"
+                )
+            }
+        }
+
+        if (isLoading && !isPause) {
             DotsProgressIndicator(
                 colors = listOf(
                     Theme.colorScheme.stroke,
@@ -146,7 +159,7 @@ actual fun VideoPlayer(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .fillMaxWidth()
-                .padding(bottom = 5.dp, start = 2.dp, end = 2.dp)
+                .padding(bottom = 2.dp, start = 1.dp, end = 1.dp)
                 .onGloballyPositioned {
                     barWidth = it.size.width.toFloat()
                 }
@@ -156,7 +169,6 @@ actual fun VideoPlayer(
                             val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
                             val seekPosition = (newProgress * duration).toLong()
                             exoPlayer.seekTo(seekPosition)
-                            exoPlayer.playWhenReady = true
                         }
                     }
                 },
