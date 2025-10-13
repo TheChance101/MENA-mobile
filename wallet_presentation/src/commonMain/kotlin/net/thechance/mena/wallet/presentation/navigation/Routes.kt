@@ -3,6 +3,7 @@
 package net.thechance.mena.wallet.presentation.navigation
 
 import kotlinx.serialization.Serializable
+import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
