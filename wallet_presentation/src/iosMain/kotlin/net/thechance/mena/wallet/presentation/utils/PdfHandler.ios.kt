@@ -10,6 +10,8 @@ import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
+import kotlinx.io.IOException
+import kotlinx.io.files.FileNotFoundException
 import org.koin.core.annotation.Single
 import platform.CoreFoundation.CFDataCreateWithBytesNoCopy
 import platform.CoreFoundation.kCFAllocatorDefault
@@ -35,7 +37,6 @@ import platform.CoreGraphics.CGPDFPageGetBoxRect
 import platform.CoreGraphics.kCGBitmapByteOrder32Big
 import platform.CoreGraphics.kCGPDFMediaBox
 import platform.Foundation.NSData
-import platform.Foundation.NSDate
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
@@ -43,7 +44,7 @@ import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.dataWithBytes
-import platform.Foundation.timeIntervalSince1970
+import platform.Foundation.dataWithContentsOfFile
 import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
@@ -51,6 +52,8 @@ import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIScreen
 import platform.posix.memcpy
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Single
 class PdfHandlerImpl : PdfHandler {
@@ -124,9 +127,7 @@ class PdfHandlerImpl : PdfHandler {
     }
 
     override suspend fun sharePdf(pdfData: ByteArray, fileName: String) {
-        val url = withContext(Dispatchers.IO) {
-            saveFile(pdfData, fileName)
-        }
+        val url = saveToCache(pdfData, fileName)
         val activityViewController = UIActivityViewController(listOf(url), null)
         UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
             activityViewController, animated = true, completion = null
@@ -134,82 +135,131 @@ class PdfHandlerImpl : PdfHandler {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    private fun saveFile(bytes: ByteArray, name: String): NSURL? {
-        val tempDir = NSTemporaryDirectory()
-        val sharedFile = tempDir + name
-        val saved = bytes.usePinned {
-            val nsData = NSData.dataWithBytes(it.addressOf(0), bytes.size.toULong())
-            nsData.writeToFile(sharedFile, true)
+    override suspend fun saveStatement(byteArray: ByteArray, location: StorageLocation): String {
+        return withContext(Dispatchers.IO) {
+            when (location) {
+                is StorageLocation.Cache -> saveToCache(byteArray, location.fileName)
+                is StorageLocation.Downloads -> saveToDocuments(byteArray, location.fileName)
+            }
         }
-        return if (saved) NSURL.fileURLWithPath(sharedFile) else null
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    override suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
-        return withContext(Dispatchers.IO) {
-            val specialFileName = generateSpecialFileName(fileName)
-
+    override suspend fun deleteStatement(location: StorageLocation) {
+        withContext(Dispatchers.IO) {
             val fileManager = NSFileManager.defaultManager
-            val paths = NSSearchPathForDirectoriesInDomains(
-                NSDocumentDirectory,
-                NSUserDomainMask,
-                true
-            )
-            val documentsPath = paths.first() as String
-            val menaFolderPath = "$documentsPath/$APP_DOWNLOADS_FOLDER"
+            val path = getFilePath(location)
 
-            if (!fileManager.fileExistsAtPath(menaFolderPath)) {
-                val created = fileManager.createDirectoryAtPath(
-                    menaFolderPath,
-                    withIntermediateDirectories = true,
-                    attributes = null,
-                    error = null
-                )
-                if (!created) {
-                    throw Exception()
-                }
+            if (fileManager.fileExistsAtPath(path)) {
+                fileManager.removeItemAtPath(path, error = null)
             }
-
-            val filePath = "$menaFolderPath/$specialFileName.pdf"
-
-            val saved = pdfData.usePinned { pinned ->
-                val nsData = NSData.dataWithBytes(
-                    pinned.addressOf(0),
-                    pdfData.size.toULong()
-                )
-                nsData.writeToFile(filePath, atomically = true)
-            }
-
-            if (!saved) {
-                throw Exception()
-            }
-
-            "$APP_DOWNLOADS_FOLDER/$specialFileName.pdf"
         }
     }
 
-    override suspend fun saveToCache(
+    @OptIn(ExperimentalForeignApi::class)
+    override suspend fun getPdfBytes(location: StorageLocation): ByteArray {
+        return withContext(Dispatchers.IO) {
+            val path = getFilePath(location)
+
+            val nsData = NSData.dataWithContentsOfFile(path)
+                ?: throw FileNotFoundException("File not found: $path")
+
+            nsData.toByteArray()
+        }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    override suspend fun checkIfStatementExists(location: StorageLocation): Boolean {
+        return withContext(Dispatchers.IO) {
+            val fileManager = NSFileManager.defaultManager
+            val path = when (location) {
+                is StorageLocation.Cache -> {
+                    val tempDir = NSTemporaryDirectory()
+                    "$tempDir${location.fileName}"
+                }
+                is StorageLocation.Downloads -> {
+                    val documentsPath = getDocumentsDirectory()
+                    "$documentsPath/$APP_DOWNLOADS_FOLDER/${location.fileName}.pdf"
+                }
+            }
+
+            fileManager.fileExistsAtPath(path)
+        }
+    }
+
+    private fun getFilePath(location: StorageLocation): String {
+        return when (location) {
+            is StorageLocation.Cache -> {
+                val tempDir = NSTemporaryDirectory()
+                "$tempDir${location.fileName}"
+            }
+            is StorageLocation.Downloads -> {
+                val documentsPath = getDocumentsDirectory()
+                "$documentsPath/$APP_DOWNLOADS_FOLDER/${location.fileName}.pdf"
+            }
+        }
+    }
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun saveToCache(bytes: ByteArray, name: String): String {
+        val tempDir = NSTemporaryDirectory()
+        val filePath = tempDir + name
+        val saved = bytes.usePinned {
+            val nsData = NSData.dataWithBytes(it.addressOf(0), bytes.size.toULong())
+            nsData.writeToFile(filePath, true)
+        }
+        val url = if (saved) NSURL.fileURLWithPath(filePath) else null
+        return url?.path ?: throw IOException("Failed to save to cache")
+    }
+
+    @OptIn(ExperimentalForeignApi::class, ExperimentalTime::class)
+    private fun saveToDocuments(
         pdfData: ByteArray,
         fileName: String
     ): String {
-        TODO("Not yet implemented")
+        val uniqueFileName = "${fileName}_${Clock.System.now().epochSeconds}"
+
+        val fileManager = NSFileManager.defaultManager
+        val documentsPath = getDocumentsDirectory()
+        val appFolderPath = "$documentsPath/$APP_DOWNLOADS_FOLDER"
+
+        if (!fileManager.fileExistsAtPath(appFolderPath)) {
+            val created = fileManager.createDirectoryAtPath(
+                appFolderPath,
+                withIntermediateDirectories = true,
+                attributes = null,
+                error = null
+            )
+            if (!created) {
+                throw IOException("Failed to create directory")
+            }
+        }
+
+        val filePath = "$appFolderPath/$uniqueFileName.pdf"
+
+        val saved = pdfData.usePinned { pinned ->
+            val nsData = NSData.dataWithBytes(
+                pinned.addressOf(0),
+                pdfData.size.toULong()
+            )
+            nsData.writeToFile(filePath, atomically = true)
+        }
+
+        if (!saved) {
+            throw IOException("Failed to save file")
+        }
+
+        return "$APP_DOWNLOADS_FOLDER/$uniqueFileName.pdf"
     }
 
-    override suspend fun deleteStatement(location: StorageLocation) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getPdfBytes(location: StorageLocation): ByteArray {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun checkIfStatementExists(location: StorageLocation): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    private fun generateSpecialFileName(baseName: String): String {
-        val timestamp = NSDate().timeIntervalSince1970.toLong() * 1000
-        return "${baseName}_$timestamp"
+    @OptIn(ExperimentalForeignApi::class)
+    private fun getDocumentsDirectory(): String {
+        val paths = NSSearchPathForDirectoriesInDomains(
+            NSDocumentDirectory,
+            NSUserDomainMask,
+            true
+        )
+        return paths.first() as String
     }
 
     private companion object {
