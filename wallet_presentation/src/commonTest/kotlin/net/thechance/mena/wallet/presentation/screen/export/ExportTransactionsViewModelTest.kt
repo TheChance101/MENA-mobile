@@ -50,7 +50,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ExportTransactionsViewModelTest {
-    val stringProvider = FakeStringProvider()
+    private val stringProvider = FakeStringProvider()
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)

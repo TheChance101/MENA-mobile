@@ -8,6 +8,7 @@ import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Single
 import platform.CoreFoundation.CFDataCreateWithBytesNoCopy
@@ -50,6 +51,8 @@ import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIScreen
 import platform.posix.memcpy
+
+@Single
 class PdfHandlerImpl : PdfHandler {
     @OptIn(ExperimentalForeignApi::class)
     override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
@@ -191,9 +194,8 @@ class PdfHandlerImpl : PdfHandler {
     }
 
     private companion object {
+        // Chosen as a good balance between rendering time and image sharpness
         const val IMAGE_SCALE = 1.67f
         const val APP_DOWNLOADS_FOLDER = "MENA"
     }
 }
-
-actual fun getPdfHandler(): PdfHandler = PdfHandlerImpl()
