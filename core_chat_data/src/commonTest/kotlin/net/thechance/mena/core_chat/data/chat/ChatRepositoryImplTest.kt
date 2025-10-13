@@ -159,7 +159,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
         )
 
         val result = repository.getChatsSummary(
@@ -178,7 +179,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
         )
 
         assertFailsWith<NotFoundException> {
