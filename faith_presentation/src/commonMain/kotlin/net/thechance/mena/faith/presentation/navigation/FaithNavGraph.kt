@@ -7,11 +7,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScreen
 import net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice.CalibrateDeviceScreen
+import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
 
@@ -25,30 +25,27 @@ fun FaithNavigation() {
         QuranTheme {
             NavHost(
                 navController = navController,
-                startDestination = MainRoute
+                startDestination = Route.MainRoute
             ) {
 
-                composable<MainRoute> {
+                composable<Route.MainRoute> {
                     MainScreen()
                 }
-                composable<SurRoute> {
+                composable<Route.SurRoute> {
                     SurScreen()
                 }
-                composable<BookmarksRoute> {
+                composable<Route.BookmarksRoute> {
                     BookmarkScreen()
                 }
-                composable<CalibrateDeviceRoute> {
+                composable<Route.CalibrateDeviceRoute> {
                     CalibrateDeviceScreen()
                 }
+                composable<Route.SearchRoute> {
+                    SearchScreen()
+                }
 
-                composable<SurahDetailsRoute> { backStackEntry ->
-                    val args = backStackEntry.toRoute<SurahDetailsRoute>()
-
-                    SurahScreen(
-                        surahId = args.surahId,
-                        surahName = args.surahName
-                    )
-
+                composable<Route.SurahDetailsRoute> {
+                    SurahScreen()
                 }
             }
         }

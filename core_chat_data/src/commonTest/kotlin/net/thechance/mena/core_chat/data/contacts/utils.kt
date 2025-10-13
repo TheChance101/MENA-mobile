@@ -141,11 +141,13 @@ fun createChatRepository(
     messageDao: MessageDao,
     imageDownloader: ImageDownloader,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
-        chatResponse = chatResponse
+        chatResponse = chatResponse,
+        chatByIdResponse = chatByIdResponse
     )
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
@@ -163,6 +165,7 @@ fun createHttpClient(
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
         val path = request.url.encodedPath
@@ -181,6 +184,9 @@ fun createHttpClient(
 
             path.contains(IMAGES_ENDPOINT) ->
                 imagesResponse?.invoke(this) ?: defaultUploadImagesResponse()
+
+            path.startsWith("$CHAT_ENDPOINT/") ->
+                chatByIdResponse?.invoke(this) ?: defaultChatResponse()
 
             else -> respond(
                 content = "",
