@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun <T> PaginationTrigger(
     list: List<T>,
     listState: LazyListState,
-    buffer: Int,
+    itemsRemaining: Int,
     loadNextItems: () -> Unit
 ) {
     LaunchedEffect(list) {
@@ -19,7 +19,7 @@ fun <T> PaginationTrigger(
         }
             .distinctUntilChanged()
             .collect { lastVisibleIndex ->
-                if (lastVisibleIndex == list.lastIndex - buffer) {
+                if (lastVisibleIndex == list.lastIndex - itemsRemaining) {
                     loadNextItems()
                 }
             }
