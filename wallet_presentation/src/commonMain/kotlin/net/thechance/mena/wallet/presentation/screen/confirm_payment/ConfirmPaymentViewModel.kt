@@ -72,7 +72,7 @@ class ConfirmPaymentViewModel(
         updateState { it.copy(isLoading = true) }
     }
 
-    private fun onSubmitTransactionSuccess(unit: Unit) {
+    private fun onSubmitTransactionSuccess() {
         updateState { it.copy(isPayBtnLoading = false) }
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
@@ -91,7 +91,7 @@ class ConfirmPaymentViewModel(
                 receiverId,
                 amount,
                 dummyTransactionId,
-                submitTransactionResultStatus = when(error){
+                submitTransactionResultStatus = when (error) {
                     ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
                     else -> SubmitTransactionResultStatus.UNKNOWN_ERROR
                 }
@@ -104,7 +104,7 @@ class ConfirmPaymentViewModel(
             callee = {
                 paymentRepository.submitTransaction(transactionId)
             },
-            onSuccess = ::onSubmitTransactionSuccess,
+            onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
             dispatcher = ioDispatcher
         )
