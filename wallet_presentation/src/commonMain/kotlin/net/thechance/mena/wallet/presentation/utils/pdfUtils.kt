@@ -5,3 +5,5 @@ interface PdfHandler {
     suspend fun sharePdf(pdfData: ByteArray, fileName: String)
     suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String
 }
+
+expect fun getPdfHandler(): PdfHandler

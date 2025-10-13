@@ -161,3 +161,7 @@ class PdfHandlerImpl : PdfHandler {
         const val MIME_TYPE = "application/pdf"
     }
 }
+
+actual fun getPdfHandler(): PdfHandler {
+    return PdfHandlerImpl()
+}

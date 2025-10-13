@@ -199,3 +199,7 @@ class PdfHandlerImpl : PdfHandler {
         const val APP_DOWNLOADS_FOLDER = "MENA"
     }
 }
+
+actual fun getPdfHandler(): PdfHandler {
+    return PdfHandlerImpl()
+}
