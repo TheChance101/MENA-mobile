@@ -20,13 +20,17 @@ import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
+import net.thechance.mena.trends.data.util.VideoFileHandler
+import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
 import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
-import net.thechance.mena.trends.data.util.infiniteTimeOut
+import net.thechance.mena.trends.data.util.getMediaMimeType
+import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Reel
@@ -37,7 +41,8 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
-    @Provided private val networkClient: NetworkClient
+    @Provided private val networkClient: NetworkClient,
+    @Provided private val videoFileHandler: VideoFileHandler
 ) : ReelsRepository {
 
     override suspend fun deleteReelById(id: String) {
@@ -69,34 +74,18 @@ internal class ReelsRepositoryImpl(
     }
 
     override fun uploadReel(
-        name: String,
-        mimeType: String,
-        size: Long,
-        bytes: ByteArray,
-        extension: String
+        filePath: String,
+        fileName: String,
+        size: Long
     ): Flow<UploadReelProgress> {
         return channelFlow {
-            val response = safeApiCall<UploadReelResponse> {
-                networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT") {
-                    infiniteTimeOut()
-                    setBody(
-                        createUploadReelBody(
-                            name = name,
-                            reelBytes = bytes,
-                            size = size,
-                            mimeType = mimeType,
-                            extension = extension
-                        )
+            val response = getUploadReelResponse(filePath, fileName, size) { sent, total ->
+                send(
+                    UploadReelProgress(
+                        numberOfUploadedBytes = sent,
+                        totalBytes = total
                     )
-                    observeUploading { sent, total ->
-                        send(
-                            UploadReelProgress(
-                                numberOfUploadedBytes = sent,
-                                totalBytes = total
-                            )
-                        )
-                    }
-                }
+                )
             }
             send(
                 UploadReelProgress(
@@ -108,69 +97,70 @@ internal class ReelsRepositoryImpl(
         }
     }
 
-    override suspend fun uploadReelThumbnail(
-        thumbnail: ByteArray,
+    private suspend fun getUploadReelResponse(
+        filePath: String,
+        fileName: String,
         size: Long,
-        mimeType: String,
-        name: String,
-        extension: String,
-        id: String
+        onProgress: suspend (sent: Long, total: Long) -> Unit
+    ): UploadReelResponse {
+        return safeApiCall<UploadReelResponse> {
+            val fileSource = videoFileHandler.readFile(filePath)
+            networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT") {
+                setUploadRequestTimeout()
+                setBody(
+                    createRequestBody(
+                        fileName = fileName,
+                        key = VIDEO,
+                        mimeType = getMediaMimeType(fileName),
+                        input = InputProvider(size) { fileSource.buffered() }
+                    )
+                )
+                observeUploading(onProgress)
+            }
+        }
+    }
+
+    override suspend fun uploadReelThumbnail(
+        reelId: String,
+        fileName: String,
+        thumbnail: ByteArray
     ) {
         safeApiCall<Unit> {
-            networkClient.put(urlString = "$TRENDS_PATH/$REELS_ENDPOINT/$THUMBNAIL_ENDPOINT/$id") {
+            networkClient.put(urlString = "$THUMBNAIL_ENDPOINT/${reelId}") {
                 setBody(
-                    createUploadThumbnailBody(
-                        thumbnail = thumbnail,
-                        size = size,
-                        mimeType = mimeType,
-                        name = name,
-                        extension = extension
+                    createRequestBody(
+                        fileName = "$reelId$JPEG_EXTENSION",
+                        key = THUMBNAIL,
+                        mimeType = THUMBNAIL_MIME_TYPE,
+                        input = InputProvider { ByteReadChannel(thumbnail).asSource().buffered() }
                     )
                 )
             }
         }
     }
 
-    private fun createUploadThumbnailBody(
-        thumbnail: ByteArray,
-        size: Long,
-        mimeType: String,
-        name: String,
-        extension: String
-    ): MultiPartFormDataContent {
-        return MultiPartFormDataContent(
-            formData {
-                append(
-                    key = THUMBNAIL,
-                    value = InputProvider(size) {
-                        ByteReadChannel(thumbnail).asSource().buffered()
-                    },
-                    headers = Headers.build {
-                        append(HttpHeaders.ContentType, mimeType)
-                        append(HttpHeaders.ContentDisposition, "filename=\"$name.$extension\"")
-                    }
-                )
-            }
-        )
+    override suspend fun getReelDuration(filePath: String): Long? {
+        return videoFileHandler.getDuration(filePath)
     }
 
-    private fun createUploadReelBody(
-        name: String,
-        reelBytes: ByteArray,
-        size: Long,
+    override suspend fun getReelThumbnail(filePath: String, timeMs: Long): ByteArray? {
+        return videoFileHandler.extractVideoFrame(filePath, timeMs)
+    }
+
+    private fun createRequestBody(
+        fileName: String,
+        key: String,
         mimeType: String,
-        extension: String
+        input: InputProvider
     ): MultiPartFormDataContent {
         return MultiPartFormDataContent(
             formData {
                 append(
-                    key = VIDEO,
-                    value = InputProvider(size) {
-                        ByteReadChannel(reelBytes).asSource().buffered()
-                    },
+                    key = key,
+                    value = input,
                     headers = Headers.build {
                         append(HttpHeaders.ContentType, mimeType)
-                        append(HttpHeaders.ContentDisposition, "filename=\"$name.$extension\"")
+                        append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
                     }
                 )
             }

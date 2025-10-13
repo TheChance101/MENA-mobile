@@ -55,7 +55,9 @@ class SearchViewModel(
     }
 
     override fun onSearchResultClick(surahId: Int, ayahId: Int) {
-        sendEffect(
+        uiState.value.surahId?.let {
+            sendEffect(SearchEffect.NavigateBack(ayahId))
+        } ?: sendEffect(
             SearchEffect.NavigateToSurah(
                 surahId,
                 ayahId,
