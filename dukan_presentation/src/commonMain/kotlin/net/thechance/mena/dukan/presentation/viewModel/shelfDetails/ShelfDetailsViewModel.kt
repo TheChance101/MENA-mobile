@@ -68,6 +68,22 @@ class ShelfDetailsViewModel(
         emitEffect(ShelfDetailsEffects.NavigateBack)
     }
 
+    override fun onCartClick(productId: String) {
+        updateState {
+            copy(
+                productsShelf = productsShelf.copy(
+                    items = productsShelf.items.map {product->
+                        if (product.id == productId) {
+                            product.copy(showProductQuantity = true)
+                        } else {
+                            product
+                        }
+                    }
+                )
+            )
+        }
+    }
+
     val pagerProduct = createPagingSource(
         mapper = { it.toUiState() }
     ) {

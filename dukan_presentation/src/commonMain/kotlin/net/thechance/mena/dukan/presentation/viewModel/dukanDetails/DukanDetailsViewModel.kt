@@ -183,6 +183,25 @@ class DukanDetailsViewModel(
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
     }
 
+    override fun onCartClick(productId: String) {
+        updateState {
+            copy(
+                shelves = shelves.copy(
+                    items = shelves.items.map {shelf->
+                        shelf.copy(
+                            products = shelf.products.map { product ->
+                                if (product.id == productId) {
+                                    product.copy(showProductQuantity = true)
+                                } else {
+                                    product
+                                }
+                            }
+                        )
+                    }
+                )
+            )
+        }
+    }
 
     val pagerShelf = createPagingSource(
         mapper = { it.toUiState() }
