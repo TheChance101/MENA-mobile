@@ -137,7 +137,7 @@ private fun PaymentStatusButtons(
     primaryButtonText: String,
     onPrimaryButtonClick: () -> Unit,
     onCancelClicked: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
