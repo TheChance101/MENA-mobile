@@ -46,7 +46,35 @@ class PaymentRepositoryImplTest {
             paymentRepository.getPaymentConfirmation(receiver1Id,amount1)
         }
     }
+    @Test
+    fun `submitTransaction completes successfully when API call is successful`() = runTest {
+        networkClient = createNetworkClient(postRespond = { request ->
+            respond(
+                content = "",
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        })
+        paymentRepository = PaymentRepositoryImpl(networkClient)
 
+        paymentRepository.submitTransaction(Uuid.random())
+    }
+
+    @Test
+    fun `submitTransaction throws exception when API call fails`() = runTest {
+        networkClient = createNetworkClient(postRespond = { request ->
+            respond(
+                content = "",
+                status = HttpStatusCode.InternalServerError,
+                headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            )
+        })
+        paymentRepository = PaymentRepositoryImpl(networkClient)
+
+        assertFailsWith<Exception> {
+            paymentRepository.submitTransaction(Uuid.random())
+        }
+    }
     private companion object {
         val receiver1Id = Uuid.random()
         const val balance1 = 500045.0102
