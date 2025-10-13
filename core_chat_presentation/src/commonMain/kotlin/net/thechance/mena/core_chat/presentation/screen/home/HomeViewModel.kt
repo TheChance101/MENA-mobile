@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
@@ -34,7 +35,7 @@ class HomeViewModel(
             getNextKey = { currentPage, _ -> currentPage + 1 },
             onError = ::onLoadChatsSummaryError,
             onSuccess = { result, newPage -> onLoadChatsSummarySuccess(result) },
-            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
+            endReached = { _, result -> result.isLastPage }
         )
     }
 
@@ -52,8 +53,11 @@ class HomeViewModel(
         updateState { it.copy(isLoading = isLoading) }
     }
 
-    private suspend fun getChatsSummary(page: Int): List<ChatSummary> {
-        return chatRepository.getChatsSummary(page).data
+    private suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
+        return chatRepository.getChatsSummary(
+            pageNumber = pageNumber,
+            pageSize = PAGE_SIZE
+        )
     }
 
     private fun onLoadChatsSummaryError(throwable: Throwable?) {
@@ -66,8 +70,8 @@ class HomeViewModel(
         )
     }
 
-    private fun onLoadChatsSummarySuccess(items: List<ChatSummary>) {
-        updateState { it.copy(chats = it.chats + items.map { chat -> chat.toUi() }) }
+    private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
+        updateState { it.copy(chats = it.chats + items.data.map { chat -> chat.toUi() }) }
     }
 
     override fun onNewChatClicked() {

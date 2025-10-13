@@ -155,7 +155,10 @@ class ChatRepositoryImplTest {
             messageDao = messageDao
         )
 
-        val result = repository.getChatsSummary(1)
+        val result = repository.getChatsSummary(
+            pageNumber = 1,
+            pageSize = 20
+        )
 
         assertThat(result.data).isNotEmpty()
     }
@@ -172,7 +175,10 @@ class ChatRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.getChatsSummary(1)
+            repository.getChatsSummary(
+                pageNumber = 1,
+                pageSize = 20
+            )
         }
     }
 
@@ -226,6 +232,7 @@ class ChatRepositoryImplTest {
         val flow = repository.observeReadMessages()
         assertThat(flow).isNotNull()
     }
+
     @Test
     fun `should return local messages from database when getLocalMessages is called`() = runTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
@@ -260,7 +267,11 @@ class ChatRepositoryImplTest {
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply { tryEmit("test-message") }
+        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
+            tryEmit(
+                "test-message"
+            )
+        }
 
         val flow = repository.subscribeToMessages(chatId)
 

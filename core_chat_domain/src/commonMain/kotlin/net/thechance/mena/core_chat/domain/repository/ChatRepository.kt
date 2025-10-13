@@ -18,5 +18,5 @@ interface ChatRepository {
     suspend fun getChatByContactUserId(userId: Uuid): Chat
     suspend fun disconnect()
     suspend fun getLocalMessages(chatId: Uuid): List<Message>
-    suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary>
+    suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary>
 }

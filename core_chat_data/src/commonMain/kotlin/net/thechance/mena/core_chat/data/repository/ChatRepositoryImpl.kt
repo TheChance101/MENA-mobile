@@ -61,13 +61,13 @@ class ChatRepositoryImpl(
         }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
     }
 
-    override suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
+    override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {
         return tryNetworkCall<PagedDataDto<ChatSummaryDto>>(
             bodyType = typeInfo<PagedDataDto<ChatSummaryDto>>()
         ) {
             client.get(CHAT_SUMMARY_ENDPOINT) {
                 parameter(PAGE_NUMBER_PARAMETER, pageNumber)
-                parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
+                parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
         }.toPagedListOfChatSummary()
     }
