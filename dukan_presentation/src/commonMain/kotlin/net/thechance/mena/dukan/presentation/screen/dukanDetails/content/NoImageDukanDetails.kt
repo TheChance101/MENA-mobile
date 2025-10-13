@@ -33,6 +33,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -284,6 +285,7 @@ private fun DukanShelvesChips(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(Theme.spacing._4)
+                .blur(Theme.spacing._8)
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
@@ -619,7 +621,7 @@ val dummyShelves = listOf(
     ShelfUiState(
         id = "3",
         name = "Accessories",
-        products = emptyList()
+        products = dummyProducts
     ),
     ShelfUiState(
         id = "4",

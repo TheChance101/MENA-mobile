@@ -120,7 +120,7 @@ class DukanDetailsViewModel(
                 updateState {
                     copy(
                         shelves = shelves.copy(
-                            items = updatedShelves
+                            items = updatedShelves.filter { it.products.isNotEmpty() }
                         )
                     )
                 }
