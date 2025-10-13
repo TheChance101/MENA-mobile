@@ -26,15 +26,15 @@ val faithDataModule = module {
 
     single<HttpClient>(named("faithHttpClient")) {
         NetworkClient(
-            authorizationService = get(),
-            baseUrl = get(named("baseUrl"))
+            //authorizationService = get(),
+            baseUrl = "https://mena-dev.the-chance.net/"
         ).provideHttpClient()
     }
 
     single<Ktorfit>(named("faithKtorfit")) {
         Ktorfit.Builder()
             .httpClient(get<HttpClient>(named("faithHttpClient")))
-            .baseUrl(get<String>(named("baseUrl")))
+            .baseUrl("https://mena-dev.the-chance.net/")
             .build()
     }
 
