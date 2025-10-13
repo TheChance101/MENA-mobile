@@ -42,7 +42,7 @@
     <string name="add_video_description_subtitle">اكتب وصفًا قصيرًا لتخبر المشاهدين عن محتوى الفيديو الخاص بك.</string>
     <string name="hint">أخبر المشاهدين عن الفيديو الخاص بك...</string>
     <string name="characters"> %1$d / %2$d  حروف</string>
-    <string name="page_number"> %1$d / %2$d </string>
+    <string name="page_number">%1$d/%2$d</string>
     <string name="characters_color_animation_label">حركه لون الحروف</string>
 
     <string name="upload_failed">فشل الرفع</string>

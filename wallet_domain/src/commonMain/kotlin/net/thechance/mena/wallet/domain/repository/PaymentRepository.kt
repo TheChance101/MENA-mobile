@@ -7,4 +7,5 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 interface PaymentRepository {
     suspend fun getPaymentConfirmation(receiverId: Uuid, amount: Double): PaymentConfirmation
+    suspend fun submitTransaction(transactionId: Uuid)
 }

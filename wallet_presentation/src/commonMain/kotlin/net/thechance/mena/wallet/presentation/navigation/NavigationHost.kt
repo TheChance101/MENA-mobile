@@ -8,8 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
+import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreen
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementHistoryScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
@@ -117,8 +119,31 @@ fun NavigationHost(
                 onNavigateBackClicked = navController::popBackStack,
                 receiverId = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().id,
                 amount = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().amount,
-                navigateToPaymentResultScreen = { receiverId, amount ->
-
+                navigateToPaymentResultScreen = { receiverName, amount ->
+                    PaymentResultScreenRoute(
+                        transactionId = "",
+                        submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS.name,
+                        amount = amount,
+                        receiverName = receiverName
+                    )
+                }
+            )
+        }
+        composable<PaymentResultScreenRoute> { backStackEntry ->
+            PaymentResultScreen(
+                transactionId = backStackEntry.toRoute<PaymentResultScreenRoute>().transactionId,
+                submitTransactionResultStatus = backStackEntry.toRoute<PaymentResultScreenRoute>().submitTransactionResultStatus,
+                receiverName = backStackEntry.toRoute<PaymentResultScreenRoute>().receiverName,
+                amount = backStackEntry.toRoute<PaymentResultScreenRoute>().amount,
+                onNavigateBackClicked = { navController.popBackStack() },
+                onNavigateToTransactionDetailsClicked = { receiverId ->
+                    TransactionDetailsScreenRoute(receiverId)
+                },
+                onCancelClicked = {
+                    navController.popBackStack(
+                        ConfirmPaymentScreenRoute,
+                        inclusive = true
+                    )
                 }
             )
         }
