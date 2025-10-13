@@ -56,8 +56,6 @@ fun BestNearestDukanSection(
                     modifier = modifier
                 )
             }
-
-            MainScreenUiState.BestNearestDukanStatus.EMPTY -> {}
         }
     }
 }

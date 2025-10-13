@@ -68,16 +68,14 @@ fun MainScreen(
                 //ToDO: navigate to dukan screen by category
             }
 
-            is MainEffect.NavigateSelectedEditorPickDukan -> DukanRoute.DukanDetails(effect.dukanId)
-
-            is MainEffect.NavigateSelectedNearsetDukan -> DukanRoute.DukanDetails(effect.dukanId)
+            is MainEffect.NavigateSelectedDukan -> DukanRoute.DukanDetails(effect.dukanId)
         }
     }
 
     MainContent(
         listener = viewModel,
         state = state.value,
-        editorPickDukaPager = viewModel.editorPickDukanPager,
+        editorPickDukanPager = viewModel.editorPickDukanPager,
         bestNearestDukanPager = viewModel.bestNearestDukanPager
     )
 }
@@ -86,7 +84,7 @@ fun MainScreen(
 private fun MainContent(
     listener: MainInteractionListener,
     state: MainScreenUiState,
-    editorPickDukaPager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>,
+    editorPickDukanPager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>,
     bestNearestDukanPager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>
 ) {
     Scaffold(
@@ -150,7 +148,7 @@ private fun MainContent(
             EditorPickDukanItemsSection(
                 state = state,
                 onDukanClick = listener::onEditorPickDukanClick,
-                pager = editorPickDukaPager,
+                pager = editorPickDukanPager,
             )
         }
     }
@@ -173,7 +171,7 @@ private fun MainScreenPreview() {
                     bestNearestDukans = PagingData(items = fakeBestNearestDuknas()),
                     editorPickDukans = PagingData(items = fakeDukans())
                 ),
-                editorPickDukaPager = Pager(
+                editorPickDukanPager = Pager(
                     config = PagingConfig(),
                     pagingSourceFactory = { EditorPickDukanItemsListPagingSource }
                 ),

@@ -204,19 +204,19 @@ class MainViewModelTest {
             mainViewModel.onNearestDukanClick(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
-            val expectedEffect = MainEffect.NavigateSelectedNearsetDukan(dukanId)
+            val expectedEffect = MainEffect.NavigateSelectedDukan(dukanId)
             assertEquals(expectedEffect, actualEffect)
         }
 
     @Test
-    fun `onEditorPickDukanClick should emit NavigateSelectedEditorPickDukan effect with correct dukanId`() =
+    fun `onEditorPickDukanClick should emit NavigateSelectedDukan effect with correct dukanId`() =
         runTest {
             val dukanId = "1"
 
             mainViewModel.onEditorPickDukanClick(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
-            val expectedEffect = MainEffect.NavigateSelectedEditorPickDukan(dukanId)
+            val expectedEffect = MainEffect.NavigateSelectedDukan(dukanId)
             assertEquals(expectedEffect, actualEffect)
         }
 
@@ -241,4 +241,5 @@ class MainViewModelTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
 }

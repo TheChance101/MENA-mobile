@@ -37,7 +37,6 @@ data class MainScreenUiState(
     enum class BestNearestDukanStatus {
         LOADING,
         LOADED,
-        EMPTY
     }
 
     enum class EditorPickDukanStatus {

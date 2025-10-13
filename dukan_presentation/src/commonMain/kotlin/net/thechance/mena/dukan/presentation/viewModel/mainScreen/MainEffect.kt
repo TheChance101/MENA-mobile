@@ -11,7 +11,6 @@ sealed class MainEffect {
     data class NavigateToDukansScreenByCategory(val categoryId: String, val categoryName: String) :
         MainEffect()
 
-    data class NavigateSelectedNearsetDukan(val dukanId: String) : MainEffect()
+    data class NavigateSelectedDukan(val dukanId: String) : MainEffect()
 
-    data class NavigateSelectedEditorPickDukan(val dukanId: String) : MainEffect()
 }

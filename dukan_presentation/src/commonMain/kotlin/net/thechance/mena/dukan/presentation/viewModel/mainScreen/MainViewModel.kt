@@ -35,7 +35,7 @@ class MainViewModel(
             block = { editorPickDukanPager.flow },
             onCollect = ::onLoadedEditorPicksDukan
         )
-        viewModelScope.launch {
+        viewModelScope.launch(context = Dispatchers.IO) {
             editorPickDukanPager.load()
         }
     }
@@ -86,7 +86,6 @@ class MainViewModel(
     private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
         val loadedBestNearestDukans = when {
             dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.BestNearestDukanStatus.LOADING
-            dukans.items.isEmpty() -> MainScreenUiState.BestNearestDukanStatus.EMPTY
             else -> MainScreenUiState.BestNearestDukanStatus.LOADED
         }
         updateState {
@@ -178,11 +177,11 @@ class MainViewModel(
     }
 
     override fun onNearestDukanClick(dukanId: String) {
-        emitEffect(MainEffect.NavigateSelectedNearsetDukan(dukanId))
+        emitEffect(MainEffect.NavigateSelectedDukan(dukanId))
     }
 
     override fun onEditorPickDukanClick(dukanId: String) {
-        emitEffect(MainEffect.NavigateSelectedEditorPickDukan(dukanId))
+        emitEffect(MainEffect.NavigateSelectedDukan(dukanId))
     }
 
     val bestNearestDukanPager = createPagingSource(
