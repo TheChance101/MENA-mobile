@@ -29,7 +29,6 @@ import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_gallery
 import mena.core_chat_presentation.generated.resources.photo
 import net.thechance.mena.core_chat.presentation.screen.chat.AttachmentsInteractionListener
-import net.thechance.mena.core_chat.presentation.utils.camera.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -96,15 +95,6 @@ private fun AttachmentBottomSheetContent(
         }
     )
 
-    val cameraManager = rememberCameraManager(
-        onResult = { sharedImage ->
-            sharedImage?.toByteArray()?.let { byteArray ->
-                attachmentsInteractionListener.onSendImageClicked(listOf(byteArray))
-                attachmentsInteractionListener.onCameraClicked()
-            }
-        }
-    )
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -119,7 +109,8 @@ private fun AttachmentBottomSheetContent(
         AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_camera,
             titleRes = Res.string.camera,
-            onClick = { cameraManager.launch() }
+            onClick = { attachmentsInteractionListener.onCameraClicked()
+            }
         )
     }
 }
@@ -139,6 +130,7 @@ private fun PreviewAddPhotoBottomSheet() {
                     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
                     override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
+                    override fun onCameraResultHandled() {}
                     override fun onCloseAttachmentClicked() {}
                 }
             )
