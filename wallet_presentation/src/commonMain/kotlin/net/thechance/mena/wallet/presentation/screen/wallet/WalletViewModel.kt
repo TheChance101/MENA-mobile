@@ -116,13 +116,13 @@ class WalletViewModel(
         tryToExecute(
             callee = {
                 transactionRepository.addPendingTransaction(
-                    pendingTransactionType = PendingTransactionType.P2P,
+                    pendingTransactionType = PendingTransactionType.ONLINE_PURCHASE,
                     receiverId = receiverId,
                     amount = amount
                 )
             },
             onSuccess = { transactionId ->
-                sendEffect(WalletEffect.NavigateToPaymentScreen(amount, transactionId))
+                sendEffect(WalletEffect.NavigateToConfirmPaymentScreen(amount, transactionId))
             },
             onError = {},
             dispatcher = ioDispatcher
