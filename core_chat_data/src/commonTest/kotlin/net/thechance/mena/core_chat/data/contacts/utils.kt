@@ -32,6 +32,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -148,6 +149,7 @@ fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
     messageDao: MessageDao,
+    imageDownloader: ImageDownloader,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
@@ -162,6 +164,7 @@ fun createChatRepository(
         webSocketManager = webSocketManager,
         messageDao = messageDao,
         json = jsonSerialization,
+        imageDownloader = imageDownloader
     )
 }
 

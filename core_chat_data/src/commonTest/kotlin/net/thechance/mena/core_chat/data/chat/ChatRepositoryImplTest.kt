@@ -31,8 +31,10 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
@@ -49,10 +51,9 @@ class ChatRepositoryImplTest {
     private lateinit var repository: ChatRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
     private lateinit var messageDao: MessageDao
+    private lateinit var imageDownloader: ImageDownloader
     private val authRepository = mock<AuthenticationRepository>()
 
-    private val chatId = Uuid.random()
-    private val userId = Uuid.random()
 
     @BeforeTest
     fun setUp() {
@@ -60,11 +61,13 @@ class ChatRepositoryImplTest {
         httpClient = createHttpClient()
         webSocketManager = mock<WebSocketManager>()
         messageDao = mock<MessageDao>()
+        imageDownloader = mock<ImageDownloader>()
 
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
         )
     }
 
@@ -76,7 +79,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
         )
 
         val result = repository.loadMessages(chatId)
@@ -105,7 +109,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
         )
 
         assertFailsWith<NotFoundException> {
@@ -120,7 +125,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
         )
 
         val result = repository.getChatByContactUserId(userId)
@@ -136,7 +142,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
         )
 
         assertFailsWith<NotFoundException> {
@@ -277,4 +284,30 @@ class ChatRepositoryImplTest {
 
         assertThat(flow).isNotNull()
     }
+
+    @Test
+    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() = runTest {
+        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
+
+        repository.downloadImage(IMAGE_URL)
+
+        verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
+    }
+
+    @Test
+    fun `downloadImage should throw OperationFailedException when downloadImage return false`() = runTest {
+        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
+
+        assertFailsWith<OperationFailedException> {
+            repository.downloadImage(IMAGE_URL)
+        }
+    }
+
+    private companion object {
+        private val chatId = Uuid.random()
+        private val userId = Uuid.random()
+
+       const val IMAGE_URL = "http://test.com/image.jpg"
+    }
+
 }
