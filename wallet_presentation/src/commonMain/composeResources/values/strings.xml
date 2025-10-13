@@ -84,7 +84,7 @@
     <string name="all_transactions">All Transactions</string>
     <string name="export_transactions">Export Transactions</string>
     <string name="downloading_started">Downloading Started...</string>
-    <string name="download_success">Your transactions have been saved successfully.</string>
+    <string name="download_success">Your transactions have been saved to %1$s</string>
     <string name="download_complete">Download complete</string>
     <string name="download_failed">Download failed</string>
     <string name="something_went_wrong">Something went wrong. Please try again.</string>

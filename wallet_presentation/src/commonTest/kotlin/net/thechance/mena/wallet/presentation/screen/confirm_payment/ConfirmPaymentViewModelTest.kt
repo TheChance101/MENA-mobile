@@ -88,6 +88,7 @@ class ConfirmPaymentViewModelTest {
             }
         }
 
+
     @Test
     fun `ConfirmPaymentViewModel should update payment ui state when user repository returns value`() =
         runTest {
@@ -175,6 +176,31 @@ class ConfirmPaymentViewModelTest {
             assertEquals(ConfirmPaymentEffect.NavigateBack, awaitItem())
         }
     }
+
+    @Test
+    fun `onPayButtonClicked should set isPayBtnLoading to true`() = runTest {
+        everySuspend {
+            paymentRepository.getPaymentConfirmation(
+                any(),
+                any()
+            )
+        } returns paymentConfirmation1
+
+        val viewModel = ConfirmPaymentViewModel(
+            args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
+            paymentRepository = paymentRepository,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.state.test {
+            skipItems(3)
+            viewModel.onPayButtonClicked()
+            val loadingState = awaitItem()
+            assertTrue(loadingState.isPayBtnLoading)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 
     @Test
     fun `onRefresh should set state with loading when initially called`() = runTest {

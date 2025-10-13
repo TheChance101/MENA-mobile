@@ -27,16 +27,13 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.component.Basma
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.UnifiedChunkText
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun SurahScreen(
-    surahId: Int,
-    surahName: String,
-    viewModel: SurahViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
+    viewModel: SurahViewModel = koinViewModel()
 ) {
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
@@ -45,6 +42,14 @@ fun SurahScreen(
         when (effect) {
             is SurahScreenEffect.NavigateBack -> navController.navigateUp()
             is SurahScreenEffect.ShareAyah -> {}
+            is SurahScreenEffect.NavigateToSearchScreen -> {
+                navController.navigate(
+                    Route.SearchRoute(
+                        effect.surahId,
+                        effect.surahName
+                    )
+                )
+            }
         }
     }
 
@@ -66,7 +71,8 @@ private fun Content(
         topBar = {
             SurahAppBar(
                 surahName = state.surahName,
-                onBackClick = listener::onBackClick
+                onBackClick = listener::onBackClick,
+                onSearchClick = listener::onSearchClick
             )
         },
         snakeBar = {
@@ -85,9 +91,8 @@ private fun Content(
         ) {
             AyatOfSurah(
                 listener = listener,
-                state = state,
-
-                )
+                state = state
+            )
 
             AnimatedAyahActionButtons(
                 state = state,

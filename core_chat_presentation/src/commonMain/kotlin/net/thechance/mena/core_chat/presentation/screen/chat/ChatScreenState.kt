@@ -3,6 +3,7 @@
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
@@ -16,9 +17,11 @@ data class ChatScreenState(
     val chatRequesterId: Uuid? = null,
     val inputMessage: String = "",
     val chatListItems: List<ChatListItem> = emptyList(),
-
+    val selectedMessage: MessageUiState? = null,
+    val isImagePagerVisible: Boolean = false,
+    val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
-
+    val isAttachmentsOverlayVisible: Boolean = false,
     val failedMessageToReSend: MessageUiState? = null
 )
 
@@ -38,9 +41,3 @@ data class MessageUiState(
     val isVisibleMessageInfo: Boolean = false,
     val content: MessageContent
 )
-
-sealed class MessageContent{
-    data class Text(val text: String): MessageContent()
-    data class ImageUrl(val imageUrls: List<String>): MessageContent()
-    data class ImageByteArray(val images: List<ByteArray>): MessageContent()
-}

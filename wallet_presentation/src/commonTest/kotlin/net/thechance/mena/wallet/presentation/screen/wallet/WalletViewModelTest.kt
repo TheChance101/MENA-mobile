@@ -19,8 +19,9 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -31,6 +32,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class WalletViewModelTest {
+    private val stringProvider = FakeStringProvider()
     private val balanceRepository = mock<BalanceRepository>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
@@ -47,7 +49,7 @@ class WalletViewModelTest {
 
     @Test
     fun `getBalance should set balance with loading when initially called`() = runTest {
-        val viewModel = WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
+        val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
 
         viewModel.state.test {
             skipItems(1)
@@ -64,7 +66,7 @@ class WalletViewModelTest {
         val expectedBalance = 250.0
         everySuspend { balanceRepository.getBalance() } returns expectedBalance
 
-        val viewModel = WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
+        val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -78,7 +80,7 @@ class WalletViewModelTest {
         val expectedException = RuntimeException("test error")
         everySuspend { balanceRepository.getBalance() } throws expectedException
 
-        val viewModel = WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
+        val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
 
         viewModel.state.test {
             skipItems(2)
@@ -95,17 +97,13 @@ class WalletViewModelTest {
         val expectedException = RuntimeException("test error")
         everySuspend { balanceRepository.getBalance() } throws expectedException
 
-        val viewModel = WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
+        val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
 
         viewModel.state.test {
             skipItems(3)
 
             val snackBarState = awaitItem()
-            assertSnackBarState(
-                isVisible = true,
-                isSuccess = false,
-                snackBarState = snackBarState.snackBar
-            )
+            assertSnackBarState(isVisible = true, isSuccess = false, snackBarState = snackBarState.snackBar)
 
             cancelAndIgnoreRemainingEvents()
         }
@@ -113,7 +111,7 @@ class WalletViewModelTest {
 
     @Test
     fun `should send navigate back effect when onBackClicked is called`() = runTest {
-        val viewModel = WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
+        val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
         viewModel.onBackClicked()
 
         viewModel.uiEffect.test {
@@ -123,21 +121,19 @@ class WalletViewModelTest {
     }
 
     @Test
-    fun `should send NavigateToTransactionHistory effect when onNavigateToTransactionHistoryClicked is called`() =
-        runTest {
-            val viewModel =
-                WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
-            viewModel.onTransactionHistoryClicked()
+    fun `should send NavigateToTransactionHistory effect when onNavigateToTransactionHistoryClicked is called`() = runTest {
+        val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
+        viewModel.onTransactionHistoryClicked()
 
-            viewModel.uiEffect.test {
-                val effect = awaitItem()
-                assertTrue(effect is WalletEffect.NavigateToTransactionHistory)
-            }
+        viewModel.uiEffect.test {
+            val effect = awaitItem()
+            assertTrue(effect is WalletEffect.NavigateToTransactionHistory)
         }
+    }
 
     @Test
     fun `should call getBalance when onRetryLoadBalanceClicked is called`() = runTest {
-        val viewModel = WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
+        val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
         viewModel.onRetryLoadBalanceClicked()
         advanceUntilIdle()
 
@@ -147,8 +143,8 @@ class WalletViewModelTest {
     @Test
     fun `onPaymentClicked should navigate to confirm payment screen when repository return pending transaction id`() =
         runTest {
-            val viewModel =
-                WalletViewModel(balanceRepository, transactionRepository, testDispatcher)
+            val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
+
             val transactionId1 = Uuid.random()
             val amount1 = 200.0
             val receiverId = Uuid.random()

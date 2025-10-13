@@ -16,7 +16,7 @@ import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import org.jetbrains.compose.resources.StringResource
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -25,6 +25,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class WalletViewModel(
+    private val stringProvider: StringProvider,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -59,15 +60,15 @@ class WalletViewModel(
             else -> Res.string.balance_fetch_error_description
         }
         showSnackBar(
-            titleRes = Res.string.error,
-            messageRes = errorMessage,
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(errorMessage),
             isSuccess = false
         )
     }
 
     private suspend fun showSnackBar(
-        titleRes: StringResource,
-        messageRes: StringResource,
+        title: String,
+        message: String,
         isSuccess: Boolean,
         durationMillis: Long = 3000L
     ) {
@@ -75,8 +76,8 @@ class WalletViewModel(
             oldState.copy(
                 snackBar = SnackBarState(
                     isVisible = true,
-                    titleRes = titleRes,
-                    messageRes = messageRes,
+                    title = title,
+                    message = message,
                     isSuccess = isSuccess
                 )
             )
@@ -131,8 +132,8 @@ class WalletViewModel(
                     else -> Res.string.payment_failed_description
                 }
                 showSnackBar(
-                    titleRes = Res.string.error,
-                    messageRes = errorMessage,
+                    title = stringProvider.getString(Res.string.error),
+                    message = stringProvider.getString(errorMessage),
                     isSuccess = false
                 )
             },

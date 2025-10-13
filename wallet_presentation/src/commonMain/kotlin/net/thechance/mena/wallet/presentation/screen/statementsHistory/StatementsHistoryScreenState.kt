@@ -16,7 +16,7 @@ data class StatementsHistoryScreenState(
     val snackBar: SnackBarState = SnackBarState(),
 ) {
     data class StatementItem(
-        val id: Uuid,
+        val id: Long,
         val startDate: String,
         val endDate: String,
         val totalInflow: Double,
