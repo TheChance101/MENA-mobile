@@ -188,6 +188,25 @@ class PdfHandlerImpl : PdfHandler {
         }
     }
 
+    override suspend fun saveToCache(
+        pdfData: ByteArray,
+        fileName: String
+    ): String {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteStatement(location: StorageLocation) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getPdfBytes(location: StorageLocation): ByteArray {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun checkIfStatementExists(location: StorageLocation): Boolean {
+        TODO("Not yet implemented")
+    }
+
     private fun generateSpecialFileName(baseName: String): String {
         val timestamp = NSDate().timeIntervalSince1970.toLong() * 1000
         return "${baseName}_$timestamp"
