@@ -35,9 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -254,34 +253,47 @@ private fun DukanShelvesChips(
     if (alpha == 0f) {
         return
     }
-    LazyRow(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .alpha(alpha)
-            .shadow(
-                elevation = Theme.spacing._4,
-                shape = RectangleShape,
-                spotColor = Color(0x14000000)
-            )
-            .background(Theme.colorScheme.background.surface)
-            .padding(vertical = Theme.spacing._8),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        state = lazyRowState
     ) {
-        items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) {
-            val shelf = state.shelves.items[it]
-            Chip(
-                text = shelf.name,
-                isSelected = (shelf.id == state.shelfIdSelected),
-                onClick = {
-                    listener.onShelfClicked(shelf.id)
-                    coroutineScope.launch {
-                        lazyColumnState.animateScrollToItem(it + 2)
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Theme.colorScheme.background.surface)
+                .padding(vertical = Theme.spacing._8),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+            contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+            state = lazyRowState
+        ) {
+            items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) {
+                val shelf = state.shelves.items[it]
+                Chip(
+                    text = shelf.name,
+                    isSelected = (shelf.id == state.shelfIdSelected),
+                    onClick = {
+                        listener.onShelfClicked(shelf.id)
+                        coroutineScope.launch {
+                            lazyColumnState.animateScrollToItem(it + 2)
+                        }
                     }
-                }
-            )
+                )
+            }
         }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(Theme.spacing._4)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0x14000000),
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
     }
 }
 
