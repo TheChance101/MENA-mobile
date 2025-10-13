@@ -12,6 +12,7 @@ import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.UserRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 import net.thechance.mena.wallet.presentation.utils.formatAmount
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -28,7 +29,7 @@ class ConfirmPaymentViewModel(
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
-    private val transactionId = args.transactionId
+    private val transactionId = Uuid.parse(args.transactionId)
     private val amount = args.amount
 
     init {
@@ -41,7 +42,14 @@ class ConfirmPaymentViewModel(
 
     override fun onPayButtonClicked() {
         updateState { it.copy(isPayBtnLoading = true) }
-        sendEffect(ConfirmPaymentEffect.NavigateToPaymentResultScreen(transactionId, amount))
+        sendEffect(
+            ConfirmPaymentEffect.NavigateToPaymentResultScreen(
+                receiverName = state.value.receiverUiState.name,
+                amount = amount,
+                transactionId = transactionId,
+                submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS
+            )
+        )
     }
 
     override fun onRefresh() {
@@ -49,7 +57,7 @@ class ConfirmPaymentViewModel(
         loadData()
     }
 
-    private fun loadData(){
+    private fun loadData() {
         viewModelScope.launch {
             onStart()
             listOf(
@@ -71,7 +79,7 @@ class ConfirmPaymentViewModel(
 
     private fun getReceiverInfo() {
         tryToExecute(
-            callee = { userRepository.getReceiverByTransactionId(Uuid.parse(transactionId)) },
+            callee = { userRepository.getReceiverByTransactionId(transactionId) },
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onError,
             dispatcher = ioDispatcher
@@ -97,6 +105,7 @@ class ConfirmPaymentViewModel(
     private fun onStart() {
         updateState { it.copy(isLoading = true) }
     }
+
     private fun onEnd() {
         updateState { it.copy(isLoading = true) }
     }
