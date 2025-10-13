@@ -1,5 +1,8 @@
 package net.thechance.mena.faith.presentation.feature.quran.search
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.quran
@@ -10,11 +13,13 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
 import net.thechance.mena.faith.presentation.util.toSearchResult
-import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.StringResource
 
 class SearchViewModel(
     searchArgs: ISearchArgs,
-    private val repository: QuranRepository
+    private val repository: QuranRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val resourceProvider: ResourceProvider
 ) : BaseViewModel<SearchScreenState, SearchEffect>(
     SearchScreenState(
         searchArgs.surahId,
@@ -67,11 +72,17 @@ class SearchViewModel(
     }
 
     private fun handleHint() {
-        tryToExecute({
-            val hintPostfix = uiState.value.surahName ?: getString(Res.string.quran)
-            val hint = getString(Res.string.search_in_surah_hint, hintPostfix)
-            updateState { it.copy(hint = hint) }
-        })
+        tryToExecute(
+            execute = {
+                val hintPostfix =
+                    uiState.value.surahName ?: resourceProvider.getString(Res.string.quran)
+                resourceProvider.getString(Res.string.search_in_surah_hint, hintPostfix)
+            },
+            onSuccess = { hint ->
+                updateState { it.copy(hint = hint) }
+            },
+            dispatcher = dispatcher
+        )
     }
 
     private fun onGetSearchResultSuccess(ayat: List<Ayah>) {
@@ -85,4 +96,13 @@ class SearchViewModel(
     private companion object {
         const val LENGTH_OF_SHORTEST_WORD_IN_QURAN = 2
     }
+}
+
+interface ResourceProvider {
+    suspend fun getString(resource: StringResource, vararg args: Any): String
+}
+
+class DefaultResourceProvider : ResourceProvider {
+    override suspend fun getString(resource: StringResource, vararg args: Any): String =
+        org.jetbrains.compose.resources.getString(resource, *args)
 }

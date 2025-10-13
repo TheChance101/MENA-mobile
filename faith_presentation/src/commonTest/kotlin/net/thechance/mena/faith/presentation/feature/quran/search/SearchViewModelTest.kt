@@ -1,0 +1,216 @@
+package net.thechance.mena.faith.presentation.feature.quran.search
+
+import app.cash.turbine.test
+import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.quran
+import mena.faith_presentation.generated.resources.search_in_surah_hint
+import net.thechance.mena.faith.domain.entity.Ayah
+import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class SearchViewModelTest {
+
+    private lateinit var testDispatcher: TestDispatcher
+    private lateinit var testViewModel: SearchViewModel
+    private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
+    private val searchArgs: ISearchArgs = mock(mode = MockMode.autofill)
+    private lateinit var resourceProvider: ResourceProvider
+
+    @BeforeTest
+    fun setup() {
+        testDispatcher = StandardTestDispatcher()
+        resourceProvider = mock(mode = MockMode.autofill)
+
+        everySuspend { resourceProvider.getString(Res.string.quran) } returns QURAN_TEXT
+        everySuspend {
+            resourceProvider.getString(
+                Res.string.search_in_surah_hint,
+                any()
+            )
+        } returns SEARCH_HINT
+
+        testViewModel = SearchViewModel(
+            searchArgs = searchArgs,
+            repository = quranRepository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
+        )
+    }
+
+    @Test
+    fun `onQueryChange should update query in state when called`() = runTest {
+        // Given & When
+        testViewModel.onQueryChange(TEST_QUERY)
+
+        // Then
+        assertEquals(TEST_QUERY, testViewModel.uiState.value.query)
+    }
+
+    @Test
+    fun `onQueryChange should clear search results when query length is less than 2`() = runTest {
+        // Given
+        everySuspend { quranRepository.searchForAyahInQuran(any()) } returns dummyAyat
+        testViewModel.onQueryChange(VALID_QUERY)
+        advanceTimeBy(SEARCH_DELAY)
+        advanceUntilIdle()
+
+        // When
+        testViewModel.onQueryChange(SHORT_QUERY)
+
+        // Then
+        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
+    }
+
+    @Test
+    fun `onQueryChange should cancel previous search when called multiple times`() = runTest {
+        // Given
+        everySuspend { quranRepository.searchForAyahInQuran(FIRST_QUERY) } returns dummyAyat
+        everySuspend { quranRepository.searchForAyahInQuran(SECOND_QUERY) } returns emptyList()
+
+        // When
+        testViewModel.onQueryChange(FIRST_QUERY)
+        advanceTimeBy(HALF_SEARCH_DELAY)
+        testViewModel.onQueryChange(SECOND_QUERY)
+        advanceTimeBy(SEARCH_DELAY)
+        advanceUntilIdle()
+
+        // Then
+        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
+    }
+
+    @Test
+    fun `onQueryChange should return empty results when repository returns empty list`() = runTest {
+        // Given
+        everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns emptyList()
+
+        // When
+        testViewModel.onQueryChange(VALID_QUERY)
+        advanceTimeBy(SEARCH_DELAY)
+        advanceUntilIdle()
+
+        // Then
+        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
+    }
+
+    @Test
+    fun `onClearQueryClick should clear query in state when called`() = runTest {
+        // Given
+        testViewModel.onQueryChange(TEST_QUERY)
+
+        // When
+        testViewModel.onClearQueryClick()
+
+        // Then
+        assertEquals(EMPTY_STRING, testViewModel.uiState.value.query)
+    }
+
+    @Test
+    fun `onBackClick should navigate back when called`() = runTest {
+        // Given & When & Then
+        testViewModel.uiEffect.test {
+            testViewModel.onBackClick()
+            val effect = awaitItem()
+            assertTrue(effect is SearchEffect.NavigateBack)
+            assertEquals(null, effect.ayahNumber)
+        }
+    }
+
+    @Test
+    fun `state should initialize with correct surahId and surahName from args`() = runTest {
+        // Given
+        everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
+        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
+
+        // When
+        testViewModel = SearchViewModel(
+            searchArgs = searchArgs,
+            repository = quranRepository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
+        )
+
+        // Then
+        assertEquals(TEST_SURAH_ID, testViewModel.uiState.value.surahId)
+        assertEquals(TEST_SURAH_NAME, testViewModel.uiState.value.surahName)
+    }
+
+    @Test
+    fun `onQueryChange with single character should not trigger search`() = runTest {
+        // Given
+        everySuspend { quranRepository.searchForAyahInQuran(SINGLE_CHAR_QUERY) } returns dummyAyat
+
+        // When
+        testViewModel.onQueryChange(SINGLE_CHAR_QUERY)
+        advanceTimeBy(SEARCH_DELAY)
+        advanceUntilIdle()
+
+        // Then
+        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
+    }
+
+    @Test
+    fun `onQueryChange with empty string should clear results`() = runTest {
+        // Given
+        testViewModel.onQueryChange(VALID_QUERY)
+        advanceTimeBy(SEARCH_DELAY)
+        advanceUntilIdle()
+
+        // When
+        testViewModel.onQueryChange(EMPTY_STRING)
+
+        // Then
+        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
+    }
+
+    private companion object {
+        const val TEST_QUERY = "test query"
+        const val VALID_QUERY = "الله"
+        const val SHORT_QUERY = "ا"
+        const val FIRST_QUERY = "first"
+        const val SECOND_QUERY = "second"
+        const val TEST_SURAH_ID = 1
+        const val TEST_SURAH_NAME = "Al-Fatiha"
+        const val EMPTY_STRING = ""
+        const val QURAN_TEXT = "Quran"
+        const val SEARCH_HINT = "Search in..."
+        const val SINGLE_CHAR_QUERY = "ا"
+        const val SEARCH_DELAY = 1000L
+        const val HALF_SEARCH_DELAY = 500L
+        private val dummyAyat = listOf(
+            Ayah(
+                number = 1,
+                surahId = 1,
+                content = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                plainContent = "بسم الله الرحمن الرحيم"
+            ),
+            Ayah(
+                number = 2,
+                surahId = 1,
+                content = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+                plainContent = "الحمد لله العالمين"
+            ),
+            Ayah(
+                number = 3,
+                surahId = 1,
+                content = "الرَّحْمَٰنِ الرَّحِيمِ",
+                plainContent = "الرحمن الرحيم"
+            )
+        )
+    }
+}
