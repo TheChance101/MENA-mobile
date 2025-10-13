@@ -58,11 +58,11 @@ fun NavigationHost(
                 navigateToStatementsHistory = {
                     navController.navigate(StatementsHistoryScreenRoute)
                 },
-                navigateToPaymentScreen = { amount, receiverId ->
+                navigateToPaymentScreen = { amount, transactionId ->
                     navController.navigate(
                         ConfirmPaymentScreenRoute(
                             amount = amount,
-                            transactionId = receiverId.toString()
+                            transactionId = transactionId.toString()
                         )
                     )
                 }
