@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiColor
 
 fun Dukan.toUiState() = DukanDetailsUiState.DukanInfo(
     name = name,
@@ -11,7 +12,7 @@ fun Dukan.toUiState() = DukanDetailsUiState.DukanInfo(
         latitude = coordinates.latitude,
         longitude = coordinates.longitude
     ),
-    color = color.hexCode.toLong(),
+    color = color.toUiColor().color,
     style = DukanDetailsUiState.Style.valueOf(style.name)
 )
 
