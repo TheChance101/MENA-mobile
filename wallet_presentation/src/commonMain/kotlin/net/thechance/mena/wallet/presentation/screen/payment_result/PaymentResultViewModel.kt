@@ -50,13 +50,13 @@ class PaymentResultViewModel(
             callee = {
                 paymentRepository.submitTransaction(transactionId)
             },
-            onSuccess = ::onSubmitTransactionSuccess,
+            onSuccess = { onSubmitTransactionSuccess()},
             onError = ::onSubmitTransactionFailed,
             dispatcher = ioDispatcher
         )
     }
 
-    private fun onSubmitTransactionSuccess(unit: Unit) {
+    private fun onSubmitTransactionSuccess() {
         updateState {
             it.copy(
                 isLoading = false,
