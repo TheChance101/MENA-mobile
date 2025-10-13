@@ -9,11 +9,15 @@ import net.thechance.mena.identity.domain.repository.LocationRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.maplibre.compose.camera.CameraPosition
 
 class PickLocationScreenViewModel(
     private val locationRepository: LocationRepository,
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val locationForegroundHandler: PermissionHandler,
+    private val locationServiceHandler: PermissionHandler
 ) : BaseScreenModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(PickLocationScreenUIState()),
     PickLocationScreenInteractionListener {
     override fun onClickMap(
@@ -67,12 +71,55 @@ class PickLocationScreenViewModel(
     }
 
     override fun onClickGps() {
+        checkLocationPermission()
+    }
+
+    fun checkLocationPermission() {
         tryToExecute(
-            function = ::onGpsFetch,
-            onSuccess = ::onGpsClickSuccess,
-            onError = ::onError,
-            dispatcher = dispatcher
+            function = { locationForegroundHandler.checkPermission() },
+            onSuccess = ::onCheckForegroundPermissionsSuccess,
+            onError = {}
         )
+    }
+    private fun onCheckForegroundPermissionsSuccess(permissionState: PermissionState) {
+        when (permissionState) {
+            PermissionState.NOT_DETERMINED -> {
+
+            }
+            PermissionState.GRANTED -> {
+                checkLocationServicePermission()
+            }
+
+            PermissionState.DENIED -> {
+                navigateToEnableLocation()
+            }
+        }
+    }
+
+    private fun checkLocationServicePermission() {
+        tryToExecute(
+            function = { locationServiceHandler.checkPermission() },
+            onSuccess = ::onCheckPermissionsSuccess ,
+            onError = {}
+        )
+    }
+
+    private fun onCheckPermissionsSuccess(permissionState: PermissionState) {
+        when (permissionState) {
+            PermissionState.NOT_DETERMINED -> {
+            }
+            PermissionState.GRANTED -> {
+                tryToExecute(
+                    function = ::onGpsFetch,
+                    onSuccess = ::onGpsClickSuccess,
+                    onError = ::onError,
+                    dispatcher = dispatcher
+                )
+            }
+            PermissionState.DENIED -> {
+                updateState { copy(errorMessage = "GPS is off") }
+            }
+        }
     }
 
     private suspend fun onGpsFetch(): Coordinates? {

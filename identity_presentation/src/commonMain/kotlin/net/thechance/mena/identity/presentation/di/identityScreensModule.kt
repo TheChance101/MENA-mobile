@@ -8,25 +8,44 @@ import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocation
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreenModel
 import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
-import net.thechance.mena.identity.presentation.util.settingsOpener.SettingsOpener
-import net.thechance.mena.identity.presentation.util.settingsOpener.SettingsOpenerImpl
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 const val APP_VERSION = "appVersion"
 
 val identityScreensModule = module {
 
+    includes(platformModule())
     single { get<String>(named(APP_VERSION)) }
-    factoryOf(::SettingsOpenerImpl) bind SettingsOpener::class
+
+    factory(named("LOCATION_SERVICE_HANDLER")) {
+        PermissionHandler(get(named("LOCATION_SERVICE_ON")))
+    }
+
+    factory(named("LOCATION_FOREGROUND_HANDLER")) {
+        PermissionHandler(get(named("LOCATION_FOREGROUND")))
+    }
+
     factoryOf(::LoginScreenViewModel)
     factoryOf(::RegisterScreenModel)
     factoryOf(::ForgetPasswordScreenViewModel)
     factoryOf(::OtpScreenViewModel)
     factoryOf(::ProfileScreenViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
-    factoryOf(::PickLocationScreenViewModel)
-    factoryOf(::EnableLocationScreenViewModel)
+    factory {
+        PickLocationScreenViewModel(
+            locationRepository = get(),
+            dispatcher = get(),
+            locationForegroundHandler = get(named("LOCATION_FOREGROUND_HANDLER")),
+            locationServiceHandler = get(named("LOCATION_SERVICE_HANDLER"))
+        )
+    }
+    factory {
+        EnableLocationScreenViewModel(
+            locationForegroundHandler = get(named("LOCATION_FOREGROUND_HANDLER")),
+            dispatcher = get()
+        )
+    }
 }
