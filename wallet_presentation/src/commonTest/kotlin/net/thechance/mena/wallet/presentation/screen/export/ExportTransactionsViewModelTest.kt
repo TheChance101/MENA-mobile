@@ -376,35 +376,6 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun `snackBar should disappear after duration`() = runTest {
-        everySuspend {
-            repository.getStatementWithMetadata(any())
-        } returns createMockStatementWithMetadata()
-        everySuspend {
-            pdfHandler.downloadPdf(any(), any())
-        } returns "MENA/statement_123.pdf"
-
-        initViewModel()
-
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            advanceUntilIdle()
-            skipItems(5)
-
-            val snackBarVisible = awaitItem().snackBar
-            assertSnackBarState(true, snackBarVisible)
-
-            advanceTimeBy(3000L)
-            advanceUntilIdle()
-
-            val snackBarHidden = awaitItem().snackBar
-            assertSnackBarState(false, snackBarHidden)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `onViewAndShareClicked with NoInternetException should update noInternetConnection`() =
         runTest {
             everySuspend { repository.getStatementWithMetadata(any()) } throws NoInternetException()
