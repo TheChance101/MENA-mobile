@@ -19,5 +19,7 @@ internal val viewModelModule = module {
     viewModel {
         SyncContactsViewModel(get(), get(), get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
     }
-    viewModel { ChatViewModel(get(), get(), get(), dispatcher = get(named(CHAT_IO_DISPATCHER))) }
+    viewModel { ChatViewModel(
+        get(), get(), get(),get(), dispatcher = get(named(CHAT_IO_DISPATCHER)))
+    }
 }
