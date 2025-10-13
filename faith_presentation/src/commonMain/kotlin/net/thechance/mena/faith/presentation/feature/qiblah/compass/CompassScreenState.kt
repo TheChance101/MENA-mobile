@@ -1,8 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.qiblah.compass
 
 data class CompassScreenState(
-    val azimuth: Float = 0f,
-    val qiblahDirection: Float = 0f,
+    val continuousAzimuth: Float = 0f,
+    val qiblahAngleValue: Float = 0f,
+    val angleToQiblah: Float = 0f,
     val currentLocation: Location = Location(),
 )
 
