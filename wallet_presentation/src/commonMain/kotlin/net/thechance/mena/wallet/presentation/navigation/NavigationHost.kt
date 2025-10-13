@@ -120,8 +120,12 @@ fun NavigationHost(
                 receiverId = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().id,
                 amount = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().amount,
                 navigateToPaymentResultScreen = { receiverName, amount ->
-                    PaymentResultScreenRoute(transactionId="", submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS.name
-                        ,amount=amount, receiverName = receiverName)//TODO
+                    PaymentResultScreenRoute(
+                        transactionId = "",
+                        submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS.name,
+                        amount = amount,
+                        receiverName = receiverName
+                    )//TODO
                 }
             )
         }
@@ -134,6 +138,12 @@ fun NavigationHost(
                 onNavigateBackClicked = { navController.popBackStack() },
                 onNavigateToTransactionDetailsClicked = { receiverId ->
                     TransactionDetailsScreenRoute(receiverId)
+                },
+                onCancelClicked = {
+                    navController.popBackStack(
+                        ConfirmPaymentScreenRoute,
+                        inclusive = true
+                    )
                 }
             )
         }
