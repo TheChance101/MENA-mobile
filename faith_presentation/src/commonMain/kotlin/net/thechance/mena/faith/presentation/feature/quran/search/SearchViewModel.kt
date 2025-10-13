@@ -51,7 +51,7 @@ class SearchViewModel(
     }
 
     override fun onBackClick() {
-        sendEffect(SearchEffect.NavigateBack)
+        sendEffect(SearchEffect.NavigateBack())
     }
 
     override fun onSearchResultClick(surahId: Int, ayahId: Int) {
