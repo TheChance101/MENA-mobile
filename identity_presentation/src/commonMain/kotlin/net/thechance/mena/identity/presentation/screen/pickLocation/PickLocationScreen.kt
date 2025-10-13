@@ -24,6 +24,7 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
@@ -49,9 +50,10 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
     ) {
         Scaffold(
             topBar = {
-                AppBar(
+                AuthAppBar(
                     title = "Pick Location",
-                    onClickBack = listener::onClickBack
+                    onClickBack = listener::onClickBack,
+                    backgroundColor = Theme.colorScheme.background.surfaceLow
                 )
             }
         ) {
@@ -115,26 +117,5 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                 EnableLocationScreen()
             )
         }
-    }
-}
-
-@Composable
-private fun AppBar(title: String, onClickBack: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Theme.colorScheme.background.surfaceLow),
-        contentAlignment = Alignment.Center
-    ) {
-        AppBar(
-            leadingContent = {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_arrow_left),
-                    contentDescription = null
-                )
-            },
-            title = title,
-            onLeadingClick = onClickBack::invoke
-        )
     }
 }
