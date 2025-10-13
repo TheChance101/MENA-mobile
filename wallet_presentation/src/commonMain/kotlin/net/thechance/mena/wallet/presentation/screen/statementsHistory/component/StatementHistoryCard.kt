@@ -53,9 +53,8 @@ fun StatementHistoryCard(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
-        if (!isEditMode) {
-            StatementHistoryIcon()
-        }
+
+        StatementHistoryIcon()
 
         StatementHistoryContent(
             startDate = startDate,
@@ -90,7 +89,8 @@ private fun StatementHistoryContent(
 ) {
     Column(
         modifier = Modifier.padding(start = if (isEditMode) 4.dp else 0.dp),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+    ) {
         Text(
             text = stringResource(Res.string.date_range, startDate, endDate),
             style = Theme.typography.body.small,
@@ -123,7 +123,6 @@ private fun StatementInOutflowRow(totalInflow: String, totalOutflow: String) {
     }
 }
 
-
 @Composable
 private fun FlowItem(
     amount: String,
@@ -148,7 +147,6 @@ private fun FlowItem(
         )
     }
 }
-
 
 @Preview
 @Composable
