@@ -216,7 +216,7 @@ class TransactionRepositoryImplTest {
         val addPendingTransactionSuccessResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
             {
                 respond(
-                    content = """$transaction1Id""".trimMargin(),
+                    content = "$transaction1Id",
                     status = HttpStatusCode.OK,
                     headers = headersOf(
                         HttpHeaders.ContentType,
