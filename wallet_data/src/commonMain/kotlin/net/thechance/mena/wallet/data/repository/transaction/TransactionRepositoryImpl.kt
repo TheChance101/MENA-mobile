@@ -53,19 +53,17 @@ class TransactionRepositoryImpl(
         receiverId: Uuid,
         amount: Double
     ): Uuid {
-        return Uuid.parse(
-            safeApiCall<String> {
-                networkClient.post("$TRANSACTION_PATH$ADD_TRANSACTION") {
-                    setBody(
-                        PendingTransactionRequestBody(
-                            amount = amount,
-                            receiverId = receiverId.toString(),
-                            type = pendingTransactionType.name
-                        )
+        return safeApiCall<Uuid> {
+            networkClient.post("$TRANSACTION_PATH$ADD_TRANSACTION") {
+                setBody(
+                    PendingTransactionRequestBody(
+                        amount = amount,
+                        receiverId = receiverId.toString(),
+                        type = pendingTransactionType.name
                     )
-                }
+                )
             }
-        )
+        }
     }
 
     private companion object {
