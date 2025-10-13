@@ -274,6 +274,28 @@ class TransactionDetailsViewModelTest {
     }
 
     @Test
+    fun `onCaptureError should show error snackbar`() = runTest {
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+
+        val viewModel = TransactionDetailsViewModel(
+            transactionRepository = transactionRepository,
+            transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
+        )
+
+        viewModel.state.test {
+            skipItems(2)
+
+            viewModel.onCaptureError()
+
+            val finalState = awaitItem()
+            assertEquals(true, finalState.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `onRefresh should set transaction with loading when initially called`() = runTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 

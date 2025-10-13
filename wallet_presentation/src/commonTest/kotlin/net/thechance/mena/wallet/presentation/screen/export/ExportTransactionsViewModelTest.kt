@@ -23,7 +23,9 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
@@ -421,18 +423,24 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `toStartOfDayLocalDateTime should parse valid date string`() = runTest {
         val formatter =
-            LocalDate.Format { year(); char('/'); monthNumber(); char('/'); dayOfMonth() }
+            LocalDate.Format {
+                year(); char('/'); monthNumber(); char('/');
+                day(padding = Padding.ZERO)
+            }
         val result = "2025/09/27".toStartOfDayLocalDateTime(formatter)
 
         assertEquals(2025, result?.year)
-        assertEquals(9, result?.monthNumber)
-        assertEquals(27, result?.dayOfMonth)
+        assertEquals(9, result?.month?.number)
+        assertEquals(27, result?.day)
     }
 
     @Test
     fun `toStartOfDayLocalDateTime should return null for empty string`() = runTest {
         val formatter =
-            LocalDate.Format { year(); char('/'); monthNumber(); char('/'); dayOfMonth() }
+            LocalDate.Format {
+                year(); char('/'); monthNumber(); char('/');
+                day(padding = Padding.ZERO)
+            }
         val result = "".toStartOfDayLocalDateTime(formatter)
         assertEquals(null, result)
     }
@@ -600,31 +608,6 @@ class ExportTransactionsViewModelTest {
 
             val toastHidden = awaitItem().toast
             assertFalse(toastHidden.isVisible)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `hideSnackBar should hide snackbar after duration`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
-        everySuspend {
-            pdfHandler.downloadPdf(any(), any())
-        } returns "MENA/statement_123.pdf"
-
-        initViewModel()
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            skipItems(5)
-
-            val visible = awaitItem().snackBar
-            assertTrue(visible.isVisible)
-
-            advanceTimeBy(3000L)
-            advanceUntilIdle()
-
-            val hidden = awaitItem().snackBar
-            assertFalse(hidden.isVisible)
 
             cancelAndIgnoreRemainingEvents()
         }

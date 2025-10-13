@@ -115,6 +115,20 @@ class TransactionHistoryViewModelTest {
     }
 
     @Test
+    fun `onDismissFilter should hide filter`() = runTest {
+        initViewModel()
+
+        viewModel.onDismissFilter()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertFalse(currentState.isFilterVisible)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `page should be reset when onResetFilters is called`() = runTest(testDispatcher) {
         initViewModel()
 
