@@ -40,7 +40,5 @@ class EnableLocationScreenViewModel(
         }
     }
 
-    private fun onError(errorState: ErrorState){
-
-    }
+    private fun onError(errorState: ErrorState){}
 }

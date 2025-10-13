@@ -17,30 +17,21 @@ class PermissionHandler(
         }
     }
 
-    fun checkPermissionFlow(): Flow<PermissionState> {
-        return flow {
-            while (true) {
-                val permissionState = checkPermission()
-                emit(permissionState)
-                delay(PERMISSION_CHECK_FLOW_FREQUENCY)
-            }
+    fun checkPermissionFlow(): Flow<PermissionState> = flow {
+        while (true) {
+            val permissionState = checkPermission()
+            emit(permissionState)
+            if (permissionState == PermissionState.GRANTED) break
+            delay(PERMISSION_CHECK_FLOW_FREQUENCY)
         }
     }
 
     suspend fun providePermission() {
-        try {
-            permissionController.providePermission()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        permissionController.providePermission()
     }
 
     fun openSettingPage() {
-        try {
-            permissionController.openSettingPage()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        permissionController.openSettingPage()
     }
 }
 
