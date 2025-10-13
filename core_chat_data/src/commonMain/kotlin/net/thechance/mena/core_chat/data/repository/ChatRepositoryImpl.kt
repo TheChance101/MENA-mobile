@@ -22,7 +22,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
-import net.thechance.mena.core_chat.data.source.remote.mapper.toSendMessageRequestDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toSendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
@@ -135,9 +135,9 @@ class ChatRepositoryImpl(
                     imageNames = byteArrays.mapIndexed { index, _ -> "chat_${chatId}_${sendAt}_image_$index" },
                     images = byteArrays,
                     chatId = chatId
-                ).toDomain()?.toSendMessageRequestDto() ?: error("Invalid message content")
+                ).toSendMessageDto()
             }
-            else -> toSendMessageRequestDto()
+            else -> toSendMessageDto()
         }
     }
 

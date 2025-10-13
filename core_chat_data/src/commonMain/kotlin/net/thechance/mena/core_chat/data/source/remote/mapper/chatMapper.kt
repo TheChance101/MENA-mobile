@@ -37,6 +37,15 @@ fun MessageDto.toDomain(): Message? {
     )
 }
 
+fun MessageDto.toSendMessageDto(): SendMessageDto {
+    val chatId = getUuidOrNull(chatId) ?: error("Invalid Chat ID")
+    return SendMessageDto(
+        chatId = chatId.toString(),
+        text = text,
+        messageId = getUuidOrNull(id).toString()
+    )
+}
+
 fun ChatDto.toDomain(): Chat? {
     return Chat(
         id = getUuidOrNull(id) ?: return null,
@@ -46,7 +55,7 @@ fun ChatDto.toDomain(): Chat? {
     )
 }
 
-fun Message.toSendMessageRequestDto(): SendMessageDto {
+fun Message.toSendMessageDto(): SendMessageDto {
     val content = this.content
     return when (content) {
         is MessageContent.Text -> SendMessageDto(chatId = chatId.toString(), text = content.text)
