@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.faith.presentation.feature.main.MainViewModel
+import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel
 import net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice.CalibrateDeviceViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel
@@ -19,19 +20,15 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val faithViewModelModule = module {
-
     factory<CoroutineDispatcher> { Dispatchers.IO }
-
     factoryOf(::SurahArgsImpl) bind ISurahArgs::class
     factoryOf(::SearchArgsImpl) bind ISearchArgs::class
-
     viewModelOf(::SurahViewModel)
     viewModelOf(::SurViewModel)
     viewModelOf(::BookmarkViewModel)
     viewModelOf(::CalibrateDeviceViewModel)
     viewModelOf(::SearchViewModel)
+    viewModelOf(::CompassViewModel)
     viewModelOf(::MainViewModel)
-
-
 }
 
