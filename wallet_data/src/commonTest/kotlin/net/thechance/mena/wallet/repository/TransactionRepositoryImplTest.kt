@@ -16,6 +16,7 @@ import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.transaction.TransactionRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
@@ -37,7 +38,7 @@ class TransactionRepositoryImplTest {
         networkClient = createNetworkClient(getRespond = successResponse)
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
-        val result = transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null)
+        val result = transactionRepository.getTransactionHistory(PAGE, PAGE_SIZE, null)
         assertEquals(1, result.size)
         val transaction: Transaction = result.first()
         assertEquals(EXPECTED_AMOUNT, transaction.amount)
@@ -53,7 +54,7 @@ class TransactionRepositoryImplTest {
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
         assertFailsWith<UnknownException> {
-            transactionRepository.getTransactionHistory(PAGE,PAGE_SIZE,null)
+            transactionRepository.getTransactionHistory(PAGE, PAGE_SIZE, null)
         }
     }
 
@@ -76,6 +77,36 @@ class TransactionRepositoryImplTest {
 
         assertFailsWith<Exception> {
             transactionRepository.getTransactionById(transaction1Id)
+        }
+    }
+
+    @Test
+    fun `addPendingTransaction returns transactionId when API call is successful`() = runTest()
+    {
+        networkClient = createNetworkClient(postRespond = addPendingTransactionSuccessResponse)
+        transactionRepository = TransactionRepositoryImpl(networkClient)
+
+        val result = transactionRepository.addPendingTransaction(
+            pendingTransactionType = pendingTransactionType1,
+            receiverId = receiverId1,
+            amount = amount1
+        )
+
+        assertEquals(transaction1Id, result)
+    }
+
+    @Test
+    fun `getPaymentConfirmation throw exception when API call is fails`() = runTest()
+    {
+        networkClient = createNetworkClient(postRespond = addPendingTransactionErrorResponse)
+        transactionRepository = TransactionRepositoryImpl(networkClient)
+
+        assertFailsWith<Exception> {
+            transactionRepository.addPendingTransaction(
+                pendingTransactionType = pendingTransactionType1,
+                receiverId = receiverId1,
+                amount = amount1
+            )
         }
     }
 
@@ -166,15 +197,49 @@ class TransactionRepositoryImplTest {
                 )
             }
 
-        val transactionErrorResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
-            respond(
-                content = """{"message": "Server error occurred"}""",
-                status = HttpStatusCode.InternalServerError,
-                headers = headersOf(
-                    HttpHeaders.ContentType,
-                    ContentType.Application.Json.toString()
+        val transactionErrorResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
+            {
+                respond(
+                    content = """{"message": "Server error occurred"}""",
+                    status = HttpStatusCode.InternalServerError,
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.toString()
+                    )
                 )
-            )
-        }
+            }
+
+        const val amount1 = 5000.0
+        val receiverId1 = Uuid.random()
+        val pendingTransactionType1 = PendingTransactionType.P2P
+
+        val addPendingTransactionSuccessResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
+            {
+                respond(
+                    content = """$transaction1Id""".trimMargin(),
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.toString()
+                    )
+                )
+            }
+
+        val addPendingTransactionErrorResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
+            {
+                respond(
+                    content = """
+                    {
+                    "status": 500,
+                    "message": "Server error occurred"
+                    }
+                    """.trimMargin(),
+                    status = HttpStatusCode.InternalServerError,
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.toString()
+                    )
+                )
+            }
     }
 }

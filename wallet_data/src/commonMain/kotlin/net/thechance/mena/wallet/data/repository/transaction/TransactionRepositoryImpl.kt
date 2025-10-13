@@ -49,29 +49,29 @@ class TransactionRepositoryImpl(
     }
 
     override suspend fun addPendingTransaction(
-        transactionType: PendingTransactionType,
+        pendingTransactionType: PendingTransactionType,
         receiverId: Uuid,
         amount: Double
     ): Uuid {
-        return safeApiCall<Uuid> {
-            networkClient.post("$TRANSACTION_PATH$ADD_TRANSACTION") {
-                setBody(
-                    PendingTransactionRequestBody(
-                        amount = amount,
-                        receiverId = receiverId.toString(),
-                        type = transactionType.name
+        return Uuid.parse(
+            safeApiCall<String> {
+                networkClient.post("$TRANSACTION_PATH$ADD_TRANSACTION") {
+                    setBody(
+                        PendingTransactionRequestBody(
+                            amount = amount,
+                            receiverId = receiverId.toString(),
+                            type = pendingTransactionType.name
+                        )
                     )
-                )
+                }
             }
-        }
+        )
     }
 
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/add"
-        const val P2P_TRANSACTION_TYPE = "P2P"
-        const val ONLINE_PURCHASE_TRANSACTION_TYPE = "ONLINE_PURCHASE"
     }
 
 }
