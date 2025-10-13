@@ -22,7 +22,7 @@ import mena.wallet_presentation.generated.resources.img_no_internet
 import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.share_button_title
-import mena.wallet_presentation.generated.resources.view_transactions
+import mena.wallet_presentation.generated.resources.statement
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -82,7 +82,7 @@ private fun ViewTransactionsStatementContent(
             .statusBarsPadding(),
         topBar = {
             AppBar(
-                title = stringResource(Res.string.view_transactions),
+                title = stringResource(Res.string.statement),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(
