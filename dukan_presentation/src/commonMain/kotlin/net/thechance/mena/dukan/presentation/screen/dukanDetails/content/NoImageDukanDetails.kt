@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -71,7 +70,6 @@ import net.thechance.mena.dukan.presentation.component.ProductsHeader
 import net.thechance.mena.dukan.presentation.component.productCard.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
@@ -135,7 +133,8 @@ private fun AppBar(
             text = state.name,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.title.medium,
-            modifier = Modifier.padding(start = Theme.spacing._8).weight(1f),
+            modifier = Modifier.padding(start = Theme.spacing._8, end = Theme.spacing._4)
+                .weight(1f),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -459,28 +458,7 @@ private fun BestSellingState(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener
 ) {
-    AnimatedContent(
-        targetState = state.shelvesState,  // should be bestSellingState
-        transitionSpec = { fadeTransitionSpec() },
-        label = "ShelvesContentAnimation"
-    ) { target ->
-        when (target) {
-            ShelvesState.LOADING -> {
-                BestSellingShimmer()
-            }
-
-            ShelvesState.LOADED -> {
-                BestSelling(
-                    products = state.bestSellingProducts.items,
-                    iconColor = state.dukanInfo.color,
-                    listener = listener
-                )
-            }
-
-            ShelvesState.EMPTY -> {
-            }
-        }
-    }
+// Handle best selling state
 }
 
 @Composable
