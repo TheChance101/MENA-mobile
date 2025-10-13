@@ -4,6 +4,10 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState.Status
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState.Status.Read
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState.Status.Received
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState.Status.Sent
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState.Status.UnRead
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.formatAsTime
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -30,17 +34,21 @@ fun ChatSummary.toUi(): ChatUiState {
 }
 
 private fun getStatusMessages(chatSummary: ChatSummary): Status = when {
-    !chatSummary.lastMessage.isMine && chatSummary.unReadMessagesCount > 0 ->
-        Status.UnRead(chatSummary.unReadMessagesCount)
+    chatSummary.lastMessage.isMine -> {
+        if (chatSummary.unReadMessagesCount == 0) {
+            Read
+        } else {
+            Sent
+        }
+    }
 
-    chatSummary.lastMessage.isMine && chatSummary.unReadMessagesCount > 0 ->
-        Status.Sent
-
-    chatSummary.lastMessage.isMine && chatSummary.unReadMessagesCount == 0 ->
-        Status.Read
-
-    else ->
-        Status.Sent
+    else -> {
+        if (chatSummary.unReadMessagesCount > 0) {
+            UnRead(chatSummary.unReadMessagesCount)
+        } else {
+            Received
+        }
+    }
 }
 
 private fun getFormattedTime(messageDateTime: LocalDateTime): String {
