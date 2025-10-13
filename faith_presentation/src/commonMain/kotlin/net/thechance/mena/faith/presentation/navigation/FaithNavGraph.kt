@@ -25,7 +25,7 @@ fun FaithNavigation() {
         QuranTheme {
             NavHost(
                 navController = navController,
-                startDestination = Route.SurRoute
+                startDestination = Route.MainRoute
             ) {
 
                 composable<Route.MainRoute> {
