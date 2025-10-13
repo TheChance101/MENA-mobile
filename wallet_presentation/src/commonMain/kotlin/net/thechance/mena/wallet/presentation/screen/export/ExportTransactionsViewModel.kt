@@ -175,7 +175,9 @@ class ExportTransactionsViewModel(
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.error),
-                message = stringProvider.getString(Res.string.start_date_must_be_before_end_date),
+                message = stringProvider.getString(
+                    Res.string.start_date_must_be_before_end_date
+                ),
                 isSuccess = false
             )
         }
@@ -261,9 +263,9 @@ class ExportTransactionsViewModel(
     private fun saveStatementToCache(statement: StatementWithMetaData) {
         tryToExecute(
             callee = {
-                pdfHandler.saveToCache(
-                    pdfData = statement.byteArray,
-                    fileName = "statement"
+                pdfHandler.saveStatement(
+                    byteArray = statement.byteArray,
+                    location = StorageLocation.Cache("statement")
                 )
             },
             onSuccess = ::onSaveStatementToCacheSuccess,
@@ -275,7 +277,9 @@ class ExportTransactionsViewModel(
         resetViewAndShareState()
 
         val fileName = statementPath.substringAfterLast("/")
-        sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(StorageLocation.Cache(fileName)))
+        sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(
+            StorageLocation.Cache(fileName))
+        )
     }
 
     private suspend fun onViewAndShareError(error: ErrorState) {
@@ -338,7 +342,12 @@ class ExportTransactionsViewModel(
 
     private fun downloadStatement(statement: StatementWithMetaData) {
         tryToExecute(
-            callee = { pdfHandler.downloadPdf(pdfData = statement.byteArray, fileName = "statement") },
+            callee = {
+                pdfHandler.saveStatement(
+                    byteArray = statement.byteArray,
+                    location = StorageLocation.Downloads("statement")
+                )
+            },
             onSuccess = { filePath -> onDownloadSuccess(filePath, statement) },
             onError = ::onDownloadFailure,
             dispatcher = ioDispatcher

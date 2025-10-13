@@ -94,17 +94,10 @@ class PdfHandlerImpl() : PdfHandler {
         context.startActivity(chooserIntent)
     }
 
-    override suspend fun downloadPdf(pdfData: ByteArray, fileName: String): String {
+    override suspend fun saveStatement(byteArray: ByteArray, location: StorageLocation): String {
         return fileManager.saveFile(
-            pdfData,
-            StorageLocation.Downloads(fileName)
-        )
-    }
-
-    override suspend fun saveToCache(pdfData: ByteArray, fileName: String): String {
-        return fileManager.saveFile(
-            pdfData,
-            StorageLocation.Cache(fileName)
+            byteArray,
+            location
         )
     }
 
