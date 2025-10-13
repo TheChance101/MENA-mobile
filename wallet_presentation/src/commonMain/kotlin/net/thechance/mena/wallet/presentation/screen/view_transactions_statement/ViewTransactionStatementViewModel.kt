@@ -1,42 +1,48 @@
 package net.thechance.mena.wallet.presentation.screen.view_transactions_statement
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.wallet.domain.model.TransactionFilterParams
-import net.thechance.mena.wallet.domain.repository.StatementRepository
+import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.base.UiState
+import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
 class ViewTransactionStatementViewModel(
-    @Provided private val statementRepository: StatementRepository,
+    @Provided private val pdfHandler: PdfHandler,
+    @Provided private val statementLocation: StorageLocation,
     private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ViewTransactionStatementScreenState, ViewTransactionStatementEffect>
     (ViewTransactionStatementScreenState()), ViewTransactionStatementInteractionListener {
 
-    fun getStatementPdf(filterParams: TransactionFilterParams?) {
+        init {
+            getStatementPdf(statementLocation)
+        }
+    fun getStatementPdf(statementLocation: StorageLocation) {
         tryToExecute(
-            onStart = {
-                updateState {
-                    currentState.copy(
-                        statement = UiState.Loading,
-                        filterParams = filterParams
-                    )
-                }
-            },
-            callee = { statementRepository.getCachedStatement(filterParams) },
+            onStart = ::onGetStatementPdfStart,
+            callee = { pdfHandler.getPdfBytes(statementLocation) },
             onSuccess = ::onSuccessFetchPdf,
             onError = ::onErrorFetchPdf,
             dispatcher = dispatcherIO
         )
     }
 
+    private fun onGetStatementPdfStart() {
+        updateState { it.copy(statement = UiState.Loading) }
+    }
+
     override fun onNavigateBackClicked() {
-        sendEffect(ViewTransactionStatementEffect.NavigateBack)
+       viewModelScope.launch (Dispatchers.IO){
+           if (statementLocation is StorageLocation.Cache) pdfHandler.deleteStatement(statementLocation)
+            sendEffect(ViewTransactionStatementEffect.NavigateBack)
+        }
     }
 
     override fun onShareClicked() {
@@ -47,7 +53,7 @@ class ViewTransactionStatementViewModel(
     }
 
     override fun onRetryClicked() {
-        getStatementPdf(currentState.filterParams)
+        getStatementPdf(statementLocation)
     }
 
     private fun onSuccessFetchPdf(pdf: ByteArray?) {
