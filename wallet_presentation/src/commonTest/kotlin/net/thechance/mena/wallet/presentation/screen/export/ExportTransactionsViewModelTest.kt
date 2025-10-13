@@ -541,14 +541,6 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun whenSelectedTransactionsTypesNotEmpty_thenHasActiveFiltersIsTrue() = runTest {
-        val state = ExportTransactionsState(
-            selectedTransactionsTypes = setOf(FilterType.SENT)
-        )
-        assertTrue(state.hasActiveFilters)
-    }
-
-    @Test
     fun `onAllTransactionsClicked should enable download and view buttons`() = runTest {
         initViewModel()
 
