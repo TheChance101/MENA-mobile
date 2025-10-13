@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.payment_result
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,12 +13,14 @@ import mena.wallet_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentStatusBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun PaymentResultScreen(
@@ -25,27 +29,33 @@ fun PaymentResultScreen(
     receiverName: String,
     amount: Double,
     onNavigateBackClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
     onNavigateToTransactionDetailsClicked: (String) -> Unit,
     viewModel: PaymentResultViewModel = koinViewModel(parameters = {
         parametersOf(
-            transactionId, submitTransactionResultStatus
+            PaymentResultArgs(transactionId, submitTransactionResultStatus)
         )
     })
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ObserveAsEffect(
-        effect = viewModel.uiEffect, onEffect = { effect ->
+        effect = viewModel.uiEffect,
+        onEffect = { effect ->
             onPaymentResultEffect(
                 effect,
-                receiverName,
                 onNavigateBackClicked = onNavigateBackClicked,
+                onCancelClicked = onCancelClicked,
                 onNavigateToTransactionDetailsClicked = { transactionId ->
                     onNavigateToTransactionDetailsClicked(transactionId)
-                })
-        })
+                }
+            )
+        }
+    )
     PaymentResultScreenContent(
-        receiverName = receiverName, amount = amount, state = state, interactionListener = viewModel
+        receiverName = receiverName,
+        amount = amount, state = state,
+        interactionListener = viewModel
     )
 }
 
@@ -58,7 +68,7 @@ private fun PaymentResultScreenContent(
 ) {
     WalletScaffold(
         topBar = {
-            if (state.hasAppBar) {
+            if (state.paymentStatus != SubmitTransactionResultStatus.SUCCESS) {
                 AppBar(
                     title = "",
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -71,7 +81,8 @@ private fun PaymentResultScreenContent(
                     onLeadingClick = interactionListener::onBackClicked
                 )
             }
-        }) {
+        }
+    ) {
         PaymentStatusBody(
             receiverName = receiverName,
             amount = amount,
@@ -83,16 +94,15 @@ private fun PaymentResultScreenContent(
 
 private fun onPaymentResultEffect(
     effect: PaymentResultEffect,
-    receiverId: String,
     onNavigateBackClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
     onNavigateToTransactionDetailsClicked: (String) -> Unit
 ) {
     when (effect) {
         is PaymentResultEffect.NavigateBack -> onNavigateBackClicked()
         is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
-            receiverId
+            effect.transactionId.toString()
         )
-
-        is PaymentResultEffect.NavigateToPreviousScreen -> TODO()
+        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked
     }
 }

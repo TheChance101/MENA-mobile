@@ -5,7 +5,4 @@ import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatu
 data class PaymentResultScreenState(
     val paymentStatus: SubmitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS,
     val isLoading: Boolean = false,
-    val error: String? = null,
-    val receiverName: String = "",
-    val hasAppBar: Boolean = true
 )

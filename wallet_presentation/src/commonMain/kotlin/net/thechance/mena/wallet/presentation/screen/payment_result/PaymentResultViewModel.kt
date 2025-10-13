@@ -17,15 +17,32 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class PaymentResultViewModel(
     @Provided private val paymentRepository: PaymentRepository,
-    @Provided private val transactionId: Uuid,
-    @Provided private val submitTransactionResultStatus: SubmitTransactionResultStatus,
+    @Provided private val paymentResultArgs: PaymentResultArgs,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<PaymentResultScreenState, PaymentResultEffect>(
     PaymentResultScreenState()
 ), PaymentResultInteractionListener {
+    private val transactionId = Uuid.parse(paymentResultArgs.transactionId)
+    private val submitTransactionResultStatus = SubmitTransactionResultStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
 
     init {
-        updateState { it.copy(submitTransactionResultStatus) }
+        updateState { it.copy(paymentStatus = submitTransactionResultStatus) }
+    }
+
+    override fun onBackClicked() {
+        sendEffect(PaymentResultEffect.NavigateBack)
+    }
+
+    override fun onCancelClicked() {
+        sendEffect(PaymentResultEffect.NavigateToScreenBeforePaymentProcess)
+    }
+
+    override fun onTryAgainClicked() {
+        submitTransaction(transactionId)
+    }
+
+    override fun onShowTransactionDetailsClicked() {
+        sendEffect(PaymentResultEffect.NavigateToTransactionDetails(transactionId))
     }
 
     private fun submitTransaction(transactionId: Uuid) {
@@ -37,22 +54,6 @@ class PaymentResultViewModel(
             onError = ::onSubmitTransactionFailed,
             dispatcher = ioDispatcher
         )
-    }
-
-    override fun onBackClicked() {
-        sendEffect(PaymentResultEffect.NavigateBack)
-    }
-
-    override fun onCancelClicked() {
-        sendEffect(PaymentResultEffect.NavigateToPreviousScreen)
-    }
-
-    override fun onTryAgainClicked() {
-        submitTransaction(transactionId)
-    }
-
-    override fun onShowTransactionDetailsClicked() {
-        sendEffect(PaymentResultEffect.NavigateToTransactionDetails)
     }
 
     private fun onSubmitTransactionSuccess(unit: Unit) {

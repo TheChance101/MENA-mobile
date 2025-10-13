@@ -125,7 +125,7 @@ fun NavigationHost(
                         submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS.name,
                         amount = amount,
                         receiverName = receiverName
-                    )//TODO
+                    )
                 }
             )
         }
