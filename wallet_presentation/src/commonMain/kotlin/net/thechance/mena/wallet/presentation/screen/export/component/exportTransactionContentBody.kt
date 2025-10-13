@@ -57,6 +57,7 @@ fun ExportTransactionContentBody(
             isEnabled = state.isViewAndShareButtonEnabled,
             contentPadding = PaddingValues(vertical = 13.dp),
         )
+        //TODO: fix enabled state
         PrimaryButton(
             text = stringResource(Res.string.download),
             onClick = interactionListener::onDownloadClicked,
