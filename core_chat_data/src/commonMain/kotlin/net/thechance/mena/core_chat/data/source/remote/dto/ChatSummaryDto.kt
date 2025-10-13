@@ -5,10 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ChatSummaryDto(
-    @SerialName("id") val id: String? = null,
-    @SerialName("imageUrl") val imageUrl: String? = null,
-    @SerialName("lastMessage") val lastMessage: String? = null,
-    @SerialName("lastMessageTime") val lastMessageTime: String? = null,
-    @SerialName("name") val name: String? = null,
-    @SerialName("status") val chatSummaryStatusDto: ChatSummaryStatusDto? = null
+    @SerialName("id") val id: String,
+    @SerialName("name") val name: String,
+    @SerialName("imageUrl") val imageUrl: String?,
+    @SerialName("lastMessage") val lastMessage: LastMessageDto,
+    @SerialName("unReadMessagesCount") val unReadMessagesCount: Int
 )
