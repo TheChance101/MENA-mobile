@@ -107,7 +107,7 @@ class ConfirmPaymentViewModel(
     }
 
     private fun onEnd() {
-        updateState { it.copy(isLoading = true) }
+        updateState { it.copy(isLoading = false) }
     }
 
     private fun onGetReceiverInfoSuccess(userInfo: User) {
