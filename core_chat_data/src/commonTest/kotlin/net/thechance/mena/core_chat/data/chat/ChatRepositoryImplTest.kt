@@ -16,12 +16,14 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
+import io.ktor.utils.io.core.toByteArray
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
+import net.thechance.mena.core_chat.data.contacts.defaultUploadImagesResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
@@ -31,6 +33,8 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -171,6 +175,39 @@ class ChatRepositoryImplTest {
         }
     }
 
+
+    @Test
+    fun `should send images message successfully when websocket is connected`() = runTest {
+        val byteArrays = listOf("img1".toByteArray(), "img2".toByteArray())
+
+        every { webSocketManager.isConnected() } returns true
+        everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
+        everySuspend { messageDao.insertMessage(any()) } returns Unit
+        everySuspend { messageDao.deleteMessage(any()) } returns Unit
+
+        val message = createMessage(
+            senderId = userId,
+            chatId = chatId,
+            content = MessageContent.Images(ImagesSource.Local(byteArrays))
+        )
+
+        repository = createChatRepository(
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader,
+            httpClient = createHttpClient(imagesResponse = { defaultUploadImagesResponse() })
+        )
+
+        repository.sendMessage(message)
+
+        verifySuspend {
+            webSocketManager.sendTextFrame(
+                destination = "/app/chat.privateMessage",
+                payload = any()
+            )
+        }
+    }
+
     @Test
     fun `should throw SendMessageFailedException when websocket is not connected`() = runTest {
         every { webSocketManager.isConnected() } returns false
@@ -257,6 +294,7 @@ class ChatRepositoryImplTest {
             repository.downloadImage(IMAGE_URL)
         }
     }
+
 
     private companion object {
         private val chatId = Uuid.random()

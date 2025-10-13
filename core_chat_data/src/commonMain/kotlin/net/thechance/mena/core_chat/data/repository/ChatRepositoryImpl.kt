@@ -128,7 +128,7 @@ class ChatRepositoryImpl(
     private suspend fun Message.getContentToSend(): SendMessageDto {
         val content = this.content
         return when(content) {
-            is MessageContent.Images -> {
+            is MessageContent.Images -> { // uncovered block
                 val source = content.source
                 val byteArrays = if (source is ImagesSource.Local) source.byteArrays else emptyList()
                 uploadImagesMessage(
@@ -145,7 +145,7 @@ class ChatRepositoryImpl(
         imageNames: List<String>,
         images: List<ByteArray>,
         chatId: Uuid
-    ): MessageDto {
+    ): MessageDto { // this function is uncovered
         require(imageNames.size == images.size) {
             "imageNames and images must have the same size."
         }
