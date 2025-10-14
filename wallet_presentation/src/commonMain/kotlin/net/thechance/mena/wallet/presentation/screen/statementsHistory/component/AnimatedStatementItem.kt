@@ -71,7 +71,7 @@ fun AnimatedStatementItem(
                     isDeleting = isDeleting,
                     onDeleteClick = {
                         isDeleting = true
-                        onDelete
+                        onDelete()
                         scope.launch {
                             delay(450)
                             isVisible = false
