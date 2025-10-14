@@ -41,7 +41,12 @@ fun ConfirmPaymentScreen(
     onNavigateBackClicked: () -> Unit,
     transactionId: String,
     amount: Double,
-    navigateToPaymentResultScreen: (String, Double, Uuid, SubmitTransactionResultStatus) -> Unit,
+    navigateToPaymentResultScreen: (
+        receiverId: String,
+        amount: Double,
+        transactionId: Uuid,
+        submitTransactionResultStatus: SubmitTransactionResultStatus
+    ) -> Unit,
     viewModel: ConfirmPaymentViewModel = koinViewModel(
         parameters = { parametersOf(ConfirmPaymentArgs(transactionId, amount)) }
     )
@@ -112,7 +117,7 @@ private fun ConfirmPaymentScreenContent(
                     )
 
                     PayButton(
-                        isPayBtnLoading = state.isPayBtnLoading,
+                        isPayBtnLoading = state.isPayButtonLoading,
                         isEnabled = state.paymentUiState.status,
                         onClick = interactionListener::onPayButtonClicked,
                         payAmount = state.paymentUiState.amount

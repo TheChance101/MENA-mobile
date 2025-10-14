@@ -8,7 +8,7 @@ data class ConfirmPaymentScreenState(
     val errorState: ErrorState? = null,
     val paymentUiState: PaymentUiState = PaymentUiState(),
     val receiverUiState: ReceiverUiState = ReceiverUiState(),
-    val isPayBtnLoading: Boolean = false
+    val isPayButtonLoading: Boolean = false
 ){
     val isLoading: Boolean
         get() = isGetUserLoading || isGetBalanceLoading

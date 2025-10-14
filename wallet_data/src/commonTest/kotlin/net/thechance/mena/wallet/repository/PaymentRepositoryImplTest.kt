@@ -2,10 +2,7 @@
 
 package net.thechance.mena.wallet.repository
 
-import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.request.HttpRequestData
-import io.ktor.client.request.HttpResponseData
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -13,10 +10,8 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.payment.PaymentRepositoryImpl
-import net.thechance.mena.wallet.domain.model.PaymentConfirmation
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

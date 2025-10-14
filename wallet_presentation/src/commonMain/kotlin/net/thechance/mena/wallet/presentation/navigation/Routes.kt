@@ -53,6 +53,7 @@ data class ConfirmPaymentScreenRoute(
     }
 }
 
+@Serializable
 data class PaymentResultScreenRoute(
     val transactionId: String,
     val submitTransactionResultStatus: String,

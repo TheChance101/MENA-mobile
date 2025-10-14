@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.domain.entity.User
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
+import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.UserRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
@@ -21,6 +22,7 @@ class ConfirmPaymentViewModel(
     @Provided private val args: ConfirmPaymentArgs,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val userRepository: UserRepository,
+    @Provided private val paymentRepository: PaymentRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
@@ -38,8 +40,8 @@ class ConfirmPaymentViewModel(
     }
 
     override fun onPayButtonClicked() {
-        updateState { it.copy(isPayBtnLoading = true) }
-        submitTransaction(dummyTransactionId)
+        updateState { it.copy(isPayButtonLoading = true) }
+        submitTransaction(transactionId)
     }
 
     override fun onRefresh() {
@@ -96,24 +98,24 @@ class ConfirmPaymentViewModel(
     }
 
     private fun onSubmitTransactionSuccess() {
-        updateState { it.copy(isPayBtnLoading = false) }
+        updateState { it.copy(isPayButtonLoading = false) }
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
-                receiverId,
-                amount,
-                transactionId,
-                SubmitTransactionResultStatus.SUCCESS
+                receiverName = state.value.receiverUiState.name,
+                amount = amount,
+                transactionId = transactionId,
+                submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS
             )
         )
     }
 
     private fun onSubmitTransactionFailed(error: ErrorState) {
-        updateState { it.copy(isPayBtnLoading = false) }
+        updateState { it.copy(isPayButtonLoading = false) }
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
-                receiverId,
-                amount,
-                transactionId,
+                receiverName = state.value.receiverUiState.name,
+                amount = amount,
+                transactionId = transactionId,
                 submitTransactionResultStatus = when (error) {
                     ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
                     else -> SubmitTransactionResultStatus.UNKNOWN_ERROR
