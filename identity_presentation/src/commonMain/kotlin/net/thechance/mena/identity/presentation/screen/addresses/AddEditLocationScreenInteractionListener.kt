@@ -2,7 +2,7 @@ package net.thechance.mena.identity.presentation.screen.addresses
 
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
-interface AddLocationScreenInteractionListener: BaseInteractionListener{
+interface AddEditLocationScreenInteractionListener: BaseInteractionListener{
 
     fun onClickMap()
     fun onClickEdit()

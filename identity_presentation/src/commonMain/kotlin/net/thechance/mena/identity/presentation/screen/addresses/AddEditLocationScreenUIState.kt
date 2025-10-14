@@ -14,6 +14,7 @@ data class AddLocationScreenUIState(
     val originalAddress: String = "",
     val originalAddressType: AddressType? = null,
     val originalOtherAddress:String?= null,
+    val isActive:Boolean = false,
 
     val isSaveEnabled: Boolean = false,
     val isLoading: Boolean = false,

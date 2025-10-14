@@ -9,33 +9,24 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
-class AddLocationScreenViewModel(
+class AddEditLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<AddLocationScreenUIState, AddLocationScreenUIEffect>(
+) : BaseScreenModel<AddLocationScreenUIState, AddEditLocationScreenUIEffect>(
     AddLocationScreenUIState()
-), AddLocationScreenInteractionListener {
-
-
-    private fun onError(errorState: ErrorState) {
-        updateState {
-            copy(
-                isLoading = false, errorMessage = mapErrorToMessage(errorState)
-            )
-        }
-    }
+), AddEditLocationScreenInteractionListener {
 
     override fun onClickMap() {
-        sendNewEffect(AddLocationScreenUIEffect.NavigateToMap)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap)
     }
 
     override fun onClickEdit() {
-        sendNewEffect(AddLocationScreenUIEffect.NavigateToMap)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap)
 
     }
 
     override fun onClickBack() {
-        sendNewEffect(AddLocationScreenUIEffect.NavigateBack)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack)
 
     }
 
@@ -55,13 +46,14 @@ class AddLocationScreenViewModel(
             function = {
                 if (state.value.addressID != null) {
                     addressesRepository.editAddress(
-                        addressID = state.value.addressID!!,
                         address = Address(
+                            id = state.value.addressID!!,
                             latitude = state.value.latitude,
                             longitude = state.value.longitude,
                             addressLine = state.value.address,
                             addressType = state.value.addressType!!.name,
-                            otherAddressType = state.value.otherAddress
+                            otherAddressType = state.value.otherAddress,
+                            isActive = state.value.isActive
                         )
                     )
                 } else {
@@ -70,18 +62,14 @@ class AddLocationScreenViewModel(
                             latitude = state.value.latitude,
                             longitude = state.value.longitude,
                             addressLine = state.value.address,
-                            addressType = state.value.addressType!!.name,
-                            otherAddressType = state.value.otherAddress
+                            addressType = state.value.addressType?.name?:"",
+                            otherAddressType = state.value.otherAddress,
+                            isActive = state.value.isActive
                         )
                     )
                 }
             }, onSuccess = ::onSuccess, onError = ::onError, dispatcher = dispatcher
         )
-    }
-
-    private fun onSuccess() {
-        updateState { copy(isLoading = false) }
-        sendNewEffect(AddLocationScreenUIEffect.NavigateBack)
     }
 
     override fun onChangeAddress(newAddress: String) {
@@ -94,6 +82,42 @@ class AddLocationScreenViewModel(
         changeIsSaveEnabled()
     }
 
+    fun setInitialAddressData(addressID: String,
+                              address: String,
+                              latitude: Double,
+                              longitude: Double,
+                              addressType: AddressType,
+                              otherAddress: String?,
+                              isActive:Boolean,
+
+                              ) {
+        updateState {
+            copy(addressID = addressID ,
+                address = address,
+                originalAddress = address,
+                latitude = latitude,
+                longitude = longitude,
+                addressType = addressType,
+                originalAddressType = addressType,
+                otherAddress = otherAddress,
+                originalOtherAddress = otherAddress,
+                isActive = isActive
+            ) }
+    }
+
+    private fun onSuccess() {
+        updateState { copy(isLoading = false) }
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack)
+    }
+
+    private fun onError(errorState: ErrorState) {
+        updateState {
+            copy(
+                isLoading = false, errorMessage = mapErrorToMessage(errorState)
+            )
+        }
+    }
+
     private fun changeIsSaveEnabled() {
         val isEdit = state.value.addressID != null
 
@@ -102,11 +126,12 @@ class AddLocationScreenViewModel(
             val addressTypeChanged = state.value.addressType != state.value.originalAddressType
             val otherAddressChanged = state.value.otherAddress != state.value.originalOtherAddress
 
-            (addressChanged || addressTypeChanged || otherAddressChanged) && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
-                ?: false))
+            (addressChanged || addressTypeChanged || otherAddressChanged)
+                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank() ?: false))
         } else {
-            state.value.address.isNotBlank() && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
-                ?: false)) && state.value.addressType != null
+            state.value.address.isNotBlank()
+                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank() ?: false))
+                    && state.value.addressType != null
         }
         updateState { copy(isSaveEnabled = isEnabled) }
     }
