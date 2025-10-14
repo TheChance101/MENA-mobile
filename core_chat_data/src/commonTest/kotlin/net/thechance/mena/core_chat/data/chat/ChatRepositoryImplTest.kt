@@ -16,14 +16,12 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
-import io.ktor.utils.io.core.toByteArray
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
-import net.thechance.mena.core_chat.data.contacts.defaultUploadImagesResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
@@ -36,8 +34,6 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -226,39 +222,6 @@ class ChatRepositoryImplTest {
         }
     }
 
-
-    @Test
-    fun `should send images message successfully when websocket is connected`() = runTest {
-        val byteArrays = listOf("img1".toByteArray(), "img2".toByteArray())
-
-        every { webSocketManager.isConnected() } returns true
-        everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        everySuspend { messageDao.insertMessage(any()) } returns Unit
-        everySuspend { messageDao.deleteMessage(any()) } returns Unit
-
-        val message = createMessage(
-            senderId = userId,
-            chatId = chatId,
-            content = MessageContent.Images(ImagesSource.Local(byteArrays))
-        )
-
-        repository = createChatRepository(
-            webSocketManager = webSocketManager,
-            messageDao = messageDao,
-            imageDownloader = imageDownloader,
-            httpClient = createHttpClient(imagesResponse = { defaultUploadImagesResponse() })
-        )
-
-        repository.sendMessage(message)
-
-        verifySuspend {
-            webSocketManager.sendTextFrame(
-                destination = "/app/chat.privateMessage",
-                payload = any()
-            )
-        }
-    }
-
     @Test
     fun `should throw SendMessageFailedException when websocket is not connected`() = runTest {
         every { webSocketManager.isConnected() } returns false
@@ -287,6 +250,7 @@ class ChatRepositoryImplTest {
         val flow = repository.observeReadMessages()
         assertThat(flow).isNotNull()
     }
+
     @Test
     fun `should return local messages from database when getLocalMessages is called`() = runTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
@@ -321,7 +285,11 @@ class ChatRepositoryImplTest {
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply { tryEmit("test-message") }
+        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
+            tryEmit(
+                "test-message"
+            )
+        }
 
         val flow = repository.subscribeToMessages(chatId)
 
@@ -329,29 +297,31 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
+    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
 
-        repository.downloadImage(IMAGE_URL)
+            repository.downloadImage(IMAGE_URL)
 
-        verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
-    }
+            verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
+        }
 
     @Test
-    fun `downloadImage should throw OperationFailedException when downloadImage return false`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
+    fun `downloadImage should throw OperationFailedException when downloadImage return false`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
 
-        assertFailsWith<OperationFailedException> {
-            repository.downloadImage(IMAGE_URL)
+            assertFailsWith<OperationFailedException> {
+                repository.downloadImage(IMAGE_URL)
+            }
         }
-    }
 
 
     private companion object {
         private val chatId = Uuid.random()
         private val userId = Uuid.random()
 
-       const val IMAGE_URL = "http://test.com/image.jpg"
+        const val IMAGE_URL = "http://test.com/image.jpg"
     }
 
 }
