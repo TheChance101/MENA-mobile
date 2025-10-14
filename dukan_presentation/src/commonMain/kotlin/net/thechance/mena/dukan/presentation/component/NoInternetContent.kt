@@ -88,7 +88,7 @@ fun NoInternetContent(
 }
 
 @Composable
-private fun WifiSignalAnimation(
+private fun WifiSignalAnimation2(
     durationMillis: Int = 1500,
     modifier: Modifier = Modifier
 ) {
@@ -147,7 +147,84 @@ private fun WifiSignalAnimation(
         )
     }
 }
+@Composable
+private fun WifiSignalAnimation(
+    durationMillis: Int = 1500,
+    modifier: Modifier = Modifier
+) {
+    val transition = rememberInfiniteTransition()
+    val delays = listOf(0, 300, 600, 900)
 
+    val animations = delays.map { delay ->
+        val alpha = transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis, easing = LinearEasing, delayMillis = delay),
+                repeatMode = RepeatMode.Restart
+            )
+        ).value
+
+        val offsetY = transition.animateFloat(
+            initialValue = 30f,
+            targetValue = 0f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis, easing = LinearEasing, delayMillis = delay),
+                repeatMode = RepeatMode.Restart
+            )
+        ).value
+
+        alpha to offsetY
+    }
+
+    val wifiImages = listOf(
+        Res.drawable.ellipse_wifi_4 to 4.33.dp,
+        Res.drawable.ellipse_wifi_3 to 28.52.dp,
+        Res.drawable.ellipse_wifi_2 to 49.12.dp,
+        Res.drawable.ellipse_wifi_1 to 67.27.dp
+    )
+
+    Box(
+        modifier = modifier.size(width = 128.dp, height = 98.dp)
+    ) {
+        wifiImages.forEachIndexed { index, (drawable, topPadding) ->
+            val (alpha, offsetY) = animations[index]
+            Image(
+                modifier = Modifier
+                    .padding(top = topPadding)
+                    .align(Alignment.TopCenter)
+                    .graphicsLayer {
+                        this.alpha = alpha
+                        translationY = offsetY
+                    },
+                painter = painterResource(drawable),
+                contentDescription = null
+            )
+        }
+        
+        val (dotAlpha, dotOffsetY) = animations.first()
+        Box(
+            modifier = Modifier
+                .size(15.dp)
+                .clip(CircleShape)
+                .align(Alignment.BottomCenter)
+                .graphicsLayer {
+                    alpha = dotAlpha
+                    translationY = dotOffsetY
+                }
+                .background(Color(0xFF000000).copy(alpha = dotAlpha))
+        )
+
+        Image(
+            modifier = Modifier
+                .size(33.5.dp)
+                .align(Alignment.TopStart),
+            painter = painterResource(Res.drawable.ic_alert_circle),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(Color(0xFF000000))
+        )
+    }
+}
 @Preview
 @Composable
 private fun NoInternetContentPreview() {
