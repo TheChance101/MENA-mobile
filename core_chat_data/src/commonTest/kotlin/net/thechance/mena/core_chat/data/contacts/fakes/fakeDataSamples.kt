@@ -5,7 +5,6 @@ package net.thechance.mena.core_chat.data.contacts.fakes
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
-import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryStatusDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -108,26 +107,26 @@ fun createChatDto(
     requesterId = requesterId
 )
 
-fun createChatSummaryStatusDto(
-    isMine: Boolean = false,
-    unReadMessagesCount: Int = 0
-) = ChatSummaryStatusDto(
-    isMine = isMine,
-    unReadMessagesCount = unReadMessagesCount
+fun createLastMessageDto(
+    content: String = "Hello there",
+    sentAt: String = "2025-10-01T12:00:00Z",
+    isMine: Boolean = false
+) = ChatSummaryDto.LastMessageDto(
+    content = content,
+    sentAt = sentAt,
+    isMine = isMine
 )
 
 fun createChatSummaryDto(
     id: String = Uuid.random().toString(),
     imageUrl: String? = "http://example.com/image.jpg",
-    lastMessage: String = "Hello there",
-    lastMessageTime: String = "2025-10-01T12:00:00Z",
     name: String = "Test Chat",
-    chatSummaryStatusDto: ChatSummaryStatusDto = createChatSummaryStatusDto()
+    lastMessage: ChatSummaryDto.LastMessageDto = createLastMessageDto(),
+    unReadMessagesCount: Int = 1
 ) = ChatSummaryDto(
     id = id,
     imageUrl = imageUrl,
     lastMessage = lastMessage,
-    lastMessageTime = lastMessageTime,
     name = name,
-    chatSummaryStatusDto = chatSummaryStatusDto
+    unReadMessagesCount = unReadMessagesCount
 )

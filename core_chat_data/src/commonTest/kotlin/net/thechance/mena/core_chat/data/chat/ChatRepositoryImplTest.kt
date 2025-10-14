@@ -218,7 +218,7 @@ class ChatRepositoryImplTest {
             pageNumber = 1,
             pageSize = 20
         )
-
+        print(result.data)
         assertThat(result.data).isNotEmpty()
     }
 

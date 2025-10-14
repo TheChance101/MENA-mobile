@@ -56,7 +56,7 @@ inline fun <reified T> MockRequestHandleScope.mockErrorPagedResponse(
     status: HttpStatusCode,
 ): HttpResponseData {
     return respond(
-        content = """{"status":$status,"success":false,"message":"${status.description}"}""",
+        content = "",
         status = status,
         headers = jsonHeaders
     )
@@ -118,7 +118,7 @@ fun MockRequestHandleScope.defaultChatSummaryResponse() = respond(
             data = listOf(
                 createChatSummaryDto()
             ),
-            pageNumber = 0,
+            pageNumber = 1,
             pageSize = 20,
             totalItems = 1,
             totalPages = 1
@@ -190,13 +190,15 @@ fun createHttpClient(
             request.url.encodedPath == CHAT_HISTORY_ENDPOINT ->
                 chatHistoryResponse?.invoke(this) ?: defaultChatHistoryResponse()
 
+            request.url.encodedPath == CHAT_SUMMARY_ENDPOINT ->
+                chatSummaryResponse?.invoke(this) ?: defaultChatSummaryResponse()
+
             request.url.encodedPath == CHAT_ENDPOINT ->
                 chatResponse?.invoke(this) ?: defaultChatResponse()
 
             request.url.encodedPath.startsWith("$CHAT_ENDPOINT/") ->
                 chatByIdResponse?.invoke(this) ?: defaultChatResponse()
 
-            CHAT_SUMMARY_ENDPOINT -> chatSummaryResponse?.invoke(this) ?: defaultChatSummaryResponse()
 
             else -> respond(
                 content = "",
@@ -221,4 +223,4 @@ private const val CONTACTS_ENDPOINT = "/chat/contacts"
 private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
 private const val CHAT_ENDPOINT = "/chat"
 private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
-private const val CHAT_SUMMARY_ENDPOINT = "/chat/list"
+private const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
