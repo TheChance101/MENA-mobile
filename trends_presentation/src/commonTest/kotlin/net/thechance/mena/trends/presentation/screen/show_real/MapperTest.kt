@@ -104,11 +104,11 @@ class ReelExtensionTest {
         )
 
 
-        // Expected TrendUiStates
-        val testTrendUiState1 =ReelUiState(
+        // Expected ReelUiStates
+        val testTrendUiState1 = ReelUiState(
             id = "1",
-            profileImageUrl = "",
-            userName = "",
+            profileImageUrl = "https://example.com/alice.jpg",
+            userName = "Alice",
             timeAgo = testCreatedAt.timeAgoValue(),
             thumbnailUrl = "thumb1.jpg",
             videoUrl = "video1.mp4",
@@ -119,8 +119,8 @@ class ReelExtensionTest {
 
         val testTrendUiState2 = ReelUiState(
             id = "2",
-            profileImageUrl = "",
-            userName = "",
+            profileImageUrl = "https://example.com/bob.jpg",
+            userName = "Bob",
             timeAgo = null,
             thumbnailUrl = "thumb2.jpg",
             videoUrl = "video2.mp4",
@@ -131,8 +131,8 @@ class ReelExtensionTest {
 
         val testTrendUiState3 = ReelUiState(
             id = "3",
-            profileImageUrl = "",
-            userName = "",
+            profileImageUrl = "https://example.com/charlie.jpg",
+            userName = "Charlie",
             timeAgo = testCreatedAt.timeAgoValue(),
             thumbnailUrl = "thumb3.jpg",
             videoUrl = "video3.mp4",
