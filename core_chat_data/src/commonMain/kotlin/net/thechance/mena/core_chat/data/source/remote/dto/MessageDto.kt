@@ -15,9 +15,9 @@ data class MessageDto(
 
 @Serializable
 data class SendMessageDto(
-    val messageId: String? = null,
     val chatId: String,
     val text: String? = null,
+    val imageUrls: List<String>? = null
 )
 
 @Serializable

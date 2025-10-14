@@ -24,6 +24,7 @@ import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
 import net.thechance.mena.core_chat.data.contacts.defaultUploadImagesResponse
+import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
 import net.thechance.mena.core_chat.data.contacts.jsonSerialization

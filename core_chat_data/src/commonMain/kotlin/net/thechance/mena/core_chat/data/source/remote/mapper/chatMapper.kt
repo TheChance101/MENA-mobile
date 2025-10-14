@@ -5,7 +5,6 @@ package net.thechance.mena.core_chat.data.source.remote.mapper
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
-import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
@@ -37,15 +36,6 @@ fun MessageDto.toDomain(): Message? {
     )
 }
 
-fun MessageDto.toSendMessageDto(): SendMessageDto {
-    val chatId = getUuidOrNull(chatId) ?: error("Invalid Chat ID")
-    return SendMessageDto(
-        chatId = chatId.toString(),
-        text = text,
-        messageId = getUuidOrNull(id).toString()
-    )
-}
-
 fun ChatDto.toDomain(): Chat? {
     return Chat(
         id = getUuidOrNull(id) ?: return null,
@@ -53,17 +43,6 @@ fun ChatDto.toDomain(): Chat? {
         name = name,
         requesterId = getUuidOrNull(requesterId) ?: return null
     )
-}
-
-fun Message.toSendMessageDto(): SendMessageDto {
-    val content = this.content
-    return when (content) {
-        is MessageContent.Text -> SendMessageDto(chatId = chatId.toString(), text = content.text)
-        is MessageContent.Images -> SendMessageDto(
-            chatId = chatId.toString(),
-            messageId = id.toString()
-        )
-    }
 }
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
