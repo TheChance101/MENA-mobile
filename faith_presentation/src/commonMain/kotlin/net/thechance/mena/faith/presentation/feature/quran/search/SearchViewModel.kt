@@ -12,8 +12,8 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
+import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
 import net.thechance.mena.faith.presentation.util.toSearchResult
-import org.jetbrains.compose.resources.StringResource
 
 class SearchViewModel(
     searchArgs: ISearchArgs,
@@ -72,7 +72,7 @@ class SearchViewModel(
     }
 
     private fun handleHint() {
-        tryToExecute(
+        tryToExecuteSuspend(
             execute = {
                 val hintPostfix =
                     uiState.value.surahName ?: resourceProvider.getString(Res.string.quran)
@@ -96,13 +96,4 @@ class SearchViewModel(
     private companion object {
         const val LENGTH_OF_SHORTEST_WORD_IN_QURAN = 2
     }
-}
-
-interface ResourceProvider {
-    suspend fun getString(resource: StringResource, vararg args: Any): String
-}
-
-class DefaultResourceProvider : ResourceProvider {
-    override suspend fun getString(resource: StringResource, vararg args: Any): String =
-        org.jetbrains.compose.resources.getString(resource, *args)
 }

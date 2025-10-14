@@ -17,6 +17,7 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.SnackBarState
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.ISurahArgs
 import net.thechance.mena.faith.presentation.util.ClipboardManager
+import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,6 +29,7 @@ class SurahViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var testViewModel: SurahViewModel
+    private lateinit var resourceProvider: ResourceProvider
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val bookmarkRepository: BookmarkRepository = mock(mode = MockMode.autofill)
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
@@ -37,12 +39,15 @@ class SurahViewModelTest {
     @BeforeTest
     fun setup() {
         testDispatcher = StandardTestDispatcher()
+        resourceProvider = mock(mode = MockMode.autofill)
+
         testViewModel = SurahViewModel(
             surahArgs = surahArgs,
             dispatcher = testDispatcher,
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
-            bookmarkRepository = bookmarkRepository
+            bookmarkRepository = bookmarkRepository,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -246,7 +251,6 @@ class SurahViewModelTest {
 
     private companion object {
         const val DEFAULT_SURAH_ID = 1
-        const val DEFAULT_SURAH_NAME = "Al-Fatiha"
         const val TEST_AYAH_INDEX = 0
         const val SECOND_AYAH_INDEX = 1
         const val NEGATIVE_AYAH_INDEX = -1

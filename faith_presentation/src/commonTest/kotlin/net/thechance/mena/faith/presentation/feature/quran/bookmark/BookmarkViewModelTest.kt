@@ -20,6 +20,7 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
+import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -36,10 +37,12 @@ class BookmarkViewModelTest {
     private val testScope = TestScope(testDispatcher)
     private lateinit var repository: BookmarkRepository
     private lateinit var viewModel: BookmarkViewModel
+    private lateinit var resourceProvider: ResourceProvider
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        resourceProvider = mock(mode = MockMode.autofill)
         repository = mock(MockMode.autofill)
     }
 
@@ -54,7 +57,10 @@ class BookmarkViewModelTest {
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
 
         // When
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(
+            bookmarkRepository = repository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider)
         advanceUntilIdle()
 
         // Then
@@ -76,7 +82,10 @@ class BookmarkViewModelTest {
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns emptyList()
 
         // When
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(
+            bookmarkRepository = repository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider)
         advanceUntilIdle()
 
         // Then
@@ -97,7 +106,10 @@ class BookmarkViewModelTest {
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
         everySuspend { repository.deleteAyahBookmark(BOOKMARK_ID1) } throws exception
 
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(
+            bookmarkRepository = repository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider)
         advanceUntilIdle()
 
         // When
@@ -119,7 +131,10 @@ class BookmarkViewModelTest {
     fun `onBackClick should emit NavigateBack effect`() = testScope.runTest {
         // Given
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns emptyList()
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(
+            bookmarkRepository = repository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider)
         advanceUntilIdle()
 
         // When & Then
@@ -134,7 +149,10 @@ class BookmarkViewModelTest {
     fun `onStartTilawahClick should emit NavigateBack effect`() = testScope.runTest {
         // Given
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns emptyList()
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(
+            bookmarkRepository = repository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider)
         advanceUntilIdle()
 
         // When & Then

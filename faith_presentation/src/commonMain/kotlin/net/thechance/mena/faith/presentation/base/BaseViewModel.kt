@@ -9,10 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import mena.faith_presentation.generated.resources.Res
@@ -24,8 +26,6 @@ import mena.faith_presentation.generated.resources.error_unauthorized
 import mena.faith_presentation.generated.resources.error_unknown
 import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString
 
 @KoverIgnore
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
@@ -52,7 +52,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     }
 
     fun showSnackBar(
-        message: StringResource,
+        message: String,
         status: SnackBarState.Status,
         durationMillis: Long = 3000L,
     ) {
@@ -63,7 +63,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
             }
             _snackBarState.update {
                 SnackBarState(
-                    message = getString(message),
+                    message = message,
                     status = status,
                     isVisible = true
                 )
@@ -111,9 +111,58 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         }
     }
 
+    protected fun <T> tryToExecuteSuspend(
+        execute: suspend () -> T,
+        onSuccess: (suspend (T) -> Unit)? = null,
+        onError: suspend (Throwable) -> Unit = ::handleError,
+        onStart: suspend () -> Unit = {},
+        onFinally: () -> Unit = {},
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        inScope: CoroutineScope = viewModelScope,
+        delayMillis: Long = 0L
+    ): Job {
+        return inScope.launch(dispatcher) {
+            val handler = CoroutineExceptionHandler { _, throwable ->
+                inScope.launch {
+                    onError(throwable)
+                }
+            }
+            inScope.launch(dispatcher + handler) {
+                onStart()
+                delay(delayMillis)
+                runCatching { execute() }
+                    .onSuccess { result -> onSuccess?.invoke(result) }
+                    .onFailure { throwable -> onError(throwable) }
+                onFinally()
+            }
+        }
+    }
+
+    protected fun <T> tryToCollect(
+        onError: (Throwable) -> Unit = ::handleError,
+        onEmitNewValue: (T) -> Unit = {},
+        coroutineScope: CoroutineScope = viewModelScope,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        block: suspend () -> Flow<T>
+    ) {
+        coroutineScope.launch(dispatcher) {
+            try {
+                block()
+                    .catch {
+                        onError(it)
+                    }.collect {
+                        onEmitNewValue(it)
+                    }
+            } catch (e: Throwable) {
+                onError(e)
+            }
+        }
+    }
+
+
     private fun handleError(error: Throwable) {
         showSnackBar(
-            (error as FaithException).toStringResource(),
+            (error as FaithException).toString(),
             SnackBarState.Status.Error
         )
     }
