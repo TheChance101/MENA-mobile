@@ -21,14 +21,11 @@ class AddressesRepositoryImpl(
         }
     }
 
-    override suspend fun editAddress(
-        addressID: String,
-        address: Address
-    ) {
+    override suspend fun editAddress(address: Address) {
         return safeWrapper {
            client.postJson(
                 requestDto = address.toAddressRequestDto(),
-                path = "$ADDRESS_ENDPOINT/$addressID"
+                path = "$ADDRESS_ENDPOINT/${address.id}"
            )
         }
 

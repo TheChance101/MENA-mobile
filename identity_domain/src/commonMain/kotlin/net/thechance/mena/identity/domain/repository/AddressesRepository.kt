@@ -6,5 +6,5 @@ interface AddressesRepository {
 
     suspend fun createAddress(address: Address)
 
-    suspend fun editAddress(addressID:String, address: Address)
+    suspend fun editAddress(address: Address)
 }
