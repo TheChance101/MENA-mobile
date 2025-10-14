@@ -5,55 +5,46 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.callbackFlow
 
-actual class AzimuthProvider(context: Context) : SensorEventListener {
-    private val _azimuth = MutableStateFlow(0f)
-    actual val azimuthFlow: Flow<Float> = _azimuth
+actual class AzimuthProvider(context: Context) {
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-    private var sensorManager: SensorManager? = null
-    private var accelValues = FloatArray(3)
-    private var magnetValues = FloatArray(3)
-    private var initialized = false
+    actual fun startListening(): Flow<Float> = callbackFlow {
+        var accelerateValues = FloatArray(3)
+        var magnetValues = FloatArray(3)
+        val listener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent?) {
+                when (event?.sensor?.type) {
+                    Sensor.TYPE_ACCELEROMETER -> accelerateValues = event.values.clone()
+                    Sensor.TYPE_MAGNETIC_FIELD -> magnetValues = event.values.clone()
+                    else -> return
+                }
+                val rotationMatrix = FloatArray(9)
+                val orientationValues = FloatArray(3)
+                val isRotationMatrixValid = SensorManager.getRotationMatrix(
+                    rotationMatrix, null, accelerateValues, magnetValues
+                )
+                if (isRotationMatrixValid) {
+                    SensorManager.getOrientation(rotationMatrix, orientationValues)
+                    val azimuthInDegrees = Math.toDegrees(orientationValues[0].toDouble()).toFloat()
+                    val normalizedAzimuth = (azimuthInDegrees + 360) % 360
+                    trySend(normalizedAzimuth)
+                }
+            }
 
-    init {
-        sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        initialized = true
-    }
-
-    actual fun startListening() {
-        if (!initialized)
-            throw IllegalStateException("AzimuthProvider not initialized — call initialize() first.")
-
-        sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also {
-            sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
         }
-        sensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also {
-            sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also {
+            sensorManager.registerListener(listener, it, SensorManager.SENSOR_DELAY_UI)
         }
-    }
-
-    actual fun stopListening() {
-        sensorManager?.unregisterListener(this)
-    }
-
-    override fun onSensorChanged(event: SensorEvent?) {
-        when (event?.sensor?.type) {
-            Sensor.TYPE_ACCELEROMETER -> accelValues = event.values.clone()
-            Sensor.TYPE_MAGNETIC_FIELD -> magnetValues = event.values.clone()
+        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also {
+            sensorManager.registerListener(listener, it, SensorManager.SENSOR_DELAY_UI)
         }
-
-        val rotationMatrix = FloatArray(9)
-        val orientationValues = FloatArray(3)
-
-        if (SensorManager.getRotationMatrix(rotationMatrix, null, accelValues, magnetValues)) {
-            SensorManager.getOrientation(rotationMatrix, orientationValues)
-            val azimuthInDegrees = Math.toDegrees(orientationValues[0].toDouble()).toFloat()
-            val normalized = (azimuthInDegrees + 360) % 360
-            _azimuth.value = normalized
+        awaitClose {
+            sensorManager.unregisterListener(listener)
         }
     }
-
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
 }

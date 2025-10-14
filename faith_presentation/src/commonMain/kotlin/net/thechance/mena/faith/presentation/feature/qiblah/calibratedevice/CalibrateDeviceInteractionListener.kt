@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice
+package net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice
 
 interface CalibrateDeviceInteractionListener {
     fun onBackClick()

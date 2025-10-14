@@ -1,5 +1,5 @@
 package net.thechance.mena.wallet.presentation.model
 
 enum class SubmitTransactionResultStatus {
-    SUCCESS, FAILURE,CONNECTION_LOST
+    SUCCESS, UNKNOWN_ERROR,CONNECTION_LOST
 }

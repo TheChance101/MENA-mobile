@@ -39,14 +39,7 @@ class ConfirmPaymentViewModel(
 
     override fun onPayButtonClicked() {
         updateState { it.copy(isPayBtnLoading = true) }
-        sendEffect(
-            ConfirmPaymentEffect.NavigateToPaymentResultScreen(
-                receiverName = state.value.receiverUiState.name,
-                amount = amount,
-                transactionId = transactionId,
-                submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS
-            )
-        )
+        submitTransaction(dummyTransactionId)
     }
 
     override fun onRefresh() {
@@ -100,5 +93,43 @@ class ConfirmPaymentViewModel(
 
     private fun onGetReceiverInfoError(errorState: ErrorState) {
         updateState { it.copy(isGetUserLoading = false, errorState = errorState) }
+    }
+
+    private fun onSubmitTransactionSuccess() {
+        updateState { it.copy(isPayBtnLoading = false) }
+        sendEffect(
+            effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
+                receiverId,
+                amount,
+                transactionId,
+                SubmitTransactionResultStatus.SUCCESS
+            )
+        )
+    }
+
+    private fun onSubmitTransactionFailed(error: ErrorState) {
+        updateState { it.copy(isPayBtnLoading = false) }
+        sendEffect(
+            effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
+                receiverId,
+                amount,
+                transactionId,
+                submitTransactionResultStatus = when (error) {
+                    ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
+                    else -> SubmitTransactionResultStatus.UNKNOWN_ERROR
+                }
+            )
+        )
+    }
+
+    private fun submitTransaction(transactionId: Uuid) {
+        tryToExecute(
+            callee = {
+                paymentRepository.submitTransaction(transactionId)
+            },
+            onSuccess = { onSubmitTransactionSuccess() },
+            onError = ::onSubmitTransactionFailed,
+            dispatcher = ioDispatcher
+        )
     }
 }
