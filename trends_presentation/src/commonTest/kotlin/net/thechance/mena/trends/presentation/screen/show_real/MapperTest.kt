@@ -55,6 +55,9 @@ class ReelExtensionTest {
             likesCount = 10,
             viewsCount = 100,
             createdAt = testCreatedAt,
+            userName = "Alice",
+            profileImageUrl = "https://example.com/alice.jpg",
+            isCurrentUserOwner = false,
             categories = emptyList()
         )
 
@@ -66,6 +69,9 @@ class ReelExtensionTest {
             likesCount = 20,
             viewsCount = 200,
             createdAt = null,
+            userName = "Bob",
+            profileImageUrl = "https://example.com/bob.jpg",
+            isCurrentUserOwner = true,
             categories = emptyList()
         )
 
@@ -77,6 +83,9 @@ class ReelExtensionTest {
             likesCount = 30,
             viewsCount = 300,
             createdAt = testCreatedAt,
+            userName = "Charlie",
+            profileImageUrl = "https://example.com/charlie.jpg",
+            isCurrentUserOwner = false,
             categories = testCategories
         )
 
@@ -88,8 +97,12 @@ class ReelExtensionTest {
             likesCount = 0,
             viewsCount = 0,
             createdAt = null,
+            userName = "",
+            profileImageUrl = "",
+            isCurrentUserOwner = false,
             categories = emptyList()
         )
+
 
         // Expected TrendUiStates
         val testTrendUiState1 =ReelUiState(

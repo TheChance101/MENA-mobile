@@ -34,8 +34,12 @@ class ReelViewModelTest {
         likesCount = 5,
         viewsCount = 50,
         createdAt = null,
+        userName = "Test User",
+        profileImageUrl = "https://example.com/profile.jpg",
+        isCurrentUserOwner = false,
         categories = emptyList()
     )
+
 
     @BeforeTest
     fun setup() {

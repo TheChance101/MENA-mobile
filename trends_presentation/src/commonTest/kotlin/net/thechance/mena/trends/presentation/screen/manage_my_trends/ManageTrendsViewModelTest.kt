@@ -94,6 +94,9 @@ class ManageTrendsViewModelTest {
                 likesCount = 100,
                 viewsCount = 1000,
                 createdAt = LocalDateTime(2023, 10, 1, 12, 0),
+                userName = "Alice",
+                profileImageUrl = "https://example.com/alice.jpg",
+                isCurrentUserOwner = false,
                 categories = listOf(Category("1", "Trend", ":fire:"))
             ),
             Reel(
@@ -104,6 +107,9 @@ class ManageTrendsViewModelTest {
                 likesCount = 200,
                 viewsCount = 2000,
                 createdAt = LocalDateTime(2023, 10, 2, 12, 0),
+                userName = "Bob",
+                profileImageUrl = "https://example.com/bob.jpg",
+                isCurrentUserOwner = true,
                 categories = listOf(Category("2", "Viral", ":rocket:"))
             )
         )
