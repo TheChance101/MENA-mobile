@@ -22,11 +22,14 @@ import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
+import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
+import net.thechance.mena.core_chat.data.contacts.jsonSerialization
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
@@ -146,6 +149,54 @@ class ChatRepositoryImplTest {
 
         assertFailsWith<NotFoundException> {
             repository.getChatByContactUserId(userId)
+        }
+    }
+
+    @Test
+    fun `should return chat when getChatById is successful`() = runTest {
+        val testChatId = Uuid.random()
+        val chatDto = createChatDto(id = testChatId.toString(), name = "Chat By Id")
+
+        httpClient = createHttpClient(
+            chatByIdResponse = {
+                respond(
+                    content = jsonSerialization.encodeToString(ChatDto.serializer(), chatDto),
+                    status = HttpStatusCode.OK,
+                    headers = jsonHeaders
+                )
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        val result = repository.getChatById(testChatId)
+
+        assertThat(result.id).isEqualTo(testChatId)
+        assertThat(result.name).isEqualTo("Chat By Id")
+    }
+
+    @Test
+    fun `should throw NotFoundException when getChatById returns 404`() = runTest {
+        val testChatId = Uuid.random()
+
+        httpClient = createHttpClient(
+            chatByIdResponse = {
+                respond("", HttpStatusCode.NotFound, jsonHeaders)
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        assertFailsWith<NotFoundException> {
+            repository.getChatById(testChatId)
         }
     }
 

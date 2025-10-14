@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice
+package net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice
 
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 

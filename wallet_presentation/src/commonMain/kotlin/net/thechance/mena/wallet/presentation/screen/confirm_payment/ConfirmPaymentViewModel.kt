@@ -7,6 +7,7 @@ import net.thechance.mena.wallet.domain.model.PaymentConfirmation
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -28,7 +29,7 @@ class ConfirmPaymentViewModel(
         getPaymentConfirmation()
     }
 
-    private fun getPaymentConfirmation(){
+    private fun getPaymentConfirmation() {
         tryToExecute(
             callee = {
                 paymentRepository.getPaymentConfirmation(
@@ -49,7 +50,7 @@ class ConfirmPaymentViewModel(
 
     override fun onPayButtonClicked() {
         updateState { it.copy(isPayBtnLoading = true) }
-        sendEffect(ConfirmPaymentEffect.NavigateToPaymentResultScreen(receiverId, amount))
+        submitTransaction(dummyTransactionId)
     }
 
     override fun onRefresh() {
@@ -57,17 +58,57 @@ class ConfirmPaymentViewModel(
         getPaymentConfirmation()
     }
 
-    private fun onGetPaymentConfirmationSuccess(paymentConfirmation: PaymentConfirmation){
+    private fun onGetPaymentConfirmationSuccess(paymentConfirmation: PaymentConfirmation) {
         updateState {
             it.copy(isLoading = false, paymentUiState = paymentConfirmation.toUi(amount))
         }
     }
 
-    private fun onGetPaymentConfirmationError(errorState: ErrorState){
+    private fun onGetPaymentConfirmationError(errorState: ErrorState) {
         updateState { it.copy(isLoading = false, errorState = errorState) }
     }
 
-    private fun onGetPaymentConfirmationStart(){
+    private fun onGetPaymentConfirmationStart() {
         updateState { it.copy(isLoading = true) }
     }
+
+    private fun onSubmitTransactionSuccess() {
+        updateState { it.copy(isPayBtnLoading = false) }
+        sendEffect(
+            effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
+                receiverId,
+                amount,
+                dummyTransactionId,
+                SubmitTransactionResultStatus.SUCCESS
+            )
+        )
+    }
+
+    private fun onSubmitTransactionFailed(error: ErrorState) {
+        updateState { it.copy(isLoading = false) }
+        sendEffect(
+            effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
+                receiverId,
+                amount,
+                dummyTransactionId,
+                submitTransactionResultStatus = when (error) {
+                    ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
+                    else -> SubmitTransactionResultStatus.UNKNOWN_ERROR
+                }
+            )
+        )
+    }
+
+    private fun submitTransaction(transactionId: Uuid) {
+        tryToExecute(
+            callee = {
+                paymentRepository.submitTransaction(transactionId)
+            },
+            onSuccess = { onSubmitTransactionSuccess() },
+            onError = ::onSubmitTransactionFailed,
+            dispatcher = ioDispatcher
+        )
+    }
+
+    private val dummyTransactionId = Uuid.parse("123e4567-e89b-12d3-a456-426614174000")
 }

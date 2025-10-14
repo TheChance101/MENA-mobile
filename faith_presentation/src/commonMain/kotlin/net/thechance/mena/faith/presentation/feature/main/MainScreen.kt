@@ -49,10 +49,8 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.feature.main.componant.PrayerTimesCard
 import net.thechance.mena.faith.presentation.feature.main.componant.SunriseTimeRow
 import net.thechance.mena.faith.presentation.feature.main.componant.TilawahSection
-import net.thechance.mena.faith.presentation.navigation.CalibrateDeviceRoute
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
-import net.thechance.mena.faith.presentation.navigation.SurRoute
-import net.thechance.mena.faith.presentation.navigation.SurahDetailsRoute
+import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -68,15 +66,15 @@ fun MainScreen(
         when (effect) {
             is MainScreenEffect.NavigateToSurah -> {
                 navController.navigate(
-                    SurahDetailsRoute(
+                    Route.SurahDetailsRoute(
                         surahId = effect.surahId,
                         surahName = effect.surahName
                     )
                 )
             }
 
-            MainScreenEffect.NavigateToQuran -> navController.navigate(SurRoute)
-            MainScreenEffect.NavigateToQiblah -> navController.navigate(CalibrateDeviceRoute)
+            MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
+            MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
             MainScreenEffect.NavigateToMosques -> {}
         }
     }

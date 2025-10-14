@@ -73,6 +73,12 @@ class ChatRepositoryImpl(
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
+    override suspend fun getChatById(chatId: Uuid): Chat {
+        return tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
+            client.get("$CHAT_ENDPOINT/$chatId")
+        }?.toDomain() ?: throw NotFoundException("Chat not found")
+    }
+
     override suspend fun getLocalMessages(chatId: Uuid): List<Message> {
         val failedEntities = messageDao.getMessagesByChat(chatId.toString())
         return failedEntities.map { it.toDomain() }

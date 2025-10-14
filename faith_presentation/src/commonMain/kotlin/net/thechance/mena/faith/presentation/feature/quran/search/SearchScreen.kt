@@ -29,8 +29,8 @@ import mena.faith_presentation.generated.resources.aya
 import mena.faith_presentation.generated.resources.back
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_clear
+import mena.faith_presentation.generated.resources.ic_empty_search
 import mena.faith_presentation.generated.resources.ic_outline_search
-import mena.faith_presentation.generated.resources.ic_search
 import mena.faith_presentation.generated.resources.ic_search_warning
 import mena.faith_presentation.generated.resources.no_results_found_subtitle
 import mena.faith_presentation.generated.resources.no_results_found_title
@@ -44,22 +44,39 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.component.DotSeparator
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.getAyahTextStyle
+import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun SearchScreen(
-    surahId: Int?,
-    surahName: String?,
-    viewModel: SearchViewModel = koinViewModel(parameters = { parametersOf(surahId, surahName) })
+    viewModel: SearchViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
+
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
-            SearchEffect.NavigateBack -> {}
-            is SearchEffect.NavigateToSurah -> {}
+            is SearchEffect.NavigateToSurah -> {
+                navController.navigate(
+                    SurahDetailsRoute(
+                        surahId = effect.surahId,
+                        surahName = effect.surahName,
+                        ayahNumber = effect.ayahId
+                    )
+                )
+            }
+
+            is SearchEffect.NavigateBack -> {
+                if (effect.ayahNumber != null) {
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("ayahNumber", effect.ayahNumber)
+                }
+                navController.navigateUp()
+            }
         }
     }
     Content(state = state, listener = viewModel)
@@ -167,7 +184,7 @@ private fun StartOrEmptyState(
                 )
                 Image(
                     modifier = Modifier.padding(bottom = Theme.spacing._12),
-                    painter = painterResource(if (isBlankQuery) Res.drawable.ic_search else Res.drawable.ic_search_warning),
+                    painter = painterResource(if (isBlankQuery) Res.drawable.ic_empty_search else Res.drawable.ic_search_warning),
                     contentDescription = stringResource(if (isBlankQuery) Res.string.start_searching_title else Res.string.no_results_found_title)
                 )
             }

@@ -5,7 +5,7 @@ import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import org.koin.core.annotation.Single
 
 @Single
-class VideoMetaDataValidator {
+class VideoValidator {
     fun validateSize(sizeInBytes: Long) {
         sizeInBytes.takeIf { it <= MAX_FILE_SIZE_100MB } ?: throw MaxFileSizeExceededException()
     }
