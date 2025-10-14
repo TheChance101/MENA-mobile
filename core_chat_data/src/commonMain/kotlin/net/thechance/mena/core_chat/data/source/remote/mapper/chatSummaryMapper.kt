@@ -8,14 +8,13 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 
-fun PagedDataDto<ChatSummaryDto>?.toPagedListOfChatSummary(): PagedData<ChatSummary> {
-    val pagedData = this ?: throw ContactsFetchFailedException("Response body is null")
+fun PagedDataDto<ChatSummaryDto>.toPagedListOfChatSummary(): PagedData<ChatSummary> {
+    val pagedData = this
     return PagedData(
         data = pagedData.data.orEmpty().toListOfChatSummary(),
         totalItems = pagedData.totalItems ?: 0,
@@ -24,7 +23,7 @@ fun PagedDataDto<ChatSummaryDto>?.toPagedListOfChatSummary(): PagedData<ChatSumm
 }
 
 private fun List<ChatSummaryDto>.toListOfChatSummary(): List<ChatSummary> {
-    return mapNotNull { it.toDomain() }.sortedByDescending { it.lastMessage.sendAt }
+    return mapNotNull { it.toDomain() }
 }
 
 @OptIn(ExperimentalTime::class)

@@ -71,7 +71,11 @@ class HomeViewModel(
     }
 
     private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
-        updateState { it.copy(chats = it.chats + items.data.map { chat -> chat.toUi() }) }
+        val chats = items.data
+                         .sortedByDescending { it.lastMessage.sendAt }
+                         .map { chat -> chat.toUi() }
+
+        updateState { it.copy(chats = it.chats + chats) }
     }
 
     override fun onNewChatClicked() {

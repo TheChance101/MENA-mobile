@@ -71,7 +71,7 @@ class ChatRepositoryImpl(
                 parameter(PAGE_NUMBER_PARAMETER, pageNumber)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
-        }.toPagedListOfChatSummary()
+        }?.toPagedListOfChatSummary() ?: throw NotFoundException("Response body is null")
     }
 
     override suspend fun deleteMessage(message: Message) {
