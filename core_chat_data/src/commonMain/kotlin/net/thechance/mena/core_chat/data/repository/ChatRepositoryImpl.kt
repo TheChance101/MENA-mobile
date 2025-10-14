@@ -119,14 +119,15 @@ class ChatRepositoryImpl(
                 is MessageContent.Images -> {
                     val source = content.source
                     val byteArrays =
-                        if (source is ImagesSource.Local) source.byteArrays else emptyList()
+                        if (source is ImagesSource.Local)
+                            source.byteArrays
+                        else throw SendMessageFailedException("Failed to send message: Corrupted images")
                     sendImagesMessage(
                         imageNames = byteArrays.mapIndexed { index, _ -> "image_$index" },
                         images = byteArrays,
                         chatId = message.chatId
                     )
                 }
-
             }
         } catch (e: Exception) {
             messageDao.updateMessageStatus(

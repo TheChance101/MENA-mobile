@@ -263,7 +263,7 @@ class ChatViewModel(
         updateChatListItems(uiMessages)
 
         uiMessages
-            .filter { it.status == MessageStatus.LOADING || it.status == MessageStatus.FAILED }
+            .filter { it.status == MessageStatus.LOADING }
             .forEach { sendMessage(it) }
     }
 
