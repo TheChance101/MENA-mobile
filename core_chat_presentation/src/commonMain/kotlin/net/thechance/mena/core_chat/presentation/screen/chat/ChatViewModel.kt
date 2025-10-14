@@ -10,10 +10,10 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
-import net.thechance.mena.core_chat.domain.entity.Chat
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.success
+import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
@@ -69,7 +69,11 @@ class ChatViewModel(
     }
 
     private fun onGetChatError() {
-        showSnackBar(titleStringResource = Res.string.error, messageStringResource = Res.string.error_cant_get_messages, isError = true)
+        showSnackBar(
+            titleStringResource = Res.string.error,
+            messageStringResource = Res.string.error_cant_get_messages,
+            isError = true
+        )
         popBackStack()
     }
 
@@ -136,16 +140,15 @@ class ChatViewModel(
         if (chatId == null || senderId == null || text.isEmpty()) return
 
         val content = MessageContent.Text(text)
-        sendMessage(chatId, senderId, content)
-    }
-
-    private fun sendMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
         val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
             content = content
         )
+        sendMessage(message)
+    }
 
+    private fun sendMessage(message: MessageUiState) {
         updateStateWithNewMessage(message)
         updateState { state -> state.copy(inputMessage = "") }
 
@@ -209,11 +212,7 @@ class ChatViewModel(
         }
         updateStateWithNewMessage(message.copy(status = MessageStatus.LOADING))
 
-        sendMessage(
-            chatId = message.chatId,
-            senderId = message.senderId,
-            content = message.content
-        )
+        sendMessage(message)
     }
 
     override fun onResendMessageDialogDismissed() {
@@ -251,14 +250,14 @@ class ChatViewModel(
 
     private fun onLoadChatHistorySuccess(messages: List<Message>) {
         val senderId = state.value.chatRequesterId
-            ?: return  showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
+            ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         val uiMessages = messages.map { it.toUi(senderId) }
         updateChatListItems(uiMessages)
 
-        messages
-            .filter { it.status == MessageStatus.LOADING }
-            .forEach { sendMessage(chatId = it.chatId, senderId = senderId, content = it.content) }
+        uiMessages
+            .filter { it.status == MessageStatus.LOADING || it.status == MessageStatus.FAILED }
+            .forEach { sendMessage(it) }
     }
 
     private fun observeReadMessages() {
@@ -327,7 +326,8 @@ class ChatViewModel(
     }
 
     private fun onDownloadImageSuccess() {
-        showSnackBar(Res.string.success, Res.string.image_saved_successfully,isError = false)    }
+        showSnackBar(Res.string.success, Res.string.image_saved_successfully, isError = false)
+    }
 
     override fun onCloseImageViewClicked() {
         updateState {
