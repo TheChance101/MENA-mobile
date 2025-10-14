@@ -38,7 +38,7 @@ class PickLocationScreenViewModel(
             function = { mobileLocationRepository.getLocationName(state.value.currentLocation.toEntity()) },
             onSuccess = ::onGetLocationNameSuccess,
             onError = ::onError,
-            dispatcher = dispatcher
+            dispatcher = Dispatchers.Main
         )
     }
 
