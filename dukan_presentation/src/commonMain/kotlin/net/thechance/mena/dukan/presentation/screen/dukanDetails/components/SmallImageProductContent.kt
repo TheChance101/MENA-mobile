@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,7 +72,7 @@ fun SmallImageProductContent(
                 item {
                     ProductsShelf(
                         shelf = shelf,
-                        state = state,
+                        cartColor = Color(state.dukanInfo.color),
                         listener = listener
                     )
                 }
@@ -83,7 +84,7 @@ fun SmallImageProductContent(
 @Composable
 private fun ProductsShelf(
     shelf: DukanDetailsUiState.ShelfUiState,
-    state: DukanDetailsUiState,
+    cartColor : Color?= null,
     listener: DukanDetailsInteractionListener
 ) {
     val productPairs = remember(shelf.products) {
@@ -95,28 +96,30 @@ private fun ProductsShelf(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
 
-        itemsIndexed(productPairs) { index, pair ->
+        itemsIndexed(items = productPairs) { index, pair ->
             Column(
                 modifier = Modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 pair.forEach { product ->
-                    ProductCard(
-                        productName = product.name,
-                        productImageUrl = product.imageUrl,
-                        productDescription = product.description,
-                        productPrice = product.price,
-                        productCardBackground = Theme.colorScheme.background.surfaceLow,
-                        productAction = {
-                            CartOrQuantityProductComponent(
-                                showProductQuantity = product.showProductQuantity,
-                                state = state,
-                                onCartClick = {
-                                    listener.onCartClick(product.id)
-                                }
-                            )
-                        }
-                    )
+                    key(product.id) {
+                        ProductCard(
+                            productName = product.name,
+                            productImageUrl = product.imageUrl,
+                            productDescription = product.description,
+                            productPrice = product.price,
+                            productCardBackground = Theme.colorScheme.background.surfaceLow,
+                            productAction = {
+                                CartOrQuantityProductComponent(
+                                    showProductQuantity = product.showProductQuantity,
+                                    cartColor = cartColor,
+                                    onCartClick = {
+                                        listener.onCartClick(product.id)
+                                    }
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,19 +18,15 @@ import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CartOrQuantityProductComponent(
     showProductQuantity: Boolean,
-    state: DukanDetailsUiState? = null,
+    cartColor : Color?= null,
     onCartClick: () -> Unit
 ) {
-    val cartColor = remember(state?.dukanInfo?.color) {
-        state?.dukanInfo?.color?.let { Color(it) }
-    }
 
     AnimatedContent(
         targetState = showProductQuantity,
@@ -46,7 +41,7 @@ fun CartOrQuantityProductComponent(
         } else {
 
             ProductCart(
-                backgroundColor = cartColor,
+                cartColor = cartColor,
                 onClick = onCartClick
             )
         }
@@ -56,7 +51,7 @@ fun CartOrQuantityProductComponent(
 @Composable
 private fun ProductCart(
     onClick: () -> Unit,
-    backgroundColor: Color? = null,
+    cartColor: Color? = null,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -64,7 +59,7 @@ private fun ProductCart(
             .size(32.dp)
             .clip(RoundedCornerShape(size = Theme.radius.full))
             .background(
-                color = backgroundColor ?: Theme.colorScheme.primary.primary,
+                color = cartColor ?: Theme.colorScheme.primary.primary,
             )
             .clickable {
                 onClick()
