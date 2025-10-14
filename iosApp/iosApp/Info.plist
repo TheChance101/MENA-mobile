@@ -10,5 +10,7 @@
     <string>$(CFBundleShortVersionString)</string>
     <key>NSContactsUsageDescription</key>
     <string>We need access to your contacts.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Enable location access to use the GPS button and get your current location.</string>
 </dict>
 </plist>
