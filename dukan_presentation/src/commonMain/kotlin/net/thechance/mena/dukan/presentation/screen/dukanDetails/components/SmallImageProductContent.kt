@@ -52,30 +52,28 @@ fun SmallImageProductContent(
         contentPadding = PaddingValues(vertical = 16.dp),
         state = lazyListState
     ) {
-        shelves.items.forEach { shelf ->
-            if (shelf.products.isNotEmpty()) {
-                stickyHeader {
-                    ShelfHeader(
-                        state = state,
-                        shelfName = shelf.name,
-                        onViewAllClicked = {
-                            listener.onViewAllShelfProductsClicked(
-                                shelf.id,
-                                shelf.name
-                            )
-                        },
-                        modifier = Modifier
-                            .background(Theme.colorScheme.background.surface)
-                            .padding(horizontal = Theme.spacing._16)
-                    )
-                }
-                item {
-                    ProductsShelf(
-                        shelf = shelf,
-                        cartColor = Color(state.dukanInfo.color),
-                        listener = listener
-                    )
-                }
+        shelves.items.filter { it.products.isNotEmpty() }.forEach { shelf ->
+            stickyHeader(key = shelf.id) {
+                ShelfHeader(
+                    state = state,
+                    shelfName = shelf.name,
+                    onViewAllClicked = {
+                        listener.onViewAllShelfProductsClicked(
+                            shelf.id,
+                            shelf.name
+                        )
+                    },
+                    modifier = Modifier
+                        .background(Theme.colorScheme.background.surface)
+                        .padding(horizontal = Theme.spacing._16)
+                )
+            }
+            item {
+                ProductsShelf(
+                    shelf = shelf,
+                    cartColor = Color(state.dukanInfo.color),
+                    listener = listener
+                )
             }
         }
     }
@@ -84,14 +82,16 @@ fun SmallImageProductContent(
 @Composable
 private fun ProductsShelf(
     shelf: DukanDetailsUiState.ShelfUiState,
-    cartColor : Color?= null,
+    cartColor: Color? = null,
     listener: DukanDetailsInteractionListener
 ) {
     val productPairs = remember(shelf.products) {
         shelf.products.chunked(2)
     }
+    val lazyListState = rememberLazyListState()
 
     LazyRow(
+        state = lazyListState,
         contentPadding = PaddingValues(Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
