@@ -8,36 +8,37 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 fun PrayerTimesDto.toDomain(): List<PrayerTime> {
     val startOfDayTimeStamp: Long = this.date?.gregorian?.timestamp.toSafeLong()
+    val hijriReadableDate = this.date?.hijri?.readableDate.orEmpty()
     return listOf(
         PrayerTime(
             name = PrayerName.SUNRISE,
             time = sunrise.toInstant(startOfDayTimeStamp),
-            hijriDate = date?.hijri?.readableDate.orEmpty()
+            hijriDate = hijriReadableDate
         ),
         PrayerTime(
             name = PrayerName.FAJR,
             time = fajr.toInstant(startOfDayTimeStamp),
-            hijriDate = date?.hijri?.readableDate.orEmpty()
+            hijriDate = hijriReadableDate
         ),
         PrayerTime(
             name = PrayerName.DHUHR,
             time = dhuhr.toInstant(startOfDayTimeStamp),
-            hijriDate = date?.hijri?.readableDate.orEmpty()
+            hijriDate = hijriReadableDate
         ),
         PrayerTime(
             name = PrayerName.ASR,
             time = asr.toInstant(startOfDayTimeStamp),
-            hijriDate = date?.hijri?.readableDate.orEmpty()
+            hijriDate = hijriReadableDate
         ),
         PrayerTime(
             name = PrayerName.MAGHRIB,
             time = maghrib.toInstant(startOfDayTimeStamp),
-            hijriDate = date?.hijri?.readableDate.orEmpty()
+            hijriDate = hijriReadableDate
         ),
         PrayerTime(
             name = PrayerName.ISHA,
             time = isha.toInstant(startOfDayTimeStamp),
-            hijriDate = date?.hijri?.readableDate.orEmpty()
+            hijriDate = hijriReadableDate
         )
     )
 }
