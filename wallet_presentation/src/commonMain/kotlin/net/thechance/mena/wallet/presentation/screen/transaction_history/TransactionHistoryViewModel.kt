@@ -21,7 +21,7 @@ import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.Paginator
-import org.jetbrains.compose.resources.getString
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.time.Clock
@@ -33,6 +33,7 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class TransactionHistoryViewModel(
     @Provided private val transactionRepository: TransactionRepository,
+    private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
     TransactionHistoryScreenState()
@@ -176,8 +177,8 @@ class TransactionHistoryViewModel(
         }
 
         showSnackBar(
-            title = getString(Res.string.error),
-            message = getString(Res.string.failed_to_load_date_picker),
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(Res.string.failed_to_load_date_picker),
             isSuccess = false
         )
     }
@@ -304,8 +305,8 @@ class TransactionHistoryViewModel(
     private fun showInvalidDatesSnackBar() {
         viewModelScope.launch {
             showSnackBar(
-                title = getString(Res.string.error),
-                message = getString(Res.string.start_date_must_be_before_end_date),
+                title = stringProvider.getString(Res.string.error),
+                message = stringProvider.getString(Res.string.start_date_must_be_before_end_date),
                 isSuccess = false
             )
         }

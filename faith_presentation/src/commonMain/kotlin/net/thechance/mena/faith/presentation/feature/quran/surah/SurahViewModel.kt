@@ -12,21 +12,21 @@ import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.SnackBarState
+import net.thechance.mena.faith.presentation.feature.quran.surah.args.ISurahArgs
 import net.thechance.mena.faith.presentation.util.ClipboardManager
 
 class SurahViewModel(
-    surahName: String,
-    private val surahId: Int,
+    private val surahArgs: ISurahArgs,
     private val quranRepository: QuranRepository,
     private val clipboardManager: ClipboardManager,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val bookmarkRepository: BookmarkRepository,
 ) : BaseViewModel<SurahScreenState, SurahScreenEffect>(
-    initialState = SurahScreenState(surahId = surahId, surahName = surahName)
+    initialState = SurahScreenState(surahId = surahArgs.surahId, surahName = surahArgs.surahName)
 ), SurahInteractionListener {
 
     init {
-        loadSurahData(surahId)
+        loadSurahData(surahArgs.surahId)
     }
 
     private fun loadSurahData(surahId: Int) {
@@ -54,6 +54,10 @@ class SurahViewModel(
         }
     }
 
+    override fun onSearchClick() {
+        sendEffect(SurahScreenEffect.NavigateToSearchScreen(surahArgs.surahId, surahArgs.surahName))
+    }
+
     override fun onCopyClick(ayahContent: String) {
         tryToExecute(
             execute = { clipboardManager.copy(ayahContent) },
@@ -79,7 +83,7 @@ class SurahViewModel(
         tryToExecute(
             execute = {
                 bookmarkRepository.addAyahBookmark(
-                    surahId = surahId,
+                    surahId = surahArgs.surahId,
                     ayahNumber = ayahNumber
                 )
             },

@@ -9,6 +9,6 @@ interface StatementsHistoryInteractionListener {
     fun onBackClicked()
     fun onRetryLoadStatementsHistoryClicked()
     fun onNextPageRequested()
-    fun onStatementCardClicked(id: Uuid)
+    fun onStatementCardClicked(id: Long)
     fun onEditClicked()
 }

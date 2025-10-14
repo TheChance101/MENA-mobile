@@ -27,8 +27,16 @@ class PaymentRepositoryImpl(private val networkClient: NetworkClient) : PaymentR
         }.toEntity()
     }
 
+    override suspend fun submitTransaction(transactionId: Uuid) {
+        safeApiCall<Unit> {
+            networkClient.post("$SUBMIT_PAYMENT_PATH/$transactionId") {
+            }
+        }
+    }
+
     private companion object {
         const val PAYMENT_PATH = "/wallet/payment"
         const val CONFIRM_PAYMENT_PATH = "$PAYMENT_PATH/isValid"
+        const val SUBMIT_PAYMENT_PATH = "$PAYMENT_PATH/submit"
     }
 }

@@ -19,7 +19,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
@@ -127,7 +126,7 @@ private fun onConfirmPaymentEffect(
     when (effect) {
         ConfirmPaymentEffect.NavigateBack -> onNavigateBackClicked()
         is ConfirmPaymentEffect.NavigateToPaymentResultScreen -> {
-            navigateToPaymentResultScreen(effect.receiverId, effect.amount)
+            navigateToPaymentResultScreen(effect.receiverName, effect.amount)
         }
     }
 }
