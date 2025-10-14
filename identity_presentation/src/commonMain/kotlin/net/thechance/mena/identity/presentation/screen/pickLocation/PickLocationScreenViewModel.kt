@@ -71,7 +71,7 @@ class PickLocationScreenViewModel(
             function = ::onGpsFetch,
             onSuccess = ::onClickGpsSuccess,
             onError = ::onClickGpsError,
-            dispatcher = dispatcher
+            dispatcher = Dispatchers.Main
         )
     }
 
