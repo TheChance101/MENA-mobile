@@ -1,11 +1,11 @@
 package net.thechance.mena.wallet.data.mapper
 
-import net.thechance.mena.wallet.data.dto.UserDto
-import net.thechance.mena.wallet.domain.entity.User
+import net.thechance.mena.wallet.data.dto.ReceiverDto
+import net.thechance.mena.wallet.domain.model.Receiver
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-fun UserDto.toEntity() = User(
+fun ReceiverDto.toEntity() = Receiver(
     name = name ?: "",
     imgUrl = imageUrl
 )

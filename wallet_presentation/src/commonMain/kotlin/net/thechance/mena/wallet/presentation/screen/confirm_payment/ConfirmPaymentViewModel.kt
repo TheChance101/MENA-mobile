@@ -3,10 +3,10 @@ package net.thechance.mena.wallet.presentation.screen.confirm_payment
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.wallet.domain.entity.User
+import net.thechance.mena.wallet.domain.model.Receiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
-import net.thechance.mena.wallet.domain.repository.UserRepository
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
@@ -21,7 +21,7 @@ import kotlin.uuid.Uuid
 class ConfirmPaymentViewModel(
     @Provided private val args: ConfirmPaymentArgs,
     @Provided private val balanceRepository: BalanceRepository,
-    @Provided private val userRepository: UserRepository,
+    @Provided private val transactionRepository: TransactionRepository,
     @Provided private val paymentRepository: PaymentRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
@@ -62,7 +62,7 @@ class ConfirmPaymentViewModel(
 
     private fun getReceiverInfo() {
         tryToExecute(
-            callee = { userRepository.getReceiverByTransactionId(transactionId) },
+            callee = { transactionRepository.getReceiverByTransactionId(transactionId) },
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onGetReceiverInfoError,
             onStart = { updateState { it.copy(isGetUserLoading = true) } },
@@ -87,9 +87,9 @@ class ConfirmPaymentViewModel(
         updateState { it.copy(isGetBalanceLoading = false, errorState = errorState) }
     }
 
-    private fun onGetReceiverInfoSuccess(userInfo: User) {
+    private fun onGetReceiverInfoSuccess(receiverInfo: Receiver) {
         updateState {
-            it.copy(isGetUserLoading = false, receiverUiState = userInfo.toUiState())
+            it.copy(isGetUserLoading = false, receiverUiState = receiverInfo.toUiState())
         }
     }
 

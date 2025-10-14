@@ -15,6 +15,7 @@ import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.transaction.TransactionRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.Receiver
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionStatus
@@ -107,6 +108,28 @@ class TransactionRepositoryImplTest {
                 receiverId = receiverId1,
                 amount = amount1
             )
+        }
+    }
+
+    @Test
+    fun `getReceiverByTransactionId returns user when API call is successful`() = runTest()
+    {
+        networkClient = createNetworkClient(userResponse)
+        transactionRepository = TransactionRepositoryImpl(networkClient)
+
+        val result = transactionRepository.getReceiverByTransactionId(transaction1Id)
+
+        assertEquals(receiver, result)
+    }
+
+    @Test
+    fun `getReceiverByTransactionId returns throw exception when API call is fails`() = runTest()
+    {
+        networkClient = createNetworkClient(userErrorResponse)
+        transactionRepository = TransactionRepositoryImpl(networkClient)
+
+        assertFailsWith<Exception> {
+            transactionRepository.getReceiverByTransactionId(transaction1Id)
         }
     }
 
@@ -234,6 +257,47 @@ class TransactionRepositoryImplTest {
                     "message": "Server error occurred"
                     }
                     """.trimMargin(),
+                    status = HttpStatusCode.InternalServerError,
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.toString()
+                    )
+                )
+            }
+
+        const val receiverName = "username1"
+        const val receiverImg = "userimg1.png"
+        val receiver = Receiver(
+            name = receiverName,
+            imgUrl = receiverImg
+        )
+
+        val userResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
+            {
+                respond(
+                    content = """
+                    {
+                        "imageUrl": "$receiverImg",
+                        "name": "$receiverName"
+                    }
+                    """,
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(
+                        HttpHeaders.ContentType,
+                        ContentType.Application.Json.toString()
+                    )
+                )
+            }
+
+        val userErrorResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
+            {
+                respond(
+                    content = """
+                    {
+                        "status": 500,
+                        "message": "Server error occurred"
+                    }
+                    """.trimIndent(),
                     status = HttpStatusCode.InternalServerError,
                     headers = headersOf(
                         HttpHeaders.ContentType,

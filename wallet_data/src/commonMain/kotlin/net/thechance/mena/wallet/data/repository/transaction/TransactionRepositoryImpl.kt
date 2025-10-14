@@ -1,16 +1,19 @@
 package net.thechance.mena.wallet.data.repository.transaction
 
+import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.dto.FirstTransactionDateDto
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.TransactionDto
+import net.thechance.mena.wallet.data.dto.ReceiverDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.model.Receiver
 import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -66,10 +69,20 @@ class TransactionRepositoryImpl(
         }
     }
 
+    override suspend fun getReceiverByTransactionId(id: Uuid): Receiver {
+        return safeApiCall<ReceiverDto> {
+            networkClient.get("${TRANSACTION_PATH}$RECEIVER_DETAILS"){
+                parameter(TRANSACTION_ID_PARAM, id)
+            }
+        }.toEntity()
+    }
+
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/add"
+        const val RECEIVER_DETAILS = "/receiver-details"
+        const val TRANSACTION_ID_PARAM = "transactionId"
     }
 
 }

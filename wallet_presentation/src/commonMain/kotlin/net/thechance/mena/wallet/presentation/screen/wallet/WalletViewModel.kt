@@ -123,21 +123,25 @@ class WalletViewModel(
                     amount = amount
                 )
             },
-            onSuccess = { transactionId ->
-                sendEffect(WalletEffect.NavigateToConfirmPaymentScreen(amount, transactionId))
-            },
-            onError = { error ->
-                val errorMessage = when (error) {
-                    ErrorState.NoInternet -> Res.string.no_internet_title
-                    else -> Res.string.payment_failed_description
-                }
-                showSnackBar(
-                    title = stringProvider.getString(Res.string.error),
-                    message = stringProvider.getString(errorMessage),
-                    isSuccess = false
-                )
-            },
+            onSuccess = { onAddPendingTransactionSuccess(it, amount) },
+            onError = ::onAddPendingTransactionError,
             dispatcher = ioDispatcher
+        )
+    }
+
+    private fun onAddPendingTransactionSuccess(transactionId : Uuid, amount: Double){
+        sendEffect(WalletEffect.NavigateToConfirmPaymentScreen(amount, transactionId))
+    }
+
+    private suspend fun onAddPendingTransactionError(error: ErrorState){
+        val errorMessage = when (error) {
+            ErrorState.NoInternet -> Res.string.no_internet_title
+            else -> Res.string.payment_failed_description
+        }
+        showSnackBar(
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(errorMessage),
+            isSuccess = false
         )
     }
 }
