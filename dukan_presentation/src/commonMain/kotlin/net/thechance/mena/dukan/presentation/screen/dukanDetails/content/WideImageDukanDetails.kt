@@ -140,7 +140,7 @@ private fun DukanHeaderIcon(
     onIconClick: () -> Unit
 ) {
     AppBarOptionContainer(onClick = { onIconClick() }, isBadgeVisible = isBadgeVisible) {
-        Icon(painter = icon, contentDescription = "header icon")
+        Icon(painter = icon, contentDescription = null)
     }
 }
 
@@ -209,7 +209,7 @@ private fun DukanIconButton(
                 shape = RoundedCornerShape(Theme.radius.full)
             )
     ) {
-        Icon(painter = icon, contentDescription = "dukan details icon", tint = iconColor)
+        Icon(painter = icon, contentDescription = null, tint = iconColor)
     }
 }
 
