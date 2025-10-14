@@ -6,8 +6,8 @@ import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 fun Reel.toUiState(): ReelUiState {
     return ReelUiState(
         id = id,
-        profileImageUrl = "",//TODO
-        userName = "",//TODO
+        profileImageUrl = profileImageUrl,
+        userName = userName,
         timeAgo = createdAt?.timeAgoValue(),
         thumbnailUrl = thumbnailUrl,
         videoUrl = videoUrl,
