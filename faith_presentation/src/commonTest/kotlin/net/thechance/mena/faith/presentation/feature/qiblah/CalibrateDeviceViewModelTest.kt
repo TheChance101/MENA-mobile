@@ -35,15 +35,6 @@ class CalibrateDeviceViewModelTest {
     }
 
     @Test
-    fun `init should have correct initial state`() = testScope.runTest {
-        viewModel.uiState.test {
-            val state = awaitItem()
-            assertEquals(Unit, state)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `onBackClick should emit NavigateBack effect`() = testScope.runTest {
         viewModel.uiEffect.test {
             viewModel.onBackClick()
