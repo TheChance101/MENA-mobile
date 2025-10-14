@@ -5,13 +5,13 @@ import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.MobileGeolocator
 import net.thechance.mena.identity.domain.entity.Coordinates
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
-import net.thechance.mena.identity.domain.repository.LocationRepository
+import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 
-class LocationRepositoryImpl(
-    private val geocoder: GeocoderWrapper,
-) : LocationRepository {
 
-    override suspend fun getCurrentLocation(): Coordinates {
+actual class MobileLocationRepositoryImpl( private val geocoder: GeocoderWrapper,
+) : MobileLocationRepository {
+
+    actual override suspend fun getCurrentLocation(): Coordinates? {
         val geolocator: Geolocator = MobileGeolocator()
         return when (val result = geolocator.current()) {
             is GeolocatorResult.Error -> {
@@ -28,7 +28,7 @@ class LocationRepositoryImpl(
         }
     }
 
-    override suspend fun getLocationName(
+    actual override suspend fun getLocationName(
         coordinates: Coordinates,
     ): String {
         val geocoder = geocoder.placeOrNull(coordinates)

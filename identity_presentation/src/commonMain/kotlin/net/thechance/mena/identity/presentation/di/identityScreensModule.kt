@@ -20,7 +20,7 @@ val identityScreensModule = module {
     includes(platformModule())
     single { get<String>(named(APP_VERSION)) }
 
-    factory(named("LOCATION_FOREGROUND_HANDLER")) {
+    factory{
         PermissionHandler(get(named("LOCATION_FOREGROUND")))
     }
 
@@ -30,17 +30,6 @@ val identityScreensModule = module {
     factoryOf(::OtpScreenViewModel)
     factoryOf(::ProfileScreenViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
-    factory {
-        PickLocationScreenViewModel(
-            locationRepository = get(),
-            dispatcher = get(),
-            locationForegroundHandler = get(named("LOCATION_FOREGROUND_HANDLER")),
-        )
-    }
-    factory {
-        EnableLocationScreenViewModel(
-            locationForegroundHandler = get(named("LOCATION_FOREGROUND_HANDLER")),
-            dispatcher = get()
-        )
-    }
+    factoryOf(::PickLocationScreenViewModel)
+    factoryOf(::EnableLocationScreenViewModel)
 }

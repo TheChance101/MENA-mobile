@@ -8,7 +8,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
-import net.thechance.mena.identity.data.repository.location.LocationRepositoryImpl
+import net.thechance.mena.identity.data.repository.location.MobileLocationRepositoryImpl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import net.thechance.mena.identity.domain.entity.Coordinates as DomainCoordinates
@@ -16,7 +16,7 @@ import net.thechance.mena.identity.domain.entity.Coordinates as DomainCoordinate
 class LocationRepositoryImplTest {
 
     private val geocoder = mock<GeocoderWrapper>()
-    private val locationRepositoryImpl: LocationRepositoryImpl = LocationRepositoryImpl(geocoder)
+    private val locationRepositoryImpl: MobileLocationRepositoryImpl = MobileLocationRepositoryImpl(geocoder)
 
     @Test
     fun `getLocationName should return formatted address when the place is not valid`() =

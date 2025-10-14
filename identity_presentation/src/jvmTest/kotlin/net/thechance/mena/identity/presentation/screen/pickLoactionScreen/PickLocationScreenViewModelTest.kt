@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
-import net.thechance.mena.identity.domain.repository.LocationRepository
+import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenViewModel
@@ -25,7 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class PickLocationScreenViewModelTest {
-    private val locationRepository = mockk<LocationRepository>()
+    private val mobileLocationRepository = mockk<MobileLocationRepository>()
     private val locationPermissionHandler = mockk<PermissionHandler>()
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: PickLocationScreenViewModel
@@ -34,7 +34,7 @@ class PickLocationScreenViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = PickLocationScreenViewModel(locationRepository, testDispatcher,locationPermissionHandler)
+        viewModel = PickLocationScreenViewModel(mobileLocationRepository, testDispatcher,locationPermissionHandler)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,7 +48,7 @@ class PickLocationScreenViewModelTest {
         val coordinates = PickLocationScreenUIState.CoordinatesUiState(28.0, 29.0)
         val pointerLocation = DpOffset(10.0.dp, 20.0.dp)
         val address = "Test Address"
-        coEvery { locationRepository.getLocationName(coordinates.toEntity()) } returns address
+        coEvery { mobileLocationRepository.getLocationName(coordinates.toEntity()) } returns address
 
         viewModel.onClickMap(coordinates, pointerLocation)
         testDispatcher.scheduler.advanceUntilIdle()
@@ -63,7 +63,7 @@ class PickLocationScreenViewModelTest {
     @Test
     fun `onClickGps should update state with current location`() = runTest {
         val coordinates = PickLocationScreenUIState.CoordinatesUiState(28.0, 29.0)
-        coEvery { locationRepository.getCurrentLocation() } returns coordinates.toEntity()
+        coEvery { mobileLocationRepository.getCurrentLocation() } returns coordinates.toEntity()
 
         viewModel.onClickGps()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -78,7 +78,7 @@ class PickLocationScreenViewModelTest {
     fun `onClickConfirm should send NavigateToAddLocation effect`() = runTest {
         val coordinates = PickLocationScreenUIState.CoordinatesUiState(28.0, 29.0)
         val address = "Test Address"
-        coEvery { locationRepository.getLocationName(coordinates.toEntity()) } returns address
+        coEvery { mobileLocationRepository.getLocationName(coordinates.toEntity()) } returns address
 
 
         viewModel.effect.test {
@@ -114,7 +114,7 @@ class PickLocationScreenViewModelTest {
 
     @Test
     fun `onClickGps should update state with error message when locationPermissionHandler throws`(){
-        coEvery { locationRepository.getCurrentLocation() } throws  Exception()
+        coEvery { mobileLocationRepository.getCurrentLocation() } throws  Exception()
         coEvery { locationPermissionHandler.checkPermission() } throws Exception()
 
         viewModel.onClickGps()
@@ -127,7 +127,7 @@ class PickLocationScreenViewModelTest {
     @Test
     fun `onClickGps should update state with error message and navigate to enable location when location repository throws UnableToFindLocationException`() =
         runTest {
-            coEvery { locationRepository.getCurrentLocation() } throws UnableToFindLocationException()
+            coEvery { mobileLocationRepository.getCurrentLocation() } throws UnableToFindLocationException()
             coEvery { locationPermissionHandler.checkPermission() } returns PermissionState.DENIED
 
             viewModel.effect.test {

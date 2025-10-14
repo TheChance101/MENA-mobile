@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.Coordinates
-import net.thechance.mena.identity.domain.repository.LocationRepository
+import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
@@ -14,7 +14,7 @@ import net.thechance.mena.identity.presentation.util.permissionHandler.Permissio
 import org.maplibre.compose.camera.CameraPosition
 
 class PickLocationScreenViewModel(
-    private val locationRepository: LocationRepository,
+    private val mobileLocationRepository: MobileLocationRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val locationForegroundHandler: PermissionHandler,
 ) : BaseScreenModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(PickLocationScreenUIState()),
@@ -35,7 +35,7 @@ class PickLocationScreenViewModel(
 
     private fun getLocationName() {
         tryToExecute(
-            function = { locationRepository.getLocationName(state.value.currentLocation.toEntity()) },
+            function = { mobileLocationRepository.getLocationName(state.value.currentLocation.toEntity()) },
             onSuccess = ::onGetLocationNameSuccess,
             onError = ::onError,
             dispatcher = dispatcher
@@ -77,7 +77,7 @@ class PickLocationScreenViewModel(
 
     private suspend fun onGpsFetch(): Coordinates? {
         updateState { copy(isGpsButtonLoading = true) }
-        return locationRepository.getCurrentLocation()
+        return mobileLocationRepository.getCurrentLocation()
     }
 
     private fun onClickGpsSuccess(

@@ -11,11 +11,9 @@ import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl
 import net.thechance.mena.identity.data.repository.UserRepositoryImpl
-import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
-import net.thechance.mena.identity.data.repository.location.LocationRepositoryImpl
-import net.thechance.mena.identity.data.repository.location.MobileGeocoderWrapper
+import net.thechance.mena.identity.data.repository.location.MobileLocationRepositoryImpl
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
-import net.thechance.mena.identity.domain.repository.LocationRepository
+import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.service.AuthorizationService
@@ -44,9 +42,6 @@ val identityDataModule = module {
     single<ResetPasswordRepository> {
         ResetPasswordRepositoryImpl(client = get(named("IdentityClient")))
     }
-
-    singleOf(::MobileGeocoderWrapper) bind GeocoderWrapper::class
-    single<LocationRepository> { LocationRepositoryImpl(get()) }
 
     singleOf(::AuthorizationService)
     single(named(IDENTITY_CLIENT)) {

@@ -26,6 +26,8 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.room.sqlite.wrapper)
+            implementation(libs.bundles.geoCoder)
+            implementation(libs.bundles.geoLocation)
         }
         commonMain.dependencies {
             implementation(projects.identityDomain)
@@ -37,14 +39,16 @@ kotlin {
             implementation(libs.multiplatform.settings)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
-            implementation(libs.bundles.geoCoder)
-            implementation(libs.bundles.geoLocation)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.bundles.geoCoder)
+            implementation(libs.bundles.geoLocation)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
         androidUnitTest.dependencies {
-            implementation(libs.kotlin.test)
             implementation(libs.mokkery.core)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.bundles.geoCoder)
