@@ -42,7 +42,7 @@
     <string name="add_video_description_subtitle">Write a short description to tell viewers what your video is about..</string>
     <string name="hint">Tell viewers about your video...</string>
     <string name="characters"> %1$d / %2$d characters</string>
-    <string name="page_number"> %1$d / %2$d </string>
+    <string name="page_number">%1$d/%2$d</string>
     <string name="characters_color_animation_label">CharactersColorAnimation</string>
 
     <string name="upload_failed">Upload failed</string>

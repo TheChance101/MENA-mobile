@@ -108,14 +108,7 @@ class ContactsViewModel(
     }
 
     private fun onContactClickSuccess(chat: Chat?) {
-        navigate(
-            ChatDetailsRoute(
-                chatId = chat?.id.toString(),
-                chatName = chat?.name.orEmpty(),
-                chatImageUrl = chat?.imageUrl.orEmpty(),
-                chatRequesterId = chat?.requesterId.toString()
-            )
-        )
+        navigate(ChatDetailsRoute(chatId = chat?.id.toString() , chat?.name.orEmpty()))
     }
 
     private fun onContactClickError() {

@@ -2,21 +2,33 @@ package net.thechance.mena.faith.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
+internal sealed interface Route {
 
-@Serializable
-data object SurRoute
+    @Serializable
+    data object SurRoute : Route
 
-@Serializable
-data class SurahDetailsRoute(
-    val surahId: Int,
-    val surahName: String
-)
+    @Serializable
+    data class SurahDetailsRoute(
+        val surahId: Int,
+        val surahName: String,
+        val ayahNumber: Int? = null
+    ) : Route
 
-@Serializable
-data object MainRoute
+    @Serializable
+    data object MainRoute : Route
 
-@Serializable
-data object BookmarksRoute
+    @Serializable
+    data object BookmarksRoute : Route
 
-@Serializable
-data object CalibrateDeviceRoute
+    @Serializable
+    data object CompassRoute : Route
+
+    @Serializable
+    data object CalibrateDeviceRoute : Route
+
+    @Serializable
+    data class SearchRoute(
+        val surahId: Int? = null,
+        val surahName: String? = null
+    ) : Route
+}

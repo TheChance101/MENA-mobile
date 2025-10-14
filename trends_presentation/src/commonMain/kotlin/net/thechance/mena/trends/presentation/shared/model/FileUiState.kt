@@ -1,10 +1,8 @@
 package net.thechance.mena.trends.presentation.shared.model
 
 data class FileUiState(
+    val filePath: String = "",
     val name: String = "",
-    val extension: String = "",
-    val mimeType: String = "",
-    val sizeInBytes: Long = 0L,
-    val sizeInMegaBytes: String = "",
-    val bytes: ByteArray = ByteArray(0),
+    val size: Long = 0L,
+    val sizeText: String = ""
 )

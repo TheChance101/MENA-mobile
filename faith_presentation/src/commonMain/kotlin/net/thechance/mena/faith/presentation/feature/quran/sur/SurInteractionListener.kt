@@ -4,4 +4,6 @@ interface SurInteractionListener {
     fun onSurahClick(surahId: Int, surahName: String)
     fun onBackClick()
     fun onBookmarkClick()
+    fun onSearchClick()
+
 }
