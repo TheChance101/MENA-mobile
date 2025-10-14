@@ -25,6 +25,7 @@ import mena.identity_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressTypeSection
@@ -33,10 +34,11 @@ import net.thechance.mena.identity.presentation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.maplibre.compose.camera.CameraPosition
 
-class AddLocationScreen :
-    BaseScreen<AddLocationScreenViewModel, AddLocationScreenUIState, AddLocationScreenUIEffect, AddLocationScreenInteractionListener>() {
+class AddEditLocationScreen :
+    BaseScreen<AddEditLocationScreenViewModel, AddLocationScreenUIState, AddEditLocationScreenUIEffect, AddEditLocationScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -45,7 +47,7 @@ class AddLocationScreen :
 
     @Composable
     override fun OnRender(
-        state: AddLocationScreenUIState, listener: AddLocationScreenInteractionListener
+        state: AddLocationScreenUIState, listener: AddEditLocationScreenInteractionListener
     ) {
         Scaffold(topBar = {
             AuthAppBar(
@@ -103,33 +105,15 @@ class AddLocationScreen :
                     AddressTypeSection(
                         selectedAddressType = state.addressType, onClickAddressType = { newType ->
                             listener.onClickAddressType(newType)
-                    })
+                        })
                 }
 
                 item {
-                    AnimatedVisibility(
-                        visible = state.addressType == AddressType.Other, enter = expandVertically(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                            )
-                        ), exit = shrinkVertically(
-                            tween(
-                                durationMillis = 500,
-                            )
-                        )
-                    ) {
-
-                        TextField(
-                            value = state.otherAddress ?: "",
-                            onValueChanged = { newType ->
-                                listener.onChangeOtherAddressType(newType)
-                            },
-                            title = stringResource(Res.string.address_type),
-                            hint = "",
-                            leadingIcon = painterResource(Res.drawable.ic_add_location),
-                            modifier = Modifier.padding(top = Theme.spacing._12)
-                        )
-                    }
+                    OtherAddressType(
+                        selectedAddressType = state.addressType,
+                        otherAddressType = state.otherAddress,
+                        onChangeOtherAddressType = listener::onChangeOtherAddressType,
+                    )
                 }
 
             }
@@ -137,16 +121,47 @@ class AddLocationScreen :
     }
 
     override fun onEffect(
-        effect: AddLocationScreenUIEffect, navigator: Navigator
+        effect: AddEditLocationScreenUIEffect, navigator: Navigator
     ) {
         when (effect) {
-            AddLocationScreenUIEffect.NavigateBack -> navigator.pop()
-            AddLocationScreenUIEffect.NavigateToMap -> navigator.push(RegisterScreen()) //TODO : change it to map screen
+            AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
+            AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(RegisterScreen()) //TODO : change it to map screen
         }
     }
 
 
 }
 
+@Composable
+private fun OtherAddressType(
+    selectedAddressType: AddressType?,
+    otherAddressType: String?,
+    onChangeOtherAddressType: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(
+        visible = selectedAddressType == AddressType.Other,
+        enter = expandVertically(
+            animationSpec = tween(
+                durationMillis = 500,
+            )
+        ), exit = shrinkVertically(
+            tween(
+                durationMillis = 500,
+            )
+        )
+    ) {
+
+        TextField(
+            value = otherAddressType ?: "",
+            onValueChanged = onChangeOtherAddressType,
+            title = stringResource(Res.string.address_type),
+            hint = "",
+            leadingIcon = painterResource(Res.drawable.ic_add_location),
+            modifier = modifier.fillMaxWidth()
+                .padding(top = Theme.spacing._12)
+        )
+    }
+}
 
 

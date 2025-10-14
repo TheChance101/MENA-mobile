@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,10 +26,12 @@ import mena.identity_presentation.generated.resources.other
 import mena.identity_presentation.generated.resources.type
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.screen.addresses.AddressType
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AddressTypeSection(
@@ -71,7 +74,7 @@ fun AddressTypeSection(
     }
 }
 @Composable
-fun AddressTypeItem(
+private fun AddressTypeItem(
     addressIcon: Painter,
     addressType: String,
     isSelected: Boolean,
@@ -98,10 +101,12 @@ fun AddressTypeItem(
             painter = addressIcon,
             tint = iconColor,
             contentDescription = "Address Icon",
-            modifier = Modifier.background(backgroundColor)
+            modifier = Modifier
+                .size(60.dp)
+                .background(color = backgroundColor, shape = CircleShape)
                 .clip(CircleShape)
                 .clickable { onAddressClick() }
-                .padding(20.dp)
+                .padding(19.dp)
 
         )
         Text(
@@ -114,3 +119,15 @@ fun AddressTypeItem(
     }
 
 }
+
+@Preview
+@Composable
+private fun AddressTypeSectionPreview() {
+    MenaTheme {
+        AddressTypeSection(
+            selectedAddressType = AddressType.Home,
+            onClickAddressType = {}
+        )
+    }
+}
+
