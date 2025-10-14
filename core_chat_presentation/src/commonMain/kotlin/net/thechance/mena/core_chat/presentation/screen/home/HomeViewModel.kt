@@ -18,12 +18,14 @@ import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.Cha
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 class HomeViewModel(
     private val contactsRepository: ContactsRepository,
     private val chatRepository: ChatRepository,
+    private val balanceRepository: BalanceRepository,
     effector: ChatEffector
 ) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector), HomeScreenInteractionListener {
 
@@ -40,7 +42,19 @@ class HomeViewModel(
     }
 
     init {
+        getBalanceAmount()
         onLoadChatsSummaryRequested()
+    }
+
+    private fun getBalanceAmount() {
+        tryToExecute(
+            execute = { balanceRepository.getBalance() },
+            onSuccess = ::onGetBalanceAmountSuccess
+        )
+    }
+
+    private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
+        updateState { it.copy(balanceAmount = balanceAmount) }
     }
 
     override fun onLoadChatsSummaryRequested() {
@@ -72,8 +86,8 @@ class HomeViewModel(
 
     private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
         val chats = items.data
-                         .sortedByDescending { it.lastMessage.sendAt }
-                         .map { chat -> chat.toUi() }
+            .sortedByDescending { it.lastMessage.sendAt }
+            .map { chat -> chat.toUi() }
 
         updateState { it.copy(chats = it.chats + chats) }
     }

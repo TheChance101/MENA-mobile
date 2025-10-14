@@ -64,7 +64,12 @@ private fun HomeContent(
     val listState = rememberLazyListState()
 
     Scaffold(
-        topBar = { HomeScreenAppBar(interactionListener::onWalletClicked) }
+        topBar = {
+            HomeScreenAppBar(
+                balanceAmount = state.balanceAmount.toString(),
+                interactionListener::onWalletClicked
+            )
+        }
     ) {
         Box(modifier = modifier.fillMaxSize()) {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -97,13 +102,16 @@ private fun HomeContent(
     PaginationTrigger(
         list = state.chats,
         listState = listState,
-        itemsRemaining  = 5,
+        itemsRemaining = 5,
         loadNextItems = interactionListener::onLoadChatsSummaryRequested
     )
 }
 
 @Composable
-private fun HomeScreenAppBar(onWalletClicked: () -> Unit) {
+private fun HomeScreenAppBar(
+    balanceAmount: String,
+    onWalletClicked: () -> Unit
+) {
     AppBar(
         title = stringResource(Res.string.mena),
         trailingContent = {
@@ -112,7 +120,7 @@ private fun HomeScreenAppBar(onWalletClicked: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "134", // TODO : Replace with the actual balance from wallet feature
+                    text = balanceAmount,
                     color = Theme.colorScheme.shadeSecondary,
                     style = Theme.typography.label.small,
                 )
