@@ -18,6 +18,7 @@ import mena.faith_presentation.generated.resources.search_in_surah_hint
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
+import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -178,6 +179,101 @@ class SearchViewModelTest {
         assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
     }
 
+    @Test
+    fun `onSearchResultClick should navigate back with ayahId when surahId is not null`() =
+        runTest {
+            // Given
+            everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
+            everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
+
+            testViewModel = SearchViewModel(
+                searchArgs = searchArgs,
+                repository = quranRepository,
+                dispatcher = testDispatcher,
+                resourceProvider = resourceProvider
+            )
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // When & Then
+            testViewModel.uiEffect.test {
+                testViewModel.onSearchResultClick(TEST_SURAH_ID, TEST_AYAH_ID)
+                val effect = awaitItem()
+                assertTrue(effect is SearchEffect.NavigateBack)
+                assertEquals(TEST_AYAH_ID, effect.ayahNumber)
+            }
+        }
+
+    @Test
+    fun `onSearchResultClick should navigate to surah when surahId is null`() = runTest {
+        // Given
+        everySuspend { searchArgs.surahId } returns null
+        everySuspend { searchArgs.surahName } returns null
+
+        testViewModel = SearchViewModel(
+            searchArgs = searchArgs,
+            repository = quranRepository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // When & Then
+        testViewModel.uiEffect.test {
+            testViewModel.onSearchResultClick(SURAH_ID_FOR_NAVIGATION, TEST_AYAH_ID)
+            val effect = awaitItem()
+            assertTrue(effect is SearchEffect.NavigateToSurah)
+            assertEquals(SURAH_ID_FOR_NAVIGATION, effect.surahId)
+            assertEquals(TEST_AYAH_ID, effect.ayahId)
+        }
+    }
+
+    @Test
+    fun `init should set hint with surah name when surahName is not null`() = runTest {
+        // Given
+        val expectedHint = "Search in Al-Fatiha"
+        everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
+        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
+        everySuspend {
+            resourceProvider.getString(Res.string.search_in_surah_hint, TEST_SURAH_NAME)
+        } returns expectedHint
+
+        // When
+        testViewModel = SearchViewModel(
+            searchArgs = searchArgs,
+            repository = quranRepository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(expectedHint, testViewModel.uiState.value.hint)
+    }
+
+    @Test
+    fun `init should set hint with quran text when surahName is null`() = runTest {
+        // Given
+        val expectedHint = "Search in Quran"
+        everySuspend { searchArgs.surahId } returns null
+        everySuspend { searchArgs.surahName } returns null
+        everySuspend { resourceProvider.getString(Res.string.quran) } returns QURAN_TEXT
+        everySuspend {
+            resourceProvider.getString(Res.string.search_in_surah_hint, QURAN_TEXT)
+        } returns expectedHint
+
+        // When
+        testViewModel = SearchViewModel(
+            searchArgs = searchArgs,
+            repository = quranRepository,
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(expectedHint, testViewModel.uiState.value.hint)
+    }
+
     private companion object {
         const val TEST_QUERY = "test query"
         const val VALID_QUERY = "الله"
@@ -192,6 +288,8 @@ class SearchViewModelTest {
         const val SINGLE_CHAR_QUERY = "ا"
         const val SEARCH_DELAY = 1000L
         const val HALF_SEARCH_DELAY = 500L
+        const val TEST_AYAH_ID = 5
+        const val SURAH_ID_FOR_NAVIGATION = 2
         private val dummyAyat = listOf(
             Ayah(
                 number = 1,
