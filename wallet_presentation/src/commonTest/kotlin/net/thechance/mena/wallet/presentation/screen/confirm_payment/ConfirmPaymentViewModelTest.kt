@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.wallet.domain.model.Receiver
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -49,7 +49,7 @@ class ConfirmPaymentViewModelTest {
     fun `getPaymentConfirmation should set state with loading when initially called`() =
         runTest {
             everySuspend { balanceRepository.getBalance() } returns balance1
-            everySuspend { transactionRepository.getReceiverByTransactionId(receiver1Id) } returns receiver1
+            everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
@@ -71,7 +71,7 @@ class ConfirmPaymentViewModelTest {
     fun `ConfirmPaymentViewModel should update payment ui state when balance repository returns value`() =
         runTest {
             everySuspend { balanceRepository.getBalance() } returns balance1
-            everySuspend { transactionRepository.getReceiverByTransactionId(receiver1Id) } returns receiver1
+            everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
@@ -96,7 +96,7 @@ class ConfirmPaymentViewModelTest {
     fun `ConfirmPaymentViewModel should update payment ui state when user repository returns value`() =
         runTest {
             everySuspend { balanceRepository.getBalance() } returns balance1
-            everySuspend { transactionRepository.getReceiverByTransactionId(any()) } returns receiver1
+            everySuspend { transactionRepository.getTransactionReceiver(any()) } returns transactionReceiver1
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
@@ -123,7 +123,7 @@ class ConfirmPaymentViewModelTest {
             val expectedError = Exception()
 
             everySuspend { balanceRepository.getBalance() } throws expectedError
-            everySuspend { transactionRepository.getReceiverByTransactionId(receiver1Id) } returns receiver1
+            everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
@@ -147,7 +147,7 @@ class ConfirmPaymentViewModelTest {
             val expectedError = Exception()
 
             everySuspend { balanceRepository.getBalance() } returns balance1
-            everySuspend { transactionRepository.getReceiverByTransactionId(receiver1Id) } throws expectedError
+            everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } throws expectedError
 
             val viewModel = ConfirmPaymentViewModel(
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
@@ -168,7 +168,7 @@ class ConfirmPaymentViewModelTest {
     @Test
     fun `onBackButtonClicked should send NavigateBack effect`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns balance1
-        everySuspend { transactionRepository.getReceiverByTransactionId(receiver1Id) } returns receiver1
+        everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
         val viewModel = ConfirmPaymentViewModel(
             args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
@@ -187,7 +187,7 @@ class ConfirmPaymentViewModelTest {
     @Test
     fun `onRefresh should set state with loading when initially called`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns balance1
-        everySuspend { transactionRepository.getReceiverByTransactionId(receiver1Id) } returns receiver1
+        everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
         val viewModel = ConfirmPaymentViewModel(
             args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
@@ -217,7 +217,7 @@ class ConfirmPaymentViewModelTest {
         val status1 = true
         const val receiverImg1 = "https://media.istockphoto.com/id/469738422/photo/large-boulders-on-lake-shore-at-sunset-minnesota-usa.jpg?s=612x612&w=0&k=20&c=4FzViDygZ8CgixTqt3VOudLJUP8uoSeh2UlD_qHYkAw="
 
-        val receiver1 = Receiver(
+        val transactionReceiver1 = TransactionReceiver(
             name = receiverName1,
             imgUrl = receiverImg1
         )

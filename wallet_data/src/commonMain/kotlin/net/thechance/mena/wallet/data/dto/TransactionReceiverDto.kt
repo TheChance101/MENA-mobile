@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ReceiverDto(
+data class TransactionReceiverDto(
     @SerialName("imageUrl")
     val imageUrl: String? = null,
     @SerialName("name")

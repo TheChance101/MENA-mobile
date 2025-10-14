@@ -7,13 +7,13 @@ import net.thechance.mena.wallet.data.dto.FirstTransactionDateDto
 import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.TransactionDto
-import net.thechance.mena.wallet.data.dto.ReceiverDto
+import net.thechance.mena.wallet.data.dto.TransactionReceiverDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.Receiver
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -69,10 +69,10 @@ class TransactionRepositoryImpl(
         }
     }
 
-    override suspend fun getReceiverByTransactionId(id: Uuid): Receiver {
-        return safeApiCall<ReceiverDto> {
+    override suspend fun getTransactionReceiver(transactionId: Uuid): TransactionReceiver {
+        return safeApiCall<TransactionReceiverDto> {
             networkClient.get("${TRANSACTION_PATH}$RECEIVER_DETAILS"){
-                parameter(TRANSACTION_ID_PARAM, id)
+                parameter(TRANSACTION_ID_PARAM, transactionId)
             }
         }.toEntity()
     }

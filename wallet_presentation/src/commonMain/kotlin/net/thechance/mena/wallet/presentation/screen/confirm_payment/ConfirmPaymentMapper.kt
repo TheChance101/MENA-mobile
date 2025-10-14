@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.confirm_payment_content_failed
 import mena.wallet_presentation.generated.resources.confirm_payment_content_success
-import net.thechance.mena.wallet.domain.model.Receiver
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import org.jetbrains.compose.resources.stringResource
 
-fun Receiver.toUiState() = ConfirmPaymentScreenState.ReceiverUiState(
+fun TransactionReceiver.toUiState() = ConfirmPaymentScreenState.ReceiverUiState(
     name = name,
     profileImg = imgUrl
 )

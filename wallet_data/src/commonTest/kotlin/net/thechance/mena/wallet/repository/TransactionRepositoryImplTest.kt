@@ -15,7 +15,7 @@ import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.transaction.TransactionRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.Receiver
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionStatus
@@ -112,24 +112,24 @@ class TransactionRepositoryImplTest {
     }
 
     @Test
-    fun `getReceiverByTransactionId returns user when API call is successful`() = runTest()
+    fun `getTransactionReceiver returns user when API call is successful`() = runTest()
     {
         networkClient = createNetworkClient(userResponse)
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
-        val result = transactionRepository.getReceiverByTransactionId(transaction1Id)
+        val result = transactionRepository.getTransactionReceiver(transaction1Id)
 
-        assertEquals(receiver, result)
+        assertEquals(transactionReceiver, result)
     }
 
     @Test
-    fun `getReceiverByTransactionId returns throw exception when API call is fails`() = runTest()
+    fun `getTransactionReceiver returns throw exception when API call is fails`() = runTest()
     {
         networkClient = createNetworkClient(userErrorResponse)
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
         assertFailsWith<Exception> {
-            transactionRepository.getReceiverByTransactionId(transaction1Id)
+            transactionRepository.getTransactionReceiver(transaction1Id)
         }
     }
 
@@ -267,7 +267,7 @@ class TransactionRepositoryImplTest {
 
         const val receiverName = "username1"
         const val receiverImg = "userimg1.png"
-        val receiver = Receiver(
+        val transactionReceiver = TransactionReceiver(
             name = receiverName,
             imgUrl = receiverImg
         )

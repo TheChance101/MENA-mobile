@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreen

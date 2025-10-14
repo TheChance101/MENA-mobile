@@ -3,13 +3,13 @@ package net.thechance.mena.wallet.presentation.screen.confirm_payment
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.wallet.domain.model.Receiver
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.utils.formatAmount
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -62,7 +62,7 @@ class ConfirmPaymentViewModel(
 
     private fun getReceiverInfo() {
         tryToExecute(
-            callee = { transactionRepository.getReceiverByTransactionId(transactionId) },
+            callee = { transactionRepository.getTransactionReceiver(transactionId) },
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onGetReceiverInfoError,
             onStart = { updateState { it.copy(isGetUserLoading = true) } },
@@ -87,9 +87,9 @@ class ConfirmPaymentViewModel(
         updateState { it.copy(isGetBalanceLoading = false, errorState = errorState) }
     }
 
-    private fun onGetReceiverInfoSuccess(receiverInfo: Receiver) {
+    private fun onGetReceiverInfoSuccess(transactionReceiverInfo: TransactionReceiver) {
         updateState {
-            it.copy(isGetUserLoading = false, receiverUiState = receiverInfo.toUiState())
+            it.copy(isGetUserLoading = false, receiverUiState = transactionReceiverInfo.toUiState())
         }
     }
 
@@ -104,7 +104,7 @@ class ConfirmPaymentViewModel(
                 receiverName = state.value.receiverUiState.name,
                 amount = amount,
                 transactionId = transactionId,
-                submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS
+                submissionStatus = SubmissionStatus.SUCCESS
             )
         )
     }
@@ -116,9 +116,9 @@ class ConfirmPaymentViewModel(
                 receiverName = state.value.receiverUiState.name,
                 amount = amount,
                 transactionId = transactionId,
-                submitTransactionResultStatus = when (error) {
-                    ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
-                    else -> SubmitTransactionResultStatus.UNKNOWN_ERROR
+                submissionStatus = when (error) {
+                    ErrorState.NoInternet -> SubmissionStatus.CONNECTION_LOST
+                    else -> SubmissionStatus.UNKNOWN_ERROR
                 }
             )
         )
