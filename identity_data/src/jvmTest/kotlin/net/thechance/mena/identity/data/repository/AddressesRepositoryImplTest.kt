@@ -22,7 +22,7 @@ class AddressesRepositoryImplTest {
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
 
-        addressRepositoryImpl.createAddress(fakeAddress)
+        addressRepositoryImpl.createAddress(fakeNewAddress)
     }
 
     @Test
@@ -31,7 +31,7 @@ class AddressesRepositoryImplTest {
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
 
-        addressRepositoryImpl.editAddress("123",fakeAddress)
+        addressRepositoryImpl.editAddress(fakeExistingAddress)
     }
 
     @Test
@@ -40,7 +40,7 @@ class AddressesRepositoryImplTest {
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
 
-       assertFailure { addressRepositoryImpl.createAddress(fakeAddress) }
+       assertFailure { addressRepositoryImpl.createAddress(fakeNewAddress) }
            .isInstanceOf<UnAuthorizedException>()
     }
 
@@ -50,18 +50,28 @@ class AddressesRepositoryImplTest {
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
 
-       assertFailure { addressRepositoryImpl.editAddress("123",fakeAddress) }
+       assertFailure { addressRepositoryImpl.editAddress(fakeExistingAddress) }
            .isInstanceOf<UnAuthorizedException>()
     }
 
 
 
-    val fakeAddress = Address(
+    val fakeNewAddress= Address(
         addressLine = "Cairo",
         addressType = "Home",
         latitude = 30.0444,
         longitude = 31.2357,
-        otherAddressType = null
+        otherAddressType = null,
+        isActive = false
+    )
+    val fakeExistingAddress= Address(
+        id = "123",
+        addressLine = "Cairo",
+        addressType = "Home",
+        latitude = 30.0444,
+        longitude = 31.2357,
+        otherAddressType = null,
+        isActive = false
     )
 
 }
