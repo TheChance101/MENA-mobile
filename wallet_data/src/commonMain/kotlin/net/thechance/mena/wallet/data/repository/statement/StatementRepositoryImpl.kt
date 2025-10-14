@@ -46,10 +46,5 @@ class StatementRepositoryImpl(
     override suspend fun getStatementById(id: Long): Statement {
         return statementDao.getStatementById(id).toEntity()
     }
-
-    companion object {
-        const val EXPIRATION_TIME_INTERVAL_IN_MILLIS = 30_000L
-        const val STATEMENT_PATH = "wallet/transactions/statement"
-    }
 }
 

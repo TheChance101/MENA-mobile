@@ -40,7 +40,7 @@ class ViewTransactionStatementViewModel(
 
     override fun onNavigateBackClicked() {
        viewModelScope.launch (Dispatchers.IO){
-           if (statementLocation is StorageLocation.Cache) pdfHandler.deleteStatement(statementLocation)
+           if (statementLocation is StorageLocation.Cache) pdfHandler.deletePdf(statementLocation)
             sendEffect(ViewTransactionStatementEffect.NavigateBack)
         }
     }

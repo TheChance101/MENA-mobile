@@ -135,7 +135,7 @@ class PdfHandlerImpl : PdfHandler {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    override suspend fun saveStatement(byteArray: ByteArray, location: StorageLocation): String {
+    override suspend fun savePdf(byteArray: ByteArray, location: StorageLocation): String {
         return withContext(Dispatchers.IO) {
             when (location) {
                 is StorageLocation.Cache -> saveToCache(byteArray, location.fileName)
@@ -145,7 +145,7 @@ class PdfHandlerImpl : PdfHandler {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    override suspend fun deleteStatement(location: StorageLocation) {
+    override suspend fun deletePdf(location: StorageLocation) {
         withContext(Dispatchers.IO) {
             val fileManager = NSFileManager.defaultManager
             val path = getFilePath(location)
@@ -169,7 +169,7 @@ class PdfHandlerImpl : PdfHandler {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    override suspend fun checkIfStatementExists(location: StorageLocation): Boolean {
+    override suspend fun checkIfPdfExists(location: StorageLocation): Boolean {
         return withContext(Dispatchers.IO) {
             val fileManager = NSFileManager.defaultManager
             val path = getFilePath(location)

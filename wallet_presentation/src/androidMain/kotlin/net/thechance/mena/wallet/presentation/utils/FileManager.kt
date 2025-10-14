@@ -182,11 +182,6 @@ class FileManager(private val context: Context) {
         return file.exists() && file.delete()
     }
 
-    private fun getUniqueFileName(fileName: String): String {
-        val timestamp = System.currentTimeMillis()
-        return "${fileName}_$timestamp"
-    }
-
     private fun checkIfCacheFileExists(fileName: String): Boolean {
         val file = File(context.cacheDir, fileName)
         return file.exists()

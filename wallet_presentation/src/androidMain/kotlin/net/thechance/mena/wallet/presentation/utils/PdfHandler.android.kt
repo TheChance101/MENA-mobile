@@ -23,7 +23,7 @@ class PdfHandlerImpl() : PdfHandler {
     override suspend fun splitToPagesOfPngs(pdfData: ByteArray): List<ByteArray> {
         return withContext(Dispatchers.IO) {
             try {
-                val tempFile = File(context.cacheDir, "statement.pdf")
+                val tempFile = File(context.cacheDir, "temp.pdf")
                     .apply { writeBytes(pdfData) }
 
                 if (!tempFile.exists() || tempFile.length() == 0L)
@@ -63,6 +63,7 @@ class PdfHandlerImpl() : PdfHandler {
                     }
                     renderer.close()
                     fileDescriptor.close()
+                    tempFile.delete()
                 }
             } catch (_: Exception) {
                 return@withContext emptyList()
@@ -95,11 +96,11 @@ class PdfHandlerImpl() : PdfHandler {
         context.startActivity(chooserIntent)
     }
 
-    override suspend fun saveStatement(byteArray: ByteArray, location: StorageLocation): String {
+    override suspend fun savePdf(byteArray: ByteArray, location: StorageLocation): String {
         return fileManager.saveFile(byteArray, location, PDF_MIME_TYPE)
     }
 
-    override suspend fun deleteStatement(location: StorageLocation) {
+    override suspend fun deletePdf(location: StorageLocation) {
         fileManager.deleteFile(location)
     }
 
@@ -107,7 +108,7 @@ class PdfHandlerImpl() : PdfHandler {
         return fileManager.readFile(location)
     }
 
-    override suspend fun checkIfStatementExists(location: StorageLocation): Boolean {
+    override suspend fun checkIfPdfExists(location: StorageLocation): Boolean {
         return fileManager.checkIfFileExists(location)
     }
 

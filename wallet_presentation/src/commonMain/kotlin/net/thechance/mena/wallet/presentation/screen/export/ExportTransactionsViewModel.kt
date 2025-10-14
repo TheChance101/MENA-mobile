@@ -175,9 +175,7 @@ class ExportTransactionsViewModel(
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.error),
-                message = stringProvider.getString(
-                    Res.string.start_date_must_be_before_end_date
-                ),
+                message = stringProvider.getString(Res.string.start_date_must_be_before_end_date),
                 isSuccess = false
             )
         }
@@ -263,7 +261,7 @@ class ExportTransactionsViewModel(
     private fun saveStatementToCache(statement: StatementWithMetaData) {
         tryToExecute(
             callee = {
-                pdfHandler.saveStatement(
+                pdfHandler.savePdf(
                     byteArray = statement.byteArray,
                     location = StorageLocation.Cache(getUniqueStatementFileName())
                 )
@@ -343,7 +341,7 @@ class ExportTransactionsViewModel(
     private fun downloadStatement(statement: StatementWithMetaData) {
         tryToExecute(
             callee = {
-                pdfHandler.saveStatement(
+                pdfHandler.savePdf(
                     byteArray = statement.byteArray,
                     location = StorageLocation.Downloads(getUniqueStatementFileName())
                 )
