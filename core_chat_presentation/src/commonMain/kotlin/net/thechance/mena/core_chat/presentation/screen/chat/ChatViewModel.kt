@@ -202,7 +202,8 @@ class ChatViewModel(
     }
 
     override fun onResendMessageClicked() {
-        val message = state.value.failedMessageToReSend ?: return
+        val message =
+            state.value.failedMessageToReSend?.copy(status = MessageStatus.LOADING) ?: return
 
         updateState { state ->
             state.copy(
@@ -210,7 +211,7 @@ class ChatViewModel(
                 failedMessageToReSend = null
             )
         }
-        updateStateWithNewMessage(message.copy(status = MessageStatus.LOADING))
+        updateStateWithNewMessage(message)
 
         sendMessage(message)
     }
@@ -223,7 +224,13 @@ class ChatViewModel(
         tryToCollect(
             collect = { chatRepository.subscribeToMessages(chatId) },
             onCollect = ::onCollectNewMessage,
-            onError = { showSnackBar(Res.string.error, Res.string.error_cant_subscribe_to_new_messages, true) },
+            onError = {
+                showSnackBar(
+                    Res.string.error,
+                    Res.string.error_cant_subscribe_to_new_messages,
+                    true
+                )
+            },
         )
     }
 
@@ -321,7 +328,13 @@ class ChatViewModel(
         tryToExecute(
             execute = { chatRepository.downloadImage(url) },
             onSuccess = { onDownloadImageSuccess() },
-            onError = { showSnackBar(Res.string.error, Res.string.error_failed_to_download_image, true) }
+            onError = {
+                showSnackBar(
+                    Res.string.error,
+                    Res.string.error_failed_to_download_image,
+                    true
+                )
+            }
         )
     }
 

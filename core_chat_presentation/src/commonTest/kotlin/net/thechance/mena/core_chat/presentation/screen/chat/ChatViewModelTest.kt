@@ -232,7 +232,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onResendMessageClick should update the resend message state to sent when resend message success`() {
+    fun `onResendMessageClick should remove the failed message when resend message success`() {
         val failedMessage =
             messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
 
@@ -251,7 +251,7 @@ class ChatViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val finalMessages = chatViewModel.state.value.chatListItems.currentUiMessages()
-        assertThat(finalMessages.isNotEmpty()).isTrue()
+        assertThat(finalMessages.isEmpty()).isTrue()
         verifySuspend { repository.sendMessage(any()) }
     }
 
@@ -263,7 +263,7 @@ class ChatViewModelTest {
                 chatId = chatId,
                 chatRequesterId = chatRequesterId,
                 failedMessageToReSend = failedMessage,
-                chatListItems = listOf(messages.first().toUi(chatRequesterId).toChatListMessage())
+                chatListItems = listOf(failedMessage.toChatListMessage())
             )
         }
 
@@ -368,7 +368,6 @@ class ChatViewModelTest {
         assertThat(chatViewModel.state.value.selectedMessage).isEqualTo(null)
         assertThat(chatViewModel.state.value.currentImageIndexForPreview).isEqualTo(0)
     }
-
 
 
     @Test
