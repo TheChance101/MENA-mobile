@@ -1,0 +1,97 @@
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageStyle
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.back_arrow
+import mena.dukan_presentation.generated.resources.favorite_icon
+import mena.dukan_presentation.generated.resources.ic_arrow_left
+import mena.dukan_presentation.generated.resources.ic_favorite
+import mena.dukan_presentation.generated.resources.ic_share
+import mena.dukan_presentation.generated.resources.ic_shopping_basket
+import mena.dukan_presentation.generated.resources.share_icon
+import mena.dukan_presentation.generated.resources.shopping_basket_icon
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.DukanInfo
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun AppBarNoImageDukan(
+    state: DukanInfo,
+    listener: DukanDetailsInteractionListener
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._8)
+    ) {
+        AppBarOptionContainer(
+            onClick = listener::onBackClicked
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                tint = Theme.colorScheme.primary.primary,
+                contentDescription = stringResource(Res.string.back_arrow),
+                modifier = Modifier.size(40.dp)
+            )
+        }
+        Text(
+            text = state.name,
+            color = Theme.colorScheme.shadePrimary,
+            style = Theme.typography.title.medium,
+            modifier = Modifier.padding(start = Theme.spacing._8, end = Theme.spacing._4)
+                .weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Row(
+            modifier = Modifier.padding(start = Theme.spacing._4),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        ) {
+            AppBarOptionContainer(
+                onClick = {}
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_share),
+                    tint = Theme.colorScheme.primary.primary,
+                    contentDescription = stringResource(Res.string.share_icon),
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+            AppBarOptionContainer(
+                onClick = {}
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_favorite),
+                    tint = Theme.colorScheme.primary.primary,
+                    contentDescription = stringResource(Res.string.favorite_icon),
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+            AppBarOptionContainer(
+                onClick = {}
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_shopping_basket),
+                    tint = Theme.colorScheme.primary.primary,
+                    contentDescription = stringResource(Res.string.shopping_basket_icon),
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+        }
+    }
+}
