@@ -104,14 +104,20 @@ class PickLocationScreenViewModel(
         tryToExecute(
             function = { locationForegroundHandler.checkPermission() },
             onSuccess = ::checkLocationEnableSuccess,
-            ::onError
+            ::onError,
+            dispatcher = dispatcher
         )
     }
 
     private fun checkLocationEnableSuccess(permissionState: PermissionState) {
         when (permissionState) {
             PermissionState.GRANTED -> {
-                updateState { copy(errorMessage = "Location is turned off") }
+                updateState {
+                    copy(
+                        errorMessage = "Location is turned off",
+                        isGpsButtonLoading = false
+                    )
+                }
             }
 
             PermissionState.DENIED -> {
@@ -125,14 +131,11 @@ class PickLocationScreenViewModel(
     }
 
     private fun onError(errorState: ErrorState) {
-        when (errorState) {
-            is ErrorState.NoLocationPermission -> navigateToEnableLocation()
-            else -> updateState {
-                copy(
-                    errorMessage = mapErrorToMessage(errorState),
-                    isGpsButtonLoading = false
-                )
-            }
+        updateState {
+            copy(
+                errorMessage = mapErrorToMessage(errorState),
+                isGpsButtonLoading = false
+            )
         }
     }
 

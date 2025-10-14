@@ -12,21 +12,21 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.presentation.util.settingsOpener.SettingsOpener
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class EnableLocationScreenViewModelTest {
-    private val settingsOpener = mockk<SettingsOpener>()
+    private val locationPermissionHandler = mockk<PermissionHandler>()
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel : EnableLocationScreenViewModel
+    private lateinit var viewModel: EnableLocationScreenViewModel
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = EnableLocationScreenViewModel(settingsOpener , testDispatcher)
+        viewModel = EnableLocationScreenViewModel(locationPermissionHandler, testDispatcher)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -36,7 +36,7 @@ class EnableLocationScreenViewModelTest {
     }
 
     @Test
-    fun`onClickBack should send NavigateBack effect`() = runTest {
+    fun `onClickBack should send NavigateBack effect`() = runTest {
         viewModel.effect.test {
             viewModel.onClickBack()
             testDispatcher.scheduler.advanceUntilIdle()
@@ -48,11 +48,11 @@ class EnableLocationScreenViewModelTest {
     }
 
     @Test
-    fun`onClickEnablePermission should call openSettings`() = runTest {
-        coEvery { settingsOpener.openSettings() } just Runs
+    fun `onClickEnablePermission should call openSettings`() = runTest {
+        coEvery { locationPermissionHandler.openSettingPage() } just Runs
 
         viewModel.onClickEnablePermission()
 
-        verify { settingsOpener.openSettings() }
+        verify { locationPermissionHandler.openSettingPage() }
     }
 }

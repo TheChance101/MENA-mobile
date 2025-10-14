@@ -17,6 +17,8 @@ import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocation
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.pickLocation.toEntity
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -24,6 +26,7 @@ import kotlin.test.Test
 
 class PickLocationScreenViewModelTest {
     private val locationRepository = mockk<LocationRepository>()
+    private val locationPermissionHandler = mockk<PermissionHandler>()
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: PickLocationScreenViewModel
 
@@ -31,7 +34,7 @@ class PickLocationScreenViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = PickLocationScreenViewModel(locationRepository, testDispatcher)
+        viewModel = PickLocationScreenViewModel(locationRepository, testDispatcher,locationPermissionHandler)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -110,8 +113,9 @@ class PickLocationScreenViewModelTest {
     }
 
     @Test
-    fun `onClickGps should update state with error message when location repository throws`() {
-        coEvery { locationRepository.getCurrentLocation() } throws Exception()
+    fun `onClickGps should update state with error message when locationPermissionHandler throws`(){
+        coEvery { locationRepository.getCurrentLocation() } throws  Exception()
+        coEvery { locationPermissionHandler.checkPermission() } throws Exception()
 
         viewModel.onClickGps()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -124,6 +128,8 @@ class PickLocationScreenViewModelTest {
     fun `onClickGps should update state with error message and navigate to enable location when location repository throws UnableToFindLocationException`() =
         runTest {
             coEvery { locationRepository.getCurrentLocation() } throws UnableToFindLocationException()
+            coEvery { locationPermissionHandler.checkPermission() } returns PermissionState.DENIED
+
             viewModel.effect.test {
                 viewModel.onClickGps()
                 testDispatcher.scheduler.advanceUntilIdle()
@@ -133,4 +139,15 @@ class PickLocationScreenViewModelTest {
             }
         }
 
+    @Test
+    fun `onClickEdit should update state with default values`(){
+        viewModel.onClickEdit()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assert(viewModel.state.value.currentLocation == PickLocationScreenUIState.CoordinatesUiState())
+        assert(viewModel.state.value.pointerLocation == null)
+        assert(!viewModel.state.value.isMapLocked)
+        assert(!viewModel.state.value.animateToCurrentLocation)
+        assert(!viewModel.state.value.isConfirmEnabled)
+    }
 }
