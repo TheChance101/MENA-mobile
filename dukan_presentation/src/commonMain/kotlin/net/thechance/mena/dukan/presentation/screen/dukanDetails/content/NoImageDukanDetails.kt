@@ -33,9 +33,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
@@ -139,7 +138,10 @@ private fun AppBar(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)) {
+        Row(
+            modifier = Modifier.padding(start = Theme.spacing._4),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        ) {
             AppBarOptionContainer(
                 onClick = {}
             ) {
@@ -189,16 +191,7 @@ private fun DukanContent(
     var chipsAlpha by remember { mutableStateOf(0f) }
 
     LaunchedEffect(key1 = lazyColumnListState) {
-        snapshotFlow {
-            lazyColumnListState.layoutInfo
-        }.collect { layoutInfo ->
-            val isBestSellingVisible = layoutInfo.visibleItemsInfo
-                .any { it.key == "BestSelling" }
-            chipsAlpha = if (isBestSellingVisible) 0f else 1f
-        }
-    }
-    LaunchedEffect(key1 = lazyColumnListState) {
-        snapshotFlow { lazyColumnListState.firstVisibleItemIndex }.collect { index ->
+        snapshotFlow { lazyColumnListState.firstVisibleItemIndex to lazyColumnListState.layoutInfo }.collect { (index, layoutInfo) ->
             val shelfIndex = index - 2
             if (shelfIndex >= 0 && shelfIndex < state.shelves.items.size) {
                 val shelfId = state.shelves.items[shelfIndex].id
@@ -209,6 +202,10 @@ private fun DukanContent(
                     }
                 }
             }
+
+            val isBestSellingVisible = layoutInfo.visibleItemsInfo
+                .any { it.key == "BestSelling" }
+            chipsAlpha = if (isBestSellingVisible) 0f else 1f
         }
     }
 
@@ -253,9 +250,10 @@ private fun DukanShelvesChips(
     if (alpha == 0f) {
         return
     }
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(Theme.spacing._4)
             .alpha(alpha)
     ) {
         LazyRow(
@@ -281,20 +279,6 @@ private fun DukanShelvesChips(
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(Theme.spacing._4)
-                .blur(Theme.spacing._8)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0x14000000),
-                            Color.Transparent
-                        )
-                    )
-                )
-        )
     }
 }
 
@@ -377,6 +361,14 @@ private fun ShelfWithProductsItemShimmer() {
 }
 
 @Composable
+private fun BestSellingState(
+    state: DukanDetailsUiState,
+    listener: DukanDetailsInteractionListener
+) {
+// Handle best selling state
+}
+
+@Composable
 private fun BestSellingShimmer() {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -399,7 +391,7 @@ private fun BestSellingShimmer() {
 }
 
 @Composable
-fun BestSellingProductItemShimmer() {
+private fun BestSellingProductItemShimmer() {
     Column(
         modifier = Modifier.width(120.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -456,15 +448,7 @@ fun BestSellingProductItemShimmer() {
 }
 
 @Composable
-private fun BestSellingState(
-    state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener
-) {
-// Handle best selling state
-}
-
-@Composable
-private fun BestSelling(
+private fun BestSellingContent(
     products: List<ProductUiState>,
     listener: DukanDetailsInteractionListener,
     iconColor: Long,
@@ -579,7 +563,6 @@ private fun NoImageDukanDetailsPreview() {
     }
 }
 
-
 val dummyProducts = listOf(
     ProductUiState(
         name = "Girls Crochet Tank Top",
@@ -635,7 +618,7 @@ val dummyShelves = listOf(
     ),
     ShelfUiState(
         id = "6",
-        name = "Top",
+        name = "Tops",
         products = dummyProducts
     )
 )
