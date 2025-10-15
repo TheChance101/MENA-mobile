@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice
+package net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

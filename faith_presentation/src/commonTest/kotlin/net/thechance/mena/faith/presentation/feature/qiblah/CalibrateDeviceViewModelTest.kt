@@ -9,8 +9,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice.CalibrateDeviceEffect
-import net.thechance.mena.faith.presentation.feature.quran.qiblah.calibratedevice.CalibrateDeviceViewModel
+import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceEffect
+import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
