@@ -14,6 +14,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
+import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
@@ -27,12 +28,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun WideImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelf: Pager<Int, DukanDetailsUiState.ShelfUiState>
+    pagerShelf: Pager<Int, DukanDetailsUiState.ShelfUiState>,
+    pagerProduct: Pager<Int, DukanDetailsUiState.ProductUiState>
 ) {
     OnSystemBackPressed { listener::onBackClicked }
-
     val gridState = rememberLazyGridState()
-
+    gridState.LoadMoreOnScroll(pagerProduct)
     Scaffold(
         topBar = {
             WideImageDukanDetailsAppBar(
@@ -60,7 +61,6 @@ fun WideImageDukanDetails(
     }
 }
 
-
 @Preview(showBackground = true, name = "Full Screen Preview")
 @Composable
 private fun WideImageDukanDetailsPreview() {
@@ -81,6 +81,8 @@ private fun WideImageDukanDetailsPreview() {
         )
     }
     val fakeShelfPager = createFakePager<Int, DukanDetailsUiState.ShelfUiState>(items = mockShelves)
+    val fakeProductPager =
+        createFakePager<Int, DukanDetailsUiState.ProductUiState>(items = mockProducts)
     val mockDukanState = DukanDetailsUiState(
         dukanInfo = DukanDetailsUiState.DukanInfo(
             name = "Sarah's Fresh Market",
@@ -99,6 +101,7 @@ private fun WideImageDukanDetailsPreview() {
             state = mockDukanState,
             listener = PreviewDukanDetailsInteractionListener,
             pagerShelf = fakeShelfPager,
+            pagerProduct = fakeProductPager,
         )
     }
 }
