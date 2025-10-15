@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.qiblah
+package net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice
 
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
@@ -9,8 +9,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceEffect
-import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
