@@ -16,8 +16,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun UploadPageNumber(
     page: Int,
-    total: Int = 3,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    total: Int = 3
 ) {
     Text(
         modifier = modifier
