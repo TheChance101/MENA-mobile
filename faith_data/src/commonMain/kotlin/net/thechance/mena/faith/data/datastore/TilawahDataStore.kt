@@ -10,15 +10,15 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 
-class TilawahDataStore(private val dataStore: DataStore<Preferences>) {
-    suspend fun saveLastAyah(savedAyah: LastAyahForTilawah) {
+class TilawahDataStore(private val dataStore: DataStore<Preferences>) : ITilawahDataStore {
+    override suspend fun saveLastAyah(savedAyah: LastAyahForTilawah) {
         dataStore.edit { prefs ->
             prefs[AYAH_NUMBER] = savedAyah.number
             prefs[SURAH_ID] = savedAyah.surahId
         }
     }
 
-    val lastAyahFlow: Flow<LastAyahForTilawah?> = dataStore.data.map { prefs ->
+    override val lastAyahFlow: Flow<LastAyahForTilawah?> = dataStore.data.map { prefs ->
 
         LastAyahForTilawah(
             number = prefs[AYAH_NUMBER] ?: return@map null,
@@ -27,7 +27,7 @@ class TilawahDataStore(private val dataStore: DataStore<Preferences>) {
         )
     }
 
-    suspend fun getLastAyah(): LastAyahForTilawah? {
+    override suspend fun getLastAyah(): LastAyahForTilawah? {
         return lastAyahFlow.first()
     }
 

@@ -7,7 +7,7 @@ import dev.mokkery.mock
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.SurahDto
-import net.thechance.mena.faith.data.datastore.TilawahDataStore
+import net.thechance.mena.faith.data.datastore.ITilawahDataStore
 import net.thechance.mena.faith.domain.entity.Surah
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 class QuranRepositoryImplTest {
 
     private val mockDao: AyahDao = mock(MockMode.autofill)
-    private val tilawahDataStore: TilawahDataStore = mock(MockMode.autofill)
+    private val tilawahDataStore: ITilawahDataStore = mock(MockMode.autofill)
 
     private val repository = QuranRepositoryImpl(mockDao, tilawahDataStore)
 
