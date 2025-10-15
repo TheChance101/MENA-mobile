@@ -41,8 +41,8 @@ private fun Preview() {
     MenaTheme {
         Box(modifier = Modifier
             .fillMaxSize()
-            .background(Theme.colorScheme.background.surface)) {
-
+            .background(Theme.colorScheme.background.surface))
+        {
             NoSavedLocationsLayout(
                 onAddLocationClicked = {},
                 modifier = Modifier.padding(horizontal = Theme.spacing._24)

@@ -37,8 +37,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.maplibre.compose.camera.CameraPosition
 
-class AddEditLocationScreen :
-    BaseScreen<AddEditLocationScreenViewModel, AddLocationScreenUIState, AddEditLocationScreenUIEffect, AddEditLocationScreenInteractionListener>() {
+class AddEditLocationScreen : BaseScreen<
+            AddEditLocationScreenViewModel,
+            AddLocationScreenUIState,
+            AddEditLocationScreenUIEffect,
+            AddEditLocationScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -47,44 +50,48 @@ class AddEditLocationScreen :
 
     @Composable
     override fun OnRender(
-        state: AddLocationScreenUIState, listener: AddEditLocationScreenInteractionListener
+        state : AddLocationScreenUIState,
+        listener : AddEditLocationScreenInteractionListener
     ) {
-        Scaffold(topBar = {
-            AuthAppBar(
-                title = if (state.addressID == null)
-                    stringResource(Res.string.add_location)
-                else stringResource(Res.string.edit_location),
-                onBackClicked = listener::onClickBack
-            )
-        }, bottomBar = {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = Theme.spacing._16)
-                    .padding(bottom = Theme.spacing._16),
-                text = stringResource(Res.string.save),
-                onClick = listener::onClickSave,
-                isEnabled = state.isSaveEnabled,
-                isLoading = state.isLoading,
-                contentPadding = PaddingValues(vertical = Theme.spacing._12)
-            )
-        }) {
+        Scaffold(
+            topBar = {
+                AuthAppBar(
+                    title = if (state.addressID == null)
+                        stringResource(Res.string.add_location)
+                    else stringResource(Res.string.edit_location),
+                    onBackClicked = listener::onClickBack
+                )
+            },
+            bottomBar = {
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = Theme.spacing._16)
+                        .padding(bottom = Theme.spacing._16),
+                    text = stringResource(Res.string.save),
+                    onClick = listener::onClickSave,
+                    isEnabled = state.isSaveEnabled,
+                    isLoading = state.isLoading,
+                    contentPadding = PaddingValues(vertical = Theme.spacing._12)
+                )
+            }
+        ) {
             LazyColumn(
-                modifier = Modifier.background(color = Theme.colorScheme.background.surface)
+                modifier = Modifier
+                    .background(color = Theme.colorScheme.background.surface)
                     .padding(horizontal = 16.dp)
             ) {
 
                 item {
                     MapSection(
                         cameraPosition = CameraPosition(
-                            target = Position(state.longitude, state.latitude), zoom = 1.0
+                            target = Position(state.longitude, state.latitude),
+                            zoom = 1.0
                         ),
                         onClickEdit = listener::onClickEdit,
                     )
-
                 }
 
                 item {
-
                     TextField(
                         value = state.address,
                         title = stringResource(Res.string.address),
@@ -96,16 +103,16 @@ class AddEditLocationScreen :
                         hint = "",
                         leadingIcon = painterResource(Res.drawable.ic_address),
                         modifier = Modifier.padding(top = Theme.spacing._12),
-
-                        )
+                    )
                 }
 
                 item {
-
                     AddressTypeSection(
-                        selectedAddressType = state.addressType, onClickAddressType = { newType ->
+                        selectedAddressType = state.addressType,
+                        onClickAddressType = { newType ->
                             listener.onClickAddressType(newType)
-                        })
+                        }
+                    )
                 }
 
                 item {
@@ -121,7 +128,8 @@ class AddEditLocationScreen :
     }
 
     override fun onEffect(
-        effect: AddEditLocationScreenUIEffect, navigator: Navigator
+        effect: AddEditLocationScreenUIEffect,
+        navigator: Navigator
     ) {
         when (effect) {
             AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
@@ -142,13 +150,10 @@ private fun OtherAddressType(
     AnimatedVisibility(
         visible = selectedAddressType == AddressType.Other,
         enter = expandVertically(
-            animationSpec = tween(
-                durationMillis = 500,
-            )
-        ), exit = shrinkVertically(
-            tween(
-                durationMillis = 500,
-            )
+            animationSpec = tween( durationMillis = 500 )
+        ),
+        exit = shrinkVertically(
+            animationSpec = tween( durationMillis = 500 )
         )
     ) {
 
@@ -158,7 +163,8 @@ private fun OtherAddressType(
             title = stringResource(Res.string.address_type),
             hint = "",
             leadingIcon = painterResource(Res.drawable.ic_add_location),
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
                 .padding(top = Theme.spacing._12)
         )
     }

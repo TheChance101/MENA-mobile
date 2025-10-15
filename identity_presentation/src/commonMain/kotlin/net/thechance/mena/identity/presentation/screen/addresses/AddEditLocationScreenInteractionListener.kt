@@ -3,7 +3,6 @@ package net.thechance.mena.identity.presentation.screen.addresses
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
 interface AddEditLocationScreenInteractionListener: BaseInteractionListener{
-
     fun onClickMap()
     fun onClickEdit()
     fun onClickBack()
@@ -11,5 +10,4 @@ interface AddEditLocationScreenInteractionListener: BaseInteractionListener{
     fun onClickSave()
     fun onChangeAddress(newAddress:String)
     fun onChangeOtherAddressType(newType:String)
-
 }

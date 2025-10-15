@@ -82,7 +82,8 @@ fun Map(
                 )
         )
         Crossfade(
-            targetState = cameraPosition.target.latitude != 28.0 && cameraPosition.target.longitude != 29.0,
+            targetState = cameraPosition.target.latitude != 28.0
+                    && cameraPosition.target.longitude != 29.0,
             modifier = Modifier.align(Alignment.Center)
         ) {
             if (it) {
@@ -97,7 +98,8 @@ fun Map(
         Crossfade(
             modifier = Modifier
                 .align(Alignment.BottomEnd),
-            targetState = cameraPosition.target.latitude != 28.0 && cameraPosition.target.longitude != 29.0
+            targetState = cameraPosition.target.latitude != 28.0
+                    && cameraPosition.target.longitude != 29.0
         ) {
             if (it) {
                 Image(
@@ -111,7 +113,8 @@ fun Map(
                         .padding(
                             horizontal = Theme.spacing._16,
                             vertical = Theme.spacing._12
-                        ).size(20.dp),
+                        )
+                        .size(20.dp),
                     painter = painterResource(Res.drawable.ic_edit),
                     contentDescription = null
                 )

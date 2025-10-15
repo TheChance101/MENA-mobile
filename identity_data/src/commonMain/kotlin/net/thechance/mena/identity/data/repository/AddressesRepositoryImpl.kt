@@ -32,7 +32,7 @@ class AddressesRepositoryImpl(
     }
 
     companion object{
-        const val ADDRESS_ENDPOINT= "identity/addresses"
+        const val ADDRESS_ENDPOINT = "identity/addresses"
 
     }
 }

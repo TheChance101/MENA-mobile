@@ -115,7 +115,8 @@ private fun AddressTypeItem(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.clickable {
                 onAddressClick()
-            })
+            }
+        )
     }
 
 }

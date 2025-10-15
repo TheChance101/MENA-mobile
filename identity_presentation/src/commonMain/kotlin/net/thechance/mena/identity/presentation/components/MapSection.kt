@@ -25,7 +25,8 @@ fun MapSection(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier){
+        modifier = modifier
+    ){
         Row(
             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
         ) {
@@ -41,7 +42,8 @@ fun MapSection(
             )
         }
         Map(
-            modifier = Modifier.clip(RoundedCornerShape(Theme.radius.md))
+            modifier = Modifier
+                .clip(RoundedCornerShape(Theme.radius.md))
                 .fillMaxWidth()
                 .height(244.dp),
             cameraPosition = cameraPosition,

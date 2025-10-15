@@ -128,6 +128,7 @@ class AddEditLocationScreenViewModelTest {
     fun `onClickSave() should call createAddress and handle success when addressID is null `() = runTest {
 
             viewModel.onClickAddressType(addressType)
+
             viewModel.onChangeAddress(addressLine)
 
             coEvery { addressesRepository.createAddress(any()) } returns Unit
@@ -149,6 +150,7 @@ class AddEditLocationScreenViewModelTest {
     fun `onClickSave() should call createAddress and handle error when addressID is null`() = runTest {
 
             viewModel.onClickAddressType(addressType)
+
             viewModel.onChangeAddress(addressLine)
 
             coEvery { addressesRepository.createAddress(any()) } throws UnAuthorizedException()
@@ -164,15 +166,17 @@ class AddEditLocationScreenViewModelTest {
     fun `onClickSave() should call editAddress and handle success when addressID is not null`() = runTest {
 
             viewModel.onClickAddressType(addressType)
+
             viewModel.onChangeAddress(addressLine)
+
             viewModel.setInitialAddressData(
-                addressID,
-                addressLine,
-                latitude,
-                longitude,
-                addressType,
-                null,
-                false
+                addressID = addressID,
+                address = addressLine,
+                latitude = latitude,
+                longitude = longitude,
+                addressType = addressType,
+                otherAddress = null,
+                isActive = false
             )
 
             coEvery { addressesRepository.editAddress(any()) } returns Unit
@@ -191,19 +195,20 @@ class AddEditLocationScreenViewModelTest {
         }
 
     @Test
-    fun `onClickSave() should call editAddress and handle error when addressID is not null`() =
-        runTest {
+    fun `onClickSave() should call editAddress and handle error when addressID is not null`() = runTest {
 
             viewModel.onClickAddressType(addressType)
+
             viewModel.onChangeAddress(addressLine)
+
             viewModel.setInitialAddressData(
-                addressID,
-                addressLine,
-                latitude,
-                longitude,
-                addressType,
-                null,
-                false
+                addressID = addressID,
+                address = addressLine,
+                latitude = latitude,
+                longitude = longitude,
+                addressType = addressType,
+                otherAddress = null,
+                isActive = false
             )
 
             coEvery { addressesRepository.editAddress(any()) } throws UnAuthorizedException()
@@ -258,6 +263,7 @@ class AddEditLocationScreenViewModelTest {
     @Test
     fun `changeIsSaveEnabled() should be true when address data is valid`() = runTest {
         viewModel.onChangeAddress(addressLine)
+
         viewModel.onClickAddressType(addressType)
 
         assertTrue { viewModel.state.value.isSaveEnabled }
@@ -268,13 +274,13 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be false in edit mode when data is not changed`() = runTest {
 
         viewModel.setInitialAddressData(
-            addressID,
-            addressLine,
-            latitude,
-            longitude,
-            addressType,
-            null,
-            false
+            addressID = addressID,
+            address = addressLine,
+            latitude = latitude,
+            longitude = longitude,
+            addressType = addressType,
+            otherAddress = null,
+            isActive = false
         )
 
         assertTrue { !viewModel.state.value.isSaveEnabled }
@@ -285,13 +291,13 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be false in edit mode when otherAddressType is null`() = runTest {
 
         viewModel.setInitialAddressData(
-            addressID,
-            addressLine,
-            latitude,
-            longitude,
-            addressType,
-            null,
-            false
+            addressID = addressID,
+            address = addressLine,
+            latitude = latitude,
+            longitude = longitude,
+            addressType = addressType,
+            otherAddress = null,
+            isActive = false
         )
         viewModel.onClickAddressType(AddressType.Other)
 
@@ -304,13 +310,13 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be false in edit mode when otherAddressType is empty`() = runTest {
 
         viewModel.setInitialAddressData(
-            addressID,
-            addressLine,
-            latitude,
-            longitude,
-            addressType,
-            null,
-            false
+            addressID = addressID,
+            address = addressLine,
+            latitude = latitude,
+            longitude = longitude,
+            addressType = addressType,
+            otherAddress = null,
+            isActive = false
         )
         viewModel.onClickAddressType(AddressType.Other)
         viewModel.onChangeOtherAddressType(" ")
@@ -324,13 +330,13 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be true in edit mode when addressType is changed`() = runTest {
 
             viewModel.setInitialAddressData(
-                addressID,
-                addressLine,
-                latitude,
-                longitude,
-                addressType,
-                null,
-                false
+                addressID = addressID,
+                address = addressLine,
+                latitude = latitude,
+                longitude = longitude,
+                addressType = addressType,
+                otherAddress = null,
+                isActive = false
             )
             viewModel.onClickAddressType(AddressType.Office)
 
@@ -342,13 +348,13 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be true in edit mode when address is changed`() = runTest {
 
         viewModel.setInitialAddressData(
-            addressID,
-            addressLine,
-            latitude,
-            longitude,
-            addressType,
-            null,
-            false
+            addressID = addressID,
+            address = addressLine,
+            latitude = latitude,
+            longitude = longitude,
+            addressType = addressType,
+            otherAddress = null,
+            isActive = false
         )
         viewModel.onChangeAddress("Giza")
 
@@ -360,13 +366,13 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be true in edit mode when otherAddressType is changed`() = runTest {
 
             viewModel.setInitialAddressData(
-                addressID,
-                addressLine,
-                latitude,
-                longitude,
-                addressType,
-                null,
-                false
+                addressID = addressID,
+                address = addressLine,
+                latitude = latitude,
+                longitude = longitude,
+                addressType = addressType,
+                otherAddress = null,
+                isActive = false
             )
             viewModel.onClickAddressType(AddressType.Other)
             viewModel.onChangeOtherAddressType("Apartment")
