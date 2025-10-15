@@ -4,6 +4,7 @@ import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.SurahDto
@@ -140,7 +141,7 @@ class QuranRepositoryImplTest {
         repository.saveLastAyahForTilawah(ayahToSave)
 
         // Then
-        dev.mokkery.verifySuspend {
+        verifySuspend {
             tilawahDataStore.saveLastAyah(ayahToSave)
         }
     }
