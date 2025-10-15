@@ -24,9 +24,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SetProductQuantity(
-    modifier: Modifier = Modifier,
     onAddProductClick: () -> Unit,
-    onRemoveProductClick: () -> Unit
+    onRemoveProductClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.background(
@@ -38,14 +38,14 @@ fun SetProductQuantity(
     ) {
         Icon(
             painter = painterResource(Res.drawable.remove_01),
-            contentDescription = stringResource(Res.string.remove_product) ,
+            contentDescription = stringResource(Res.string.remove_product),
             tint = Theme.colorScheme.primary.primary,
             modifier = modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
                 )
-                .clickable {onRemoveProductClick()}
+                .clickable { onRemoveProductClick() }
                 .padding(6.dp)
         )
         Text(
@@ -61,7 +61,7 @@ fun SetProductQuantity(
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
                 )
-                .clickable {onAddProductClick()}
+                .clickable { onAddProductClick() }
                 .padding(6.dp)
         )
 

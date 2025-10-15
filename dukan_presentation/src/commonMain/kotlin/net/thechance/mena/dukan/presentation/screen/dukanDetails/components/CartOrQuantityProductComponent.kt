@@ -24,8 +24,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CartOrQuantityProductComponent(
     showProductQuantity: Boolean,
-    cartColor : Color?= null,
-    onCartClick: () -> Unit
+    onCartClick: () -> Unit,
+    cartColor: Color? = null
 ) {
 
     AnimatedContent(
@@ -51,8 +51,8 @@ fun CartOrQuantityProductComponent(
 @Composable
 private fun ProductCart(
     onClick: () -> Unit,
-    cartColor: Color? = null,
     modifier: Modifier = Modifier,
+    cartColor: Color? = null
 ) {
     Box(
         modifier = modifier

@@ -57,8 +57,8 @@ fun DukanImageAndTitle(
 fun DukanIconButton(
     icon: Painter,
     iconColor: Color,
-    onIconClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onIconClick: () -> Unit = {}
 ) {
     Icon(
         painter = icon,
@@ -78,8 +78,8 @@ fun DukanIconButton(
 @Composable
 fun DukanHeaderIcon(
     icon: Painter,
-    isBadgeVisible: Boolean = false,
     onIconClick: () -> Unit,
+    isBadgeVisible: Boolean = false
 ) {
     AppBarOptionContainer(
         onClick = { onIconClick() },

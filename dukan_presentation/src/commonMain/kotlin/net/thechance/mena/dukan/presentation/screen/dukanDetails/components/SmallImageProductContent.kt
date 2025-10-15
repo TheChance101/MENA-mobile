@@ -70,8 +70,8 @@ fun SmallImageProductContent(
 @Composable
 private fun ProductsShelf(
     shelf: DukanDetailsUiState.ShelfUiState,
-    cartColor: Color? = null,
-    listener: DukanDetailsInteractionListener
+    listener: DukanDetailsInteractionListener,
+    cartColor: Color? = null
 ) {
     val productPairs = remember(shelf.products) {
         shelf.products.chunked(2)
