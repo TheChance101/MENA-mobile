@@ -20,12 +20,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
@@ -39,14 +41,12 @@ import mena.faith_presentation.generated.resources.qiblah
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.component.BackIcon
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -101,7 +101,6 @@ private fun Content(
                 contentScale = ContentScale.Fit,
                 colorFilter = ColorFilter.tint(Theme.colorScheme.secondary.secondary)
             )
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -109,11 +108,12 @@ private fun Content(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CompassView(azimuth = uiState.azimuth, qiblahDirection = uiState.qiblahDirection)
-
+                CompassView(
+                    azimuth = uiState.continuousAzimuth,
+                    qiblahDirection = uiState.qiblahAngleValue
+                )
                 TextAngleToQiblah(
-                    azimuth = uiState.azimuth,
-                    uiState.qiblahDirection,
+                    qiblahDirection = uiState.angleToQiblah.toInt().toString(),
                     modifier = Modifier.padding(top = Theme.spacing._16)
                 )
             }
@@ -131,10 +131,11 @@ private fun CompassView(
         contentAlignment = Alignment.Center
     ) {
         val animatedBearing by animateFloatAsState(
-            targetValue = azimuth,
+            targetValue = -azimuth,
             animationSpec = tween(durationMillis = 300),
             label = "compass_rotation"
         )
+        val rotateModifier = remember(animatedBearing) { Modifier.rotate(animatedBearing) }
         Box(
             modifier = Modifier.size(224.dp).border(
                 width = 3.dp,
@@ -143,27 +144,25 @@ private fun CompassView(
             ),
             contentAlignment = Alignment.Center
         ) {
-            DirectionPlaceHolder()
-
+            DirectionPlaceHolder(modifier = rotateModifier)
             Image(
                 painter = painterResource(Res.drawable.ic_direction),
                 contentDescription = "direction_arrow",
-                modifier = Modifier
+                modifier = rotateModifier
                     .size(128.dp)
-                    .rotate(animatedBearing)
             )
         }
-
-        QiblahImage(qiblahDirection)
-
+        QiblahImage(
+            qiblahDirection = qiblahDirection,
+            compassBearing = animatedBearing
+        )
     }
 }
 
-
 @Composable
-private fun DirectionPlaceHolder() {
+private fun DirectionPlaceHolder(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize().padding(20.dp),
+        modifier = modifier.fillMaxSize().padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -201,10 +200,9 @@ private fun DirectionPlaceHolder() {
     }
 }
 
-
 @Composable
-private fun CirclesPlaceHolder() {
-    Box(modifier = Modifier.size(116.dp)) {
+private fun CirclesPlaceHolder(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.size(116.dp)) {
         BrownCircle(modifier = Modifier.align(Alignment.TopStart))
         BrownCircle(modifier = Modifier.align(Alignment.TopEnd))
         BrownCircle(modifier = Modifier.align(Alignment.BottomStart))
@@ -214,21 +212,32 @@ private fun CirclesPlaceHolder() {
 
 @Composable
 private fun TextAngleToQiblah(
-    azimuth: Float,
-    qiblahDirection: Float,
+    qiblahDirection: String,
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         Arrangement.Center
     ) {
-        Text(
-            text = "${azimuth - qiblahDirection}°N",
-            style = Theme.typography.title.small,
-            color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = qiblahDirection,
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "°N",
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.weight(1f)
+            )
+        }
         Text(
             text = stringResource(Res.string.device_angle_to_qiblah),
             style = Theme.typography.title.small,
@@ -238,14 +247,13 @@ private fun TextAngleToQiblah(
     }
 }
 
-
 @Composable
-private fun QiblahImage(qiblahDirection: Float) {
+private fun QiblahImage(qiblahDirection: Float, compassBearing: Float) {
     Box(
         modifier = Modifier
             .size(270.dp)
             .graphicsLayer {
-                rotationZ = qiblahDirection
+                rotationZ = compassBearing + qiblahDirection
             },
         contentAlignment = Alignment.TopCenter
     ) {
@@ -265,7 +273,6 @@ private fun QiblahImage(qiblahDirection: Float) {
 
 @Composable
 private fun QiblahTopBar(uiState: CompassScreenState) {
-
     Row(
         modifier = Modifier.background(
             shape = RoundedCornerShape(Theme.radius.full),
@@ -297,12 +304,4 @@ private fun BrownCircle(modifier: Modifier = Modifier) {
         modifier = modifier.size(6.dp)
             .background(color = Theme.colorScheme.secondary.secondaryText, shape = CircleShape)
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CompassScreenPreview() {
-    MenaTheme {
-        Content(uiState = CompassScreenState(), listener = CompassViewModel())
-    }
 }

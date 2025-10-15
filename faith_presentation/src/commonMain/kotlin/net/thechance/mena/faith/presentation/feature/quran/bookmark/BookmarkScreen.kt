@@ -31,7 +31,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
-import net.thechance.mena.faith.presentation.base.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.component.BackIcon
 import net.thechance.mena.faith.presentation.component.FaithSnackBar
 import net.thechance.mena.faith.presentation.component.SwappableCard

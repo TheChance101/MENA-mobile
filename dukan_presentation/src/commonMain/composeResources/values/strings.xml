@@ -105,5 +105,10 @@
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
     <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
 
+    <string name="no_internet_title">Oops! It looks like you’re offline.</string>
+    <string name="no_internet_message">Check your connection and try again</string>
+    <string name="retry_button">Re-try</string>
+    <string name="warning">Warning Image</string>
+    <string name="wifi_image">Wifi Image</string>
 
 </resources>

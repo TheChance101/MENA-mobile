@@ -21,6 +21,9 @@ internal sealed interface Route {
     data object BookmarksRoute : Route
 
     @Serializable
+    data object CompassRoute : Route
+
+    @Serializable
     data object CalibrateDeviceRoute : Route
 
     @Serializable

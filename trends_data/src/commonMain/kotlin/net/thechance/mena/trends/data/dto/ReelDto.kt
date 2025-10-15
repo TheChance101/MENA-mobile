@@ -19,6 +19,12 @@ internal data class ReelDto(
     val likesCount : Int? = null,
     @SerialName("viewsCount")
     val viewsCount : Int? = null,
+    @SerialName("isCurrentUserOwner")
+    val isCurrentUserOwner: Boolean = false,
+    @SerialName("username")
+    val username: String = "The Chance",
+    @SerialName("profilePictureUrl")
+    val profilePictureUrl: String? = null,
     @SerialName("categories")
     val categories : List<CategoryDto>? = null
 )

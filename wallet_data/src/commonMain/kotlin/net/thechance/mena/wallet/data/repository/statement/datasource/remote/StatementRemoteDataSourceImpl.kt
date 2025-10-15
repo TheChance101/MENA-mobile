@@ -6,7 +6,6 @@ import net.thechance.mena.wallet.data.database.StatementWithMetaDataDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toStatementRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
-import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl.Companion.STATEMENT_PATH
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import org.koin.core.annotation.Single
 
@@ -31,5 +30,9 @@ class StatementRemoteDataSourceImpl(
             totalInflows = headers["X-Statement-Total-Inflows"]?.toDoubleOrNull() ?: 0.0,
             totalOutflows = headers["X-Statement-Total-Outflows"]?.toDoubleOrNull() ?: 0.0
         )
+    }
+
+    companion object {
+        const val STATEMENT_PATH = "wallet/transactions/statement"
     }
 }
