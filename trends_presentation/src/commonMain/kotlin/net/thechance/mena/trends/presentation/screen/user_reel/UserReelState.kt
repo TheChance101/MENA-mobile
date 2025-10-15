@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 
 internal data class UserReelState(
     val reels: Flow<PagingData<UserReelUiState>> = flowOf(),
@@ -14,7 +15,7 @@ internal data class UserReelState(
     val isDescriptionExpanded: Boolean = false,
 )
 
-data class UserReelUiState( //TODO get user info
+data class UserReelUiState(
     val id : String = "",
     val videoUrl: String= "",
     val description: String = "",
@@ -22,6 +23,6 @@ data class UserReelUiState( //TODO get user info
     val viewsCount: Int = 0,
     val username : String = "",
     val profileImage : String = "",
-    val createdAt: String?= null,
+    val createdAt: TimeAgoValue? = null,
     val isCurrentUserOwner: Boolean = false
 )

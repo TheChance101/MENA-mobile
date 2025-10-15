@@ -24,21 +24,20 @@ internal class UserReelViewModel(
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
-        getAllReals()
+        getFeedReals()
     }
 
-    private fun getAllReals() {
+    private fun getFeedReals() {
         tryToExecute(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    onError = {},
-                    loadPage = { page -> reelsRepository.getAllReels(page) }
+                    loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
                 )
             },
             onSuccess = ::onGetReelsSuccess,
             onStart = { updateState { copy(isLoading = true) } },
-            onEnd = { updateState { copy(isLoading = true) } },
+            onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = ioDispatcher,
             onError = { error -> updateState { copy(error = error) } }
         )
@@ -48,7 +47,7 @@ internal class UserReelViewModel(
         val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
             pagingData.map { reel -> reel.toUserReelUiState() }
         }
-        updateState { copy(isLoading = false, reels = uiReelsFlow) }
+        updateState { copy(reels = uiReelsFlow) }
     }
 
     override fun onDescriptionClick(isCollapsed: Boolean) {

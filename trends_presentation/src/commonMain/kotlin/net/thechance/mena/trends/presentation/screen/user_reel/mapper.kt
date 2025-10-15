@@ -1,7 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
 import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.presentation.shared.util.toFormattedString
+import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 
 fun Reel.toUserReelUiState() =
     UserReelUiState(
@@ -10,6 +10,8 @@ fun Reel.toUserReelUiState() =
         description = description,
         likesCount = likesCount,
         viewsCount = viewsCount,
-        createdAt = createdAt.toFormattedString(),
-        isCurrentUserOwner = isCurrentUserOwner
+        createdAt = createdAt?.timeAgoValue(),
+        isCurrentUserOwner = isCurrentUserOwner,
+        username = userName,
+        profileImage = profileImageUrl
     )
