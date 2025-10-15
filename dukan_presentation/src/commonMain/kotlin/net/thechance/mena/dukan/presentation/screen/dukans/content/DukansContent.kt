@@ -1,12 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukans.content
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.EaseInCubic
-import androidx.compose.animation.core.EaseOutCubic
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import mena.dukan_presentation.generated.resources.Res
@@ -21,6 +15,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.EmptyStateContent
 import net.thechance.mena.dukan.presentation.screen.dukans.component.DukansList
+import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
@@ -60,18 +55,7 @@ fun DukansContent(
     ) {
         AnimatedContent(
             targetState = state.dukansState,
-            transitionSpec = {
-                fadeIn(
-                    animationSpec = tween(
-                        easing = EaseOutCubic
-                    )
-                ) togetherWith
-                        fadeOut(
-                            animationSpec = tween(
-                                easing = EaseInCubic
-                            )
-                        )
-            },
+            transitionSpec = { fadeCubicTransition() },
             label = "Dukans Animation"
         ) { target ->
             when (target) {
