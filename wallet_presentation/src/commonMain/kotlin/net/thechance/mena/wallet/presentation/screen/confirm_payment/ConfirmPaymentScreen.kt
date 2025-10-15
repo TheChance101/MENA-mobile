@@ -117,7 +117,7 @@ private fun ConfirmPaymentScreenContent(
                     )
 
                     PayButton(
-                        isPayBtnLoading = state.isPayButtonLoading,
+                        isLoading = state.isPayButtonLoading,
                         isEnabled = state.paymentUiState.status,
                         onClick = interactionListener::onPayButtonClicked,
                         payAmount = state.paymentUiState.amount
@@ -132,7 +132,12 @@ private fun ConfirmPaymentScreenContent(
 private fun onConfirmPaymentEffect(
     effect: ConfirmPaymentEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToPaymentResultScreen: (String, Double, Uuid, SubmissionStatus) -> Unit
+    navigateToPaymentResultScreen: (
+        receiverName: String,
+        amount: Double,
+        transactionId: Uuid,
+        submissionStatus: SubmissionStatus
+    ) -> Unit
 ) {
     when (effect) {
         ConfirmPaymentEffect.NavigateBack -> onNavigateBackClicked()
