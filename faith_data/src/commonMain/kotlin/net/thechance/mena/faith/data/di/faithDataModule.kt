@@ -1,13 +1,9 @@
 package net.thechance.mena.faith.data.di
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.QuranDatabase
-import net.thechance.mena.faith.data.datastore.TilawahDataStore
-import net.thechance.mena.faith.data.datastore.createDataStore
 import net.thechance.mena.faith.data.remote.client.NetworkClient
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
 import net.thechance.mena.faith.data.remote.service.createBookmarkApiService
@@ -30,15 +26,15 @@ val faithDataModule = module {
 
     single<HttpClient>(named("faithHttpClient")) {
         NetworkClient(
-            // authorizationService = get(),
-            baseUrl = "http://mena-dev.the-chance.net/"
+            authorizationService = get(),
+            baseUrl = get(named("baseUrl"))
         ).provideHttpClient()
     }
 
     single<Ktorfit>(named("faithKtorfit")) {
         Ktorfit.Builder()
             .httpClient(get<HttpClient>(named("faithHttpClient")))
-            .baseUrl("http://mena-dev.the-chance.net/")
+            .baseUrl(get<String>(named("baseUrl")))
             .build()
     }
 
@@ -47,9 +43,4 @@ val faithDataModule = module {
     }
 
     singleOf(::BookmarkRepositoryImpl) bind BookmarkRepository::class
-
-    single<DataStore<Preferences>> { createDataStore() }
-    singleOf(::TilawahDataStore)
 }
-
-
