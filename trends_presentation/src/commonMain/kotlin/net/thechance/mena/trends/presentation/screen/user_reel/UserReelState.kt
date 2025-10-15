@@ -22,7 +22,7 @@ data class UserReelUiState(
     val likesCount: Int = 0,
     val viewsCount: Int = 0,
     val username : String = "",
-    val profileImage : String = "",
+    val profileImageUrl: String = "",
     val createdAt: TimeAgoValue? = null,
     val isCurrentUserOwner: Boolean = false
 )

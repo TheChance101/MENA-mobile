@@ -246,7 +246,9 @@ class UserReelViewModelTest {
                 likesCount = 50,
                 viewsCount = 100,
                 createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
-                isCurrentUserOwner = false
+                isCurrentUserOwner = false,
+                username = "hend",
+                profileImageUrl = "",
             ),
             UserReelUiState(
                 id = "1",
@@ -255,7 +257,9 @@ class UserReelViewModelTest {
                 likesCount = 100,
                 viewsCount = 1000,
                 createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
-                isCurrentUserOwner = true
+                isCurrentUserOwner = true,
+                username = "Nour",
+                profileImageUrl = "",
             )
         )
     }

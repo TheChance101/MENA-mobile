@@ -225,7 +225,7 @@ private fun Reel(
                 userName = reel.username,
                 timeOfPublish = reel.createdAt.toString(),
                 description = reel.description,
-                avatar = reel.profileImage,
+                avatar = reel.profileImageUrl,
                 modifier = Modifier.align(Alignment.BottomCenter),
                 isDescriptionExpanded = isDescriptionExpanded,
                 onDescriptionClick = onDescriptionClick,
