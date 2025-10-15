@@ -1,8 +1,8 @@
 package net.thechance.mena.trends.presentation.video_player
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,19 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.UIKitView
-import androidx.compose.ui.zIndex
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_pause
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -31,15 +30,22 @@ import net.thechance.mena.designsystem.presentation.component.indicator.DotsProg
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVPlayer
-import platform.AVFoundation.asset
+import platform.AVFoundation.AVPlayerItemStatusFailed
+import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
+import platform.AVFoundation.AVPlayerItemStatusUnknown
+import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.currentTime
+import platform.AVFoundation.duration
 import platform.AVFoundation.pause
 import platform.AVFoundation.play
-import platform.AVFoundation.replaceCurrentItemWithPlayerItem
+import platform.AVFoundation.seekToTime
+import platform.AVFoundation.timeControlStatus
 import platform.AVKit.AVPlayerViewController
 import platform.CoreMedia.CMTimeGetSeconds
+import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.Foundation.NSURL
 
 @OptIn(ExperimentalForeignApi::class)
@@ -47,84 +53,150 @@ import platform.Foundation.NSURL
 actual fun VideoPlayer(
     url: String,
     playWhenVisible: Boolean,
+    modifier: Modifier,
+    content: @Composable () -> Unit
 ) {
-    val player = remember(url) { AVPlayer(uRL = NSURL.URLWithString(url)!!) }
-    val controller = remember { AVPlayerViewController().apply { this.player = player } }
-
-    var isPause by remember { mutableStateOf(false) }
+    var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
+    var isPaused by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(true) }
-    var currentProgress by remember { mutableStateOf(0f) }
-    var duration by remember { mutableDoubleStateOf(1.0) }
 
-    LaunchedEffect(playWhenVisible) {
-        if (playWhenVisible) player.play() else player.pause()
+    var currentProgress by remember { mutableStateOf(0f) }
+    var duration by remember { mutableStateOf(1.0) }
+    var barWidth by remember { mutableFloatStateOf(1f) }
+
+    val player = remember(url) { AVPlayer(uRL = NSURL(string = url)) }
+
+    val playerViewController = remember {
+        AVPlayerViewController().apply {
+            showsPlaybackControls = false
+            videoGravity = AVLayerVideoGravityResizeAspectFill
+        }
     }
 
-    LaunchedEffect(url) {
-        val item = player.currentItem
-        if (item != null) {
-            duration = CMTimeGetSeconds(item.asset.duration)
-            isLoading = false
+    LaunchedEffect(url, playWhenVisible) {
+        playerViewController.player = player
+        if (playWhenVisible) {
+            if (lastPosition > 0.0) {
+                val time = CMTimeMakeWithSeconds(lastPosition, 600)
+                player.seekToTime(time)
+            }
+            player.play()
+            isPaused = false
+        } else {
+            lastPosition = CMTimeGetSeconds(player.currentTime())
+            player.pause()
+            isPaused = true
         }
-        while (isActive) {
-            val current = CMTimeGetSeconds(player.currentTime())
-            currentProgress = if (duration > 0) (current / duration).toFloat() else 0f
-            delay(500)
+    }
+
+    LaunchedEffect(player) {
+        while (true) {
+            val item = player.currentItem
+            val itemReady = when (item?.status) {
+                AVPlayerItemStatusReadyToPlay -> true
+                AVPlayerItemStatusFailed, AVPlayerItemStatusUnknown, null -> false
+                else -> false
+            }
+
+            val waiting = player.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+
+            isLoading = (!itemReady) || waiting
+
+            kotlinx.coroutines.delay(250)
+        }
+    }
+
+    LaunchedEffect(player) {
+        while (true) {
+            val currentItem = player.currentItem
+            if (currentItem != null) {
+                val totalSeconds = CMTimeGetSeconds(currentItem.duration)
+                if (!totalSeconds.isNaN() && totalSeconds > 0.0) {
+                    duration = totalSeconds
+                    val currentSeconds = CMTimeGetSeconds(player.currentTime())
+                    currentProgress = if (!currentSeconds.isNaN()) {
+                        (currentSeconds / totalSeconds).toFloat().coerceIn(0f, 1f)
+                    } else {
+                        0f
+                    }
+                }
+            }
+            kotlinx.coroutines.delay(250)
+        }
+    }
+
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        UIKitView(
+            factory = { playerViewController.view },
+            update = {
+                it.setNeedsLayout()
+                if (isPaused) player.pause() else player.play()
+            },
+            modifier = Modifier.matchParentSize()
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clickable {
+                    isPaused = !isPaused
+                    if (isPaused) player.pause() else player.play()
+                }
+        ) {
+            content()
+
+            if (isPaused) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_pause),
+                    contentDescription = "Pause Icon",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            if (isLoading && !isPaused) {
+                DotsProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    dotSize = 10.dp,
+                    colors = listOf(
+                        Theme.colorScheme.stroke,
+                        Theme.colorScheme.shadeTertiary,
+                        Theme.colorScheme.shadeTertiary
+                    )
+                )
+            }
+
+            ProgressBar(
+                progress = { currentProgress },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .fillMaxWidth()
+                    .padding(bottom = 2.dp, start = 1.dp, end = 1.dp)
+                    .onGloballyPositioned {
+                        barWidth = it.size.width.toFloat()
+                    }
+                    .pointerInput(barWidth, duration) {
+                        detectTapGestures { offset ->
+                            if (duration > 0.0 && barWidth > 0f) {
+                                val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
+                                val seekSeconds = newProgress * duration
+                                val seekTime = CMTimeMakeWithSeconds(seekSeconds, 600)
+                                player.seekToTime(seekTime)
+                            }
+                        }
+                    },
+                trackColor = Theme.colorScheme.primary.onPrimaryHint,
+                color = Theme.colorScheme.border.brand
+            )
         }
     }
 
     DisposableEffect(Unit) {
         onDispose {
+            lastPosition = CMTimeGetSeconds(player.currentTime())
             player.pause()
-            player.replaceCurrentItemWithPlayerItem(null)
-            controller.player = null
         }
-    }
-
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        UIKitView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { controller.view },
-            update = {
-                if (isPause) player.pause() else player.play()
-            }
-        )
-
-
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .zIndex(10f)
-                .background(Color.Transparent)
-                .clickable { isPause = !isPause }
-        )
-
-        if (isPause) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_pause),
-                contentDescription = "Pause",
-                modifier = Modifier.align(Alignment.Center).zIndex(11f)
-            )
-        }
-
-        if (isLoading && !isPause) {
-            DotsProgressIndicator(
-                colors = listOf(
-                    Theme.colorScheme.stroke,
-                    Theme.colorScheme.shadeTertiary,
-                    Theme.colorScheme.primary.primary
-                )
-            )
-        }
-
-        ProgressBar(
-            progress = { currentProgress },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .fillMaxWidth()
-                .padding(2.dp),
-            trackColor = Theme.colorScheme.primary.onPrimaryHint,
-            color = Theme.colorScheme.border.brand
-        )
     }
 }
