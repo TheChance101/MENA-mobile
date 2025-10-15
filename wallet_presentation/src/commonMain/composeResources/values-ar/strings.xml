@@ -94,7 +94,7 @@
     <string name="reset">إعادة تعيين</string>
     <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
     <string name="share_button_title">مشاركة</string>
-    <string name="view_transactions">اظهار المعاملات</string>
+    <string name="statement">كشف الحساب</string>
     <string name="view_transactions_statement_error_message">حدث خطأ اثناء تحميل الملف</string>
     <string name="loading_pdf_message">جارٍ تحميل الملف ...</string>
     <string name="rendering_pdf_message">اظهار الملف ...</string>

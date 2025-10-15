@@ -14,7 +14,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -30,7 +30,7 @@ class PaymentResultViewModelTest {
     private val transactionId = Uuid.random()
     private val paymentResultArgs = PaymentResultArgs(
         transactionId = transactionId.toString(),
-        submitTransactionResultStatus = SubmitTransactionResultStatus.SUCCESS.name
+        submitTransactionResultStatus = SubmissionStatus.SUCCESS.name
     )
 
     @BeforeTest
@@ -52,7 +52,7 @@ class PaymentResultViewModelTest {
         )
 
         assertEquals(
-            SubmitTransactionResultStatus.SUCCESS,
+            SubmissionStatus.SUCCESS,
             viewModel.state.value.paymentStatus
         )
     }
@@ -116,7 +116,7 @@ class PaymentResultViewModelTest {
             viewModel.onTryAgainClicked()
             skipItems(1)
             val state = awaitItem()
-            assertEquals(SubmitTransactionResultStatus.CONNECTION_LOST, state.paymentStatus)
+            assertEquals(SubmissionStatus.CONNECTION_LOST, state.paymentStatus)
             cancelAndIgnoreRemainingEvents()
         }
     }

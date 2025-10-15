@@ -109,6 +109,15 @@ fun MockRequestHandleScope.defaultChatResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultUploadImagesResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        MessageDto.serializer(),
+        createMessageDto()
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 
 fun createRepository(
     contactsProvider: ContactsProvider,
@@ -155,23 +164,28 @@ fun createHttpClient(
     syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
-        when {
-            request.url.encodedPath == CONTACTS_ENDPOINT ->
-                contactsResponse?.invoke(this) ?: defaultContactsResponse()
+        val path = request.url.encodedPath
+        when  {
+            path == CONTACTS_ENDPOINT -> contactsResponse?.invoke(this)
+                ?: defaultContactsResponse()
 
-            request.url.encodedPath == SYNC_CONTACTS_ENDPOINT ->
-                syncContactsResponse?.invoke(this) ?: defaultSyncContactsResponse()
+            path == SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
+                ?: defaultSyncContactsResponse()
 
-            request.url.encodedPath == CHAT_HISTORY_ENDPOINT ->
-                chatHistoryResponse?.invoke(this) ?: defaultChatHistoryResponse()
+            path == CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
+                ?: defaultChatHistoryResponse()
 
-            request.url.encodedPath == CHAT_ENDPOINT ->
-                chatResponse?.invoke(this) ?: defaultChatResponse()
+            path == CHAT_ENDPOINT -> chatResponse?.invoke(this)
+                ?: defaultChatResponse()
 
-            request.url.encodedPath.startsWith("$CHAT_ENDPOINT/") ->
+            path.contains(IMAGES_ENDPOINT) ->
+                imagesResponse?.invoke(this) ?: defaultUploadImagesResponse()
+
+            path.startsWith("$CHAT_ENDPOINT/") ->
                 chatByIdResponse?.invoke(this) ?: defaultChatResponse()
 
             else -> respond(
@@ -196,3 +210,5 @@ private const val CONTACTS_ENDPOINT = "/chat/contacts"
 private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
 private const val CHAT_ENDPOINT = "/chat"
 private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
+
+private const val IMAGES_ENDPOINT = "/chat/image"

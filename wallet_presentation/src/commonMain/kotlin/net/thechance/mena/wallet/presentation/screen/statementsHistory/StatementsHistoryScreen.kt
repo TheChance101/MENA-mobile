@@ -20,16 +20,15 @@ import net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedTrailingIcon
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementHistoryBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun StatementHistoryScreen(
     viewModel: StatementsHistoryViewModel = koinViewModel(),
     onNavigateBackClicked: () -> Unit,
-    navigateToStatementDetails: (id: Long) -> Unit
+    navigateToStatementDetails: (statementLocation: StorageLocation) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -102,14 +101,13 @@ private fun NormalModeAppBar(listener: StatementsHistoryInteractionListener) {
     )
 }
 
-@OptIn(ExperimentalUuidApi::class)
 private fun onStatementHistoryEffect(
     effect: StatementsHistoryEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToStatementDetails: (id: Long) -> Unit
+    navigateToStatementDetails: (statementLocation: StorageLocation) -> Unit
 ) {
     when (effect) {
         StatementsHistoryEffect.NavigateBack -> onNavigateBackClicked()
-        is StatementsHistoryEffect.NavigateToStatementDetails -> navigateToStatementDetails(effect.id)
+        is StatementsHistoryEffect.NavigateToStatementDetails -> navigateToStatementDetails(effect.statementLocation)
     }
 }

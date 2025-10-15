@@ -11,6 +11,7 @@ import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.utils.Paginator
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
@@ -41,8 +42,8 @@ class StatementsHistoryViewModel(
         loadNextStatements()
     }
 
-    override fun onStatementCardClicked(id: Long) {
-        sendEffect(effect = StatementsHistoryEffect.NavigateToStatementDetails(id))
+    override fun onStatementCardClicked(statement: StatementsHistoryScreenState.StatementItem) {
+        sendEffect(effect = StatementsHistoryEffect.NavigateToStatementDetails(StorageLocation.Downloads(statement.fileName)))
     }
 
     override fun onEditClicked() {

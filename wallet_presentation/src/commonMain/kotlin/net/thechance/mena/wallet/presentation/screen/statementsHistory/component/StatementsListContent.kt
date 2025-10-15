@@ -103,7 +103,7 @@ fun StatementsListContent(
                 historyIconOffsetX = historyIconOffsetX.value.roundToInt(),
                 deleteButtonOffsetX = deleteButtonOffsetX.value.roundToInt(),
                 onDeleteClicked = { listener.onDeleteClicked(id = statement.id) },
-                onStatementCardClicked = { listener.onStatementCardClicked(id = statement.id) }
+                onStatementCardClicked = { listener.onStatementCardClicked(statement) }
             )
         }
 

@@ -31,7 +31,7 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultInteractionListener
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -39,7 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PaymentStatusBody(
     interactionListener: PaymentResultInteractionListener,
-    paymentStatus: SubmitTransactionResultStatus = SubmitTransactionResultStatus.UNKNOWN_ERROR,
+    paymentStatus: SubmissionStatus = SubmissionStatus.UNKNOWN_ERROR,
     description: String = stringResource(Res.string.connection_lost_try_again),
     receiverName: String = "",
     amount: Double = 0.0
@@ -49,7 +49,7 @@ fun PaymentStatusBody(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        if (paymentStatus == SubmitTransactionResultStatus.UNKNOWN_ERROR) {
+        if (paymentStatus == SubmissionStatus.UNKNOWN_ERROR) {
             PaymentResultCard(
                 image = painterResource(Res.drawable.transaction_failed),
                 title = stringResource(Res.string.transaction_failed),
@@ -86,7 +86,7 @@ fun PaymentStatusBody(
 private fun PaymentResultCard(
     image: Painter,
     title: String,
-    paymentStatus: SubmitTransactionResultStatus,
+    paymentStatus: SubmissionStatus,
     modifier: Modifier = Modifier,
     amount: Double = 0.0,
     description: String = "",
@@ -112,7 +112,7 @@ private fun PaymentResultCard(
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.title.small,
         )
-        if (paymentStatus == SubmitTransactionResultStatus.UNKNOWN_ERROR) {
+        if (paymentStatus == SubmissionStatus.UNKNOWN_ERROR) {
             Text(
                 text = description,
                 color = Theme.colorScheme.shadeSecondary,

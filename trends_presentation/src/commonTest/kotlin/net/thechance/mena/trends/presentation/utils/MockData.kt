@@ -1,14 +1,11 @@
 package net.thechance.mena.trends.presentation.utils
 
+import net.thechance.mena.trends.domain.entity.Category
 
-const val largeNewDescription = "Once upon a time, there was a young girl who loved reading more than anything in the world. Every day after school, she would sit quietly in a cozy corner of the park, open her favorite book, and dive into countless stories filled with adventures, mysteries, and fascinating characters. She didn’t care about what others around her were doing, as she was completely immersed in her literary worlds. Over time, she began dreaming of becoming a great writer herself, creating stories that could inspire, entertain, and bring joy to readers everywhere. Each new word she wrote filled her with excitement and pride because she could express her thoughts, feelings, and imagination freely.\n" +
-        "\n" +
-        "In the evenings, after the sun had set, she would return home carrying her precious books, counting the days until she could again sit among the pages and get lost in thrilling tales. As she explored these literary worlds, she discovered words that were unforgettable and letters that conveyed deep emotions. Every chapter she read or wrote opened new doors for her to think, explore, and create. Gradually, she built a small library in her room, filled with books, journals, and magazines, constantly adding new stories every day. She loved sharing what she read with her friends and family, discussing adventures of characters, plot twists, and lessons learned. \n" +
-        "\n" +
-        "Her passion for reading soon grew into a love for writing. She would write short stories, poems, and small essays, always trying to capture the beauty of life, the struggles of people, and the magic of imagination. She experimented with words, sentences, and paragraphs, learning how to make stories flow naturally and how to keep readers engaged. Sometimes she would spend hours perfecting a single paragraph, finding the right words to convey exactly what she felt in her heart. Through reading and writing, she discovered patience, creativity, and the joy of self-expression. \n" +
-        "\n" +
-        "Over the years, her collection of books and stories became enormous, filling shelves, tables, and corners of her room. Her imagination became sharper, and she started to create her own fictional worlds, inventing new characters, settings, and adventures. She dreamed of publishing her stories one day so that children and adults alike could enjoy them, just as she had enjoyed countless books in her youth. Her life was enriched by every page she read and every sentence she wrote, teaching her lessons about empathy, courage, and the wonders of the human spirit. Through reading and writing, she learned that stories could change lives, inspire minds, and create connections across time and space. \n" +
-        "\n" +
-        "Even when she grew older, she never stopped writing. She would wake up early in the morning, brew a cup of tea, and sit at her desk, letting her thoughts flow freely onto paper. Each day brought new ideas, new characters, and new adventures waiting to be told. Her love for literature never faded, and she shared it with everyone around her. She realized that words were not just letters on a page, but bridges to understanding, imagination, and connection. Her heart was full of stories, and her mind was a universe of possibilities, all waiting to be discovered by curious readers like her."
+val category = Category(id = "1", name = "Category 1", emoji = "🫡")
 
-const val smallNewDescription = "New Description"
+val categories = listOf(
+    category,
+    Category(id = "2", name = "Category 2", emoji = "🔥"),
+    Category(id = "3", name = "Category 3", emoji = "👻")
+)

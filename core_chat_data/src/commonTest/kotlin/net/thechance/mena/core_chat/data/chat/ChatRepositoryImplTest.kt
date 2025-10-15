@@ -250,6 +250,7 @@ class ChatRepositoryImplTest {
         val flow = repository.observeReadMessages()
         assertThat(flow).isNotNull()
     }
+
     @Test
     fun `should return local messages from database when getLocalMessages is called`() = runTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
@@ -284,7 +285,11 @@ class ChatRepositoryImplTest {
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply { tryEmit("test-message") }
+        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
+            tryEmit(
+                "test-message"
+            )
+        }
 
         val flow = repository.subscribeToMessages(chatId)
 
@@ -292,28 +297,31 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
+    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
 
-        repository.downloadImage(IMAGE_URL)
+            repository.downloadImage(IMAGE_URL)
 
-        verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
-    }
+            verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
+        }
 
     @Test
-    fun `downloadImage should throw OperationFailedException when downloadImage return false`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
+    fun `downloadImage should throw OperationFailedException when downloadImage return false`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
 
-        assertFailsWith<OperationFailedException> {
-            repository.downloadImage(IMAGE_URL)
+            assertFailsWith<OperationFailedException> {
+                repository.downloadImage(IMAGE_URL)
+            }
         }
-    }
+
 
     private companion object {
         private val chatId = Uuid.random()
         private val userId = Uuid.random()
 
-       const val IMAGE_URL = "http://test.com/image.jpg"
+        const val IMAGE_URL = "http://test.com/image.jpg"
     }
 
 }
