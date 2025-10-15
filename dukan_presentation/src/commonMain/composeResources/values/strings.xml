@@ -114,7 +114,7 @@
     <string name="view_more">View more</string>
     <string name="heart_icon">Heart Icon</string>
     <string name="favorites">Favorites</string>
-    <string name="no_dukans_title">No dukans found</string>
-    <string name="no_dukans_body">There are no dukans available in this category at the moment.</string>
+    <string name="no_dukans_title">There is no dukan related to this category!There is no dukan related to this category!</string>
+    <string name="no_dukans_body">It will appear here when it added.</string>
 
 </resources>
