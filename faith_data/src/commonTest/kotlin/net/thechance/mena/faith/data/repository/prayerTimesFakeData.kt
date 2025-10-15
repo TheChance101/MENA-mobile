@@ -16,11 +16,11 @@ import kotlin.time.Instant
 fun getPrayerTimesFakeData(
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
     sunriseTime: Instant = LocalDateTime(
-        2025,
-        10,
-        10,
-        6,
-        52
+        year = 2025,
+        month = 10,
+        day = 10,
+        hour = 6,
+        minute = 52
     ).toInstant(timeZone),
     fajrTime: Instant = LocalDateTime(
         year = 2025,

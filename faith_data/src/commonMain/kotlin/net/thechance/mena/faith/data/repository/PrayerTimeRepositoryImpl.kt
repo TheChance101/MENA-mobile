@@ -24,14 +24,14 @@ class PrayerTimeRepositoryImpl(
         timeZone: TimeZone,
     ): List<PrayerTime> = executeApiSafely<PrayerTimesDto> {
         prayerTimeApiService.getPrayerTimes(
-            date = date.toDateString(),
+            date = date.toDateString(timeZone = timeZone),
             latitude = location.latitude,
             longitude = location.longitude
         )
     }.toDomain(timeZone)
 
-    private fun Instant.toDateString(): String {
-        val dateTime = this.toLocalDateTime(TimeZone.currentSystemDefault())
+    private fun Instant.toDateString(timeZone: TimeZone): String {
+        val dateTime = this.toLocalDateTime(timeZone = timeZone)
         val month = dateTime.month.number.toString().padStart(2, '0')
         val day = dateTime.day.toString().padStart(2, '0')
         return "$day-$month-${dateTime.year}"
