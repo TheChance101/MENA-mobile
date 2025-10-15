@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,8 +41,7 @@ fun CategoryCard(
     iconSize: Dp = 24.dp,
     iconContainerSize: Dp = 60.dp
 ) {
-    val imageState = rememberSaveable { mutableStateOf(CategoryImageState.Loading) }
-    val isCategoryButtonEnabled = imageState.value != CategoryImageState.Loading
+    var imageState by rememberSaveable { mutableStateOf(CategoryImageState.Loading) }
 
     Column(
         modifier = modifier,
@@ -55,8 +56,8 @@ fun CategoryCard(
                     color = Theme.colorScheme.background.surfaceLow,
                     shape = RoundedCornerShape(Theme.radius.full)
                 ).clip(shape = RoundedCornerShape(Theme.radius.full))
-                .clickable(onClick = onClick, enabled = isCategoryButtonEnabled)
-                .skeletonLoading(isLoading = imageState.value == CategoryImageState.Loading),
+                .clickable(onClick = onClick)
+                .skeletonLoading(isLoading = imageState == CategoryImageState.Loading),
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
@@ -65,9 +66,9 @@ fun CategoryCard(
                 modifier = Modifier.size(iconSize),
                 colorFilter = ColorFilter.tint(color = Theme.colorScheme.primary.primary),
                 error = painterResource(Res.drawable.ic_no_image_loaded),
-                onSuccess = { imageState.value = CategoryImageState.Success },
-                onError = { imageState.value = CategoryImageState.Error },
-                onLoading = { imageState.value = CategoryImageState.Loading }
+                onSuccess = { imageState = CategoryImageState.Success },
+                onError = { imageState = CategoryImageState.Error },
+                onLoading = { imageState = CategoryImageState.Loading }
             )
         }
 
@@ -78,9 +79,7 @@ fun CategoryCard(
             maxLines = 2,
             minLines = 1,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(horizontal = Theme.spacing._8)
-                .skeletonLoading(isLoading = imageState.value == CategoryImageState.Loading )
+            modifier = Modifier.padding(horizontal = Theme.spacing._8)
         )
     }
 }
