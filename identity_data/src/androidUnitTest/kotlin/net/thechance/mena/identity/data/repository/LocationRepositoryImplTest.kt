@@ -7,8 +7,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
 import net.thechance.mena.identity.data.repository.location.MobileLocationRepositoryImpl
+import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import net.thechance.mena.identity.domain.entity.Coordinates as DomainCoordinates
 
 class LocationRepositoryImplTest {
@@ -29,16 +31,16 @@ class LocationRepositoryImplTest {
         }
 
     @Test
-    fun `getLocationName should return empty address when the place is null`() = runTest {
+    fun `getLocationName should throw AddressNotFoundException when the place is null`() = runTest {
         val domainCoordinates = DomainCoordinates(LATITUDE, LONGITUDE)
         coEvery { geocoder.placeOrNull(any()) } returns null
 
-        val result = locationRepositoryImpl.getLocationName(domainCoordinates)
-
-        assertEquals("", result)
+        assertFailsWith<AddressNotFoundException> {
+            locationRepositoryImpl.getLocationName(domainCoordinates)
+        }
     }
 
-    private companion object{
+    private companion object {
         const val LATITUDE = 28.0
         const val LONGITUDE = 29.0
 
@@ -54,6 +56,7 @@ class LocationRepositoryImplTest {
             locality = "",
             subLocality = "",
             thoroughfare = "",
-            subThoroughfare = "")
+            subThoroughfare = ""
+        )
     }
 }
