@@ -13,14 +13,12 @@ actual class AzimuthProvider {
     private val locationManager = CLLocationManager()
 
     actual fun startListening(): Flow<Float> = callbackFlow {
-        val delegate = object : NSObject(), CLLocationManagerDelegateProtocol {
+        val locationManagerDelegate = object : NSObject(), CLLocationManagerDelegateProtocol {
             override fun locationManager(
                 manager: CLLocationManager,
                 didUpdateHeading: CLHeading
             ) {
-                // Azimuth in degrees (0-360)
                 val azimuth = didUpdateHeading.trueHeading.toFloat()
-                println("Azimuth: $azimuth")
                 trySend(azimuth)
             }
 
@@ -32,7 +30,7 @@ actual class AzimuthProvider {
             }
         }
 
-        locationManager.delegate = delegate
+        locationManager.delegate = locationManagerDelegate
         locationManager.startUpdatingHeading()
 
         awaitClose {
