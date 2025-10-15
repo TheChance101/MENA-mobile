@@ -99,7 +99,7 @@
     <string name="failed_to_load_date_picker">Failed to load date picker</string>
 
     <string name="share_button_title">Share</string>
-    <string name="view_transactions">View Transactions</string>
+    <string name="statement">Statement</string>
 
     <string name="view_transactions_statement_error_message">an error happened while loading the statement file</string>
     <string name="loading_pdf_message">Loading PDF...</string>

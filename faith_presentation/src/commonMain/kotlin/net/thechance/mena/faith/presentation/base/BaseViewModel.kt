@@ -26,19 +26,18 @@ import mena.faith_presentation.generated.resources.error_unauthorized
 import mena.faith_presentation.generated.resources.error_unknown
 import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
+
 
 @KoverIgnore
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
-    initialState: UI_STATE
-) : ViewModel() {
+    initialState: UI_STATE,
+    private val snackbarHandler: SnackbarHandler = SnackbarHandler.Empty,
+) : ViewModel(), SnackbarHandler by snackbarHandler {
 
     private val _uiState = MutableStateFlow(initialState)
     val uiState = _uiState.asStateFlow()
-
-    private val _snackBarState = MutableStateFlow(SnackBarState())
-    val snackBarState = _snackBarState.asStateFlow()
 
     private val _uiEffect = MutableSharedFlow<UI_EFFECT>()
     val uiEffect = _uiEffect.asSharedFlow()
@@ -53,68 +52,35 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         }
     }
 
-    fun showSnackBar(
-        message: StringResource,
-        status: SnackBarState.Status,
-        durationMillis: Long = 3000L,
-    ) {
-        viewModelScope.launch {
-            if (snackBarState.value.isVisible) {
-                hideSnackBar()
-                delay(1000L)
-            }
-            _snackBarState.update {
-                SnackBarState(
-                    message = getString(message),
-                    status = status,
-                    isVisible = true
-                )
-            }
-            delay(durationMillis)
-            _snackBarState.update {
-                it.copy(
-                    isVisible = false
-                )
-            }
-        }
-    }
-
-    private fun hideSnackBar() {
-        viewModelScope.launch {
-            _snackBarState.update {
-                it.copy(
-                    isVisible = false,
-                )
-            }
-        }
-    }
-
     protected fun <T> tryToExecute(
         execute: suspend () -> T,
-        onSuccess: ((T) -> Unit)? = null,
-        onError: (Throwable) -> Unit = ::handleError,
+        onSuccess: (suspend (T) -> Unit)? = null,
+        onError: suspend (Throwable) -> Unit = ::handleError,
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         inScope: CoroutineScope = viewModelScope,
         delayMillis: Long = 0L
     ): Job {
-        val handler = CoroutineExceptionHandler { _, throwable ->
-            onError(throwable)
-        }
-
-        return inScope.launch(dispatcher + handler) {
-            onStart()
-            delay(delayMillis)
-            runCatching { execute() }
-                .onSuccess { result -> onSuccess?.invoke(result) }
-                .onFailure { throwable -> onError(throwable) }
-            onFinally()
+        return inScope.launch(dispatcher) {
+            val handler = CoroutineExceptionHandler { _, throwable ->
+                inScope.launch {
+                    onError(throwable)
+                }
+            }
+            inScope.launch(dispatcher + handler) {
+                onStart()
+                delay(delayMillis)
+                runCatching { execute() }
+                    .onSuccess { result -> onSuccess?.invoke(result) }
+                    .onFailure { throwable -> onError(throwable) }
+                onFinally()
+            }
         }
     }
 
     protected fun <T> tryToCollect(
-        onError: (Throwable) -> Unit = ::handleError,
+        onError: suspend (Throwable) -> Unit = ::handleError,
         onEmitNewValue: (T) -> Unit = {},
         coroutineScope: CoroutineScope = viewModelScope,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -136,9 +102,12 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
 
 
     private fun handleError(error: Throwable) {
+        val faithError = error as? FaithException ?: FaithException.UnknownException
+        val message = faithError.toStringResource()
         showSnackBar(
-            (error as FaithException).toStringResource(),
-            SnackBarState.Status.Error
+            message = message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope
         )
     }
 

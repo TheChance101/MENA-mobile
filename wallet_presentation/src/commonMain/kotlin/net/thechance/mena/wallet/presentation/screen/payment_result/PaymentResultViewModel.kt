@@ -8,7 +8,7 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -23,10 +23,10 @@ class PaymentResultViewModel(
     PaymentResultScreenState()
 ), PaymentResultInteractionListener {
     private val transactionId = Uuid.parse(paymentResultArgs.transactionId)
-    private val submitTransactionResultStatus = SubmitTransactionResultStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
+    private val submissionStatus = SubmissionStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
 
     init {
-        updateState { it.copy(paymentStatus = submitTransactionResultStatus) }
+        updateState { it.copy(paymentStatus = submissionStatus) }
     }
 
     override fun onBackClicked() {
@@ -60,7 +60,7 @@ class PaymentResultViewModel(
         updateState {
             it.copy(
                 isLoading = false,
-                paymentStatus = SubmitTransactionResultStatus.SUCCESS
+                paymentStatus = SubmissionStatus.SUCCESS
             )
         }
     }
@@ -68,9 +68,9 @@ class PaymentResultViewModel(
     private fun onSubmitTransactionFailed(error: ErrorState) {
         updateState { it.copy(isLoading = false) }
         when (error) {
-            is ErrorState.NoInternet -> updateState { it.copy(SubmitTransactionResultStatus.CONNECTION_LOST) }
+            is ErrorState.NoInternet -> updateState { it.copy(SubmissionStatus.CONNECTION_LOST) }
             else -> updateState {
-                it.copy(SubmitTransactionResultStatus.CONNECTION_LOST)
+                it.copy(SubmissionStatus.CONNECTION_LOST)
             }
         }
     }

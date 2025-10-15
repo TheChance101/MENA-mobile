@@ -8,19 +8,16 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
-import kotlin.test.AfterTest
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,29 +29,33 @@ import kotlin.time.Instant
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookmarkViewModelTest {
 
-    private val testDispatcher = StandardTestDispatcher()
-    private val testScope = TestScope(testDispatcher)
-    private lateinit var repository: BookmarkRepository
+    private lateinit var testDispatcher: TestDispatcher
+    private var repository: BookmarkRepository = mock(MockMode.autofill)
     private lateinit var viewModel: BookmarkViewModel
+    private lateinit var snackbarHandler: SnackbarHandler
 
     @BeforeTest
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
-        repository = mock(MockMode.autofill)
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
+        testDispatcher  = StandardTestDispatcher()
+        snackbarHandler = mock(MockMode.autofill)
+        viewModel = BookmarkViewModel(
+            bookmarkRepository = repository,
+            dispatcher = testDispatcher,
+            snackbarHandler = snackbarHandler
+        )
     }
 
     @Test
-    fun `init should load bookmarks successfully`() = testScope.runTest {
+    fun `init should load bookmarks successfully`() = runTest {
         // Given
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
 
         // When
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(
+            bookmarkRepository = repository,
+            dispatcher = testDispatcher,
+            snackbarHandler = snackbarHandler
+        )
         advanceUntilIdle()
 
         // Then
@@ -71,12 +72,12 @@ class BookmarkViewModelTest {
     }
 
     @Test
-    fun `init should handle empty bookmarks list`() = testScope.runTest {
+    fun `init should handle empty bookmarks list`() = runTest {
         // Given
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns emptyList()
 
         // When
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher, snackbarHandler = snackbarHandler)
         advanceUntilIdle()
 
         // Then
@@ -91,13 +92,13 @@ class BookmarkViewModelTest {
     }
 
     @Test
-    fun `onDeleteBookmarkClick should restore bookmark on error`() = testScope.runTest {
+    fun `onDeleteBookmarkClick should restore bookmark on error`() = runTest {
         // Given
         val exception = Exception("Delete failed")
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
         everySuspend { repository.deleteAyahBookmark(BOOKMARK_ID1) } throws exception
 
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
+        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher, snackbarHandler = snackbarHandler)
         advanceUntilIdle()
 
         // When
@@ -116,32 +117,21 @@ class BookmarkViewModelTest {
     }
 
     @Test
-    fun `onBackClick should emit NavigateBack effect`() = testScope.runTest {
-        // Given
-        everySuspend { repository.getAyahBookmarks(any(), any()) } returns emptyList()
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
-        advanceUntilIdle()
-
+    fun `onBackClick should emit NavigateBack effect`() = runTest(testDispatcher) {
         // When & Then
         viewModel.uiEffect.test {
             viewModel.onBackClick()
-            assertEquals(BookmarkEffect.NavigateBack, awaitItem())
-            cancelAndIgnoreRemainingEvents()
+            val effect = awaitItem()
+            assertEquals(BookmarkEffect.NavigateBack, effect)
         }
     }
 
     @Test
-    fun `onStartTilawahClick should emit NavigateBack effect`() = testScope.runTest {
-        // Given
-        everySuspend { repository.getAyahBookmarks(any(), any()) } returns emptyList()
-        viewModel = BookmarkViewModel(bookmarkRepository = repository, dispatcher = testDispatcher)
-        advanceUntilIdle()
-
+    fun `onStartTilawahClick should emit NavigateBack effect`() = runTest(testDispatcher) {
         // When & Then
         viewModel.uiEffect.test {
             viewModel.onStartTilawahClick()
             assertEquals(BookmarkEffect.NavigateBack, awaitItem())
-            cancelAndIgnoreRemainingEvents()
         }
     }
 

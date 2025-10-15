@@ -14,7 +14,7 @@ import org.jetbrains.compose.resources.getString
 
 class SearchViewModel(
     searchArgs: ISearchArgs,
-    private val repository: QuranRepository
+    private val repository: QuranRepository,
 ) : BaseViewModel<SearchScreenState, SearchEffect>(
     SearchScreenState(
         searchArgs.surahId,
