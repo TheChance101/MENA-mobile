@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,7 +38,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
@@ -79,23 +79,12 @@ fun WideImageDukanDetails(
     OnSystemBackPressed { listener::onBackClicked }
     Scaffold(
         topBar = {
-            AppBar(
-                title = "",
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow)
-                    )
-                },
-                onLeadingClick = { listener::onBackClicked },
-                trailingContent = {
-                    DukanHeaderIcon(
-                        icon = painterResource(Res.drawable.ic_shopping_basket),
-                        onIconClick = {}
-                    )
-                }
+            WideImageDukanDetailsAppBar(
+                onBackClicked = listener::onBackClicked,
+                onCartClicked = {}
             )
-        }, modifier = Modifier.fillMaxSize()
+        },
+        modifier = Modifier.fillMaxSize()
     ) {
         Box {
             LazyColumn {
@@ -106,6 +95,29 @@ fun WideImageDukanDetails(
             DukanActionButtons(state = state.dukanInfo, modifier = Modifier.align(Alignment.TopEnd))
         }
     }
+}
+
+@Composable
+private fun WideImageDukanDetailsAppBar(
+    onBackClicked: () -> Unit,
+    onCartClicked: () -> Unit
+) {
+    AppBar(
+        title = "",
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_arrow)
+            )
+        },
+        onLeadingClick = onBackClicked,
+        trailingContent = {
+            DukanHeaderIcon(
+                icon = painterResource(Res.drawable.ic_shopping_basket),
+                onIconClick = onCartClicked
+            )
+        }
+    )
 }
 
 @Composable
@@ -121,14 +133,15 @@ private fun DukanActionButtons(
     state: DukanDetailsUiState.DukanInfo,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(top = Theme.spacing._16 + Theme.spacing._4)) {
-        DukanIconButton(
-            icon = painterResource(Res.drawable.ic_favorite),
-            iconColor = Color(state.color),
-        )
+    Column(modifier = modifier.padding(top = Theme.spacing._8)) {
         DukanIconButton(
             icon = painterResource(Res.drawable.ic_share),
             iconColor = Color(state.color),
+        )
+        DukanIconButton(
+            icon = painterResource(Res.drawable.ic_favorite),
+            iconColor = Color(state.color),
+            modifier = modifier.offset(y = (-2).dp)
         )
     }
 }
@@ -149,17 +162,11 @@ private fun DukanImageAndTitle(
     state: DukanDetailsUiState.DukanInfo,
     modifier: Modifier = Modifier
 ) {
-    val shadowColor = Color(state.color).copy(alpha = 0.3f)
+    val shadowColor = Color(state.color).copy(alpha = 0.8f)
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(188.dp)
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(Theme.radius.md),
-                spotColor = shadowColor,
-                ambientColor = shadowColor
-            )
             .clip(RoundedCornerShape(Theme.radius.md)),
         contentAlignment = Alignment.Center
     ) {
@@ -178,6 +185,16 @@ private fun DukanImageAndTitle(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = Theme.spacing._8, bottom = Theme.spacing._8)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .shadow(
+                    elevation = 12.dp,
+                    shape = RoundedCornerShape(Theme.radius.md),
+                    spotColor = shadowColor,
+                    ambientColor = shadowColor
+                )
         )
     }
 }
@@ -325,15 +342,10 @@ private fun LoadingProductsGrid() {
 @Composable
 private fun ProductsGrid(
     products: List<DukanDetailsUiState.ProductUiState>,
-    modifier: Modifier = Modifier
 ) {
-    val rows = (products.size + 1) / 2
-    val gridHeight = (rows * 240.dp) + ((rows - 1) * Theme.spacing._8)
-
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = modifier.height(gridHeight),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+        columns = GridCells.Adaptive(160.dp),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         userScrollEnabled = false
@@ -383,14 +395,14 @@ private fun ProductCard(
             modifier = Modifier
                 .padding(horizontal = Theme.spacing._8)
                 .padding(top = Theme.spacing._16)
-                .align(Alignment.CenterHorizontally)
+                .align(Alignment.Start)
         )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = Theme.spacing._4),
+                .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._8),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Start
         ) {
             Icon(
                 painter = painterResource(Res.drawable.discount_icon),
@@ -492,6 +504,7 @@ private fun DukanProductsSectionLoadedPreview() {
         )
     }
 }
+
 @Preview(showBackground = true, name = "Header Icon")
 @Composable
 private fun DukanHeaderIconPreview() {
