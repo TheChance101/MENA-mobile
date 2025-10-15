@@ -7,7 +7,7 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetails
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetails
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.WideImageDukanDetails
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails.WideImageDukanDetails
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
