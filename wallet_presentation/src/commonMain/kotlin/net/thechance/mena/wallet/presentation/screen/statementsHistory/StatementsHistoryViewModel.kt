@@ -46,7 +46,25 @@ class StatementsHistoryViewModel(
     }
 
     override fun onStatementCardClicked(statement: StatementsHistoryScreenState.StatementItem) {
-        sendEffect(effect = StatementsHistoryEffect.NavigateToStatementDetails(StorageLocation.Downloads(statement.fileName)))
+        viewModelScope.launch(dispatcherIO) {
+            val fileLocation = StorageLocation.Downloads(statement.fileName)
+
+            val fileExists = getPdfHandler().checkIfPdfExists(fileLocation)
+
+            if (fileExists) {
+                sendEffect(
+                    effect = StatementsHistoryEffect.NavigateToStatementDetails(
+                        StorageLocation.Downloads(statement.fileName)
+                    )
+                )
+            } else {
+                showSnackBar(
+                    title = "File Missing",
+                    message = "The statement file could not be found.",
+                    isSuccess = false
+                )
+            }
+        }
     }
 
     override fun onEditClicked() {
@@ -54,41 +72,46 @@ class StatementsHistoryViewModel(
     }
 
     override fun onCancelEditModeClicked() {
-        updateState {
-            it.copy(isEditMode = false)
-        }
+        updateState { it.copy(isEditMode = false) }
     }
 
     override fun onDeleteClicked(id: Long) {
         tryToExecute(
-            callee = {
-                val statement = currentState.statements.find { it.id == id }
-                    ?: throw IllegalStateException("Statement not found")
-
-                val fileLocation = StorageLocation.Downloads(statement.fileName)
-                val pdfHandler = getPdfHandler()
-
-                val fileExists = pdfHandler.checkIfPdfExists(fileLocation)
-
-                if (fileExists) { pdfHandler.deletePdf(fileLocation) }
-
-                statementRepository.deleteStatementById(id)
-            },
-            onSuccess = {
-                updateState {
-                    //val updatedList = it.statements.filter { statement -> statement.id != id }
-                    it.copy(
-                        //statements = updatedList,
-                        isStatementDeleted = true,
-                        //isEditMode = updatedList.isNotEmpty()
-                    )
-                }
-
-                resetStatementDeletedAfterDelay()
-            },
+            callee = { deleteStatementAndPdf(id) },
+            onSuccess = { handleStatementRemoval(id) },
             onError = { errorState -> updateState { it.copy(errorState = errorState) } },
             dispatcher = dispatcherIO
         )
+    }
+
+    private suspend fun deleteStatementAndPdf(id: Long) {
+        val statement = findStatementById(id)
+        val fileLocation = StorageLocation.Downloads(statement.fileName)
+        val pdfHandler = getPdfHandler()
+
+        if (pdfHandler.checkIfPdfExists(fileLocation)) {
+            pdfHandler.deletePdf(fileLocation)
+        }
+
+        statementRepository.deleteStatementById(id)
+    }
+
+    private fun findStatementById(id: Long): StatementsHistoryScreenState.StatementItem {
+        return currentState.statements.find { it.id == id }
+            ?: throw IllegalStateException("Statement not found")
+    }
+
+    private suspend fun handleStatementRemoval(id: Long) {
+        delay(300)
+        updateState { current ->
+            val updatedList = current.statements.filter { it.id != id }
+            current.copy(
+                statements = updatedList,
+                isStatementDeleted = false,
+                isEditMode = updatedList.isNotEmpty()
+            )
+        }
+        resetStatementDeletedAfterDelay()
     }
 
     private fun resetStatementDeletedAfterDelay() {

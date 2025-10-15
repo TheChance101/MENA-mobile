@@ -27,10 +27,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AnimatedTrailingIcon(
     isEditMode: Boolean,
+    isStatementFound: Boolean,
     listener: StatementsHistoryInteractionListener
 ) {
     AnimatedVisibility(
-        visible = !isEditMode,
+        visible = !isEditMode && !isStatementFound,
         enter = fadeIn(tween(300)) +
                 scaleIn(tween(300)),
         exit = fadeOut(tween(300)) +

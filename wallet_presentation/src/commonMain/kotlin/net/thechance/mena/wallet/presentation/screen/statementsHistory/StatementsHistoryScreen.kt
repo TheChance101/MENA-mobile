@@ -73,7 +73,13 @@ private fun EditModeAppBar(listener: StatementsHistoryInteractionListener) {
         contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
         leadingContent = { AnimatedLeadingIcon(isEditMode = true) },
         onLeadingClick = { listener.onCancelEditModeClicked() },
-        trailingContent = { AnimatedTrailingIcon(isEditMode = true, listener = listener) }
+        trailingContent = {
+            AnimatedTrailingIcon(
+                isEditMode = true,
+                isStatementFound = true,
+                listener = listener
+            )
+        }
     )
 }
 
@@ -83,7 +89,12 @@ private fun NormalModeContent(
     listener: StatementsHistoryInteractionListener
 ) {
     WalletScaffold(
-        topBar = { NormalModeAppBar(listener = listener) },
+        topBar = {
+            NormalModeAppBar(
+                listener = listener,
+                isStatementFound = state.statements.isEmpty()
+            )
+        },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
         onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
@@ -91,13 +102,22 @@ private fun NormalModeContent(
 }
 
 @Composable
-private fun NormalModeAppBar(listener: StatementsHistoryInteractionListener) {
+private fun NormalModeAppBar(
+    listener: StatementsHistoryInteractionListener,
+    isStatementFound: Boolean
+) {
     AppBar(
         title = stringResource(Res.string.statements),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
         leadingContent = { AnimatedLeadingIcon(isEditMode = false) },
         onLeadingClick = { listener.onBackClicked() },
-        trailingContent = { AnimatedTrailingIcon(isEditMode = false, listener = listener) }
+        trailingContent = {
+            AnimatedTrailingIcon(
+                isEditMode = false,
+                isStatementFound = isStatementFound,
+                listener = listener
+            )
+        }
     )
 }
 
