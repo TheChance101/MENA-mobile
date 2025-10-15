@@ -52,7 +52,13 @@ fun StatementHistoryCard(
             .fillMaxWidth()
             .padding(vertical = Theme.spacing._16)
             .clip(RoundedCornerShape(Theme.spacing._12))
-            .clickable { onStatementCardClicked() },
+            .then(
+                if (isEditMode) {
+                    Modifier
+                } else {
+                    Modifier.clickable { onStatementCardClicked() }
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
