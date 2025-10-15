@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation
+package net.thechance.mena.dukan.presentation.component
 
 
 import androidx.compose.animation.core.LinearEasing
