@@ -26,7 +26,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ViewTransactionStatementViewModelTest {
+class StatementDetailsViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
@@ -79,7 +79,7 @@ class ViewTransactionStatementViewModelTest {
             advanceUntilIdle()
 
             val effect = awaitItem()
-            assertTrue(effect is StatementDetailsEffect.ShareStatementDetails)
+            assertTrue(effect is StatementDetailsEffect.ShareStatement)
         }
     }
 
@@ -96,7 +96,7 @@ class ViewTransactionStatementViewModelTest {
 
                 val effect = awaitItem()
                 val effectStatement =
-                    (effect as StatementDetailsEffect.ShareStatementDetails).statement
+                    (effect as StatementDetailsEffect.ShareStatement).statement
                 assertContentEquals(createMockStatementWithMetadata().byteArray, effectStatement)
             }
         }
@@ -117,7 +117,6 @@ class ViewTransactionStatementViewModelTest {
 
     private fun TestScope.initViewModel() {
         viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
-        viewModel.getStatementPdf(statementLocation)
         advanceUntilIdle()
     }
 
