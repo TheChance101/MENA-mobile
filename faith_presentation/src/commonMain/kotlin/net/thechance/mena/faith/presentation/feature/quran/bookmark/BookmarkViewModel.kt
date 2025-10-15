@@ -18,13 +18,18 @@ import mena.faith_presentation.generated.resources.bookmark_removed_successfully
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.base.SnackBarState
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<BookmarksScreenState, BookmarkEffect>(BookmarksScreenState()),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    snackbarHandler: SnackbarHandler,
+) : BaseViewModel<BookmarksScreenState, BookmarkEffect>(
+    BookmarksScreenState(),
+    snackbarHandler = snackbarHandler
+),
     BookmarkInteractionListener {
 
     private val cachedBookmarksFlow = createBookmarksPagingSource()
@@ -76,12 +81,11 @@ class BookmarkViewModel(
         }
     }
 
-    private fun onDeleteBookmarkSuccess() {
-        showSnackBar(
-            message = Res.string.bookmark_removed_successfully,
-            status = SnackBarState.Status.Success
-        )
-    }
+    private fun onDeleteBookmarkSuccess() = showSnackBar(
+        message = Res.string.bookmark_removed_successfully,
+        status = SnackBarState.Status.Success,
+        scope = viewModelScope
+    )
 
     private fun createBookmarksPagingSource(): Flow<PagingData<AyahBookmark>> {
         return createPagingSourceFlow { pageNumber, pageSize ->

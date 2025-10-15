@@ -16,6 +16,7 @@ import net.thechance.mena.trends.data.repository.util.getReelsResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.Test
 import kotlin.test.assertFails
 
@@ -60,8 +61,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should update reel successfully`() = runTest {
 
-        networkClient =
-            createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
+        networkClient =createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         val result = runCatching {
