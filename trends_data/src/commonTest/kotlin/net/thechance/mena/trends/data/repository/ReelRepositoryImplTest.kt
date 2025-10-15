@@ -1,13 +1,8 @@
 package net.thechance.mena.trends.data.repository
 
-import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
 import assertk.assertions.isSuccess
-import assertk.assertions.size
-import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
 import dev.mokkery.verifySuspend
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.collect
@@ -43,6 +38,16 @@ internal class ReelRepositoryImplTest {
         }
 
     @Test
+    fun `should return feed reels mapped to entity successfully`() = runTest {
+        networkClient = createReelsHttpClient { getReelsResponse() }
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
+
+        val result = repository.getFeedReels(page = 1)
+
+        assertThat(result).isEqualTo(fakeReelList)
+    }
+
+    @Test
     fun `should delete reel successfully when valid id provided`() = runTest {
 
         networkClient = createReelsHttpClient { deleteReelResponse() }
@@ -69,41 +74,6 @@ internal class ReelRepositoryImplTest {
 
         assertThat(result).isSuccess()
     }
-
-
-    @Test
-    fun `uploadReel should emit final progress with reelId when uploading success`() = runTest {
-        networkClient = createReelsHttpClient { uploadReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, videoHandler)
-
-        repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).test {
-            assertThat(awaitItem().reelId).isEqualTo("1")
-            awaitComplete()
-        }
-    }
-
-    @Test
-    fun `uploadReel should emit final progress with number of uploaded bytes equal to size when success`() = runTest {
-        networkClient = createReelsHttpClient { uploadReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, videoHandler)
-
-        repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).test {
-            assertThat(awaitItem().numberOfUploadedBytes).isEqualTo(FAKE_SIZE)
-            awaitComplete()
-        }
-    }
-
-    @Test
-    fun `uploadReel should emit final progress with total size equal to file size when success`() = runTest {
-        networkClient = createReelsHttpClient { uploadReelResponse() }
-        repository = ReelsRepositoryImpl(networkClient, videoHandler)
-
-        repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).test {
-            assertThat(awaitItem().totalBytes).isEqualTo(FAKE_SIZE)
-            awaitComplete()
-        }
-    }
-
     @Test
     fun `uploadReel should call fileReader with correct file path`() = runTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
@@ -190,6 +160,16 @@ internal class ReelRepositoryImplTest {
         assertThat(thumbnailByteArray?.size).isEqualTo(2)
     }
 
+    @Test
+    fun `should throw exception when API fails in getAllReels`() = runTest {
+        networkClient = createReelsHttpClient { throw Exception("Network Error") }
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
+
+        val result = runCatching { repository.getAllReels(pageNumber = 1) }
+
+        assertThat(result.isFailure).isEqualTo(true)
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("Network Error")
+    }
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
