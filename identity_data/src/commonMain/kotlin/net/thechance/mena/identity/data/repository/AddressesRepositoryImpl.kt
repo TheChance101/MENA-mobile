@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.data.repository
 
 import io.ktor.client.HttpClient
-import net.thechance.mena.identity.data.mapper.toAddressRequestDto
+import net.thechance.mena.identity.data.mapper.toDto
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.Address
@@ -14,7 +14,7 @@ class AddressesRepositoryImpl(
     override suspend fun createAddress(address: Address) {
         return safeWrapper {
             client.postJson(
-                requestDto = address.toAddressRequestDto(),
+                requestDto = address.toDto(),
                 path = ADDRESS_ENDPOINT
             )
 
@@ -24,7 +24,7 @@ class AddressesRepositoryImpl(
     override suspend fun editAddress(address: Address) {
         return safeWrapper {
            client.postJson(
-                requestDto = address.toAddressRequestDto(),
+                requestDto = address.toDto(),
                 path = "$ADDRESS_ENDPOINT/${address.id}"
            )
         }
