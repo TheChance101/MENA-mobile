@@ -77,8 +77,4 @@ internal class ReelViewModel(
         }
         //TODO will handle it with like Api
     }
-
-    override fun onMoreClick() {
-        // Placeholder bottom sheet
-    }
 }

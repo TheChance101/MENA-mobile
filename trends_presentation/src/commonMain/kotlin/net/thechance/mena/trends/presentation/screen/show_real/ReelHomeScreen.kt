@@ -93,7 +93,6 @@ private fun ReelScreenContent(
                     reel.let { reel ->
                         FeedReelCard(
                             reel = reel,
-                            onMoreClick = listener::onMoreClick,
                             onLikeClick = { listener.onLikeClick(reel.id) },
                             onReelClick = { listener.onReelClick(reel.id) }
                         )

@@ -42,7 +42,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun FeedReelCard(
     reel: ReelUiState,
-    onMoreClick: () -> Unit,
     onLikeClick: () -> Unit,
     onReelClick: () -> Unit
 ) {
@@ -56,7 +55,6 @@ internal fun FeedReelCard(
         ReelHeaderSection(
             reel = reel,
             timeAgoText = reel.timeAgo?.asString() ?: stringResource(Res.string.just_now),
-            onMoreClick = onMoreClick,
             onReelClick = onReelClick
         )
 
@@ -71,7 +69,6 @@ internal fun FeedReelCard(
 private fun ReelHeaderSection(
     reel: ReelUiState,
     timeAgoText: String,
-    onMoreClick: () -> Unit,
     onReelClick: () -> Unit
 ) {
     Column {
@@ -107,15 +104,6 @@ private fun ReelHeaderSection(
                     color = Theme.colorScheme.shadeSecondary
                 )
             }
-
-            Icon(
-                painter = painterResource(Res.drawable.ic_dots),
-                contentDescription = stringResource(Res.string.more_options),
-                tint = Theme.colorScheme.shadeTertiary,
-                modifier = Modifier
-                    .size(24.dp)
-                    .noRippleClickable { onMoreClick() }
-            )
         }
 
         AsyncImage(
