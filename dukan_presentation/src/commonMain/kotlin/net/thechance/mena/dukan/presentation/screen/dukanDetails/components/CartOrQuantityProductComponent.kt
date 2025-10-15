@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shopping_basket
@@ -23,8 +24,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CartOrQuantityProductComponent(
     showProductQuantity: Boolean,
-    onCartClick: ()-> Unit
+    onCartClick: () -> Unit,
+    cartColor: Color? = null
 ) {
+
     AnimatedContent(
         targetState = showProductQuantity,
         transitionSpec = { fadeTransitionSpec() },
@@ -36,10 +39,10 @@ fun CartOrQuantityProductComponent(
                 onRemoveProductClick = {}
             )
         } else {
+
             ProductCart(
-                onClick = {
-                    onCartClick()
-                },
+                cartColor = cartColor,
+                onClick = onCartClick
             )
         }
     }
@@ -49,13 +52,14 @@ fun CartOrQuantityProductComponent(
 private fun ProductCart(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    cartColor: Color? = null
 ) {
     Box(
         modifier = modifier
             .size(32.dp)
             .clip(RoundedCornerShape(size = Theme.radius.full))
             .background(
-                color = Theme.colorScheme.primary.primary,
+                color = cartColor ?: Theme.colorScheme.primary.primary,
             )
             .clickable {
                 onClick()

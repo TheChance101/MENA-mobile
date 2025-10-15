@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_icon
 import mena.dukan_presentation.generated.resources.add_product
@@ -24,9 +23,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SetProductQuantity(
-    modifier: Modifier = Modifier,
     onAddProductClick: () -> Unit,
-    onRemoveProductClick: () -> Unit
+    onRemoveProductClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.background(
@@ -38,15 +37,15 @@ fun SetProductQuantity(
     ) {
         Icon(
             painter = painterResource(Res.drawable.remove_01),
-            contentDescription = stringResource(Res.string.remove_product) ,
+            contentDescription = stringResource(Res.string.remove_product),
             tint = Theme.colorScheme.primary.primary,
             modifier = modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
                 )
-                .clickable {onRemoveProductClick()}
-                .padding(6.dp)
+                .clickable { onRemoveProductClick() }
+                .padding(Theme.spacing._4 + Theme.spacing._2)
         )
         Text(
             text = "01",
@@ -61,8 +60,8 @@ fun SetProductQuantity(
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
                 )
-                .clickable {onAddProductClick()}
-                .padding(6.dp)
+                .clickable { onAddProductClick() }
+                .padding(Theme.spacing._4 + Theme.spacing._2)
         )
 
     }

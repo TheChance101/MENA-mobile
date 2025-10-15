@@ -46,7 +46,6 @@ fun ShelfProducts(
                     }
                 }
             }
-
             ShelfDetailsUiState.ProductsState.LOADED -> ProductsList(
                 products = state.productsShelf,
                 pager = pager,
@@ -57,7 +56,6 @@ fun ShelfProducts(
                     )
                 }
             )
-
             ShelfDetailsUiState.ProductsState.EMPTY -> {}
         }
     }

@@ -99,8 +99,7 @@ class DukanDetailsViewModel(
         updateState {
             copy(
                 shelves = shelves,
-                shelvesState = shelfState,
-                shelfIdSelected = shelves.items.firstOrNull()?.id.orEmpty()
+                shelvesState = shelfState
             )
         }
         loadProductsFromRepository()
@@ -109,7 +108,7 @@ class DukanDetailsViewModel(
     private fun updateProductsShelves(shelves: PagingData<DukanDetailsUiState.ShelfUiState>) {
         if (state.value.dukanInfo.style != DukanDetailsUiState.Style.WIDE_IMAGE) {
             viewModelScope.launch {
-                val updatedShelves = shelves.items
+                val updatedShelvesWithProducts = shelves.items
                     .map { shelf ->
                         async {
                             val products = getInitialProductsForShelf(shelf.id)
@@ -117,11 +116,18 @@ class DukanDetailsViewModel(
                         }
                     }
                     .awaitAll()
+                    .filter { it.products.isNotEmpty() }
+                val firstShelfId = updatedShelvesWithProducts.firstOrNull()?.id
                 updateState {
                     copy(
                         shelves = shelves.copy(
-                            items = updatedShelves
-                        )
+                            items = updatedShelvesWithProducts
+                        ),
+                        shelfIdSelected = if (state.value.shelfIdSelected.isNullOrEmpty()) {
+                            firstShelfId
+                        } else {
+                            state.value.shelfIdSelected
+                        }
                     )
                 }
             }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.koin_icon
@@ -25,13 +26,14 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LoadingProductCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Theme.colorScheme.background.surfaceLow
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Theme.colorScheme.background.surfaceLow,
+                color = backgroundColor,
                 shape = RoundedCornerShape(size = Theme.radius.md)
             ).height(104.dp)
             .padding(Theme.spacing._4),

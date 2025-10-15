@@ -40,7 +40,16 @@ fun DukanDetailsScreen(
             pagerShelf = viewModel.pagerShelf, pagerProduct = viewModel.pagerProduct
         )
 
-        DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(state, viewModel)
-        DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(state, viewModel)
+        DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(
+            state,
+            viewModel,
+            viewModel.pagerShelf
+        )
+
+        DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(
+            state,
+            viewModel,
+            viewModel.pagerShelf
+        )
     }
 }
