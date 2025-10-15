@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
 
 import androidx.lifecycle.viewModelScope
@@ -15,8 +13,6 @@ import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @KoinViewModel
 class StatementsHistoryViewModel(
@@ -53,13 +49,13 @@ class StatementsHistoryViewModel(
         updateState { it.copy(isEditMode = true) }
     }
 
-    override fun onCancelEditClicked() {
+    override fun onCancelEditModeClicked() {
         updateState { it.copy(isEditMode = false) }
     }
 
-    override fun onDeleteClicked(id: Uuid) {
+    override fun onDeleteClicked(id: Long) {
         tryToExecute(
-            callee = { statementRepository.deleteStatement(id) },
+            callee = { statementRepository.deleteStatementById(id) },
             onSuccess = { updateState { it.copy(isStatementDeleted = true) } },
             onError = { errorState -> updateState { it.copy(errorState = errorState) } },
             dispatcher = dispatcherIO
@@ -78,7 +74,6 @@ class StatementsHistoryViewModel(
             updateState { it.copy(errorState = null) }
         }
     }
-
 
     private suspend fun getPagedStatements(page: Int): List<Statement> {
         return statementRepository.getStatements(page = page, pageSize = PAGE_SIZE)
@@ -100,7 +95,6 @@ class StatementsHistoryViewModel(
         }
     }
 
-
     private val paginator by lazy {
         Paginator(
             initialKey = INITIAL_PAGE,
@@ -117,5 +111,4 @@ class StatementsHistoryViewModel(
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
     }
-
 }

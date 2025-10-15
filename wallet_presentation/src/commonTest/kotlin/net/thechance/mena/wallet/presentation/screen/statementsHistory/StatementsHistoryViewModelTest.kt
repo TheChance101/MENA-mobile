@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
 
 import app.cash.turbine.test
@@ -30,8 +28,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatementsHistoryViewModelTest {
@@ -193,7 +189,7 @@ class StatementsHistoryViewModelTest {
 
         viewModel.onEditClicked()
 
-        viewModel.onCancelEditClicked()
+        viewModel.onCancelEditModeClicked()
 
         viewModel.state.test {
             val state = awaitItem()
@@ -204,9 +200,9 @@ class StatementsHistoryViewModelTest {
 
     @Test
     fun `onDeleteClicked should delete statement successfully`() = runTest(testDispatcher) {
-        val statementId = Uuid.random()
+        val statementId = 123L
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatement(statementId) } returns true
+        everySuspend { statementRepository.deleteStatementById(statementId) }
 
         advanceUntilIdle()
 
@@ -220,14 +216,14 @@ class StatementsHistoryViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verifySuspend { statementRepository.deleteStatement(statementId) }
+        verifySuspend { statementRepository.deleteStatementById(statementId) }
     }
 
     @Test
     fun `onDeleteClicked should handle NoInternetException`() = runTest(testDispatcher) {
-        val statementId = Uuid.random()
+        val statementId = 123L
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatement(statementId) } throws NoInternetException()
+        everySuspend { statementRepository.deleteStatementById(statementId) } throws NoInternetException()
 
         advanceUntilIdle()
 
@@ -241,14 +237,14 @@ class StatementsHistoryViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verifySuspend { statementRepository.deleteStatement(statementId) }
+        verifySuspend { statementRepository.deleteStatementById(statementId) }
     }
 
     @Test
     fun `onDeleteClicked should handle UnknownException`() = runTest(testDispatcher) {
-        val statementId = Uuid.random()
+        val statementId = 123L
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatement(statementId) } throws UnknownException()
+        everySuspend { statementRepository.deleteStatementById(statementId) } throws UnknownException()
 
         advanceUntilIdle()
 
@@ -262,14 +258,14 @@ class StatementsHistoryViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verifySuspend { statementRepository.deleteStatement(statementId) }
+        verifySuspend { statementRepository.deleteStatementById(statementId) }
     }
 
     @Test
     fun `edit mode flow - activate, delete, then cancel`() = runTest(testDispatcher) {
-        val statementId = Uuid.random()
+        val statementId = 123L
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatement(statementId) } returns true
+        everySuspend { statementRepository.deleteStatementById(statementId) }
 
         advanceUntilIdle()
 
@@ -285,7 +281,7 @@ class StatementsHistoryViewModelTest {
             assertTrue(awaitItem().isStatementDeleted == true)
             cancelAndIgnoreRemainingEvents()
         }
-        viewModel.onCancelEditClicked()
+        viewModel.onCancelEditModeClicked()
         viewModel.state.test {
             assertFalse(awaitItem().isEditMode)
             cancelAndIgnoreRemainingEvents()

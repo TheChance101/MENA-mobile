@@ -6,7 +6,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,17 +28,17 @@ import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Composable
 fun AnimatedStatementItem(
     statement: StatementsHistoryScreenState.StatementItem,
     lastStatement: StatementsHistoryScreenState.StatementItem,
     isEditMode: Boolean,
-    offsetX: Int,
-    onDelete: () -> Unit,
-    onClick: () -> Unit
+    cardOffsetX: Int,
+    historyIconOffsetX: Int,
+    deleteButtonOffsetX: Int,
+    onDeleteClicked: () -> Unit,
+    onStatementCardClicked: () -> Unit
 ) {
     var isVisible by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
@@ -60,38 +59,39 @@ fun AnimatedStatementItem(
     ) {
         Column {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onClick() }
-                    .offset { IntOffset(offsetX, 0) },
+                modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 StatementDeleteButton(
-                    isVisible = isEditMode,
                     isDeleting = isDeleting,
                     onDeleteClick = {
                         isDeleting = true
-                        onDelete()
+                        onDeleteClicked()
                         scope.launch {
-                            delay(450)
+                            delay(100)
                             isVisible = false
                         }
                     },
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .offset(60.dp)
+                        .offset { IntOffset(deleteButtonOffsetX, 0) }
                 )
+
                 StatementHistoryCard(
                     startDate = statement.startDate,
                     endDate = statement.endDate,
                     totalInflow = statement.totalInflow.toString(),
                     totalOutflow = statement.totalOutflow.toString(),
-                    onStatementCardClicked = onClick,
-                    modifier = Modifier.graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        transformOrigin = TransformOrigin(0f, 0.3f)
-                    },
+                    onStatementCardClicked = { if (!isEditMode) onStatementCardClicked() },
+                    isEditMode = isEditMode,
+                    historyIconOffsetX = historyIconOffsetX,
+                    modifier = Modifier
+                        .offset { IntOffset(cardOffsetX, 0) }
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                            transformOrigin = TransformOrigin(0f, 0.3f)
+                        }
                 )
             }
             if (lastStatement != statement) {
@@ -106,28 +106,29 @@ fun AnimatedStatementItem(
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Preview
 @Composable
 private fun AnimatedStatementItemPreview() {
     AnimatedStatementItem(
         statement = StatementsHistoryScreenState.StatementItem(
-            id = Uuid.random(),
+            id = 123,
             startDate = "Jul 23 2025",
             endDate = "Aug 27 2025",
             totalInflow = 2000.0,
             totalOutflow = 4200.0
         ),
         lastStatement = StatementsHistoryScreenState.StatementItem(
-            id = Uuid.random(),
+            id = 124,
             startDate = "Jul 23 2025",
             endDate = "Aug 27 2025",
             totalInflow = 2000.0,
             totalOutflow = 4200.0
         ),
-        offsetX = 10,
+        cardOffsetX = 10,
+        historyIconOffsetX = 10,
+        deleteButtonOffsetX = 10,
         isEditMode = false,
-        onDelete = {},
-        onClick = {}
+        onDeleteClicked = {},
+        onStatementCardClicked = {}
     )
 }

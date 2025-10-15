@@ -1,9 +1,4 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
-
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 interface StatementsHistoryInteractionListener {
     fun onBackClicked()
@@ -11,6 +6,6 @@ interface StatementsHistoryInteractionListener {
     fun onNextPageRequested()
     fun onStatementCardClicked(id: Long)
     fun onEditClicked()
-    fun onCancelEditClicked()
-    fun onDeleteClicked(id: Uuid)
+    fun onCancelEditModeClicked()
+    fun onDeleteClicked(id: Long)
 }

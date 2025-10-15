@@ -21,15 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.ic_trush
+import mena.wallet_presentation.generated.resources.ic_trash
+import mena.wallet_presentation.generated.resources.remove_statements
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun StatementDeleteButton(
-    isVisible: Boolean,
     isDeleting: Boolean,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -57,7 +58,6 @@ fun StatementDeleteButton(
                     shape = if (isDeleting) RoundedCornerShape(8.dp) else CircleShape
                 )
                 .clickable(
-                    enabled = isVisible,
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 ) { onDeleteClick() },
@@ -65,8 +65,8 @@ fun StatementDeleteButton(
         ) {
             Icon(
                 modifier = Modifier.size(24.dp),
-                painter = painterResource(Res.drawable.ic_trush),
-                contentDescription = "Delete",
+                painter = painterResource(Res.drawable.ic_trash),
+                contentDescription = stringResource(Res.string.remove_statements),
                 tint = Theme.colorScheme.error
             )
         }
@@ -77,7 +77,6 @@ fun StatementDeleteButton(
 @Composable
 private fun StatementDeleteButtonPreview() {
     StatementDeleteButton(
-        isVisible = true,
         isDeleting = true,
         onDeleteClick = {}
     )

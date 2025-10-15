@@ -5,15 +5,24 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.EditModeContent
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.NormalModeContent
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.remove_statements
+import mena.wallet_presentation.generated.resources.statements
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.component.SnackBarContainer
+import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedLeadingIcon
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedTrailingIcon
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementHistoryBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
@@ -45,6 +54,52 @@ fun StatementHistoryScreen(
         if (isEditMode) { EditModeContent(state = state, listener = viewModel) }
         else { NormalModeContent(state = state, listener = viewModel) }
     }
+}
+
+@Composable
+private fun EditModeContent(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
+    WalletScaffold(
+        topBar = { EditModeAppBar(listener = listener) },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) }
+    ) { StatementHistoryBody(state = state, listener = listener) }
+}
+
+@Composable
+private fun EditModeAppBar(listener: StatementsHistoryInteractionListener) {
+    AppBar(
+        title = stringResource(Res.string.remove_statements),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+        leadingContent = { AnimatedLeadingIcon(isEditMode = true) },
+        onLeadingClick = { listener.onCancelEditModeClicked() },
+        trailingContent = { AnimatedTrailingIcon(isEditMode = true, listener = listener) }
+    )
+}
+
+@Composable
+private fun NormalModeContent(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
+    WalletScaffold(
+        topBar = { NormalModeAppBar(listener = listener) },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        errorState = state.errorState,
+        onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
+    ) { StatementHistoryBody(state = state, listener = listener) }
+}
+
+@Composable
+private fun NormalModeAppBar(listener: StatementsHistoryInteractionListener) {
+    AppBar(
+        title = stringResource(Res.string.statements),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+        leadingContent = { AnimatedLeadingIcon(isEditMode = false) },
+        onLeadingClick = { listener.onBackClicked() },
+        trailingContent = { AnimatedTrailingIcon(isEditMode = false, listener = listener) }
+    )
 }
 
 @OptIn(ExperimentalUuidApi::class)

@@ -14,24 +14,19 @@ import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsL
 @Composable
 fun StatementHistoryBody(
     state: StatementsHistoryScreenState,
-    listener: StatementsHistoryInteractionListener,
-    isEditMode: Boolean
+    listener: StatementsHistoryInteractionListener
 ) {
     when {
-        state.isLoading -> LoadingState()
+        state.isLoading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        }
         state.statements.isEmpty() -> EmptyStatementsHistory(modifier = Modifier.fillMaxSize())
         else -> StatementsListContent(
             modifier = Modifier.fillMaxSize().padding(top = Theme.spacing._8),
             listener = listener,
-            state = state,
-            isEditMode = isEditMode
+            state = state
         )
-    }
-}
-
-@Composable
-private fun LoadingState() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
     }
 }
