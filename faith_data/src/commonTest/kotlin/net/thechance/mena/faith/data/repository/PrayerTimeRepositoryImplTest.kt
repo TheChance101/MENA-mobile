@@ -12,6 +12,7 @@ import dev.mokkery.mock
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
 import net.thechance.mena.faith.data.remote.dto.prayertime.PrayerTimesDto
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
 import net.thechance.mena.faith.domain.entity.Location
@@ -44,7 +45,8 @@ class PrayerTimeRepositoryImplTest {
             //When
             val result = prayerTimeRepository.getPrayerTimes(
                 date = dateInstant,
-                location = Location(latitude = LAT, longitude = LONG)
+                location = Location(latitude = LAT, longitude = LONG),
+                timeZone = timeZone
             )
             //Then
             assertThat(result).isEqualTo(fakePrayerTimes)
@@ -68,7 +70,8 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
-                    location = Location(latitude = LAT, longitude = LONG)
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
                 )
             }.isInstanceOf<FaithException.NetworkException>()
         }
@@ -88,7 +91,8 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
-                    location = Location(latitude = LAT, longitude = LONG)
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
                 )
             }.isInstanceOf<FaithException.UnauthorizedException>()
         }
@@ -108,7 +112,8 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
-                    location = Location(latitude = LAT, longitude = LONG)
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
                 )
             }.isInstanceOf<FaithException.NetworkException>()
         }
@@ -128,7 +133,8 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
-                    location = Location(latitude = LAT, longitude = LONG)
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
                 )
             }.isInstanceOf<FaithException.UnknownException>()
         }
@@ -161,6 +167,7 @@ class PrayerTimeRepositoryImplTest {
     }
 
     private companion object {
+        val timeZone = TimeZone.of("Africa/Cairo")
         const val LAT = 30.033333
         const val LONG = 31.233334
         const val DATE = "10-10-2025"

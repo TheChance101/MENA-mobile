@@ -20,14 +20,15 @@ class PrayerTimeRepositoryImpl(
 
     override suspend fun getPrayerTimes(
         date: Instant,
-        location: Location
+        location: Location,
+        timeZone: TimeZone,
     ): List<PrayerTime> = executeApiSafely<PrayerTimesDto> {
         prayerTimeApiService.getPrayerTimes(
             date = date.toDateString(),
             latitude = location.latitude,
             longitude = location.longitude
         )
-    }.toDomain()
+    }.toDomain(timeZone)
 
     private fun Instant.toDateString(): String {
         val dateTime = this.toLocalDateTime(TimeZone.currentSystemDefault())

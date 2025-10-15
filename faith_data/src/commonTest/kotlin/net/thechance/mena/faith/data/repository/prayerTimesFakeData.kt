@@ -1,5 +1,8 @@
 package net.thechance.mena.faith.data.repository
 
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import net.thechance.mena.faith.data.remote.dto.prayertime.GregorianDateDto
 import net.thechance.mena.faith.data.remote.dto.prayertime.HijriDateDto
 import net.thechance.mena.faith.data.remote.dto.prayertime.PrayerDateDto
@@ -11,12 +14,49 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 fun getPrayerTimesFakeData(
-    sunriseTime: Instant = Instant.parse("2025-10-10T03:52:00Z"), //10-10-2025 06:52
-    fajrTime: Instant = Instant.parse("2025-10-10T02:25:00Z"), //10-10-2025 05:25
-    dhuhrTime: Instant = Instant.parse("2025-10-10T09:40:00Z"), //10-10-2025 12:40
-    asrTime: Instant = Instant.parse("2025-10-10T12:59:00Z"), //10-10-2025 15:59
-    maghribTime: Instant = Instant.parse("2025-10-10T15:27:00Z"), //10-10-2025 18:27
-    ishaTime: Instant = Instant.parse("2025-10-10T16:45:00Z"), //10-10-2025 19:45
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    sunriseTime: Instant = LocalDateTime(
+        2025,
+        10,
+        10,
+        6,
+        52
+    ).toInstant(timeZone),
+    fajrTime: Instant = LocalDateTime(
+        year = 2025,
+        month = 10,
+        day = 10,
+        hour = 5,
+        minute = 25
+    ).toInstant(timeZone),
+    dhuhrTime: Instant = LocalDateTime(
+        year = 2025,
+        month = 10,
+        day = 10,
+        hour = 12,
+        minute = 40
+    ).toInstant(timeZone),
+    asrTime: Instant = LocalDateTime(
+        year = 2025,
+        month = 10,
+        day = 10,
+        hour = 15,
+        minute = 59
+    ).toInstant(timeZone),
+    maghribTime: Instant = LocalDateTime(
+        year = 2025,
+        month = 10,
+        day = 10,
+        hour = 18,
+        minute = 27
+    ).toInstant(timeZone),
+    ishaTime: Instant = LocalDateTime(
+        year = 2025,
+        month = 10,
+        day = 10,
+        hour = 19,
+        minute = 45
+    ).toInstant(timeZone),
     hijriDate: String = fakePrayerTimesDto.date?.hijri?.readableDate.orEmpty()
 ): List<PrayerTime> {
     return listOf(
