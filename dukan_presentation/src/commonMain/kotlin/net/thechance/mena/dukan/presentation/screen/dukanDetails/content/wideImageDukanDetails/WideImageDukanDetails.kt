@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,10 +27,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun WideImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelf: Pager<Int, DukanDetailsUiState.ShelfUiState>,
-    pagerProduct: Pager<Int, DukanDetailsUiState.ProductUiState>
+    pagerShelf: Pager<Int, DukanDetailsUiState.ShelfUiState>
 ) {
     OnSystemBackPressed { listener::onBackClicked }
+
+    val gridState = rememberLazyGridState()
+
     Scaffold(
         topBar = {
             WideImageDukanDetailsAppBar(
@@ -40,6 +43,7 @@ fun WideImageDukanDetails(
         modifier = Modifier.fillMaxSize()
     ) {
         LazyVerticalGrid(
+            state = gridState,
             columns = GridCells.Adaptive(minSize = 160.dp),
             contentPadding = PaddingValues(horizontal = Theme.spacing._16),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
@@ -49,7 +53,7 @@ fun WideImageDukanDetails(
                 DukanHeader(state = state.dukanInfo)
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
-                DukanShelvesSection(state = state, listener = listener)
+                DukanShelvesSection(state = state, listener = listener, shelvesPager = pagerShelf)
             }
             ProductsGridSection(state = state)
         }
@@ -77,8 +81,6 @@ private fun WideImageDukanDetailsPreview() {
         )
     }
     val fakeShelfPager = createFakePager<Int, DukanDetailsUiState.ShelfUiState>(items = mockShelves)
-    val fakeProductPager =
-        createFakePager<Int, DukanDetailsUiState.ProductUiState>(items = mockProducts)
     val mockDukanState = DukanDetailsUiState(
         dukanInfo = DukanDetailsUiState.DukanInfo(
             name = "Sarah's Fresh Market",
@@ -97,7 +99,6 @@ private fun WideImageDukanDetailsPreview() {
             state = mockDukanState,
             listener = PreviewDukanDetailsInteractionListener,
             pagerShelf = fakeShelfPager,
-            pagerProduct = fakeProductPager,
         )
     }
 }

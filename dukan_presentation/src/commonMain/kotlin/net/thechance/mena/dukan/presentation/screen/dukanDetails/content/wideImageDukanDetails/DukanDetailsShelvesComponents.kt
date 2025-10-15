@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +25,11 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ShelfChip
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
+import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
+import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeShelvesDukanDetailsPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
@@ -34,7 +39,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun DukanShelvesSection(
     state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener
+    listener: DukanDetailsInteractionListener,
+    shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -44,7 +50,7 @@ internal fun DukanShelvesSection(
             text = stringResource(Res.string.products),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = Theme.spacing._8)
+            modifier = Modifier.padding(top = Theme.spacing._16)
         )
         AnimatedContent(
             targetState = state.shelvesState,
@@ -61,7 +67,8 @@ internal fun DukanShelvesSection(
                     shelves = state.shelves.items,
                     selectedShelfId = state.shelfIdSelected,
                     onShelfClick = listener::onShelfClicked,
-                    chipColor = Color(state.dukanInfo.color)
+                    chipColor = Color(state.dukanInfo.color),
+                    shelvesPager = shelvesPager
                 )
 
                 DukanDetailsUiState.ShelvesState.EMPTY -> {}
@@ -92,9 +99,13 @@ private fun LoadedShelves(
     shelves: List<DukanDetailsUiState.ShelfUiState>,
     selectedShelfId: String?,
     onShelfClick: (shelfId: String) -> Unit,
-    chipColor: Color
+    chipColor: Color,
+    shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>
 ) {
+    val listState = rememberLazyListState()
+    listState.LoadMoreOnScroll(shelvesPager)
     LazyRow(
+        state = listState,
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         modifier = Modifier.fillWidthOfParent(16.dp),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -110,14 +121,18 @@ private fun LoadedShelves(
     }
 }
 
-
 @Preview(showBackground = true, name = "Shelves Section - Loading")
 @Composable
 private fun DukanShelvesSectionLoadingPreview() {
     MenaTheme {
+        val dummyPager = Pager<Int, DukanDetailsUiState.ShelfUiState>(
+            config = PagingConfig(),
+            pagingSourceFactory = { FakeShelvesDukanDetailsPagingSource() }
+        )
         DukanShelvesSection(
             state = DukanDetailsUiState(shelvesState = DukanDetailsUiState.ShelvesState.LOADING),
-            listener = PreviewDukanDetailsInteractionListener
+            listener = PreviewDukanDetailsInteractionListener,
+            shelvesPager = dummyPager
         )
     }
 }
@@ -126,6 +141,10 @@ private fun DukanShelvesSectionLoadingPreview() {
 @Composable
 private fun DukanShelvesSectionLoadedPreview() {
     MenaTheme {
+        val dummyPager = Pager<Int, DukanDetailsUiState.ShelfUiState>(
+            config = PagingConfig(),
+            pagingSourceFactory = { FakeShelvesDukanDetailsPagingSource() }
+        )
         DukanShelvesSection(
             state = DukanDetailsUiState(
                 shelvesState = DukanDetailsUiState.ShelvesState.LOADED,
@@ -139,7 +158,8 @@ private fun DukanShelvesSectionLoadedPreview() {
                 shelfIdSelected = "2",
                 dukanInfo = DukanDetailsUiState.DukanInfo(color = 0xFF4CAF50)
             ),
-            listener = PreviewDukanDetailsInteractionListener
+            listener = PreviewDukanDetailsInteractionListener,
+            shelvesPager = dummyPager
         )
     }
 }
