@@ -3,7 +3,9 @@ package net.thechance.mena.trends.data.repository
 import io.ktor.client.request.setBody
 import io.ktor.http.contentType
 import net.thechance.mena.trends.data.client.NetworkClient
-import net.thechance.mena.trends.data.dto.CategoriesResponse
+import net.thechance.mena.trends.data.dto.CategoryDto
+import net.thechance.mena.trends.data.dto.PatchUserInterestsRequest
+import net.thechance.mena.trends.data.dto.PatchUserInterestsResponse
 import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UserStatusResponse
 import net.thechance.mena.trends.data.mapper.toEntityList
@@ -23,9 +25,9 @@ internal class CategoryRepositoryImpl(
 ) : CategoryRepository {
 
     override suspend fun getAllCategories(): List<Category> {
-        return safeApiCall<CategoriesResponse> {
+        return safeApiCall<List<CategoryDto>> {
             networkClient.get("/$TRENDS_PATH/$CATEGORIES_ENDPOINT")
-        }.categories?.toEntityList().orEmpty()
+        }.toEntityList()
     }
 
     override suspend fun isCategoriesAlreadySelectedByUser(): Boolean {
@@ -39,6 +41,26 @@ internal class CategoryRepositoryImpl(
             networkClient.post("/$TRENDS_PATH/$CATEGORIES_ENDPOINT") {
                 contentType(io.ktor.http.ContentType.Application.Json)
                 setBody(SubmitCategoriesRequestDto(categoriesIds))
+            }
+        }
+    }
+
+    override suspend fun patchUserCategories(
+        originalSelectedIds: List<String>,
+        currentSelectedIds: List<String>
+    ) {
+        val toAdd = currentSelectedIds.filterNot { it in originalSelectedIds }
+        val toRemove = originalSelectedIds.filterNot { it in currentSelectedIds }
+
+        safeApiCall<PatchUserInterestsResponse> {
+            networkClient.patch("/$TRENDS_PATH/$CATEGORIES_ENDPOINT") {
+                contentType(io.ktor.http.ContentType.Application.Json)
+                setBody(
+                    PatchUserInterestsRequest(
+                        interestsIdsToAdd = toAdd,
+                        interestsIdsToRemove = toRemove
+                    )
+                )
             }
         }
     }
