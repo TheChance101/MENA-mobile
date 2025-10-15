@@ -173,6 +173,6 @@ class PrayerTimeRepositoryImplTest {
         const val DATE = "10-10-2025"
         val dateInstant = Instant.parse("2025-10-10T00:00:00Z") //10-10-2025 00:00
         val fakePrayerTimesDto = getFakePrayerTimesDto()
-        val fakePrayerTimes: List<PrayerTime> = getPrayerTimesFakeData()
+        val fakePrayerTimes: List<PrayerTime> = getPrayerTimesFakeData(timeZone = timeZone)
     }
 }

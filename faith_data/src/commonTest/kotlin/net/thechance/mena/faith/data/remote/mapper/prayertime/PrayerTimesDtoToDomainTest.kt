@@ -32,8 +32,9 @@ class PrayerTimesDtoToDomainTest {
     }
 
     private companion object {
+        val timeZone = TimeZone.of("Africa/Cairo")
         val fakePrayerTimesDto = getFakePrayerTimesDto()
-        val fakePrayerTimes: List<PrayerTime> = getPrayerTimesFakeData()
+        val fakePrayerTimes: List<PrayerTime> = getPrayerTimesFakeData(timeZone)
         val fakePrayerTimesDtoWithNulls = getFakePrayerTimesDto(
             sunrise = null,
             fajr = null,
@@ -61,7 +62,6 @@ class PrayerTimesDtoToDomainTest {
             gregorianMonthName = null,
             gregorianYear = null
         )
-        val timeZone = TimeZone.of("Africa/Cairo")
         val startOfDayInstant: Instant = Instant.fromEpochMilliseconds(0)
         val fakePrayerTimesWithDefaults: List<PrayerTime> = getPrayerTimesFakeData(
             sunriseTime = startOfDayInstant,
