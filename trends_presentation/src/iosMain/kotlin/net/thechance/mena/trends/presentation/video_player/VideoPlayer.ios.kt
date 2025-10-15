@@ -94,7 +94,7 @@ actual fun VideoPlayer(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .zIndex(10f)
+                .zIndex(5f)
                 .background(Color.Transparent)
                 .clickable { isPause = !isPause }
         )
