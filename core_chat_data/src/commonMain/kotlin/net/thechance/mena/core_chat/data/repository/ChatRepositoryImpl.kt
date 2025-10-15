@@ -201,7 +201,7 @@ class ChatRepositoryImpl(
     }
 
     private suspend fun onConnectedWebSocket(chatId: String) {
-        webSocketManager.subscribe("$WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX/$chatId$QUEUE_MESSAGES")
+        webSocketManager.subscribe("$WEB_SOCKETS_USER_DESTINATION_PREFIX/$chatId$QUEUE_MESSAGES")
         markMessageAsRead(chatId)
     }
 
@@ -244,7 +244,7 @@ class ChatRepositoryImpl(
         const val PAGE_NUMBER = 0
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val SEND_MESSAGE_DESTINATION = "/app/chat.privateMessage"
-        const val WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX = "/user"
+        const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
         const val IMAGES_ENDPOINT = "/chat/image"
