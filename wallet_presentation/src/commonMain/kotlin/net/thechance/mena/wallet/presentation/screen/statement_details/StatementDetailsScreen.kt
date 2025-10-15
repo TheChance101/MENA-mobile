@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.view_transactions_statement
+package net.thechance.mena.wallet.presentation.screen.statement_details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -43,10 +43,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ViewTransactionStatementScreen(
+fun StatementDetailsScreen(
     onNavigateBackClicked: () -> Unit,
     statementLocation: StorageLocation,
-    viewModel: ViewTransactionStatementViewModel = koinViewModel(
+    viewModel: StatementDetailsViewModel = koinViewModel(
         parameters = { parametersOf(statementLocation) }
     ),
     pdfHandler: PdfHandler = koinInject()
@@ -65,16 +65,16 @@ fun ViewTransactionStatementScreen(
         }
     )
 
-    ViewTransactionsStatementContent(
+    StatementDetailsContent(
         state = state,
         listener = viewModel
     )
 }
 
 @Composable
-private fun ViewTransactionsStatementContent(
-    state: ViewTransactionStatementScreenState,
-    listener: ViewTransactionStatementInteractionListener
+private fun StatementDetailsContent(
+    state: StatementDetailsScreenState,
+    listener: StatementDetailsInteractionListener
 ) {
     WalletScaffold(
         modifier = Modifier
@@ -143,13 +143,13 @@ fun StatementViewer(
 }
 
 private suspend fun handleEffects(
-    effect: ViewTransactionStatementEffect,
+    effect: StatementDetailsEffect,
     onNavigateBackClicked: () -> Unit,
     shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
 ) {
     when (effect) {
-        ViewTransactionStatementEffect.NavigateBack -> onNavigateBackClicked()
-        is ViewTransactionStatementEffect.ShareStatement -> {
+        StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
+        is StatementDetailsEffect.ShareStatement -> {
             shareStatement(effect.statement, "statement.pdf")
         }
     }

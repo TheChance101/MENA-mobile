@@ -13,10 +13,10 @@ import net.thechance.mena.wallet.presentation.navigation.navType.StorageLocation
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreen
+import net.thechance.mena.wallet.presentation.screen.statement_details.StatementDetailsScreen
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementHistoryScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
-import net.thechance.mena.wallet.presentation.screen.view_transactions_statement.ViewTransactionStatementScreen
 import net.thechance.mena.wallet.presentation.screen.wallet.WalletMainScreen
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.reflect.typeOf
@@ -94,7 +94,7 @@ fun NavigationHost(
         composable<ExportTransactionsScreenRoute> {
             ExportTransactionScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
-                navigateToVewTransactionStatement = { statementLocation ->
+                navigateToStatementDetails = { statementLocation ->
                     navController.navigate(StatementDetailsScreenRoute(statementLocation))
                 }
             )
@@ -104,7 +104,7 @@ fun NavigationHost(
         ) { backStackEntry ->
             val statementLocation = backStackEntry.toRoute<StatementDetailsScreenRoute>().statementLocation
 
-            ViewTransactionStatementScreen(
+            StatementDetailsScreen(
                 onNavigateBackClicked = { navController.popBackStack() },
                 statementLocation = statementLocation
             )

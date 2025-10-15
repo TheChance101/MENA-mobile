@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.view_transactions_statement
+package net.thechance.mena.wallet.presentation.screen.statement_details
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
@@ -14,41 +14,37 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
-class ViewTransactionStatementViewModel(
+class StatementDetailsViewModel(
     @Provided private val pdfHandler: PdfHandler,
     @Provided private val statementLocation: StorageLocation,
     private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ViewTransactionStatementScreenState, ViewTransactionStatementEffect>
-    (ViewTransactionStatementScreenState()), ViewTransactionStatementInteractionListener {
+) : BaseViewModel<StatementDetailsScreenState, StatementDetailsEffect>
+    (StatementDetailsScreenState()), StatementDetailsInteractionListener {
 
-        init {
-            getStatementPdf(statementLocation)
-        }
-    fun getStatementPdf(statementLocation: StorageLocation) {
+    init {
+        getStatementPdf(statementLocation)
+    }
+    private fun getStatementPdf(statementLocation: StorageLocation) {
         tryToExecute(
             onStart = ::onGetStatementPdfStart,
             callee = { pdfHandler.getPdfBytes(statementLocation) },
-            onSuccess = ::onSuccessFetchPdf,
-            onError = ::onErrorFetchPdf,
+            onSuccess = ::onGetStatementPdfSuccess,
+            onError = ::onGetStatementPdfError,
             dispatcher = dispatcherIO
         )
-    }
-
-    private fun onGetStatementPdfStart() {
-        updateState { it.copy(statement = UiState.Loading) }
     }
 
     override fun onNavigateBackClicked() {
        viewModelScope.launch (Dispatchers.IO){
            if (statementLocation is StorageLocation.Cache) pdfHandler.deletePdf(statementLocation)
-            sendEffect(ViewTransactionStatementEffect.NavigateBack)
+            sendEffect(StatementDetailsEffect.NavigateBack)
         }
     }
 
     override fun onShareClicked() {
         if (currentState.statement is UiState.Success) {
             val statement = (currentState.statement as UiState.Success<ByteArray>).data
-            sendEffect(ViewTransactionStatementEffect.ShareStatement(statement))
+            sendEffect(StatementDetailsEffect.ShareStatement(statement))
         }
     }
 
@@ -56,7 +52,11 @@ class ViewTransactionStatementViewModel(
         getStatementPdf(statementLocation)
     }
 
-    private fun onSuccessFetchPdf(pdf: ByteArray?) {
+    private fun onGetStatementPdfStart() {
+        updateState { it.copy(statement = UiState.Loading) }
+    }
+
+    private fun onGetStatementPdfSuccess(pdf: ByteArray?) {
         if (pdf == null) {
             updateState { it.copy(statement = UiState.Error(ErrorState.NoDataFound)) }
         } else {
@@ -64,7 +64,7 @@ class ViewTransactionStatementViewModel(
         }
     }
 
-    private fun onErrorFetchPdf(error: ErrorState) {
+    private fun onGetStatementPdfError(error: ErrorState) {
         updateState { it.copy(statement = UiState.Error(error)) }
     }
 }

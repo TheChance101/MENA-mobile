@@ -33,7 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ExportTransactionScreen(
     onNavigateBackClicked: () -> Unit,
-    navigateToVewTransactionStatement: (statementLocation: StorageLocation) -> Unit,
+    navigateToStatementDetails: (statementLocation: StorageLocation) -> Unit,
     viewModel: ExportTransactionsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -44,7 +44,7 @@ fun ExportTransactionScreen(
             onExportTransactionsEffect(
                 effect,
                 onNavigateBackClicked,
-                navigateToVewTransactionStatement
+                navigateToStatementDetails
             )
         }
     )
