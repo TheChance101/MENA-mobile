@@ -3,11 +3,14 @@ package net.thechance.mena.wallet.presentation.screen.confirm_payment
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.wallet.domain.model.PaymentConfirmation
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
+import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.utils.formatAmount
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -17,31 +20,19 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class ConfirmPaymentViewModel(
     @Provided private val args: ConfirmPaymentArgs,
+    @Provided private val balanceRepository: BalanceRepository,
+    @Provided private val transactionRepository: TransactionRepository,
     @Provided private val paymentRepository: PaymentRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
-    private val receiverId = args.receiverId
+    private val transactionId = Uuid.parse(args.transactionId)
     private val amount = args.amount
 
     init {
-        getPaymentConfirmation()
-    }
-
-    private fun getPaymentConfirmation() {
-        tryToExecute(
-            callee = {
-                paymentRepository.getPaymentConfirmation(
-                    receiverId = Uuid.parse(receiverId),
-                    amount = amount
-                )
-            },
-            onSuccess = ::onGetPaymentConfirmationSuccess,
-            onError = ::onGetPaymentConfirmationError,
-            onStart = ::onGetPaymentConfirmationStart,
-            dispatcher = ioDispatcher
-        )
+        getUserBalance()
+        getReceiverInfo()
     }
 
     override fun onBackButtonClicked() {
@@ -49,51 +40,85 @@ class ConfirmPaymentViewModel(
     }
 
     override fun onPayButtonClicked() {
-        updateState { it.copy(isPayBtnLoading = true) }
-        submitTransaction(dummyTransactionId)
+        updateState { it.copy(isPayButtonLoading = true) }
+        submitTransaction(transactionId)
     }
 
     override fun onRefresh() {
-        updateState { it.copy(isLoading = true, errorState = null) }
-        getPaymentConfirmation()
+        updateState { it.copy(errorState = null) }
+        getUserBalance()
+        getReceiverInfo()
     }
 
-    private fun onGetPaymentConfirmationSuccess(paymentConfirmation: PaymentConfirmation) {
+    private fun getUserBalance() {
+        tryToExecute(
+            callee = { balanceRepository.getBalance() },
+            onSuccess = ::onGetUserBalanceSuccess,
+            onError = ::onGetUserBalanceError,
+            onStart = { updateState { it.copy(isGetBalanceLoading = true) } },
+            dispatcher = ioDispatcher
+        )
+    }
+
+    private fun getReceiverInfo() {
+        tryToExecute(
+            callee = { transactionRepository.getTransactionReceiver(transactionId) },
+            onSuccess = ::onGetReceiverInfoSuccess,
+            onError = ::onGetReceiverInfoError,
+            onStart = { updateState { it.copy(isGetUserLoading = true) } },
+            dispatcher = ioDispatcher
+        )
+    }
+
+    private fun onGetUserBalanceSuccess(balance: Double) {
         updateState {
-            it.copy(isLoading = false, paymentUiState = paymentConfirmation.toUi(amount))
+            it.copy(
+                isGetBalanceLoading = false,
+                paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
+                    amount = formatAmount(amount),
+                    status = balance >= amount,
+                    balance = formatAmount(balance)
+                )
+            )
         }
     }
 
-    private fun onGetPaymentConfirmationError(errorState: ErrorState) {
-        updateState { it.copy(isLoading = false, errorState = errorState) }
+    private fun onGetUserBalanceError(errorState: ErrorState) {
+        updateState { it.copy(isGetBalanceLoading = false, errorState = errorState) }
     }
 
-    private fun onGetPaymentConfirmationStart() {
-        updateState { it.copy(isLoading = true) }
+    private fun onGetReceiverInfoSuccess(transactionReceiverInfo: TransactionReceiver) {
+        updateState {
+            it.copy(isGetUserLoading = false, receiverUiState = transactionReceiverInfo.toUiState())
+        }
+    }
+
+    private fun onGetReceiverInfoError(errorState: ErrorState) {
+        updateState { it.copy(isGetUserLoading = false, errorState = errorState) }
     }
 
     private fun onSubmitTransactionSuccess() {
-        updateState { it.copy(isPayBtnLoading = false) }
+        updateState { it.copy(isPayButtonLoading = false) }
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
-                receiverId,
-                amount,
-                dummyTransactionId,
-                SubmitTransactionResultStatus.SUCCESS
+                receiverName = state.value.receiverUiState.name,
+                amount = amount,
+                transactionId = transactionId,
+                submissionStatus = SubmissionStatus.SUCCESS
             )
         )
     }
 
     private fun onSubmitTransactionFailed(error: ErrorState) {
-        updateState { it.copy(isLoading = false) }
+        updateState { it.copy(isPayButtonLoading = false) }
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
-                receiverId,
-                amount,
-                dummyTransactionId,
-                submitTransactionResultStatus = when (error) {
-                    ErrorState.NoInternet -> SubmitTransactionResultStatus.CONNECTION_LOST
-                    else -> SubmitTransactionResultStatus.UNKNOWN_ERROR
+                receiverName = state.value.receiverUiState.name,
+                amount = amount,
+                transactionId = transactionId,
+                submissionStatus = when (error) {
+                    ErrorState.NoInternet -> SubmissionStatus.CONNECTION_LOST
+                    else -> SubmissionStatus.UNKNOWN_ERROR
                 }
             )
         )
@@ -109,6 +134,4 @@ class ConfirmPaymentViewModel(
             dispatcher = ioDispatcher
         )
     }
-
-    private val dummyTransactionId = Uuid.parse("123e4567-e89b-12d3-a456-426614174000")
 }

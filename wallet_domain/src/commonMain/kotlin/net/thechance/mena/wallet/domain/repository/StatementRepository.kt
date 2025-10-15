@@ -19,7 +19,4 @@ interface StatementRepository {
     suspend fun insertStatement(statement: Statement)
     suspend fun deleteStatementById(id: Long)
     suspend fun getStatementById(id:Long): Statement
-
-    suspend fun getCachedStatement(filterParams: TransactionFilterParams?=null): ByteArray?
-
 }

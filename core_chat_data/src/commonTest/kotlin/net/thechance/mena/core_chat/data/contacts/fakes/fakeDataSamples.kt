@@ -67,14 +67,14 @@ fun createMessage(
     id: Uuid = Uuid.random(),
     senderId: Uuid = Uuid.random(),
     chatId: Uuid = Uuid.random(),
-    text: String = "fail",
+    content: MessageContent = MessageContent.Text("Hello from test"),
     sendAt: LocalDateTime = LocalDateTime.now(),
     status: MessageStatus = MessageStatus.SENT
 ) = Message(
     id = id,
     senderId = senderId,
     chatId = chatId,
-    content = MessageContent.Text(text),
+    content = content,
     sendAt = sendAt,
     status = status
 )

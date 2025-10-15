@@ -338,28 +338,31 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
+    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
 
-        repository.downloadImage(IMAGE_URL)
+            repository.downloadImage(IMAGE_URL)
 
-        verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
-    }
+            verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
+        }
 
     @Test
-    fun `downloadImage should throw OperationFailedException when downloadImage return false`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
+    fun `downloadImage should throw OperationFailedException when downloadImage return false`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
 
-        assertFailsWith<OperationFailedException> {
-            repository.downloadImage(IMAGE_URL)
+            assertFailsWith<OperationFailedException> {
+                repository.downloadImage(IMAGE_URL)
+            }
         }
-    }
+
 
     private companion object {
         private val chatId = Uuid.random()
         private val userId = Uuid.random()
 
-       const val IMAGE_URL = "http://test.com/image.jpg"
+        const val IMAGE_URL = "http://test.com/image.jpg"
     }
 
 }

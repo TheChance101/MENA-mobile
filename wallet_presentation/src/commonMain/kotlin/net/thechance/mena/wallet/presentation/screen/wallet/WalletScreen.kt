@@ -130,7 +130,7 @@ private fun WalletContent(
                 onClick = { interactionListener.onPaymentClicked(amount = 222.22, receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
+                    .padding(top = Theme.spacing._16)
             )
         }
     }
@@ -147,7 +147,7 @@ private fun onWalletEffect(
         WalletEffect.NavigateBack -> onNavigateBackClicked()
         WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
         WalletEffect.NavigateToStatementHistory -> navigateToStatementsHistory()
-        is WalletEffect.NavigateToPaymentScreen -> navigateToPaymentScreen(effect.amount, effect.receiverId)
+        is WalletEffect.NavigateToConfirmPaymentScreen -> navigateToPaymentScreen(effect.amount, effect.transactionId)
     }
 }
 
