@@ -32,7 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -173,7 +173,6 @@ private fun DukanImageAndTitle(
     state: DukanDetailsUiState.DukanInfo,
     modifier: Modifier = Modifier
 ) {
-    val shadowColor = Color(state.color).copy(alpha = 0.8f)
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -187,6 +186,19 @@ private fun DukanImageAndTitle(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.5f)
+                        ),
+                        startY = 100f
+                    )
+                )
+        )
         Text(
             text = state.name,
             style = Theme.typography.title.medium,
@@ -196,16 +208,6 @@ private fun DukanImageAndTitle(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = Theme.spacing._8, bottom = Theme.spacing._8)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .shadow(
-                    elevation = 12.dp,
-                    shape = RoundedCornerShape(Theme.radius.md),
-                    spotColor = shadowColor,
-                    ambientColor = shadowColor
-                )
         )
     }
 }
@@ -330,21 +332,29 @@ private fun ProductCard(
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true
 ) {
+
     Column(
         modifier = modifier.size(160.dp, 240.dp)
             .clip(RoundedCornerShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(onClick = onClick, enabled = isEnabled)
     ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(176.dp)
-                .clip(RoundedCornerShape(Theme.radius.sm))
-        )
+        Box(
+            modifier = modifier.padding(
+                horizontal = Theme.spacing._4,
+                vertical = Theme.spacing._4
+            )
+        ) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(176.dp)
+                    .clip(RoundedCornerShape(Theme.radius.sm))
+            )
+        }
         Text(
             text = title,
             style = Theme.typography.label.small,
@@ -366,7 +376,7 @@ private fun ProductCard(
             Icon(
                 painter = painterResource(Res.drawable.discount_icon),
                 contentDescription = null,
-                modifier = modifier.padding(end = Theme.spacing._4)
+                modifier = modifier.padding(end = Theme.spacing._8)
             )
             PriceWithIcon(
                 price = price,
