@@ -28,12 +28,11 @@ class QuranRepositoryImpl(
 
     override suspend fun getLastAyahForTilawah(): LastAyahForTilawah {
         return tilawahDataStore.getLastAyah()
-            ?: LastAyahForTilawah(number = 1, surahId = 1, surahName = "")
+            ?: LastAyahForTilawah(number = 1, surahId = 1, surahName = "Al-Fatiha")
     }
 
-    override suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah) {
+    override suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah) =
         tilawahDataStore.saveLastAyah(savedAyah)
-    }
 
     override suspend fun searchForAyahInSurah(
         surahId: Int,
