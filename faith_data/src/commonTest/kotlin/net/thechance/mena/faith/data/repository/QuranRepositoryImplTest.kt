@@ -111,13 +111,13 @@ class QuranRepositoryImplTest {
     fun `getLastAyahForTilawah should return stored ayah when datastore has value`() = runTest {
         // Given
 
-        everySuspend { tilawahDataStore.getLastAyah() } returns EXPECTED_AYAH
+        everySuspend { tilawahDataStore.getLastAyah() } returns SAVED_TILAWAH_PROGRESS
 
         // When
         val result = repository.getLastAyahForTilawah()
 
         // Then
-        assertEquals(EXPECTED_AYAH, result)
+        assertEquals(SAVED_TILAWAH_PROGRESS, result)
     }
 
     @Test
@@ -129,13 +129,13 @@ class QuranRepositoryImplTest {
         val result = repository.getLastAyahForTilawah()
 
         // Then
-        assertEquals(EXPECTED_DEFAULT, result)
+        assertEquals(DEFAULT_TILAWAH, result)
     }
 
     @Test
     fun `saveLastAyahForTilawah should call datastore saveLastAyah`() = runTest {
         // Given
-        val ayahToSave = AYAH_TO_SAVE
+        val ayahToSave = TILAWAH_AYAH_TO_SAVE
 
         // When
         repository.saveLastAyahForTilawah(ayahToSave)
@@ -152,19 +152,19 @@ class QuranRepositoryImplTest {
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         const val AL_BAQARAH_NAME = "Al-Baqarah"
 
-        val AYAH_TO_SAVE = LastAyahForTilawah(
+        val TILAWAH_AYAH_TO_SAVE = LastAyahForTilawah(
             number = 3,
             surahId = 1,
             surahName = AL_FATIHAH_NAME
         )
 
-        val EXPECTED_DEFAULT = LastAyahForTilawah(
+        val DEFAULT_TILAWAH = LastAyahForTilawah(
             number = 1,
             surahId = 1,
             surahName = ""
         )
 
-        val EXPECTED_AYAH = LastAyahForTilawah(
+        val SAVED_TILAWAH_PROGRESS = LastAyahForTilawah(
             number = 5,
             surahId = 2,
             surahName = AL_BAQARAH_NAME
