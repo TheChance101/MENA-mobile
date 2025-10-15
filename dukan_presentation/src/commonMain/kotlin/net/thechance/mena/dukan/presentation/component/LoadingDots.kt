@@ -9,15 +9,14 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -52,28 +51,20 @@ fun LoadingDots(
         ),
         label = "colorOffset"
     )
-
-    val currentColors by remember {
-        derivedStateOf {
-            val offset = colorOffset.toInt()
-            List(colorCount) { index ->
-                val colorIndex = (colorCount - offset + index) % colorCount
-                dotColors[colorIndex]
-            }
-        }
-    }
-
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        currentColors.forEachIndexed { index, color ->
-            Row(
+        val offset = colorOffset.toInt()
+        for (i in 0 until colorCount) {
+            val colorIndex = (colorCount - offset + i) % colorCount
+            val color = dotColors[colorIndex]
+            Box(
                 modifier = Modifier
                     .size(dotSize)
                     .background(color = color, shape = CircleShape)
-            ) {}
+            )
         }
     }
 }
