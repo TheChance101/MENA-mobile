@@ -57,7 +57,7 @@ internal fun ProductCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(4.dp)
+                .padding(Theme.spacing._4)
                 .clip(RoundedCornerShape(Theme.radius.sm))
         )
         Column(
