@@ -31,12 +31,12 @@ import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.util.pagination.PagingSource
+import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeShelvesDukanDetailsPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeShelves
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.DukanInfo
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -63,6 +63,7 @@ fun NoImageDukanDetails(
         )
     }
 }
+
 private const val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
 private fun synchronizeScrollsAndAlpha(
     index: Int,
@@ -89,6 +90,7 @@ private fun synchronizeScrollsAndAlpha(
 
     chipsAlphaUpdate(if (isBestSellingVisible) 0f else 1f)
 }
+
 @OptIn(FlowPreview::class)
 @Composable
 private fun NoImageDukanContent(
@@ -114,7 +116,7 @@ private fun NoImageDukanContent(
                     coroutineScope,
                     lazyRowListState
                 ) { alpha -> chipsAlpha = alpha }
-        }
+            }
     }
 
     LazyColumn(
@@ -153,62 +155,7 @@ private fun NoImageDukanContent(
 @Preview
 @Composable
 private fun NoImageDukanDetailsPreview() {
-    val dummyProducts = listOf(
-        ProductUiState(
-            name = "Girls Crochet Tank Top",
-            description = "Girls Crochet Tank Top description text here for this productGirls Crochet Tank Top",
-            price = 23.99,
-            imageUrl = "https://m.media-amazon.com/images/I/61CRq2R6i4L._AC_SL1024_.jpg"
-        ),
-        ProductUiState(
-            name = "Girls Crochet Tank Top",
-            description = "Girls Crochet Tank Top description text here for this productGirls Crochet Tank Top",
-            price = 23.99,
-            imageUrl = "https://m.media-amazon.com/images/I/61CRq2R6i4L._AC_SL1024_.jpg"
-        )
-    )
-    val dummyShelves = listOf(
-        ShelfUiState(
-            id = "1",
-            name = "Clothes",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "2",
-            name = "Perfumes",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "3",
-            name = "Accessories",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "4",
-            name = "Shoes",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "5",
-            name = "Shoes",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "6",
-            name = "Shoes",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "7",
-            name = "Shoes",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "8",
-            name = "Shoes",
-            products = dummyProducts
-        )
-    )
+
     MenaTheme {
         NoImageDukanDetails(
             state = DukanDetailsUiState(
@@ -218,19 +165,13 @@ private fun NoImageDukanDetailsPreview() {
                 ),
                 shelvesState = ShelvesState.LOADED,
                 shelfIdSelected = "1",
-                shelves = PagingData(dummyShelves)
+                shelves = PagingData(fakeShelves())
             ),
             listener = PreviewDukanDetailsInteractionListener,
             pagerShelves = Pager(
                 config = PagingConfig(),
-                pagingSourceFactory = {
-                    object : PagingSource<Int, ShelfUiState>() {
-                        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ShelfUiState> {
-                            return LoadResult.Page(dummyShelves, null, null)
-                        }
-                    }
-                }
-            )
+                pagingSourceFactory = { FakeShelvesDukanDetailsPagingSource() }
+            ),
         )
     }
 }
