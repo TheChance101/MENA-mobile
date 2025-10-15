@@ -25,9 +25,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ProductsHeader(
     shelfName: String,
-    viewAllColor: Color = Theme.colorScheme.primary.primary,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewAllColor: Color = Theme.colorScheme.primary.primary
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -63,6 +63,10 @@ fun ProductsHeader(
 @Composable
 private fun ProductsHeaderPreview() {
     MenaTheme {
-        ProductsHeader(shelfName = "Category Name", modifier = Modifier.padding(16.dp), onClick = {})
+        ProductsHeader(
+            shelfName = "Category Name",
+            modifier = Modifier.padding(16.dp),
+            onClick = {}
+        )
     }
 }
