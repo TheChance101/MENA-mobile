@@ -105,7 +105,10 @@ class ManageTrendsViewModelTest {
             likesCount = 100,
             viewsCount = 1000,
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
-            categories = categories
+            categories = categories,
+            userName = "mTm",
+            profileImageUrl = "",
+            isCurrentUserOwner = true
         )
 
         val reels = listOf(
