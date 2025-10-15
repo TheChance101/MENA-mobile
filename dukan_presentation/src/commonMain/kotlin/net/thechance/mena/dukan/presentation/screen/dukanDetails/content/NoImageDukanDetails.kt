@@ -170,13 +170,14 @@ private fun NoImageDukanDetailsPreview() {
         )
     }
 
-    val previewListener = object : DukanDetailsInteractionListener by PreviewDukanDetailsInteractionListener {
-        override fun onShelfClicked(id: String) {
-            previewState = previewState.copy(
-                shelfIdSelected = id,
-            )
+    val previewListener =
+        object : DukanDetailsInteractionListener by PreviewDukanDetailsInteractionListener {
+            override fun onShelfClicked(id: String) {
+                previewState = previewState.copy(
+                    shelfIdSelected = id,
+                )
+            }
         }
-    }
     MenaTheme {
         NoImageDukanDetails(
             state = previewState,
