@@ -73,15 +73,13 @@
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و 3000 حرف.</string>
     <string name="favorites">المفضلة</string>
-    <string name="no_dukans_title_ar">لم يتم العثور على دكان</string>
-    <string name="no_dukans_body_ar">لا توجد دكان متاحة في هذه الفئة في الوقت الحالي.</string>
-
+    <string name="no_dukans_title">لا يوجد دكان مرتبط بهذه الفئة!</string>
+    <string name="no_dukans_body">سيظهر هنا عند إضافته.</string>
     <string name="categories">الفئات</string>
     <string name="back_to_main_screen_icon">العودة الي الصفحة الرئيسية</string>
     <string name="category_icon">رمز الفئة</string>
     <string name="something_went_wrong_while_fetching_categories">حدث خطأ ما اثناء تحميل الفئات المختلفة</string>
     <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
-
     <string name="best_dukans_around_you">أفضل الدكاكين من حولك</string>
     <string name="editor_pick_dukans">اختيارات المحرر من الدكاكين</string>
     <string name="what_do_you_need">ماذا تحتاج؟</string>
