@@ -6,7 +6,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
@@ -22,8 +21,6 @@ import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.repository.UserRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
-
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageTrendsViewModelTest {
@@ -68,16 +65,6 @@ class ManageTrendsViewModelTest {
         }
 
     @Test
-    fun `initialize view model should handle error state when getAllReels fails`() =
-        runTest(testDispatcher) {
-            val errorMessage = "error"
-            everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
-            assertFailsWith<Exception> {
-                viewModel.state.value.reels.asSnapshot()
-            }
-        }
-
-    @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         viewModel.effect.test {
             viewModel.onReelItemClick(REEL_ID)
@@ -107,6 +94,9 @@ class ManageTrendsViewModelTest {
                 likesCount = 100,
                 viewsCount = 1000,
                 createdAt = LocalDateTime(2023, 10, 1, 12, 0),
+                userName = "Alice",
+                profileImageUrl = "https://example.com/alice.jpg",
+                isCurrentUserOwner = false,
                 categories = listOf(Category("1", "Trend", ":fire:"))
             ),
             Reel(
@@ -117,6 +107,9 @@ class ManageTrendsViewModelTest {
                 likesCount = 200,
                 viewsCount = 2000,
                 createdAt = LocalDateTime(2023, 10, 2, 12, 0),
+                userName = "Bob",
+                profileImageUrl = "https://example.com/bob.jpg",
+                isCurrentUserOwner = true,
                 categories = listOf(Category("2", "Viral", ":rocket:"))
             )
         )

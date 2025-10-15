@@ -63,4 +63,23 @@
     <string name="publish_categories_screen_count">3/3</string>
     <string name="publish_hint">hint</string>
 
+    <string name="trends_title">Trends</string>
+    <string name="manage_trends">Manage Trends</string>
+    <string name="edit_tags">Edit Tags</string>
+    <string name="add_reel">Add Reel</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="more_options">More Options</string>
+    <string name="video_thumbnail">Video Thumbnail</string>
+    <string name="likes">Likes</string>
+    <string name="views">Views</string>
+    <string name="likes_suffix">%1$d Likes</string>
+    <string name="views_suffix">%1$d Views</string>
+
+    <string name="just_now">Just now</string>
+    <string name="minutes_ago">%1$d minutes ago</string>
+    <string name="hours_ago">%1$d hours ago</string>
+    <string name="days_ago">%1$d days ago</string>
+    <string name="weeks_ago">%1$d weeks ago</string>
+    <string name="months_ago">%1$d months ago</string>
+    <string name="years_ago">%1$d years ago</string>
 </resources>

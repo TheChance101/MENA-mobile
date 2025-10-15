@@ -5,7 +5,6 @@ package net.thechance.mena.core_chat.data.source.remote.mapper
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
-import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
@@ -44,17 +43,6 @@ fun ChatDto.toDomain(): Chat? {
         name = name,
         requesterId = getUuidOrNull(requesterId) ?: return null
     )
-}
-
-fun MessageContent.toSendMessageRequestDto(chatId: String): SendMessageDto {
-    return when (this) {
-        is MessageContent.Text -> SendMessageDto(chatId = chatId, text = text)
-        is MessageContent.Images -> {
-            val source = this.source
-            val urls = if (source is ImagesSource.Remote) source.urls else emptyList()
-            SendMessageDto(chatId = chatId, images = urls)
-        }
-    }
 }
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
