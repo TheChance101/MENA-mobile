@@ -49,6 +49,8 @@ import org.jetbrains.compose.resources.painterResource
 actual fun VideoPlayer(
     url: String,
     playWhenVisible: Boolean,
+    modifier: Modifier,
+    content:@Composable () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -109,7 +111,7 @@ actual fun VideoPlayer(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         AndroidView(
@@ -175,6 +177,7 @@ actual fun VideoPlayer(
             trackColor = Theme.colorScheme.primary.onPrimaryHint,
             color = Theme.colorScheme.border.brand
         )
+        content()
     }
 
     DisposableEffect(lifecycleOwner, exoPlayer) {

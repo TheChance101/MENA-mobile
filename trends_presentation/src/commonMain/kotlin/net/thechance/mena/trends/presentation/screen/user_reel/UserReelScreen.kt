@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -20,6 +21,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +55,6 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -60,7 +63,6 @@ import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import net.thechance.mena.trends.presentation.video_player.VideoPlayer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -88,11 +90,6 @@ private fun UserReelScreenContent(
     state: UserReelState,
     listener: UserReelInteractionListener
 ) {
-    val reels = state.reels.collectAsLazyPagingItems()
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        pageCount = { reels.itemCount },
-    )
 
     Scaffold(
         overlays = {
@@ -150,22 +147,38 @@ private fun UserReelScreenContent(
                     contentPadding = PaddingValues(16.dp)
                 )
             }
-        },
+        }
     ) {
+
+        val reels = state.reels.collectAsLazyPagingItems()
+        val pagerState = rememberPagerState(
+            initialPage = 0,
+            pageCount = { state.fakeReels.size },
+        )
+
+        var currentReel: UserReelUiState? by remember { mutableStateOf(UserReelUiState()) } // ُTODO: It should be removed
+
+        TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
 
         VerticalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            key = { page -> reels[page]?.id ?: "" },
-        )
-        { page ->
+            key = { page -> state.fakeReels[page]?.id ?: page },
+        ) { page ->
 
-            ReelPage(
-                reel = state.reels.collectAsLazyPagingItems()[page] ?: UserReelUiState(),
-                shouldRender = pagerState.currentPage == page,
-                state = state,
-                listener = listener
-            )
+            val isCurrentPage = (pagerState.currentPage == page)
+            currentReel = state.fakeReels[page]
+
+            currentReel?.let { reel ->
+                Reel(
+                    reel = reel,
+                    shouldRender = isCurrentPage,
+                    isDescriptionExpanded = state.isDescriptionExpanded,
+                    onDeleteClick = listener::onDeleteClick,
+                    onDescriptionClick = listener::onDescriptionClick,
+                    onPublisherInfoClick = listener::onPublisherInfoClick
+                )
+            }
         }
     }
 }
@@ -180,7 +193,8 @@ private fun TopAppBar(
         modifier = modifier
             .fillMaxWidth()
             .gradientShadow()
-            .padding(horizontal = Theme.spacing._16).padding(top = 8.dp),
+            .padding(horizontal = Theme.spacing._16)
+            .padding(top = 8.dp),
         contentPadding = PaddingValues(0.dp),
         leadingContent = {
             Icon(
@@ -193,44 +207,44 @@ private fun TopAppBar(
 }
 
 @Composable
-private fun ReelPage(
+private fun Reel(
     reel: UserReelUiState,
     shouldRender: Boolean,
-    state: UserReelState,
-    listener: UserReelInteractionListener,
+    isDescriptionExpanded: Boolean,
+    onDeleteClick: () -> Unit,
+    onDescriptionClick: (Boolean) -> Unit,
+    onPublisherInfoClick: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
+    VideoPlayer(
+        modifier = Modifier.fillMaxSize().background(Color.Black),
+        url = reel.videoUrl,
+        playWhenVisible = shouldRender,
+    ) {
+        Box(Modifier.fillMaxSize()) {
+            UsersReAct(
+                viewCount = reel.viewsCount.toString(),
+                likeCount = reel.likesCount.toString(),
+                isCurrentUserOwner = reel.isCurrentUserOwner,
+                onDeleteClick = onDeleteClick,
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .padding(end = Theme.spacing._16, bottom = 140.dp)
+            )
 
-        VideoPlayer(
-            url = reel.videoUrl,
-            playWhenVisible = shouldRender,
-        )
+            PublisherInfo(
+                userName = reel.username,
+                timeOfPublish = reel.createdAt.orEmpty(),
+                description = reel.description,
+                avatar = reel.profileImage,
+                modifier = Modifier.align(Alignment.BottomCenter),
+                isDescriptionExpanded = isDescriptionExpanded,
+                onDescriptionClick = onDescriptionClick,
+                onPublisherInfoClick = onPublisherInfoClick
+            )
 
-        UsersReAct(
-            viewCount = reel.viewsCount.toString(),
-            likeCount = reel.likesCount.toString(),
-            isCurrentUserOwner = reel.isCurrentUserOwner,
-            onDeleteClick = listener::onDeleteClick,
-            modifier = Modifier.align(Alignment.BottomEnd)
-                .padding(end = Theme.spacing._16, bottom = 140.dp)
-        )
-
-        PublisherInfo(
-            userName = reel.username,
-            timeOfPublish = reel.createdAt.toString(),
-            description = reel.description,
-            avatar = reel.profileImage,
-            modifier = Modifier.align(Alignment.BottomCenter),
-            isDescriptionExpanded = state.isDescriptionExpanded,
-            onDescriptionClick = listener::onDescriptionClick,
-            onPublisherInfoClick = listener::onPublisherInfoClick
-        )
-
-        Box(modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow())
+            Box(modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow())
+        }
     }
 }
-
 
 @Composable
 private fun PublisherInfo(
@@ -243,7 +257,6 @@ private fun PublisherInfo(
     description: String,
     modifier: Modifier = Modifier
 ) {
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -348,26 +361,6 @@ private fun ReActIcon(
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeTertiary,
             textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    MenaTheme {
-        UserReelScreenContent(
-            state = UserReelState(),
-            listener = object : UserReelInteractionListener {
-                override fun onDescriptionClick(isCollapsed: Boolean) {}
-                override fun onPublisherInfoClick() {}
-                override fun onBackClick() {}
-                override fun onDeleteClick() {}
-                override fun onConfirmDeleteClick() {}
-                override fun onDismissSuccessDialog() {}
-                override fun onDismissErrorDialog() {}
-                override fun onDismissConfirmationDialog() {}
-            }
         )
     }
 }
