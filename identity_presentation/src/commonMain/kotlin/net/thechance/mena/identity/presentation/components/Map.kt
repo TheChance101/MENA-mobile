@@ -91,8 +91,6 @@ fun Map(
                     contentDescription = null,
                     modifier = Modifier
                         .size(46.dp, 58.05.dp)
-                        .offset(
-                        )
                 )
             }
         }

@@ -43,32 +43,10 @@ class AddEditLocationScreenViewModel(
     override fun onClickSave() {
         updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
-            function = {
-                if (state.value.addressID != null) {
-                    addressesRepository.editAddress(
-                        address = Address(
-                            id = state.value.addressID!!,
-                            latitude = state.value.latitude,
-                            longitude = state.value.longitude,
-                            addressLine = state.value.address,
-                            addressType = state.value.addressType!!.name,
-                            otherAddressType = state.value.otherAddress,
-                            isActive = state.value.isActive
-                        )
-                    )
-                } else {
-                    addressesRepository.createAddress(
-                        address = Address(
-                            latitude = state.value.latitude,
-                            longitude = state.value.longitude,
-                            addressLine = state.value.address,
-                            addressType = state.value.addressType?.name?:"",
-                            otherAddressType = state.value.otherAddress,
-                            isActive = state.value.isActive
-                        )
-                    )
-                }
-            }, onSuccess = ::onSuccess, onError = ::onError, dispatcher = dispatcher
+            function = ::onSave
+            , onSuccess = ::onSuccess,
+            onError = ::onError,
+            dispatcher = dispatcher
         )
     }
 
@@ -105,6 +83,32 @@ class AddEditLocationScreenViewModel(
             ) }
     }
 
+    private suspend fun onSave(){
+        if (state.value.addressID != null) {
+            addressesRepository.editAddress(
+                address = Address(
+                    id = state.value.addressID!!,
+                    latitude = state.value.latitude,
+                    longitude = state.value.longitude,
+                    addressLine = state.value.address,
+                    addressType = state.value.addressType!!.name,
+                    otherAddressType = state.value.otherAddress,
+                    isActive = state.value.isActive
+                )
+            )
+        } else {
+            addressesRepository.createAddress(
+                address = Address(
+                    latitude = state.value.latitude,
+                    longitude = state.value.longitude,
+                    addressLine = state.value.address,
+                    addressType = state.value.addressType?.name?:"",
+                    otherAddressType = state.value.otherAddress,
+                    isActive = state.value.isActive
+                )
+            )
+        }
+    }
     private fun onSuccess() {
         updateState { copy(isLoading = false) }
         sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack)
