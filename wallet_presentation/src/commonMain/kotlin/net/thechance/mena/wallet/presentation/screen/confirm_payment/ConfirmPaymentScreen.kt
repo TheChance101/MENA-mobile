@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.confirm_payment
 
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PaymentDetailsSection
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
@@ -30,15 +33,22 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun ConfirmPaymentScreen(
     onNavigateBackClicked: () -> Unit,
-    receiverId: String,
+    transactionId: String,
     amount: Double,
-    navigateToPaymentResultScreen: (String, Double) -> Unit,
+    navigateToPaymentResultScreen: (
+        receiverId: String,
+        amount: Double,
+        transactionId: Uuid,
+        submissionStatus: SubmissionStatus
+    ) -> Unit,
     viewModel: ConfirmPaymentViewModel = koinViewModel(
-        parameters = { parametersOf(ConfirmPaymentArgs(receiverId, amount)) }
+        parameters = { parametersOf(ConfirmPaymentArgs(transactionId, amount)) }
     )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -102,11 +112,12 @@ private fun ConfirmPaymentScreenContent(
                 ) {
                     PaymentDetailsSection(
                         modifier = Modifier.fillMaxWidth().weight(1f),
-                        paymentUiState = state.paymentUiState
+                        payment = state.paymentUiState,
+                        receiver = state.receiverUiState
                     )
 
                     PayButton(
-                        isPayBtnLoading = state.isPayBtnLoading,
+                        isLoading = state.isPayButtonLoading,
                         isEnabled = state.paymentUiState.status,
                         onClick = interactionListener::onPayButtonClicked,
                         payAmount = state.paymentUiState.amount
@@ -121,12 +132,22 @@ private fun ConfirmPaymentScreenContent(
 private fun onConfirmPaymentEffect(
     effect: ConfirmPaymentEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToPaymentResultScreen: (String, Double) -> Unit
+    navigateToPaymentResultScreen: (
+        receiverName: String,
+        amount: Double,
+        transactionId: Uuid,
+        submissionStatus: SubmissionStatus
+    ) -> Unit
 ) {
     when (effect) {
         ConfirmPaymentEffect.NavigateBack -> onNavigateBackClicked()
         is ConfirmPaymentEffect.NavigateToPaymentResultScreen -> {
-            navigateToPaymentResultScreen(effect.receiverName, effect.amount)
+            navigateToPaymentResultScreen(
+                effect.receiverName,
+                effect.amount,
+                effect.transactionId,
+                effect.submissionStatus
+            )
         }
     }
 }

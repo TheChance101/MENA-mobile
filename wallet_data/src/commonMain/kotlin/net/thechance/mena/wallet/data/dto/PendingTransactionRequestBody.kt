@@ -4,9 +4,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PaymentConfirmationRequest(
+data class PendingTransactionRequestBody(
+    @SerialName("amount")
+    val amount: Double,
     @SerialName("receiverId")
     val receiverId: String,
-    @SerialName("amount")
-    val amount: Double
+    @SerialName("type")
+    val type: String
 )
