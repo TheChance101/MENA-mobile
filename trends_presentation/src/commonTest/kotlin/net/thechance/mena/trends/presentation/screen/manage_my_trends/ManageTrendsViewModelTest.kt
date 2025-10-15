@@ -67,7 +67,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         viewModel.effect.test {
-            viewModel.onReelItemClick(REEL_ID)
+            viewModel.onReelClick(REEL_ID)
             assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateToTrend(REEL_ID))
             cancelAndIgnoreRemainingEvents()
         }

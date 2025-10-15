@@ -57,7 +57,7 @@ internal class ReelsRepositoryImpl(
             networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT") {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
-        }.results?.map { it.toEntity() } ?: emptyList()
+        }.results?.map { it.toEntity() }.orEmpty()
     }
 
     override suspend fun getFeedReels(page: Int): List<Reel> {

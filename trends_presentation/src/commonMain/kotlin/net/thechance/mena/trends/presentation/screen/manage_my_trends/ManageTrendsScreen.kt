@@ -74,48 +74,27 @@ internal fun ManageTrendsScreen(
 
     ManageTrendsScreenContent(
         state = state,
-        listener = viewModel,
+        listener = viewModel
     )
 }
 
 @Composable
 private fun ManageTrendsScreenContent(
     state: ManageTrendsScreenState,
-    listener: ManageTrendsInteractionListener,
+    listener: ManageTrendsInteractionListener
 ) {
-    val reels = state.reels.collectAsLazyPagingItems()
-
     Scaffold(
-        topBar = {
-            AppBar(
-                onLeadingClick = listener::onBackClick,
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow)
-                    )
-                },
-                title = stringResource(Res.string.manage_trends_title),
-            )
-        }
+        topBar = { ManageMyTrendsAppBar(onBackClick = listener::onBackClick) }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
         ) {
-
-        AsyncImage(
-            model =  state.profile.profileImageUrl,
-            contentDescription = stringResource(Res.string.profile_image_desc),
-            error = painterResource(Res.drawable.ic_placeholder_profile),
-            modifier = Modifier
-                .padding(top = 32.dp)
-                .size(100.dp)
-                .clip(CircleShape)
-                .align(Alignment.CenterHorizontally),
-            contentScale = ContentScale.Crop,
-        )
+            UserAvatar(
+                profileImageUrl = state.profile.profileImageUrl,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
 
             Text(
                 text = state.profile.userName,
@@ -124,9 +103,10 @@ private fun ManageTrendsScreenContent(
                     .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
                     .align(Alignment.CenterHorizontally)
             )
+
             SegmentSection(
-                reels = reels,
-                onTrendClick = listener::onReelItemClick,
+                reels = state.reels.collectAsLazyPagingItems(),
+                onTrendClick = listener::onReelClick,
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 trendsTitle = stringResource(Res.string.my_trends),
                 favoriteTitle = stringResource(Res.string.favorite)
@@ -136,33 +116,53 @@ private fun ManageTrendsScreenContent(
 }
 
 @Composable
+private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
+    AppBar(
+        onLeadingClick = onBackClick,
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_arrow)
+            )
+        },
+        title = stringResource(Res.string.manage_trends_title),
+    )
+}
+
+@Composable
+private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = profileImageUrl,
+        contentDescription = stringResource(Res.string.profile_image_desc),
+        error = painterResource(Res.drawable.ic_placeholder_profile),
+        modifier = modifier.padding(top = 32.dp).size(100.dp).clip(CircleShape),
+        contentScale = ContentScale.Crop,
+    )
+}
+
+@Composable
 private fun SegmentSection(
     reels: LazyPagingItems<ReelUiState>,
-    onTrendClick: (id: String) -> Unit,
-    modifier: Modifier = Modifier,
     trendsTitle: String,
-    favoriteTitle: String
+    favoriteTitle: String,
+    onTrendClick: (id: String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(end = Theme.spacing._16, start = Theme.spacing._16)
+            .padding(horizontal = Theme.spacing._16)
     ) {
         Segment(
             modifier = Modifier.fillMaxWidth(),
         ) {
             item(title = trendsTitle) {
-                val gridState = rememberLazyGridState()
-
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(minSize = 106.dp),
-                    state = gridState,
+                    state = rememberLazyGridState(),
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        4.dp,
-                        Alignment.CenterHorizontally
-                    ),
+                    verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
+                    horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._4, Alignment.CenterHorizontally),
                     contentPadding = PaddingValues(bottom = Theme.spacing._16)
                 ) {
                     items(key = reels.itemKey(), count = reels.itemCount) { index ->
@@ -197,16 +197,15 @@ private fun TrendItem(
 ) {
     Box(
         modifier = modifier
-            .size(106.dp, 164.dp)
+            .size(width = 106.dp, height = 164.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onTrendClick(item.id) }
-            .background(Theme.colorScheme.background.surfaceHigh)
+            .background(color = Theme.colorScheme.background.surfaceHigh)
     ) {
         AsyncImage(
             model = item.thumbnailUrl,
-            contentDescription = stringResource(Res.string.trend_image_desc),
-            modifier = Modifier
-                .fillMaxSize(),
+            contentDescription = stringResource(resource = Res.string.trend_image_desc),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
     }
