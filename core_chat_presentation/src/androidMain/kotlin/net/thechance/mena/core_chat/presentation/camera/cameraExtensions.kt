@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.utils.camera
+package net.thechance.mena.core_chat.presentation.camera
 
 import android.content.ContentResolver
 import android.graphics.Bitmap
@@ -7,6 +7,7 @@ import android.graphics.Matrix
 //noinspection ExifInterface
 import android.media.ExifInterface
 import android.net.Uri
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
 
@@ -45,5 +46,13 @@ internal fun Bitmap.rotateImageIfRequired(inputStream: InputStream?): Bitmap {
         Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
     }.getOrElse {
         this
+    }
+}
+
+fun Bitmap?.toByteArray(): ByteArray? {
+    return this?.let {
+        val stream = ByteArrayOutputStream()
+        it.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        stream.toByteArray()
     }
 }

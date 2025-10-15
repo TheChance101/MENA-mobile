@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.utils.camera
+package net.thechance.mena.core_chat.presentation.camera
 
 import android.content.Context
 import android.net.Uri

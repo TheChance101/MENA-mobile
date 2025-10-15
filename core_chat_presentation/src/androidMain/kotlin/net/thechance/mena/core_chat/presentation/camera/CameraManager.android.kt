@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.utils.camera
+package net.thechance.mena.core_chat.presentation.camera
 
 import android.content.ContentResolver
 import android.net.Uri
@@ -12,7 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-actual fun rememberCameraManager(onResult: (SharedImage?) -> Unit): CameraManager {
+actual fun rememberCameraManager(onResult: (ByteArray?) -> Unit): CameraManager {
     val context = LocalContext.current
     val contentResolver: ContentResolver = context.contentResolver
     var tempPhotoUri: Uri by remember { mutableStateOf(Uri.EMPTY) }
@@ -21,9 +21,7 @@ actual fun rememberCameraManager(onResult: (SharedImage?) -> Unit): CameraManage
         onResult = { success ->
             if (success) {
                 onResult.invoke(
-                    SharedImage(
-                        tempPhotoUri.getBitmapFromUri(contentResolver)
-                    )
+                        tempPhotoUri.getBitmapFromUri(contentResolver).toByteArray()
                 )
             } else {
                 onResult.invoke(null)

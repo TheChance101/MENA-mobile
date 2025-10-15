@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.utils.camera
+package net.thechance.mena.core_chat.presentation.camera
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -14,7 +14,7 @@ import platform.UIKit.UINavigationControllerDelegateProtocol
 import platform.darwin.NSObject
 
 @Composable
-actual fun rememberCameraManager(onResult: (SharedImage?) -> Unit): CameraManager {
+actual fun rememberCameraManager(onResult: (ByteArray?) -> Unit): CameraManager {
     val imagePicker = UIImagePickerController()
     val cameraDelegate = remember {
         object : NSObject(), UIImagePickerControllerDelegateProtocol,
@@ -27,11 +27,7 @@ actual fun rememberCameraManager(onResult: (SharedImage?) -> Unit): CameraManage
                         ?: didFinishPickingMediaWithInfo.getValue(
                             UIImagePickerControllerOriginalImage
                         ) as? UIImage
-                onResult.invoke(
-                    SharedImage(
-                        image
-                    )
-                )
+                onResult.invoke(image.toByteArray())
                 picker.dismissViewControllerAnimated(true, null)
             }
         }

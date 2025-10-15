@@ -20,13 +20,13 @@ import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
+import net.thechance.mena.core_chat.presentation.camera.rememberCameraManager
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
-import net.thechance.mena.core_chat.presentation.utils.camera.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
