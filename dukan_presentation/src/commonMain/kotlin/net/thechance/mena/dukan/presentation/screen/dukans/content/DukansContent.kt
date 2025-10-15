@@ -7,11 +7,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.dukan_pending
@@ -20,6 +17,7 @@ import mena.dukan_presentation.generated.resources.no_dukans_body
 import mena.dukan_presentation.generated.resources.no_dukans_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.EmptyStateContent
 import net.thechance.mena.dukan.presentation.screen.dukans.component.DukansList
@@ -46,18 +44,20 @@ fun DukansContent(
 
     lazyListState.LoadMoreOnScroll(pager)
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar(
-            title = state.categoryTitle,
-            onLeadingClick = listener::onBackClick,
-            leadingContent = {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_arrow_left),
-                    contentDescription = stringResource(Res.string.back_arrow)
-                )
-            }
-        )
-
+    Scaffold(
+        topBar = {
+            AppBar(
+                title = state.categoryTitle,
+                onLeadingClick = listener::onBackClick,
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_arrow_left),
+                        contentDescription = stringResource(Res.string.back_arrow)
+                    )
+                }
+            )
+        }
+    ) {
         AnimatedContent(
             targetState = state.dukansState,
             transitionSpec = {
