@@ -19,7 +19,7 @@ class MainViewModel(
     private val prayerTimeRepository: PrayerTimeRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<MainScreenState, MainScreenEffect>(
-    initialState = MainScreenState()
+    initialState = MainScreenState(),
 ), MainInteractionListener {
 
     init {
