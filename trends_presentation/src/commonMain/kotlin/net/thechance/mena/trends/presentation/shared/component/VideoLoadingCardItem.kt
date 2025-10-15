@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.arrow_reload_horizontal
 import mena.trends_presentation.generated.resources.error
+import mena.trends_presentation.generated.resources.ic_arrow_reload_horizontal
 import mena.trends_presentation.generated.resources.ic_cancel
 import mena.trends_presentation.generated.resources.ic_delete
 import mena.trends_presentation.generated.resources.ic_video
@@ -198,7 +198,7 @@ private fun VideoActionsSection(
                 exit = fadeOut()
             ) {
                 Icon(
-                    painter = painterResource(Res.drawable.arrow_reload_horizontal),
+                    painter = painterResource(Res.drawable.ic_arrow_reload_horizontal),
                     contentDescription = stringResource(Res.string.retry),
                     tint = Theme.colorScheme.shadeSecondary,
                     modifier = Modifier

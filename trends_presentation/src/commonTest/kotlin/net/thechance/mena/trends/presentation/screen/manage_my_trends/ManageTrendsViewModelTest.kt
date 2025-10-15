@@ -15,12 +15,11 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.utils.categories
 import net.thechance.mena.trends.domain.repository.UserRepository
+import net.thechance.mena.trends.presentation.utils.categories
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -36,7 +35,7 @@ class ManageTrendsViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = ManageTrendsViewModel(repository,userRepository ,testDispatcher)
+        viewModel = ManageTrendsViewModel(repository, userRepository, testDispatcher)
         everySuspend { userRepository.getCurrentUserInfo() } returns user
     }
 
@@ -70,7 +69,8 @@ class ManageTrendsViewModelTest {
     @Test
     fun `initialize view model should handle error state when getAllReels fails`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getAllReels(1) } throws Exception()
+            val errorMessage = "error"
+            everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
             assertFailsWith<Exception> {
                 viewModel.state.value.reels.asSnapshot()
             }
