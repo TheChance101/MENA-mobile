@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
-import mena.dukan_presentation.generated.resources.empty_shelf
+import mena.dukan_presentation.generated.resources.dukan_pending
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.no_dukans_body
 import mena.dukan_presentation.generated.resources.no_dukans_title
@@ -91,7 +91,7 @@ fun DukansContent(
                 )
 
                 DukansState.EMPTY -> EmptyStateContent(
-                    image = Res.drawable.empty_shelf,
+                    image = Res.drawable.dukan_pending,
                     title = Res.string.no_dukans_title,
                     body = Res.string.no_dukans_body
                 )
