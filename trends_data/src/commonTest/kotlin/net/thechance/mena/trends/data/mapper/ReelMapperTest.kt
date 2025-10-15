@@ -12,25 +12,14 @@ import kotlin.test.Test
 internal class ReelMapperTest {
     @Test
     fun `ReelDto toEntity() should map correctly`() {
-        val dto = ReelDto(
-            id = "1",
-            reelImageUrl = "thumb.jpg",
-            videoUrl = "video.mp4",
-            description = "sample reel",
-            likesCount = 10,
-            viewsCount = 100,
-            createdAt = "2025-09-25T12:00:00"
-        )
+        val entity = reelDto.toEntity()
 
-        val entity = dto.toEntity()
-
-        assertThat(entity.id).isEqualTo("1")
-        assertThat(entity.thumbnailUrl).isEqualTo("thumb.jpg")
-        assertThat(entity.videoUrl).isEqualTo("video.mp4")
-        assertThat(entity.description).isEqualTo("sample reel")
-        assertThat(entity.likesCount).isEqualTo(10)
-        assertThat(entity.viewsCount).isEqualTo(100)
-
+        assertThat(entity.id).isEqualTo(reelDto.id)
+        assertThat(entity.thumbnailUrl).isEqualTo(reelDto.reelImageUrl)
+        assertThat(entity.videoUrl).isEqualTo(reelDto.videoUrl)
+        assertThat(entity.description).isEqualTo(reelDto.description)
+        assertThat(entity.likesCount).isEqualTo(reelDto.likesCount)
+        assertThat(entity.viewsCount).isEqualTo(reelDto.viewsCount)
         val expectedCreatedAt = LocalDateTime(2025, 9, 25, 12, 0, 0)
         assertThat(entity.createdAt).isEqualTo(expectedCreatedAt)
     }
@@ -75,22 +64,17 @@ internal class ReelMapperTest {
 
     @Test
     fun `ReelDTO with valid categories should map correctly`() {
-        val dto = ReelDto(
-            categories = listOf(
-                CategoryDto(id = "uuid 1", name = "Sport", emoji = "⚽"),
-                CategoryDto(id = "uuid 2", name = "Music", emoji = "🎵")
-            )
-        )
+        val dto = ReelDto(categories = categoriesDto)
 
         val reel = dto.toEntity()
 
-        assertThat(reel.categories.first().id).isEqualTo("uuid 1")
-        assertThat(reel.categories.first().name).isEqualTo("Sport")
-        assertThat(reel.categories.first().emoji).isEqualTo("⚽")
+        assertThat(reel.categories.first().id).isEqualTo(categoriesDto.first().id)
+        assertThat(reel.categories.first().name).isEqualTo(categoriesDto.first().name)
+        assertThat(reel.categories.first().emoji).isEqualTo(categoriesDto.first().emoji)
 
-        assertThat(reel.categories.last().id).isEqualTo("uuid 2")
-        assertThat(reel.categories.last().name).isEqualTo("Music")
-        assertThat(reel.categories.last().emoji).isEqualTo("🎵")
+        assertThat(reel.categories.last().id).isEqualTo(categoriesDto.last().id)
+        assertThat(reel.categories.last().name).isEqualTo(categoriesDto.last().name)
+        assertThat(reel.categories.last().emoji).isEqualTo(categoriesDto.last().emoji)
 
         assertThat(reel.categories.size).isEqualTo(2)
     }
@@ -99,16 +83,32 @@ internal class ReelMapperTest {
     fun `ReelDTO with some invalid categories should ignore nulls`() {
         val dto = ReelDto(
             categories = listOf(
-                CategoryDto(id = "1", name = "Comedy",emoji = "⚽"),
+                CategoryDto(id = "1", name = "Comedy", emoji = "⚽"),
                 CategoryDto(id = "3", name = null, emoji = null),
-                CategoryDto(id = null, name = "NoId",emoji = null)
+                CategoryDto(id = null, name = "NoId", emoji = null)
             )
         )
 
         val reel = dto.toEntity()
 
         assertThat(reel.categories.size).isEqualTo(2)
-        assertThat(reel.categories.first()).isEqualTo(Category("1", "Comedy","⚽"))
+        assertThat(reel.categories.first()).isEqualTo(Category("1", "Comedy", "⚽"))
         assertThat(reel.categories.last()).isEqualTo(Category("3", "", ""))
+    }
+
+    private companion object {
+        val reelDto = ReelDto(
+            id = "1",
+            reelImageUrl = "thumb.jpg",
+            videoUrl = "video.mp4",
+            description = "sample reel",
+            likesCount = 10,
+            viewsCount = 100,
+            createdAt = "2025-09-25T12:00:00"
+        )
+        val categoriesDto = listOf(
+            CategoryDto(id = "uuid 1", name = "Sport", emoji = "⚽"),
+            CategoryDto(id = "uuid 2", name = "Music", emoji = "🎵")
+        )
     }
 }

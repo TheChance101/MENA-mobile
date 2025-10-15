@@ -12,7 +12,7 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import org.jetbrains.compose.resources.getString
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -23,6 +23,7 @@ import kotlin.uuid.Uuid
 class TransactionDetailsViewModel(
     @Provided private val transactionDetailsArgs: TransactionDetailsArgs,
     @Provided val transactionRepository: TransactionRepository,
+    @Provided private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
     TransactionDetailsScreenState()), TransactionDetailsInteractionListener {
@@ -89,8 +90,8 @@ class TransactionDetailsViewModel(
 
     override suspend fun onCaptureError() {
         showSnackBar(
-            title = getString(Res.string.error),
-            message = getString(Res.string.share_transaction_details_error_msg),
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(Res.string.share_transaction_details_error_msg),
             isSuccess = false)
     }
 
