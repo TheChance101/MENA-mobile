@@ -166,7 +166,7 @@ private fun DukanIconButton(
             .clickable(
                 onClick = onIconClick,
                 indication = null,
-                interactionSource = remember { MutableInteractionSource() }
+                interactionSource = null
             )
             .background(
                 color = Theme.colorScheme.background.surfaceLow,

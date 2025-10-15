@@ -52,7 +52,7 @@ internal fun ProductCard(
     ) {
         AsyncImage(
             model = imageUrl,
-            contentDescription = "$title product image",
+            contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()

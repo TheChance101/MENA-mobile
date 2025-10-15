@@ -57,7 +57,10 @@ fun ShelfChip(
     )
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(
+            Theme.spacing._4,
+            Alignment.CenterHorizontally
+        ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(shape)
