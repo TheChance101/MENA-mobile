@@ -6,14 +6,8 @@ import platform.CoreLocation.CLLocationManagerDelegateProtocol
 import platform.darwin.NSObject
 
 actual class AzimuthProvider {
-
-    val locationManager = LocationManager()
-
-    actual val azimuthFlow: Flow<Float> = flowOf(0f)
-
-    actual fun startListening() {}
-
-    actual fun stopListening() {}
+    private val locationManager = LocationManager()
+    actual fun startListening(): Flow<Float> = flowOf(0f)
 }
 
-class LocationManager : NSObject(), CLLocationManagerDelegateProtocol
+internal class LocationManager : NSObject(), CLLocationManagerDelegateProtocol

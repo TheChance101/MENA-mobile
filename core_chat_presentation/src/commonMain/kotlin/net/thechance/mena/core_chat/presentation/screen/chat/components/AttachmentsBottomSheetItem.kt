@@ -42,9 +42,9 @@ fun AttachmentsBottomSheetItem(
     ) {
         Box(
             modifier = Modifier
-                .clickable { onClick() }
                 .clip(CircleShape)
                 .background(Theme.colorScheme.background.surfaceLow)
+                .clickable(onClick = onClick)
                 .padding(Theme.spacing._16)
         ) {
             Icon(

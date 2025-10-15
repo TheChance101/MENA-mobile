@@ -99,7 +99,7 @@
     <string name="failed_to_load_date_picker">Failed to load date picker</string>
 
     <string name="share_button_title">Share</string>
-    <string name="view_transactions">View Transactions</string>
+    <string name="statement">Statement</string>
 
     <string name="view_transactions_statement_error_message">an error happened while loading the statement file</string>
     <string name="loading_pdf_message">Loading PDF...</string>
@@ -129,4 +129,5 @@
     <string name="connection_lost_try_again">The connection was lost. Please try again.</string>
     <string name="try_again">Try Again</string>
     <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
+    <string name="you_paid">You paid</string>
 </resources>

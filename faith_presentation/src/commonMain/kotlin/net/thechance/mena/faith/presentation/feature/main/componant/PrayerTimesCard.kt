@@ -3,6 +3,7 @@ package net.thechance.mena.faith.presentation.feature.main.componant
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -82,7 +84,8 @@ fun PrayerTimesCard(
                 .onGloballyPositioned { coordinates ->
                     rowWidth = coordinates.size.width.toFloat()
                 }
-                .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12),
+                .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
+                .horizontalScroll(rememberScrollState()),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {

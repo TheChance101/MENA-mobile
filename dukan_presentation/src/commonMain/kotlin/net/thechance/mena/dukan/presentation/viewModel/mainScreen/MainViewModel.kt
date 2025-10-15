@@ -7,6 +7,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
@@ -21,8 +22,11 @@ class MainViewModel(
     initialState = MainScreenUiState(),
     defaultDispatcher = dispatcher
 ), MainInteractionListener {
+     lateinit var bestNearestDukanPager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>
+     lateinit var editorPickDukanPager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>
 
     init {
+        initPagers()
         getDukanState()
         getCategories()
         getEditorPicksDukans()
@@ -183,22 +187,24 @@ class MainViewModel(
     override fun onEditorPickDukanClick(dukanId: String) {
         emitEffect(MainEffect.NavigateSelectedDukan(dukanId))
     }
+    fun initPagers(){
+        bestNearestDukanPager = createPagingSource(
+            mapper = { it.toBestNearestUiState() }
+        ) { currentPage ->
+            dukanRepository.getBestAroundDukans(
+                page = currentPage,
+                size = 20
+            )
+        }
 
-    val bestNearestDukanPager = createPagingSource(
-        mapper = { it.toBestNearestUiState() }
-    ) { currentPage ->
-        dukanRepository.getBestAroundDukans(
-            page = currentPage,
-            size = 20
-        )
+        editorPickDukanPager = createPagingSource(
+            mapper = { it.toEditorPickUiState() }
+        ) { currentPage ->
+            dukanRepository.getEditorPicksDukans(
+                page = currentPage,
+                size = 20
+            )
+        }
     }
 
-    val editorPickDukanPager = createPagingSource(
-        mapper = { it.toEditorPickUiState() }
-    ) { currentPage ->
-        dukanRepository.getEditorPicksDukans(
-            page = currentPage,
-            size = 20
-        )
-    }
 }

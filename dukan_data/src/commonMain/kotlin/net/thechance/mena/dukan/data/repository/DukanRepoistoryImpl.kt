@@ -110,7 +110,7 @@ class DukanRepositoryImpl(
         val lng = 44.3615
         val range = 30000
         val dukansResponse = safeApiCall<PageResponseDto<DukanResponseDto>> {
-            client.get("$BASE_URL/best_around") {
+            client.get("$BASE_URL/nearby/best") {
                 parameter("page", page)
                 parameter("size", size)
                 parameter("lat", lat)
