@@ -37,7 +37,8 @@ fun DukanDetailsScreen(
     when (state.dukanInfo.style) {
         DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetails(
             state, viewModel,
-            pagerShelf = viewModel.pagerShelf
+            pagerShelf = viewModel.pagerShelf,
+            pagerProduct = viewModel.pagerProduct
         )
 
         DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(
