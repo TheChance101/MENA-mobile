@@ -78,7 +78,7 @@ class AddEditLocationScreen : BaseScreen<
             LazyColumn(
                 modifier = Modifier
                     .background(color = Theme.colorScheme.background.surface)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = Theme.spacing._16)
             ) {
 
                 item {

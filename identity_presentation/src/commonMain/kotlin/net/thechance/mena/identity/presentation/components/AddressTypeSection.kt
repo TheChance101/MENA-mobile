@@ -45,12 +45,13 @@ fun AddressTypeSection(
             text = stringResource(Res.string.type),
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+            modifier = Modifier
+                .padding(top = Theme.spacing._12, bottom = Theme.spacing._4)
         )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
             AddressTypeItem(
                 addressIcon = painterResource(Res.drawable.ic_home),
@@ -92,8 +93,8 @@ private fun AddressTypeItem(
     )
 
     Column(
-        modifier = modifier.padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.padding(horizontal = Theme.spacing._8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
