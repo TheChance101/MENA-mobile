@@ -73,6 +73,7 @@ fun SmallImageDukanDetails(
                 )
             }
             SmallImageProductContent(
+                shelves = state.shelves,
                 state = state,
                 listener = listener,
                 shelvesPager = pager,
