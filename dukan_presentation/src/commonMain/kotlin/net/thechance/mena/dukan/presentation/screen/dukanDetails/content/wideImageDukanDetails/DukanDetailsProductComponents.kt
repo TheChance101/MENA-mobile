@@ -73,7 +73,7 @@ internal fun ProductCard(
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = 12.dp)
+                modifier = Modifier.padding(top = Theme.spacing._12)
             )
 
             Row(
