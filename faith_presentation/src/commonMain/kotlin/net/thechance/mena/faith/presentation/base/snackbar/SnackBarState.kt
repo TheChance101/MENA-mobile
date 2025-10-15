@@ -1,4 +1,5 @@
-package net.thechance.mena.faith.presentation.base
+package net.thechance.mena.faith.presentation.base.snackbar
+
 
 data class SnackBarState(
     val message: String = "",
