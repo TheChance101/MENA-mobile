@@ -40,7 +40,10 @@ fun ProductsHeader(
             modifier = Modifier.weight(1f)
         )
         Row(
-            modifier = Modifier.clickable { onClick() },
+            modifier = Modifier.clickable(
+                indication = null,
+                interactionSource = null
+            ) { onClick() },
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
