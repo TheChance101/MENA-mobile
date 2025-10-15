@@ -19,6 +19,7 @@ import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
+import kotlin.math.round
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -54,7 +55,8 @@ class HomeViewModel(
     }
 
     private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
-        updateState { it.copy(balanceAmount = balanceAmount) }
+        val balance = (balanceAmount * 100).toInt() / 100.0
+        updateState { it.copy(balanceAmount = balance) }
     }
 
     override fun onLoadChatsSummaryRequested() {
