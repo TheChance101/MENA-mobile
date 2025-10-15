@@ -28,9 +28,7 @@ class TilawahDataStore(private val dataStore: DataStore<Preferences>) : ITilawah
         )
     }
 
-    override suspend fun getLastAyah(): LastAyahForTilawah? {
-        return lastAyahFlow.last()
-    }
+    override suspend fun getLastAyah(): LastAyahForTilawah? = lastAyahFlow.last()
 
     private companion object {
         val AYAH_NUMBER = intPreferencesKey("ayah_number")
