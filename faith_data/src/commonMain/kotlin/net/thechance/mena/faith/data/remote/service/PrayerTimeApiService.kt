@@ -1,0 +1,17 @@
+package net.thechance.mena.faith.data.remote.service
+
+import de.jensklingenberg.ktorfit.Response
+import de.jensklingenberg.ktorfit.http.GET
+import de.jensklingenberg.ktorfit.http.Path
+import de.jensklingenberg.ktorfit.http.Query
+import net.thechance.mena.faith.data.remote.dto.prayertime.PrayerTimesDto
+
+interface PrayerTimeApiService {
+
+    @GET("faith/DayPrayerTimes/{date}")
+    suspend fun getPrayerTimes(
+        @Path("date") date: String,
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+    ): Response<PrayerTimesDto>
+}

@@ -9,11 +9,13 @@ import dev.mokkery.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
-import net.thechance.mena.faith.presentation.base.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.feature.quran.surah.args.ISurahArgs
 import net.thechance.mena.faith.presentation.util.ClipboardManager
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -29,17 +31,20 @@ class SurahViewModelTest {
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val bookmarkRepository: BookmarkRepository = mock(mode = MockMode.autofill)
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
+    private val fakeSnackbarHandler = FakeSnackbarHandler()
+
+    private val surahArgs = mock<ISurahArgs>(mode = MockMode.autofill)
 
     @BeforeTest
     fun setup() {
         testDispatcher = StandardTestDispatcher()
         testViewModel = SurahViewModel(
-            surahId = DEFAULT_SURAH_ID,
-            surahName = DEFAULT_SURAH_NAME,
+            surahArgs = surahArgs,
             dispatcher = testDispatcher,
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
-            bookmarkRepository = bookmarkRepository
+            bookmarkRepository = bookmarkRepository,
+            snackbarHandler = fakeSnackbarHandler
         )
     }
 
@@ -97,7 +102,7 @@ class SurahViewModelTest {
     fun `onAyahLongPress should set selectedAyahIndex to negative value when called with negative index`() =
         runTest {
             // Given
-            everySuspend { quranRepository.getAyatOfSurah(DEFAULT_SURAH_ID) } returns dummyAyat
+            everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
             // When
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, NEGATIVE_AYAH_INDEX)
@@ -165,7 +170,7 @@ class SurahViewModelTest {
 
         // When
         testViewModel.onShareClick(TEST_AYAH_CONTENT)
-        testDispatcher.scheduler.advanceUntilIdle()
+        advanceUntilIdle()
 
         // Then
         assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
@@ -193,7 +198,7 @@ class SurahViewModelTest {
     fun `onAyahLongPress should keep previous selectedAyah when called with same content`() =
         runTest {
             // Given
-            everySuspend { quranRepository.getAyatOfSurah(DEFAULT_SURAH_ID) } returns dummyAyat
+            everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
             // When
@@ -231,7 +236,7 @@ class SurahViewModelTest {
     @Test
     fun `onCopyClick should update state correctly when copy operation succeeds`() = runTest {
         // Given
-        everySuspend { quranRepository.getAyatOfSurah(DEFAULT_SURAH_ID) } returns dummyAyat
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
         // When
         testViewModel.onCopyClick(AYAH_CONTENT)

@@ -23,6 +23,7 @@ import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -68,12 +69,12 @@ class StatementsHistoryViewModelTest {
             everySuspend {
                 statementRepository.getStatements(PAGE, PAGE_SIZE)
             } returns emptyList()
-            val id = Uuid.random()
+            val statement= statements[0].toUiState()
             advanceUntilIdle()
             viewModel.uiEffect.test {
-                viewModel.onStatementCardClicked(id)
+                viewModel.onStatementCardClicked(statement)
                 val effect = awaitItem()
-                assertEquals(StatementsHistoryEffect.NavigateToStatementDetails(id), effect)
+                assertEquals(StatementsHistoryEffect.NavigateToStatementDetails(StorageLocation.Downloads(statement.fileName)), effect)
                 cancelAndIgnoreRemainingEvents()
             }
 
@@ -173,7 +174,7 @@ class StatementsHistoryViewModelTest {
     companion object {
         val statements = listOf(
             Statement(
-                Uuid.random(),
+                1,
                 LocalDate(2025, 3, 1),
                 LocalDate(2025, 3, 31),
                 1410.0,
@@ -181,7 +182,7 @@ class StatementsHistoryViewModelTest {
                 "/storage/statements/mar_2025.pdf"
             ),
             Statement(
-                Uuid.random(),
+                2,
                 LocalDate(2025, 4, 1),
                 LocalDate(2025, 4, 30),
                 1600.3,
@@ -189,7 +190,7 @@ class StatementsHistoryViewModelTest {
                 "/storage/statements/apr_2025.pdf"
             ),
             Statement(
-                Uuid.random(),
+                3,
                 LocalDate(2025, 5, 1),
                 LocalDate(2025, 5, 31),
                 1555.0,

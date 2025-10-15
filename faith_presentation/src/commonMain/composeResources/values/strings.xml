@@ -92,6 +92,7 @@
     <string name="no_results_found_title">No results found!</string>
     <string name="no_results_found_subtitle">Please try again with another keyword.</string>
     <string name="back">back</string>
+    <string name="search_icon">Search Icon</string>"
     <string name="faith_title">Faith</string>
     <string name="sunrise_time_label">Sunrise time</string>
     <string name="location">location</string>

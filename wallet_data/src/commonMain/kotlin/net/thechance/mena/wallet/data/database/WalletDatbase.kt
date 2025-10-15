@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 
-@Database(entities = [Statement::class], version = 1)
+@Database(entities = [LocalStatement::class], version = 1)
 @ConstructedBy(WalletDatabaseConstructor::class)
 abstract class WalletDatabase : RoomDatabase() {
     abstract fun getStatementDao(): StatementDao
