@@ -39,7 +39,7 @@ fun SkeletonOverlayShape(
     durationMillis: Int = 1000,
     background: Color = Theme.colorScheme.background.surfaceHigh
 ) {
-    val transition = rememberInfiniteTransition()
+    val transition = rememberInfiniteTransition(label = "skeletonAnimation")
     val alphaAnim by transition.animateFloat(
         initialValue = 0.5f, targetValue = 1f, animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = durationMillis, easing = LinearEasing),
