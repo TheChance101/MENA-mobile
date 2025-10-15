@@ -66,19 +66,19 @@ private fun FadeSkeletonItem() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = Theme.spacing._16)
     ) {
         AppBarSkeleton()
         SkeletonOverlayShape(
             modifier = Modifier
-                .padding(top = 8.dp)
+                .padding(top =Theme.spacing._8)
                 .fillMaxWidth()
                 .height(92.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(Theme.spacing._16))
         )
         SkeletonOverlayShape(
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = Theme.spacing._12)
                 .size(height = 24.dp, width = 167.dp)
         )
         ProductsListSkeleton()
@@ -91,7 +91,7 @@ private fun AppBarSkeleton() {
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .padding(vertical = 16.dp),
+            .padding(vertical = Theme.spacing._16),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -106,12 +106,12 @@ private fun AppBarSkeleton() {
         )
         SkeletonOverlayShape(
             modifier = Modifier
-                .padding(start = 8.dp, end = 4.dp)
-                .size(height = 16.dp, width = 52.dp)
+                .padding(start = Theme.spacing._8, end = Theme.spacing._4)
+                .size(height = Theme.spacing._16, width = 52.dp)
         )
         SkeletonOverlayShape(
             modifier = Modifier
-                .size(24.dp)
+                .size(Theme.spacing._24)
                 .clip(CircleShape)
         )
     }
@@ -121,9 +121,9 @@ private fun AppBarSkeleton() {
 private fun ProductsListSkeleton() {
     LazyColumn(
         modifier = Modifier
-            .padding(top = 12.dp)
+            .padding(top = Theme.spacing._12)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
         items(10) {
             ProductItemSkeleton()
@@ -137,8 +137,8 @@ private fun ProductItemSkeleton() {
     Row() {
         SkeletonOverlayShape(
             modifier = Modifier
-                .padding(end = 8.dp)
-                .size(48.dp)
+                .padding(end = Theme.spacing._8)
+                .size(Theme.spacing._48)
                 .clip(CircleShape)
         )
         Column(
@@ -161,7 +161,7 @@ private fun ProductItemSkeleton() {
         }
         SkeletonOverlayShape(
             modifier = Modifier
-                .size(height = 16.dp, width = 46.dp)
+                .size(height =Theme.spacing._16, width = 46.dp)
         )
     }
 }
