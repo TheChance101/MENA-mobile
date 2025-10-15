@@ -27,6 +27,4 @@ internal data class ReelDto(
     val profilePictureUrl: String? = null,
     @SerialName("categories")
     val categories : List<CategoryDto>? = null,
-    @SerialName("isCurrentUserOwner")
-    val isCurrentUserOwner : Boolean
 )
