@@ -83,8 +83,8 @@ class AddressesScreenViewModelTest {
         viewModel.onDeleteAddressClicked(addressId)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertTrue(viewModel.state.value.deleteAddressDialogUIState.isVisible)
-        assertEquals(addressId, viewModel.state.value.deleteAddressDialogUIState.addressId)
+        assertTrue(viewModel.state.value.deleteDialogUIState.isVisible)
+        assertEquals(addressId, viewModel.state.value.deleteDialogUIState.addressId)
     }
 
     @Test
@@ -101,7 +101,7 @@ class AddressesScreenViewModelTest {
         coVerify { addressRepository.deleteAddress(address.id) }
         assertTrue(viewModel.state.value.snackBarUiState.isVisible)
         assertEquals(SnackBarType.SUCCESS, viewModel.state.value.snackBarUiState.snackBarType)
-        assertFalse(viewModel.state.value.deleteAddressDialogUIState.isVisible)
+        assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
     }
 
     @Test
@@ -113,7 +113,7 @@ class AddressesScreenViewModelTest {
         viewModel.onDismissDeleteDialog()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.deleteAddressDialogUIState.isVisible)
+        assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
     }
 
     @Test

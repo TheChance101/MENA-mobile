@@ -1,7 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -42,11 +41,11 @@ class AddressesScreen :
     ) {
         Scaffold(
             overlays = {
-                dialog(state.deleteAddressDialogUIState.isVisible) {
+                dialog(state.deleteDialogUIState.isVisible) {
                     Dialog(
                         isVisible = it,
-                        title = stringResource(state.deleteAddressDialogUIState.title),
-                        message = stringResource(state.deleteAddressDialogUIState.description),
+                        title = stringResource(state.deleteDialogUIState.title),
+                        message = stringResource(state.deleteDialogUIState.description),
                         onDismiss = listener::onDismissDeleteDialog,
                         onCancelClick = listener::onDismissDeleteDialog,
                         actionButtons = {

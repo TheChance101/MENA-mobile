@@ -34,12 +34,12 @@ class AddressesScreenViewModel(
         sendNewEffect(AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState))
 
 
-    override fun onAddressClicked(addressId: Uuid) {
+    override fun onClickAddress(addressId: Uuid) {
     }
 
     override fun onDeleteAddressClicked(addressId: Uuid) = updateState {
         copy(
-            deleteAddressDialogUIState = DeleteAddressDialogUIState(
+            deleteDialogUIState = DeleteDialogUIState(
                 isVisible = true, addressId = addressId
             ),
         )
@@ -47,7 +47,7 @@ class AddressesScreenViewModel(
 
     override fun onConfirmDeleteAddress() {
         tryToExecute(
-            function = { addressRepository.deleteAddress(state.value.deleteAddressDialogUIState.addressId!!) },
+            function = { addressRepository.deleteAddress(state.value.deleteDialogUIState.addressId!!) },
             onSuccess = {
                 getUserAddresses()
                 updateState {
@@ -57,7 +57,7 @@ class AddressesScreenViewModel(
                             isVisible = true,
                             message = Res.string.address_deleted_successfully
                         ),
-                        deleteAddressDialogUIState = DeleteAddressDialogUIState(
+                        deleteDialogUIState = DeleteDialogUIState(
                             isVisible = false,
                         )
                     )
@@ -70,7 +70,7 @@ class AddressesScreenViewModel(
 
     override fun onDismissDeleteDialog() = updateState {
         copy(
-            deleteAddressDialogUIState = DeleteAddressDialogUIState(
+            deleteDialogUIState = DeleteDialogUIState(
                 isVisible = false,
             )
         )

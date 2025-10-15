@@ -13,13 +13,13 @@ import kotlin.uuid.Uuid
 data class AddressesScreenUIState(
     val addresses: List<AddressUIState> = emptyList(),
     val addressToDelete: Uuid? = null,
-    val deleteAddressDialogUIState: DeleteAddressDialogUIState = DeleteAddressDialogUIState(),
+    val deleteDialogUIState: DeleteDialogUIState = DeleteDialogUIState(),
     val errorMessage: String? = null,
     val snackBarUiState :SnackBarUiState= SnackBarUiState()
 )
 
 @OptIn(ExperimentalUuidApi::class)
-data class DeleteAddressDialogUIState (
+data class DeleteDialogUIState (
     val title: StringResource = Res.string.delete_address_title,
     val description: StringResource = Res.string.delete_address_description,
     val addressId: Uuid? = null,
