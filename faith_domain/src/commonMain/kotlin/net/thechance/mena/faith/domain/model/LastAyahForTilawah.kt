@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.domain.model
 
-data class SavedAyah(
+data class LastAyahForTilawah(
     val number: Int,
     val surahId: Int
 )

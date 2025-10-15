@@ -7,27 +7,27 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import net.thechance.mena.faith.domain.model.SavedAyah
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 
 class TilawahDataStore(private val dataStore: DataStore<Preferences>) {
-    suspend fun saveLastAyah(savedAyah: SavedAyah) {
+    suspend fun saveLastAyah(savedAyah: LastAyahForTilawah) {
         dataStore.edit { prefs ->
             prefs[AYAH_NUMBER] = savedAyah.number
             prefs[SURAH_ID] = savedAyah.surahId
         }
     }
 
-    val lastAyahFlow: Flow<SavedAyah?> = dataStore.data.map { prefs ->
+    val lastAyahFlow: Flow<LastAyahForTilawah?> = dataStore.data.map { prefs ->
         val ayahNumber = prefs[AYAH_NUMBER] ?: return@map null
         val surahId = prefs[SURAH_ID] ?: return@map null
 
-        SavedAyah(
+        LastAyahForTilawah(
             number = ayahNumber,
             surahId = surahId,
         )
     }
 
-    suspend fun getLastAyah(): SavedAyah? {
+    suspend fun getLastAyah(): LastAyahForTilawah? {
         return lastAyahFlow.first()
     }
 

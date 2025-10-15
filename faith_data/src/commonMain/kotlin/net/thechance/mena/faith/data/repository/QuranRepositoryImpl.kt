@@ -8,7 +8,7 @@ import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.data.utils.executeLocalSafely
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
-import net.thechance.mena.faith.domain.model.SavedAyah
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 
 class QuranRepositoryImpl(
@@ -26,12 +26,12 @@ class QuranRepositoryImpl(
             ayahDao.getAyatOfSurah(surahId).map { it.toAyah() }
         }
 
-    override suspend fun getLastAyahForTilawah(): SavedAyah {
+    override suspend fun getLastAyahForTilawah(): LastAyahForTilawah {
         return tilawahDataStore.getLastAyah()
-            ?: SavedAyah(number = 1, surahId = 1)
+            ?: LastAyahForTilawah(number = 1, surahId = 1)
     }
 
-    override suspend fun saveLastAyahForTilawah(savedAyah: SavedAyah) {
+    override suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah) {
         tilawahDataStore.saveLastAyah(savedAyah)
     }
 
