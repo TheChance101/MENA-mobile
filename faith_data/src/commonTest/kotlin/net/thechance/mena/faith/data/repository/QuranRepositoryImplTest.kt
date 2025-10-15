@@ -9,6 +9,7 @@ import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.SurahDto
 import net.thechance.mena.faith.data.datastore.ITilawahDataStore
 import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -105,10 +106,68 @@ class QuranRepositoryImplTest {
         assertTrue(result.isEmpty())
     }
 
+    @Test
+    fun `getLastAyahForTilawah should return stored ayah when datastore has value`() = runTest {
+        // Given
+
+        everySuspend { tilawahDataStore.getLastAyah() } returns EXPECTED_AYAH
+
+        // When
+        val result = repository.getLastAyahForTilawah()
+
+        // Then
+        assertEquals(EXPECTED_AYAH, result)
+    }
+
+    @Test
+    fun `getLastAyahForTilawah should return default ayah when datastore is empty`() = runTest {
+        // Given
+        everySuspend { tilawahDataStore.getLastAyah() } returns null
+
+        // When
+        val result = repository.getLastAyahForTilawah()
+
+        // Then
+        assertEquals(EXPECTED_DEFAULT, result)
+    }
+
+    @Test
+    fun `saveLastAyahForTilawah should call datastore saveLastAyah`() = runTest {
+        // Given
+        val ayahToSave = AYAH_TO_SAVE
+
+        // When
+        repository.saveLastAyahForTilawah(ayahToSave)
+
+        // Then
+        dev.mokkery.verifySuspend {
+            tilawahDataStore.saveLastAyah(ayahToSave)
+        }
+    }
+
+
     private companion object {
+
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         const val AL_BAQARAH_NAME = "Al-Baqarah"
 
+        val AYAH_TO_SAVE = LastAyahForTilawah(
+            number = 3,
+            surahId = 1,
+            surahName = AL_FATIHAH_NAME
+        )
+
+        val EXPECTED_DEFAULT = LastAyahForTilawah(
+            number = 1,
+            surahId = 1,
+            surahName = ""
+        )
+
+        val EXPECTED_AYAH = LastAyahForTilawah(
+            number = 5,
+            surahId = 2,
+            surahName = AL_BAQARAH_NAME
+        )
         val SURAH_DTOS: List<SurahDto> = listOf(
             SurahDto(number = 1, name = AL_FATIHAH_NAME, ayahCount = 7),
             SurahDto(number = 2, name = AL_BAQARAH_NAME, ayahCount = 286)

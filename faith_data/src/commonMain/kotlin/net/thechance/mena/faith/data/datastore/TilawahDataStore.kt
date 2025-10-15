@@ -6,15 +6,16 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 
 class TilawahDataStore(private val dataStore: DataStore<Preferences>) : ITilawahDataStore {
-    override suspend fun saveLastAyah(savedAyah: LastAyahForTilawah) {
+    override suspend fun saveLastAyah(ayah: LastAyahForTilawah) {
         dataStore.edit { prefs ->
-            prefs[AYAH_NUMBER] = savedAyah.number
-            prefs[SURAH_ID] = savedAyah.surahId
+            prefs[AYAH_NUMBER] = ayah.number
+            prefs[SURAH_ID] = ayah.surahId
+            prefs[SURAH_NAME] = ayah.surahName
         }
     }
 
@@ -28,7 +29,7 @@ class TilawahDataStore(private val dataStore: DataStore<Preferences>) : ITilawah
     }
 
     override suspend fun getLastAyah(): LastAyahForTilawah? {
-        return lastAyahFlow.first()
+        return lastAyahFlow.last()
     }
 
     private companion object {
