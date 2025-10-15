@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -21,9 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -153,26 +149,21 @@ private fun UserReelScreenContent(
         val reels = state.reels.collectAsLazyPagingItems()
         val pagerState = rememberPagerState(
             initialPage = 0,
-            pageCount = { state.fakeReels.size },
+            pageCount = { reels.itemCount },
         )
-
-        var currentReel: UserReelUiState? by remember { mutableStateOf(UserReelUiState()) } // ُTODO: It should be removed
 
         TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
 
         VerticalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            key = { page -> state.fakeReels[page]?.id ?: page },
+            key = { page -> reels[page]?.id ?: page },
         ) { page ->
 
-            val isCurrentPage = (pagerState.currentPage == page)
-            currentReel = state.fakeReels[page]
-
-            currentReel?.let { reel ->
+            reels[page]?.let { reel ->
                 Reel(
                     reel = reel,
-                    shouldRender = isCurrentPage,
+                    shouldRender = (pagerState.currentPage == page),
                     isDescriptionExpanded = state.isDescriptionExpanded,
                     onDeleteClick = listener::onDeleteClick,
                     onDescriptionClick = listener::onDescriptionClick,
@@ -194,7 +185,7 @@ private fun TopAppBar(
             .fillMaxWidth()
             .gradientShadow()
             .padding(horizontal = Theme.spacing._16)
-            .padding(top = 8.dp),
+            .padding(top = Theme.spacing._8),
         contentPadding = PaddingValues(0.dp),
         leadingContent = {
             Icon(
@@ -232,7 +223,7 @@ private fun Reel(
 
             PublisherInfo(
                 userName = reel.username,
-                timeOfPublish = reel.createdAt.orEmpty(),
+                timeOfPublish = reel.createdAt.toString(),
                 description = reel.description,
                 avatar = reel.profileImage,
                 modifier = Modifier.align(Alignment.BottomCenter),
