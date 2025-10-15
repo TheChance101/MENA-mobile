@@ -95,7 +95,7 @@ class PickLocationScreenViewModelTest {
     @Test
     fun `onCameraMoved should update state with camera position`() = runTest {
         val cameraPosition = CameraPosition()
-        viewModel.onCameraMoved(cameraPosition)
+        viewModel.onMoveCamera(cameraPosition)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assert(viewModel.state.value.cameraPosition == cameraPosition)

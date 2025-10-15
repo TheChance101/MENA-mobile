@@ -9,11 +9,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.enable_location_title
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.EnableLocationLayout
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import org.jetbrains.compose.resources.stringResource
 
 
 class EnableLocationScreen : BaseScreen<
@@ -34,7 +37,7 @@ class EnableLocationScreen : BaseScreen<
         Scaffold(
             topBar = {
                 AuthAppBar(
-                    title = "Enable location",
+                    title = stringResource(Res.string.enable_location_title),
                     onClickBack = listener::onClickBack
                 )
             }

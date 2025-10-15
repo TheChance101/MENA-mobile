@@ -3,7 +3,7 @@ package net.thechance.mena.identity.data.repository.location
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.MobileGeolocator
-import net.thechance.mena.identity.domain.entity.Coordinates
+import net.thechance.mena.identity.domain.util.Coordinates
 import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.repository.MobileLocationRepository

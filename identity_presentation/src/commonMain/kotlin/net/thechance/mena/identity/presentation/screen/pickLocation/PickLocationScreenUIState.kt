@@ -2,7 +2,7 @@ package net.thechance.mena.identity.presentation.screen.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
 import io.github.dellisd.spatialk.geojson.Position
-import net.thechance.mena.identity.domain.entity.Coordinates
+import net.thechance.mena.identity.domain.util.Coordinates
 import org.maplibre.compose.camera.CameraPosition
 
 data class PickLocationScreenUIState(

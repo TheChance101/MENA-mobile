@@ -11,7 +11,7 @@ import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import net.thechance.mena.identity.domain.entity.Coordinates as DomainCoordinates
+import net.thechance.mena.identity.domain.util.Coordinates as DomainCoordinates
 
 class LocationRepositoryImplTest {
 

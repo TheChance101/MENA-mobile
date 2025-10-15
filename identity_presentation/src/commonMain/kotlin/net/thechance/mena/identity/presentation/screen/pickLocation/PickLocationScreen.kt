@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.confirm
+import mena.identity_presentation.generated.resources.pick_location_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -44,7 +45,7 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
         Scaffold(
             topBar = {
                 AuthAppBar(
-                    title = "Pick Location",
+                    title = stringResource(Res.string.pick_location_title),
                     onClickBack = listener::onClickBack,
                     backgroundColor = Theme.colorScheme.background.surfaceLow
                 )
@@ -52,7 +53,7 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
         ) {
             Map(
                 cameraPosition = state.cameraPosition,
-                onCameraMoved = listener::onCameraMoved,
+                onCameraMoved = listener::onMoveCamera,
                 onMapClick = listener::onClickMap,
                 anchorLocation = state.pointerLocation,
                 isLocked = state.isMapLocked,

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.domain.entity
+package net.thechance.mena.identity.domain.util
 
 data class Coordinates(
     val latitude: Double,

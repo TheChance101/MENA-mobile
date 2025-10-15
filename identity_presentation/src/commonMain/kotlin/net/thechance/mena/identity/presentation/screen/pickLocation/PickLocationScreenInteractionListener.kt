@@ -6,7 +6,7 @@ import org.maplibre.compose.camera.CameraPosition
 
 interface PickLocationScreenInteractionListener : BaseInteractionListener {
     fun onClickMap(coordinates: PickLocationScreenUIState.CoordinatesUiState, offset: DpOffset)
-    fun onCameraMoved(cameraPosition: CameraPosition)
+    fun onMoveCamera(cameraPosition: CameraPosition)
     fun onClickEdit()
     fun onClickGps()
     fun onClickConfirm()

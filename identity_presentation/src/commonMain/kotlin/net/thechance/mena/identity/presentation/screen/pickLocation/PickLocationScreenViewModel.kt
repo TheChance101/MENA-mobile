@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.DpOffset
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.identity.domain.entity.Coordinates
+import net.thechance.mena.identity.domain.util.Coordinates
 import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
@@ -47,7 +47,7 @@ class PickLocationScreenViewModel(
         changeIsConfirmEnabled()
     }
 
-    override fun onCameraMoved(
+    override fun onMoveCamera(
         cameraPosition: CameraPosition
     ) {
         updateState { copy(cameraPosition = cameraPosition, animateToCurrentLocation = false) }

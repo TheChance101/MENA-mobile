@@ -92,4 +92,5 @@
     <string name="add_location_button">Add location</string>
     <string name="location_saved_empty_desc">No saved locations icon</string>
 
+    <string name="pick_location_title">Pick Location</string>
 </resources>
