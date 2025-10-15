@@ -140,20 +140,7 @@ private fun NoImageDukanDetailsPreview() {
             description = "Girls Crochet Tank Top description text here for this productGirls Crochet Tank Top",
             price = 23.99,
             imageUrl = "https://m.media-amazon.com/images/I/61CRq2R6i4L._AC_SL1024_.jpg"
-        ),
-        ProductUiState(
-            name = "Girls Crochet Tank Top",
-            description = "Girls Crochet Tank Top description text here for this productGirls Crochet Tank Top",
-            price = 23.99,
-            imageUrl = "https://m.media-amazon.com/images/I/61CRq2R6i4L._AC_SL1024_.jpg"
-        ),
-        ProductUiState(
-            name = "Girls Crochet Tank Top",
-            description = "Girls Crochet Tank Top description text here for this productGirls Crochet Tank Top",
-            price = 23.99,
-            imageUrl = "https://m.media-amazon.com/images/I/61CRq2R6i4L._AC_SL1024_.jpg"
         )
-
     )
     val dummyShelves = listOf(
         ShelfUiState(
@@ -174,26 +161,6 @@ private fun NoImageDukanDetailsPreview() {
         ShelfUiState(
             id = "4",
             name = "Shoes",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "5",
-            name = "Watch",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "6",
-            name = "Topssssssssssssssssssssssssssssssss",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "7",
-            name = "Topssssssssssssssssssssssssssssssss",
-            products = dummyProducts
-        ),
-        ShelfUiState(
-            id = "8",
-            name = "Topssssssssssssssssssssssssssssssss",
             products = dummyProducts
         )
     )
