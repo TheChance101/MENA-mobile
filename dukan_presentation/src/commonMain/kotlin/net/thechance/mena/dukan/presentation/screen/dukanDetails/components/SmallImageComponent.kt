@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DukanImageAndTitle(
+fun SmallImageDukanImageAndTitle(
     state: DukanDetailsUiState.DukanInfo,
     modifier: Modifier = Modifier
 ) {
@@ -59,7 +59,7 @@ fun DukanImageAndTitle(
 }
 
 @Composable
-fun DukanIconButton(
+fun SmallImageDukanIconButton(
     icon: Painter,
     iconColor: Color,
     modifier: Modifier = Modifier,
@@ -92,7 +92,7 @@ fun PreviewDukanImageAndTitle() {
         Box(
             modifier = Modifier.background(Theme.colorScheme.background.surface)
         ) {
-            DukanImageAndTitle(state = mockState, modifier = Modifier.padding(16.dp))
+            SmallImageDukanImageAndTitle(state = mockState, modifier = Modifier.padding(16.dp))
         }
     }
 }
@@ -104,7 +104,7 @@ fun PreviewDukanIconButton() {
         Box(
             modifier = Modifier.background(Theme.colorScheme.background.surface)
         ) {
-            DukanIconButton(
+            SmallImageDukanIconButton(
                 icon = painterResource(Res.drawable.ic_favorite),
                 iconColor = Color(0xFFE91E63),
                 modifier = Modifier.padding(16.dp)

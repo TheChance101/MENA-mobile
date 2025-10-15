@@ -20,8 +20,8 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptio
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.DukanIconButton
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.DukanImageAndTitle
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageDukanIconButton
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageDukanImageAndTitle
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageProductContent
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
@@ -44,7 +44,7 @@ fun SmallImageDukanDetails(
         }
     ) {
         Column {
-            DukanImageAndTitle(
+            SmallImageDukanImageAndTitle(
                 state.dukanInfo,
                 modifier = Modifier.padding(
                     start = Theme.spacing._16,
@@ -57,17 +57,17 @@ fun SmallImageDukanDetails(
                 modifier = Modifier.padding(horizontal = Theme.spacing._16),
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
             ) {
-                DukanIconButton(
+                SmallImageDukanIconButton(
                     icon = painterResource(Res.drawable.ic_favorite),
                     iconColor = Color(state.dukanInfo.color),
                     modifier = Modifier.weight(1f)
                 )
-                DukanIconButton(
+                SmallImageDukanIconButton(
                     icon = painterResource(Res.drawable.ic_share),
                     iconColor = Color(state.dukanInfo.color),
                     modifier = Modifier.weight(1f)
                 )
-                DukanIconButton(
+                SmallImageDukanIconButton(
                     icon = painterResource(Res.drawable.dukan_location),
                     iconColor = Color(state.dukanInfo.color),
                     modifier = Modifier.weight(1f)

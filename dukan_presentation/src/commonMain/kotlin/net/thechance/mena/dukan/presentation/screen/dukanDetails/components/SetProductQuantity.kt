@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_icon
 import mena.dukan_presentation.generated.resources.add_product
@@ -46,7 +45,7 @@ fun SetProductQuantity(
                     color = Theme.colorScheme.background.surfaceLow,
                 )
                 .clickable { onRemoveProductClick() }
-                .padding(6.dp)
+                .padding(Theme.spacing._4 + Theme.spacing._2)
         )
         Text(
             text = "01",
@@ -62,7 +61,7 @@ fun SetProductQuantity(
                     color = Theme.colorScheme.background.surfaceLow,
                 )
                 .clickable { onAddProductClick() }
-                .padding(6.dp)
+                .padding(Theme.spacing._4 + Theme.spacing._2)
         )
 
     }
