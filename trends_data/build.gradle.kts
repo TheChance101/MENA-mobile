@@ -24,6 +24,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.ktor.client.cio)
+            implementation(libs.androidx.core.ktx)
         }
 
         commonMain.dependencies {
@@ -42,6 +43,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.bundles.test)
+            implementation(libs.turbine)
         }
     }
     sourceSets.named("commonMain").configure {

@@ -9,7 +9,9 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 
-class QuranRepositoryImpl(val ayahDao: AyahDao) : QuranRepository {
+class QuranRepositoryImpl(
+    val ayahDao: AyahDao,
+) : QuranRepository {
 
     override suspend fun getAllSur(): List<Surah> =
         executeLocalSafely {
@@ -32,7 +34,7 @@ class QuranRepositoryImpl(val ayahDao: AyahDao) : QuranRepository {
 
     override suspend fun searchForAyahInSurah(
         surahId: Int,
-        query: String
+        query: String,
     ): List<Ayah> =
         executeLocalSafely {
             ayahDao.searchForAyahInSurah(surahId, query).map(AyahDto::toAyah)

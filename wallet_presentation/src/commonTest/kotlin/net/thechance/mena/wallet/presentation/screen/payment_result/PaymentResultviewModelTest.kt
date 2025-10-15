@@ -1,0 +1,123 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
+package net.thechance.mena.wallet.presentation.screen.payment_result
+
+import app.cash.turbine.test
+import dev.mokkery.MockMode
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import net.thechance.mena.wallet.domain.repository.PaymentRepository
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class PaymentResultViewModelTest {
+    private val paymentRepository = mock<PaymentRepository>(mode = MockMode.autofill)
+    private val testDispatcher = StandardTestDispatcher()
+
+    private val transactionId = Uuid.random()
+    private val paymentResultArgs = PaymentResultArgs(
+        transactionId = transactionId.toString(),
+        submitTransactionResultStatus = SubmissionStatus.SUCCESS.name
+    )
+
+    @BeforeTest
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `initial state should set paymentStatus from args`() = runTest {
+        val viewModel = PaymentResultViewModel(
+            paymentRepository = paymentRepository,
+            paymentResultArgs = paymentResultArgs,
+            ioDispatcher = testDispatcher
+        )
+
+        assertEquals(
+            SubmissionStatus.SUCCESS,
+            viewModel.state.value.paymentStatus
+        )
+    }
+
+    @Test
+    fun `onBackClicked should send NavigateBack effect`() = runTest {
+        val viewModel = PaymentResultViewModel(
+            paymentRepository = paymentRepository,
+            paymentResultArgs = paymentResultArgs,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.uiEffect.test {
+            viewModel.onBackClicked()
+            assertEquals(PaymentResultEffect.NavigateBack, awaitItem())
+        }
+    }
+
+    @Test
+    fun `onCancelClicked should send NavigateToScreenBeforePaymentProcess effect`() = runTest {
+        val viewModel = PaymentResultViewModel(
+            paymentRepository = paymentRepository,
+            paymentResultArgs = paymentResultArgs,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.uiEffect.test {
+            viewModel.onCancelClicked()
+            assertEquals(PaymentResultEffect.NavigateToScreenBeforePaymentProcess, awaitItem())
+        }
+    }
+
+    @Test
+    fun `onShowTransactionDetailsClicked should send NavigateToTransactionDetails effect with correct id`() = runTest {
+        val viewModel = PaymentResultViewModel(
+            paymentRepository = paymentRepository,
+            paymentResultArgs = paymentResultArgs,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.uiEffect.test {
+            viewModel.onShowTransactionDetailsClicked()
+            assertEquals(
+                PaymentResultEffect.NavigateToTransactionDetails(transactionId),
+                awaitItem()
+            )
+        }
+    }
+
+    @Test
+    fun `onTryAgainClicked should update state with CONNECTION_LOST on error`() = runTest {
+        everySuspend { paymentRepository.submitTransaction(transactionId) } throws Exception()
+
+        val viewModel = PaymentResultViewModel(
+            paymentRepository = paymentRepository,
+            paymentResultArgs = paymentResultArgs,
+            ioDispatcher = testDispatcher
+        )
+
+        viewModel.state.test {
+            viewModel.onTryAgainClicked()
+            skipItems(1)
+            val state = awaitItem()
+            assertEquals(SubmissionStatus.CONNECTION_LOST, state.paymentStatus)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+}

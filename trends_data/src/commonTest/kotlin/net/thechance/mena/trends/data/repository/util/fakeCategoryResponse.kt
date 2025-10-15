@@ -6,7 +6,7 @@ import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpStatusCode
 import net.thechance.mena.trends.data.dto.CategoriesResponse
 import net.thechance.mena.trends.data.dto.CategoryDto
-import net.thechance.mena.trends.data.dto.SubmitInterestsRequestDto
+import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UserStatusResponse
 
 internal val mockCategories = listOf(
@@ -41,8 +41,8 @@ internal fun MockRequestHandleScope.isCategoriesAlreadySelectedByUser() = respon
 
 internal fun MockRequestHandleScope.updateInterestsResponse() = respond(
     content = jsonSerialization.encodeToString(
-        SubmitInterestsRequestDto.serializer(),
-        SubmitInterestsRequestDto(listOf("uuid 1", "uuid 2"))
+        SubmitCategoriesRequestDto.serializer(),
+        SubmitCategoriesRequestDto(listOf("uuid 1", "uuid 2"))
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders

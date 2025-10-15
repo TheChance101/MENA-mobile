@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -19,6 +20,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.preat.peekaboo.image.picker.SelectionMode
+import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.camera
 import mena.core_chat_presentation.generated.resources.ic_camera
@@ -71,7 +74,7 @@ fun AttachmentsBottomSheet(
                     shape = RoundedCornerShape(Theme.spacing._12)
                 )
                 .align(Alignment.End),
-            onClick = attachmentsInteractionListener::onCancelClicked
+            onClick = attachmentsInteractionListener::onCloseAttachmentClicked
         )
     }
 }
@@ -81,7 +84,16 @@ private fun AttachmentBottomSheetContent(
     attachmentsInteractionListener: AttachmentsInteractionListener,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
 
+    val imagePickerLauncher = rememberImagePickerLauncher(
+        selectionMode = SelectionMode.Multiple(maxSelection = 10),
+        scope = scope,
+        onResult = { byteArrays ->
+            attachmentsInteractionListener.onSendImageClicked(byteArrays)
+            attachmentsInteractionListener.onGalleryClicked()
+        }
+    )
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -90,7 +102,9 @@ private fun AttachmentBottomSheetContent(
         AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
-            onClick = attachmentsInteractionListener::onPhotoClicked
+            onClick = {
+                imagePickerLauncher.launch()
+            }
         )
 
         AttachmentsBottomSheetItem(
@@ -114,9 +128,10 @@ private fun PreviewAddPhotoBottomSheet() {
             AttachmentsBottomSheet(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 attachmentsInteractionListener = object : AttachmentsInteractionListener {
-                    override fun onPhotoClicked() {}
+                    override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
+                    override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
-                    override fun onCancelClicked() {}
+                    override fun onCloseAttachmentClicked() {}
                 }
             )
 

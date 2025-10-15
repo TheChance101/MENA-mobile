@@ -19,9 +19,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.from
-import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
@@ -29,7 +27,7 @@ import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -40,6 +38,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TransactionDetailsViewModelTest {
+    private val stringProvider = FakeStringProvider()
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
@@ -61,7 +60,8 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
+                ioDispatcher = testDispatcher,
+                stringProvider = stringProvider
             )
 
             viewModel.state.test {
@@ -80,7 +80,8 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
+                ioDispatcher = testDispatcher,
+                stringProvider = stringProvider
             )
 
             viewModel.state.test {
@@ -115,7 +116,8 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
+                ioDispatcher = testDispatcher,
+                stringProvider = stringProvider
             )
 
             viewModel.state.test {
@@ -133,7 +135,8 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
         )
 
         viewModel.uiEffect.test {
@@ -150,7 +153,8 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
+                ioDispatcher = testDispatcher,
+                stringProvider = stringProvider
             )
             viewModel.state.test {
                 skipItems(1)
@@ -168,7 +172,8 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
+                ioDispatcher = testDispatcher,
+                stringProvider = stringProvider
             )
             viewModel.uiEffect.test {
                 viewModel.onShareReceiptButtonClicked()
@@ -185,7 +190,8 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
+                ioDispatcher = testDispatcher,
+                stringProvider = stringProvider
             )
 
             viewModel.state.test {
@@ -207,7 +213,8 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
+                ioDispatcher = testDispatcher,
+                stringProvider = stringProvider
             )
             viewModel.uiEffect.test {
                 viewModel.onScreenShotCaptured(byteArray, "test_file")
@@ -230,7 +237,8 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
         )
 
         viewModel.state.test {
@@ -252,12 +260,35 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
         )
 
         viewModel.state.test {
             skipItems(2)
             viewModel.onScreenShotCaptured(byteArray, "test_file")
+            val finalState = awaitItem()
+            assertEquals(true, finalState.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onCaptureError should show error snackbar`() = runTest {
+        everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
+
+        val viewModel = TransactionDetailsViewModel(
+            transactionRepository = transactionRepository,
+            transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
+        )
+
+        viewModel.state.test {
+            skipItems(2)
+
+            viewModel.onCaptureError()
+
             val finalState = awaitItem()
             assertEquals(true, finalState.snackBar.isSuccess)
             cancelAndIgnoreRemainingEvents()
@@ -271,7 +302,8 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
         )
 
         viewModel.state.test {
@@ -281,50 +313,6 @@ class TransactionDetailsViewModelTest {
             assertTrue(initialState.isLoading)
             cancelAndIgnoreRemainingEvents()
         }
-    }
-
-    @Test
-    fun `onCaptureError should send showErrorSnackBar effect`() =
-        runTest {
-            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
-            )
-            viewModel.uiEffect.test {
-                viewModel.onCaptureError()
-                assertEquals(TransactionDetailsEffect.showErrorSnackBar, awaitItem())
-            }
-        }
-
-    @Test
-    fun `showSnackBar should show snack bar`() =
-        runTest {
-            everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
-
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher
-            )
-            viewModel.state.test {
-                skipItems(1)
-                viewModel.showSnackBar(Res.string.error,Res.string.share_transaction_details_error_msg,false)
-                val snackBarState = awaitItem()
-                assertSnackBarState(isVisible = true, isSuccess = false, snackBarState = snackBarState.snackBar)
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-    private fun assertSnackBarState(
-        isVisible: Boolean,
-        isSuccess: Boolean,
-        snackBarState: SnackBarState
-    ) {
-        assertEquals(isVisible, snackBarState.isVisible)
-        assertEquals(isSuccess, snackBarState.isSuccess)
     }
 
     private companion object {
