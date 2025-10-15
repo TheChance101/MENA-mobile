@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.presentation.screen.home
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -19,7 +20,6 @@ import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
-import kotlin.math.round
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -33,7 +33,7 @@ class HomeViewModel(
     private val paginator by lazy {
         Paginator(
             initialKey = INITIAL_PAGE,
-            onLoadUpdated = ::onLoadChatSummary,
+            onLoadUpdated = ::changeLoadingState,
             onRequest = ::getChatsSummary,
             getNextKey = { currentPage, _ -> currentPage + 1 },
             onError = ::onLoadChatsSummaryError,
@@ -44,7 +44,7 @@ class HomeViewModel(
 
     init {
         getBalanceAmount()
-        onLoadChatsSummaryRequested()
+        onChatsListScrolled()
     }
 
     private fun getBalanceAmount() {
@@ -59,13 +59,13 @@ class HomeViewModel(
         updateState { it.copy(balanceAmount = balance) }
     }
 
-    override fun onLoadChatsSummaryRequested() {
+    override fun onChatsListScrolled() {
         viewModelScope.launch {
             paginator.loadNextItems()
         }
     }
 
-    private fun onLoadChatSummary(isLoading: Boolean) {
+    private fun changeLoadingState(isLoading: Boolean) {
         updateState { it.copy(isLoading = isLoading) }
     }
 
@@ -77,7 +77,6 @@ class HomeViewModel(
     }
 
     private fun onLoadChatsSummaryError(throwable: Throwable?) {
-        updateState { it.copy(isLoading = false) }
         showSnackBar(
             SnackBarData(
                 title = UiText.StringRes(Res.string.something_went_wrong),
@@ -105,7 +104,17 @@ class HomeViewModel(
                 } else {
                     navigate(SyncContactsRoute(forceSync = false))
                 }
-            }
+            },
+            onError = ::onGetSyncStatusError
+        )
+    }
+
+    private fun onGetSyncStatusError(throwable: Throwable?) {
+        showSnackBar(
+            SnackBarData(
+                title = UiText.StringRes(Res.string.something_went_wrong),
+                message = UiText.StringRes(Res.string.could_not_sync_contacts_message),
+            )
         )
     }
 

@@ -102,8 +102,8 @@ private fun HomeContent(
     PaginationTrigger(
         list = state.chats,
         listState = listState,
-        itemsRemaining = 5,
-        loadNextItems = interactionListener::onLoadChatsSummaryRequested
+        remainingItemsToLoadNextPage = 5,
+        loadNextItems = interactionListener::onChatsListScrolled
     )
 }
 

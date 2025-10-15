@@ -6,5 +6,5 @@ interface HomeScreenInteractionListener {
     fun onNewChatClicked()
     fun onChatClicked(chat: ChatUiState)
     fun onWalletClicked()
-    fun onLoadChatsSummaryRequested()
+    fun onChatsListScrolled()
 }
