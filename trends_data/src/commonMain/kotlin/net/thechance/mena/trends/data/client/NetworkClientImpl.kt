@@ -55,6 +55,13 @@ class NetworkClientImpl(
         return client.put(urlString, block)
     }
 
+    override suspend fun patch(
+        urlString: String,
+        block: HttpRequestBuilder.() -> Unit
+    ): HttpResponse {
+        return client.put(urlString, block)
+    }
+
     override suspend fun delete(
         urlString: String,
         block: HttpRequestBuilder.() -> Unit
