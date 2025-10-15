@@ -15,7 +15,7 @@ import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeDukanPagingSource
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukansList
 import net.thechance.mena.dukan.presentation.viewModel.dukans.DukanUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -63,7 +63,7 @@ fun DukansList(
 private fun DukansListPreview() {
     MenaTheme {
         DukansList(
-            fakeDukans(),
+            fakeDukansList(),
             pager = Pager(
                 config = PagingConfig(),
                 pagingSourceFactory = { FakeDukanPagingSource() }

@@ -7,7 +7,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukans.DukanUiState
 class FakeDukanPagingSource : BasePagingSource<DukanUiState>() {
     override suspend fun onFetchPage(pageNumber: Int): PagedResult<DukanUiState> {
         return PagedResult(
-            items = fakeDukans(),
+            items = fakeDukansList(),
             hasPrevious = false,
             hasNext = true,
             currentPage = pageNumber,
@@ -17,7 +17,7 @@ class FakeDukanPagingSource : BasePagingSource<DukanUiState>() {
     }
 }
 
-fun fakeDukans(): List<DukanUiState> {
+fun fakeDukansList(): List<DukanUiState> {
     return listOf(
         DukanUiState(
             id = "1",
