@@ -106,7 +106,7 @@ actual fun VideoPlayer(
             duration = exoPlayer.duration.coerceAtLeast(1L)
             val position = exoPlayer.currentPosition
             currentProgress = position.toFloat() / duration.toFloat()
-            delay(1000)
+            delay(500)
         }
     }
 
