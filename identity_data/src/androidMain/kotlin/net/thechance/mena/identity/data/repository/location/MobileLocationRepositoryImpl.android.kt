@@ -4,6 +4,7 @@ import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.MobileGeolocator
 import net.thechance.mena.identity.domain.entity.Coordinates
+import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 
@@ -35,6 +36,6 @@ actual class MobileLocationRepositoryImpl( private val geocoder: GeocoderWrapper
         return geocoder?.let {
             listOfNotNull(it.subAdministrativeArea, it.administrativeArea, it.country)
                 .joinToString(", ")
-        }.orEmpty()
+        }?: throw AddressNotFoundException()
     }
 }

@@ -19,6 +19,9 @@ internal fun mapErrorToMessage(error: ErrorState): String {
         ErrorState.OTPExpired -> "OTP expired"
         ErrorState.NoNetwork -> "No Internet Connection"
         ErrorState.NoLocationPermission -> "Location permission denied"
+        ErrorState.FailedToOpenSettings -> "Failed to open settings"
+        ErrorState.FailedToRequestPermission -> "Permission not granted"
+        ErrorState.AddressNotFound -> "Address not found"
     }
 }
 

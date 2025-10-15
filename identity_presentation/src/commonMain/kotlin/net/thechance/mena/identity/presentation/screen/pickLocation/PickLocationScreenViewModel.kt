@@ -134,9 +134,11 @@ class PickLocationScreenViewModel(
         updateState {
             copy(
                 errorMessage = mapErrorToMessage(errorState),
-                isGpsButtonLoading = false
+                isGpsButtonLoading = false,
+                address = ""
             )
         }
+        changeIsConfirmEnabled()
     }
 
     private fun navigateToEnableLocation() {

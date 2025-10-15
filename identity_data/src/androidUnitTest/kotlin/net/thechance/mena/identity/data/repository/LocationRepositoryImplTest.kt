@@ -20,21 +20,8 @@ class LocationRepositoryImplTest {
     @Test
     fun `getLocationName should return formatted address when the place is not valid`() =
         runTest {
-            val domainCoordinates = DomainCoordinates(28.0, 29.0)
-            coEvery { geocoder.placeOrNull(any()) } returns Place(
-                subAdministrativeArea = "Basra",
-                administrativeArea = "Basra Governorate",
-                country = "Basra",
-                isoCountryCode = null,
-                coordinates = Coordinates(domainCoordinates.latitude, domainCoordinates.longitude),
-                name = "",
-                street = "",
-                postalCode = "",
-                locality = "",
-                subLocality = "",
-                thoroughfare = "",
-                subThoroughfare = ""
-            )
+            val domainCoordinates = DomainCoordinates(LATITUDE, LONGITUDE)
+            coEvery { geocoder.placeOrNull(any()) } returns place
 
             val result = locationRepositoryImpl.getLocationName(domainCoordinates)
 
@@ -43,11 +30,30 @@ class LocationRepositoryImplTest {
 
     @Test
     fun `getLocationName should return empty address when the place is null`() = runTest {
-        val domainCoordinates = DomainCoordinates(28.0, 29.0)
+        val domainCoordinates = DomainCoordinates(LATITUDE, LONGITUDE)
         coEvery { geocoder.placeOrNull(any()) } returns null
 
         val result = locationRepositoryImpl.getLocationName(domainCoordinates)
 
         assertEquals("", result)
+    }
+
+    private companion object{
+        const val LATITUDE = 28.0
+        const val LONGITUDE = 29.0
+
+        val place = Place(
+            subAdministrativeArea = "Basra",
+            administrativeArea = "Basra Governorate",
+            country = "Basra",
+            isoCountryCode = null,
+            coordinates = Coordinates(LATITUDE, LONGITUDE),
+            name = "",
+            street = "",
+            postalCode = "",
+            locality = "",
+            subLocality = "",
+            thoroughfare = "",
+            subThoroughfare = "")
     }
 }

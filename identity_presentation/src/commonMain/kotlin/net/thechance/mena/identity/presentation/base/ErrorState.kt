@@ -1,11 +1,15 @@
 package net.thechance.mena.identity.presentation.base
 
+import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.CannotOpenSettingsException
+import net.thechance.mena.identity.domain.exception.FailedToRequestPermissionException
 import net.thechance.mena.identity.domain.exception.InvalidCountryCodeException
 import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.InvalidPasswordException
+import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
@@ -27,7 +31,12 @@ sealed interface ErrorState {
     data object TooManyRequests : ErrorState
     object NoNetwork : ErrorState
     data object OTPExpired : ErrorState
+    // endregion
+    // region Location
     data object NoLocationPermission : ErrorState
+    data object FailedToOpenSettings : ErrorState
+    data object FailedToRequestPermission : ErrorState
+    data object AddressNotFound : ErrorState
     // endregion
     data class SomethingWentWrong(val message: String?) : ErrorState
 }
@@ -46,7 +55,18 @@ fun handelAuthorizationException(
         is TooManyRequestsException -> onError(ErrorState.TooManyRequests)
         is OtpExpiredException -> onError(ErrorState.OTPExpired)
         is NoNetworkException -> onError(ErrorState.NoNetwork)
+    }
+}
+
+fun handleLocationException(
+    exception: LocationException,
+    onError: (t: ErrorState) -> Unit,
+){
+    when (exception) {
         is UnableToFindLocationException -> onError(ErrorState.NoLocationPermission)
+        is CannotOpenSettingsException -> onError(ErrorState.FailedToOpenSettings)
+        is FailedToRequestPermissionException -> onError(ErrorState.FailedToRequestPermission)
+        is AddressNotFoundException -> onError(ErrorState.AddressNotFound)
         else -> onError(ErrorState.SomethingWentWrong(exception.message))
     }
 }
