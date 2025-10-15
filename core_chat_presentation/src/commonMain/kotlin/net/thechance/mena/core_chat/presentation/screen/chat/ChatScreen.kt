@@ -58,10 +58,10 @@ fun ChatScreenContent(
 ) {
     val cameraManager = rememberCameraManager(
         onResult = { sharedImage ->
-            sharedImage?.toByteArray()?.let { byteArray ->
+            sharedImage?.let { byteArray ->
                 interactions.onSendImageClicked(listOf(byteArray))
             }
-            interactions.onCameraResultHandled()
+            interactions.onCameraClosed()
         }
     )
 

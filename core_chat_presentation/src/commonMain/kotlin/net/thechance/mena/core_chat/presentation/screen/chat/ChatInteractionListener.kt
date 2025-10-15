@@ -27,7 +27,7 @@ interface AttachmentsInteractionListener {
     fun onSendImageClicked(imageByteArrays: List<ByteArray>)
     fun onGalleryClicked()
     fun onCameraClicked()
-    fun onCameraResultHandled()
+    fun onCameraClosed()
     fun onCloseAttachmentClicked()
 }
 

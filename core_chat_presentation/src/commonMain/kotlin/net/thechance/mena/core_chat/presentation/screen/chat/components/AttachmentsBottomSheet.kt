@@ -130,7 +130,7 @@ private fun PreviewAddPhotoBottomSheet() {
                     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
                     override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
-                    override fun onCameraResultHandled() {}
+                    override fun onCameraClosed() {}
                     override fun onCloseAttachmentClicked() {}
                 }
             )

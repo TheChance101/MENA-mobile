@@ -376,7 +376,7 @@ class ChatViewModel(
     private fun onCameraPermissionGranted() {
         updateState { it.copy(isCameraOpen = true, isAttachmentsOverlayVisible = false) }
     }
-    override fun onCameraResultHandled() {
+    override fun onCameraClosed() {
         updateState { it.copy(isCameraOpen = false) }
     }
     override fun onCloseAttachmentClicked() {
