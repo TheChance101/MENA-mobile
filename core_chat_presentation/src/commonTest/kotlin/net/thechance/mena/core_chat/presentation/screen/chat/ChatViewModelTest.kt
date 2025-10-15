@@ -6,6 +6,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import dev.icerock.moko.permissions.PermissionsController
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -43,6 +44,7 @@ import kotlin.uuid.Uuid
 class ChatViewModelTest {
     private val repository = mock<ChatRepository>()
     private val chatArgs = mock<ChatArgs>()
+    private val permissionsController = mock<PermissionsController>()
     private val effector = mock<ChatEffector>(MockMode.autofill)
     private lateinit var chatViewModel: ChatViewModel
 
@@ -57,7 +59,7 @@ class ChatViewModelTest {
         every { chatArgs.chatRequesterId } returns chatRequesterId.toString()
         every { chatArgs.chatImageUrl } returns chatImage
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
     }
 
     @AfterTest
@@ -70,7 +72,7 @@ class ChatViewModelTest {
         everySuspend { repository.loadMessages(chatId) } returns messages
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(
@@ -84,7 +86,7 @@ class ChatViewModelTest {
     fun `init should send snack bar effect when its LOADING the messages failed`() {
         everySuspend { repository.loadMessages(chatId) } throws Exception()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         verifySuspend {
@@ -101,7 +103,7 @@ class ChatViewModelTest {
     fun `init should update uiMessage and chatListItems when receive new message`() {
         every { repository.subscribeToMessages(chatId) } returns flowOf(messages.first())
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(
