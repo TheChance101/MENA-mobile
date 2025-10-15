@@ -7,12 +7,10 @@ import kotlin.uuid.Uuid
 interface AddressesScreenInteractionListener : BaseInteractionListener {
     fun onBackButtonClicked()
     fun onAddButtonClicked()
-    fun onEditAddressClicked(addressId: AddressUIState)
-
+    fun onEditAddressClicked(addressUIState: AddressUIState)
     fun onDeleteAddressClicked(addressId: Uuid)
     fun onConfirmDeleteAddress()
     fun onDismissDeleteDialog()
     fun onDismissSnackBar()
     fun onAddressClicked(addressId: Uuid)
-    fun clearErrorMessage()
 }

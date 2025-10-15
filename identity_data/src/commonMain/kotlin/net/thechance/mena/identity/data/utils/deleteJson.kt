@@ -11,9 +11,14 @@ import io.ktor.http.contentType
 
 internal suspend fun HttpClient.deleteJson(
     path: String,
+    queryParams: Map<String, String> = emptyMap(),
 ){
     val response = this.delete {
         url(path)
+        queryParams.forEach { query ->
+            url.parameters.append(query.key, query.value)
+        }
+
         contentType(ContentType.Application.Json)
     }
 

@@ -48,9 +48,10 @@ abstract class BaseScreenModel<S, E>(initialState: S) : ScreenModel {
         function: suspend () -> T,
         onSuccess: (T) -> Unit,
         onError: (ErrorState) -> Unit,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
         inScope: CoroutineScope = screenModelScope,
     ): Job {
-        return runWithErrorCheck(onError, inScope) {
+        return runWithErrorCheck(onError, inScope,dispatcher) {
             val result = function()
             onSuccess(result)
         }

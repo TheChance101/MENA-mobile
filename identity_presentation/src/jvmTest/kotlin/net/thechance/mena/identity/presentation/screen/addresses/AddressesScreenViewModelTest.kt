@@ -1,0 +1,162 @@
+package net.thechance.mena.identity.presentation.screen.addresses
+
+import app.cash.turbine.test
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.repository.AddressRepository
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
+class AddressesScreenViewModelTest {
+
+    private val testDispatcher = StandardTestDispatcher()
+    private val addressRepository: AddressRepository = mockk(relaxed = true)
+    private lateinit var viewModel: AddressesScreenViewModel
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `should fetch addresses on init and update state on success`() = runTest {
+        val fakeAddresses = listOf(createFakeAddress())
+        coEvery { addressRepository.getUserAddresses() } returns fakeAddresses
+        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(1, viewModel.state.value.addresses.size)
+        assertEquals(fakeAddresses.first().id, viewModel.state.value.addresses.first().id)
+    }
+
+    @Test
+    fun `should emit NavigateBack effect when onBackButtonClicked`() = runTest {
+        coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        viewModel.effect.test {
+            viewModel.onBackButtonClicked()
+            assertTrue(awaitItem() is AddressesScreenUIEffect.NavigateBack)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should emit NavigateToAddressDetailsScreen with null id when onAddButtonClicked`() =
+        runTest {
+            coEvery { addressRepository.getUserAddresses() } returns emptyList()
+
+            viewModel.effect.test {
+                viewModel.onAddButtonClicked()
+                val effect = awaitItem() as AddressesScreenUIEffect.NavigateToAddressDetailsScreen
+                assertEquals(null, effect.addressUIState)
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `should show delete dialog when onDeleteAddressClicked`() = runTest {
+        coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        val addressId = Uuid.random()
+
+        viewModel.onDeleteAddressClicked(addressId)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.state.value.deleteAddressDialogUIState.isVisible)
+        assertEquals(addressId, viewModel.state.value.deleteAddressDialogUIState.addressId)
+    }
+
+    @Test
+    fun `should delete address and show success snackbar when onConfirmDeleteAddress`() = runTest {
+        val address = createFakeAddress()
+        coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        coEvery { addressRepository.deleteAddress(address.id) } returns Unit
+        viewModel.onDeleteAddressClicked(address.id)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onConfirmDeleteAddress()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { addressRepository.deleteAddress(address.id) }
+        assertTrue(viewModel.state.value.snackBarUiState.isVisible)
+        assertEquals(SnackBarType.SUCCESS, viewModel.state.value.snackBarUiState.snackBarType)
+        assertFalse(viewModel.state.value.deleteAddressDialogUIState.isVisible)
+    }
+
+    @Test
+    fun `should hide delete dialog when onDismissDeleteDialog`() = runTest {
+        coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        viewModel.onDeleteAddressClicked(Uuid.random())
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onDismissDeleteDialog()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.deleteAddressDialogUIState.isVisible)
+    }
+
+    @Test
+    fun `should hide snackbar when onDismissSnackBar`() = runTest {
+        coEvery { addressRepository.getUserAddresses() } throws Exception()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onDismissSnackBar()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.snackBarUiState.isVisible)
+    }
+
+    @Test
+    fun `should emit NavigateToAddressDetailsScreen effect when onEditAddressClicked`() = runTest {
+        coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        val fakeAddressUIState = AddressUIState(
+            id = Uuid.random(),
+            addressType = AddressType.HOME,
+            addressDetails = "Test Street 42",
+            isMainAddress = true,
+            coordinates = CoordinatesUiState(
+                latitude = 1.0,
+                longitude = 1.0
+            )
+        )
+
+        viewModel.effect.test {
+            viewModel.onEditAddressClicked(fakeAddressUIState)
+            val effect = awaitItem() as AddressesScreenUIEffect.NavigateToAddressDetailsScreen
+            assertEquals(fakeAddressUIState, effect.addressUIState)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    private fun createFakeAddress(): Address {
+        return Address(
+            id = Uuid.random(),
+            addressType = AddressType.HOME,
+            isMainAddress = true,
+            addressDetails = "123 Fake St",
+            latitude = 0.0,
+            longitude = 0.0
+        )
+    }
+}

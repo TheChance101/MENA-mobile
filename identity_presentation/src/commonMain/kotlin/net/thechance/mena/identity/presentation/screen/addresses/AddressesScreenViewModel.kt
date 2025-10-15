@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.address_deleted_successfully
+import mena.identity_presentation.generated.resources.unexpected_error
 import net.thechance.mena.identity.domain.repository.AddressRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
@@ -23,15 +24,14 @@ class AddressesScreenViewModel(
         getUserAddresses()
     }
 
-
     override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
 
     override fun onAddButtonClicked() = sendNewEffect(
         AddressesScreenUIEffect.NavigateToAddressDetailsScreen(null)
     )
 
-    override fun onEditAddressClicked(addressId: AddressUIState) =
-        sendNewEffect(AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressId))
+    override fun onEditAddressClicked(addressUIState: AddressUIState) =
+        sendNewEffect(AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState))
 
 
     override fun onAddressClicked(addressId: Uuid) {
@@ -47,7 +47,7 @@ class AddressesScreenViewModel(
 
     override fun onConfirmDeleteAddress() {
         tryToExecute(
-            function = { addressRepository.deleteAddress(state.value.addressToDelete!!) },
+            function = { addressRepository.deleteAddress(state.value.deleteAddressDialogUIState.addressId!!) },
             onSuccess = {
                 getUserAddresses()
                 updateState {
@@ -56,11 +56,16 @@ class AddressesScreenViewModel(
                             snackBarType = SnackBarType.SUCCESS,
                             isVisible = true,
                             message = Res.string.address_deleted_successfully
+                        ),
+                        deleteAddressDialogUIState = DeleteAddressDialogUIState(
+                            isVisible = false,
                         )
                     )
                 }
             },
-            onError = { ::onErrorOccurred })
+            onError = ::onErrorOccurred,
+            dispatcher = dispatcher
+        )
     }
 
     override fun onDismissDeleteDialog() = updateState {
@@ -82,8 +87,9 @@ class AddressesScreenViewModel(
     private fun getUserAddresses() {
         tryToExecute(
             function = { addressRepository.getUserAddresses().map { it.toUiState() } },
-            onSuccess = { ::onGetUserAddressesSuccess },
-            onError = { ::onErrorOccurred },
+            onSuccess = ::onGetUserAddressesSuccess,
+            onError = ::onErrorOccurred,
+            dispatcher = dispatcher,
         )
     }
 
@@ -94,11 +100,15 @@ class AddressesScreenViewModel(
     private fun onErrorOccurred(errorState: ErrorState) {
         updateState {
             copy(
+                snackBarUiState = SnackBarUiState(
+                    snackBarType = SnackBarType.ERROR,
+                    isVisible = true,
+                    message = Res.string.unexpected_error
+                ),
                 errorMessage = mapErrorToMessage(errorState)
             )
         }
     }
 
-    override fun clearErrorMessage() = updateState { copy(errorMessage = null) }
 }
 
