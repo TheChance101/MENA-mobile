@@ -36,7 +36,7 @@ internal class ManageTrendsViewModel(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    loadPage = { page -> repository.getAllReels(page) }
+                    loadPage = { page -> repository.getAllCurrentUserReels(page) }
                 )
             },
             onSuccess = ::onGetReelsSuccess,

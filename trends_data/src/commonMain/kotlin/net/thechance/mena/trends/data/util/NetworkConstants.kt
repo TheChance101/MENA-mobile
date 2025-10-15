@@ -20,4 +20,5 @@ internal object NetworkConstants {
     const val THUMBNAIL = "thumbnail"
     const val THUMBNAIL_MIME_TYPE = "image/jpeg"
     const val JPEG_EXTENSION = ".jpeg"
+    const val USER = "user"
 }
