@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,13 +18,11 @@ import net.thechance.mena.dukan.presentation.component.ProductsHeader
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 
 @Composable
 fun SmallImageProductContent(
-    shelves: PagingData<DukanDetailsUiState.ShelfUiState>,
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
     shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>,
@@ -36,11 +33,10 @@ fun SmallImageProductContent(
 
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(vertical = Theme.spacing._16),
         state = lazyListState
     ) {
-        shelves.items.forEach { shelf ->
+        state.shelves.items.forEach { shelf ->
             stickyHeader(key = shelf.id) {
                 ProductsHeader(
                     viewAllColor = Color(state.dukanInfo.color),
@@ -52,7 +48,6 @@ fun SmallImageProductContent(
                         )
                     },
                     modifier = Modifier
-                        .background(Theme.colorScheme.background.surface)
                         .padding(horizontal = Theme.spacing._16)
                 )
             }

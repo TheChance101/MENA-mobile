@@ -14,20 +14,24 @@ import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
+import mena.dukan_presentation.generated.resources.shopping_basket_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.DukanHeaderIcon
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.DukanIconButton
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.DukanImageAndTitle
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageProductContent
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SmallImageDukanDetails(
@@ -73,7 +77,6 @@ fun SmallImageDukanDetails(
                 )
             }
             SmallImageProductContent(
-                shelves = state.shelves,
                 state = state,
                 listener = listener,
                 shelvesPager = pager,
@@ -97,20 +100,13 @@ private fun SmallImageAppBar(
         },
         onLeadingClick = { listener::onBackClicked },
         trailingContent = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+            AppBarOptionContainer(
+                onClick = {},
+                isBadgeVisible = false
             ) {
-                DukanHeaderIcon(
-                    icon = painterResource(Res.drawable.ic_share),
-                    onIconClick = {}
-                )
-                DukanHeaderIcon(
-                    icon = painterResource(Res.drawable.ic_favorite),
-                    onIconClick = {}
-                )
-                DukanHeaderIcon(
-                    icon = painterResource(Res.drawable.ic_shopping_basket),
-                    onIconClick = {}
+                Icon(
+                    painter = painterResource(Res.drawable.ic_shopping_basket),
+                    contentDescription = stringResource(Res.string.shopping_basket_icon)
                 )
             }
         }
