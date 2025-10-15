@@ -6,13 +6,14 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 
+private const val SHIMMER_SHELVES_COUNT = 4
 fun LazyListScope.shelvesWithProductsNoImageDukan(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
 ) {
     when (state.shelvesState) {
         ShelvesState.LOADING -> {
-            items(4) {
+            items(SHIMMER_SHELVES_COUNT) {
                 ShelfWithProductsShimmerNoImageDukan()
             }
         }

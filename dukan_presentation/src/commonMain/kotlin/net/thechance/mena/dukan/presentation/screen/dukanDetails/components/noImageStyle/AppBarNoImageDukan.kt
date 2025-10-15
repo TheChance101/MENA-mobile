@@ -51,8 +51,7 @@ fun AppBarNoImageDukan(
             style = Theme.typography.title.medium,
             modifier = Modifier.padding(start = Theme.spacing._8, end = Theme.spacing._4)
                 .weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            maxLines = 1
         )
         Row(
             modifier = Modifier.padding(start = Theme.spacing._4),
