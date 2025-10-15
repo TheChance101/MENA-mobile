@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.appBar.HomeAppBar
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -147,7 +146,6 @@ fun ScaffoldScope.Dialog(
             )
             Text(
                 text = message,
-                textAlign = TextAlign.Center,
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary,
             )
