@@ -246,7 +246,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
         everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.downloadPdf(any(), any())
+            pdfHandler.savePdf(any(), any())
         } returns "MENA/statement_123.pdf"
 
         initViewModel()
@@ -314,7 +314,7 @@ class ExportTransactionsViewModelTest {
             repository.getStatementWithMetadata(any())
         } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.downloadPdf(any(), any())
+            pdfHandler.savePdf(any(), any())
         } returns "MENA/statement_123.pdf"
 
         initViewModel()
@@ -338,7 +338,7 @@ class ExportTransactionsViewModelTest {
             repository.getStatementWithMetadata(any())
         } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.downloadPdf(any(), any())
+            pdfHandler.savePdf(any(), any())
         } throws IOException()
 
         initViewModel()
@@ -525,7 +525,7 @@ class ExportTransactionsViewModelTest {
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
         everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.downloadPdf(any(), any())
+            pdfHandler.savePdf(any(), any())
         } returns "MENA/statement_123.pdf"
 
         initViewModel()
@@ -543,7 +543,8 @@ class ExportTransactionsViewModelTest {
     @Test
     fun whenSelectedTransactionsTypesNotEmpty_thenHasActiveFiltersIsTrue() = runTest {
         val state = ExportTransactionsState(
-            selectedTransactionsTypes = setOf(FilterType.SENT)
+            selectedTransactionsTypes = setOf(FilterType.SENT),
+            startDate = LocalDate(2025, 9, 1)
         )
         assertTrue(state.hasActiveFilters)
     }
@@ -587,7 +588,7 @@ class ExportTransactionsViewModelTest {
     fun `downloadPdf returns success with file path`() = runTest {
         everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.downloadPdf(any(), any())
+            pdfHandler.savePdf(any(), any())
         } returns "Downloads/MENA/statement_1234567890.pdf"
 
         initViewModel()

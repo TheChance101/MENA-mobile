@@ -4,16 +4,12 @@ import androidx.compose.runtime.Composable
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.confirm_payment_content_failed
 import mena.wallet_presentation.generated.resources.confirm_payment_content_success
-import net.thechance.mena.wallet.domain.model.PaymentConfirmation
-import net.thechance.mena.wallet.presentation.utils.formatAmount
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import org.jetbrains.compose.resources.stringResource
 
-fun PaymentConfirmation.toUi(amount: Double) = ConfirmPaymentScreenState.PaymentUiState(
-    amount = formatAmount(amount),
-    receiverName = receiverName,
-    receiverImage = receiverImg,
-    status = status,
-    balance = formatAmount(balance)
+fun TransactionReceiver.toUiState() = ConfirmPaymentScreenState.ReceiverUiState(
+    name = name,
+    profileImg = imgUrl
 )
 
 @Composable
