@@ -56,7 +56,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getAllCurrentUserReels(1) } returns reelList
+            everySuspend { repository.getAllCurrentUserReels(1) } returns reels
 
             viewModel.state.test {
                 val currentState = awaitItem()
