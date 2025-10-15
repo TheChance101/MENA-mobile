@@ -7,7 +7,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 internal actual fun platformModule(): Module = module {
-    single<PermissionController>(named("LOCATION_FOREGROUND")) {
+    single<PermissionController>(named(LOCATION_FOREGROUND)) {
         LocationForegroundPermission()
     }
 }

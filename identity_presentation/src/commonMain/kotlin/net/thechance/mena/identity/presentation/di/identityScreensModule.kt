@@ -14,13 +14,14 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 const val APP_VERSION = "appVersion"
+const val LOCATION_FOREGROUND = "LOCATION_FOREGROUND"
 
 val identityScreensModule = module {
 
     includes(platformModule())
     single { get<String>(named(APP_VERSION)) }
 
-    factory { PermissionHandler(get(named("LOCATION_FOREGROUND"))) }
+    factory { PermissionHandler(get(named(LOCATION_FOREGROUND))) }
 
     factoryOf(::LoginScreenViewModel)
     factoryOf(::RegisterScreenModel)
