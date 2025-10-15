@@ -10,13 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.anchor
+import mena.identity_presentation.generated.resources.ic_anchor
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
 import org.jetbrains.compose.resources.painterResource
 import org.maplibre.compose.camera.CameraPosition
@@ -142,7 +141,7 @@ private fun Anchor(
     ) {
         it?.let { offset ->
             Image(
-                painter = painterResource(Res.drawable.anchor),
+                painter = painterResource(Res.drawable.ic_anchor),
                 contentDescription = null,
                 modifier = modifier
                     .size(46.dp, 58.05.dp)
