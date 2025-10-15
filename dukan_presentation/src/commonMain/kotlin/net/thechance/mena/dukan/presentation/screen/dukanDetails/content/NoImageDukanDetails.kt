@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -155,10 +156,9 @@ private fun NoImageDukanContent(
 @Preview
 @Composable
 private fun NoImageDukanDetailsPreview() {
-
-    MenaTheme {
-        NoImageDukanDetails(
-            state = DukanDetailsUiState(
+    var previewState by remember {
+        mutableStateOf(
+            DukanDetailsUiState(
                 DukanInfo(
                     name = "Calvin Klein store international",
                     color = 0xFFFB5B5D
@@ -166,8 +166,21 @@ private fun NoImageDukanDetailsPreview() {
                 shelvesState = ShelvesState.LOADED,
                 shelfIdSelected = "1",
                 shelves = PagingData(fakeShelves())
-            ),
-            listener = PreviewDukanDetailsInteractionListener,
+            )
+        )
+    }
+
+    val previewListener = object : DukanDetailsInteractionListener by PreviewDukanDetailsInteractionListener {
+        override fun onShelfClicked(id: String) {
+            previewState = previewState.copy(
+                shelfIdSelected = id,
+            )
+        }
+    }
+    MenaTheme {
+        NoImageDukanDetails(
+            state = previewState,
+            listener = previewListener,
             pagerShelves = Pager(
                 config = PagingConfig(),
                 pagingSourceFactory = { FakeShelvesDukanDetailsPagingSource() }
