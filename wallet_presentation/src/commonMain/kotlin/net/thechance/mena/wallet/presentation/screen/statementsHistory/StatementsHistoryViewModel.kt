@@ -4,14 +4,17 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
+import net.thechance.mena.wallet.presentation.utils.getPdfHandler
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
@@ -51,16 +54,48 @@ class StatementsHistoryViewModel(
     }
 
     override fun onCancelEditModeClicked() {
-        updateState { it.copy(isEditMode = false) }
+        updateState {
+            it.copy(isEditMode = false)
+        }
     }
 
     override fun onDeleteClicked(id: Long) {
         tryToExecute(
-            callee = { statementRepository.deleteStatementById(id) },
-            onSuccess = { updateState { it.copy(isStatementDeleted = true) } },
+            callee = {
+                val statement = currentState.statements.find { it.id == id }
+                    ?: throw IllegalStateException("Statement not found")
+
+                val fileLocation = StorageLocation.Downloads(statement.fileName)
+                val pdfHandler = getPdfHandler()
+
+                val fileExists = pdfHandler.checkIfPdfExists(fileLocation)
+
+                if (fileExists) { pdfHandler.deletePdf(fileLocation) }
+
+                statementRepository.deleteStatementById(id)
+            },
+            onSuccess = {
+                updateState {
+                    //val updatedList = it.statements.filter { statement -> statement.id != id }
+                    it.copy(
+                        //statements = updatedList,
+                        isStatementDeleted = true,
+                        //isEditMode = updatedList.isNotEmpty()
+                    )
+                }
+
+                resetStatementDeletedAfterDelay()
+            },
             onError = { errorState -> updateState { it.copy(errorState = errorState) } },
             dispatcher = dispatcherIO
         )
+    }
+
+    private fun resetStatementDeletedAfterDelay() {
+        viewModelScope.launch(dispatcherIO) {
+            delay(100)
+            updateState { it.copy(isStatementDeleted = false) }
+        }
     }
 
     private fun onPaginationLoading(isLoading: Boolean) {
@@ -106,6 +141,32 @@ class StatementsHistoryViewModel(
             onSuccess = { result, newKey -> onPaginationSuccess(result) },
             endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
         )
+    }
+
+    private suspend fun showSnackBar(
+        title: String,
+        message: String,
+        isSuccess: Boolean,
+        durationMillis: Long = 3000L
+    ) {
+        updateState { oldState ->
+            oldState.copy(
+                snackBar = SnackBarState(
+                    isVisible = true,
+                    title = title,
+                    message = message,
+                    isSuccess = isSuccess
+                )
+            )
+        }
+
+        delay(durationMillis)
+
+        hideSnackBar()
+    }
+
+    private fun hideSnackBar() {
+        updateState { oldState -> oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false)) }
     }
 
     private companion object {

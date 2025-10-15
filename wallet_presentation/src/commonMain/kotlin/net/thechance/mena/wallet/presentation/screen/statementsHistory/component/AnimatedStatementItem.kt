@@ -115,14 +115,16 @@ private fun AnimatedStatementItemPreview() {
             startDate = "Jul 23 2025",
             endDate = "Aug 27 2025",
             totalInflow = 2000.0,
-            totalOutflow = 4200.0
+            totalOutflow = 4200.0,
+            fileName = ""
         ),
         lastStatement = StatementsHistoryScreenState.StatementItem(
             id = 124,
             startDate = "Jul 23 2025",
             endDate = "Aug 27 2025",
             totalInflow = 2000.0,
-            totalOutflow = 4200.0
+            totalOutflow = 4200.0,
+            fileName = ""
         ),
         cardOffsetX = 10,
         historyIconOffsetX = 10,
