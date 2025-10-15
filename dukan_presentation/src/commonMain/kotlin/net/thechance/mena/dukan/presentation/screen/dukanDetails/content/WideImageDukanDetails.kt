@@ -332,57 +332,54 @@ private fun ProductCard(
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true
 ) {
-
     Column(
-        modifier = modifier.size(160.dp, 240.dp)
+        modifier = modifier
+            .size(width = 160.dp, height = 240.dp)
             .clip(RoundedCornerShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(onClick = onClick, enabled = isEnabled)
     ) {
-        Box(
-            modifier = modifier.padding(
-                horizontal = Theme.spacing._4,
-                vertical = Theme.spacing._4
-            )
-        ) {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(176.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm))
-            )
-        }
-        Text(
-            text = title,
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadePrimary,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .padding(horizontal = Theme.spacing._8)
-                .padding(top = Theme.spacing._16)
-                .align(Alignment.Start)
-        )
-        Row(
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = "$title product image",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._8),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+                .weight(1f)
+                .padding(4.dp)
+                .clip(RoundedCornerShape(Theme.radius.sm))
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Theme.spacing._8)
+                .padding(bottom = Theme.spacing._4),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.discount_icon),
-                contentDescription = null,
-                modifier = modifier.padding(end = Theme.spacing._8)
+            Text(
+                text = title,
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.shadePrimary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 12.dp)
             )
-            PriceWithIcon(
-                price = price,
-                iconRes = Res.drawable.silver_tc,
-                contentDescription = stringResource(Res.string.koin_icon),
-            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.discount_icon),
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = Theme.spacing._4)
+                )
+                PriceWithIcon(
+                    price = price,
+                    iconRes = Res.drawable.silver_tc,
+                    contentDescription = stringResource(Res.string.koin_icon),
+                )
+            }
         }
     }
 }
