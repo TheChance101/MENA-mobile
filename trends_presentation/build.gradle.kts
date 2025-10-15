@@ -33,6 +33,10 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.coil.network.ktor3)
+
+            implementation(libs.androidx.media3.exoplayer)
+            implementation(libs.androidx.media3.ui)
+            implementation(libs.androidx.media3.exoplayer.dash)
         }
         commonMain.dependencies {
             implementation(projects.trendsDomain)
@@ -55,10 +59,6 @@ kotlin {
             implementation(libs.resources)
             implementation(libs.kermit)
             implementation(libs.bundles.filekit)
-
-            implementation(libs.androidx.media3.exoplayer)
-            implementation(libs.androidx.media3.ui)
-            implementation(libs.androidx.media3.exoplayer.dash)
 
             implementation(libs.kotlinx.datetime)
         }
