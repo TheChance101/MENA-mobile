@@ -161,7 +161,7 @@ class QuranRepositoryImplTest {
         val DEFAULT_TILAWAH = LastAyahForTilawah(
             number = 1,
             surahId = 1,
-            surahName = ""
+            surahName = "Al-Fatiha"
         )
 
         val SAVED_TILAWAH_PROGRESS = LastAyahForTilawah(
