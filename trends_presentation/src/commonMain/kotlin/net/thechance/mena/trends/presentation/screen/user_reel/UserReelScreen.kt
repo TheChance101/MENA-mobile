@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.cash.paging.compose.collectAsLazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.confirmation_message
@@ -53,7 +55,6 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -62,7 +63,6 @@ import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import net.thechance.mena.trends.presentation.video_player.VideoPlayer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -90,13 +90,6 @@ private fun UserReelScreenContent(
     state: UserReelState,
     listener: UserReelInteractionListener
 ) {
-//    val reels = state.reels.collectAsLazyPagingItems()
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        pageCount = { reelss.count() },
-    )
-
-    var currentReel: UserReelUiState? by remember { mutableStateOf(UserReelUiState()) }
 
     Scaffold(
         overlays = {
@@ -157,19 +150,35 @@ private fun UserReelScreenContent(
         }
     ) {
 
+        val reels = state.reels.collectAsLazyPagingItems()
+        val pagerState = rememberPagerState(
+            initialPage = 0,
+            pageCount = { state.fakeReels.size },
+        )
+
+        var currentReel: UserReelUiState? by remember { mutableStateOf(UserReelUiState()) } // ُTODO: It should be removed
+
+        TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
+
         VerticalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            key = { page -> reelss[page].id },
-        )
-        { page ->
+            key = { page -> state.fakeReels[page]?.id ?: page },
+        ) { page ->
 
-            ReelPage(
-                reel = reelss[page] ,
-                shouldRender = pagerState.currentPage == page,
-                state = state,
-                listener = listener
-            )
+            val isCurrentPage = (pagerState.currentPage == page)
+            currentReel = state.fakeReels[page]
+
+            currentReel?.let { reel ->
+                Reel(
+                    reel = reel,
+                    shouldRender = isCurrentPage,
+                    isDescriptionExpanded = state.isDescriptionExpanded,
+                    onDeleteClick = listener::onDeleteClick,
+                    onDescriptionClick = listener::onDescriptionClick,
+                    onPublisherInfoClick = listener::onPublisherInfoClick
+                )
+            }
         }
     }
 }
@@ -184,7 +193,8 @@ private fun TopAppBar(
         modifier = modifier
             .fillMaxWidth()
             .gradientShadow()
-            .padding(horizontal = Theme.spacing._16).padding(top = 8.dp),
+            .padding(horizontal = Theme.spacing._16)
+            .padding(top = 8.dp),
         contentPadding = PaddingValues(0.dp),
         leadingContent = {
             Icon(
@@ -197,45 +207,44 @@ private fun TopAppBar(
 }
 
 @Composable
-private fun ReelPage(
+private fun Reel(
     reel: UserReelUiState,
     shouldRender: Boolean,
-    state: UserReelState,
-    listener: UserReelInteractionListener,
+    isDescriptionExpanded: Boolean,
+    onDeleteClick: () -> Unit,
+    onDescriptionClick: (Boolean) -> Unit,
+    onPublisherInfoClick: () -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-        TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
-
-        if (shouldRender) {
-            VideoPlayer(
-                url = reel.videoUrl,
-                playWhenVisible = true,
+    VideoPlayer(
+        modifier = Modifier.fillMaxSize().background(Color.Black),
+        url = reel.videoUrl,
+        playWhenVisible = shouldRender,
+    ) {
+        Box(Modifier.fillMaxSize()) {
+            UsersReAct(
+                viewCount = reel.viewsCount.toString(),
+                likeCount = reel.likesCount.toString(),
+                isCurrentUserOwner = reel.isCurrentUserOwner,
+                onDeleteClick = onDeleteClick,
+                modifier = Modifier.align(Alignment.BottomEnd)
+                    .padding(end = Theme.spacing._16, bottom = 140.dp)
             )
+
+            PublisherInfo(
+                userName = reel.username,
+                timeOfPublish = reel.createdAt.orEmpty(),
+                description = reel.description,
+                avatar = reel.profileImage,
+                modifier = Modifier.align(Alignment.BottomCenter),
+                isDescriptionExpanded = isDescriptionExpanded,
+                onDescriptionClick = onDescriptionClick,
+                onPublisherInfoClick = onPublisherInfoClick
+            )
+
+            Box(modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow())
         }
-
-        UsersReAct(
-            viewCount = reel.viewsCount.toString(),
-            likeCount = reel.likesCount.toString(),
-            isCurrentUserOwner = reel.isCurrentUserOwner,
-            onDeleteClick = listener::onDeleteClick,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(end = Theme.spacing._16, bottom = 140.dp)
-        )
-
-        PublisherInfo(
-            userName = reel.username,
-            timeOfPublish = reel.createdAt.orEmpty(),
-            description = reel.description,
-            avatar = reel.profileImage,
-            modifier = Modifier.align(Alignment.BottomCenter),
-            isDescriptionExpanded = state.isDescriptionExpanded,
-            onDescriptionClick = listener::onDescriptionClick,
-            onPublisherInfoClick = listener::onPublisherInfoClick
-        )
-
-        Box(modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow())
     }
 }
-
 
 @Composable
 private fun PublisherInfo(
@@ -248,7 +257,6 @@ private fun PublisherInfo(
     description: String,
     modifier: Modifier = Modifier
 ) {
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -356,60 +364,3 @@ private fun ReActIcon(
         )
     }
 }
-
-@Preview
-@Composable
-private fun Preview() {
-    MenaTheme {
-        UserReelScreenContent(
-            state = UserReelState(),
-            listener = object : UserReelInteractionListener {
-                override fun onDescriptionClick(isCollapsed: Boolean) {}
-                override fun onPublisherInfoClick() {}
-                override fun onBackClick() {}
-                override fun onDeleteClick() {}
-                override fun onConfirmDeleteClick() {}
-                override fun onDismissSuccessDialog() {}
-                override fun onDismissErrorDialog() {}
-                override fun onDismissConfirmationDialog() {}
-            }
-        )
-    }
-}
-
-val reelss = listOf(
-    UserReelUiState(
-        id = "12",
-        videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        description = "Description is very useful",
-        likesCount = 2,
-        viewsCount = 4,
-        createdAt = "25-11",
-        isCurrentUserOwner = false,
-        username = "Hend",
-        profileImage = "https://static.vecteezy.com/system/resources/previews/042/332/066/original/person-photo-placeholder-woman-default-avatar-profile-icon-grey-photo-placeholder-female-no-photo-images-for-unfilled-user-profile-greyscale-illustration-for-social-media-free-vector.jpg"
-    ),
-
-    UserReelUiState(
-        id = "13",
-        videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        description = "Description",
-        likesCount = 5,
-        viewsCount = 10,
-        createdAt = "2-11",
-        isCurrentUserOwner = false,
-        username = "Ahmed",
-        profileImage = "https://www.bing.com/ck/a?!&&p=5164f87f101a6e605c32022a4e013c24b699dc1bb0782c7c91d09e9b489e2c28JmltdHM9MTc2MDE0MDgwMA&ptn=3&ver=2&hsh=4&fclid=1434bab1-96f1-6582-15f3-ac84974a6473&u=a1L2ltYWdlcy9zZWFyY2g_cT1pbWFnZSUyMHBsYWNlaG9sZGVyJTIwcHJvZmlsZSZGT1JNPUlRRlJCQSZpZD0zODJFOTlERkM0MzI4REQzRDY4OUI4NTVBRUQxRTFFRTA1NjM3MEJE"
-    ),
-    UserReelUiState(
-        id = "14",
-        videoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        description = "Watch This Reel , it's very Interesting",
-        likesCount = 0,
-        viewsCount = 1,
-        createdAt = "25-10",
-        isCurrentUserOwner = true,
-        username = "Fatima",
-        profileImage = "https://static.vecteezy.com/system/resources/previews/042/332/066/original/person-photo-placeholder-woman-default-avatar-profile-icon-grey-photo-placeholder-female-no-photo-images-for-unfilled-user-profile-greyscale-illustration-for-social-media-free-vector.jpg"
-    )
-)
