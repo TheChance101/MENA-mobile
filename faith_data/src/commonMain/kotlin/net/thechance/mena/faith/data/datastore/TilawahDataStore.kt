@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -18,12 +19,11 @@ class TilawahDataStore(private val dataStore: DataStore<Preferences>) {
     }
 
     val lastAyahFlow: Flow<LastAyahForTilawah?> = dataStore.data.map { prefs ->
-        val ayahNumber = prefs[AYAH_NUMBER] ?: return@map null
-        val surahId = prefs[SURAH_ID] ?: return@map null
 
         LastAyahForTilawah(
-            number = ayahNumber,
-            surahId = surahId,
+            number = prefs[AYAH_NUMBER] ?: return@map null,
+            surahId = prefs[SURAH_ID] ?: return@map null,
+            surahName = prefs[SURAH_NAME] ?: return@map null
         )
     }
 
@@ -34,6 +34,7 @@ class TilawahDataStore(private val dataStore: DataStore<Preferences>) {
     private companion object {
         val AYAH_NUMBER = intPreferencesKey("ayah_number")
         val SURAH_ID = intPreferencesKey("surah_id")
+        val SURAH_NAME = stringPreferencesKey("surah_name")
 
     }
 }
