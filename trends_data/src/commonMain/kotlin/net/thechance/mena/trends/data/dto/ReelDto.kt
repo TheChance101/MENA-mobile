@@ -26,5 +26,5 @@ internal data class ReelDto(
     @SerialName("profilePictureUrl")
     val profilePictureUrl: String? = null,
     @SerialName("categories")
-    val categories : List<CategoryDto>? = null,
+    val categories: List<CategoryDto>? = null
 )
