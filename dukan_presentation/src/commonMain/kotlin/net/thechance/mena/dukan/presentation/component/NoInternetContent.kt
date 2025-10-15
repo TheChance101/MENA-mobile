@@ -1,11 +1,5 @@
 package net.thechance.mena.dukan.presentation.component
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
@@ -51,17 +44,17 @@ fun NoInternetContent(
 ) {
     Column(
         modifier = modifier
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = Theme.spacing._16),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        WifiSignalAnimation(
+        WifiImage(
             modifier = Modifier
-                .padding(bottom = 12.dp),
+                .padding(bottom = Theme.spacing._12),
         )
         Text(
             modifier = Modifier
-                .padding(bottom = 2.dp),
+                .padding(bottom = Theme.spacing._2),
             text = stringResource(Res.string.no_internet_title),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.title.small,
@@ -88,32 +81,16 @@ fun NoInternetContent(
 }
 
 @Composable
-private fun WifiSignalAnimation2(
-    durationMillis: Int = 1500,
+private fun WifiImage(
     modifier: Modifier = Modifier
 ) {
-    val transition = rememberInfiniteTransition()
-
     val black = Color(0xFF000000)
-    val delays = listOf(0, 300, 600, 900)
-    val alphas = delays.map { delay ->
-        transition.animateFloat(
-            initialValue = 1f,
-            targetValue = 0.6f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis, easing = LinearEasing, delayMillis = delay),
-                repeatMode = RepeatMode.Reverse
-            )
-        ).value
-    }
-
     val wifiImages = listOf(
         Res.drawable.ellipse_wifi_4 to 4.33.dp,
         Res.drawable.ellipse_wifi_3 to 28.52.dp,
         Res.drawable.ellipse_wifi_2 to 49.12.dp,
         Res.drawable.ellipse_wifi_1 to 67.27.dp
     )
-
     Box(
         modifier = modifier
             .size(width = 128.dp, height = 98.dp)
@@ -122,8 +99,7 @@ private fun WifiSignalAnimation2(
             Image(
                 modifier = Modifier
                     .padding(top = topPadding)
-                    .align(Alignment.TopCenter)
-                    .graphicsLayer(alpha = alphas[index]),
+                    .align(Alignment.TopCenter),
                 painter = painterResource(drawable),
                 contentDescription = null
             )
@@ -134,7 +110,7 @@ private fun WifiSignalAnimation2(
                 .size(15.dp)
                 .clip(CircleShape)
                 .align(Alignment.BottomCenter)
-                .background(black.copy(alpha = alphas[0]))
+                .background(black)
         )
 
         Image(
@@ -147,84 +123,7 @@ private fun WifiSignalAnimation2(
         )
     }
 }
-@Composable
-private fun WifiSignalAnimation(
-    durationMillis: Int = 1500,
-    modifier: Modifier = Modifier
-) {
-    val transition = rememberInfiniteTransition()
-    val delays = listOf(0, 300, 600, 900)
 
-    val animations = delays.map { delay ->
-        val alpha = transition.animateFloat(
-            initialValue = 0f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis, easing = LinearEasing, delayMillis = delay),
-                repeatMode = RepeatMode.Restart
-            )
-        ).value
-
-        val offsetY = transition.animateFloat(
-            initialValue = 30f,
-            targetValue = 0f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis, easing = LinearEasing, delayMillis = delay),
-                repeatMode = RepeatMode.Restart
-            )
-        ).value
-
-        alpha to offsetY
-    }
-
-    val wifiImages = listOf(
-        Res.drawable.ellipse_wifi_4 to 4.33.dp,
-        Res.drawable.ellipse_wifi_3 to 28.52.dp,
-        Res.drawable.ellipse_wifi_2 to 49.12.dp,
-        Res.drawable.ellipse_wifi_1 to 67.27.dp
-    )
-
-    Box(
-        modifier = modifier.size(width = 128.dp, height = 98.dp)
-    ) {
-        wifiImages.forEachIndexed { index, (drawable, topPadding) ->
-            val (alpha, offsetY) = animations[index]
-            Image(
-                modifier = Modifier
-                    .padding(top = topPadding)
-                    .align(Alignment.TopCenter)
-                    .graphicsLayer {
-                        this.alpha = alpha
-                        translationY = offsetY
-                    },
-                painter = painterResource(drawable),
-                contentDescription = null
-            )
-        }
-        
-        val (dotAlpha, dotOffsetY) = animations.first()
-        Box(
-            modifier = Modifier
-                .size(15.dp)
-                .clip(CircleShape)
-                .align(Alignment.BottomCenter)
-                .graphicsLayer {
-                    alpha = dotAlpha
-                    translationY = dotOffsetY
-                }
-                .background(Color(0xFF000000).copy(alpha = dotAlpha))
-        )
-
-        Image(
-            modifier = Modifier
-                .size(33.5.dp)
-                .align(Alignment.TopStart),
-            painter = painterResource(Res.drawable.ic_alert_circle),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(Color(0xFF000000))
-        )
-    }
-}
 @Preview
 @Composable
 private fun NoInternetContentPreview() {
