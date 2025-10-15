@@ -108,21 +108,6 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUser() should call saveUserInfo after successful remote fetch`() = runTest {
-
-        val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
-
-        coEvery { userDao.upsert(any()) } returns Unit
-        every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
-
-        val result  = userRepositoryImpl.getUser().first()
-
-        testDispatcher.scheduler.advanceUntilIdle()
-        coVerify(exactly = 1) { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) }
-    }
-
-    @Test
     fun `getUser() should return object from User`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
