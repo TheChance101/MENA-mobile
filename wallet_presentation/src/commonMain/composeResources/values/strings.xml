@@ -131,4 +131,7 @@
     <string name="try_again">Try Again</string>
     <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
     <string name="you_paid">You paid</string>
+
+    <string name="file_missing">File Missing</string>
+    <string name="file_missing_description">The statement file could not be found.</string>
 </resources>

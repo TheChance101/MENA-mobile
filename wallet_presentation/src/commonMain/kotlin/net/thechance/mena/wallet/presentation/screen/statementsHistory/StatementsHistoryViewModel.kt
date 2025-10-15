@@ -6,6 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.file_missing
+import mena.wallet_presentation.generated.resources.file_missing_description
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
@@ -15,6 +18,7 @@ import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.getPdfHandler
+import org.jetbrains.compose.resources.getString
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
@@ -59,8 +63,8 @@ class StatementsHistoryViewModel(
                 )
             } else {
                 showSnackBar(
-                    title = "File Missing",
-                    message = "The statement file could not be found.",
+                    title = getString(Res.string.file_missing),
+                    message = getString(Res.string.file_missing_description),
                     isSuccess = false
                 )
             }
