@@ -26,6 +26,7 @@ import mena.dukan_presentation.generated.resources.ic_arrow_right
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.ProductsHeader
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
@@ -40,24 +41,24 @@ fun SmallImageProductContent(
     shelves: PagingData<DukanDetailsUiState.ShelfUiState>,
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pager: Pager<Int, DukanDetailsUiState.ShelfUiState>,
+    shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
-    lazyListState.LoadMoreOnScroll(pager)
+    lazyListState.LoadMoreOnScroll(shelvesPager)
 
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        contentPadding = PaddingValues(vertical = 16.dp),
+        contentPadding = PaddingValues(vertical = Theme.spacing._16),
         state = lazyListState
     ) {
-        shelves.items.filter { it.products.isNotEmpty() }.forEach { shelf ->
+        shelves.items.forEach { shelf ->
             stickyHeader(key = shelf.id) {
-                ShelfHeader(
-                    state = state,
+                ProductsHeader(
+                    viewAllColor = Color(state.dukanInfo.color),
                     shelfName = shelf.name,
-                    onViewAllClicked = {
+                    onClick = {
                         listener.onViewAllShelfProductsClicked(
                             shelf.id,
                             shelf.name
@@ -126,44 +127,3 @@ private fun ProductsShelf(
     }
 }
 
-@Composable
-private fun ShelfHeader(
-    state: DukanDetailsUiState,
-    shelfName: String,
-    onViewAllClicked: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() }
-        ) {
-            onViewAllClicked()
-        },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = shelfName,
-            style = Theme.typography.title.small,
-            color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .weight(1f)
-        )
-
-        Text(
-            text = stringResource(Res.string.all),
-            style = Theme.typography.label.medium,
-            color = Color(state.dukanInfo.color),
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(end = 3.dp)
-        )
-
-        Icon(
-            painter = painterResource(Res.drawable.ic_arrow_right),
-            contentDescription = "arrow right",
-            tint = Color(state.dukanInfo.color)
-        )
-    }
-}
