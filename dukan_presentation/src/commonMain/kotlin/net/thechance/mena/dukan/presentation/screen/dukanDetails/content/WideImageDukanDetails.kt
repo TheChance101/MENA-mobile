@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -61,6 +60,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ShelfChip
 import net.thechance.mena.dukan.presentation.component.productCard.PriceWithIcon
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
+import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
@@ -91,7 +91,8 @@ fun WideImageDukanDetails(
     ) {
         Box {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(160.dp),
+                columns = GridCells.Adaptive(minSize = 160.dp),
+                contentPadding = PaddingValues(horizontal = Theme.spacing._16),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
@@ -135,7 +136,7 @@ private fun WideImageDukanDetailsAppBar(
 private fun DukanHeader(state: DukanDetailsUiState.DukanInfo) {
     DukanImageAndTitle(
         state = state,
-        modifier = Modifier.padding(start = 16.dp, end = 22.dp)
+        modifier = Modifier.padding(end = Theme.spacing._4 + Theme.spacing._2)
     )
 }
 
@@ -152,7 +153,6 @@ private fun DukanActionButtons(
         DukanIconButton(
             icon = painterResource(Res.drawable.ic_favorite),
             iconColor = Color(state.color),
-            modifier = modifier.offset(y = (-2).dp)
         )
     }
 }
@@ -247,33 +247,36 @@ private fun DukanShelvesSection(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener
 ) {
-    Text(
-        text = stringResource(Res.string.products),
-        style = Theme.typography.title.medium,
-        color = Theme.colorScheme.shadePrimary,
-        modifier = Modifier.padding(horizontal = Theme.spacing._16)
-            .padding(top = Theme.spacing._16)
-    )
-    AnimatedContent(
-        targetState = state.shelvesState,
-        transitionSpec = {
-            fadeIn(
-                tween(300)
-            ) togetherWith fadeOut(tween(300))
-        },
-        label = "Shelves Animation",
-        modifier = Modifier.padding(vertical = Theme.spacing._16)
-    ) { targetState ->
-        when (targetState) {
-            DukanDetailsUiState.ShelvesState.LOADING -> LoadingShelves()
-            DukanDetailsUiState.ShelvesState.LOADED -> LoadedShelves(
-                shelves = state.shelves.items,
-                selectedShelfId = state.shelfIdSelected,
-                onShelfClick = listener::onShelfClicked,
-                chipColor = Color(state.dukanInfo.color)
-            )
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+    ) {
+        Text(
+            text = stringResource(Res.string.products),
+            style = Theme.typography.title.medium,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(top = Theme.spacing._16)
+        )
+        AnimatedContent(
+            targetState = state.shelvesState,
+            transitionSpec = {
+                fadeIn(
+                    tween(300)
+                ) togetherWith fadeOut(tween(300))
+            },
+            label = "Shelves Animation",
+        ) { targetState ->
+            when (targetState) {
+                DukanDetailsUiState.ShelvesState.LOADING -> LoadingShelves()
+                DukanDetailsUiState.ShelvesState.LOADED -> LoadedShelves(
+                    shelves = state.shelves.items,
+                    selectedShelfId = state.shelfIdSelected,
+                    onShelfClick = listener::onShelfClicked,
+                    chipColor = Color(state.dukanInfo.color)
+                )
 
-            DukanDetailsUiState.ShelvesState.EMPTY -> {}
+                DukanDetailsUiState.ShelvesState.EMPTY -> {}
+            }
         }
     }
 }
@@ -282,6 +285,7 @@ private fun DukanShelvesSection(
 private fun LoadingShelves() {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+        modifier = Modifier.fillWidthOfParent(16.dp),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(count = 8) {
@@ -303,6 +307,7 @@ private fun LoadedShelves(
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+        modifier = Modifier.fillWidthOfParent(16.dp),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(items = shelves, key = { it.id }) { shelf ->
@@ -326,8 +331,7 @@ private fun ProductCard(
     isEnabled: Boolean = true
 ) {
     Column(
-        modifier = modifier
-            .size(width = 160.dp, height = 240.dp)
+        modifier = modifier.size(160.dp, 240.dp)
             .clip(RoundedCornerShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(onClick = onClick, enabled = isEnabled)
@@ -338,7 +342,7 @@ private fun ProductCard(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .height(176.dp)
                 .clip(RoundedCornerShape(Theme.radius.sm))
         )
         Text(
