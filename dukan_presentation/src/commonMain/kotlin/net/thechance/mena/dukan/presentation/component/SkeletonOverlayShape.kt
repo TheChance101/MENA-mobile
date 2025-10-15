@@ -138,7 +138,7 @@ private fun ProductItemSkeleton() {
         SkeletonOverlayShape(
             modifier = Modifier
                 .padding(end = Theme.spacing._8)
-                .size(Theme.spacing._48)
+                .size(48.dp)
                 .clip(CircleShape)
         )
         Column(
