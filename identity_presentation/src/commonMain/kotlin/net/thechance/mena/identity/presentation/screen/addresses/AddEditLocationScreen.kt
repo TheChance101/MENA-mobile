@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
@@ -25,7 +24,6 @@ import mena.identity_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressTypeSection
@@ -34,14 +32,13 @@ import net.thechance.mena.identity.presentation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.maplibre.compose.camera.CameraPosition
 
 class AddEditLocationScreen : BaseScreen<
-            AddEditLocationScreenViewModel,
-            AddLocationScreenUIState,
-            AddEditLocationScreenUIEffect,
-            AddEditLocationScreenInteractionListener>() {
+        AddEditLocationScreenViewModel,
+        AddLocationScreenUIState,
+        AddEditLocationScreenUIEffect,
+        AddEditLocationScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -50,8 +47,8 @@ class AddEditLocationScreen : BaseScreen<
 
     @Composable
     override fun OnRender(
-        state : AddLocationScreenUIState,
-        listener : AddEditLocationScreenInteractionListener
+        state: AddLocationScreenUIState,
+        listener: AddEditLocationScreenInteractionListener
     ) {
         Scaffold(
             topBar = {
@@ -151,10 +148,10 @@ private fun OtherAddressType(
     AnimatedVisibility(
         visible = selectedAddressType == AddressType.Other,
         enter = expandVertically(
-            animationSpec = tween( durationMillis = 500 )
+            animationSpec = tween(durationMillis = 500)
         ),
         exit = shrinkVertically(
-            animationSpec = tween( durationMillis = 500 )
+            animationSpec = tween(durationMillis = 500)
         )
     ) {
 

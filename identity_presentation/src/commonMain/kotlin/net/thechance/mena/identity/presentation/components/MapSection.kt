@@ -21,14 +21,15 @@ import org.maplibre.compose.camera.CameraPosition
 @Composable
 fun MapSection(
     cameraPosition: CameraPosition,
-    onClickEdit:()->Unit,
+    onClickEdit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
-    ){
+    ) {
         Row(
-            modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._4)
+            modifier = Modifier
+                .padding(top = Theme.spacing._8, bottom = Theme.spacing._4)
         ) {
             Text(
                 text = stringResource(Res.string.location),

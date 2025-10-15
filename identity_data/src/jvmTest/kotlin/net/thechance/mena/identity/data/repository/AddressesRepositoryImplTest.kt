@@ -17,7 +17,7 @@ class AddressesRepositoryImplTest {
     lateinit var addressRepositoryImpl: AddressesRepositoryImpl
 
     @Test
-    fun `createAddress() should not throw exception when server returns 200`() = runTest{
+    fun `createAddress() should not throw exception when server returns 200`() = runTest {
         client = mockHttpClient(Unit)
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
@@ -26,7 +26,7 @@ class AddressesRepositoryImplTest {
     }
 
     @Test
-    fun `editAddress() should not throw exception when server returns 200`() = runTest{
+    fun `editAddress() should not throw exception when server returns 200`() = runTest {
         client = mockHttpClient(Unit)
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
@@ -35,28 +35,27 @@ class AddressesRepositoryImplTest {
     }
 
     @Test
-    fun `createAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest{
+    fun `createAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest {
         client = mockHttpClientError(HttpStatusCode.Unauthorized)
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
 
-       assertFailure { addressRepositoryImpl.createAddress(fakeNewAddress) }
-           .isInstanceOf<UnAuthorizedException>()
+        assertFailure { addressRepositoryImpl.createAddress(fakeNewAddress) }
+            .isInstanceOf<UnAuthorizedException>()
     }
 
     @Test
-    fun `editAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest{
+    fun `editAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest {
         client = mockHttpClientError(HttpStatusCode.Unauthorized)
 
         addressRepositoryImpl = AddressesRepositoryImpl(client)
 
-       assertFailure { addressRepositoryImpl.editAddress(fakeExistingAddress) }
-           .isInstanceOf<UnAuthorizedException>()
+        assertFailure { addressRepositoryImpl.editAddress(fakeExistingAddress) }
+            .isInstanceOf<UnAuthorizedException>()
     }
 
 
-
-    val fakeNewAddress= Address(
+    val fakeNewAddress = Address(
         addressLine = "Cairo",
         addressType = "Home",
         latitude = 30.0444,
@@ -64,7 +63,7 @@ class AddressesRepositoryImplTest {
         otherAddressType = null,
         isActive = false
     )
-    val fakeExistingAddress= Address(
+    val fakeExistingAddress = Address(
         id = "123",
         addressLine = "Cairo",
         addressType = "Home",

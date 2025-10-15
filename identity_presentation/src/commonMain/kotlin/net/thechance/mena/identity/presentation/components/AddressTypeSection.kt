@@ -74,6 +74,7 @@ fun AddressTypeSection(
         }
     }
 }
+
 @Composable
 private fun AddressTypeItem(
     addressIcon: Painter,

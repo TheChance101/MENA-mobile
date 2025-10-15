@@ -9,7 +9,7 @@ import net.thechance.mena.identity.domain.repository.AddressesRepository
 
 class AddressesRepositoryImpl(
     val client: HttpClient
-): AddressesRepository {
+) : AddressesRepository {
 
     override suspend fun createAddress(address: Address) {
         return safeWrapper {
@@ -23,15 +23,15 @@ class AddressesRepositoryImpl(
 
     override suspend fun editAddress(address: Address) {
         return safeWrapper {
-           client.postJson(
+            client.postJson(
                 requestDto = address.toDto(),
                 path = "$ADDRESS_ENDPOINT/${address.id}"
-           )
+            )
         }
 
     }
 
-    companion object{
+    companion object {
         const val ADDRESS_ENDPOINT = "identity/addresses"
 
     }

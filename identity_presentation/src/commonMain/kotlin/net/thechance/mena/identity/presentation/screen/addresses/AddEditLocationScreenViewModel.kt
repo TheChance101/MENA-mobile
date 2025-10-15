@@ -43,7 +43,7 @@ class AddEditLocationScreenViewModel(
 
     override fun onClickSave() {
 
-        updateState { copy ( isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true, errorMessage = null) }
 
         tryToExecute(
             function = ::onSave,
@@ -55,27 +55,28 @@ class AddEditLocationScreenViewModel(
 
     override fun onChangeAddress(newAddress: String) {
 
-        updateState { copy ( address = newAddress ) }
+        updateState { copy(address = newAddress) }
         changeIsSaveEnabled()
     }
 
     override fun onChangeOtherAddressType(newType: String) {
 
-        updateState { copy ( otherAddress = newType ) }
+        updateState { copy(otherAddress = newType) }
         changeIsSaveEnabled()
     }
 
-    fun setInitialAddressData( addressID: String,
-                               address: String,
-                               latitude: Double,
-                               longitude: Double,
-                               addressType: AddressType,
-                               otherAddress: String?,
-                               isActive:Boolean
+    fun setInitialAddressData(
+        addressID: String,
+        address: String,
+        latitude: Double,
+        longitude: Double,
+        addressType: AddressType,
+        otherAddress: String?,
+        isActive: Boolean
     ) {
         updateState {
             copy(
-                addressID = addressID ,
+                addressID = addressID,
                 address = address,
                 originalAddress = address,
                 latitude = latitude,
@@ -89,7 +90,7 @@ class AddEditLocationScreenViewModel(
         }
     }
 
-    private suspend fun onSave(){
+    private suspend fun onSave() {
         if (state.value.addressID != null) {
             addressesRepository.editAddress(
                 address = Address(
@@ -108,15 +109,16 @@ class AddEditLocationScreenViewModel(
                     latitude = state.value.latitude,
                     longitude = state.value.longitude,
                     addressLine = state.value.address,
-                    addressType = state.value.addressType?.name?:"",
+                    addressType = state.value.addressType?.name ?: "",
                     otherAddressType = state.value.otherAddress,
                     isActive = state.value.isActive
                 )
             )
         }
     }
+
     private fun onSuccess() {
-        updateState { copy ( isLoading = false ) }
+        updateState { copy(isLoading = false) }
         sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack)
     }
 
@@ -138,14 +140,16 @@ class AddEditLocationScreenViewModel(
             val otherAddressChanged = state.value.otherAddress != state.value.originalOtherAddress
 
             (addressChanged || addressTypeChanged || otherAddressChanged)
-             && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank() ?: false))
+                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
+                ?: false))
 
         } else {
 
             state.value.address.isNotBlank()
-            && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank() ?: false))
-            && state.value.addressType != null
+                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
+                ?: false))
+                    && state.value.addressType != null
         }
-        updateState { copy ( isSaveEnabled = isEnabled ) }
+        updateState { copy(isSaveEnabled = isEnabled) }
     }
 }

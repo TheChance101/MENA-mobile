@@ -1,15 +1,11 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import app.cash.turbine.test
 import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -18,7 +14,6 @@ import net.thechance.mena.identity.domain.repository.AddressesRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -125,7 +120,8 @@ class AddEditLocationScreenViewModelTest {
     }
 
     @Test
-    fun `onClickSave() should call createAddress and handle success when addressID is null `() = runTest {
+    fun `onClickSave() should call createAddress and handle success when addressID is null `() =
+        runTest {
 
             viewModel.onClickAddressType(addressType)
 
@@ -147,7 +143,8 @@ class AddEditLocationScreenViewModelTest {
         }
 
     @Test
-    fun `onClickSave() should call createAddress and handle error when addressID is null`() = runTest {
+    fun `onClickSave() should call createAddress and handle error when addressID is null`() =
+        runTest {
 
             viewModel.onClickAddressType(addressType)
 
@@ -163,7 +160,8 @@ class AddEditLocationScreenViewModelTest {
         }
 
     @Test
-    fun `onClickSave() should call editAddress and handle success when addressID is not null`() = runTest {
+    fun `onClickSave() should call editAddress and handle success when addressID is not null`() =
+        runTest {
 
             viewModel.onClickAddressType(addressType)
 
@@ -195,7 +193,8 @@ class AddEditLocationScreenViewModelTest {
         }
 
     @Test
-    fun `onClickSave() should call editAddress and handle error when addressID is not null`() = runTest {
+    fun `onClickSave() should call editAddress and handle error when addressID is not null`() =
+        runTest {
 
             viewModel.onClickAddressType(addressType)
 
@@ -288,46 +287,49 @@ class AddEditLocationScreenViewModelTest {
     }
 
     @Test
-    fun `changeIsSaveEnabled() should be false in edit mode when otherAddressType is null`() = runTest {
+    fun `changeIsSaveEnabled() should be false in edit mode when otherAddressType is null`() =
+        runTest {
 
-        viewModel.setInitialAddressData(
-            addressID = addressID,
-            address = addressLine,
-            latitude = latitude,
-            longitude = longitude,
-            addressType = addressType,
-            otherAddress = null,
-            isActive = false
-        )
-        viewModel.onClickAddressType(AddressType.Other)
-
-
-        assertTrue { !viewModel.state.value.isSaveEnabled }
-
-    }
-
-    @Test
-    fun `changeIsSaveEnabled() should be false in edit mode when otherAddressType is empty`() = runTest {
-
-        viewModel.setInitialAddressData(
-            addressID = addressID,
-            address = addressLine,
-            latitude = latitude,
-            longitude = longitude,
-            addressType = addressType,
-            otherAddress = null,
-            isActive = false
-        )
-        viewModel.onClickAddressType(AddressType.Other)
-        viewModel.onChangeOtherAddressType(" ")
+            viewModel.setInitialAddressData(
+                addressID = addressID,
+                address = addressLine,
+                latitude = latitude,
+                longitude = longitude,
+                addressType = addressType,
+                otherAddress = null,
+                isActive = false
+            )
+            viewModel.onClickAddressType(AddressType.Other)
 
 
-        assertTrue { !viewModel.state.value.isSaveEnabled }
+            assertTrue { !viewModel.state.value.isSaveEnabled }
 
-    }
+        }
 
     @Test
-    fun `changeIsSaveEnabled() should be true in edit mode when addressType is changed`() = runTest {
+    fun `changeIsSaveEnabled() should be false in edit mode when otherAddressType is empty`() =
+        runTest {
+
+            viewModel.setInitialAddressData(
+                addressID = addressID,
+                address = addressLine,
+                latitude = latitude,
+                longitude = longitude,
+                addressType = addressType,
+                otherAddress = null,
+                isActive = false
+            )
+            viewModel.onClickAddressType(AddressType.Other)
+            viewModel.onChangeOtherAddressType(" ")
+
+
+            assertTrue { !viewModel.state.value.isSaveEnabled }
+
+        }
+
+    @Test
+    fun `changeIsSaveEnabled() should be true in edit mode when addressType is changed`() =
+        runTest {
 
             viewModel.setInitialAddressData(
                 addressID = addressID,
@@ -363,7 +365,8 @@ class AddEditLocationScreenViewModelTest {
     }
 
     @Test
-    fun `changeIsSaveEnabled() should be true in edit mode when otherAddressType is changed`() = runTest {
+    fun `changeIsSaveEnabled() should be true in edit mode when otherAddressType is changed`() =
+        runTest {
 
             viewModel.setInitialAddressData(
                 addressID = addressID,
