@@ -12,7 +12,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 inline fun <reified T> mockHttpClient(response: T): HttpClient {
-    return HttpClient(MockEngine) {
+    return io.ktor.client.HttpClient(MockEngine) {
         install(ContentNegotiation) {
             json()
         }

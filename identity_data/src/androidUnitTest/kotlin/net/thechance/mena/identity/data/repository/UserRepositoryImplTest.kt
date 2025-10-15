@@ -58,7 +58,7 @@ class UserRepositoryImplTest {
     }
 
     private fun mockHttpClient(response: ProfileResponseDto): HttpClient {
-        return HttpClient(MockEngine) {
+        return io.ktor.client.HttpClient(MockEngine) {
             install(ContentNegotiation) {
                 json()
             }
@@ -77,7 +77,7 @@ class UserRepositoryImplTest {
     }
 
     private fun mockHttpClientError(status: HttpStatusCode): HttpClient {
-        return HttpClient(MockEngine) {
+        return io.ktor.client.HttpClient(MockEngine) {
             install(ContentNegotiation) {
                 json()
             }

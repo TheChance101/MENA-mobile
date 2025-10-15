@@ -9,7 +9,6 @@ plugins {
 
 kotlin {
     androidTarget()
-    jvm()
 
     listOf(
         iosX64(),
@@ -25,6 +24,9 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.room.sqlite.wrapper)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.bundles.jvm.test)
         }
         commonMain.dependencies {
             implementation(projects.identityDomain)
@@ -42,9 +44,6 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-        }
-        jvmTest.dependencies {
-            implementation(libs.bundles.jvm.test)
         }
     }
 }

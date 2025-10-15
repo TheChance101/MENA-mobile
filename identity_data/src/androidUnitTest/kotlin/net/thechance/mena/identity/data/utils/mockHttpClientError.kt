@@ -8,7 +8,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 
 fun mockHttpClientError(status: HttpStatusCode): HttpClient {
-        return HttpClient(MockEngine) {
+        return io.ktor.client.HttpClient(MockEngine) {
             install(ContentNegotiation) {
                 json()
             }

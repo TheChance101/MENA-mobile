@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -11,7 +12,6 @@ plugins {
 }
 
 kotlin {
-    jvm()
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -33,13 +33,17 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
+        }
+        androidUnitTest.dependencies{
+            implementation(libs.kotlin.test)
+            implementation(libs.bundles.jvm.test)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
         }
         commonMain.dependencies {
             implementation(projects.identityApi)
             implementation(projects.identityDomain)
             implementation(projects.designSystem)
-
             implementation(libs.squircle.shape)
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -53,13 +57,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
-        jvmTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.bundles.jvm.test)
-            implementation(libs.turbine)
-            implementation(libs.kotlinx.coroutines.test)
-        }
-
     }
 }
 
