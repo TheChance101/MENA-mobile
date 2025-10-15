@@ -58,7 +58,8 @@ class AddEditLocationScreen : BaseScreen<
                 AuthAppBar(
                     title = if (state.addressID == null)
                         stringResource(Res.string.add_location)
-                    else stringResource(Res.string.edit_location),
+                    else
+                        stringResource(Res.string.edit_location),
                     onBackClicked = listener::onClickBack
                 )
             },
