@@ -11,16 +11,27 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 interface StringHoursAndMinutesToInstantMapper {
 
-    fun String?.toInstant(startOfDayTimeStamp: Long): Instant = runCatching {
-        stringTimeToInstant(this, startOfDayTimeStamp)
+    fun String?.toInstant(
+        startOfDayTimeStamp: Long,
+        timeZone: TimeZone = TimeZone.currentSystemDefault()
+    ): Instant = runCatching {
+        stringTimeToInstant(
+            hoursAndMinutes = this,
+            startOfDayTimeStamp = startOfDayTimeStamp,
+            timeZone = timeZone
+        )
     }.getOrDefault(Instant.fromEpochMilliseconds(startOfDayTimeStamp))
 
-    private fun stringTimeToInstant(hoursAndMinutes: String?, startOfDayTimeStamp: Long): Instant {
+    private fun stringTimeToInstant(
+        hoursAndMinutes: String?,
+        startOfDayTimeStamp: Long,
+        timeZone: TimeZone
+    ): Instant {
         val parts = hoursAndMinutes?.split(":").orEmpty()
         val hour = parts[0].toInt()
         val minute = parts[1].toInt()
         val startOfDayInstant = Instant.fromEpochSeconds(startOfDayTimeStamp)
-        val localDate = startOfDayInstant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val localDate = startOfDayInstant.toLocalDateTime(timeZone).date
         val dateTime = LocalDateTime(
             year = localDate.year,
             month = localDate.month.number,
@@ -29,6 +40,6 @@ interface StringHoursAndMinutesToInstantMapper {
             minute = minute
         )
 
-        return dateTime.toInstant(TimeZone.currentSystemDefault())
+        return dateTime.toInstant(timeZone = timeZone)
     }
 }

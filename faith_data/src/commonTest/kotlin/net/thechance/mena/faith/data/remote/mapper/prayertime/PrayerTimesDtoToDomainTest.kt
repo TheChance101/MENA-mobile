@@ -3,6 +3,7 @@ package net.thechance.mena.faith.data.remote.mapper.prayertime
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
 import net.thechance.mena.faith.data.repository.getFakePrayerTimesDto
 import net.thechance.mena.faith.data.repository.getPrayerTimesFakeData
 import net.thechance.mena.faith.domain.entity.PrayerTime
@@ -16,7 +17,7 @@ class PrayerTimesDtoToDomainTest {
     @Test
     fun `toDomain should return list of PrayerTime when PrayerTimesDto is valid`() = runTest {
         //When
-        val result = fakePrayerTimesDto.toDomain()
+        val result = fakePrayerTimesDto.toDomain(timeZone)
         //Then
         assertThat(result).isEqualTo(fakePrayerTimes)
     }
@@ -24,7 +25,7 @@ class PrayerTimesDtoToDomainTest {
     @Test
     fun `toDomain should return data with defaults when data has nulls`() = runTest {
         //When
-        val result = fakePrayerTimesDtoWithNulls.toDomain()
+        val result = fakePrayerTimesDtoWithNulls.toDomain(timeZone)
         //Then
         assertThat(result).isEqualTo(fakePrayerTimesWithDefaults)
 
@@ -60,6 +61,7 @@ class PrayerTimesDtoToDomainTest {
             gregorianMonthName = null,
             gregorianYear = null
         )
+        val timeZone = TimeZone.of("Africa/Cairo")
         val startOfDayInstant: Instant = Instant.fromEpochMilliseconds(0)
         val fakePrayerTimesWithDefaults: List<PrayerTime> = getPrayerTimesFakeData(
             sunriseTime = startOfDayInstant,
