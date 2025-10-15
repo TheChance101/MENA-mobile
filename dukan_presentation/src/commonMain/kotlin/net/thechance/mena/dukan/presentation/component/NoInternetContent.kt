@@ -29,6 +29,8 @@ import mena.dukan_presentation.generated.resources.ic_alert_circle
 import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.no_internet_title
 import mena.dukan_presentation.generated.resources.retry_button
+import mena.dukan_presentation.generated.resources.warning
+import mena.dukan_presentation.generated.resources.wifi_image
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -101,7 +103,7 @@ private fun WifiImage(
                     .padding(top = topPadding)
                     .align(Alignment.TopCenter),
                 painter = painterResource(drawable),
-                contentDescription = null
+                contentDescription = stringResource(Res.string.wifi_image)
             )
         }
 
@@ -118,7 +120,7 @@ private fun WifiImage(
                 .size(33.5.dp)
                 .align(Alignment.TopStart),
             painter = painterResource(Res.drawable.ic_alert_circle),
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.warning),
             colorFilter = ColorFilter.tint(black)
         )
     }

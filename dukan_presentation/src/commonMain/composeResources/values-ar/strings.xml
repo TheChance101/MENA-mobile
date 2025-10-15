@@ -77,5 +77,6 @@
     <string name="no_internet_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
     <string name="no_internet_message">تحقق من الاتصال وحاول مرة أخرى</string>
     <string name="retry_button">إعادة المحاولة</string>
-
+    <string name="warning">ايقونة تحذير</string>
+    <string name="wifi_image">ايقونة الواي فاي</string>
 </resources>
