@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
-    alias(libs.plugins.mockkery)
 }
 
 kotlin {
@@ -49,10 +48,9 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         androidUnitTest.dependencies {
-            implementation(libs.mokkery.core)
-            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.bundles.geoCoder)
             implementation(libs.bundles.geoLocation)
+            implementation(libs.bundles.jvm.test)
         }
         jvmTest.dependencies {
             implementation(libs.bundles.jvm.test)
