@@ -20,7 +20,7 @@ actual fun createDataStore(): DataStore<Preferences> {
                 create = false,
                 error = null
             )
-            val path = requireNotNull(documentDirectory).path + "/tilawah_datastore.preferences_pb"
+            val path = requireNotNull(documentDirectory).path + dataStoreFileName
             path.toPath()
         }
     )

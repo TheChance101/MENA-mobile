@@ -12,7 +12,7 @@ actual fun createDataStore(): DataStore<Preferences> {
     return PreferenceDataStoreFactory.createWithPath(
         produceFile = {
             context.filesDir
-                .resolve("tilawah_datastore.preferences_pb")
+                .resolve(dataStoreFileName)
                 .absolutePath
                 .toPath()
         }
