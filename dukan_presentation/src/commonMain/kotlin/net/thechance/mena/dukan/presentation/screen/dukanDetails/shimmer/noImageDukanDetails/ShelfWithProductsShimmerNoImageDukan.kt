@@ -15,8 +15,7 @@ import net.thechance.mena.dukan.presentation.component.productCard.LoadingProduc
 fun ShelfWithProductsShimmerNoImageDukan() {
     Column(
         Modifier.fillMaxWidth()
-            .padding(top = Theme.spacing._16)
-            .padding(horizontal = Theme.spacing._16)
+            .padding(top = Theme.spacing._16, start = Theme.spacing._16, end = Theme.spacing._16)
     ) {
         LoadingProductsHeader()
         Spacer(Modifier.height(Theme.spacing._8))

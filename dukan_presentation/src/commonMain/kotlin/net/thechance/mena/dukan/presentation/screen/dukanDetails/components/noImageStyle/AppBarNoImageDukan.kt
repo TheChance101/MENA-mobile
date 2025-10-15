@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
@@ -39,16 +40,11 @@ fun AppBarNoImageDukan(
             .fillMaxWidth()
             .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._8)
     ) {
-        AppBarOptionContainer(
+        AppBarIcon(
+            painter = painterResource(Res.drawable.ic_arrow_left),
+            contentDescription = stringResource(Res.string.back_arrow),
             onClick = listener::onBackClicked
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                tint = Theme.colorScheme.primary.primary,
-                contentDescription = stringResource(Res.string.back_arrow),
-                modifier = Modifier.size(40.dp)
-            )
-        }
+        )
         Text(
             text = state.name,
             color = Theme.colorScheme.shadePrimary,
@@ -62,36 +58,39 @@ fun AppBarNoImageDukan(
             modifier = Modifier.padding(start = Theme.spacing._4),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
         ) {
-            AppBarOptionContainer(
+            AppBarIcon(
+                painter = painterResource(Res.drawable.ic_share),
+                contentDescription = stringResource(Res.string.share_icon),
                 onClick = {}
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_share),
-                    tint = Theme.colorScheme.primary.primary,
-                    contentDescription = stringResource(Res.string.share_icon),
-                    modifier = Modifier.size(40.dp)
-                )
-            }
-            AppBarOptionContainer(
+            )
+            AppBarIcon(
+                painter = painterResource(Res.drawable.ic_favorite),
+                contentDescription = stringResource(Res.string.favorite_icon),
                 onClick = {}
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_favorite),
-                    tint = Theme.colorScheme.primary.primary,
-                    contentDescription = stringResource(Res.string.favorite_icon),
-                    modifier = Modifier.size(40.dp)
-                )
-            }
-            AppBarOptionContainer(
+            )
+            AppBarIcon(
+                painter = painterResource(Res.drawable.ic_shopping_basket),
+                contentDescription = stringResource(Res.string.shopping_basket_icon),
                 onClick = {}
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_shopping_basket),
-                    tint = Theme.colorScheme.primary.primary,
-                    contentDescription = stringResource(Res.string.shopping_basket_icon),
-                    modifier = Modifier.size(40.dp)
-                )
-            }
+            )
         }
+    }
+}
+
+@Composable
+private fun AppBarIcon(
+    painter: Painter,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
+    AppBarOptionContainer(
+        onClick = onClick
+    ) {
+        Icon(
+            painter = painter,
+            tint = Theme.colorScheme.primary.primary,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(40.dp)
+        )
     }
 }

@@ -30,12 +30,13 @@ fun ProductActionIconNoImageDukan(
         contentDescription = stringResource(Res.string.add_product),
         modifier = modifier.size(36.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
+            .clickable(onClick = onClick, indication = null, interactionSource = null)
             .border(
                 1.dp,
                 Theme.colorScheme.stroke,
                 RoundedCornerShape(Theme.radius.md)
             )
-            .clickable(onClick = onClick)
+
             .padding(Theme.spacing._8)
     )
 }
