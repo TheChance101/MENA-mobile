@@ -54,10 +54,15 @@ class ChatViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { chatArgs.chatId } returns chatId.toString()
         every { chatArgs.chatName } returns chatName
-        every { chatArgs.chatRequesterId } returns chatRequesterId.toString()
-        every { chatArgs.chatImageUrl } returns chatImage
+
+        everySuspend { repository.getChatById(chatId) } returns mockChat
+        everySuspend { repository.loadMessages(chatId) } returns emptyList()
+        everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
+        every { repository.subscribeToMessages(chatId) } returns flowOf()
+        every { repository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        testDispatcher.scheduler.advanceUntilIdle()
     }
 
     @AfterTest
@@ -67,8 +72,11 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update chat list when its loaded messages successfully`() {
+        everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns messages
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
+        every { repository.subscribeToMessages(chatId) } returns flowOf()
+        every { repository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
@@ -82,7 +90,11 @@ class ChatViewModelTest {
 
     @Test
     fun `init should send snack bar effect when its LOADING the messages failed`() {
+        everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } throws Exception()
+        everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
+        every { repository.subscribeToMessages(chatId) } returns flowOf()
+        every { repository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
@@ -99,7 +111,11 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update uiMessage and chatListItems when receive new message`() {
+        everySuspend { repository.getChatById(chatId) } returns mockChat
+        everySuspend { repository.loadMessages(chatId) } returns emptyList()
+        everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
         every { repository.subscribeToMessages(chatId) } returns flowOf(messages.first())
+        every { repository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
@@ -147,6 +163,7 @@ class ChatViewModelTest {
         chatViewModel.updateState {
             chatViewModel.state.value.copy(
                 chatId = chatId,
+                chatRequesterId = chatRequesterId,
                 inputMessage = inputMessage
             )
         }
@@ -164,11 +181,13 @@ class ChatViewModelTest {
         chatViewModel.updateState {
             chatViewModel.state.value.copy(
                 chatId = chatId,
+                chatRequesterId = chatRequesterId,
                 inputMessage = inputMessage
             )
         }
 
-        // repository.sendMessage not stubbed -> will fail path (or you can explicitly throw)
+        everySuspend { repository.sendMessage(any()) } throws Exception("Send failed")
+
         chatViewModel.onSendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -213,40 +232,27 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onResendMessageClick should update the resend message state to sent when resend message success`() {
+    fun `onResendMessageClick should remove the failed message when resend message success`() {
         val failedMessage =
             messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
 
         chatViewModel.updateState {
             it.copy(
                 chatId = chatId,
+                chatRequesterId = chatRequesterId,
                 failedMessageToReSend = failedMessage,
                 chatListItems = listOf(failedMessage.toChatListMessage())
             )
         }
 
-        everySuspend { repository.loadMessages(chatId) } returns emptyList()
-        everySuspend { repository.getLocalMessages(chatId) } returns listOf(failedMessage.toEntity())
         everySuspend { repository.sendMessage(any()) } returns Unit
 
         chatViewModel.onResendMessageClicked()
-
-        assertThat(
-            chatViewModel.state.value.chatListItems.currentUiMessages().first().status
-        ).isEqualTo(MessageStatus.LOADING)
-
-        val sentMessage = failedMessage.toEntity().copy(status = MessageStatus.SENT)
-        everySuspend { repository.loadMessages(chatId) } returns listOf(sentMessage)
-        everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
-
         testDispatcher.scheduler.advanceUntilIdle()
 
         val finalMessages = chatViewModel.state.value.chatListItems.currentUiMessages()
-        if (finalMessages.isNotEmpty()) {
-            assertThat(finalMessages.first().status).isEqualTo(MessageStatus.SENT)
-        } else {
-            verifySuspend { repository.sendMessage(any()) }
-        }
+        assertThat(finalMessages.isEmpty()).isTrue()
+        verifySuspend { repository.sendMessage(any()) }
     }
 
     @Test
@@ -254,10 +260,14 @@ class ChatViewModelTest {
         val failedMessage = messages.first().toUi(chatRequesterId)
         chatViewModel.updateState {
             it.copy(
+                chatId = chatId,
+                chatRequesterId = chatRequesterId,
                 failedMessageToReSend = failedMessage,
-                chatListItems = listOf(messages.first().toUi(chatRequesterId).toChatListMessage())
+                chatListItems = listOf(failedMessage.toChatListMessage())
             )
         }
+
+        everySuspend { repository.sendMessage(any()) } throws Exception("Send failed")
 
         chatViewModel.onResendMessageClicked()
 
@@ -360,10 +370,14 @@ class ChatViewModelTest {
     }
 
 
-
     @Test
     fun `onSendImageClicked should update message to FAILED status after failed repository call`() {
-
+        chatViewModel.updateState {
+            it.copy(
+                chatId = chatId,
+                chatRequesterId = chatRequesterId
+            )
+        }
 
         val imageByteArray = byteArrayOf(1, 2, 3)
         val imageByteArrays = listOf(imageByteArray)
@@ -390,6 +404,13 @@ class ChatViewModelTest {
         val chatRequesterId = Uuid.parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
         val chatName = "Noor"
         val chatImage = "https://image.com/noor.jpg"
+
+        val mockChat = net.thechance.mena.core_chat.domain.entity.Chat(
+            id = chatId,
+            name = chatName,
+            imageUrl = chatImage,
+            requesterId = chatRequesterId
+        )
 
         val message1Id = Uuid.parse("22222222-2222-2222-2222-222222222222")
         val message2Id = Uuid.parse("33333333-3333-3333-3333-333333333333")

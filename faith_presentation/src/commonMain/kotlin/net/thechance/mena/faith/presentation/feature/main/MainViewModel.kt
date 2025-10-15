@@ -35,7 +35,7 @@ class MainViewModel(
     private fun loadPrayerTimes() {
         tryToExecute(
             execute = {
-                val defaultLocation = Location(latitude = 30.0444, longitude = 31.2357)
+                val defaultLocation = Location(latitude = 30.186173, longitude = 31.158446)
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
                     location = defaultLocation

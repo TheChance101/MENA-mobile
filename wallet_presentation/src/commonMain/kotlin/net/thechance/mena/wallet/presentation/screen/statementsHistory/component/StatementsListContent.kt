@@ -55,7 +55,7 @@ fun StatementsListContent(
                 endDate = statement.endDate,
                 totalInflow = statement.totalInflow.toString(),
                 totalOutflow = statement.totalOutflow.toString(),
-                onStatementCardClicked = { listener.onStatementCardClicked(id = statement.id) }
+                onStatementCardClicked = { listener.onStatementCardClicked(statement) }
             )
 
             if (state.statements.last() != statement) {

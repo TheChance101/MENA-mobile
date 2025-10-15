@@ -32,6 +32,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.component.BackIcon
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -44,7 +45,7 @@ fun CalibrateDeviceScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is CalibrateDeviceEffect.NavigateBack -> navController.navigateUp()
-            is CalibrateDeviceEffect.NavigateToQiblah -> {}
+            is CalibrateDeviceEffect.NavigateToQiblah -> navController.navigate(Route.CompassRoute)
         }
     }
 

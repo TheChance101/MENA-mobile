@@ -23,6 +23,7 @@ import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -68,12 +69,12 @@ class StatementsHistoryViewModelTest {
             everySuspend {
                 statementRepository.getStatements(PAGE, PAGE_SIZE)
             } returns emptyList()
-            val id = 1L
+            val statement= statements[0].toUiState()
             advanceUntilIdle()
             viewModel.uiEffect.test {
-                viewModel.onStatementCardClicked(id)
+                viewModel.onStatementCardClicked(statement)
                 val effect = awaitItem()
-                assertEquals(StatementsHistoryEffect.NavigateToStatementDetails(id), effect)
+                assertEquals(StatementsHistoryEffect.NavigateToStatementDetails(StorageLocation.Downloads(statement.fileName)), effect)
                 cancelAndIgnoreRemainingEvents()
             }
 

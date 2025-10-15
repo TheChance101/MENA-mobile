@@ -2,6 +2,7 @@ package net.thechance.mena.wallet.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,15 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.rendering_pdf_message
-import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -44,14 +40,9 @@ fun PdfViewer(
     }
 
     if (finishedSplittingThePdfToPages.not()) {
-        Text(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            text = stringResource(Res.string.rendering_pdf_message),
-            style = Theme.typography.body.medium,
-            textAlign = TextAlign.Center,
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+        }
     } else {
         LazyColumn(
             modifier = Modifier

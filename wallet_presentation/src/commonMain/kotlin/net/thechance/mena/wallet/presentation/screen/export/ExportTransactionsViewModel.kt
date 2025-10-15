@@ -35,6 +35,7 @@ import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.jetbrains.compose.resources.StringResource
 import org.koin.android.annotation.KoinViewModel
@@ -143,7 +144,7 @@ class ExportTransactionsViewModel(
         tryToExecute(
             onStart = ::onViewAndShareStart,
             callee = ::getStatement,
-            onSuccess = { onViewAndShareSuccess() },
+            onSuccess = ::saveStatementToCache,
             onError = { error -> onViewAndShareError(error) },
             dispatcher = ioDispatcher
         )
@@ -257,9 +258,26 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun onViewAndShareSuccess() {
+    private fun saveStatementToCache(statement: StatementWithMetaData) {
+        tryToExecute(
+            callee = {
+                pdfHandler.savePdf(
+                    byteArray = statement.byteArray,
+                    location = StorageLocation.Cache(getUniqueStatementFileName())
+                )
+            },
+            onSuccess = ::onSaveStatementToCacheSuccess,
+            onError = ::onViewAndShareError
+        )
+    }
+
+    private fun onSaveStatementToCacheSuccess(statementPath: String) {
         resetViewAndShareState()
-        sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(getTransactionFilterParams()))
+
+        val fileName = statementPath.substringAfterLast("/")
+        sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(
+            StorageLocation.Cache(fileName))
+        )
     }
 
     private suspend fun onViewAndShareError(error: ErrorState) {
@@ -322,7 +340,12 @@ class ExportTransactionsViewModel(
 
     private fun downloadStatement(statement: StatementWithMetaData) {
         tryToExecute(
-            callee = { pdfHandler.downloadPdf(pdfData = statement.byteArray, fileName = "statement") },
+            callee = {
+                pdfHandler.savePdf(
+                    byteArray = statement.byteArray,
+                    location = StorageLocation.Downloads(getUniqueStatementFileName())
+                )
+            },
             onSuccess = { filePath -> onDownloadSuccess(filePath, statement) },
             onError = ::onDownloadFailure,
             dispatcher = ioDispatcher
@@ -476,6 +499,12 @@ class ExportTransactionsViewModel(
         updateState { oldState ->
             oldState.copy(isViewAndShareLoading = false, isDownloadButtonEnabled = true)
         }
+    }
+
+
+    @OptIn(ExperimentalTime::class)
+    private fun getUniqueStatementFileName(): String {
+        return "statement_${Clock.System.now().epochSeconds}.pdf"
     }
 
     @OptIn(ExperimentalTime::class)
