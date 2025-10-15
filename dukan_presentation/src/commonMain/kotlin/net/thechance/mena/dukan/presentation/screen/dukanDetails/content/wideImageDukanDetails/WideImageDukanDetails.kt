@@ -1,14 +1,12 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -41,22 +39,19 @@ fun WideImageDukanDetails(
         },
         modifier = Modifier.fillMaxSize()
     ) {
-        Box {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 160.dp),
-                contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-            ) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    DukanHeader(state = state.dukanInfo)
-                }
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    DukanShelvesSection(state = state, listener = listener)
-                }
-                ProductsGridSection(state = state)
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 160.dp),
+            contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+        ) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                DukanHeader(state = state.dukanInfo)
             }
-            DukanActionButtons(state = state.dukanInfo, modifier = Modifier.align(Alignment.TopEnd))
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                DukanShelvesSection(state = state, listener = listener)
+            }
+            ProductsGridSection(state = state)
         }
     }
 }

@@ -67,10 +67,16 @@ internal fun WideImageDukanDetailsAppBar(
 
 @Composable
 internal fun DukanHeader(state: DukanDetailsUiState.DukanInfo) {
-    DukanImageAndTitle(
-        state = state,
-        modifier = Modifier.padding(end = Theme.spacing._4 + Theme.spacing._2)
-    )
+    Box {
+        DukanImageAndTitle(
+            state = state,
+            modifier = Modifier.padding(end = Theme.spacing._4 + Theme.spacing._2)
+        )
+        DukanActionButtons(
+            state = state,
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
+    }
 }
 
 @Composable
@@ -126,7 +132,7 @@ private fun DukanImageAndTitle(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.Black.copy(alpha = 0.5f)
+                            Color(state.color).copy(alpha = 0.5f)
                         ),
                         startY = 100f
                     )

@@ -44,7 +44,7 @@ internal fun DukanShelvesSection(
             text = stringResource(Res.string.products),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = Theme.spacing._16)
+            modifier = Modifier.padding(top = Theme.spacing._8)
         )
         AnimatedContent(
             targetState = state.shelvesState,
