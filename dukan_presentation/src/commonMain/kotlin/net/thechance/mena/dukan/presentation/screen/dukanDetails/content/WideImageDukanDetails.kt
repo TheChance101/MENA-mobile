@@ -20,9 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -62,6 +63,8 @@ import net.thechance.mena.dukan.presentation.component.productCard.PriceWithIcon
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.createFakePager
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
@@ -87,10 +90,18 @@ fun WideImageDukanDetails(
         modifier = Modifier.fillMaxSize()
     ) {
         Box {
-            LazyColumn {
-                item { DukanHeader(state = state.dukanInfo) }
-                item { DukanShelvesSection(state = state, listener = listener) }
-                item { DukanProductsSection(state = state) }
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(160.dp),
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    DukanHeader(state = state.dukanInfo)
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    DukanShelvesSection(state = state, listener = listener)
+                }
+                ProductsGridSection(state = state)
             }
             DukanActionButtons(state = state.dukanInfo, modifier = Modifier.align(Alignment.TopEnd))
         }
@@ -124,7 +135,7 @@ private fun WideImageDukanDetailsAppBar(
 private fun DukanHeader(state: DukanDetailsUiState.DukanInfo) {
     DukanImageAndTitle(
         state = state,
-        modifier = Modifier.padding(horizontal = Theme.spacing._16)
+        modifier = Modifier.padding(start = 16.dp, end = 22.dp)
     )
 }
 
@@ -245,7 +256,11 @@ private fun DukanShelvesSection(
     )
     AnimatedContent(
         targetState = state.shelvesState,
-        transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
+        transitionSpec = {
+            fadeIn(
+                tween(300)
+            ) togetherWith fadeOut(tween(300))
+        },
         label = "Shelves Animation",
         modifier = Modifier.padding(vertical = Theme.spacing._16)
     ) { targetState ->
@@ -296,66 +311,6 @@ private fun LoadedShelves(
                 isSelected = (shelf.id == selectedShelfId),
                 onClick = { onShelfClick(shelf.id) },
                 selectedBackgroundColor = chipColor,
-            )
-        }
-    }
-}
-
-@Composable
-private fun DukanProductsSection(state: DukanDetailsUiState, modifier: Modifier = Modifier) {
-    AnimatedContent(
-        targetState = state.productsState,
-        transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
-        label = "Products Animation",
-        modifier = modifier
-    ) { targetState ->
-        when (targetState) {
-            DukanDetailsUiState.ProductsState.LOADING -> LoadingProductsGrid()
-            DukanDetailsUiState.ProductsState.LOADED -> ProductsGrid(products = state.productsShelf.items)
-            DukanDetailsUiState.ProductsState.EMPTY -> {}
-        }
-    }
-}
-
-@Composable
-private fun LoadingProductsGrid() {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        userScrollEnabled = false,
-        modifier = Modifier.height(500.dp)
-    ) {
-        items(count = 6) {
-            ProductCard(
-                imageUrl = "",
-                title = "          ",
-                price = "      ",
-                onClick = {},
-                isEnabled = false
-            )
-        }
-    }
-}
-
-@Composable
-private fun ProductsGrid(
-    products: List<DukanDetailsUiState.ProductUiState>,
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(160.dp),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        userScrollEnabled = false
-    ) {
-        items(items = products, key = { it.id }) { product ->
-            ProductCard(
-                imageUrl = product.imageUrl,
-                title = product.name,
-                price = "$${product.price}",
-                onClick = {}
             )
         }
     }
@@ -418,104 +373,104 @@ private fun ProductCard(
     }
 }
 
-@Preview(showBackground = true, name = "Image and Title")
+private fun LazyGridScope.ProductsGridSection(
+    state: DukanDetailsUiState,
+) {
+    when (state.productsState) {
+        DukanDetailsUiState.ProductsState.LOADING -> {
+            items(count = 6) {
+                ProductCard(
+                    imageUrl = "",
+                    title = "...",
+                    price = "...",
+                    onClick = {},
+                    isEnabled = false
+                )
+            }
+        }
+
+        DukanDetailsUiState.ProductsState.LOADED -> {
+            items(items = state.productsShelf.items, key = { it.id }) { product ->
+                ProductCard(
+                    imageUrl = product.imageUrl,
+                    title = product.name,
+                    price = "$${product.price}",
+                    onClick = {}
+                )
+            }
+        }
+
+        DukanDetailsUiState.ProductsState.EMPTY -> {
+            item(span = { GridItemSpan(maxLineSpan) }) {}
+        }
+    }
+}
+
+
+@Preview(showBackground = true, name = "Full Screen Preview")
 @Composable
-private fun DukanImageAndTitlePreview() {
+private fun WideImageDukanDetailsPreview() {
+    val mockShelves = listOf(
+        DukanDetailsUiState.ShelfUiState(id = "1", name = "Fruits"),
+        DukanDetailsUiState.ShelfUiState(id = "2", name = "Vegetables"),
+        DukanDetailsUiState.ShelfUiState(id = "3", name = "Baked Goods"),
+        DukanDetailsUiState.ShelfUiState(id = "4", name = "Dairy"),
+    )
+
+    val mockProducts = fakeProducts().map {
+        DukanDetailsUiState.ProductUiState(
+            id = it.id,
+            name = it.name,
+            imageUrl = it.imageUrl,
+            price = it.price,
+            description = it.description ?: ""
+        )
+    }
+    val fakeShelfPager = createFakePager<Int, DukanDetailsUiState.ShelfUiState>(items = mockShelves)
+    val fakeProductPager =
+        createFakePager<Int, DukanDetailsUiState.ProductUiState>(items = mockProducts)
+    val mockDukanState = DukanDetailsUiState(
+        dukanInfo = DukanDetailsUiState.DukanInfo(
+            name = "Sarah's Fresh Market",
+            imageUrl = "https://via.placeholder.com/800x400/228B22/FFFFFF?text=Sarah's+Market",
+            color = 0xFF228B22
+        ),
+        shelvesState = DukanDetailsUiState.ShelvesState.LOADED,
+        shelves = PagingData(items = mockShelves),
+        shelfIdSelected = "2",
+        productsState = DukanDetailsUiState.ProductsState.LOADED,
+        productsShelf = PagingData(items = mockProducts)
+    )
+
     MenaTheme {
-        DukanImageAndTitle(
+        WideImageDukanDetails(
+            state = mockDukanState,
+            listener = PreviewDukanDetailsInteractionListener,
+            pagerShelf = fakeShelfPager,
+            pagerProduct = fakeProductPager,
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "AppBar")
+@Composable
+private fun WideImageDukanDetailsAppBarPreview() {
+    MenaTheme {
+        WideImageDukanDetailsAppBar(onBackClicked = {}, onCartClicked = {})
+    }
+}
+
+@Preview(showBackground = true, name = "Header")
+@Composable
+private fun DukanHeaderPreview() {
+    MenaTheme {
+        DukanHeader(
             state = DukanDetailsUiState.DukanInfo(
                 name = "My Awesome Dukan",
                 imageUrl = "https://via.placeholder.com/400x188",
                 color = 0xFF4CAF50
             )
         )
-    }
-}
-
-@Preview(showBackground = true, name = "Icon Buttons")
-@Composable
-private fun DukanIconButtonPreview() {
-    MenaTheme {
-        Column {
-            DukanIconButton(
-                icon = painterResource(Res.drawable.ic_favorite),
-                iconColor = Theme.colorScheme.secondary.secondary,
-                onIconClick = {}
-            )
-            DukanIconButton(
-                icon = painterResource(Res.drawable.ic_share),
-                iconColor = Theme.colorScheme.secondary.secondary,
-                onIconClick = {}
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true, name = "Shelves - Loading State")
-@Composable
-private fun DukanShelvesRowLoadingPreview() {
-    MenaTheme {
-        LoadingShelves()
-    }
-}
-
-@Preview(showBackground = true, name = "Shelves - Loaded State")
-@Composable
-private fun DukanShelvesRowLoadedPreview() {
-    MenaTheme {
-        LoadedShelves(
-            shelves = listOf(
-                DukanDetailsUiState.ShelfUiState(id = "1", name = "Dairy & Eggs"),
-                DukanDetailsUiState.ShelfUiState(id = "2", name = "Fresh Produce"),
-                DukanDetailsUiState.ShelfUiState(id = "3", name = "Bakery"),
-            ),
-            selectedShelfId = "2",
-            onShelfClick = {},
-            chipColor = Theme.colorScheme.secondary.secondary
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Products Section - Loading")
-@Composable
-private fun DukanProductsSectionLoadingPreview() {
-    MenaTheme {
-        DukanProductsSection(
-            state = DukanDetailsUiState(productsState = DukanDetailsUiState.ProductsState.LOADING)
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Products Section - Loaded")
-@Composable
-private fun DukanProductsSectionLoadedPreview() {
-    val mockProducts = fakeProducts().map {
-        DukanDetailsUiState.ProductUiState(
-            id = it.id, name = it.name, imageUrl = it.imageUrl, price = it.price,
-            description = it.description ?: ""
-        )
-    }
-    MenaTheme {
-        DukanProductsSection(
-            state = DukanDetailsUiState(
-                productsState = DukanDetailsUiState.ProductsState.LOADED,
-                productsShelf = PagingData(items = mockProducts)
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Header Icon")
-@Composable
-private fun DukanHeaderIconPreview() {
-    MenaTheme {
-        Row(modifier = Modifier.padding(16.dp)) {
-            DukanHeaderIcon(
-                icon = painterResource(Res.drawable.ic_shopping_basket),
-                isBadgeVisible = true,
-                onIconClick = {}
-            )
-        }
     }
 }
 
@@ -536,16 +491,124 @@ private fun DukanActionButtonsPreview() {
     }
 }
 
-@Preview(showBackground = true, name = "Products Grid Standalone")
+@Preview(showBackground = true, name = "Header Icon")
 @Composable
-private fun ProductsGridPreview() {
-    val mockProducts = fakeProducts().map {
-        DukanDetailsUiState.ProductUiState(
-            id = it.id, name = it.name, imageUrl = it.imageUrl, price = it.price,
-            description = it.description ?: ""
+private fun DukanHeaderIconPreview() {
+    MenaTheme {
+        Row(modifier = Modifier.padding(16.dp)) {
+            DukanHeaderIcon(
+                icon = painterResource(Res.drawable.ic_shopping_basket),
+                isBadgeVisible = true,
+                onIconClick = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Image and Title")
+@Composable
+private fun DukanImageAndTitlePreview() {
+    MenaTheme {
+        DukanImageAndTitle(
+            state = DukanDetailsUiState.DukanInfo(
+                name = "My Awesome Dukan",
+                imageUrl = "https://via.placeholder.com/400x188",
+                color = 0xFF4CAF50
+            )
         )
     }
+}
+
+@Preview(showBackground = true, name = "Icon Buttons")
+@Composable
+private fun DukanIconButtonPreview() {
     MenaTheme {
-        ProductsGrid(products = mockProducts)
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            DukanIconButton(
+                icon = painterResource(Res.drawable.ic_favorite),
+                iconColor = Theme.colorScheme.secondary.secondary,
+                onIconClick = {}
+            )
+            DukanIconButton(
+                icon = painterResource(Res.drawable.ic_share),
+                iconColor = Theme.colorScheme.secondary.secondary,
+                onIconClick = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Shelves Section - Loading")
+@Composable
+private fun DukanShelvesSectionLoadingPreview() {
+    MenaTheme {
+        DukanShelvesSection(
+            state = DukanDetailsUiState(shelvesState = DukanDetailsUiState.ShelvesState.LOADING),
+            listener = PreviewDukanDetailsInteractionListener
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Shelves Section - Loaded")
+@Composable
+private fun DukanShelvesSectionLoadedPreview() {
+    MenaTheme {
+        DukanShelvesSection(
+            state = DukanDetailsUiState(
+                shelvesState = DukanDetailsUiState.ShelvesState.LOADED,
+                shelves = PagingData(
+                    items = listOf(
+                        DukanDetailsUiState.ShelfUiState(id = "1", name = "Dairy & Eggs"),
+                        DukanDetailsUiState.ShelfUiState(id = "2", name = "Fresh Produce"),
+                        DukanDetailsUiState.ShelfUiState(id = "3", name = "Bakery"),
+                    )
+                ),
+                shelfIdSelected = "2",
+                dukanInfo = DukanDetailsUiState.DukanInfo(color = 0xFF4CAF50)
+            ),
+            listener = PreviewDukanDetailsInteractionListener
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Shelves - Loading State")
+@Composable
+private fun LoadingShelvesPreview() {
+    MenaTheme {
+        LoadingShelves()
+    }
+}
+
+@Preview(showBackground = true, name = "Shelves - Loaded State")
+@Composable
+private fun LoadedShelvesPreview() {
+    MenaTheme {
+        LoadedShelves(
+            shelves = listOf(
+                DukanDetailsUiState.ShelfUiState(id = "1", name = "Dairy & Eggs"),
+                DukanDetailsUiState.ShelfUiState(id = "2", name = "Fresh Produce"),
+                DukanDetailsUiState.ShelfUiState(id = "3", name = "Bakery"),
+            ),
+            selectedShelfId = "2",
+            onShelfClick = {},
+            chipColor = Theme.colorScheme.secondary.secondary
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Product Card")
+@Composable
+private fun ProductCardPreview() {
+    MenaTheme {
+        ProductCard(
+            imageUrl = fakeProducts().first().imageUrl,
+            title = fakeProducts().first().name,
+            price = "$${fakeProducts().first().price}",
+            onClick = {},
+            modifier = Modifier.padding(8.dp)
+        )
     }
 }
