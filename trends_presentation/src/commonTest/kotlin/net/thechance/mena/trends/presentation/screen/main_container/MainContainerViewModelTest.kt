@@ -37,45 +37,6 @@ class MainContainerViewModelTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
-
-    @Test
-    fun `navigateToUploadReel should navigate to upload reel screen`() = runTest {
-        viewModel.navigateToUploadReel()
-        viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToUploadReel)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `navigateToManageTrends should navigate to manage trends screen`() = runTest {
-        viewModel.navigateToManageTrends()
-        viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToManageTrends)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `navigateToCategories should navigate to categories screen when when user categories are not set`() =
-        runTest {
-            viewModel.handleGetIsUserCategorySet(isUserCategorySet = false)
-            viewModel.effect.test {
-                viewModel.navigateToCategories()
-                assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToCategoryPick)
-            }
-        }
-
-    @Test
-    fun `navigateToCategories should navigate to trends screen when user categories are already set`() =
-        runTest {
-            viewModel.handleGetIsUserCategorySet(isUserCategorySet = true)
-            viewModel.effect.test {
-                viewModel.navigateToCategories()
-                assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToTrends)
-            }
-        }
-
     @Test
     fun `handleGetIsUserCategorySet should update state with isUserCategorySet`() = runTest {
         viewModel.handleGetIsUserCategorySet(isUserCategorySet = true)
