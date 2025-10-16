@@ -1,8 +1,10 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.navigation
 
 import kotlinx.serialization.Serializable
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -10,46 +12,49 @@ import kotlin.uuid.Uuid
 sealed class WalletRoute
 
 @Serializable
-data object WalletMainScreenRoute: WalletRoute()
+data object WalletMainScreenRoute : WalletRoute()
 
 @Serializable
-data object TransactionsHistoryScreenRoute: WalletRoute()
+data object TransactionsHistoryScreenRoute : WalletRoute()
 
 @Serializable
 data object StatementsHistoryScreenRoute : WalletRoute()
 
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
-data class StatementDetailsScreenRoute(val id: String) : WalletRoute()
+data class StatementDetailsScreenRoute(val statementLocation: StorageLocation) : WalletRoute()
 
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class TransactionDetailsScreenRoute(
     val id: String
-): WalletRoute() {
+) : WalletRoute() {
     init {
         Uuid.parse(id)
     }
 }
 
 @Serializable
-data object ExportTransactionsScreenRoute: WalletRoute()
-
-@Serializable
-data class ViewTransactionsStatementScreenRoute(
-    val types: List<TransactionType>? = null,
-    val status: TransactionStatus? = null,
-    val startDate: String? = null,
-    val endDate: String? = null,
-): WalletRoute()
+data object ExportTransactionsScreenRoute : WalletRoute()
 
 @OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class ConfirmPaymentScreenRoute(
-    val id: String,
+    val transactionId: String,
     val amount: Double
-): WalletRoute() {
+) : WalletRoute() {
     init {
-        Uuid.parse(id)
+        Uuid.parse(transactionId)
+    }
+}
+
+@Serializable
+data class PaymentResultScreenRoute(
+    val transactionId: String,
+    val submitTransactionResultStatus: String,
+    val receiverName: String,
+    val amount: Double
+) : WalletRoute() {
+    init {
+        Uuid.parse(transactionId)
+        SubmissionStatus.valueOf(submitTransactionResultStatus)
     }
 }

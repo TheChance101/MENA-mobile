@@ -63,7 +63,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should expand description when onDescriptionClick is called with collapsed state`() = runTest {
+    fun `onDescriptionClick should expand description when called with collapsed state`() = runTest {
         viewModel.onDescriptionClick(isCollapsed = false)
 
         viewModel.state.test {
@@ -74,7 +74,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should collapse description when onDescriptionClick is called with expanded state`() = runTest {
+    fun `onDescriptionClick should collapse description when called with expanded state`() = runTest {
         viewModel.onDescriptionClick(isCollapsed = true)
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -86,7 +86,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should send NavigateBack effect when onBackClick is called`() = runTest {
+    fun `onBackClick should send NavigateBack effect when called`() = runTest {
         viewModel.onBackClick()
 
         viewModel.effect.test {
@@ -97,7 +97,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should show confirmation dialog when onDeleteClick is called`() = runTest {
+    fun `onDeleteClick should show confirmation dialog when called`() = runTest {
         viewModel.onDeleteClick()
 
         viewModel.state.test {
@@ -108,7 +108,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should dismiss confirmation dialog when onDismissConfirmationDialog is called`() = runTest {
+    fun `onDismissConfirmationDialog should dismiss confirmation dialog when called`() = runTest {
         viewModel.onDeleteClick()
 
         viewModel.onDismissConfirmationDialog()
@@ -120,7 +120,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should delete reel successfully when onConfirmDeleteClick is called`() = runTest {
+    fun `onConfirmDeleteClick should delete reel successfully when is called`() = runTest {
         viewModel.onConfirmDeleteClick()
 
         viewModel.state.test {
@@ -135,7 +135,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should dismiss success dialog when onDismissSuccessDialog is called`() = runTest {
+    fun `onDismissSuccessDialog should dismiss success dialog when called`() = runTest {
         viewModel.onDismissSuccessDialog()
 
         viewModel.state.test {
@@ -147,7 +147,7 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `should dismiss error dialog when onDismissErrorDialog is called`() = runTest {
+    fun `onDismissErrorDialog should dismiss error dialog when called`() = runTest {
         viewModel.onDismissErrorDialog()
 
         viewModel.state.test {
@@ -159,10 +159,9 @@ class UserReelViewModelTest {
 
     @Test
     fun `onConfirmDeleteClick should update error state when repository throws exception`() = runTest {
-        val errorMessage = "Delete failed"
 
         val errorMockRepository: ReelsRepository = mock(MockMode.autofill) {
-            everySuspend { deleteReelById("1") } throws Exception(errorMessage)
+            everySuspend { deleteReelById("1") } throws Exception()
         }
 
         val errorViewModel = UserReelViewModel(userReelArgs, errorMockRepository, testDispatcher)

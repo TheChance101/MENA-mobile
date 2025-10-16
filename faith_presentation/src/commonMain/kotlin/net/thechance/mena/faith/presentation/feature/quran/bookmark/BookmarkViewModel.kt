@@ -18,15 +18,18 @@ import mena.faith_presentation.generated.resources.bookmark_removed_successfully
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.base.SnackBarState
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
-import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val resourceProvider: ResourceProvider
-) : BaseViewModel<BookmarksScreenState, BookmarkEffect>(BookmarksScreenState()),
+    snackbarHandler: SnackbarHandler,
+) : BaseViewModel<BookmarksScreenState, BookmarkEffect>(
+    BookmarksScreenState(),
+    snackbarHandler = snackbarHandler
+),
     BookmarkInteractionListener {
 
     private val cachedBookmarksFlow = createBookmarksPagingSource()
@@ -51,7 +54,7 @@ class BookmarkViewModel(
     override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateBack)
 
     override fun onDeleteBookmarkClick(bookmarkId: Int) {
-        tryToExecuteSuspend(
+        tryToExecute(
             dispatcher = dispatcher,
             execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
@@ -78,12 +81,11 @@ class BookmarkViewModel(
         }
     }
 
-    private suspend fun onDeleteBookmarkSuccess() {
-        showSnackBar(
-            message = resourceProvider.getString(Res.string.bookmark_removed_successfully),
-            status = SnackBarState.Status.Success
-        )
-    }
+    private fun onDeleteBookmarkSuccess() = showSnackBar(
+        message = Res.string.bookmark_removed_successfully,
+        status = SnackBarState.Status.Success,
+        scope = viewModelScope
+    )
 
     private fun createBookmarksPagingSource(): Flow<PagingData<AyahBookmark>> {
         return createPagingSourceFlow { pageNumber, pageSize ->

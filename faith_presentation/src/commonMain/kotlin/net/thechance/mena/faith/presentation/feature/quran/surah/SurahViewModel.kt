@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -11,10 +12,10 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.base.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.ISurahArgs
 import net.thechance.mena.faith.presentation.util.ClipboardManager
-import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
 
 class SurahViewModel(
     private val surahArgs: ISurahArgs,
@@ -22,9 +23,13 @@ class SurahViewModel(
     private val clipboardManager: ClipboardManager,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val bookmarkRepository: BookmarkRepository,
-    private val resourceProvider: ResourceProvider
+    snackbarHandler: SnackbarHandler,
 ) : BaseViewModel<SurahScreenState, SurahScreenEffect>(
-    initialState = SurahScreenState(surahId = surahArgs.surahId, surahName = surahArgs.surahName)
+    initialState = SurahScreenState(
+        surahId = surahArgs.surahId,
+        surahName = surahArgs.surahName
+    ),
+    snackbarHandler = snackbarHandler
 ), SurahInteractionListener {
 
     init {
@@ -61,7 +66,7 @@ class SurahViewModel(
     }
 
     override fun onCopyClick(ayahContent: String) {
-        tryToExecuteSuspend(
+        tryToExecute(
             execute = { clipboardManager.copy(ayahContent) },
             onSuccess = { onCopySuccess(ayahContent) },
             onError = { showErrorSnackBar() },
@@ -82,7 +87,7 @@ class SurahViewModel(
     override fun onBackClick() = sendEffect(SurahScreenEffect.NavigateBack)
 
     override fun onBookmarkClick(ayahNumber: Int) {
-        tryToExecuteSuspend(
+        tryToExecute(
             execute = {
                 bookmarkRepository.addAyahBookmark(
                     surahId = surahArgs.surahId,
@@ -100,12 +105,11 @@ class SurahViewModel(
         }
     }
 
-    private suspend fun onAddBookmarkSuccess() {
-        showSnackBar(
-            message = resourceProvider.getString(Res.string.bookmark_added_successfully),
-            status = SnackBarState.Status.Success
-        )
-    }
+    private fun onAddBookmarkSuccess() = showSnackBar(
+        message = Res.string.bookmark_added_successfully,
+        status = SnackBarState.Status.Success,
+        scope = viewModelScope
+    )
 
     override fun onShareClick(ayahContent: String) {
         updateState {
@@ -118,7 +122,7 @@ class SurahViewModel(
         sendEffect(SurahScreenEffect.ShareAyah(ayahContent))
     }
 
-    private suspend fun onCopySuccess(ayahContent: String) {
+    private fun onCopySuccess(ayahContent: String) {
         showSuccessSnackBar()
         updateState {
             it.copy(
@@ -129,19 +133,17 @@ class SurahViewModel(
         }
     }
 
-    private suspend fun showSuccessSnackBar() {
-        showSnackBar(
-            message = resourceProvider.getString(Res.string.copied_ayah_successfully),
-            status = SnackBarState.Status.Success,
-        )
-    }
+    private fun showSuccessSnackBar() = showSnackBar(
+        message = Res.string.copied_ayah_successfully,
+        status = SnackBarState.Status.Success,
+        scope = viewModelScope
+    )
 
-    private suspend fun showErrorSnackBar() {
-        showSnackBar(
-            message = resourceProvider.getString(Res.string.copied_ayah_failed),
-            status = SnackBarState.Status.Error,
-        )
-    }
+    private fun showErrorSnackBar() = showSnackBar(
+        message = Res.string.copied_ayah_failed,
+        status = SnackBarState.Status.Error,
+        scope = viewModelScope
+    )
 
     private fun handleBasmalaVisibility(surahId: Int) {
         val isTawbah = surahId == Surah.SurahOrder.AtTawbah.order

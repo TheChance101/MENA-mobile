@@ -1,0 +1,179 @@
+package net.thechance.mena.faith.presentation.feature.main
+
+import app.cash.turbine.test
+import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
+import dev.mokkery.mock
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
+import net.thechance.mena.faith.domain.entity.PrayerName
+import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
+import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
+import net.thechance.mena.faith.domain.repository.QuranRepository
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class MainViewModelTest {
+
+    private var testDispatcher: TestDispatcher = StandardTestDispatcher()
+    private lateinit var viewModel: MainViewModel
+    private lateinit var quranRepository: QuranRepository
+    private lateinit var prayerTimeRepository: PrayerTimeRepository
+
+    @OptIn(ExperimentalTime::class)
+    @BeforeTest
+    fun setup() {
+        // Given
+        quranRepository = mock(MockMode.autofill)
+        prayerTimeRepository = mock(MockMode.autofill)
+
+        everySuspend { quranRepository.getLastAyahForTilawah() } returns fakeAyah
+        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
+
+        // When
+        viewModel = MainViewModel(quranRepository, prayerTimeRepository, testDispatcher)
+
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `viewModel should load prayer times`() = runTest(testDispatcher) {
+
+        // When
+        advanceUntilIdle()
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.isLoading)
+        assertEquals(fakePrayerTimes.size, state.prayerTimes.size)
+        assertTrue(state.prayerTimes.isNotEmpty())
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `init should handle prayer times error `() = runTest {
+        // Given
+        everySuspend {
+            prayerTimeRepository.getPrayerTimes(
+                any(),
+                any()
+            )
+        } throws Exception("Network error")
+
+        // When
+        val failingViewModel = MainViewModel(quranRepository, prayerTimeRepository, testDispatcher)
+        advanceUntilIdle()
+        val state = failingViewModel.uiState.value
+
+        // Then
+        assertFalse(state.isLoading)
+        assertTrue(state.prayerTimes.isEmpty())
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `onContinueTilawahClick should emit NavigateToSurah effect`() = runTest {
+        // Given
+        advanceUntilIdle()
+
+        // When
+        viewModel.uiEffect.test {
+            viewModel.onContinueTilawahClick(SURAH_ID, SURAH_NAME)
+
+            // Then
+            assertEquals(MainScreenEffect.NavigateToSurah(SURAH_ID, SURAH_NAME), awaitItem())
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `onQiblahClick should emit NavigateToQiblah effect`() = runTest {
+        // Given
+        advanceUntilIdle()
+
+        // When
+        viewModel.uiEffect.test {
+            viewModel.onQiblahClick()
+
+            // Then
+            assertEquals(MainScreenEffect.NavigateToQiblah, awaitItem())
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `onMosquesClick should emit NavigateToMosques effect`() = runTest {
+        // Given
+        advanceUntilIdle()
+
+        // When
+        viewModel.uiEffect.test {
+            viewModel.onMosquesClick()
+
+            // Then
+            assertEquals(MainScreenEffect.NavigateToMosques, awaitItem())
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `multiple navigation clicks should emit multiple effects`() = runTest {
+        // Given
+        advanceUntilIdle()
+
+        // When
+        viewModel.uiEffect.test {
+            viewModel.onQuranClick()
+            // Then
+            assertEquals(MainScreenEffect.NavigateToQuran, awaitItem())
+
+            // When
+            viewModel.onQiblahClick()
+            // Then
+            assertEquals(MainScreenEffect.NavigateToQiblah, awaitItem())
+
+            // When
+            viewModel.onMosquesClick()
+            // Then
+            assertEquals(MainScreenEffect.NavigateToMosques, awaitItem())
+        }
+    }
+
+    private companion object {
+        const val SURAH_ID = 1
+        const val SURAH_NAME = "Al-Fatihah"
+
+        @OptIn(ExperimentalTime::class)
+        private val now = Instant.fromEpochSeconds(1_700_000_000)
+
+        @OptIn(ExperimentalTime::class)
+        val fakePrayerTimes = listOf(
+            PrayerTime(PrayerName.FAJR, now, "1446-04-10"),
+            PrayerTime(PrayerName.SUNRISE, now + 1.hours, "1446-04-10"),
+            PrayerTime(PrayerName.DHUHR, now + 6.hours, "1446-04-10"),
+            PrayerTime(PrayerName.ASR, now + 9.hours, "1446-04-10"),
+            PrayerTime(PrayerName.MAGHRIB, now + 12.hours, "1446-04-10"),
+            PrayerTime(PrayerName.ISHA, now + 13.hours, "1446-04-10")
+        )
+
+        val fakeAyah = LastAyahForTilawah(
+            number = 1,
+            surahId = SURAH_ID,
+            surahName = SURAH_NAME
+        )
+    }
+}

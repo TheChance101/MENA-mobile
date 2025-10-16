@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(projects.identityDomain)
             implementation(libs.bundles.ktor)
+            implementation(libs.androidx.datastore.preferences)
             api(libs.koin.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
@@ -68,10 +69,6 @@ kover.reports {
         }
 
         excludes {
-
-                classes(
-                    "net.thechance.mena.faith.data.repository.PrayerTimeRepositoryImpl"
-                )
             annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
         }
     }

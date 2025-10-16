@@ -19,15 +19,18 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.You_are_about_to_pay
+import mena.wallet_presentation.generated.resources.ic_user
 import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.silver_coin
 import mena.wallet_presentation.generated.resources.to
+import mena.wallet_presentation.generated.resources.user_img
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.PaymentUiState
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.ReceiverUiState
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.GetUserMessage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -35,7 +38,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun PaymentDetailsSection(
-    paymentUiState: PaymentUiState,
+    payment: PaymentUiState,
+    receiver: ReceiverUiState,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -45,9 +49,9 @@ internal fun PaymentDetailsSection(
     ) {
 
         PaymentInfoSection(
-            amount = paymentUiState.amount,
-            receiverName = paymentUiState.receiverName,
-            receiverImage = paymentUiState.receiverImage
+            amount = payment.amount,
+            receiverName = receiver.name,
+            receiverImage = receiver.profileImg
         )
 
         Text(
@@ -55,11 +59,11 @@ internal fun PaymentDetailsSection(
                 .padding(top = Theme.spacing._16)
                 .fillMaxWidth(),
             text = GetUserMessage(
-                paymentStatus = paymentUiState.status,
-                balance = paymentUiState.balance
+                paymentStatus = payment.status,
+                balance = payment.balance
             ),
             style = Theme.typography.body.small,
-            color = if (paymentUiState.status) Theme.colorScheme.shadeSecondary else Theme.colorScheme.error,
+            color = if (payment.status) Theme.colorScheme.shadeSecondary else Theme.colorScheme.error,
             textAlign = TextAlign.Center
         )
     }
@@ -141,7 +145,19 @@ private fun ReceiverInfo(
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
-        receiverImage?.let {
+        if (receiverImage == null) {
+            Icon(
+                modifier = Modifier
+                    .padding(start = Theme.spacing._8)
+                    .size(20.dp)
+                    .background(color = Theme.colorScheme.stroke, shape = CircleShape)
+                    .padding(Theme.spacing._2)
+                    .clip(CircleShape),
+                painter = painterResource(Res.drawable.ic_user),
+                contentDescription = stringResource(Res.string.user_img),
+                tint = Theme.colorScheme.shadeTertiary
+            )
+        } else {
             AsyncImage(
                 modifier = Modifier
                     .padding(start = Theme.spacing._8)
@@ -149,7 +165,7 @@ private fun ReceiverInfo(
                     .size(20.dp),
                 model = receiverImage,
                 contentScale = ContentScale.Crop,
-                contentDescription = stringResource(Res.string.silver_coin),
+                contentDescription = stringResource(Res.string.user_img),
             )
         }
         Text(
@@ -166,7 +182,7 @@ private fun ReceiverInfo(
 private fun PaymentDetailsSectionPreview() {
     MenaTheme {
         Scaffold {
-            PaymentDetailsSection(paymentUiState = PaymentUiState())
+            PaymentDetailsSection(payment = PaymentUiState(), receiver = ReceiverUiState())
         }
     }
 }

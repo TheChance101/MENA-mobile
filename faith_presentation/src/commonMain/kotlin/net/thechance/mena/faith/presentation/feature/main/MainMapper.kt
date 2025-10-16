@@ -11,10 +11,10 @@ import mena.faith_presentation.generated.resources.isha
 import mena.faith_presentation.generated.resources.maghrib
 import mena.faith_presentation.generated.resources.sunrise
 import mena.faith_presentation.generated.resources.surah_al_fatiha
-import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.presentation.util.extentions.formatInstantToTimeString
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
@@ -70,7 +70,7 @@ private fun getCurrentPrayer(prayerTimes: List<PrayerTime>, now: Instant): Praye
     return sortedPrayers.firstOrNull { now < it.time }?.name ?: sortedPrayers.first().name
 }
 
-suspend fun Ayah.toTilawahUiState(): TilawahUiState {
+suspend fun LastAyahForTilawah.toTilawahUiState(): TilawahUiState {
     val surahName = Surah.SurahOrder.entries
         .find { it.order == this.surahId }
         ?.name ?: getString(Res.string.surah_al_fatiha)

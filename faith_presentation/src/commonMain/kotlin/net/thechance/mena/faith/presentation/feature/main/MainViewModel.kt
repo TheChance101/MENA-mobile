@@ -3,9 +3,9 @@ package net.thechance.mena.faith.presentation.feature.main
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
@@ -19,7 +19,7 @@ class MainViewModel(
     private val prayerTimeRepository: PrayerTimeRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<MainScreenState, MainScreenEffect>(
-    initialState = MainScreenState()
+    initialState = MainScreenState(),
 ), MainInteractionListener {
 
     init {
@@ -35,7 +35,7 @@ class MainViewModel(
     private fun loadPrayerTimes() {
         tryToExecute(
             execute = {
-                val defaultLocation = Location(latitude = 30.0444, longitude = 31.2357)
+                val defaultLocation = Location(latitude = 30.186173, longitude = 31.158446)
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
                     location = defaultLocation
@@ -69,7 +69,7 @@ class MainViewModel(
         )
     }
 
-    private fun onGetLastAyahForTilawahSuccess(ayah: Ayah) {
+    private fun onGetLastAyahForTilawahSuccess(ayah: LastAyahForTilawah) {
         tryToExecute(
             execute = { ayah.toTilawahUiState() },
             onSuccess = { tilawahState ->

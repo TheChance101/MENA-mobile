@@ -1,0 +1,9 @@
+package net.thechance.mena.faith.domain.di
+
+import net.thechance.mena.faith.domain.usecase.QiblahBearingCalculatorUseCase
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
+
+val faithDomainModule = module {
+    singleOf(::QiblahBearingCalculatorUseCase)
+}

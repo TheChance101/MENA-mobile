@@ -1,10 +1,108 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.payment_result
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
+import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Provided
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @KoinViewModel
-class PaymentResultViewModel() : BaseViewModel<PaymentResultScreenState, PaymentResultEffect>(
+class PaymentResultViewModel(
+    @Provided private val paymentRepository: PaymentRepository,
+    @Provided private val paymentResultArgs: PaymentResultArgs,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) : BaseViewModel<PaymentResultScreenState, PaymentResultEffect>(
     PaymentResultScreenState()
 ), PaymentResultInteractionListener {
+    private val transactionId = Uuid.parse(paymentResultArgs.transactionId)
+    private val submissionStatus =
+        SubmissionStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
+
+    init {
+        updateState { it.copy(paymentStatus = submissionStatus) }
+    }
+
+    override fun onBackClicked() {
+        resetTryAgainAttempts()
+        sendEffect(PaymentResultEffect.NavigateBack)
+    }
+
+    override fun onTryAgainClicked() {
+        if (currentState.tryAgainAttempts >= 3 || currentState.isLoading) return
+        updateState { oldState ->
+            oldState.copy(
+                isLoading = true,
+                isTryAgainButtonEnabled = false,
+                isCloseButtonEnabled = false
+            )
+        }
+        submitTransaction(transactionId)
+    }
+
+    override fun onCloseClicked() {
+        resetTryAgainAttempts()
+        sendEffect(PaymentResultEffect.NavigateToScreenBeforePaymentProcess)
+    }
+
+    override fun onShowTransactionDetailsClicked() {
+        sendEffect(PaymentResultEffect.NavigateToTransactionDetails(transactionId))
+    }
+
+    private fun submitTransaction(transactionId: Uuid) {
+        tryToExecute(
+            callee = { paymentRepository.submitTransaction(transactionId) },
+            onSuccess = { onSubmitTransactionSuccess() },
+            onError = ::onSubmitTransactionFailed,
+            dispatcher = ioDispatcher
+        )
+    }
+
+    private fun onSubmitTransactionSuccess() {
+        updateState {
+            it.copy(
+                isLoading = false,
+                paymentStatus = SubmissionStatus.SUCCESS,
+                isTryAgainButtonEnabled = false,
+                isCloseButtonEnabled = true
+            )
+        }
+    }
+
+    private fun onSubmitTransactionFailed(error: ErrorState) {
+        val newAttempts = currentState.tryAgainAttempts + 1
+        val canRetry = newAttempts < 3
+
+        updateState {
+            it.copy(
+                isLoading = false,
+                isTryAgainButtonEnabled = canRetry,
+                tryAgainAttempts = newAttempts,
+                isCloseButtonEnabled = true
+            )
+        }
+        when (error) {
+            is ErrorState.NoInternet ->
+                updateState { it.copy(paymentStatus = SubmissionStatus.CONNECTION_LOST) }
+
+            else ->
+                updateState { it.copy(paymentStatus = SubmissionStatus.UNKNOWN_ERROR) }
+        }
+    }
+
+    private fun resetTryAgainAttempts() {
+        updateState {
+            it.copy(
+                tryAgainAttempts = 0,
+                isTryAgainButtonEnabled = true
+            )
+        }
+    }
 }
