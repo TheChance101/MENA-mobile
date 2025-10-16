@@ -12,14 +12,14 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
-import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
+import net.thechance.mena.faith.presentation.util.provider.StringResourceProvider
 import net.thechance.mena.faith.presentation.util.toSearchResult
 
 class SearchViewModel(
     searchArgs: ISearchArgs,
     private val repository: QuranRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val resourceProvider: ResourceProvider
+    private val stringResourceProvider: StringResourceProvider
 ) : BaseViewModel<SearchScreenState, SearchEffect>(
     SearchScreenState(
         searchArgs.surahId,
@@ -74,8 +74,8 @@ class SearchViewModel(
 
     private fun handleHint() {
         tryToExecute({
-            val hintPostfix = uiState.value.surahName ?: resourceProvider.getString(Res.string.quran)
-            val hint = resourceProvider.getString(Res.string.search_in_surah_hint, hintPostfix)
+            val hintPostfix = uiState.value.surahName ?: stringResourceProvider.getString(Res.string.quran)
+            val hint = stringResourceProvider.getString(Res.string.search_in_surah_hint, hintPostfix)
             updateState { it.copy(hint = hint) }
         }, dispatcher = dispatcher)
     }
