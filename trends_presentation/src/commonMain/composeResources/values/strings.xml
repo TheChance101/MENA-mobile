@@ -81,4 +81,7 @@
     <string name="weeks_ago">%1$d weeks ago</string>
     <string name="months_ago">%1$d months ago</string>
     <string name="years_ago">%1$d years ago</string>
+
+    <string name="pause_icon">Pause Icon</string>
+    <string name="avatar_image">avatar image</string>
 </resources>

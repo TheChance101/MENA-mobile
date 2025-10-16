@@ -89,6 +89,7 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel",
+                "net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel",
                 "net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel",
                 "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel",

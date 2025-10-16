@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.manageDukan.compnent
+package net.thechance.mena.dukan.presentation.screen.manageDukan.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -65,7 +65,7 @@ private fun ProductsLayoutPreview() {
             fakeProducts(),
             pager = Pager(
                 config = PagingConfig(),
-                pagingSourceFactory = { FakeProductPagingSource() }
+                pagingSourceFactory = { FakeProductPagingSource }
             ),
         )
     }

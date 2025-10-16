@@ -2,7 +2,9 @@ package net.thechance.mena.dukan.presentation.util.animation
 
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseInCubic
 import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,3 +25,16 @@ fun fadeTransitionSpec(): ContentTransform {
         )
     )
 }
+
+fun fadeCubicTransition(): ContentTransform {
+    return fadeIn(
+        animationSpec = tween(
+            easing = EaseOutCubic
+        )
+    ) togetherWith fadeOut(
+        animationSpec = tween(
+            easing = EaseInCubic
+        )
+    )
+}
+

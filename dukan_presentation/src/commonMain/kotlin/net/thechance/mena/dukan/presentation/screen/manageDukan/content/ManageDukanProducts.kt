@@ -12,21 +12,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.empty_shelf
 import mena.dukan_presentation.generated.resources.shelf_empty_body
 import mena.dukan_presentation.generated.resources.shelf_empty_title
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
+import net.thechance.mena.dukan.presentation.component.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.productCard.LoadingProductCard
-import net.thechance.mena.dukan.presentation.screen.manageDukan.compnent.ProductsList
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ProductsList
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductsState
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ManageDukanProducts(
@@ -65,24 +62,12 @@ fun ManageDukanProducts(
                 pager = pager
             )
 
-            ProductsState.EMPTY -> EmptyStateContent()
+            ProductsState.EMPTY -> EmptyStateContent(
+                image = Res.drawable.empty_shelf,
+                title = Res.string.shelf_empty_title,
+                body = Res.string.shelf_empty_body
+            )
 
         }
     }
-}
-
-@Composable
-private fun EmptyStateContent() {
-    ImageWithTextContainer(
-        foregroundImageRes = Res.drawable.empty_shelf,
-        header = {
-            Text(
-                text = stringResource(Res.string.shelf_empty_title),
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary,
-                textAlign = TextAlign.Center
-            )
-        },
-        bodyText = stringResource(Res.string.shelf_empty_body)
-    )
 }

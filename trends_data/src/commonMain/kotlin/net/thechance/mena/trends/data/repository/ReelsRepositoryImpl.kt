@@ -21,7 +21,6 @@ import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.FEED_ENDPOINT
-import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
@@ -31,10 +30,11 @@ import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
 import net.thechance.mena.trends.data.util.NetworkConstants.USER
 import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
+import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.getMediaMimeType
-import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
+import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -61,9 +61,13 @@ internal class ReelsRepositoryImpl(
         }.results?.map { it.toEntity() }.orEmpty()
     }
 
-    override suspend fun getFeedReels(page: Int): List<Reel> {
+    override suspend fun getFeedReels(page: Int, reelId: String?): List<Reel> {
+        val endpoint = reelId?.let {
+            "$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT/$it"
+        } ?: "$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT"
+
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
-            networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT") {
+            networkClient.get(endpoint) {
                 parameter(PAGE_PARAMETER, page)
             }
         }.results.orEmpty().map { it.toEntity() }
