@@ -11,6 +11,7 @@ import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -55,6 +56,21 @@ class StatementsHistoryViewModelTest {
     @AfterTest
     fun terDown() {
         Dispatchers.resetMain()
+    }
+    @Test
+    fun `onBackClicked should send NavigateBack effect`() = runTest(testDispatcher) {
+        everySuspend {
+            statementRepository.getStatements(any(), any())
+        } returns emptyList()
+
+        advanceUntilIdle()
+
+        viewModel.uiEffect.test {
+            viewModel.onBackClicked()
+            val effect = awaitItem()
+            assertEquals(StatementsHistoryEffect.NavigateBack, effect)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -292,6 +308,43 @@ class StatementsHistoryViewModelTest {
         viewModel.onCancelEditModeClicked()
         viewModel.state.test {
             assertFalse(awaitItem().isEditMode)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onStatementCardClicked should navigate when PDF exists`() = runTest(testDispatcher) {
+        everySuspend {
+            statementRepository.getStatements(any(), any())
+        } returns statements
+
+        val statement = statements[0].toUiState()
+
+        everySuspend {
+            pdfHandler.checkIfPdfExists(StorageLocation.Downloads(statement.fileName))
+        } returns true
+
+        advanceUntilIdle()
+
+        var pdfFound: Boolean? = null
+
+        viewModel.uiEffect.test {
+            viewModel.onStatementCardClicked(
+                statement = statement,
+                onViewStatementAvailable = { isPdfFound ->
+                    pdfFound = isPdfFound
+                }
+            )
+            advanceUntilIdle()
+
+            assertTrue(pdfFound == true)
+            val effect = awaitItem()
+            assertEquals(
+                StatementsHistoryEffect.NavigateToStatementDetails(
+                    StorageLocation.Downloads(statement.fileName)
+                ),
+                effect
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
