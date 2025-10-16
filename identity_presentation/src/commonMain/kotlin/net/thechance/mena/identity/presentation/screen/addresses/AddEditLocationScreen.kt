@@ -36,9 +36,9 @@ import org.koin.core.parameter.parametersOf
 import org.maplibre.compose.camera.CameraPosition
 
 class AddEditLocationScreen(
-    private val latitude: Double?,
-    private val longitude: Double?,
-    private val address: String?,
+    private val latitude: Double? = null,
+    private val longitude: Double? = null,
+    private val address: String? = null,
 ) : BaseScreen<
         AddEditLocationScreenViewModel,
         AddLocationScreenUIState,
