@@ -30,7 +30,14 @@ val identityScreensModule = module {
     factoryOf(::OtpScreenViewModel)
     factoryOf(::ProfileScreenViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
-    factoryOf(::PickLocationScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
     factoryOf(::AddEditLocationScreenViewModel)
+    factoryOf(::PickLocationScreenViewModel)
+    factory {
+        PickLocationScreenViewModel(
+            locationForegroundHandler = get(),
+            mobileLocationRepository = get(),
+            location = getOrNull()
+        )
+    }
 }

@@ -37,7 +37,7 @@ fun EditMapButton(
                     .background(Color.Black)
                     .padding(
                         horizontal = Theme.spacing._16,
-                        vertical = Theme.spacing._12
+                        vertical = 14.dp
                     ).size(20.dp),
                 painter = painterResource(Res.drawable.ic_edit),
                 contentDescription = null

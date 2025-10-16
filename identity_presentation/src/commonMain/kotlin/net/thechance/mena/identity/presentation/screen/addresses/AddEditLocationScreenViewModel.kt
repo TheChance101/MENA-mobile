@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
+import androidx.compose.ui.unit.DpOffset
+import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -8,29 +10,50 @@ import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import org.maplibre.compose.camera.CameraPosition
 
 class AddEditLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val initialLatitude: Double?,
-    private val initialLongitude: Double?,
-    private val initialAddress: String?,
+    private val locationData: AddLocationScreenUIState.PickLocationData?
 ) : BaseScreenModel<AddLocationScreenUIState, AddEditLocationScreenUIEffect>
     (AddLocationScreenUIState()),
     AddEditLocationScreenInteractionListener {
 
-    override fun onClickMap() {
+    init {
+        if (locationData != null) {
+            updateState {
+                copy(
+                    latitude = locationData.latitude,
+                    longitude = locationData.longitude,
+                    address = locationData.address ,
+                    animateToCurrentLocation = true,
+                    cameraPosition = CameraPosition(
+                        target = Position(
+                            longitude = locationData.longitude,
+                            latitude = locationData.latitude
+                        ),
+                        zoom = 15.0
+                    )
+                )
+            }
+        }
+    }
 
+    override fun onClickMap() {
         sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap())
     }
 
     override fun onClickEdit() {
-
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap(
-            latitude = state.value.latitude,
-            longitude = state.value.longitude,
-            address = state.value.address
-        ))
+        sendNewEffect(
+            AddEditLocationScreenUIEffect.NavigateToMap(
+                AddLocationScreenUIState.PickLocationData(
+                    latitude = state.value.latitude,
+                    longitude = state.value.longitude,
+                    address = state.value.address
+                )
+            )
+        )
     }
 
     override fun onClickBack() {
@@ -71,6 +94,11 @@ class AddEditLocationScreenViewModel(
         updateState { copy(otherAddress = newType) }
         changeIsSaveEnabled()
     }
+
+    override fun onSetAnchorLocation(anchorLocation: DpOffset) {
+        updateState { copy(anchorLocation = anchorLocation) }
+    }
+
 
     fun setInitialAddressData(
         addressID: String,

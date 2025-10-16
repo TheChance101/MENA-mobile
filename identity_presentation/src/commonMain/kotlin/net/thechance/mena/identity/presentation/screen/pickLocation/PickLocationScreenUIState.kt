@@ -13,7 +13,6 @@ data class PickLocationScreenUIState(
     val animateToCurrentLocation: Boolean = false,
     val currentLocation: CoordinatesUiState = CoordinatesUiState(),
     val address: String = "",
-    val isButtonEnabled: Boolean = false,
     val isMapLocked: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
