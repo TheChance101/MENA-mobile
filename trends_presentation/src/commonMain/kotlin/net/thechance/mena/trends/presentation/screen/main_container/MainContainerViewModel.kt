@@ -31,21 +31,14 @@ internal class MainContainerViewModel(
 
     fun handleGetIsUserCategorySet(isUserCategorySet: Boolean) {
         updateState { copy(isCategoriesAlreadySelectedByUser = isUserCategorySet) }
+        navigateBasedOnCategoryState(isUserCategorySet)
     }
 
-    fun navigateToCategories() {
-        if (state.value.isCategoriesAlreadySelectedByUser == true) {
-            sendEffect(MainContainerEffect.NavigateToTrends)
+    private fun navigateBasedOnCategoryState(isUserCategorySet: Boolean) {
+        if (isUserCategorySet) {
+            sendEffect(MainContainerEffect.NavigateToReelHome)
         } else {
             sendEffect(MainContainerEffect.NavigateToCategoryPick)
         }
-    }
-
-    fun navigateToManageTrends() {
-        sendEffect(MainContainerEffect.NavigateToManageTrends)
-    }
-
-    fun navigateToUploadReel() {
-        sendEffect(MainContainerEffect.NavigateToUploadReel)
     }
 }
