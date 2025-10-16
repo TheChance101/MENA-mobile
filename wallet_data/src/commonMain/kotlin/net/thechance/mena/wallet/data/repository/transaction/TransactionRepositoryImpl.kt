@@ -1,6 +1,5 @@
 package net.thechance.mena.wallet.data.repository.transaction
 
-import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.dto.FirstTransactionDateDto
@@ -14,7 +13,6 @@ import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
-import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.koin.core.annotation.Single
@@ -52,7 +50,6 @@ class TransactionRepositoryImpl(
     }
 
     override suspend fun addPendingTransaction(
-        pendingTransactionType: PendingTransactionType,
         receiverId: Uuid,
         amount: Double
     ): Uuid {
@@ -61,8 +58,7 @@ class TransactionRepositoryImpl(
                 setBody(
                     PendingTransactionRequestBody(
                         amount = amount,
-                        receiverId = receiverId.toString(),
-                        type = pendingTransactionType.name
+                        receiverId = receiverId.toString()
                     )
                 )
             }
@@ -71,18 +67,15 @@ class TransactionRepositoryImpl(
 
     override suspend fun getTransactionReceiver(transactionId: Uuid): TransactionReceiver {
         return safeApiCall<TransactionReceiverDto> {
-            networkClient.get("${TRANSACTION_PATH}$RECEIVER_DETAILS"){
-                parameter(TRANSACTION_ID_PARAM, transactionId)
-            }
+            networkClient.get("${TRANSACTION_PATH}/$transactionId$RECEIVER_DETAILS")
         }.toEntity()
     }
 
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
-        const val ADD_TRANSACTION = "/add"
+        const val ADD_TRANSACTION = "/p2p/initiate"
         const val RECEIVER_DETAILS = "/receiver-details"
-        const val TRANSACTION_ID_PARAM = "transactionId"
     }
 
 }

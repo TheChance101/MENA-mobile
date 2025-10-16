@@ -3,6 +3,10 @@ package net.thechance.mena.faith.presentation.util
 import kotlinx.coroutines.flow.Flow
 
 
-expect class AzimuthProvider {
+expect class AzimuthProviderImpl: AzimuthProvider {
+    override fun startListening(): Flow<Float>
+}
+
+interface AzimuthProvider {
     fun startListening(): Flow<Float>
 }

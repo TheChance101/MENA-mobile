@@ -9,6 +9,4 @@ data class PendingTransactionRequestBody(
     val amount: Double,
     @SerialName("receiverId")
     val receiverId: String,
-    @SerialName("type")
-    val type: String
 )

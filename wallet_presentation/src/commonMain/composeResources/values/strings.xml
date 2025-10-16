@@ -11,7 +11,7 @@
     <string name="type">Type</string>
     <string name="status">Status</string>
     <string name="from">From</string>
-    <string name="to">To</string>
+    <string name="to">to</string>
     <string name="select_date">Select Date</string>
     <string name="sent">Sent</string>
     <string name="received">Received</string>
@@ -108,7 +108,7 @@
     <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
     <string name="inflows">Inflows</string>
     <string name="outflows">Outflows</string>
-    <string name="silvers">Silvers</string>
+    <string name="silvers">silvers</string>
     <string name="date_range">%1$s - %2$s</string>
     <string name="amount_with_currency">%1$s %2$s</string>
     <string name="statements">Statements</string>
@@ -121,6 +121,7 @@
     <string name="confirm_payment_content_failed">You only have %1$s silvers in your wallet, which isn’t enough.</string>
     <string name="You_are_about_to_pay">You’re about to pay</string>
     <string name="pay_amount">Pay %1$s</string>
+    <string name="user_img">user image</string>
 
     <string name="transaction_successful">Transaction Successful!</string>
     <string name="show_transaction_details">Show Transaction Details</string>
@@ -130,4 +131,5 @@
     <string name="try_again">Try Again</string>
     <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
     <string name="you_paid">You paid</string>
+    <string name="payment_status_crossfade">Payment status transition</string>
 </resources>

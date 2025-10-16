@@ -17,7 +17,6 @@ import net.thechance.mena.wallet.data.repository.transaction.TransactionReposito
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
-import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.model.TransactionStatus
 import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
@@ -88,7 +87,6 @@ class TransactionRepositoryImplTest {
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
         val result = transactionRepository.addPendingTransaction(
-            pendingTransactionType = pendingTransactionType1,
             receiverId = receiverId1,
             amount = amount1
         )
@@ -104,7 +102,6 @@ class TransactionRepositoryImplTest {
 
         assertFailsWith<Exception> {
             transactionRepository.addPendingTransaction(
-                pendingTransactionType = pendingTransactionType1,
                 receiverId = receiverId1,
                 amount = amount1
             )
@@ -234,7 +231,6 @@ class TransactionRepositoryImplTest {
 
         const val amount1 = 5000.0
         val receiverId1 = Uuid.random()
-        val pendingTransactionType1 = PendingTransactionType.P2P
 
         val addPendingTransactionSuccessResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
             {
