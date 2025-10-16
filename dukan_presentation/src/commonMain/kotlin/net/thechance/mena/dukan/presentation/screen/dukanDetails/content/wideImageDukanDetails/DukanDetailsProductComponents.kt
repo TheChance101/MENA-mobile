@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun ProductCard(
+fun ProductCard(
     imageUrl: String,
     title: String,
     price: String,
@@ -95,7 +95,7 @@ internal fun ProductCard(
     }
 }
 
-internal fun LazyGridScope.ProductsGridSection(
+fun LazyGridScope.ProductsGridSection(
     state: DukanDetailsUiState,
 ) {
     when (state.productsState) {

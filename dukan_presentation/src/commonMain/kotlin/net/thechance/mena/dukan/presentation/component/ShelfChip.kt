@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,11 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
@@ -30,9 +25,7 @@ fun ShelfChip(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    painter: Painter? = null,
     modifier: Modifier = Modifier,
-    iconSize: Dp = 16.dp,
     isEnabled: Boolean = true,
     shape: Shape = RoundedCornerShape(Theme.radius.full),
     selectedBackgroundColor: Color = Theme.colorScheme.brand.brand,
@@ -74,14 +67,6 @@ fun ShelfChip(
                 horizontal = Theme.spacing._12
             )
     ) {
-        painter?.let { iconPainter ->
-            Icon(
-                painter = iconPainter,
-                modifier = Modifier.size(iconSize),
-                contentDescription = null,
-                tint = if (isEnabled) contentColor else Theme.colorScheme.textDisabled
-            )
-        }
         Text(
             text = text,
             style = Theme.typography.label.small,

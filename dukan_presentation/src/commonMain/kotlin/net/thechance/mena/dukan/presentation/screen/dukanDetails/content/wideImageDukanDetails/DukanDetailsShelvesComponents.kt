@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun DukanShelvesSection(
+fun DukanShelvesSection(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
     shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>
