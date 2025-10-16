@@ -25,10 +25,13 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -42,6 +45,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class, ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
     private val repository = mock<ChatRepository>()
+    private val userRepository = mock<UserRepository>()
     private val chatArgs = mock<ChatArgs>()
     private val effector = mock<ChatEffector>(MockMode.autofill)
     private lateinit var chatViewModel: ChatViewModel
@@ -61,7 +65,8 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel =
+            ChatViewModel(repository, userRepository, chatArgs, effector, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
     }
 
@@ -78,7 +83,7 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(
@@ -96,7 +101,7 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         verifySuspend {
@@ -117,7 +122,7 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf(messages.first())
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(
@@ -126,6 +131,17 @@ class ChatViewModelTest {
         ).isEqualTo(
             listOf(messages.first().toUi(chatRequesterId))
         )
+    }
+    @Test
+    fun `init should update user data when receive user data from repository`() {
+
+        everySuspend {userRepository.getUserInfo() } returns user
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, testDispatcher)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.userData.firstName).isEqualTo(user.firstName)
+        assertThat(chatViewModel.state.value.userData.lastName).isEqualTo(user.lastName)
+        assertThat(chatViewModel.state.value.userData.imageUrl).isEqualTo(user.imageUrl)
     }
 
     @Test
@@ -400,12 +416,17 @@ class ChatViewModelTest {
 
     private companion object {
 
+        val user: User = User(
+            firstName = "ali",
+            lastName = "nawar",
+            imageUrl = ""
+        )
         val chatId = Uuid.parse("11111111-1111-1111-1111-111111111111")
         val chatRequesterId = Uuid.parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
         val chatName = "Noor"
         val chatImage = "https://image.com/noor.jpg"
 
-        val mockChat = net.thechance.mena.core_chat.domain.entity.Chat(
+        val mockChat = Chat(
             id = chatId,
             name = chatName,
             imageUrl = chatImage,
