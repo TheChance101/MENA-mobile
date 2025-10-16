@@ -11,6 +11,7 @@ import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
@@ -72,6 +73,11 @@ internal fun createReelsHttpClient(
             block: HttpRequestBuilder.() -> Unit
         ): HttpResponse = client.put(urlString, block)
 
+        override suspend fun patch(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.patch(urlString, block)
+
         override suspend fun delete(
             urlString: String,
             block: HttpRequestBuilder.() -> Unit
@@ -127,6 +133,13 @@ internal fun createCategoryHttpClient(
             return client.put(urlString, block)
         }
 
+        override suspend fun patch(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse {
+            return client.patch(urlString, block)
+        }
+
         override suspend fun delete(
             urlString: String,
             block: HttpRequestBuilder.() -> Unit
@@ -135,6 +148,7 @@ internal fun createCategoryHttpClient(
         }
     }
 }
+
 internal fun mockUserInfoHttpClient(
     response: UserInfoDto,
     respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
@@ -180,6 +194,11 @@ internal fun mockUserInfoHttpClient(
             urlString: String,
             block: HttpRequestBuilder.() -> Unit
         ): HttpResponse = client.put(urlString, block)
+
+        override suspend fun patch(
+            urlString: String,
+            block: HttpRequestBuilder.() -> Unit
+        ): HttpResponse = client.patch(urlString, block)
 
         override suspend fun delete(
             urlString: String,

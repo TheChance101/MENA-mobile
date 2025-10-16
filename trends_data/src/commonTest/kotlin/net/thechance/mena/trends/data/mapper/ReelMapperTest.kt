@@ -92,8 +92,9 @@ internal class ReelMapperTest {
         val reel = dto.toEntity()
 
         assertThat(reel.categories.size).isEqualTo(2)
-        assertThat(reel.categories.first()).isEqualTo(Category("1", "Comedy", "⚽"))
-        assertThat(reel.categories.last()).isEqualTo(Category("3", "", ""))
+        assertThat(reel.categories.first())
+            .isEqualTo(Category("1", "Comedy", "⚽", isSelected = false))
+        assertThat(reel.categories.last()).isEqualTo(Category("3", "", "", isSelected = false))
     }
 
     private companion object {

@@ -14,6 +14,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
@@ -59,7 +60,7 @@ class NetworkClientImpl(
         urlString: String,
         block: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
-        return client.put(urlString, block)
+        return client.patch(urlString, block)
     }
 
     override suspend fun delete(
