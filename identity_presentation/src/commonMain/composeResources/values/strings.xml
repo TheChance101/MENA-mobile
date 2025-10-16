@@ -105,9 +105,8 @@
 
     <string name="no_saved_locations_title">No saved locations yet!</string>
     <string name="no_saved_locations_message">Click on button below to start add and have your favorite locations status ups.</string>
-    <string name="add_location_button">Add location</string>
     <string name="location_saved_empty_desc">No saved locations icon</string>
-    <string name="location_saved_empty_desc">No saved locations icon</string>
+
 
 
     <string name="address_type_home">Home</string>
@@ -117,7 +116,6 @@
     <string name="address_priority_main">Main</string>
     <string name="address_edit">Edit</string>
 
-    <string name="no_saved_locations_message">Click on button below to start add and have your favorite locations status ups.</string>
     <string name="add_location_button">Add location</string>
     <string name="delete_address_description">Are you sure you want to delete this location?</string>
     <string name="delete_address_title">Delete Location</string>
@@ -128,6 +126,6 @@
     <string name="address_deleted_successfully">Address deleted successfully</string>
 
     <!--    crop image-->
-    <string name="save">Save</string>
+
     <string name="upload_another_image">Upload another image</string>
 </resources>
