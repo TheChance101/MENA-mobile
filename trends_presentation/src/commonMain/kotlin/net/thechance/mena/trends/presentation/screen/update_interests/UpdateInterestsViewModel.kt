@@ -21,50 +21,53 @@ internal class UpdateInterestsViewModel(
 ), UpdateInterestsInteractionListener {
 
     init {
-        initializeCategories()
+        getCategories()
     }
 
-    private fun initializeCategories() {
+    fun getCategories() {
         tryToExecute(
             block = { repository.getAllCategories() },
             onSuccess = ::handleLoadCategoriesSuccess,
-            onError = { errorState -> updateState { copy(error = errorState) } },
-            onStart = ::startLoading,
-            onEnd = ::endLoading,
+            onError = { errorState -> updateState { copy(errorState = errorState) } },
+            onStart = { updateState { copy(isLoading = true) } },
+            onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = defaultDispatcher
         )
-    }
-
-    private fun handleLoadCategoriesSuccess(categories: List<Category>) {
-        updateState { copy(categories = categories.toUiStates()) }
     }
 
     override fun onCategoryClick(categoryId: String) = updateState {
         copy(categories = categories.toggleCategory(categoryId))
     }
 
+    override fun onBackClick() = sendEffect(UpdateInterestsScreenEffect.NavigateBack)
+
     override fun onSaveClick() {
         tryToExecute(
             block = { saveSelectedCategories() },
             onSuccess = { sendEffect(UpdateInterestsScreenEffect.NavigateToTrends) },
-            onStart = ::startSaving,
-            onEnd = ::endSaving,
-            onError = { errorState -> updateState { copy(error = errorState) } },
+            onStart = { updateState { copy(isSaveButtonLoading = true) } },
+            onEnd = { updateState { copy(isSaveButtonLoading = false) } },
+            onError = { errorState -> updateState { copy(errorState = errorState) } },
             dispatcher = defaultDispatcher
         )
     }
 
     private suspend fun saveSelectedCategories() {
-        val selectedIds = state.value.categories
-            .filter { it.isSelected }
-            .mapNotNull { it.value.id }
-        repository.updateUserCategories(selectedIds)
+        val originalSelectedIds = state.value.initialCategories
+            .filter { it.isSelected }.mapNotNull { it.value.id }
+
+        val currentSelectedIds = state.value.categories
+            .filter { it.isSelected }.mapNotNull { it.value.id }
+
+        repository.patchUserCategories(originalSelectedIds, currentSelectedIds)
     }
 
-    override fun onBackClick() = sendEffect(UpdateInterestsScreenEffect.NavigateBack)
-
-    private fun startLoading() = updateState { copy(isLoading = true) }
-    private fun endLoading() = updateState { copy(isLoading = false) }
-    private fun startSaving() = updateState { copy(isNextButtonLoading = true) }
-    private fun endSaving() = updateState { copy(isNextButtonLoading = false) }
+    private fun handleLoadCategoriesSuccess(categories: List<Category>) {
+        updateState {
+            copy(
+                initialCategories = categories.toUiStates(),
+                categories = categories.toUiStates()
+            )
+        }
+    }
 }

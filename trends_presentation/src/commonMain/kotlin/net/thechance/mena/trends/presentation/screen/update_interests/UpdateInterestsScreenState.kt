@@ -6,10 +6,11 @@ import net.thechance.mena.trends.presentation.shared.model.Selectable
 
 internal data class UpdateInterestsScreenState(
     val isLoading: Boolean = true,
-    val error: ErrorState? = null,
+    val errorState: ErrorState? = null,
+    val initialCategories: List<Selectable<CategoryUiState>> = emptyList(),
     val categories: List<Selectable<CategoryUiState>> = emptyList(),
-    val isNextButtonLoading: Boolean = false
+    val isSaveButtonLoading: Boolean = false
 )
 
-internal fun UpdateInterestsScreenState.isNextButtonEnabled() =
-    categories.any(Selectable<CategoryUiState>::isSelected)
+internal fun UpdateInterestsScreenState.saveButtonEnabled() =
+    categories.any(Selectable<CategoryUiState>::isSelected) && categories != initialCategories
