@@ -19,7 +19,6 @@ import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.repository.UserRepository
-import net.thechance.mena.trends.presentation.utils.categories
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -105,7 +104,6 @@ class ManageTrendsViewModelTest {
             likesCount = 100,
             viewsCount = 1000,
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
-            categories = categories,
             userName = "mTm",
             profileImageUrl = "",
             isCurrentUserOwner = true
