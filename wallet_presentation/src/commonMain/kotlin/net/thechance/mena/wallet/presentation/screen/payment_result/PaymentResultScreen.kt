@@ -54,7 +54,8 @@ fun PaymentResultScreen(
     )
     PaymentResultScreenContent(
         receiverName = receiverName,
-        amount = amount, state = state,
+        amount = amount,
+        state = state,
         interactionListener = viewModel
     )
 }
@@ -86,6 +87,7 @@ private fun PaymentResultScreenContent(
         PaymentStatusBody(
             receiverName = receiverName,
             amount = amount,
+            status = state,
             paymentStatus = state.paymentStatus,
             interactionListener = interactionListener
         )
@@ -103,6 +105,6 @@ private fun onPaymentResultEffect(
         is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
             effect.transactionId.toString()
         )
-        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked
+        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked()
     }
 }

@@ -19,16 +19,18 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.You_are_about_to_pay
+import mena.wallet_presentation.generated.resources.ic_user
 import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.silver_coin
 import mena.wallet_presentation.generated.resources.to
+import mena.wallet_presentation.generated.resources.user_img
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.ReceiverUiState
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.PaymentUiState
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.ReceiverUiState
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.GetUserMessage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -143,7 +145,19 @@ private fun ReceiverInfo(
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
-        receiverImage?.let {
+        if (receiverImage == null) {
+            Icon(
+                modifier = Modifier
+                    .padding(start = Theme.spacing._8)
+                    .size(20.dp)
+                    .background(color = Theme.colorScheme.stroke, shape = CircleShape)
+                    .padding(Theme.spacing._2)
+                    .clip(CircleShape),
+                painter = painterResource(Res.drawable.ic_user),
+                contentDescription = stringResource(Res.string.user_img),
+                tint = Theme.colorScheme.shadeTertiary
+            )
+        } else {
             AsyncImage(
                 modifier = Modifier
                     .padding(start = Theme.spacing._8)
@@ -151,7 +165,7 @@ private fun ReceiverInfo(
                     .size(20.dp),
                 model = receiverImage,
                 contentScale = ContentScale.Crop,
-                contentDescription = stringResource(Res.string.silver_coin),
+                contentDescription = stringResource(Res.string.user_img),
             )
         }
         Text(

@@ -3,7 +3,7 @@
 package net.thechance.mena.wallet.presentation.navigation
 
 import kotlinx.serialization.Serializable
-import net.thechance.mena.wallet.domain.model.TransactionStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -55,6 +55,6 @@ data class PaymentResultScreenRoute(
 ) : WalletRoute() {
     init {
         Uuid.parse(transactionId)
-        TransactionStatus.valueOf(submitTransactionResultStatus)
+        SubmissionStatus.valueOf(submitTransactionResultStatus)
     }
 }

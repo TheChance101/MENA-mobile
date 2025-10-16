@@ -119,6 +119,7 @@
     <string name="confirm_payment_content_failed">لديك فقط %1$s فضة في محفظتك، وهذا لا يكفي.</string>
     <string name="You_are_about_to_pay">أنت على وشك الدفع</string>
     <string name="pay_amount">%1$s ادفع</string>
+    <string name="user_img">صورة المستخدم</string>
 
     <string name="transaction_successful">تمت العملية بنجاح!</string>
     <string name="show_transaction_details">عرض تفاصيل العملية</string>
@@ -132,4 +133,5 @@
     <string name="file_missing">الملف غير موجود</string>
     <string name="file_missing_description">ملف المعاملات غير موجود.</string>
 
+    <string name="payment_status_crossfade">الانتقال بين حالات الدفع</string>
 </resources>
