@@ -10,28 +10,28 @@ import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.pickLocation.AddressModel
 import org.maplibre.compose.camera.CameraPosition
 
 class AddEditLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val locationData: AddLocationScreenUIState.PickLocationData?
-) : BaseScreenModel<AddLocationScreenUIState, AddEditLocationScreenUIEffect>
-    (AddLocationScreenUIState()),
-    AddEditLocationScreenInteractionListener {
-
+    private val addressModel: AddressModel? = null,
+) : BaseScreenModel<AddLocationScreenUIState, AddEditLocationScreenUIEffect>(
+    AddLocationScreenUIState()
+), AddEditLocationScreenInteractionListener {
     init {
-        if (locationData != null) {
+        if (addressModel != null) {
             updateState {
                 copy(
-                    latitude = locationData.latitude,
-                    longitude = locationData.longitude,
-                    address = locationData.address ,
+                    latitude = addressModel.latitude,
+                    longitude = addressModel.longitude,
+                    address = addressModel.addressLine,
                     animateToCurrentLocation = true,
                     cameraPosition = CameraPosition(
                         target = Position(
-                            longitude = locationData.longitude,
-                            latitude = locationData.latitude
+                            latitude = addressModel.latitude,
+                            longitude = addressModel.longitude,
                         ),
                         zoom = 15.0
                     )
@@ -41,18 +41,12 @@ class AddEditLocationScreenViewModel(
     }
 
     override fun onClickMap() {
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap())
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap(addressModel, ::updateAddress))
     }
 
     override fun onClickEdit() {
         sendNewEffect(
-            AddEditLocationScreenUIEffect.NavigateToMap(
-                AddLocationScreenUIState.PickLocationData(
-                    latitude = state.value.latitude,
-                    longitude = state.value.longitude,
-                    address = state.value.address
-                )
-            )
+            AddEditLocationScreenUIEffect.NavigateToMap(addressModel, ::updateAddress)
         )
     }
 
@@ -98,7 +92,6 @@ class AddEditLocationScreenViewModel(
     override fun onSetAnchorLocation(anchorLocation: DpOffset) {
         updateState { copy(anchorLocation = anchorLocation) }
     }
-
 
     fun setInitialAddressData(
         addressID: String,
@@ -160,8 +153,17 @@ class AddEditLocationScreenViewModel(
     private fun onError(errorState: ErrorState) {
         updateState {
             copy(
-                isLoading = false,
-                errorMessage = mapErrorToMessage(errorState)
+                isLoading = false, errorMessage = mapErrorToMessage(errorState)
+            )
+        }
+    }
+
+    private fun updateAddress(newAddress: AddressModel) {
+        updateState {
+            copy(
+                latitude = newAddress.latitude,
+                longitude = newAddress.longitude,
+                address = newAddress.addressLine,
             )
         }
     }
@@ -174,16 +176,13 @@ class AddEditLocationScreenViewModel(
             val addressTypeChanged = state.value.addressType != state.value.originalAddressType
             val otherAddressChanged = state.value.otherAddress != state.value.originalOtherAddress
 
-            (addressChanged || addressTypeChanged || otherAddressChanged)
-                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
+            (addressChanged || addressTypeChanged || otherAddressChanged) && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
                 ?: false))
 
         } else {
 
-            state.value.address.isNotBlank()
-                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
-                ?: false))
-                    && state.value.addressType != null
+            state.value.address.isNotBlank() && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
+                ?: false)) && state.value.addressType != null
         }
         updateState { copy(isSaveEnabled = isEnabled) }
     }

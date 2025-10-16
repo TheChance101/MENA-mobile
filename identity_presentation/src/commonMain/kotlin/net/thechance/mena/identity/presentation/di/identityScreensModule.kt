@@ -26,6 +26,25 @@ val identityScreensModule = module {
 
     factory { PermissionHandler(get(named(LOCATION_FOREGROUND))) }
 
+    factory {
+        PickLocationScreenViewModel(
+            locationForegroundHandler = get(),
+            dispatcher = get(),
+            mobileLocationRepository = get(),
+            addressModel = getOrNull()
+        )
+    }
+
+    factory {
+        AddEditLocationScreenViewModel(
+            addressesRepository = get(),
+            dispatcher = get(),
+            addressModel = getOrNull(),
+        )
+    }
+
+    factory { (imageBitmap: ImageBitmap) -> ImageCropperViewModel(imageBitmap) }
+
     factoryOf(::LoginScreenViewModel)
     factoryOf(::RegisterScreenModel)
     factoryOf(::ForgetPasswordScreenViewModel)
@@ -35,12 +54,4 @@ val identityScreensModule = module {
     factoryOf(::EnableLocationScreenViewModel)
     factoryOf(::AddEditLocationScreenViewModel)
     factoryOf(::PickLocationScreenViewModel)
-    factory {
-        PickLocationScreenViewModel(
-            locationForegroundHandler = get(),
-            mobileLocationRepository = get(),
-            addressModel = getOrNull()
-        )
-    }
-    factory { (imageBitmap: ImageBitmap) -> ImageCropperViewModel(imageBitmap) }
 }

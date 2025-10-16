@@ -21,8 +21,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocationScreen
-import net.thechance.mena.identity.presentation.screen.addresses.AddLocationScreenUIState
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
@@ -31,7 +29,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 data class PickLocationScreen(
-    private val locationData: AddLocationScreenUIState.PickLocationData?,
+    private val addressModel: AddressModel?,
+    private val onUpdateLocation: (AddressModel) -> Unit,
 ) : BaseScreen<PickLocationScreenViewModel,
         PickLocationScreenUIState,
         PickLocationScreenUIEffect,
@@ -39,7 +38,7 @@ data class PickLocationScreen(
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(locationData) }))
+        InitScreen(getScreenModel(parameters = { parametersOf(addressModel) }))
     }
 
     @Composable
@@ -110,9 +109,10 @@ data class PickLocationScreen(
     ) {
         when (effect) {
             PickLocationScreenUIEffect.NavigateBack -> navigator.pop()
-            is PickLocationScreenUIEffect.NavigateToAddLocation -> navigator.replace(
-                AddEditLocationScreen(locationData = effect.locationData)
-            )
+            is PickLocationScreenUIEffect.NavigateBackWithLocation -> {
+                onUpdateLocation(effect.addressModel)
+                navigator.pop()
+            }
 
             PickLocationScreenUIEffect.NavigateToEnableLocation -> navigator.push(
                 EnableLocationScreen()

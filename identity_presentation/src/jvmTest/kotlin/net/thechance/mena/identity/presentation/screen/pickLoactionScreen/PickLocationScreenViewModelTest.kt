@@ -34,7 +34,7 @@ class PickLocationScreenViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = PickLocationScreenViewModel(mobileLocationRepository, testDispatcher,locationPermissionHandler, null, null, null )
+        viewModel = PickLocationScreenViewModel(mobileLocationRepository, testDispatcher,locationPermissionHandler, null )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -87,7 +87,7 @@ class PickLocationScreenViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             val emittedEffect = awaitItem()
-            assert(emittedEffect is PickLocationScreenUIEffect.NavigateToAddLocation)
+            assert(emittedEffect is PickLocationScreenUIEffect.NavigateBackWithLocation)
             cancelAndConsumeRemainingEvents()
         }
     }

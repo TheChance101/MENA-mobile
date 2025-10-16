@@ -29,21 +29,23 @@ import net.thechance.mena.identity.presentation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreen
+import net.thechance.mena.identity.presentation.screen.pickLocation.AddressModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 class AddEditLocationScreen(
-    private val locationData: AddLocationScreenUIState.PickLocationData?
+    private val addressModel: AddressModel?,
 ) : BaseScreen<
-        AddEditLocationScreenViewModel,
-        AddLocationScreenUIState,
-        AddEditLocationScreenUIEffect,
-        AddEditLocationScreenInteractionListener>() {
+    AddEditLocationScreenViewModel,
+    AddLocationScreenUIState,
+    AddEditLocationScreenUIEffect,
+    AddEditLocationScreenInteractionListener>()
+{
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(locationData) }))
+        InitScreen(getScreenModel(parameters = { parametersOf(addressModel) }))
     }
 
     @Composable
@@ -132,9 +134,7 @@ class AddEditLocationScreen(
         when (effect) {
             AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
             is AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(
-                PickLocationScreen(
-                    locationData = effect.locationData
-                )
+                PickLocationScreen(addressModel = effect.addressModel, onUpdateLocation = effect.onUpdateLocation)
             )
         }
     }
