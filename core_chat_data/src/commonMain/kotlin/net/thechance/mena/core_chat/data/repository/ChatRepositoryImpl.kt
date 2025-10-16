@@ -21,6 +21,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
@@ -108,6 +109,14 @@ class ChatRepositoryImpl(
         if (!success) {
             throw OperationFailedException("Failed to download image")
         }
+    }
+
+    override suspend fun getUserImageUrl(): String {
+        return tryNetworkCall<UserDto>(
+            bodyType = typeInfo<UserDto>()
+        ){
+            client.get(USER_ENDPOINT)
+        }?.imageUrl.orEmpty()
     }
 
     override fun subscribeToMessages(chatId: Uuid): Flow<Message> {
@@ -247,6 +256,8 @@ class ChatRepositoryImpl(
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
+
+        const val USER_ENDPOINT = "/chat/user"
         const val IMAGES_ENDPOINT = "/chat/image"
         const val IMAGES_FILES_PARAM = "images"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"

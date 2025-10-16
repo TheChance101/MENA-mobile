@@ -11,6 +11,7 @@ import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import mena.core_chat_presentation.generated.resources.error_get_user_info
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
@@ -41,7 +42,7 @@ class ChatViewModel(
 
     init {
         val chatId = getUuidOrNull(chatArgs.chatId)
-
+        getUserImageUrl()
         updateState { state ->
             state.copy(
                 chatId = chatId,
@@ -60,6 +61,26 @@ class ChatViewModel(
         }
     }
 
+    private fun getUserImageUrl(){
+        tryToExecute(
+            execute = { chatRepository.getUserImageUrl() },
+            onSuccess = ::onGetUserImageUrlSuccess,
+            onError = { onGetUserImageUrlError() }
+        )
+    }
+
+    private fun onGetUserImageUrlSuccess(imageUrl: String) {
+        updateState { state -> state.copy(userImageUrl = imageUrl) }
+
+        println("--> userImageUrl: $imageUrl")
+    }
+    private fun onGetUserImageUrlError() {
+        showSnackBar(
+            titleStringResource = Res.string.error,
+            messageStringResource = Res.string.error_get_user_info,
+            isError = true
+        )
+    }
     private fun onGetChatSuccess(chat: Chat) {
         updateInitialState(
             chatId = chat.id,
