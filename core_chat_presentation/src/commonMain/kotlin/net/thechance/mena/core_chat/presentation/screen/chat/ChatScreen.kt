@@ -94,7 +94,7 @@ fun ChatScreenContent(
         ) {
             val isMine = state.selectedMessage?.isMine == true
             val senderName = if (isMine) stringResource(Res.string.you) else state.chatName
-            val senderImageUrl = if (isMine) "" else state.chatAvatarUrl // todo: add user image
+            val senderImageUrl = if (isMine) state.userImageUrl else state.chatAvatarUrl // todo: add user image
 
             FullImagePagerView(
                 message = state.selectedMessage,
