@@ -23,13 +23,16 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.delay
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_pause
+import mena.trends_presentation.generated.resources.pause_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItemStatusFailed
@@ -52,7 +55,7 @@ import platform.Foundation.NSURL
 @Composable
 actual fun VideoPlayer(
     url: String,
-    playWhenVisible: Boolean,
+    isReelVisible: Boolean,
     modifier: Modifier,
     content: @Composable () -> Unit
 ) {
@@ -73,9 +76,9 @@ actual fun VideoPlayer(
         }
     }
 
-    LaunchedEffect(url, playWhenVisible) {
+    LaunchedEffect(url, isReelVisible) {
         playerViewController.player = player
-        if (playWhenVisible) {
+        if (isReelVisible) {
             if (lastPosition > 0.0) {
                 val time = CMTimeMakeWithSeconds(lastPosition, 600)
                 player.seekToTime(time)
@@ -98,11 +101,12 @@ actual fun VideoPlayer(
                 else -> false
             }
 
-            val waiting = player.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+            val waiting =
+                player.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
 
             isLoading = (!itemReady) || waiting
 
-            kotlinx.coroutines.delay(250)
+            delay(250)
         }
     }
 
@@ -121,7 +125,7 @@ actual fun VideoPlayer(
                     }
                 }
             }
-            kotlinx.coroutines.delay(250)
+            delay(250)
         }
     }
 
@@ -151,7 +155,7 @@ actual fun VideoPlayer(
             if (isPaused) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pause),
-                    contentDescription = "Pause Icon",
+                    contentDescription = stringResource(Res.string.pause_icon),
                     modifier = Modifier.align(Alignment.Center)
                 )
             }

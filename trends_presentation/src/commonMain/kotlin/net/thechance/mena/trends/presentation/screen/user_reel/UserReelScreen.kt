@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cash.paging.compose.collectAsLazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
 import mena.trends_presentation.generated.resources.Res
+import mena.trends_presentation.generated.resources.avatar_image
 import mena.trends_presentation.generated.resources.confirmation_message
 import mena.trends_presentation.generated.resources.delete
 import mena.trends_presentation.generated.resources.delete_reel
@@ -100,9 +101,9 @@ private fun UserReelScreenContent(
                     onDismiss = { listener.onDismissConfirmationDialog() },
                     onActionClick = { listener.onConfirmDeleteClick() },
                     onCancelClick = { listener.onDismissConfirmationDialog() },
-                    dialogCornerShape = RoundedCornerShape(12.dp),
+                    dialogCornerShape = RoundedCornerShape(Theme.radius.md),
                     cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(16.dp)
+                    contentPadding = PaddingValues(Theme.spacing._16)
                 )
             }
 
@@ -122,9 +123,9 @@ private fun UserReelScreenContent(
                         listener.onDismissSuccessDialog()
                         listener.onBackClick()
                     },
-                    dialogCornerShape = RoundedCornerShape(12.dp),
+                    dialogCornerShape = RoundedCornerShape(Theme.radius.md),
                     cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(16.dp)
+                    contentPadding = PaddingValues(Theme.spacing._16)
                 )
             }
 
@@ -138,9 +139,9 @@ private fun UserReelScreenContent(
                     isVisible = state.error != null,
                     onDismiss = { listener.onDismissErrorDialog() },
                     onCancelClick = { listener.onDismissErrorDialog() },
-                    dialogCornerShape = RoundedCornerShape(12.dp),
+                    dialogCornerShape = RoundedCornerShape(Theme.radius.md),
                     cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(16.dp)
+                    contentPadding = PaddingValues(Theme.spacing._16)
                 )
             }
         }
@@ -161,7 +162,7 @@ private fun UserReelScreenContent(
         ) { page ->
 
             reels[page]?.let { reel ->
-                Reel(
+                ReelContent(
                     reel = reel,
                     shouldRender = (pagerState.currentPage == page),
                     isDescriptionExpanded = state.isDescriptionExpanded,
@@ -198,18 +199,18 @@ private fun TopAppBar(
 }
 
 @Composable
-private fun Reel(
+private fun ReelContent(
     reel: UserReelUiState,
     shouldRender: Boolean,
     isDescriptionExpanded: Boolean,
     onDeleteClick: () -> Unit,
-    onDescriptionClick: (Boolean) -> Unit,
+    onDescriptionClick: (isCollapsed: Boolean) -> Unit,
     onPublisherInfoClick: () -> Unit,
 ) {
     VideoPlayer(
-        modifier = Modifier.fillMaxSize().background(Color.Black),
+        modifier = Modifier.background(Color.Black),
         url = reel.videoUrl,
-        playWhenVisible = shouldRender,
+        isReelVisible = shouldRender,
     ) {
         Box(Modifier.fillMaxSize()) {
             UsersReAct(
@@ -265,7 +266,7 @@ private fun PublisherInfo(
                     .border(shape = CircleShape, width = 0.5.dp, color = Theme.colorScheme.stroke)
                     .clickable { onPublisherInfoClick() },
                 contentScale = ContentScale.Crop,
-                contentDescription = "avatar image"
+                contentDescription = stringResource(Res.string.avatar_image)
             )
 
             Column(Modifier.padding(bottom = Theme.spacing._16)) {
@@ -343,7 +344,7 @@ private fun ReActIcon(
             painter = icon,
             contentDescription = stringResource(Res.string.react),
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .padding(bottom = Theme.spacing._8)
                 .clickable { onClick() },
             tint = Theme.colorScheme.shadeTertiary
         )

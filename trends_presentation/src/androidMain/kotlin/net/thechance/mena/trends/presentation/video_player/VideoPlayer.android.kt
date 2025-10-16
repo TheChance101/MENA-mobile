@@ -38,32 +38,44 @@ import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_pause
+import mena.trends_presentation.generated.resources.pause_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_MS
+import net.thechance.mena.trends.presentation.video_player.util.Constants.MAX_BUFFER_MS
+import net.thechance.mena.trends.presentation.video_player.util.Constants.MIN_BUFFER_MS
+import net.thechance.mena.trends.presentation.video_player.util.Constants.SEEK_BAR_DURATION_MS
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(UnstableApi::class)
 @Composable
 actual fun VideoPlayer(
     url: String,
-    playWhenVisible: Boolean,
+    isReelVisible: Boolean,
     modifier: Modifier,
-    content:@Composable () -> Unit
+    content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var lastPosition by rememberSaveable(url) { mutableLongStateOf(0L) }
 
     val loadControl = DefaultLoadControl.Builder()
-        .setBufferDurationsMs(200, 5000, 100, 200)
+        .setBufferDurationsMs(
+            MIN_BUFFER_MS,
+            MAX_BUFFER_MS,
+            BUFFER_FOR_PLAYBACK_MS,
+            BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+        )
         .build()
 
     var isLoading by remember { mutableStateOf(true) }
     var isPause by remember { mutableStateOf(false) }
 
-    var currentProgress by remember { mutableStateOf(0f) }
+    var currentProgress by remember { mutableFloatStateOf(0f) }
     var duration by remember { mutableStateOf(1L) }
     var barWidth by remember { mutableFloatStateOf(1f) }
 
@@ -88,8 +100,8 @@ actual fun VideoPlayer(
             }
     }
 
-    LaunchedEffect(playWhenVisible) {
-        if (playWhenVisible) {
+    LaunchedEffect(isReelVisible) {
+        if (isReelVisible) {
             exoPlayer.setMediaItem(MediaItem.fromUri(url))
             exoPlayer.prepare()
             if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
@@ -106,7 +118,7 @@ actual fun VideoPlayer(
             duration = exoPlayer.duration.coerceAtLeast(1L)
             val position = exoPlayer.currentPosition
             currentProgress = position.toFloat() / duration.toFloat()
-            delay(500)
+            delay(SEEK_BAR_DURATION_MS)
         }
     }
 
@@ -141,7 +153,7 @@ actual fun VideoPlayer(
             Box(modifier = Modifier.align(Alignment.Center)) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pause),
-                    contentDescription = "Pause Icon"
+                    contentDescription = stringResource(Res.string.pause_icon)
                 )
             }
         }
@@ -189,7 +201,7 @@ actual fun VideoPlayer(
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    if (playWhenVisible) {
+                    if (isReelVisible) {
                         if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
                         exoPlayer.play()
                     }
