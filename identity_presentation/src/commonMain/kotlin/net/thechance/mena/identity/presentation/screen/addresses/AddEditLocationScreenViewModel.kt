@@ -13,6 +13,7 @@ import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.pickLocation.AddressModel
 import org.maplibre.compose.camera.CameraPosition
+import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class AddEditLocationScreenViewModel(
@@ -106,6 +107,7 @@ class AddEditLocationScreenViewModel(
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private suspend fun onSave() {
         if (state.value.addressID != null) {
             addressesRepository.editAddress(

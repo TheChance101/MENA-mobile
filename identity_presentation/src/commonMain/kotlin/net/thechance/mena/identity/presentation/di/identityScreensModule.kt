@@ -52,7 +52,6 @@ val identityScreensModule = module {
     factoryOf(::OtpScreenViewModel)
     factoryOf(::ProfileScreenViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
-    factoryOf(::AddEditLocationScreenViewModel)
     factory { (imageBitmap: ImageBitmap) -> ImageCropperViewModel(imageBitmap) }
     factoryOf(::AddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)

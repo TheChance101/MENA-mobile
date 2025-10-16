@@ -22,10 +22,4 @@ data class AddLocationScreenUIState(
     val anchorLocation: DpOffset? = null,
     val cameraPosition: CameraPosition = CameraPosition(),
     val animateToCurrentLocation: Boolean = false
-){
-    data class PickLocationData(
-        val latitude: Double,
-        val longitude: Double,
-        val address: String
-    )
-}
+)
