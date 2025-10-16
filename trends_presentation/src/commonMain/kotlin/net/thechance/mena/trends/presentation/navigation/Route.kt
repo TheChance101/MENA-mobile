@@ -7,6 +7,9 @@ internal sealed interface Route {
     data object Categories : Route
 
     @Serializable
+    data object UpdateInterests : Route
+
+    @Serializable
     data object Trends : Route
 
     @Serializable
