@@ -9,10 +9,10 @@ import platform.CoreLocation.CLLocationManagerDelegateProtocol
 import platform.Foundation.NSError
 import platform.darwin.NSObject
 
-actual class AzimuthProvider {
+actual class AzimuthProviderImpl : AzimuthProvider {
     private val locationManager = CLLocationManager()
 
-    actual fun startListening(): Flow<Float> = callbackFlow {
+    actual override fun startListening(): Flow<Float> = callbackFlow {
         val locationManagerDelegate = object : NSObject(), CLLocationManagerDelegateProtocol {
             override fun locationManager(
                 manager: CLLocationManager,
