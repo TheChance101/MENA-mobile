@@ -21,5 +21,4 @@ interface ChatRepository {
     suspend fun getLocalMessages(chatId: Uuid): List<Message>
     suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary>
     suspend fun downloadImage(url: String)
-    suspend fun getUserImageUrl(): String
 }
