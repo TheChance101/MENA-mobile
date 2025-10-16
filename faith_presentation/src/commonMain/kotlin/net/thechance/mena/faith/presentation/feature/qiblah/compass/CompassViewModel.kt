@@ -1,12 +1,16 @@
 package net.thechance.mena.faith.presentation.feature.qiblah.compass
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.faith.domain.usecase.QiblahBearingCalculatorUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.util.AzimuthProvider
 
 class CompassViewModel(
     private val bearingCalculatorUseCase: QiblahBearingCalculatorUseCase,
-    private val azimuthProvider: AzimuthProvider
+    private val azimuthProvider: AzimuthProvider,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CompassScreenState, CompassEffect>(CompassScreenState()),
     CompassInteractionListener {
     private var currentContinuousAzimuth: Float = 0f
@@ -19,6 +23,7 @@ class CompassViewModel(
 
     private fun getQiblahAngle() {
         tryToExecute(
+            dispatcher = dispatcher,
             execute = bearingCalculatorUseCase::calculateQiblahAngle,
             onSuccess = ::onGetQiblahSuccess
         )
@@ -31,6 +36,7 @@ class CompassViewModel(
 
     private fun startListeningOnAzimuth() {
         tryToCollect(
+            dispatcher = dispatcher,
             block = azimuthProvider::startListening,
             onEmitNewValue = ::onAzimuthValueChange,
         )

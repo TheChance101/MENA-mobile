@@ -60,7 +60,6 @@
     <string name="add_categories_to_video">Add categories to video</string>
     <string name="choose_categories">You can choose up to 3 categories</string>
     <string name="publish_video">Publish Video</string>
-    <string name="publish_categories_screen_count">3/3</string>
     <string name="publish_hint">hint</string>
 
     <string name="trends_title">Trends</string>
@@ -82,4 +81,7 @@
     <string name="weeks_ago">%1$d weeks ago</string>
     <string name="months_ago">%1$d months ago</string>
     <string name="years_ago">%1$d years ago</string>
+
+    <string name="pause_icon">Pause Icon</string>
+    <string name="avatar_image">avatar image</string>
 </resources>

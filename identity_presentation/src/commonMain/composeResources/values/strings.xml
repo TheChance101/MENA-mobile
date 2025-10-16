@@ -104,6 +104,9 @@
     <string name="location_icon_desc">Location service icon</string>
 
     <string name="no_saved_locations_title">No saved locations yet!</string>
+    <string name="no_saved_locations_message">Click on button below to start add and have your favorite locations status ups.</string>
+    <string name="add_location_button">Add location</string>
+    <string name="location_saved_empty_desc">No saved locations icon</string>
     <string name="location_saved_empty_desc">No saved locations icon</string>
 
 
@@ -124,5 +127,7 @@
 
     <string name="address_deleted_successfully">Address deleted successfully</string>
 
-
+    <!--    crop image-->
+    <string name="save">Save</string>
+    <string name="upload_another_image">Upload another image</string>
 </resources>

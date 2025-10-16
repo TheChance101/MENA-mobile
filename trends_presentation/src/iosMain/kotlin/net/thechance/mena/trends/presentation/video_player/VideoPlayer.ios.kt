@@ -1,0 +1,206 @@
+package net.thechance.mena.trends.presentation.video_player
+
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.UIKitView
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.delay
+import mena.trends_presentation.generated.resources.Res
+import mena.trends_presentation.generated.resources.ic_pause
+import mena.trends_presentation.generated.resources.pause_icon
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
+import platform.AVFoundation.AVPlayer
+import platform.AVFoundation.AVPlayerItemStatusFailed
+import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
+import platform.AVFoundation.AVPlayerItemStatusUnknown
+import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+import platform.AVFoundation.currentItem
+import platform.AVFoundation.currentTime
+import platform.AVFoundation.duration
+import platform.AVFoundation.pause
+import platform.AVFoundation.play
+import platform.AVFoundation.seekToTime
+import platform.AVFoundation.timeControlStatus
+import platform.AVKit.AVPlayerViewController
+import platform.CoreMedia.CMTimeGetSeconds
+import platform.CoreMedia.CMTimeMakeWithSeconds
+import platform.Foundation.NSURL
+
+@OptIn(ExperimentalForeignApi::class)
+@Composable
+actual fun VideoPlayer(
+    url: String,
+    isReelVisible: Boolean,
+    modifier: Modifier,
+    content: @Composable () -> Unit
+) {
+    var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
+    var isPaused by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    var currentProgress by remember { mutableStateOf(0f) }
+    var duration by remember { mutableStateOf(1.0) }
+    var barWidth by remember { mutableFloatStateOf(1f) }
+
+    val player = remember(url) { AVPlayer(uRL = NSURL(string = url)) }
+
+    val playerViewController = remember {
+        AVPlayerViewController().apply {
+            showsPlaybackControls = false
+            videoGravity = AVLayerVideoGravityResizeAspectFill
+        }
+    }
+
+    LaunchedEffect(url, isReelVisible) {
+        playerViewController.player = player
+        if (isReelVisible) {
+            if (lastPosition > 0.0) {
+                val time = CMTimeMakeWithSeconds(lastPosition, 600)
+                player.seekToTime(time)
+            }
+            player.play()
+            isPaused = false
+        } else {
+            lastPosition = CMTimeGetSeconds(player.currentTime())
+            player.pause()
+            isPaused = true
+        }
+    }
+
+    LaunchedEffect(player) {
+        while (true) {
+            val item = player.currentItem
+            val itemReady = when (item?.status) {
+                AVPlayerItemStatusReadyToPlay -> true
+                AVPlayerItemStatusFailed, AVPlayerItemStatusUnknown, null -> false
+                else -> false
+            }
+
+            val waiting =
+                player.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+
+            isLoading = (!itemReady) || waiting
+
+            delay(250)
+        }
+    }
+
+    LaunchedEffect(player) {
+        while (true) {
+            val currentItem = player.currentItem
+            if (currentItem != null) {
+                val totalSeconds = CMTimeGetSeconds(currentItem.duration)
+                if (!totalSeconds.isNaN() && totalSeconds > 0.0) {
+                    duration = totalSeconds
+                    val currentSeconds = CMTimeGetSeconds(player.currentTime())
+                    currentProgress = if (!currentSeconds.isNaN()) {
+                        (currentSeconds / totalSeconds).toFloat().coerceIn(0f, 1f)
+                    } else {
+                        0f
+                    }
+                }
+            }
+            delay(250)
+        }
+    }
+
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        UIKitView(
+            factory = { playerViewController.view },
+            update = {
+                it.setNeedsLayout()
+                if (isPaused) player.pause() else player.play()
+            },
+            modifier = Modifier.matchParentSize()
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clickable {
+                    isPaused = !isPaused
+                    if (isPaused) player.pause() else player.play()
+                }
+        ) {
+            content()
+
+            if (isPaused) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_pause),
+                    contentDescription = stringResource(Res.string.pause_icon),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            if (isLoading && !isPaused) {
+                DotsProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    dotSize = 10.dp,
+                    colors = listOf(
+                        Theme.colorScheme.stroke,
+                        Theme.colorScheme.shadeTertiary,
+                        Theme.colorScheme.shadeTertiary
+                    )
+                )
+            }
+
+            ProgressBar(
+                progress = { currentProgress },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .fillMaxWidth()
+                    .padding(bottom = 2.dp, start = 1.dp, end = 1.dp)
+                    .onGloballyPositioned {
+                        barWidth = it.size.width.toFloat()
+                    }
+                    .pointerInput(barWidth, duration) {
+                        detectTapGestures { offset ->
+                            if (duration > 0.0 && barWidth > 0f) {
+                                val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
+                                val seekSeconds = newProgress * duration
+                                val seekTime = CMTimeMakeWithSeconds(seekSeconds, 600)
+                                player.seekToTime(seekTime)
+                            }
+                        }
+                    },
+                trackColor = Theme.colorScheme.primary.onPrimaryHint,
+                color = Theme.colorScheme.border.brand
+            )
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            lastPosition = CMTimeGetSeconds(player.currentTime())
+            player.pause()
+        }
+    }
+}

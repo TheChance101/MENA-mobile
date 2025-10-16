@@ -10,12 +10,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
+import net.thechance.mena.core_chat.presentation.camera.rememberCameraManager
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
@@ -26,12 +31,18 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun ChatScreen(
-    viewModel: ChatViewModel = koinViewModel()
-) {
+fun ChatScreen() {
+    val factory = rememberPermissionsControllerFactory()
+    val controller = remember(factory) { factory.createPermissionsController() }
+
+    val viewModel: ChatViewModel = koinViewModel(parameters = { parametersOf(controller) })
+
+    BindEffect(controller)
+
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ChatScreenContent(
@@ -45,6 +56,20 @@ fun ChatScreenContent(
     state: ChatScreenState,
     interactions: ChatInteractionListener
 ) {
+    val cameraManager = rememberCameraManager(
+        onResult = { sharedImageByteArray  ->
+            sharedImageByteArray?.let {
+                interactions.onSendImageClicked(listOf(sharedImageByteArray))
+            }
+            interactions.onCameraClosed()
+        }
+    )
+
+    LaunchedEffect(state.isCameraOpen) {
+        if (state.isCameraOpen) {
+            cameraManager.launch()
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center

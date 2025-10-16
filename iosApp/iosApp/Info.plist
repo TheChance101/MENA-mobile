@@ -10,5 +10,9 @@
     <string>$(CFBundleShortVersionString)</string>
     <key>NSContactsUsageDescription</key>
     <string>We need access to your contacts.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library.</string>
 </dict>
 </plist>
