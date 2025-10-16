@@ -13,6 +13,7 @@ fun Reel.toUiState(): ReelUiState {
         videoUrl = videoUrl,
         description = description,
         likes = likesCount,
-        views = viewsCount
+        views = viewsCount,
+        isLiked = isLiked
     )
 }

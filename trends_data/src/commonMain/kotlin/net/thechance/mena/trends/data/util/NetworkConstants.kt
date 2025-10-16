@@ -7,6 +7,8 @@ internal object NetworkConstants {
     const val REELS_ENDPOINT = "reels"
     const val USER_STATUS_ENDPOINT = "user/categories/status"
     const val THUMBNAIL_ENDPOINT = "$TRENDS_PATH/$REELS_ENDPOINT/thumbnail"
+    const val LIKE_REEL_ENDPOINT = "trends/reels/like"
+    const val VIEW_REEL_ENDPOINT = "trends/reels/view"
     const val FEED_ENDPOINT = "feed"
 
     const val IDENTITY_PATH = "identity"

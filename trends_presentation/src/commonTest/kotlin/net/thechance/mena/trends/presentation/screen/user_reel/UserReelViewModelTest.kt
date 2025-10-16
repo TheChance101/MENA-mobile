@@ -9,10 +9,12 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -53,6 +55,7 @@ class UserReelViewModelTest {
     @Test
     fun `should initialize UserReelUiState with default state`() = runTest {
         viewModel.state.test {
+            skipItems(1)
             val initialState = awaitItem()
 
             assertFalse(initialState.isLoading)
@@ -67,11 +70,13 @@ class UserReelViewModelTest {
     @Test
     fun `viewmodel should update state by reels when getFeedReels return data`() =
         runTest(testDispatcher) {
-            everySuspend { mockReelsRepository.getFeedReels(1, "2") } returns feedReels
+            everySuspend { mockReelsRepository.getFeedReels(any()) } returns feedReels
+
+            advanceUntilIdle()
 
             viewModel.state.test {
                 val state = awaitItem()
-                val reelsSnapshot: List<UserReelUiState> = state.reels.asSnapshot()
+                val reelsSnapshot = state.reels.asSnapshot()
                 assertThat(reelsSnapshot).isEqualTo(expectedReelUiStateList)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -200,6 +205,157 @@ class UserReelViewModelTest {
             }
         }
 
+    @Test
+    fun `onPublisherInfoClick should send NavigateToPublisherProfile effect when called`() =
+        runTest {
+            viewModel.onPublisherInfoClick()
+
+            viewModel.effect.test {
+                val effect = awaitItem()
+                assertTrue(effect is UserReelEffect.NavigateToPublisherProfile)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `increaseReelView should update error state when repository throws exception`() = runTest {
+        val reelId = "1"
+        everySuspend { mockReelsRepository.addReelView(reelId) } throws Exception("View failed")
+
+        viewModel.increaseReelView(reelId)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertNotNull(state.error)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should optimistically update likes count and isLiked state`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any()) } returns feedReels
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns reel2.copy(
+            isLiked = true,
+            likesCount = 51
+        )
+
+        advanceUntilIdle()
+
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val updatedState = awaitItem()
+            val updatedReel = updatedState.reels.asSnapshot().first()
+
+            assertThat(updatedReel.likes).isEqualTo(reel2.likesCount + 1)
+            assertThat(updatedReel.isLiked).isEqualTo(!reel2.isLiked)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should update reel with server response on success`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any()) } returns feedReels
+        val updatedReel = reel2.copy(isLiked = true, likesCount = 51)
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns updatedReel
+
+        advanceUntilIdle()
+
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val reel = state.reels.asSnapshot().first()
+
+            assertThat(reel.likes).isEqualTo(51)
+            assertThat(reel.isLiked).isEqualTo(true)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should revert optimistic update when repository throws exception`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any()) } returns feedReels
+        everySuspend { mockReelsRepository.toggleReelLike("2") } throws Exception("Like failed")
+
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val initialReel = state.reels.asSnapshot().first()
+
+            viewModel.onLikeClick("2")
+
+            advanceUntilIdle()
+
+            val errorState = awaitItem()
+            val revertedReel = errorState.reels.asSnapshot().first()
+
+            assertThat(revertedReel.likes).isEqualTo(initialReel.likes)
+            assertThat(revertedReel.isLiked).isEqualTo(initialReel.isLiked)
+            assertNotNull(errorState.error)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should decrement likes when reel is already liked`() = runTest {
+        val likedReel = reel2.copy(isLiked = true, likesCount = 51)
+        everySuspend { mockReelsRepository.getFeedReels(any()) } returns listOf(likedReel)
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns likedReel.copy(
+            isLiked = false,
+            likesCount = 50
+        )
+
+        advanceUntilIdle()
+        val initialReel = viewModel.state.value.reels.asSnapshot().first()
+
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        val updatedReel = viewModel.state.value.reels.asSnapshot().first()
+
+        assertThat(updatedReel.likes).isEqualTo(initialReel.likes - 1)
+        assertThat(updatedReel.isLiked).isEqualTo(false)
+    }
+
+    @Test
+    fun `updateReelInPagingData should only update the specific reel by id`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any()) } returns feedReels
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns reel2.copy(
+            isLiked = true,
+            likesCount = 51
+        )
+
+        advanceUntilIdle()
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val reelsSnapshot = state.reels.asSnapshot().first()
+
+            assertThat(reelsSnapshot.likes).isEqualTo(51)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onDismissErrorDialog should clear error and dismiss dialogs when called`() = runTest {
+        viewModel.onDismissErrorDialog()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertNull(state.error)
+            assertNull(state.isReelDeleted)
+            assertFalse(state.isConfirmationDialogVisible)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
@@ -217,7 +373,8 @@ class UserReelViewModelTest {
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
             userName = "Nour",
             profileImageUrl = "",
-            isCurrentUserOwner = true
+            isCurrentUserOwner = true,
+            isLiked = false
         )
 
         val reel2 = Reel(
@@ -230,7 +387,8 @@ class UserReelViewModelTest {
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
             userName = "hend",
             profileImageUrl = "",
-            isCurrentUserOwner = false
+            isCurrentUserOwner = false,
+            isLiked = false
         )
 
         val feedReels = listOf(reel2, reel1)
@@ -240,7 +398,7 @@ class UserReelViewModelTest {
                 id = "2",
                 videoUrl = "video2.mp4",
                 description = "second reel",
-                likesCount = 50,
+                likes = 50,
                 viewsCount = 100,
                 createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
                 isCurrentUserOwner = false,
@@ -251,7 +409,7 @@ class UserReelViewModelTest {
                 id = "1",
                 videoUrl = "video1.mp4",
                 description = "First reel",
-                likesCount = 100,
+                likes = 100,
                 viewsCount = 1000,
                 createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
                 isCurrentUserOwner = true,

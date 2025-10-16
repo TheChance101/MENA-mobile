@@ -58,6 +58,7 @@ class ReelExtensionTest {
             userName = "Alice",
             profileImageUrl = "https://example.com/alice.jpg",
             isCurrentUserOwner = false,
+            isLiked = false
         )
 
         val testReel2 = Reel(
@@ -71,6 +72,7 @@ class ReelExtensionTest {
             userName = "Bob",
             profileImageUrl = "https://example.com/bob.jpg",
             isCurrentUserOwner = true,
+            isLiked = false
         )
 
         val testReel3 = Reel(
@@ -84,6 +86,7 @@ class ReelExtensionTest {
             userName = "Charlie",
             profileImageUrl = "https://example.com/charlie.jpg",
             isCurrentUserOwner = false,
+            isLiked = false
         )
 
         val testReel4 = Reel(
@@ -97,6 +100,7 @@ class ReelExtensionTest {
             userName = "",
             profileImageUrl = "",
             isCurrentUserOwner = false,
+            isLiked = false
         )
 
 

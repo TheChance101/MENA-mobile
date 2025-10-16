@@ -52,8 +52,8 @@ internal abstract class BaseViewModel<State, Effect>(
 
     protected fun <R> tryToExecute(
         block: suspend () -> R,
-        onSuccess: (R) -> Unit,
-        onError: (ErrorState) -> Unit,
+        onSuccess: (R) -> Unit = {},
+        onError: (ErrorState) -> Unit = {},
         onStart: () -> Unit = {},
         onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,

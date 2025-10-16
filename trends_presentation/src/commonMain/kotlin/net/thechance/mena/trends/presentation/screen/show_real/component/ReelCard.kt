@@ -19,13 +19,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.ic_dots
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_heart
 import mena.trends_presentation.generated.resources.just_now
 import mena.trends_presentation.generated.resources.likes
 import mena.trends_presentation.generated.resources.likes_suffix
-import mena.trends_presentation.generated.resources.more_options
 import mena.trends_presentation.generated.resources.profile_image
 import mena.trends_presentation.generated.resources.video_thumbnail
 import mena.trends_presentation.generated.resources.views
@@ -79,7 +77,7 @@ private fun ReelHeaderSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model =  reel.profileImageUrl,
+                model = reel.profileImageUrl,
                 contentDescription = stringResource(Res.string.profile_image),
                 modifier = Modifier
                     .size(40.dp)
@@ -107,7 +105,7 @@ private fun ReelHeaderSection(
         }
 
         AsyncImage(
-            model =  reel.thumbnailUrl,
+            model = reel.thumbnailUrl,
             contentDescription = stringResource(Res.string.video_thumbnail),
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -151,7 +149,7 @@ private fun ReelFooterSection(
             Icon(
                 painter = painterResource(Res.drawable.ic_heart),
                 contentDescription = stringResource(Res.string.likes),
-                tint = Theme.colorScheme.shadeTertiary,
+                tint = if (reel.isLiked) Theme.colorScheme.error else Theme.colorScheme.shadeTertiary,
                 modifier = Modifier
                     .size(24.dp)
                     .noRippleClickable { onLikeClick() }

@@ -8,10 +8,11 @@ internal fun Reel.toUserReelUiState() =
         id = id,
         videoUrl = videoUrl,
         description = description,
-        likesCount = likesCount,
+        likes = likesCount,
         viewsCount = viewsCount,
         createdAt = createdAt?.timeAgoValue(),
         isCurrentUserOwner = isCurrentUserOwner,
         username = userName,
-        profileImageUrl = profileImageUrl
+        profileImageUrl = profileImageUrl,
+        isLiked = isLiked
     )

@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +63,8 @@ internal fun ReelHomeScreen(
         }
     }
 
+    LaunchedEffect(Unit) { viewModel.getFeedReels() }
+
     ReelScreenContent(
         state = state,
         listener = viewModel,
@@ -99,6 +102,7 @@ private fun ReelScreenContent(
                     }
                 }
             }
+
             Icon(
                 painter = painterResource(Res.drawable.ic_add_real),
                 contentDescription = stringResource(Res.string.add_reel),
