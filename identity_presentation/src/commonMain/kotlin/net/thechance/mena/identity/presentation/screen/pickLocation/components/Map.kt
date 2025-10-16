@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
+import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_anchor
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
@@ -37,8 +39,9 @@ fun Map(
     currentLocation: PickLocationScreenUIState.CoordinatesUiState?,
     onMapClick: (PickLocationScreenUIState.CoordinatesUiState, DpOffset) -> Unit,
     onCameraMoved: (CameraPosition) -> Unit,
-    animateToCurrentLocation: Boolean = false,
+    onSetAnchorLocation: (DpOffset) -> Unit,
     modifier: Modifier = Modifier,
+    animateToCurrentLocation: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val camera = rememberCameraState(firstPosition = cameraPosition)
@@ -51,16 +54,17 @@ fun Map(
         snapshotFlow { camera.position }.collect { position -> onCameraMoved(position) }
     }
 
+
     BoxWithConstraints(
         modifier = modifier
     ) {
         SetAnchorInCenterScreenWhenUseGps(
             animateToCurrentLocation = animateToCurrentLocation,
             currentLocation = currentLocation,
-            onMapClick = onMapClick,
+            onSetAnchorLocation = onSetAnchorLocation,
             camera = camera,
             maxWidth = maxWidth,
-            maxHeight = maxHeight
+            maxHeight = maxHeight,
         )
 
         MaplibreMap(
@@ -93,13 +97,14 @@ fun Map(
 private fun SetAnchorInCenterScreenWhenUseGps(
     animateToCurrentLocation: Boolean,
     currentLocation: PickLocationScreenUIState.CoordinatesUiState?,
-    onMapClick: (PickLocationScreenUIState.CoordinatesUiState, DpOffset) -> Unit,
+    onSetAnchorLocation: (DpOffset) -> Unit,
     camera: CameraState,
     maxWidth: Dp,
-    maxHeight: Dp
-){
-    LaunchedEffect(animateToCurrentLocation) {
-        if (animateToCurrentLocation && currentLocation != null) {
+    maxHeight: Dp,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    if (animateToCurrentLocation && currentLocation != null) {
+        coroutineScope.launch {
             camera.animateTo(
                 finalPosition = CameraPosition(
                     target = Position(
@@ -109,18 +114,14 @@ private fun SetAnchorInCenterScreenWhenUseGps(
                     zoom = 16.0
                 )
             )
-
-            onMapClick(
-                PickLocationScreenUIState.CoordinatesUiState(
-                    latitude = currentLocation.latitude,
-                    longitude = currentLocation.longitude
-                ),
+            onSetAnchorLocation(
                 DpOffset(
                     x = maxWidth / 2f,
                     y = maxHeight / 2f
                 ),
             )
         }
+
     }
 }
 
