@@ -20,18 +20,17 @@ import mena.wallet_presentation.generated.resources.edit
 import mena.wallet_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryInteractionListener
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AnimatedTrailingIcon(
     isEditMode: Boolean,
-    isStatementFound: Boolean,
-    listener: StatementsHistoryInteractionListener
+    hasStatements : Boolean,
+    onEditClicked: () -> Unit
 ) {
     AnimatedVisibility(
-        visible = !isEditMode && !isStatementFound,
+        visible = !isEditMode && !hasStatements,
         enter = fadeIn(tween(300)) +
                 scaleIn(tween(300)),
         exit = fadeOut(tween(300)) +
@@ -47,7 +46,7 @@ fun AnimatedTrailingIcon(
                     RoundedCornerShape(Theme.radius.md)
                 )
                 .clip(RoundedCornerShape(Theme.radius.md))
-                .clickable { listener.onEditClicked() }
+                .clickable { onEditClicked() }
                 .padding(10.dp)
         )
     }

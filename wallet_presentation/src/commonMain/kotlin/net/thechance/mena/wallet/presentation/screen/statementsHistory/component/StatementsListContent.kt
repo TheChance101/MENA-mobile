@@ -86,9 +86,7 @@ fun StatementsListContent(
         modifier = modifier
             .background(Theme.colorScheme.background.surface)
             .padding(horizontal = Theme.spacing._16),
-        contentPadding = PaddingValues(
-            bottom = Theme.spacing._16
-        ),
+        contentPadding = PaddingValues(bottom = Theme.spacing._16),
         state = listState
     ) {
         items(
@@ -97,13 +95,23 @@ fun StatementsListContent(
         ) { statement ->
             AnimatedStatementItem(
                 statement = statement,
-                lastStatement = state.statements.last(),
+                isDividerVisible = state.statements.last() != statement,
                 isEditMode = state.isEditMode,
                 cardOffsetX = cardOffsetX.value.roundToInt(),
                 historyIconOffsetX = historyIconOffsetX.value.roundToInt(),
                 deleteButtonOffsetX = deleteButtonOffsetX.value.roundToInt(),
-                onDeleteClicked = { listener.onDeleteClicked(id = statement.id) },
-                onStatementCardClicked = { listener.onStatementCardClicked(statement) }
+                onDeleteClicked = { onDeleteComplete ->
+                    listener.onDeleteClicked(
+                        statement = statement,
+                        onDeleteComplete = onDeleteComplete
+                    )
+                },
+                onStatementCardClicked = { onViewStatementAvailable ->
+                    listener.onStatementCardClicked(
+                        statement,
+                        onViewStatementAvailable = onViewStatementAvailable
+                    )
+                }
             )
         }
 

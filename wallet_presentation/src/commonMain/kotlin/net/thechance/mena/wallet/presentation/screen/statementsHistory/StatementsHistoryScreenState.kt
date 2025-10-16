@@ -14,7 +14,6 @@ data class StatementsHistoryScreenState(
     val endOfPages: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
     val isEditMode: Boolean = false,
-    val isStatementDeleted: Boolean? = null
 ) {
     data class StatementItem(
         val id: Long,

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,13 +33,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AnimatedStatementItem(
     statement: StatementsHistoryScreenState.StatementItem,
-    lastStatement: StatementsHistoryScreenState.StatementItem,
+    isDividerVisible: Boolean,
     isEditMode: Boolean,
     cardOffsetX: Int,
     historyIconOffsetX: Int,
     deleteButtonOffsetX: Int,
-    onDeleteClicked: () -> Unit,
-    onStatementCardClicked: () -> Unit
+    shouldAutoDelete: Boolean = false,
+    onDeleteClicked: (onDeleteComplete: (isSuccess: Boolean) -> Unit) -> Unit,
+    onStatementCardClicked: (onViewStatementAvailable: (isPdfFound: Boolean) -> Unit) -> Unit
 ) {
     var isVisible by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
@@ -66,10 +68,15 @@ fun AnimatedStatementItem(
                     isDeleting = isDeleting,
                     onDeleteClick = {
                         isDeleting = true
-                        onDeleteClicked()
-                        scope.launch {
-                            delay(100)
-                            isVisible = false
+                        onDeleteClicked { isSuccess ->
+                            scope.launch {
+                                if (isSuccess) {
+                                    delay(100)
+                                    isVisible = false
+                                } else {
+                                    isDeleting = false
+                                }
+                            }
                         }
                     },
                     modifier = Modifier
@@ -82,7 +89,21 @@ fun AnimatedStatementItem(
                     endDate = statement.endDate,
                     totalInflow = statement.totalInflow.toString(),
                     totalOutflow = statement.totalOutflow.toString(),
-                    onStatementCardClicked = { if (!isEditMode) onStatementCardClicked() },
+                    onStatementCardClicked = {
+                        if (!isEditMode) {
+                            isDeleting = true
+                            onStatementCardClicked { isPdfFound ->
+                                if (!isPdfFound) {
+                                    scope.launch {
+                                        delay(100)
+                                        isVisible = false
+                                    }
+                                } else {
+                                    isDeleting = false
+                                }
+                            }
+                        }
+                    },
                     isEditMode = isEditMode,
                     historyIconOffsetX = historyIconOffsetX,
                     modifier = Modifier
@@ -94,7 +115,7 @@ fun AnimatedStatementItem(
                         }
                 )
             }
-            if (lastStatement != statement) {
+            if (isDividerVisible) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -118,14 +139,7 @@ private fun AnimatedStatementItemPreview() {
             totalOutflow = 4200.0,
             fileName = ""
         ),
-        lastStatement = StatementsHistoryScreenState.StatementItem(
-            id = 124,
-            startDate = "Jul 23 2025",
-            endDate = "Aug 27 2025",
-            totalInflow = 2000.0,
-            totalOutflow = 4200.0,
-            fileName = ""
-        ),
+        isDividerVisible = true,
         cardOffsetX = 10,
         historyIconOffsetX = 10,
         deleteButtonOffsetX = 10,

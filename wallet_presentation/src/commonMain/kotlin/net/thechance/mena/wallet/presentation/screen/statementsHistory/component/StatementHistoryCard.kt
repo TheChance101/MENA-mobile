@@ -28,6 +28,7 @@ import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.inflows
 import mena.wallet_presentation.generated.resources.outflows
 import mena.wallet_presentation.generated.resources.silvers
+import mena.wallet_presentation.generated.resources.transaction_history
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -80,7 +81,7 @@ fun StatementHistoryCard(
 private fun StatementHistoryIcon(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(Res.drawable.ic_clock),
-        contentDescription = null,
+        contentDescription = stringResource(Res.string.transaction_history),
         modifier = modifier
             .size(48.dp)
             .clip(CircleShape)

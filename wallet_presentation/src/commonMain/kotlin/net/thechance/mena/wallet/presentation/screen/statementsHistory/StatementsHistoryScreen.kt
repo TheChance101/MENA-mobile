@@ -76,8 +76,8 @@ private fun EditModeAppBar(listener: StatementsHistoryInteractionListener) {
         trailingContent = {
             AnimatedTrailingIcon(
                 isEditMode = true,
-                isStatementFound = true,
-                listener = listener
+                hasStatements = true,
+                onEditClicked = { listener.onEditClicked() }
             )
         }
     )
@@ -114,8 +114,8 @@ private fun NormalModeAppBar(
         trailingContent = {
             AnimatedTrailingIcon(
                 isEditMode = false,
-                isStatementFound = isStatementFound,
-                listener = listener
+                hasStatements = isStatementFound,
+                onEditClicked = { listener.onEditClicked() }
             )
         }
     )

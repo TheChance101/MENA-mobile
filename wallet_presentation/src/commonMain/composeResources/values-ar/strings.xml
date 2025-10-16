@@ -128,10 +128,9 @@
     <string name="connection_lost_try_again">انقطع الاتصال. يرجى المحاولة مرة أخرى.</string>
     <string name="try_again">حاول مرة أخرى</string>
     <string name="payment_failed_description">تعذر إتمام الدفع. يرجى المحاولة مرة أخرى.</string>
+    <string name="payment_status_crossfade">الانتقال بين حالات الدفع</string>
     <string name="you_paid">لقد دفعت</string>
 
     <string name="file_missing">الملف غير موجود</string>
-    <string name="file_missing_description">ملف المعاملات غير موجود.</string>
-
-    <string name="payment_status_crossfade">الانتقال بين حالات الدفع</string>
+    <string name="file_missing_description">تعذر العثور على ملف البيان هذا. قد يكون قد تم حذفه أو نقله من جهازك.</string>
 </resources>

@@ -131,9 +131,9 @@
     <string name="connection_lost_try_again">The connection was lost. Please try again.</string>
     <string name="try_again">Try Again</string>
     <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
+    <string name="payment_status_crossfade">Payment status transition</string>
     <string name="you_paid">You paid</string>
 
     <string name="file_missing">File Missing</string>
     <string name="file_missing_description">We couldn’t find this statement file. It may have been deleted or moved from your device.</string>
-    <string name="payment_status_crossfade">Payment status transition</string>
 </resources>
