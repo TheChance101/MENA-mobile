@@ -12,13 +12,12 @@ import kotlin.uuid.Uuid
 class PaymentRepositoryImpl(private val networkClient: NetworkClient) : PaymentRepository {
     override suspend fun submitTransaction(transactionId: Uuid) {
         safeApiCall<Unit> {
-            networkClient.post("$SUBMIT_PAYMENT_PATH/$transactionId") {
-            }
+            networkClient.post("$PAYMENT_PATH/$transactionId$SUBMIT_PAYMENT_PATH")
         }
     }
 
     private companion object {
         const val PAYMENT_PATH = "/wallet/payment"
-        const val SUBMIT_PAYMENT_PATH = "$PAYMENT_PATH/submit"
+        const val SUBMIT_PAYMENT_PATH = "/submit"
     }
 }

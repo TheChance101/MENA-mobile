@@ -149,11 +149,7 @@ class WalletViewModelTest {
             val amount1 = 200.0
             val receiverId = Uuid.random()
             everySuspend {
-                transactionRepository.addPendingTransaction(
-                    any(),
-                    any(),
-                    any()
-                )
+                transactionRepository.addPendingTransaction(any(), any())
             } returns transactionId1
 
             viewModel.onPaymentClicked(amount1, receiverId)

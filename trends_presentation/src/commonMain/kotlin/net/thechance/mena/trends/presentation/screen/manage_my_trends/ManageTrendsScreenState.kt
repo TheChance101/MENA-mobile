@@ -14,11 +14,11 @@ internal data class ManageTrendsScreenState(
     val currentTab: String = "",
     val errorMessage: StringResource? = null,
 )
-data class ReelUiState(
+internal data class ReelUiState(
     val id: String,
     val thumbnailUrl: String,
 )
-data class UserInfoUiState(
+internal data class UserInfoUiState(
     val userName: String = "",
     val profileImageUrl: String = "",
 )
