@@ -39,7 +39,9 @@ sealed interface ErrorState {
     data object FailedToRequestPermission : ErrorState
     data object AddressNotFound : ErrorState
     // endregion
+
     data class SomethingWentWrong(val message: String?) : ErrorState
+    data class IsActiveAddress(val message: String?) : ErrorState
 }
 
 fun handelAuthorizationException(

@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
 import androidx.compose.ui.unit.DpOffset
+import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
 interface AddEditLocationScreenInteractionListener : BaseInteractionListener {

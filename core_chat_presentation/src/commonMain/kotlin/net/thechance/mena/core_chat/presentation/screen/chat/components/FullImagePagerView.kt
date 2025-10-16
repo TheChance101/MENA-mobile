@@ -1,5 +1,6 @@
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -28,9 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.preat.peekaboo.image.picker.toImageBitmap
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_cancel
@@ -45,6 +48,7 @@ import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import kotlin.jvm.JvmName
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -58,19 +62,25 @@ fun FullImagePagerView(
 ) {
     if (message == null || message.content !is MessageContent.Images) return
     val imagesSource = message.content.source
-    if (imagesSource !is ImagesSource.Remote) return
 
-    val images = imagesSource.urls
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = {
+            when (imagesSource) {
+                is ImagesSource.Remote -> {
+                    imagesSource.urls.size
+                }
 
-    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { images.size })
+                is ImagesSource.Local -> {
+                    imagesSource.byteArrays.size
+                }
+            }
+        }
+    )
     Box(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
     ) {
-        HorizontalImagePager(
-            state = pagerState,
-            images = images,
-        )
-
+        ImagePager(state = pagerState, imagesSource = imagesSource)
         FabButton(
             painter = painterResource(Res.drawable.ic_cancel),
             shape = RoundedCornerShape(Theme.spacing._12),
@@ -89,7 +99,11 @@ fun FullImagePagerView(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
             time = message.sendTime,
-            onDownloadClicked = { onDownloadClick(images[pagerState.currentPage]) },
+            isDownloadButtonVisible = imagesSource is ImagesSource.Remote,
+            onDownloadClicked = {
+                if (imagesSource is ImagesSource.Remote)
+                    onDownloadClick(imagesSource.urls[pagerState.currentPage])
+            },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
@@ -101,9 +115,10 @@ fun FullImagePagerView(
 }
 
 @Composable
+@JvmName("HorizontalImagePagerFromUrls")
 fun HorizontalImagePager(
     state: PagerState,
-    images: List<String>,
+    urls: List<String>,
 ) {
     HorizontalPager(
         state = state,
@@ -116,7 +131,7 @@ fun HorizontalImagePager(
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
-                model = images[page],
+                model = urls[page],
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 onState = { state ->
@@ -131,12 +146,38 @@ fun HorizontalImagePager(
 }
 
 @Composable
+@JvmName("HorizontalImagePagerFromByteArrays")
+fun HorizontalImagePager(
+    state: PagerState,
+    byteArrays: List<ByteArray>,
+) {
+    HorizontalPager(
+        state = state,
+        modifier = Modifier.fillMaxSize(),
+    ) { page ->
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                bitmap = byteArrays[page].toImageBitmap(),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+    }
+}
+
+@Composable
 private fun PagerOverlay(
     senderName: String,
     senderImageUrl: String,
     time: LocalDateTime,
     onDownloadClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    isDownloadButtonVisible: Boolean,
 ) {
     val bgGradientColor = Brush.verticalGradient(
         colors = listOf(
@@ -179,13 +220,25 @@ private fun PagerOverlay(
             )
         }
 
-        FabButton(
-            onClick = onDownloadClicked,
-            painter = painterResource(Res.drawable.ic_download),
-            iconSize = 32.dp,
-            containerColor = Color.Transparent,
-            contentColor = Theme.colorScheme.primary.onPrimary,
-            contentPadding = PaddingValues(0.dp)
-        )
+        if (isDownloadButtonVisible) {
+            FabButton(
+                onClick = onDownloadClicked,
+                painter = painterResource(Res.drawable.ic_download),
+                iconSize = 32.dp,
+                containerColor = Color.Transparent,
+                contentColor = Theme.colorScheme.primary.onPrimary,
+                contentPadding = PaddingValues(0.dp)
+            )
+        }
+    }
+}
+@Composable
+private fun ImagePager(
+    state: PagerState,
+    imagesSource: ImagesSource
+) {
+    when (imagesSource) {
+        is ImagesSource.Remote -> HorizontalImagePager(state, imagesSource.urls)
+        is ImagesSource.Local -> HorizontalImagePager(state, imagesSource.byteArrays)
     }
 }
