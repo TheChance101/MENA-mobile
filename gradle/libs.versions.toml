@@ -56,6 +56,7 @@ ktorfit = "2.6.4"
 peekaboo = "0.5.2"
 
 [libraries]
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-paging-compose = { module = "app.cash.paging:paging-compose-common", version.ref = "paging-compose-version" }
 androidx-paging-runtime = { module = "app.cash.paging:paging-common", version.ref = "paging-compose-version" }
 androidx-paging-testing = { module = "androidx.paging:paging-testing", version.ref = "pagingTesting" }
@@ -167,7 +168,9 @@ maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.r
 compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
 compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
 
+# DataStore
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
+
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }
 contacts-provider = { module = "io.github.dev-bilal-azzam:contacts-provider", version.ref = "contacts-provider" }

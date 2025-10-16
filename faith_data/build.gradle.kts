@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(projects.identityDomain)
             implementation(libs.bundles.ktor)
+            implementation(libs.androidx.datastore.preferences)
             api(libs.koin.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
