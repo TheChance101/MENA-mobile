@@ -12,9 +12,13 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.quran
+import mena.faith_presentation.generated.resources.search_in_surah_hint
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
+import net.thechance.mena.faith.presentation.util.provider.ResourceProvider
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,15 +31,26 @@ class SearchViewModelTest {
     private lateinit var testViewModel: SearchViewModel
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val searchArgs: ISearchArgs = mock(mode = MockMode.autofill)
+    private lateinit var resourceProvider: ResourceProvider
 
     @BeforeTest
     fun setup() {
         testDispatcher = StandardTestDispatcher()
+        resourceProvider = mock(mode = MockMode.autofill)
+
+        everySuspend { resourceProvider.getString(Res.string.quran) } returns QURAN_TEXT
+        everySuspend {
+            resourceProvider.getString(
+                Res.string.search_in_surah_hint,
+                any()
+            )
+        } returns SEARCH_HINT
 
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -127,7 +142,8 @@ class SearchViewModelTest {
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
         )
 
         // Then
@@ -173,7 +189,8 @@ class SearchViewModelTest {
             testViewModel = SearchViewModel(
                 searchArgs = searchArgs,
                 repository = quranRepository,
-                dispatcher = testDispatcher
+                dispatcher = testDispatcher,
+                resourceProvider = resourceProvider
             )
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -195,7 +212,8 @@ class SearchViewModelTest {
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -215,12 +233,16 @@ class SearchViewModelTest {
         val expectedHint = "Search in Al-Fatiha"
         everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
         everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
+        everySuspend {
+            resourceProvider.getString(Res.string.search_in_surah_hint, TEST_SURAH_NAME)
+        } returns expectedHint
 
         // When
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -234,12 +256,17 @@ class SearchViewModelTest {
         val expectedHint = "Search in Quran"
         everySuspend { searchArgs.surahId } returns null
         everySuspend { searchArgs.surahName } returns null
+        everySuspend { resourceProvider.getString(Res.string.quran) } returns QURAN_TEXT
+        everySuspend {
+            resourceProvider.getString(Res.string.search_in_surah_hint, QURAN_TEXT)
+        } returns expectedHint
 
         // When
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            resourceProvider = resourceProvider
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -256,6 +283,8 @@ class SearchViewModelTest {
         const val TEST_SURAH_ID = 1
         const val TEST_SURAH_NAME = "Al-Fatiha"
         const val EMPTY_STRING = ""
+        const val QURAN_TEXT = "Quran"
+        const val SEARCH_HINT = "Search in..."
         const val SINGLE_CHAR_QUERY = "ا"
         const val SEARCH_DELAY = 1000L
         const val HALF_SEARCH_DELAY = 500L
