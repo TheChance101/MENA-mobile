@@ -220,7 +220,7 @@ private fun ReelContent(
         Box(Modifier.fillMaxSize()) {
             UsersReAct(
                 viewCount = reel.viewsCount.toString(),
-                likeCount = reel.likes.toString(),
+                likeCount = reel.likesCount.toString(),
                 isCurrentUserOwner = reel.isCurrentUserOwner,
                 onDeleteClick = onDeleteClick,
                 onLikeClick = onLikeClick,

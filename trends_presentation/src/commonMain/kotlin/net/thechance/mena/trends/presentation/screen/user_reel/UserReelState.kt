@@ -21,7 +21,7 @@ internal data class UserReelUiState(
     val id: String = "",
     val videoUrl: String = "",
     val description: String = "",
-    val likes: Int = 0,
+    val likesCount: Int = 0,
     val viewsCount: Int = 0,
     val username: String = "",
     val profileImageUrl: String = "",

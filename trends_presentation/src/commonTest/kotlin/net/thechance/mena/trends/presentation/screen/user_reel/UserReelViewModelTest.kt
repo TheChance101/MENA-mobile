@@ -249,7 +249,7 @@ class UserReelViewModelTest {
             val updatedState = awaitItem()
             val updatedReel = updatedState.reels.asSnapshot().first()
 
-            assertThat(updatedReel.likes).isEqualTo(reel2.likesCount + 1)
+            assertThat(updatedReel.likesCount).isEqualTo(reel2.likesCount + 1)
             assertThat(updatedReel.isLiked).isEqualTo(!reel2.isLiked)
             cancelAndIgnoreRemainingEvents()
         }
@@ -270,7 +270,7 @@ class UserReelViewModelTest {
             val state = awaitItem()
             val reel = state.reels.asSnapshot().first()
 
-            assertThat(reel.likes).isEqualTo(51)
+            assertThat(reel.likesCount).isEqualTo(51)
             assertThat(reel.isLiked).isEqualTo(true)
             cancelAndIgnoreRemainingEvents()
         }
@@ -294,7 +294,7 @@ class UserReelViewModelTest {
             val errorState = awaitItem()
             val revertedReel = errorState.reels.asSnapshot().first()
 
-            assertThat(revertedReel.likes).isEqualTo(initialReel.likes)
+            assertThat(revertedReel.likesCount).isEqualTo(initialReel.likesCount)
             assertThat(revertedReel.isLiked).isEqualTo(initialReel.isLiked)
             assertNotNull(errorState.error)
             cancelAndIgnoreRemainingEvents()
@@ -318,7 +318,7 @@ class UserReelViewModelTest {
 
         val updatedReel = viewModel.state.value.reels.asSnapshot().first()
 
-        assertThat(updatedReel.likes).isEqualTo(initialReel.likes - 1)
+        assertThat(updatedReel.likesCount).isEqualTo(initialReel.likesCount - 1)
         assertThat(updatedReel.isLiked).isEqualTo(false)
     }
 
@@ -338,7 +338,7 @@ class UserReelViewModelTest {
             val state = awaitItem()
             val reelsSnapshot = state.reels.asSnapshot().first()
 
-            assertThat(reelsSnapshot.likes).isEqualTo(51)
+            assertThat(reelsSnapshot.likesCount).isEqualTo(51)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -398,7 +398,7 @@ class UserReelViewModelTest {
                 id = "2",
                 videoUrl = "video2.mp4",
                 description = "second reel",
-                likes = 50,
+                likesCount = 50,
                 viewsCount = 100,
                 createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
                 isCurrentUserOwner = false,
@@ -409,7 +409,7 @@ class UserReelViewModelTest {
                 id = "1",
                 videoUrl = "video1.mp4",
                 description = "First reel",
-                likes = 100,
+                likesCount = 100,
                 viewsCount = 1000,
                 createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
                 isCurrentUserOwner = true,
