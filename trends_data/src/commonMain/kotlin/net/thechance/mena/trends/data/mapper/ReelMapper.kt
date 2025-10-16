@@ -18,6 +18,5 @@ internal fun ReelDto.toEntity(): Reel {
         userName = username,
         profileImageUrl = profilePictureUrl.orEmpty(),
         isCurrentUserOwner = isCurrentUserOwner,
-        categories = categories?.mapNotNull { it.toEntity() }.orEmpty()
     )
 }

@@ -16,17 +16,20 @@ import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.data.utils.buildMultiPartFormData
 import net.thechance.mena.core_chat.domain.entity.Chat
+import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
@@ -34,6 +37,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -61,6 +65,17 @@ class ChatRepositoryImpl(
                 parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
             }
         }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
+    }
+
+    override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {
+        return tryNetworkCall<PagedDataDto<ChatSummaryDto>>(
+            bodyType = typeInfo<PagedDataDto<ChatSummaryDto>>()
+        ) {
+            client.get(CHAT_SUMMARY_ENDPOINT) {
+                parameter(PAGE_NUMBER_PARAMETER, pageNumber)
+                parameter(PAGE_SIZE_PARAMETER, pageSize)
+            }
+        }?.toPagedListOfChatSummary() ?: throw NotFoundException("Response body is null")
     }
 
     override suspend fun deleteMessage(message: Message) {
@@ -186,7 +201,7 @@ class ChatRepositoryImpl(
     }
 
     private suspend fun onConnectedWebSocket(chatId: String) {
-        webSocketManager.subscribe("$WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX/$chatId$QUEUE_MESSAGES")
+        webSocketManager.subscribe("$WEB_SOCKETS_USER_DESTINATION_PREFIX/$chatId$QUEUE_MESSAGES")
         markMessageAsRead(chatId)
     }
 
@@ -229,11 +244,12 @@ class ChatRepositoryImpl(
         const val PAGE_NUMBER = 0
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val SEND_MESSAGE_DESTINATION = "/app/chat.privateMessage"
-        const val WEB_SOCKETS_APPLICATION_DESTINATION_PREFIX = "/user"
+        const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
         const val IMAGES_ENDPOINT = "/chat/image"
         const val IMAGES_FILES_PARAM = "images"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
+        const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
     }
 }

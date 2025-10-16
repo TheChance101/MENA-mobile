@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.presentation.screen.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,25 +21,25 @@ import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
+import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
-import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ChatItem(
-    chat: HomeScreenState.ChatUiState,
+    chat: ChatUiState,
+    onChatClicked: (ChatUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onChatClicked(chat) },
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         CircularAvatar(
@@ -53,7 +54,7 @@ fun ChatItem(
 }
 
 @Composable
-private fun TimeAndStatus(chat: HomeScreenState.ChatUiState) {
+private fun TimeAndStatus(chat: ChatUiState) {
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4),
         horizontalAlignment = Alignment.End,
@@ -65,13 +66,13 @@ private fun TimeAndStatus(chat: HomeScreenState.ChatUiState) {
             color = Theme.colorScheme.shadeSecondary
         )
         if (chat.lastMessage.isMine) {
-            if (chat.status is HomeScreenState.ChatUiState.Status.Sent) {
+            if (chat.status is ChatUiState.Status.Sent) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_message_sent),
                     contentDescription = null,
                     tint = Theme.colorScheme.shadeTertiary
                 )
-            } else if (chat.status is HomeScreenState.ChatUiState.Status.Read) {
+            } else if (chat.status is ChatUiState.Status.Read) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_message_read),
                     contentDescription = null,
@@ -79,7 +80,7 @@ private fun TimeAndStatus(chat: HomeScreenState.ChatUiState) {
                 )
             }
         } else {
-            if (chat.status is HomeScreenState.ChatUiState.Status.UnRead) {
+            if (chat.status is ChatUiState.Status.UnRead) {
                 Box(
                     modifier = Modifier
                         .size(20.dp)
@@ -103,7 +104,11 @@ private fun TimeAndStatus(chat: HomeScreenState.ChatUiState) {
 }
 
 @Composable
-private fun RowScope.NameAndLastMessage(chat: HomeScreenState.ChatUiState) {
+private fun RowScope.NameAndLastMessage(chat: ChatUiState) {
+    val lastMessage =
+        if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
+        else chat.lastMessage.text
+
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4).weight(1f)
             .padding(end = Theme.spacing._4),
@@ -117,32 +122,11 @@ private fun RowScope.NameAndLastMessage(chat: HomeScreenState.ChatUiState) {
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = chat.lastMessage.text,
+            text = lastMessage,
             style = Theme.typography.label.extraSmall,
             color = Theme.colorScheme.shadeTertiary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@OptIn(ExperimentalUuidApi::class)
-@Composable
-@Preview
-private fun ChatItemPreview() {
-    MenaTheme {
-        ChatItem(
-            chat = HomeScreenState.ChatUiState(
-                id = Uuid.random(),
-                name = "mona",
-                imageUrl = "https://i.ibb.co/DjJLNHm/ef7bf477a8366d411f62a575dc169f0858ca1fec.jpg",
-                lastMessage = HomeScreenState.ChatUiState.MessageUiState(
-                    time = "12:33 PM",
-                    isMine = false,
-                    text = "Hi, how are you?",
-                ),
-                status = HomeScreenState.ChatUiState.Status.UnRead(2),
-            )
         )
     }
 }

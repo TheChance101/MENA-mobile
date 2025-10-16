@@ -1,19 +1,15 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -26,7 +22,6 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.new_trend
-import mena.trends_presentation.generated.resources.page_number
 import mena.trends_presentation.generated.resources.upload_video
 import mena.trends_presentation.generated.resources.upload_video_description
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -38,6 +33,7 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.NextButton
+import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
 import net.thechance.mena.trends.presentation.shared.component.VideoLoadingCardItem
 import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
@@ -182,18 +178,7 @@ private fun UploadReelScreenTopBar(
             )
         },
         title = stringResource(Res.string.new_trend),
-        trailingContent = {
-            Text(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(Theme.radius.full))
-                    .background(Theme.colorScheme.background.surfaceLow)
-                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4),
-                text = stringResource(Res.string.page_number, 1, 3),
-                style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadePrimary,
-                textAlign = TextAlign.Center
-            )
-        }
+        trailingContent = { UploadPageNumber(page = 1) }
     )
 }
 

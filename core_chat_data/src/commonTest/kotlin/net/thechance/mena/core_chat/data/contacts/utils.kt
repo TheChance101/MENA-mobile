@@ -21,12 +21,14 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
+import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -54,7 +56,7 @@ inline fun <reified T> MockRequestHandleScope.mockErrorPagedResponse(
     status: HttpStatusCode,
 ): HttpResponseData {
     return respond(
-        content = """{"status":$status,"success":false,"message":"${status.description}"}""",
+        content = "",
         status = status,
         headers = jsonHeaders
     )
@@ -109,6 +111,23 @@ fun MockRequestHandleScope.defaultChatResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultChatSummaryResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PagedDataDto.serializer(ChatSummaryDto.serializer()),
+        PagedDataDto(
+            data = listOf(
+                createChatSummaryDto()
+            ),
+            pageNumber = 1,
+            pageSize = 20,
+            totalItems = 1,
+            totalPages = 1
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 fun MockRequestHandleScope.defaultUploadImagesResponse() = respond(
     content = jsonSerialization.encodeToString(
         MessageDto.serializer(),
@@ -142,11 +161,13 @@ fun createChatRepository(
     imageDownloader: ImageDownloader,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
         chatResponse = chatResponse,
+        chatSummaryResponse = chatSummaryResponse,
         chatByIdResponse = chatByIdResponse
     )
     return ChatRepositoryImpl(
@@ -166,6 +187,7 @@ fun createHttpClient(
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
         val path = request.url.encodedPath
@@ -179,14 +201,18 @@ fun createHttpClient(
             path == CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
                 ?: defaultChatHistoryResponse()
 
-            path == CHAT_ENDPOINT -> chatResponse?.invoke(this)
-                ?: defaultChatResponse()
+            request.url.encodedPath == CHAT_SUMMARY_ENDPOINT ->
+                chatSummaryResponse?.invoke(this) ?: defaultChatSummaryResponse()
+
+            request.url.encodedPath == CHAT_ENDPOINT ->
+                chatResponse?.invoke(this) ?: defaultChatResponse()
 
             path.contains(IMAGES_ENDPOINT) ->
                 imagesResponse?.invoke(this) ?: defaultUploadImagesResponse()
 
             path.startsWith("$CHAT_ENDPOINT/") ->
                 chatByIdResponse?.invoke(this) ?: defaultChatResponse()
+
 
             else -> respond(
                 content = "",
@@ -206,9 +232,10 @@ fun createHttpClient(
     }
 }
 
+
 private const val CONTACTS_ENDPOINT = "/chat/contacts"
 private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
 private const val CHAT_ENDPOINT = "/chat"
 private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
-
+private const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
 private const val IMAGES_ENDPOINT = "/chat/image"
