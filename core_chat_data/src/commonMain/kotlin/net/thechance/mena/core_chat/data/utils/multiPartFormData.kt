@@ -1,10 +1,39 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.data.utils
 
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+
+fun Pair<String, ByteArray>.buildImageMultiPartFormData(
+    fieldName: String,
+    chatId: String,
+    messageId: String?
+): MultiPartFormDataContent {
+    val (name, byteArray) = this
+    val extension = byteArray.getExtension()
+    val formattedFileName = formatFileName(name, extension)
+
+    return MultiPartFormDataContent(
+        formData {
+            append("chatId", chatId)
+            messageId?.let { append("messageId", it) }
+            append(
+                fieldName,
+                byteArray,
+                Headers.build {
+                    append(HttpHeaders.ContentType, imageExtensionToMimeType(extension))
+                    append(HttpHeaders.ContentDisposition, """filename="$formattedFileName"""")
+                }
+            )
+        }
+    )
+}
 
 fun List<Pair<String, ByteArray>>.buildMultiPartFormData(
     fieldName: String

@@ -25,7 +25,7 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
-import net.thechance.mena.core_chat.data.utils.buildMultiPartFormData
+import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -160,17 +160,39 @@ class ChatRepositoryImpl(
         images: List<ByteArray>,
         chatId: Uuid
     ): MessageDto {
-        if (images.size != imageNames.size) throw SendMessageFailedException("imageNames and images must have the same size.")
+        if (images.size != imageNames.size)
+            throw SendMessageFailedException("imageNames and images must have the same size.")
 
         val files = imageNames.zip(images)
 
-        return tryNetworkCall<MessageDto>(
-            bodyType = typeInfo<MessageDto>()
-        ) {
-            client.post("$IMAGES_ENDPOINT/$chatId") {
-                setBody(files.buildMultiPartFormData(fieldName = IMAGES_FILES_PARAM))
+        var messageId: String? = null
+        var latestMessage: MessageDto? = null
+
+        files.forEach { imageFile ->
+            val multipart = imageFile.buildImageMultiPartFormData(
+                fieldName = IMAGES_FILES_PARAM,
+                chatId = chatId.toString(),
+                messageId = messageId
+            )
+
+            val messageResponse = tryNetworkCall<MessageDto>(
+                bodyType = typeInfo<MessageDto>()
+            ) {
+                client.post(IMAGES_ENDPOINT) {
+                    setBody(multipart)
+                }
             }
-        } ?: throw SendMessageFailedException("Failed to upload images")
+
+            if (messageId == null && messageResponse != null) {
+                messageId = messageResponse.id
+            }
+
+            latestMessage = messageResponse
+
+        }
+
+        return latestMessage
+            ?: throw SendMessageFailedException("No images were uploaded successfully.")
     }
 
     override fun observeReadMessages(): Flow<String> {
@@ -233,7 +255,7 @@ class ChatRepositoryImpl(
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
         const val IMAGES_ENDPOINT = "/chat/image"
-        const val IMAGES_FILES_PARAM = "images"
+        const val IMAGES_FILES_PARAM = "image"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
     }
 }
