@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import kotlin.test.AfterTest
@@ -80,7 +81,7 @@ class PaymentResultViewModelTest {
         )
 
         viewModel.uiEffect.test {
-            viewModel.onCancelClicked()
+            viewModel.onCloseClicked()
             assertEquals(PaymentResultEffect.NavigateToScreenBeforePaymentProcess, awaitItem())
         }
     }
@@ -104,7 +105,7 @@ class PaymentResultViewModelTest {
 
     @Test
     fun `onTryAgainClicked should update state with CONNECTION_LOST on error`() = runTest {
-        everySuspend { paymentRepository.submitTransaction(transactionId) } throws Exception()
+        everySuspend { paymentRepository.submitTransaction(transactionId) } throws NoInternetException()
 
         val viewModel = PaymentResultViewModel(
             paymentRepository = paymentRepository,
@@ -113,8 +114,9 @@ class PaymentResultViewModelTest {
         )
 
         viewModel.state.test {
-            viewModel.onTryAgainClicked()
             skipItems(1)
+            viewModel.onTryAgainClicked()
+            skipItems(2)
             val state = awaitItem()
             assertEquals(SubmissionStatus.CONNECTION_LOST, state.paymentStatus)
             cancelAndIgnoreRemainingEvents()

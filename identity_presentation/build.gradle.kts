@@ -5,9 +5,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.mockkery)
     alias(libs.plugins.kover)
-
+    alias(libs.plugins.cocoapods)
 }
 
 kotlin {
@@ -39,6 +38,8 @@ kotlin {
             implementation(projects.identityApi)
             implementation(projects.identityDomain)
             implementation(projects.designSystem)
+            implementation(libs.bundles.filekit)
+
 
             implementation(libs.squircle.shape)
             implementation(compose.runtime)
@@ -52,6 +53,7 @@ kotlin {
             implementation(libs.bundles.coil)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.maplibre.compose)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.test)
@@ -60,6 +62,17 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
 
+    }
+    cocoapods {
+        summary = "IdentityPresentation. Contains iOS-compatible map composables and shared location logic used across mobile modules."
+        homepage = "https://github.com/TheChance101/MENA-mobile"
+        version = "1.0"
+        ios.deploymentTarget = "15.4"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
+            baseName = "IdentityPresentation"
+            isStatic = true
+        }
     }
 }
 

@@ -1,5 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.payment_result.component
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.close
 import mena.wallet_presentation.generated.resources.connection_lost_try_again
+import mena.wallet_presentation.generated.resources.payment_failed_description
+import mena.wallet_presentation.generated.resources.payment_status_crossfade
 import mena.wallet_presentation.generated.resources.show_transaction_details
 import mena.wallet_presentation.generated.resources.silvers
 import mena.wallet_presentation.generated.resources.to
@@ -30,56 +34,94 @@ import net.thechance.mena.designsystem.presentation.component.button.OutlinedBut
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultInteractionListener
+import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreenState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PaymentStatusBody(
     interactionListener: PaymentResultInteractionListener,
-    paymentStatus: SubmissionStatus = SubmissionStatus.UNKNOWN_ERROR,
-    description: String = stringResource(Res.string.connection_lost_try_again),
+    status: PaymentResultScreenState,
+    paymentStatus: SubmissionStatus = SubmissionStatus.CONNECTION_LOST,
     receiverName: String = "",
     amount: Double = 0.0
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        if (paymentStatus == SubmissionStatus.UNKNOWN_ERROR) {
-            PaymentResultCard(
-                image = painterResource(Res.drawable.transaction_failed),
-                title = stringResource(Res.string.transaction_failed),
-                description = description,
-                paymentStatus = paymentStatus,
-                modifier = Modifier.align(Alignment.Center)
-            )
-            PaymentStatusButtons(
-                primaryButtonText = stringResource(Res.string.try_again),
-                onPrimaryButtonClick = interactionListener::onTryAgainClicked,
-                onCancelClicked = interactionListener::onCancelClicked,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
-        } else {
-            PaymentResultCard(
-                image = painterResource(Res.drawable.transaction_success),
-                title = stringResource(Res.string.transaction_successful),
-                name = receiverName,
-                amount = amount,
-                paymentStatus = paymentStatus,
-                modifier = Modifier.align(Alignment.Center)
-            )
-            PaymentStatusButtons(
-                primaryButtonText = stringResource(Res.string.show_transaction_details),
-                onPrimaryButtonClick = interactionListener::onShowTransactionDetailsClicked,
-                onCancelClicked = interactionListener::onCancelClicked,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+    Crossfade(
+        targetState = paymentStatus,
+        animationSpec = tween(durationMillis = 300),
+        label = stringResource(Res.string.payment_status_crossfade)
+    ) { state ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            when (state) {
+                SubmissionStatus.CONNECTION_LOST -> {
+                    PaymentResultCard(
+                        image = painterResource(Res.drawable.transaction_failed),
+                        title = stringResource(Res.string.transaction_failed),
+                        description = stringResource(Res.string.connection_lost_try_again),
+                        paymentStatus = state,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    PaymentStatusButtons(
+                        primaryButtonText = stringResource(Res.string.try_again),
+                        onPrimaryButtonClick = interactionListener::onTryAgainClicked,
+                        onCancelClicked = interactionListener::onCloseClicked,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        isLoading = status.isLoading,
+                        isCloseEnabled = status.isCloseButtonEnabled,
+                        isTryAgainEnabled = status.isTryAgainButtonEnabled
+                    )
+                }
+
+                SubmissionStatus.UNKNOWN_ERROR -> {
+                    PaymentResultCard(
+                        image = painterResource(Res.drawable.transaction_failed),
+                        title = stringResource(Res.string.transaction_failed),
+                        description = stringResource(Res.string.payment_failed_description),
+                        paymentStatus = state,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    PaymentStatusButtons(
+                        primaryButtonText = stringResource(Res.string.try_again),
+                        onPrimaryButtonClick = interactionListener::onTryAgainClicked,
+                        onCancelClicked = interactionListener::onCloseClicked,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        isLoading = status.isLoading,
+                        isCloseEnabled = status.isCloseButtonEnabled,
+                        isTryAgainEnabled = status.isTryAgainButtonEnabled
+                    )
+                }
+
+                SubmissionStatus.SUCCESS -> {
+                    PaymentResultCard(
+                        image = painterResource(Res.drawable.transaction_success),
+                        title = stringResource(Res.string.transaction_successful),
+                        name = receiverName,
+                        amount = amount,
+                        paymentStatus = state,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    PaymentStatusButtons(
+                        primaryButtonText = stringResource(Res.string.show_transaction_details),
+                        onPrimaryButtonClick = interactionListener::onShowTransactionDetailsClicked,
+                        onCancelClicked = interactionListener::onCloseClicked,
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        isLoading = status.isLoading,
+                        isCloseEnabled = status.isCloseButtonEnabled
+                    )
+                }
+            }
         }
     }
+
 }
 
 @Composable
@@ -112,18 +154,18 @@ private fun PaymentResultCard(
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.title.small,
         )
-        if (paymentStatus == SubmissionStatus.UNKNOWN_ERROR) {
-            Text(
-                text = description,
-                color = Theme.colorScheme.shadeSecondary,
-                style = Theme.typography.label.extraSmall,
+        if (paymentStatus == SubmissionStatus.SUCCESS) {
+            SuccessPaymentDescription(
+                name = name,
+                amount = amount,
                 modifier = Modifier
                     .padding(top = 8.dp)
             )
         } else {
-            SuccessPaymentDescription(
-                name = name,
-                amount = amount,
+            Text(
+                text = description,
+                color = Theme.colorScheme.shadeSecondary,
+                style = Theme.typography.label.extraSmall,
                 modifier = Modifier
                     .padding(top = 8.dp)
             )
@@ -137,7 +179,10 @@ private fun PaymentStatusButtons(
     primaryButtonText: String,
     onPrimaryButtonClick: () -> Unit,
     onCancelClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+    isCloseEnabled: Boolean = true,
+    isTryAgainEnabled: Boolean = true
 ) {
     Column(
         modifier = modifier
@@ -148,8 +193,10 @@ private fun PaymentStatusButtons(
             onClick = onPrimaryButtonClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            contentPadding = PaddingValues(vertical = 13.dp)
+                .padding(bottom = 12.dp),
+            contentPadding = PaddingValues(vertical = 13.dp),
+            isLoading = isLoading,
+            isEnabled = isTryAgainEnabled
         )
 
         OutlinedButton(
@@ -157,8 +204,9 @@ private fun PaymentStatusButtons(
             onClick = onCancelClicked,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 6.dp, bottom = 12.dp),
+                .padding(bottom = 24.dp),
             contentPadding = PaddingValues(vertical = 13.dp),
+            isEnabled = isCloseEnabled
         )
     }
 }
@@ -178,10 +226,10 @@ private fun SuccessPaymentDescription(
             style = Theme.typography.label.small
         )
         Text(
-            text = "$amount ${stringResource(Res.string.silvers)}",
+            text = " $amount ${stringResource(Res.string.silvers)} ",
             color = Theme.colorScheme.shadeSecondary,
             style = Theme.typography.label.small.copy(
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             )
         )
         Text(
@@ -193,8 +241,61 @@ private fun SuccessPaymentDescription(
             text = name,
             color = Theme.colorScheme.shadeSecondary,
             style = Theme.typography.label.small.copy(
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             )
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PaymentResultSuccessPreview() {
+    MenaTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            PaymentResultCard(
+                image = painterResource(Res.drawable.transaction_success),
+                title = stringResource(Res.string.transaction_successful),
+                paymentStatus = SubmissionStatus.SUCCESS,
+                name = "Ahmed Ali",
+                amount = 31.99,
+                modifier = Modifier.align(Alignment.Center)
+            )
+            PaymentStatusButtons(
+                primaryButtonText = stringResource(Res.string.try_again),
+                onPrimaryButtonClick = {},
+                onCancelClicked = {},
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PaymentResultUnknownErrorPreview() {
+    MenaTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            PaymentResultCard(
+                image = painterResource(Res.drawable.transaction_failed),
+                title = stringResource(Res.string.transaction_failed),
+                paymentStatus = SubmissionStatus.UNKNOWN_ERROR,
+                description = stringResource(Res.string.payment_failed_description),
+                modifier = Modifier.align(Alignment.Center)
+            )
+            PaymentStatusButtons(
+                primaryButtonText = stringResource(Res.string.try_again),
+                onPrimaryButtonClick = {},
+                onCancelClicked = {},
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
     }
 }

@@ -16,6 +16,7 @@ import net.thechance.mena.trends.data.repository.util.getReelsResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.Test
 import kotlin.test.assertFails
 
@@ -32,7 +33,7 @@ internal class ReelRepositoryImplTest {
             networkClient = createReelsHttpClient { getReelsResponse() }
             repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
-            val reels = repository.getAllReels(pageNumber = 1)
+            val reels = repository.getAllCurrentUserReels(pageNumber = 1)
 
             assertThat(reels).isEqualTo(fakeReelList)
         }
@@ -60,8 +61,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should update reel successfully`() = runTest {
 
-        networkClient =
-            createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
+        networkClient =createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         val result = runCatching {
@@ -165,7 +165,7 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient { throw Exception("Network Error") }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
-        val result = runCatching { repository.getAllReels(pageNumber = 1) }
+        val result = runCatching { repository.getAllCurrentUserReels(pageNumber = 1) }
 
         assertThat(result.isFailure).isEqualTo(true)
         assertThat(result.exceptionOrNull()?.message).isEqualTo("Network Error")

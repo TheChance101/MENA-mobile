@@ -9,7 +9,6 @@ import mena.wallet_presentation.generated.resources.balance_fetch_error_descript
 import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.payment_failed_description
-import net.thechance.mena.wallet.domain.model.PendingTransactionType
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
@@ -118,7 +117,6 @@ class WalletViewModel(
         tryToExecute(
             callee = {
                 transactionRepository.addPendingTransaction(
-                    pendingTransactionType = PendingTransactionType.ONLINE_PURCHASE,
                     receiverId = receiverId,
                     amount = amount
                 )

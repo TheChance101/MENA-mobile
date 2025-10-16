@@ -36,7 +36,7 @@ internal class ManageTrendsViewModel(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    loadPage = { page -> repository.getAllReels(page) }
+                    loadPage = { page -> repository.getAllCurrentUserReels(page) }
                 )
             },
             onSuccess = ::onGetReelsSuccess,
@@ -50,12 +50,8 @@ internal class ManageTrendsViewModel(
     fun getCurrentUserInfo() {
         tryToExecute(
             block = { userRepository.getCurrentUserInfo() },
-            onSuccess = { profile ->
-                updateState { copy(profile = profile.toUiState()) }
-            },
-            onError = { errorState ->
-                updateState { copy(error = errorState) }
-            },
+            onSuccess = { profile -> updateState { copy(profile = profile.toUiState()) } },
+            onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = ioDispatcher
@@ -69,7 +65,7 @@ internal class ManageTrendsViewModel(
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
-    override fun onReelItemClick(reelId: String) {
+    override fun onReelClick(reelId: String) {
         sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId))
     }
 

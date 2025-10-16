@@ -29,6 +29,7 @@ import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
+import net.thechance.mena.trends.data.util.NetworkConstants.USER
 import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
 import net.thechance.mena.trends.data.util.getMediaMimeType
 import net.thechance.mena.trends.data.util.setUploadRequestTimeout
@@ -52,12 +53,12 @@ internal class ReelsRepositoryImpl(
         }
     }
 
-    override suspend fun getAllReels(pageNumber: Int): List<Reel> {
+    override suspend fun getAllCurrentUserReels(pageNumber: Int): List<Reel> {
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
-            networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT") {
+            networkClient.get("$TRENDS_PATH/$USER/$REELS_ENDPOINT") {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
-        }.results?.map { it.toEntity() } ?: emptyList()
+        }.results?.map { it.toEntity() }.orEmpty()
     }
 
     override suspend fun getFeedReels(page: Int): List<Reel> {

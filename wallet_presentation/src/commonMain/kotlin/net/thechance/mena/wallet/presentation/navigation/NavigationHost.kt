@@ -144,10 +144,9 @@ fun NavigationHost(
                     navController.navigate(TransactionDetailsScreenRoute(receiverId))
                 },
                 onCancelClicked = {
-                    navController.popBackStack(
-                        ConfirmPaymentScreenRoute,
-                        inclusive = true
-                    )
+                    navController.navigate(WalletMainScreenRoute) {
+                        popUpTo(WalletMainScreenRoute) { inclusive = true }
+                    }
                 }
             )
         }

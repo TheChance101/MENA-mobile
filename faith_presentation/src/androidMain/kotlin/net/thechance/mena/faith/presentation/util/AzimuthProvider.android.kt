@@ -9,10 +9,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-actual class AzimuthProvider(context: Context) {
+actual class AzimuthProviderImpl(context: Context): AzimuthProvider {
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-    actual fun startListening(): Flow<Float> = callbackFlow {
+    actual override fun startListening(): Flow<Float> = callbackFlow {
         var accelerateValues = FloatArray(3)
         var magnetValues = FloatArray(3)
         val listener = object : SensorEventListener {

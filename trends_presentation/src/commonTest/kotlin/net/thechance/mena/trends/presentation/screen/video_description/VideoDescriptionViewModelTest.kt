@@ -11,8 +11,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.presentation.screen.video_description.args.VideoDescriptionArgs
-import net.thechance.mena.trends.presentation.utils.largeNewDescription
-import net.thechance.mena.trends.presentation.utils.smallNewDescription
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -32,29 +30,36 @@ class VideoDescriptionViewModelTest {
         viewModel = VideoDescriptionViewModel(videoDescriptionArgs)
     }
 
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
-    fun `should update description when onDescriptionChanged is called`() = runTest {
-        viewModel.onDescriptionChanged(smallNewDescription)
+    fun `onDescriptionChanged should update description when called`() = runTest {
+        viewModel.onDescriptionChanged(SMALL_NEW_DESCRIPTION)
 
         viewModel.state.test {
             val initialState = awaitItem()
-            assertTrue(initialState.description == smallNewDescription)
+            assertTrue(initialState.description == SMALL_NEW_DESCRIPTION)
         }
     }
 
     @Test
-    fun `should update currentNumberOfCharacters when onDescriptionChanged is called`() = runTest {
-        viewModel.onDescriptionChanged(smallNewDescription)
+    fun `onDescriptionChanged should update currentNumberOfCharacters when called`() = runTest {
+        viewModel.onDescriptionChanged(SMALL_NEW_DESCRIPTION)
 
         viewModel.state.test {
             val initialState = awaitItem()
-            assertTrue(initialState.currentNumberOfCharacters == smallNewDescription.length)
+            assertTrue(initialState.currentNumberOfCharacters == SMALL_NEW_DESCRIPTION.length)
         }
     }
 
     @Test
     fun `should update isButtonEnabled to false when description length is greater than maxNumberOfCharacters`() =
         runTest {
+            val largeNewDescription = "istanbul ".repeat(500)
+
             viewModel.onDescriptionChanged(largeNewDescription)
 
             viewModel.state.test {
@@ -64,7 +69,7 @@ class VideoDescriptionViewModelTest {
         }
 
     @Test
-    fun `should send NavigateBack effect when onBackClick is called`() = runTest {
+    fun `onBackClick should send NavigateBack effect when called`() = runTest {
         viewModel.onBackClick()
 
         viewModel.effect.test {
@@ -74,7 +79,7 @@ class VideoDescriptionViewModelTest {
     }
 
     @Test
-    fun `should send NavigateToNext effect when onNextClick is called`() = runTest {
+    fun `onNextClick should send NavigateToNext effect when called`() = runTest {
         viewModel.onNextClick()
 
         viewModel.effect.test {
@@ -83,8 +88,7 @@ class VideoDescriptionViewModelTest {
         }
     }
 
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
+    private companion object {
+        const val SMALL_NEW_DESCRIPTION = "New Description"
     }
 }

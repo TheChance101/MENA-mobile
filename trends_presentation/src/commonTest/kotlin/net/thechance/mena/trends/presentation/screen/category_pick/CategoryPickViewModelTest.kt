@@ -10,9 +10,9 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.utils.TestExtensions
+import net.thechance.mena.trends.presentation.utils.categories
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,15 +27,10 @@ class CategoryPickViewModelTest : TestExtensions() {
             defaultDispatcher = testDispatcher
         )
     }
-    private val demoCategories = listOf(
-        Category(id = "1", name = "Category 1", emoji = "🫡"),
-        Category(id = "2", name = "Category 2", emoji = "🔥"),
-        Category(id = "3", name = "Category 3", emoji = "👻")
-    )
 
     @BeforeTest
     fun setup() {
-        everySuspend { repository.getAllCategories() } returns demoCategories
+        everySuspend { repository.getAllCategories() } returns categories
     }
 
     @Test
@@ -53,7 +48,7 @@ class CategoryPickViewModelTest : TestExtensions() {
             viewModel.state.test {
                 skipItems(1)
                 val state = awaitItem()
-                assertEquals(demoCategories.size, state.categories.size)
+                assertEquals(categories.size, state.categories.size)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -114,7 +109,7 @@ class CategoryPickViewModelTest : TestExtensions() {
     @Test
     fun `onNextClick should called updateUserInterestedCategories from repository with success`() =
         runTest(testDispatcher) {
-            val selectedIds = listOf(demoCategories.first().id)
+            val selectedIds = listOf(categories.first().id)
             everySuspend { repository.updateUserCategories(selectedIds) } returns Unit
 
             viewModel.onNextClick()
@@ -129,7 +124,9 @@ class CategoryPickViewModelTest : TestExtensions() {
     @Test
     fun `onNextClick should throw exception when called`() =
         runTest(testDispatcher) {
-            everySuspend { repository.updateUserCategories(any()) } throws Exception()
+            everySuspend {
+                repository.updateUserCategories(any())
+            } throws Exception()
 
             viewModel.onNextClick()
             testDispatcher.scheduler.advanceUntilIdle()
@@ -140,5 +137,4 @@ class CategoryPickViewModelTest : TestExtensions() {
                 cancelAndIgnoreRemainingEvents()
             }
         }
-
 }
