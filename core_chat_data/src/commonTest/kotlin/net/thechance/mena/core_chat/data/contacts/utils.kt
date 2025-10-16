@@ -32,6 +32,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import kotlin.uuid.ExperimentalUuidApi
@@ -106,6 +107,20 @@ fun MockRequestHandleScope.defaultChatResponse() = respond(
     content = jsonSerialization.encodeToString(
         ChatDto.serializer(),
         createChatDto()
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun MockRequestHandleScope.defaultUserInfoResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        serializer = UserDto.serializer(),
+        value = UserDto(
+            firstName = "sam",
+            lastName = "smith",
+            imageUrl = "url",
+            phoneNumber = "7777",
+        )
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
@@ -188,10 +203,11 @@ fun createHttpClient(
     imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    userResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): HttpClient {
     val engine = MockEngine { request ->
         val path = request.url.encodedPath
-        when  {
+        when {
             path == CONTACTS_ENDPOINT -> contactsResponse?.invoke(this)
                 ?: defaultContactsResponse()
 
@@ -209,6 +225,9 @@ fun createHttpClient(
 
             path.contains(IMAGES_ENDPOINT) ->
                 imagesResponse?.invoke(this) ?: defaultUploadImagesResponse()
+
+            path.contains(USER_ENDPOINT) ->
+                userResponse?.invoke(this) ?: defaultUserInfoResponse()
 
             path.startsWith("$CHAT_ENDPOINT/") ->
                 chatByIdResponse?.invoke(this) ?: defaultChatResponse()
@@ -236,6 +255,8 @@ fun createHttpClient(
 private const val CONTACTS_ENDPOINT = "/chat/contacts"
 private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
 private const val CHAT_ENDPOINT = "/chat"
+
+private const val USER_ENDPOINT = "/chat/user"
 private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
 private const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
 private const val IMAGES_ENDPOINT = "/chat/image"
