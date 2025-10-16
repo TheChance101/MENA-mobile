@@ -22,7 +22,6 @@ import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
-import net.thechance.mena.trends.presentation.utils.categories
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -216,7 +215,6 @@ class UserReelViewModelTest {
             likesCount = 100,
             viewsCount = 1000,
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
-            categories = categories,
             userName = "Nour",
             profileImageUrl = "",
             isCurrentUserOwner = true
@@ -230,7 +228,6 @@ class UserReelViewModelTest {
             likesCount = 50,
             viewsCount = 100,
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
-            categories = categories,
             userName = "hend",
             profileImageUrl = "",
             isCurrentUserOwner = false
