@@ -39,13 +39,13 @@ fun ExportTransactionContentBody(
         modifier = Modifier
             .fillMaxHeight()
             .padding(16.dp)
-    )
-    {
+    ) {
         ExportTransactionFilterSection(
             modifier = Modifier.weight(1f),
             state = state,
             interactionListener = interactionListener
         )
+
         OutlinedButton(
             text = stringResource(Res.string.view_and_share),
             onClick = interactionListener::onViewAndShareClicked,
@@ -57,6 +57,7 @@ fun ExportTransactionContentBody(
             isEnabled = state.isViewAndShareButtonEnabled,
             contentPadding = PaddingValues(vertical = 13.dp),
         )
+
         PrimaryButton(
             text = stringResource(Res.string.download),
             onClick = interactionListener::onDownloadClicked,

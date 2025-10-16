@@ -24,7 +24,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PayButton(
-    isPayBtnLoading: Boolean,
+    isLoading: Boolean,
     isEnabled: Boolean,
     onClick: () -> Unit,
     payAmount: String,
@@ -34,7 +34,7 @@ fun PayButton(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp),
-        isLoading = isPayBtnLoading,
+        isLoading = isLoading,
         isEnabled = isEnabled,
         containerColor = Theme.colorScheme.primary.primary,
         disabledContainerColor = Theme.colorScheme.disabled,
@@ -75,7 +75,7 @@ fun PayButton(
 private fun PayButtonPreview(){
     MenaTheme {
         PayButton(
-            isPayBtnLoading = false,
+            isLoading = false,
             isEnabled = true,
             onClick = {},
             payAmount = "5000"

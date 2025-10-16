@@ -58,6 +58,18 @@
     <string name="reset_password_dialog_title">Success!</string>
     <string name="reset_password_dialog_message">Your password has been successfully reset.</string>
 
+    <!-- Add Edit Location Screen -->
+    <string name="add_location">Add Location</string>
+    <string name="edit_location">Edit Location</string>
+    <string name="location">Location </string>
+    <string name="pick_on_map">( pick on map )</string>
+    <string name="address">Address</string>
+    <string name="type">Type</string>
+    <string name="home">Home</string>
+    <string name="office">Office</string>
+    <string name="other">Other</string>
+    <string name="address_type">Address type</string>
+
     <!-- Profile Screen Strings -->
     <string name="profile_title">Profile</string>
     <string name="profile_account_settings_header">Account settings</string>
@@ -92,4 +104,7 @@
     <string name="add_location_button">Add location</string>
     <string name="location_saved_empty_desc">No saved locations icon</string>
 
+    <!--    crop image-->
+    <string name="save">Save</string>
+    <string name="upload_another_image">Upload another image</string>
 </resources>

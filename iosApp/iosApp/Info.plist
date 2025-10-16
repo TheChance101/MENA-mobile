@@ -12,5 +12,9 @@
     <string>We need access to your contacts.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Enable location access to use the GPS button and get your current location.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library.</string>
 </dict>
 </plist>

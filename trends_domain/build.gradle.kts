@@ -57,6 +57,7 @@ kover.reports {
             packages("mena.trends_domain.generated.resources*")
             classes(
                 "**.di.**",
+                "**.repository.**",
                 "**.entity.**",
                 "**.exception.**",
                 "**org.koin.ksp.generated**",

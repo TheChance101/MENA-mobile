@@ -10,5 +10,7 @@ data class Reel(
     val likesCount: Int,
     val viewsCount: Int,
     val createdAt: LocalDateTime?,
-    val categories: List<Category>
+    val userName: String,
+    val profileImageUrl: String,
+    val isCurrentUserOwner: Boolean,
 )

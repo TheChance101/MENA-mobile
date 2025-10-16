@@ -17,7 +17,6 @@ import mena.wallet_presentation.generated.resources.pick_start_date
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.presentation.component.CustomToast
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
@@ -25,6 +24,7 @@ import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.export.component.ExportTransactionContentBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -33,7 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ExportTransactionScreen(
     onNavigateBackClicked: () -> Unit,
-    navigateToVewTransactionStatement: (filterParams: TransactionFilterParams) -> Unit,
+    navigateToStatementDetails: (statementLocation: StorageLocation) -> Unit,
     viewModel: ExportTransactionsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -44,7 +44,7 @@ fun ExportTransactionScreen(
             onExportTransactionsEffect(
                 effect,
                 onNavigateBackClicked,
-                navigateToVewTransactionStatement
+                navigateToStatementDetails
             )
         }
     )
@@ -115,13 +115,13 @@ private fun ExportTransactionScreenContent(
 private fun onExportTransactionsEffect(
     effect: ExportTransactionsEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToVewTransactionStatement: (filterParams: TransactionFilterParams) -> Unit,
+    navigateToVewTransactionStatement: (statementLocation: StorageLocation) -> Unit,
 ) {
     when (effect) {
         is ExportTransactionsEffect.NavigateBack -> onNavigateBackClicked()
 
         is ExportTransactionsEffect.NavigateToViewFileScreen
-            -> navigateToVewTransactionStatement(effect.filterParams)
+            -> navigateToVewTransactionStatement(effect.statementLocation)
     }
 }
 

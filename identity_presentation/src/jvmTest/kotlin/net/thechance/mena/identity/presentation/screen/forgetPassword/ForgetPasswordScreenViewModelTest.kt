@@ -1,7 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.forgetPassword
 
 import app.cash.turbine.test
-import dev.mokkery.mock
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +31,7 @@ class ForgetPasswordScreenViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         useCase = LoginUseCase(
-            authenticationRepository = mock<AuthenticationRepository>(),
+            authenticationRepository = mockk<AuthenticationRepository>(),
             mobileNumberValidator = MobileNumberValidator()
         )
         viewModel = ForgetPasswordScreenViewModel(

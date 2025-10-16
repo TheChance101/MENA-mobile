@@ -13,7 +13,7 @@ import mena.wallet_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentStatusBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -54,7 +54,8 @@ fun PaymentResultScreen(
     )
     PaymentResultScreenContent(
         receiverName = receiverName,
-        amount = amount, state = state,
+        amount = amount,
+        state = state,
         interactionListener = viewModel
     )
 }
@@ -68,7 +69,7 @@ private fun PaymentResultScreenContent(
 ) {
     WalletScaffold(
         topBar = {
-            if (state.paymentStatus != SubmitTransactionResultStatus.SUCCESS) {
+            if (state.paymentStatus != SubmissionStatus.SUCCESS) {
                 AppBar(
                     title = "",
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -86,6 +87,7 @@ private fun PaymentResultScreenContent(
         PaymentStatusBody(
             receiverName = receiverName,
             amount = amount,
+            status = state,
             paymentStatus = state.paymentStatus,
             interactionListener = interactionListener
         )
@@ -103,6 +105,6 @@ private fun onPaymentResultEffect(
         is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
             effect.transactionId.toString()
         )
-        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked
+        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked()
     }
 }

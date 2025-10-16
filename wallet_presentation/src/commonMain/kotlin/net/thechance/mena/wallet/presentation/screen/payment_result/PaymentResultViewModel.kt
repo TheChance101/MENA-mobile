@@ -8,7 +8,7 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.SubmitTransactionResultStatus
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -23,22 +23,33 @@ class PaymentResultViewModel(
     PaymentResultScreenState()
 ), PaymentResultInteractionListener {
     private val transactionId = Uuid.parse(paymentResultArgs.transactionId)
-    private val submitTransactionResultStatus = SubmitTransactionResultStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
+    private val submissionStatus =
+        SubmissionStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
 
     init {
-        updateState { it.copy(paymentStatus = submitTransactionResultStatus) }
+        updateState { it.copy(paymentStatus = submissionStatus) }
     }
 
     override fun onBackClicked() {
+        resetTryAgainAttempts()
         sendEffect(PaymentResultEffect.NavigateBack)
     }
 
-    override fun onCancelClicked() {
-        sendEffect(PaymentResultEffect.NavigateToScreenBeforePaymentProcess)
+    override fun onTryAgainClicked() {
+        if (currentState.tryAgainAttempts >= 3 || currentState.isLoading) return
+        updateState { oldState ->
+            oldState.copy(
+                isLoading = true,
+                isTryAgainButtonEnabled = false,
+                isCloseButtonEnabled = false
+            )
+        }
+        submitTransaction(transactionId)
     }
 
-    override fun onTryAgainClicked() {
-        submitTransaction(transactionId)
+    override fun onCloseClicked() {
+        resetTryAgainAttempts()
+        sendEffect(PaymentResultEffect.NavigateToScreenBeforePaymentProcess)
     }
 
     override fun onShowTransactionDetailsClicked() {
@@ -47,10 +58,8 @@ class PaymentResultViewModel(
 
     private fun submitTransaction(transactionId: Uuid) {
         tryToExecute(
-            callee = {
-                paymentRepository.submitTransaction(transactionId)
-            },
-            onSuccess = { onSubmitTransactionSuccess()},
+            callee = { paymentRepository.submitTransaction(transactionId) },
+            onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
             dispatcher = ioDispatcher
         )
@@ -60,18 +69,40 @@ class PaymentResultViewModel(
         updateState {
             it.copy(
                 isLoading = false,
-                paymentStatus = SubmitTransactionResultStatus.SUCCESS
+                paymentStatus = SubmissionStatus.SUCCESS,
+                isTryAgainButtonEnabled = false,
+                isCloseButtonEnabled = true
             )
         }
     }
 
     private fun onSubmitTransactionFailed(error: ErrorState) {
-        updateState { it.copy(isLoading = false) }
+        val newAttempts = currentState.tryAgainAttempts + 1
+        val canRetry = newAttempts < 3
+
+        updateState {
+            it.copy(
+                isLoading = false,
+                isTryAgainButtonEnabled = canRetry,
+                tryAgainAttempts = newAttempts,
+                isCloseButtonEnabled = true
+            )
+        }
         when (error) {
-            is ErrorState.NoInternet -> updateState { it.copy(SubmitTransactionResultStatus.CONNECTION_LOST) }
-            else -> updateState {
-                it.copy(SubmitTransactionResultStatus.CONNECTION_LOST)
-            }
+            is ErrorState.NoInternet ->
+                updateState { it.copy(paymentStatus = SubmissionStatus.CONNECTION_LOST) }
+
+            else ->
+                updateState { it.copy(paymentStatus = SubmissionStatus.UNKNOWN_ERROR) }
+        }
+    }
+
+    private fun resetTryAgainAttempts() {
+        updateState {
+            it.copy(
+                tryAgainAttempts = 0,
+                isTryAgainButtonEnabled = true
+            )
         }
     }
 }
