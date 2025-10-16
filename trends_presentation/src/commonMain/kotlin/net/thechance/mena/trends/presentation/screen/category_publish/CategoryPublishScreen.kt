@@ -1,22 +1,29 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.trends_presentation.generated.resources.Res
@@ -26,13 +33,10 @@ import mena.trends_presentation.generated.resources.choose_categories
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_hint
 import mena.trends_presentation.generated.resources.new_trend
-import mena.trends_presentation.generated.resources.page_number
-import mena.trends_presentation.generated.resources.publish_categories_screen_count
 import mena.trends_presentation.generated.resources.publish_hint
-import mena.trends_presentation.generated.resources.publish_video
+import mena.trends_presentation.generated.resources.upload_video
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.button.Button
-import net.thechance.mena.designsystem.presentation.component.chip.Chip
+import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -42,6 +46,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
+import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -77,17 +82,15 @@ private fun CategoryPublishContent(
 ) {
     if (state.isLoading.not()) {
         Scaffold(
-            topBar = {
-                CategoryPublishAppBar(
-                    onBackClick = listener::onBackClick,
-                    currentStepNumber = stringResource(Res.string.publish_categories_screen_count)
-                )
-            },
+            topBar = { CategoryPublishAppBar(listener::onBackClick) },
             bottomBar = {
-                PublishButton(
-                    onPublishClick = { listener.onPublishClick() },
-                    isButtonEnabled = state.isPublishButtonEnabled(),
-                    isButtonLoading = state.isPublishButtonLoadingVisible,
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
+                    text = stringResource(resource = Res.string.upload_video),
+                    onClick = listener::onPublishClick,
+                    isEnabled = state.isPublishButtonEnabled,
+                    isLoading = state.isPublishButtonLoadingVisible,
+                    contentPadding = PaddingValues(vertical = 13.dp)
                 )
             },
             modifier = Modifier.padding(bottom = Theme.spacing._24)
@@ -146,10 +149,7 @@ private fun CategoryPublishContent(
                         )
                     }
                 }
-
-                Spacer(Modifier.weight(1f))
             }
-
         }
     } else {
         LoadingProgressBar()
@@ -158,8 +158,7 @@ private fun CategoryPublishContent(
 
 @Composable
 private fun CategoryPublishAppBar(
-    onBackClick: () -> Unit,
-    currentStepNumber: String
+    onBackClick: () -> Unit
 ) {
     AppBar(
         onLeadingClick = onBackClick,
@@ -170,49 +169,8 @@ private fun CategoryPublishAppBar(
             )
         },
         title = stringResource(Res.string.new_trend),
-        trailingContent = {
-            Chip(
-                text = stringResource(Res.string.page_number, 3, 3),
-                isSelected = false,
-                isEnabled = true,
-                onClick = {},
-            )
-        }
+        trailingContent = { UploadPageNumber(page = 3) }
     )
-}
-
-@Composable
-private fun PublishButton(
-    onPublishClick: () -> Unit,
-    isButtonEnabled: Boolean,
-    isButtonLoading: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onPublishClick,
-        isEnabled = isButtonEnabled,
-        isLoading = isButtonLoading,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16),
-        shape = RoundedCornerShape(Theme.radius.md),
-        containerColor = Theme.colorScheme.primary.primary,
-        disabledContainerColor = Theme.colorScheme.primary.primary.copy(alpha = 0.5f),
-        contentColor = Theme.colorScheme.primary.onPrimary,
-        disabledContentColor = Theme.colorScheme.primary.onPrimary.copy(alpha = 0.5f),
-    ) { contentColor ->
-        Text(
-            text = stringResource(Res.string.publish_video),
-            color = contentColor,
-            style = Theme.typography.label.medium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(
-                    vertical = 13.dp,
-                    horizontal = Theme.spacing._24
-                )
-        )
-    }
 }
 
 @Composable

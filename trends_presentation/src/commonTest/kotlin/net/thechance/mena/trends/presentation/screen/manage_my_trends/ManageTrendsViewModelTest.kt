@@ -19,7 +19,6 @@ import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.repository.UserRepository
-import net.thechance.mena.trends.presentation.utils.categories
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -56,7 +55,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getAllReels(1) } returns reels
+            everySuspend { repository.getAllCurrentUserReels(1) } returns reels
 
             viewModel.state.test {
                 val currentState = awaitItem()
@@ -70,7 +69,7 @@ class ManageTrendsViewModelTest {
     fun `initialize view model should handle error state when getAllReels fails`() =
         runTest(testDispatcher) {
             val errorMessage = "error"
-            everySuspend { repository.getAllReels(1) } throws Exception(errorMessage)
+            everySuspend { repository.getAllCurrentUserReels(1) } throws Exception(errorMessage)
             assertFailsWith<Exception> {
                 viewModel.state.value.reels.asSnapshot()
             }
@@ -79,7 +78,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         viewModel.effect.test {
-            viewModel.onReelItemClick(REEL_ID)
+            viewModel.onReelClick(REEL_ID)
             assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateToTrend(REEL_ID))
             cancelAndIgnoreRemainingEvents()
         }
@@ -105,7 +104,6 @@ class ManageTrendsViewModelTest {
             likesCount = 100,
             viewsCount = 1000,
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
-            categories = categories,
             userName = "mTm",
             profileImageUrl = "",
             isCurrentUserOwner = true

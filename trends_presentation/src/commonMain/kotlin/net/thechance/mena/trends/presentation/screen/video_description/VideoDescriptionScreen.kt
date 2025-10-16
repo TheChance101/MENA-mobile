@@ -4,10 +4,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
@@ -32,11 +30,7 @@ import mena.trends_presentation.generated.resources.characters_color_animation_l
 import mena.trends_presentation.generated.resources.hint
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.new_trend
-import mena.trends_presentation.generated.resources.next
-import mena.trends_presentation.generated.resources.page_number
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -45,6 +39,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.NextButton
+import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -122,13 +118,11 @@ private fun VideoDescriptionContent(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            PrimaryButton(
-                text = stringResource(Res.string.next),
-                onClick = listener::onNextClick,
-                contentPadding = PaddingValues(vertical = Theme.spacing._8),
-                isEnabled = state.isButtonEnabled,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._16)
-                    .height(48.dp)
+            NextButton(
+                modifier = Modifier.padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._24),
+                isButtonLoading = false,
+                isButtonEnabled = state.isButtonEnabled,
+                onNextClick = listener::onNextClick
             )
         }
     }
@@ -144,14 +138,7 @@ private fun DescriptionAppBar(onBackClick: () -> Unit) {
                 contentDescription = stringResource(Res.string.back_arrow)
             )
         },
-        trailingContent = {
-            Chip(
-                text = stringResource(Res.string.page_number, 2, 3),
-                isSelected = false,
-                isEnabled = true,
-                onClick = {},
-            )
-        },
+        trailingContent = { UploadPageNumber(page = 2) },
         onLeadingClick = onBackClick
     )
 }

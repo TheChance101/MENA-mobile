@@ -6,25 +6,23 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class ReelDto(
     @SerialName("reelId")
-    val id : String? = null,
+    val id: String? = null,
     @SerialName("thumbnailUrl")
-    val reelImageUrl : String? = null,
+    val reelImageUrl: String? = null,
     @SerialName("videoUrl")
-    val videoUrl : String? = null,
+    val videoUrl: String? = null,
     @SerialName("description")
-    val description : String? = null,
+    val description: String? = null,
     @SerialName("createdAt")
-    val createdAt : String? = null,
+    val createdAt: String? = null,
     @SerialName("likesCount")
-    val likesCount : Int? = null,
+    val likesCount: Int? = null,
     @SerialName("viewsCount")
-    val viewsCount : Int? = null,
+    val viewsCount: Int? = null,
     @SerialName("isCurrentUserOwner")
     val isCurrentUserOwner: Boolean = false,
     @SerialName("username")
     val username: String = "The Chance",
     @SerialName("profilePictureUrl")
-    val profilePictureUrl: String? = null,
-    @SerialName("categories")
-    val categories : List<CategoryDto>? = null
+    val profilePictureUrl: String? = null
 )

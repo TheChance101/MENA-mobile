@@ -33,7 +33,7 @@ internal class ReelRepositoryImplTest {
             networkClient = createReelsHttpClient { getReelsResponse() }
             repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
-            val reels = repository.getAllReels(pageNumber = 1)
+            val reels = repository.getAllCurrentUserReels(pageNumber = 1)
 
             assertThat(reels).isEqualTo(fakeReelList)
         }
@@ -165,7 +165,7 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient { throw Exception("Network Error") }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
-        val result = runCatching { repository.getAllReels(pageNumber = 1) }
+        val result = runCatching { repository.getAllCurrentUserReels(pageNumber = 1) }
 
         assertThat(result.isFailure).isEqualTo(true)
         assertThat(result.exceptionOrNull()?.message).isEqualTo("Network Error")

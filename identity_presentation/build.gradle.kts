@@ -38,6 +38,8 @@ kotlin {
             implementation(projects.identityApi)
             implementation(projects.identityDomain)
             implementation(projects.designSystem)
+            implementation(libs.bundles.filekit)
+
 
             implementation(libs.squircle.shape)
             implementation(compose.runtime)
