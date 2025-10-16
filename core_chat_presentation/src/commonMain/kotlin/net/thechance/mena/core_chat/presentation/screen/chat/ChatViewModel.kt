@@ -45,7 +45,7 @@ class ChatViewModel(
 
     init {
         val chatId = getUuidOrNull(chatArgs.chatId)
-        getUserImageUrl()
+        getUserInfo()
         updateState { state ->
             state.copy(
                 chatId = chatId,
@@ -64,7 +64,7 @@ class ChatViewModel(
         }
     }
 
-    private fun getUserImageUrl(){
+    private fun getUserInfo(){
         tryToExecute(
             execute = { userRepository.getUserInfo() },
             onSuccess = ::onGetUserDataSuccess,
@@ -78,8 +78,6 @@ class ChatViewModel(
             lastName = user.lastName,
             imageUrl = user.imageUrl.orEmpty()
         )) }
-
-        println("------> user data: $user")
     }
     private fun onGetUserDataError(t: Throwable) {
         showSnackBar(
