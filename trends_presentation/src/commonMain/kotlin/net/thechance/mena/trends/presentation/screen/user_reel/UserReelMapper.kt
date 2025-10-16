@@ -3,7 +3,7 @@ package net.thechance.mena.trends.presentation.screen.user_reel
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 
-fun Reel.toUserReelUiState() =
+internal fun Reel.toUserReelUiState() =
     UserReelUiState(
         id = id,
         videoUrl = videoUrl,

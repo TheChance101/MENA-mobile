@@ -15,7 +15,7 @@ internal data class UserReelState(
     val isDescriptionExpanded: Boolean = false,
 )
 
-data class UserReelUiState(
+internal data class UserReelUiState(
     val id : String = "",
     val videoUrl: String= "",
     val description: String = "",
