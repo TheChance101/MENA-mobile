@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
-import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.add_location
 import mena.identity_presentation.generated.resources.address
@@ -33,12 +32,9 @@ import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocation
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
-import org.maplibre.compose.camera.CameraPosition
 
 class AddEditLocationScreen(
-    private val latitude: Double?,
-    private val longitude: Double?,
-    private val address: String?,
+    private val locationData: AddLocationScreenUIState.PickLocationData?
 ) : BaseScreen<
         AddEditLocationScreenViewModel,
         AddLocationScreenUIState,
@@ -47,7 +43,7 @@ class AddEditLocationScreen(
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(latitude, longitude, address) }))
+        InitScreen(getScreenModel(parameters = { parametersOf(locationData) }))
     }
 
     @Composable
@@ -86,11 +82,14 @@ class AddEditLocationScreen(
 
                 item {
                     MapSection(
-                        cameraPosition = CameraPosition(
-                            target = Position(state.longitude, state.latitude),
-                            zoom = 1.0
-                        ),
+                        cameraPosition = state.cameraPosition,
                         onClickEdit = listener::onClickEdit,
+                        onClickMap = listener::onClickMap,
+                        anchorLocation = state.anchorLocation,
+                        setAnchorLocation = listener::onSetAnchorLocation,
+                        longitude = state.longitude,
+                        latitude = state.latitude,
+                        animateToCurrentLocation = state.animateToCurrentLocation
                     )
                 }
 
@@ -98,9 +97,7 @@ class AddEditLocationScreen(
                     TextField(
                         value = state.address,
                         title = stringResource(Res.string.address),
-                        onValueChanged = { newAddress ->
-                            listener.onChangeAddress(newAddress)
-                        },
+                        onValueChanged = listener::onChangeAddress,
                         readOnly = true,
                         enabled = false,
                         hint = "",
@@ -112,9 +109,7 @@ class AddEditLocationScreen(
                 item {
                     AddressTypeSection(
                         selectedAddressType = state.addressType,
-                        onClickAddressType = { newType ->
-                            listener.onClickAddressType(newType)
-                        }
+                        onClickAddressType = listener::onClickAddressType,
                     )
                 }
 
@@ -138,9 +133,7 @@ class AddEditLocationScreen(
             AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
             is AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(
                 PickLocationScreen(
-                    latitude = effect.latitude,
-                    longitude = effect.longitude,
-                    address = effect.address
+                    locationData = effect.locationData
                 )
             )
         }

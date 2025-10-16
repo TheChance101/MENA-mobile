@@ -22,17 +22,16 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocationScreen
+import net.thechance.mena.identity.presentation.screen.addresses.AddLocationScreenUIState
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
-import net.thechance.mena.identity.presentation.screen.pickLocation.components.Map
+import net.thechance.mena.identity.presentation.screen.pickLocation.components.PickLocationMap
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 data class PickLocationScreen(
-    private val latitude: Double?,
-    private val longitude: Double?,
-    private val address: String?,
+    private val locationData: AddLocationScreenUIState.PickLocationData?,
 ) : BaseScreen<PickLocationScreenViewModel,
         PickLocationScreenUIState,
         PickLocationScreenUIEffect,
@@ -40,7 +39,7 @@ data class PickLocationScreen(
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(latitude, longitude, address) }))
+        InitScreen(getScreenModel(parameters = { parametersOf(locationData) }))
     }
 
     @Composable
@@ -57,7 +56,7 @@ data class PickLocationScreen(
                 )
             }
         ) {
-            Map(
+            PickLocationMap(
                 cameraPosition = state.cameraPosition,
                 onCameraMoved = listener::onMoveCamera,
                 onMapClick = listener::onClickMap,
@@ -112,11 +111,7 @@ data class PickLocationScreen(
         when (effect) {
             PickLocationScreenUIEffect.NavigateBack -> navigator.pop()
             is PickLocationScreenUIEffect.NavigateToAddLocation -> navigator.replace(
-                AddEditLocationScreen(
-                    latitude = effect.latitude,
-                    longitude = effect.longitude,
-                    address = effect.address
-                )
+                AddEditLocationScreen(locationData = effect.locationData)
             )
 
             PickLocationScreenUIEffect.NavigateToEnableLocation -> navigator.push(

@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.location
@@ -22,7 +23,13 @@ import org.maplibre.compose.camera.CameraPosition
 fun MapSection(
     cameraPosition: CameraPosition,
     onClickEdit: () -> Unit,
-    modifier: Modifier = Modifier
+    onClickMap: () -> Unit,
+    setAnchorLocation: (DpOffset) -> Unit,
+    longitude : Double?,
+    latitude : Double?,
+    modifier: Modifier = Modifier,
+    anchorLocation: DpOffset? = null,
+    animateToCurrentLocation: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -49,6 +56,12 @@ fun MapSection(
                 .height(244.dp),
             cameraPosition = cameraPosition,
             onEditClick = onClickEdit,
+            onClickMap = onClickMap,
+            longitude = longitude,
+            latitude = latitude,
+            animateToCurrentLocation = animateToCurrentLocation,
+            onSetAnchorLocation = setAnchorLocation,
+            anchorLocation = anchorLocation
         )
     }
 }

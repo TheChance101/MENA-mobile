@@ -18,6 +18,7 @@ import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_anchor
+import net.thechance.mena.identity.presentation.components.util.MapStyle
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
 import org.jetbrains.compose.resources.painterResource
 import org.maplibre.compose.camera.CameraPosition
@@ -32,7 +33,7 @@ import org.maplibre.compose.style.BaseStyle
 import org.maplibre.compose.util.ClickResult
 
 @Composable
-fun Map(
+fun PickLocationMap(
     anchorLocation: DpOffset?,
     isLocked: Boolean,
     cameraPosition: CameraPosition,
@@ -54,13 +55,13 @@ fun Map(
         snapshotFlow { camera.position }.collect { position -> onCameraMoved(position) }
     }
 
-
     BoxWithConstraints(
         modifier = modifier
     ) {
-        SetAnchorInCenterScreenWhenUseGps(
+        SetAnchorInCenter(
             animateToCurrentLocation = animateToCurrentLocation,
-            currentLocation = currentLocation,
+            longitude = currentLocation?.longitude,
+            latitude = currentLocation?.latitude,
             onSetAnchorLocation = onSetAnchorLocation,
             camera = camera,
             maxWidth = maxWidth,
@@ -70,7 +71,7 @@ fun Map(
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
-            baseStyle = BaseStyle.Uri(BRIGHT),
+            baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
             onMapClick = { position, offset ->
                 if (isLocked) {
                     ClickResult.Consume
@@ -94,22 +95,23 @@ fun Map(
 }
 
 @Composable
-private fun SetAnchorInCenterScreenWhenUseGps(
+fun SetAnchorInCenter(
     animateToCurrentLocation: Boolean,
-    currentLocation: PickLocationScreenUIState.CoordinatesUiState?,
+    longitude : Double?,
+    latitude : Double?,
     onSetAnchorLocation: (DpOffset) -> Unit,
     camera: CameraState,
     maxWidth: Dp,
     maxHeight: Dp,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    if (animateToCurrentLocation && currentLocation != null) {
+    if (animateToCurrentLocation && longitude != null && latitude != null) {
         coroutineScope.launch {
             camera.animateTo(
                 finalPosition = CameraPosition(
                     target = Position(
-                        longitude = currentLocation.longitude,
-                        latitude = currentLocation.latitude
+                        longitude = longitude,
+                        latitude = latitude
                     ),
                     zoom = 16.0
                 )
@@ -126,7 +128,7 @@ private fun SetAnchorInCenterScreenWhenUseGps(
 }
 
 @Composable
-private fun Anchor(
+fun Anchor(
     anchorLocation: DpOffset?,
     modifier: Modifier = Modifier
 ) {
@@ -162,4 +164,3 @@ private fun mapOptions(
     )
 }
 
-private const val BRIGHT = "https://tiles.openfreemap.org/styles/bright"
