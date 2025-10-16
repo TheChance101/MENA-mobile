@@ -35,29 +35,6 @@ fun Pair<String, ByteArray>.buildImageMultiPartFormData(
     )
 }
 
-fun List<Pair<String, ByteArray>>.buildMultiPartFormData(
-    fieldName: String
-): MultiPartFormDataContent {
-    return MultiPartFormDataContent(
-        formData {
-
-            forEach { (name, byteArray) ->
-                val extension = byteArray.getExtension()
-                val formattedFileName = formatFileName(name, extension)
-
-                append(
-                    fieldName,
-                    byteArray,
-                    Headers.build {
-                        append(HttpHeaders.ContentType, imageExtensionToMimeType(extension))
-                        append(HttpHeaders.ContentDisposition, """filename="$formattedFileName"""")
-                    }
-                )
-            }
-        }
-    )
-}
-
 private fun ByteArray.getExtension(): String = when {
     isEmpty() -> "octet-stream"
     size >= 8 &&

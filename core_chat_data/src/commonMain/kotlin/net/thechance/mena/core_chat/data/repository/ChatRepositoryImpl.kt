@@ -159,14 +159,13 @@ class ChatRepositoryImpl(
         imageNames: List<String>,
         images: List<ByteArray>,
         chatId: Uuid
-    ): MessageDto {
+    ) {
         if (images.size != imageNames.size)
             throw SendMessageFailedException("imageNames and images must have the same size.")
 
         val files = imageNames.zip(images)
 
         var messageId: String? = null
-        var latestMessage: MessageDto? = null
 
         files.forEach { imageFile ->
             val multipart = imageFile.buildImageMultiPartFormData(
@@ -186,13 +185,8 @@ class ChatRepositoryImpl(
             if (messageId == null && messageResponse != null) {
                 messageId = messageResponse.id
             }
-
-            latestMessage = messageResponse
-
         }
 
-        return latestMessage
-            ?: throw SendMessageFailedException("No images were uploaded successfully.")
     }
 
     override fun observeReadMessages(): Flow<String> {
