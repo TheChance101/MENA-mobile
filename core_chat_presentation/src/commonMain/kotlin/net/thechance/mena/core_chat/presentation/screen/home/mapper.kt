@@ -17,41 +17,45 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 fun ChatSummary.toUi(): ChatUiState {
 
-    val statusMessages = getStatusMessages(this)
-    val formattedTime = getFormattedTime(lastMessage.sendAt)
-
+    val statusMessages = getStatusMessages(lastMessage, unReadMessagesCount)
+    val lastMessage = lastMessage?.let {
+        ChatUiState.MessageUiState(
+            text = it.content,
+            time = getFormattedTime(it.sendAt),
+            isMine = it.isMine
+        )
+    }
     return ChatUiState(
         id = id,
         name = name,
         imageUrl = imageUrl,
-        lastMessage = ChatUiState.MessageUiState(
-            text = lastMessage.content,
-            time = formattedTime,
-            isMine = lastMessage.isMine
-        ),
+        lastMessage = lastMessage,
         status = statusMessages
     )
 }
 
-private fun getStatusMessages(chatSummary: ChatSummary): Status = when {
-    chatSummary.lastMessage.isMine -> {
-        if (chatSummary.unReadMessagesCount == 0) {
-            Read
-        } else {
-            Sent
+private fun getStatusMessages(lastMessage: ChatSummary.Message?, unReadMessagesCount: Int): Status {
+    if (lastMessage == null) return Received
+    return when {
+        lastMessage.isMine -> {
+            if (unReadMessagesCount == 0) {
+                Read
+            } else {
+                Sent
+            }
         }
-    }
 
-    else -> {
-        if (chatSummary.unReadMessagesCount > 0) {
-            UnRead(chatSummary.unReadMessagesCount)
-        } else {
-            Received
+        else -> {
+            if (unReadMessagesCount > 0) {
+                UnRead(unReadMessagesCount)
+            } else {
+                Received
+            }
         }
     }
 }
 
-private fun getFormattedTime(messageDateTime: LocalDateTime): String {
+fun getFormattedTime(messageDateTime: LocalDateTime): String {
     val now = LocalDateTime.now()
     val today = now.date
     val messageDate = messageDateTime.date

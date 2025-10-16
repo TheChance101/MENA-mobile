@@ -60,11 +60,14 @@ private fun TimeAndStatus(chat: ChatUiState) {
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2, Alignment.Top)
     ) {
+        chat.lastMessage ?: return
+
         Text(
             text = chat.lastMessage.time,
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )
+
         if (chat.lastMessage.isMine) {
             if (chat.status is ChatUiState.Status.Sent) {
                 Icon(
@@ -105,8 +108,8 @@ private fun TimeAndStatus(chat: ChatUiState) {
 
 @Composable
 private fun RowScope.NameAndLastMessage(chat: ChatUiState) {
-    val lastMessage =
-        if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
+    val lastMessage = if (chat.lastMessage == null) ""
+        else if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
         else chat.lastMessage.text
 
     Column(

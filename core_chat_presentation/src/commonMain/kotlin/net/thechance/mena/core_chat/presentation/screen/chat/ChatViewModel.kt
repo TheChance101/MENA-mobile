@@ -3,7 +3,6 @@
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.core_chat_presentation.generated.resources.Res
@@ -15,6 +14,7 @@ import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -66,6 +66,10 @@ class ChatViewModel(
             requesterUserId = chat.requesterId,
             chatAvatarUrl = chat.imageUrl.orEmpty()
         )
+
+        subscribeToNewMessages(chat.id)
+        loadChatHistory(chat.id)
+        observeReadMessages()
     }
 
     private fun onGetChatError() {
@@ -89,10 +93,6 @@ class ChatViewModel(
                 chatRequesterId = requesterUserId,
             )
         }
-
-        subscribeToNewMessages(chatId)
-        loadChatHistory(chatId)
-        observeReadMessages()
     }
 
     override fun onBackClicked() {
@@ -222,7 +222,7 @@ class ChatViewModel(
 
     private fun subscribeToNewMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { chatRepository.subscribeToMessages(chatId) },
+            collect = { chatRepository.getMessages(chatId) },
             onCollect = ::onCollectNewMessage,
             onError = {
                 showSnackBar(
@@ -234,13 +234,14 @@ class ChatViewModel(
         )
     }
 
-    private fun onCollectNewMessage(message: Message?) {
+    private suspend fun onCollectNewMessage(message: Message?) {
         if (message == null) return
 
         val senderId = state.value.chatRequesterId
             ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
         updateStateWithNewMessage(message.toUi(senderId))
+        chatRepository.markMessagesAsRead(message.chatId)
     }
 
     private fun loadChatHistory(chatId: Uuid) {
@@ -255,7 +256,7 @@ class ChatViewModel(
         )
     }
 
-    private fun onLoadChatHistorySuccess(messages: List<Message>) {
+    private suspend fun onLoadChatHistorySuccess(messages: List<Message>) {
         val senderId = state.value.chatRequesterId
             ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
@@ -265,6 +266,8 @@ class ChatViewModel(
         uiMessages
             .filter { it.status == MessageStatus.LOADING }
             .forEach { sendMessage(it) }
+
+        chatRepository.markMessagesAsRead(state.value.chatId ?: return)
     }
 
     private fun observeReadMessages() {
@@ -274,11 +277,11 @@ class ChatViewModel(
         )
     }
 
-    private fun onCollectReadMessagesEvent(readerId: String?) {
-        if (readerId == null) return
+    private fun onCollectReadMessagesEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
+        if (markMessageAsReadEvent == null) return
 
         mapMessagesState { message ->
-            if (message.senderId.toString() != readerId && message.status == MessageStatus.SENT)
+            if (message.senderId != markMessageAsReadEvent.readByUserId && message.status == MessageStatus.SENT)
                 message.copy(status = MessageStatus.READ)
             else message
         }
@@ -288,25 +291,23 @@ class ChatViewModel(
     private fun updateStateWithNewMessage(newMessage: MessageUiState) {
         val messages = uiMessages.toMutableList()
             .apply { add(0, newMessage) }
-            .distinctBy { it.id }
-            .sortedByDescending { it.sendTime }
         updateChatListItems(messages)
     }
 
     private fun mapMessagesState(transform: (MessageUiState) -> MessageUiState) {
-        val messages = uiMessages.map(transform).distinctBy { it.id }
-            .sortedByDescending { it.sendTime }
+        val messages = uiMessages.map(transform)
         updateChatListItems(messages)
     }
 
     private fun filterMessagesState(predicate: (MessageUiState) -> Boolean) {
-        val messages = uiMessages.filter(predicate).distinctBy { it.id }
-            .sortedByDescending { it.sendTime }
+        val messages = uiMessages.filter(predicate)
         updateChatListItems(messages)
     }
 
     private fun updateChatListItems(messages: List<MessageUiState>) {
-        uiMessages = messages.distinctBy { it.id }.sortedByDescending { it.sendTime }
+        uiMessages = messages
+            .distinctBy { it.id }
+            .sortedByDescending { it.sendTime }
         updateState { state ->
             state.copy(
                 chatListItems = messages.buildListItems()
@@ -363,14 +364,6 @@ class ChatViewModel(
                 message = UiText.StringRes(messageStringResource),
                 isError = isError
             )
-        )
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        tryToExecute(
-            coroutineScope = CoroutineScope(Dispatchers.IO), // Required to avoid cancellation
-            execute = { chatRepository.disconnect() }
         )
     }
 

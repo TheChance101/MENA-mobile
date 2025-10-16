@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
@@ -22,6 +23,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
@@ -31,6 +33,7 @@ import net.thechance.mena.core_chat.data.utils.buildMultiPartFormData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -52,7 +55,7 @@ class ChatRepositoryImpl(
 ) : ChatRepository, BaseRepository {
 
     private val messageFlows = MutableSharedFlow<Message>()
-    private val markMessagesAsRead = MutableSharedFlow<String>()
+    private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
     override suspend fun loadMessages(chatId: Uuid): List<Message> {
@@ -76,6 +79,14 @@ class ChatRepositoryImpl(
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
         }?.toPagedListOfChatSummary() ?: throw NotFoundException("Response body is null")
+    }
+
+    override suspend fun getChatSummaryById(chatId: Uuid): ChatSummary {
+        return tryNetworkCall<ChatSummaryDto>(
+            bodyType = typeInfo<ChatSummaryDto>()
+        ){
+            client.get("$CHAT_SUMMARY_ENDPOINT/$chatId")
+        }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
     override suspend fun deleteMessage(message: Message) {
@@ -110,11 +121,9 @@ class ChatRepositoryImpl(
         }
     }
 
-    override fun subscribeToMessages(chatId: Uuid): Flow<Message> {
-        scope.launch {
-            initializeWebsocketConnection(chatId.toString())
-        }
-        return messageFlows
+    override fun getMessages(chatId: Uuid?): Flow<Message> {
+        if (webSocketManager.isConnected().not()) initializeWebsocketConnection()
+        return messageFlows.filter { chatId == null || it.chatId == chatId }
     }
 
     override suspend fun sendMessage(message: Message) {
@@ -188,25 +197,25 @@ class ChatRepositoryImpl(
         } ?: throw SendMessageFailedException("Failed to upload images")
     }
 
-    override fun observeReadMessages(): Flow<String> {
+    override fun observeReadMessages(): Flow<MarkMessageAsReadEvent> {
         return markMessagesAsRead
     }
 
-    private suspend fun initializeWebsocketConnection(chatId: String) {
-        webSocketManager.connect(
-            onConnected = { onConnectedWebSocket(chatId) }
-        )
+    private fun initializeWebsocketConnection() {
+        scope.launch {
+            webSocketManager.connect(
+                onConnected = ::onConnectedWebSocket
+            )
 
-        webSocketManager.incomingMessages.collect { handleIncomingAsEvent(chatId, it) }
+            webSocketManager.incomingMessages.collect { handleIncomingAsEvent(it) }
+        }
     }
 
-    private suspend fun onConnectedWebSocket(chatId: String) {
-        webSocketManager.subscribe("$WEB_SOCKETS_USER_DESTINATION_PREFIX/$chatId$QUEUE_MESSAGES")
-        markMessageAsRead(chatId)
+    private suspend fun onConnectedWebSocket() {
+        webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + PRIVATE_MESSAGES)
     }
 
     private suspend fun handleIncomingAsEvent(
-        chatId: String,
         incomingText: String
     ) {
         val jsonBody = incomingText.substringAfter("\n\n").trimEnd('\u0000')
@@ -214,20 +223,19 @@ class ChatRepositoryImpl(
 
         when (event) {
             is MessageEvent.MarkAsRead -> {
-                markMessagesAsRead.emit(event.dto.readBy)
+                markMessagesAsRead.emit(event.dto.toEntity())
             }
 
             is MessageEvent.Message -> {
                 event.dto.toDomain()?.let { messageFlows.emit(it) }
-                markMessageAsRead(chatId)
             }
         }
     }
 
-    private suspend fun markMessageAsRead(chatId: String) {
+    override suspend fun markMessagesAsRead(chatId: Uuid) {
         webSocketManager.sendTextFrame(
             destination = MARK_AS_READ_DESTINATION,
-            payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId))
+            payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
         )
     }
 
@@ -245,7 +253,7 @@ class ChatRepositoryImpl(
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val SEND_MESSAGE_DESTINATION = "/app/chat.privateMessage"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
-        const val QUEUE_MESSAGES = "/queue/messages"
+        const val PRIVATE_MESSAGES = "/private/messages"
         const val CHAT_ENDPOINT = "/chat"
         const val IMAGES_ENDPOINT = "/chat/image"
         const val IMAGES_FILES_PARAM = "images"

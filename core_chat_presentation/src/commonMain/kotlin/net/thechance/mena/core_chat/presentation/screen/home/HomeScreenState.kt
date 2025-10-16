@@ -14,7 +14,7 @@ data class HomeScreenState(
         val id: Uuid,
         val name: String,
         val imageUrl: String?,
-        val lastMessage: MessageUiState,
+        val lastMessage: MessageUiState?,
         val status: Status,
     ) {
         data class MessageUiState(
