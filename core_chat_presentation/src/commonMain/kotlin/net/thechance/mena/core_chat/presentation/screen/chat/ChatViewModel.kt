@@ -61,11 +61,13 @@ class ChatViewModel(
     }
 
     private fun onGetChatSuccess(chat: Chat) {
-        updateInitialState(
-            chatId = chat.id,
-            requesterUserId = chat.requesterId,
-            chatAvatarUrl = chat.imageUrl.orEmpty()
-        )
+        updateState { state ->
+            state.copy(
+                chatId = chat.id,
+                chatAvatarUrl = chat.imageUrl.orEmpty(),
+                chatRequesterId = chat.requesterId,
+            )
+        }
 
         subscribeToNewMessages(chat.id)
         loadChatHistory(chat.id)
@@ -79,20 +81,6 @@ class ChatViewModel(
             isError = true
         )
         popBackStack()
-    }
-
-    private fun updateInitialState(
-        chatId: Uuid,
-        requesterUserId: Uuid,
-        chatAvatarUrl: String
-    ) {
-        updateState { state ->
-            state.copy(
-                chatId = chatId,
-                chatAvatarUrl = chatAvatarUrl,
-                chatRequesterId = requesterUserId,
-            )
-        }
     }
 
     override fun onBackClicked() {
