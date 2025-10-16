@@ -34,7 +34,7 @@ class PickLocationScreenViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = PickLocationScreenViewModel(mobileLocationRepository, testDispatcher,locationPermissionHandler)
+        viewModel = PickLocationScreenViewModel(mobileLocationRepository, testDispatcher,locationPermissionHandler, null, null, null )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
