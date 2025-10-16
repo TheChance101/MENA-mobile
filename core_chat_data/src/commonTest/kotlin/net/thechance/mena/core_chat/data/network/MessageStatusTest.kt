@@ -1,5 +1,5 @@
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
-import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
+import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import kotlin.test.Test
@@ -9,10 +9,10 @@ class MessageStatusTest {
     
     @Test
     fun `toEntity should convert MessageLocalDto MessageStatus to MessageStatus correctly`() {
-        assertEquals(MessageStatus.LOADING, MessageLocalDto.MessageStatus.LOADING.toEntity())
-        assertEquals(MessageStatus.SENT, MessageLocalDto.MessageStatus.SENT.toEntity())
-        assertEquals(MessageStatus.FAILED, MessageLocalDto.MessageStatus.FAILED.toEntity())
-        assertEquals(MessageStatus.READ, MessageLocalDto.MessageStatus.READ.toEntity())
+        assertEquals(MessageStatus.LOADING, MessageLocalDto.MessageStatus.LOADING.toDomain())
+        assertEquals(MessageStatus.SENT, MessageLocalDto.MessageStatus.SENT.toDomain())
+        assertEquals(MessageStatus.FAILED, MessageLocalDto.MessageStatus.FAILED.toDomain())
+        assertEquals(MessageStatus.READ, MessageLocalDto.MessageStatus.READ.toDomain())
     }
 
     @Test

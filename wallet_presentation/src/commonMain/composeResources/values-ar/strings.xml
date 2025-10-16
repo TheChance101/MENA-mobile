@@ -63,7 +63,7 @@
     <string name="all_transactions">جميع المعاملات</string>
     <string name="export_transactions">تصدير المعاملات</string>
     <string name="downloading_started">جارٍ بدء التنزيل...</string>
-    <string name="download_success">تم حفظ معاملاتك بنجاح.</string>
+    <string name="download_success">تم حفظ معاملاتك في %1$s.</string>
     <string name="download_complete">اكتمل التنزيل</string>
     <string name="download_failed">فشل التنزيل</string>
     <string name="something_went_wrong">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>
@@ -94,7 +94,7 @@
     <string name="reset">إعادة تعيين</string>
     <string name="failed_to_apply_filters">فشل تطبيق عوامل التصفية</string>
     <string name="share_button_title">مشاركة</string>
-    <string name="view_transactions">اظهار المعاملات</string>
+    <string name="statement">كشف الحساب</string>
     <string name="view_transactions_statement_error_message">حدث خطأ اثناء تحميل الملف</string>
     <string name="loading_pdf_message">جارٍ تحميل الملف ...</string>
     <string name="rendering_pdf_message">اظهار الملف ...</string>
@@ -117,6 +117,7 @@
     <string name="confirm_payment_content_failed">لديك فقط %1$s فضة في محفظتك، وهذا لا يكفي.</string>
     <string name="You_are_about_to_pay">أنت على وشك الدفع</string>
     <string name="pay_amount">%1$s ادفع</string>
+    <string name="user_img">صورة المستخدم</string>
 
     <string name="transaction_successful">تمت العملية بنجاح!</string>
     <string name="show_transaction_details">عرض تفاصيل العملية</string>
@@ -125,4 +126,6 @@
     <string name="connection_lost_try_again">انقطع الاتصال. يرجى المحاولة مرة أخرى.</string>
     <string name="try_again">حاول مرة أخرى</string>
     <string name="payment_failed_description">تعذر إتمام الدفع. يرجى المحاولة مرة أخرى.</string>
+    <string name="you_paid">لقد دفعت</string>
+    <string name="payment_status_crossfade">الانتقال بين حالات الدفع</string>
 </resources>

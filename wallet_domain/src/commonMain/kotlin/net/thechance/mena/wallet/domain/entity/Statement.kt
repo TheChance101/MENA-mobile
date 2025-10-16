@@ -7,7 +7,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 data class Statement(
-    val id: Uuid,
+    val id: Long,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val totalInflows: Double,

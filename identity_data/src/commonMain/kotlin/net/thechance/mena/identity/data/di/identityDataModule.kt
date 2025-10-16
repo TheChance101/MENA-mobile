@@ -8,11 +8,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.data.dataSource.local.database.IdentityDatabase
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
+import net.thechance.mena.identity.data.repository.AddressesRepositoryImpl
 import net.thechance.mena.identity.data.repository.AddressRepositoryImpl
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl
 import net.thechance.mena.identity.data.repository.UserRepositoryImpl
-import net.thechance.mena.identity.domain.repository.AddressRepository
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
@@ -43,11 +44,6 @@ val identityDataModule = module {
             settings = get()
         )
     }
-    single<AddressRepository> {
-        AddressRepositoryImpl(
-            client = get(named(IDENTITY_CLIENT)),
-        )
-    }
     singleOf(::Settings)
     singleOf(::AuthorizationService)
     single(named(IDENTITY_CLIENT)) {
@@ -62,9 +58,18 @@ val identityDataModule = module {
     single<IdentityDatabase> { getRoomDatabase(builder = get()) }
     single<UserDao> { get<IdentityDatabase>().getUserDao() }
 
+    single { provideDatabaseBuilder() }
+    single<IdentityDatabase> { getRoomDatabase(builder = get()) }
+    single<UserDao> { get<IdentityDatabase>().getUserDao() }
+
     single<ResetPasswordRepository> {
         ResetPasswordRepositoryImpl(
-            client = get(named("IdentityClient"))
+            client = get(named(IDENTITY_CLIENT))
+        )
+    }
+    single<AddressesRepository>{
+        AddressesRepositoryImpl(
+            client = get(named(IDENTITY_CLIENT))
         )
     }
 }

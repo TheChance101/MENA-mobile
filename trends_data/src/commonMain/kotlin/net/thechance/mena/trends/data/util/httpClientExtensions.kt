@@ -5,7 +5,7 @@ import io.ktor.client.plugins.onUpload
 import io.ktor.client.plugins.timeout
 import io.ktor.client.request.HttpRequestBuilder
 
-fun HttpRequestBuilder.infiniteTimeOut() {
+fun HttpRequestBuilder.setUploadRequestTimeout() {
     timeout {
         requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
         socketTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS

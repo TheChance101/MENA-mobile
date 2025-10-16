@@ -24,8 +24,8 @@ import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageContent
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
@@ -45,7 +45,8 @@ fun MessageLayout(
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
     onFailClick: () -> Unit = {},
-    onMessageClick: () -> Unit = {}
+    onMessageClick: () -> Unit = {},
+    onMessageImageClick: (MessageUiState, Int) -> Unit,
 ) {
     val messageBackground =
         if (message.isMine) Theme.colorScheme.background.surfaceLow
@@ -126,7 +127,13 @@ fun MessageLayout(
                         vertical = Theme.spacing._4
                     )
             ) {
-                MessageContent(messageContent = message.content, shape = messageShape)
+                MessageContent(
+                    messageContent = message.content,
+                    shape = messageShape,
+                    onImageClick = { index ->
+                        onMessageImageClick(message, index)
+                    }
+                )
             }
 
         }
@@ -164,7 +171,8 @@ private fun PreviewBaseMessageLayout() {
                     content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,
-                isMarkedLastInSeries = true
+                isMarkedLastInSeries = true,
+                onMessageImageClick = { message,index -> }
             )
         }
     }

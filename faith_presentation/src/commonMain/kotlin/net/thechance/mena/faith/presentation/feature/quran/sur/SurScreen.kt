@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
@@ -31,11 +32,13 @@ import mena.faith_presentation.generated.resources.ic_al_fatihah
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_bookmark
 import mena.faith_presentation.generated.resources.ic_moshaf
+import mena.faith_presentation.generated.resources.ic_search
 import mena.faith_presentation.generated.resources.ic_surah_number_container
 import mena.faith_presentation.generated.resources.madani
 import mena.faith_presentation.generated.resources.makki
 import mena.faith_presentation.generated.resources.moshaf_icon
 import mena.faith_presentation.generated.resources.quran
+import mena.faith_presentation.generated.resources.search_icon
 import mena.faith_presentation.generated.resources.sur
 import mena.faith_presentation.generated.resources.surah_arabic_name_icon
 import mena.faith_presentation.generated.resources.surah_number_container_icon
@@ -47,9 +50,8 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
-import net.thechance.mena.faith.presentation.navigation.BookmarksRoute
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
-import net.thechance.mena.faith.presentation.navigation.SurahDetailsRoute
+import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -66,33 +68,41 @@ fun SurScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is SurEffect.NavigateBack -> navController.navigateUp()
-            is SurEffect.NavigateToBookmark -> navController.navigate(BookmarksRoute)
-            is SurEffect.NavigateToSurahDetails -> navController.navigate(
-                SurahDetailsRoute(
-                    surahId = effect.surahId,
-                    surahName = effect.surahName
+            is SurEffect.NavigateToBookmark -> navController.navigate(Route.BookmarksRoute)
+            is SurEffect.NavigateToSurahDetails -> {
+                navController.navigate(
+                    Route.SurahDetailsRoute(
+                        surahId = effect.surahId,
+                        surahName = effect.surahName
+                    )
                 )
-            )
+            }
+
+            SurEffect.NavigateToSearch -> {
+                navController.navigate(Route.SearchRoute())
+
+            }
         }
     }
 
     Content(
         uiState = state,
-        interactionListener = viewModel
+        listener = viewModel
     )
 }
 
 @Composable
 private fun Content(
     uiState: SurScreenState,
-    interactionListener: SurInteractionListener,
+    listener: SurInteractionListener,
 ) {
     Scaffold(
         topBar = {
             Topbar(
                 modifier = Modifier.padding(horizontal = Theme.spacing._16),
-                onBackClick = { interactionListener.onBackClick() },
-                onBookmarkClick = { interactionListener.onBookmarkClick() },
+                onBackClick = { listener.onBackClick() },
+                onBookmarkClick = { listener.onBookmarkClick() },
+                onSearchClick = { listener.onSearchClick() }
             )
         }
     ) {
@@ -116,7 +126,12 @@ private fun Content(
             items(uiState.sur) { surah ->
                 SurahItem(
                     surah = surah,
-                    onClick = { interactionListener.onSurahClick(surah.id, surah.surahName) }
+                    onClick = {
+                        listener.onSurahClick(
+                            surah.id,
+                            surah.surahName
+                        )
+                    }
                 )
             }
         }
@@ -127,6 +142,7 @@ private fun Content(
 private fun Topbar(
     onBackClick: () -> Unit,
     onBookmarkClick: () -> Unit,
+    onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AppBar(
@@ -140,29 +156,47 @@ private fun Topbar(
                 tint = Theme.colorScheme.primary.primary,
                 modifier = Modifier.size(20.dp)
             )
+
         },
         onLeadingClick = onBackClick,
-        trailingContent = { AppBarBookmarkOption(onBookmarkClick) }
+        trailingContent = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+            ) {
+                AppBarIcon(
+                    iconRes = painterResource(Res.drawable.ic_search),
+                    contentDescription = stringResource(resource = Res.string.search_icon),
+                    onClick = onSearchClick
+                )
+
+                AppBarIcon(
+                    iconRes = painterResource(Res.drawable.ic_bookmark),
+                    contentDescription = stringResource(resource = Res.string.bookmark_icon),
+                    onClick = onBookmarkClick
+                )
+            }
+        }
     )
 }
 
 @Composable
-private fun AppBarBookmarkOption(
-    onBookmarkClick: () -> Unit,
-    modifier: Modifier = Modifier,
+private fun AppBarIcon(
+    iconRes: Painter,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AppBarOptionContainer(
-        onClick = onBookmarkClick,
-        content = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_bookmark),
-                contentDescription = stringResource(resource = Res.string.bookmark_icon),
-                tint = Theme.colorScheme.primary.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        },
+        onClick = onClick,
         modifier = modifier
-    )
+    ) {
+        Icon(
+            painter = iconRes,
+            contentDescription = contentDescription,
+            tint = Theme.colorScheme.primary.primary,
+            modifier = Modifier.size(20.dp)
+        )
+    }
 }
 
 @Composable
@@ -320,10 +354,11 @@ private fun SurScreenPreview() {
                     )
                 )
             ),
-            interactionListener = object : SurInteractionListener {
+            listener = object : SurInteractionListener {
                 override fun onSurahClick(surahId: Int, surahName: String) = Unit
                 override fun onBackClick() = Unit
                 override fun onBookmarkClick() = Unit
+                override fun onSearchClick() {}
             }
         )
     }

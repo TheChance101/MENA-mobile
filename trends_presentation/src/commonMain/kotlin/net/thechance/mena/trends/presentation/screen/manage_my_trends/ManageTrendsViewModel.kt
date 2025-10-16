@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.repository.UserRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
@@ -19,6 +20,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class ManageTrendsViewModel(
     @Provided private val repository: ReelsRepository,
+    @Provided private val userRepository: UserRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ManageTrendsScreenState,
         ManageTrendsUiEffect>(ManageTrendsScreenState()),
@@ -26,6 +28,7 @@ internal class ManageTrendsViewModel(
 
     init {
         getReels()
+        getCurrentUserInfo()
     }
 
     fun getReels() {
@@ -33,11 +36,21 @@ internal class ManageTrendsViewModel(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    onError = {},
-                    loadPage = { page -> repository.getAllReels(page) }
+                    loadPage = { page -> repository.getAllCurrentUserReels(page) }
                 )
             },
             onSuccess = ::onGetReelsSuccess,
+            onError = { errorState -> updateState { copy(error = errorState) } },
+            onStart = { updateState { copy(isLoading = true) } },
+            onEnd = { updateState { copy(isLoading = false) } },
+            dispatcher = ioDispatcher
+        )
+    }
+
+    fun getCurrentUserInfo() {
+        tryToExecute(
+            block = { userRepository.getCurrentUserInfo() },
+            onSuccess = { profile -> updateState { copy(profile = profile.toUiState()) } },
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
@@ -52,7 +65,7 @@ internal class ManageTrendsViewModel(
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
-    override fun onReelItemClick(reelId: String) {
+    override fun onReelClick(reelId: String) {
         sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId))
     }
 

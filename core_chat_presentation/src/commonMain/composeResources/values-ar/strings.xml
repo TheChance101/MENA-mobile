@@ -29,10 +29,19 @@
     <string name="error_cant_get_messages">لم نتمكن من جلب الرسائل</string>
     <string name="error_cant_load_messages_history">لم نتمكن من تحميل تاريخ الرسائل</string>
     <string name="error_cant_send_messages">لم نتمكن من ارسال الرسالة</string>
+    <string name="error_failed_to_download_image">فشل تنزيل الصورة</string>
     <string name="contact_not_mena_user">هذا الشخص لا يملك حساب مينا</string>
+    <string name="mena">مينا</string>
+    <string name="chats">المحادثات</string>
+    <string name="success">نجاح</string>
+    <string name="image_saved_successfully">تم تنزيل الصورة على جهازك بنجاح</string>
     <string name="today">اليوم</string>
     <string name="yesterday">الأمس</string>
     <string name="cancel">الغاء</string>
     <string name="photo">صوره</string>
     <string name="camera">الكاميرا</string>
+    <string name="no_chats_history_title">ليس لديك أي محادثات حتى الآن!</string>
+    <string name="no_chats_history_desc">ابدأ الدردشة مع أصدقائك بالضغط على زر بدء الدردشة.</string>
+    <string name="you">أنت</string>
+    <string name="could_not_get_sync_contacts_status">لم نتمكن من الحصول على حالة مزامنة جهات الاتصال، يرجى المحاولة مرة أخرى.</string>
 </resources>

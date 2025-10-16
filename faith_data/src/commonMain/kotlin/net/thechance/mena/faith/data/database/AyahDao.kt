@@ -46,7 +46,7 @@ interface AyahDao {
         """
                 SELECT *
                 FROM ayat
-                WHERE aya_text_emlaey LIKE :query
+                WHERE aya_text_emlaey LIKE '%'||:query||'%'
         """
     )
     suspend fun searchForAyahInQuran(query: String): List<AyahDto>
@@ -55,7 +55,7 @@ interface AyahDao {
         """
                 SELECT *
                 FROM ayat
-                WHERE aya_text_emlaey LIKE :query AND sura_no = :surahId
+                WHERE aya_text_emlaey LIKE '%'||:query||'%' AND sura_no = :surahId
         """
     )
     suspend fun searchForAyahInSurah(surahId: Int, query: String): List<AyahDto>

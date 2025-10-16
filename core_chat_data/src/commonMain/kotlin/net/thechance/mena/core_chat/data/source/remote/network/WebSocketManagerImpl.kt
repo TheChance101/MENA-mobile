@@ -126,7 +126,7 @@ class WebSocketManagerImpl(
     }
 
     private companion object {
-        const val WEB_SOCKETS_ENDPOINT = "ws"
+        const val WEB_SOCKETS_ENDPOINT = "/ws"
         const val RECONNECT_DELAY = 5000L
     }
 }

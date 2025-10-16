@@ -10,7 +10,7 @@ import androidx.room.TypeConverters
 
 @Database(entities = [MessageLocalDto::class], version = 1)
 @ConstructedBy(ChatDatabaseConstructor::class)
-@TypeConverters(MessageStatusConverter::class)
+@TypeConverters(MessageConverter::class)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun getMessageDao(): MessageDao
 }

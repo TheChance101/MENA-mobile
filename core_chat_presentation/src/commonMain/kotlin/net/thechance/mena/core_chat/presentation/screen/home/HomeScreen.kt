@@ -1,40 +1,197 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import net.thechance.mena.designsystem.presentation.component.button.Button
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.chats
+import mena.core_chat_presentation.generated.resources.ic_coin
+import mena.core_chat_presentation.generated.resources.ic_plus
+import mena.core_chat_presentation.generated.resources.mena
+import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
+import net.thechance.mena.core_chat.presentation.screen.home.components.ChatItem
+import net.thechance.mena.core_chat.presentation.screen.home.components.NoChatsHistoryView
+import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.button.FabButton
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
+    viewModel: HomeViewModel = koinViewModel<HomeViewModel>()
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._32, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-        Button(onClick = viewModel::onNewChatClicked) {
-            Text(
-                text = "Chat",
-                style = Theme.typography.title.medium
+    HomeContent(
+        state = state,
+        interactionListener = viewModel
+    )
+}
+
+@OptIn(ExperimentalUuidApi::class)
+@Composable
+private fun HomeContent(
+    state: HomeScreenState,
+    interactionListener: HomeScreenInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    val listState = rememberLazyListState()
+
+    Scaffold(
+        topBar = {
+            HomeScreenAppBar(
+                balanceAmount = state.balanceAmount.toString(),
+                interactionListener::onWalletClicked
             )
         }
-        Button(onClick = viewModel::onWalletClicked) {
-            Text(
-                text = "Wallet",
-                style = Theme.typography.title.medium
+    ) {
+        Box(modifier = modifier.fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxSize()) {
+
+                when {
+                    state.chats.isEmpty() && state.isLoading -> {
+                        LoadingView()
+                    }
+
+                    state.chats.isEmpty() && !state.isLoading -> {
+                        EmptyView()
+                    }
+
+                    else -> {
+                        ChatsSummaryList(listState, state, interactionListener::onChatClicked)
+                    }
+                }
+            }
+            FabButton(
+                painter = painterResource(Res.drawable.ic_plus),
+                onClick = interactionListener::onNewChatClicked,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(Theme.spacing._16)
             )
+        }
+
+    }
+
+    PaginationTrigger(
+        list = state.chats,
+        listState = listState,
+        remainingItemsToLoadNextPage = 5,
+        loadNextItems = interactionListener::onChatsListScrolled
+    )
+}
+
+@Composable
+private fun HomeScreenAppBar(
+    balanceAmount: String,
+    onWalletClicked: () -> Unit
+) {
+    AppBar(
+        title = stringResource(Res.string.mena),
+        trailingContent = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = balanceAmount,
+                    color = Theme.colorScheme.shadeSecondary,
+                    style = Theme.typography.label.small,
+                )
+                Image(
+                    painter = painterResource(Res.drawable.ic_coin),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                        .clickable { onWalletClicked() }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun LoadingView(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        DotsProgressIndicator()
+    }
+}
+
+@Composable
+private fun EmptyView() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        NoChatsHistoryView(modifier = Modifier.padding(Theme.spacing._24))
+    }
+}
+
+@Composable
+@OptIn(ExperimentalUuidApi::class)
+private fun ChatsSummaryList(
+    listState: LazyListState,
+    state: HomeScreenState,
+    onChatClicked: (ChatUiState) -> Unit
+) {
+    Text(
+        text = stringResource(Res.string.chats),
+        color = Theme.colorScheme.shadePrimary,
+        style = Theme.typography.title.small,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing._16)
+    )
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .padding(horizontal = Theme.spacing._16)
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(vertical = Theme.spacing._12),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+    ) {
+        items(
+            items = state.chats,
+            key = { it.id }
+        ) { chat ->
+            ChatItem(
+                chat = chat,
+                onChatClicked = onChatClicked
+            )
+        }
+
+        if (state.isLoading) {
+            item {
+                LoadingView(Modifier.padding(vertical = Theme.spacing._16))
+            }
         }
     }
 }

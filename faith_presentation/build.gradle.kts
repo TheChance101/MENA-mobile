@@ -51,6 +51,9 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.coil.compose)
             implementation(libs.coil.gif)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.napier)
+
         }
         iosMain.dependencies {
 
@@ -87,11 +90,14 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel",
+                "net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel",
+                "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
                 "*MapperKt",
             )
         }
 
         excludes {
+            packages("net.thechance.mena.faith.presentation.util.extentions")
             annotatedBy("net.thechance.mena.faith.domain.annotation.KoverIgnore")
         }
     }

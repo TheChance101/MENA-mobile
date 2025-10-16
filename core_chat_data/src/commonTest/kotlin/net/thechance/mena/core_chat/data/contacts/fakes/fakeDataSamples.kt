@@ -4,17 +4,18 @@ package net.thechance.mena.core_chat.data.contacts.fakes
 
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import com.bilalazzam.contacts_provider.Contact as DeviceContact
-
 
 val sampleDeviceContact = createDeviceContact(
     id = "1",
@@ -66,14 +67,14 @@ fun createMessage(
     id: Uuid = Uuid.random(),
     senderId: Uuid = Uuid.random(),
     chatId: Uuid = Uuid.random(),
-    text: String = "fail",
+    content: MessageContent = MessageContent.Text("Hello from test"),
     sendAt: LocalDateTime = LocalDateTime.now(),
     status: MessageStatus = MessageStatus.SENT
 ) = Message(
     id = id,
     senderId = senderId,
     chatId = chatId,
-    text = text,
+    content = content,
     sendAt = sendAt,
     status = status
 )
@@ -104,4 +105,28 @@ fun createChatDto(
     name = name,
     imageUrl = imageUrl,
     requesterId = requesterId
+)
+
+fun createLastMessageDto(
+    content: String = "Hello there",
+    sentAt: String = "2025-10-01T12:00:00Z",
+    isMine: Boolean = false
+) = ChatSummaryDto.LastMessageDto(
+    content = content,
+    sentAt = sentAt,
+    isMine = isMine
+)
+
+fun createChatSummaryDto(
+    id: String = Uuid.random().toString(),
+    imageUrl: String? = "http://example.com/image.jpg",
+    name: String = "Test Chat",
+    lastMessage: ChatSummaryDto.LastMessageDto = createLastMessageDto(),
+    unReadMessagesCount: Int = 1
+) = ChatSummaryDto(
+    id = id,
+    imageUrl = imageUrl,
+    lastMessage = lastMessage,
+    name = name,
+    unReadMessagesCount = unReadMessagesCount
 )

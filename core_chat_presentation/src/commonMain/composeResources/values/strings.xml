@@ -29,10 +29,19 @@
     <string name="error_cant_get_messages">Couldn't Get Messages!</string>
     <string name="error_cant_load_messages_history">Couldn't Load Messages History!</string>
     <string name="error_cant_send_messages">Couldn't Send Messages!</string>
+    <string name="error_failed_to_download_image">Couldn't download image!</string>
     <string name="contact_not_mena_user">This Contact Is Not Mena User!</string>
+    <string name="mena">MENA</string>
+    <string name="chats">Chats</string>
+    <string name="success">Success</string>
+    <string name="image_saved_successfully">Download photo to your device successfully.</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="cancel">Cancel</string>
     <string name="photo">Photo</string>
     <string name="camera">Camera</string>
+    <string name="no_chats_history_title">You don't have any chats yet!</string>
+    <string name="no_chats_history_desc">Start chatting with your friends by click on start chat button.</string>
+    <string name="you">You</string>
+    <string name="could_not_get_sync_contacts_status">Could not get sync contacts status, please try again</string>
 </resources>
