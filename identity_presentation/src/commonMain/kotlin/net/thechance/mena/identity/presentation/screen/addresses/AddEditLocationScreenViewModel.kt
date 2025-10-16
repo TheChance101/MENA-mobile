@@ -11,7 +11,10 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class AddEditLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val latitude: Double,
+    private val longitude: Double,
+    private val address: String,
 ) : BaseScreenModel<AddLocationScreenUIState, AddEditLocationScreenUIEffect>
     (AddLocationScreenUIState()),
     AddEditLocationScreenInteractionListener {

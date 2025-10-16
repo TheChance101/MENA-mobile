@@ -47,8 +47,6 @@ fun Map(
         camera.animateTo(finalPosition = cameraPosition)
     }
 
-
-
     LaunchedEffect(camera) {
         snapshotFlow { camera.position }.collect { position -> onCameraMoved(position) }
     }

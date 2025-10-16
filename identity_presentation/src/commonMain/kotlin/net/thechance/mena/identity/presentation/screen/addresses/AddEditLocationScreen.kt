@@ -32,9 +32,14 @@ import net.thechance.mena.identity.presentation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
 import org.maplibre.compose.camera.CameraPosition
 
-class AddEditLocationScreen : BaseScreen<
+class AddEditLocationScreen(
+    private val latitude: Double,
+    private val longitude: Double,
+    private val address: String,
+) : BaseScreen<
         AddEditLocationScreenViewModel,
         AddLocationScreenUIState,
         AddEditLocationScreenUIEffect,
@@ -42,7 +47,7 @@ class AddEditLocationScreen : BaseScreen<
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(getScreenModel(parameters = { parametersOf(latitude, longitude, address) }))
     }
 
     @Composable
@@ -57,7 +62,7 @@ class AddEditLocationScreen : BaseScreen<
                         stringResource(Res.string.add_location)
                     else
                         stringResource(Res.string.edit_location),
-                    onBackClicked = listener::onClickBack
+                    onClickBack = listener::onClickBack
                 )
             },
             bottomBar = {

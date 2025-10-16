@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.pickLocation.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -34,17 +35,19 @@ fun GpsFabButton(
         containerColor = Theme.colorScheme.primary.primary,
         contentColor = Theme.colorScheme.primary.onPrimary,
         shape = RoundedCornerShape(Theme.radius.md),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = 14.dp),
         modifier = modifier,
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_gps),
-                tint = it,
-                contentDescription = "GPS",
-                modifier = Modifier.size(20.dp)
-            )
-            GpsDotLoadingAnimation(isLoading)
+    ) { contentColor ->
+        Crossfade(isLoading) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_gps),
+                    tint = contentColor,
+                    contentDescription = "GPS",
+                    modifier = Modifier.size(20.dp)
+                )
+                GpsDotLoadingAnimation(isLoading)
+            }
         }
     }
 }
@@ -52,7 +55,7 @@ fun GpsFabButton(
 @Composable
 private fun GpsDotLoadingAnimation(
     isLoading: Boolean
-){
+) {
     if (isLoading) {
         val infiniteTransition = rememberInfiniteTransition()
         val animatedAlpha = infiniteTransition.animateFloat(

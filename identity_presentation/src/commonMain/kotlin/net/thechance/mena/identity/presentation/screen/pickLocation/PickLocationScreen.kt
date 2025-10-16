@@ -21,6 +21,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocationScreen
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
@@ -61,9 +62,7 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                 animateToCurrentLocation = state.animateToCurrentLocation
             ) {
                 Column(
-                    Modifier
-                        .padding(16.dp)
-                        .fillMaxSize(),
+                    Modifier.padding(Theme.spacing._16).fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
                     Row(
@@ -73,7 +72,7 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                         GpsFabButton(
                             onClick = listener::onClickGps,
                             isLoading = state.isGpsButtonLoading,
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            modifier = Modifier.padding(bottom = Theme.spacing._12)
                         )
                         EditMapButton(
                             anchorLocation = state.pointerLocation,
@@ -106,7 +105,10 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
     ) {
         when (effect) {
             PickLocationScreenUIEffect.NavigateBack -> navigator.pop()
-            is PickLocationScreenUIEffect.NavigateToAddLocation -> TODO("add navigator.replace(AddLocationScreen(effect.latitude, effect.longitude,effect.address}) when implement")
+            is PickLocationScreenUIEffect.NavigateToAddLocation -> navigator.replace(
+                AddEditLocationScreen(effect.latitude, effect.longitude, effect.address)
+            )
+
             PickLocationScreenUIEffect.NavigateToEnableLocation -> navigator.push(
                 EnableLocationScreen()
             )
