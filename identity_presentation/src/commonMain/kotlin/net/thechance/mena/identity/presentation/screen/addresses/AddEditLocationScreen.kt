@@ -29,16 +29,16 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.MapSection
-import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
+import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import org.maplibre.compose.camera.CameraPosition
 
 class AddEditLocationScreen(
-    private val latitude: Double? = null,
-    private val longitude: Double? = null,
-    private val address: String? = null,
+    private val latitude: Double?,
+    private val longitude: Double?,
+    private val address: String?,
 ) : BaseScreen<
         AddEditLocationScreenViewModel,
         AddLocationScreenUIState,
@@ -136,7 +136,13 @@ class AddEditLocationScreen(
     ) {
         when (effect) {
             AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
-            AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(RegisterScreen()) //TODO : change it to map screen
+            is AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(
+                PickLocationScreen(
+                    latitude = effect.latitude,
+                    longitude = effect.longitude,
+                    address = effect.address
+                )
+            )
         }
     }
 

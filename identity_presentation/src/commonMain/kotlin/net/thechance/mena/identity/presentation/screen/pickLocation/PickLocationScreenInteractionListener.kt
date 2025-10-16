@@ -12,6 +12,7 @@ interface PickLocationScreenInteractionListener : BaseInteractionListener {
     fun onClickConfirm()
     fun onClearErrorMessage()
     fun onClickBack()
+    fun onSetAnchorLocation(pointerLocation: DpOffset)
 }
 
 

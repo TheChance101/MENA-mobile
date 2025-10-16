@@ -21,12 +21,16 @@ class AddEditLocationScreenViewModel(
 
     override fun onClickMap() {
 
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap())
     }
 
     override fun onClickEdit() {
 
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap(
+            latitude = state.value.latitude,
+            longitude = state.value.longitude,
+            address = state.value.address
+        ))
     }
 
     override fun onClickBack() {

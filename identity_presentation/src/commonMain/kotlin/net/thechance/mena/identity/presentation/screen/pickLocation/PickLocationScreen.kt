@@ -27,15 +27,20 @@ import net.thechance.mena.identity.presentation.screen.pickLocation.components.E
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.pickLocation.components.Map
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
 
-class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
+data class PickLocationScreen(
+    private val latitude: Double?,
+    private val longitude: Double?,
+    private val address: String?,
+) : BaseScreen<PickLocationScreenViewModel,
         PickLocationScreenUIState,
         PickLocationScreenUIEffect,
         PickLocationScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(getScreenModel(parameters = { parametersOf(latitude, longitude, address) }))
     }
 
     @Composable
@@ -59,7 +64,8 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                 anchorLocation = state.pointerLocation,
                 isLocked = state.isMapLocked,
                 currentLocation = state.currentLocation,
-                animateToCurrentLocation = state.animateToCurrentLocation
+                animateToCurrentLocation = state.animateToCurrentLocation,
+                onSetAnchorLocation = listener::onSetAnchorLocation
             ) {
                 Column(
                     Modifier.padding(Theme.spacing._16).fillMaxSize(),
@@ -75,7 +81,7 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
                             modifier = Modifier.padding(bottom = Theme.spacing._12)
                         )
                         EditMapButton(
-                            anchorLocation = state.pointerLocation,
+                            isMapLocked = state.isMapLocked,
                             onEditClick = listener::onClickEdit
                         )
                     }
@@ -106,7 +112,11 @@ class PickLocationScreen() : BaseScreen<PickLocationScreenViewModel,
         when (effect) {
             PickLocationScreenUIEffect.NavigateBack -> navigator.pop()
             is PickLocationScreenUIEffect.NavigateToAddLocation -> navigator.replace(
-                AddEditLocationScreen(effect.latitude, effect.longitude, effect.address)
+                AddEditLocationScreen(
+                    latitude = effect.latitude,
+                    longitude = effect.longitude,
+                    address = effect.address
+                )
             )
 
             PickLocationScreenUIEffect.NavigateToEnableLocation -> navigator.push(

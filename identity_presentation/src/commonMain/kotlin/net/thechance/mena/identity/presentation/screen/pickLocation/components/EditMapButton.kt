@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_edit
@@ -20,14 +19,14 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun EditMapButton(
-    anchorLocation: DpOffset?,
+    isMapLocked: Boolean,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
 
     ) {
     Crossfade(
         modifier = modifier,
-        targetState = anchorLocation != null
+        targetState = isMapLocked
     ) {
         if (it) {
             Image(
