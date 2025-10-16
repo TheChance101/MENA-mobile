@@ -3,10 +3,11 @@ package net.thechance.mena.trends.presentation.screen.video_description.args
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import net.thechance.mena.trends.presentation.navigation.Route
+import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Single
 
 
-@Single (binds = [VideoDescriptionArgs::class])
+@Factory (binds = [VideoDescriptionArgs::class])
 class VideoDescriptionArgsImp(
     saveSateHandle : SavedStateHandle
 ) : VideoDescriptionArgs {
