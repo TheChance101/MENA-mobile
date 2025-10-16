@@ -230,7 +230,7 @@ private fun ReelContent(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 isDescriptionExpanded = isDescriptionExpanded,
                 onDescriptionClick = onDescriptionClick,
-                onPublisherInfoClick = onPublisherInfoClick
+                onPublisherInfoClick = onPublisherInfoClick.takeIf { reel.isCurrentUserOwner } ?: {}
             )
 
             Box(modifier = Modifier.fillMaxWidth().height(height = 118.dp).gradientShadow())
@@ -245,7 +245,7 @@ private fun PublisherInfo(
     timeOfPublish: String,
     isDescriptionExpanded: Boolean,
     onPublisherInfoClick: () -> Unit,
-    onDescriptionClick: (Boolean) -> Unit,
+    onDescriptionClick: (isCollapsed: Boolean) -> Unit,
     description: String,
     modifier: Modifier = Modifier
 ) {
