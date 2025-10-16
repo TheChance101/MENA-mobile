@@ -19,7 +19,9 @@ import net.thechance.mena.core_chat.domain.entity.ImagesSource
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
@@ -32,6 +34,7 @@ import kotlin.uuid.Uuid
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
+    private val userRepository: UserRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -63,18 +66,22 @@ class ChatViewModel(
 
     private fun getUserImageUrl(){
         tryToExecute(
-            execute = { chatRepository.getUserImageUrl() },
-            onSuccess = ::onGetUserImageUrlSuccess,
-            onError = { onGetUserImageUrlError() }
+            execute = { userRepository.getUserInfo() },
+            onSuccess = ::onGetUserDataSuccess,
+            onError = ::onGetUserDataError
         )
     }
 
-    private fun onGetUserImageUrlSuccess(imageUrl: String) {
-        updateState { state -> state.copy(userImageUrl = imageUrl) }
+    private fun onGetUserDataSuccess(user: User) {
+        updateState { state -> state.copy(userData = UserData(
+            firstName = user.firstName,
+            lastName = user.lastName,
+            imageUrl = user.imageUrl.orEmpty()
+        )) }
 
-        println("--> userImageUrl: $imageUrl")
+        println("------> user data: $user")
     }
-    private fun onGetUserImageUrlError() {
+    private fun onGetUserDataError(t: Throwable) {
         showSnackBar(
             titleStringResource = Res.string.error,
             messageStringResource = Res.string.error_get_user_info,
