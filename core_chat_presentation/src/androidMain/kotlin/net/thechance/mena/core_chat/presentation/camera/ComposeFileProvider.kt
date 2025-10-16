@@ -16,9 +16,6 @@ class ComposeFileProvider: FileProvider(R.xml.path_provider) {
                 createNewFile()
             }
             val authority = context.applicationContext.packageName + ".fileprovider"
-
-            println("getImageUri: ${tempFile.absolutePath}")
-
             getUriForFile(
                 Objects.requireNonNull(context),
                 authority,

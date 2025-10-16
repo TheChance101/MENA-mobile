@@ -80,17 +80,7 @@ fun FullImagePagerView(
     Box(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
     ) {
-        if (imagesSource is ImagesSource.Remote) {
-            HorizontalImagePager(
-                state = pagerState,
-                urls = imagesSource.urls,
-            )
-        } else if (imagesSource is ImagesSource.Local) {
-            HorizontalImagePager(
-                state = pagerState,
-                byteArrays = imagesSource.byteArrays,
-            )
-        }
+        ImagePager(state = pagerState, imagesSource = imagesSource)
         FabButton(
             painter = painterResource(Res.drawable.ic_cancel),
             shape = RoundedCornerShape(Theme.spacing._12),
@@ -240,5 +230,15 @@ private fun PagerOverlay(
                 contentPadding = PaddingValues(0.dp)
             )
         }
+    }
+}
+@Composable
+private fun ImagePager(
+    state: PagerState,
+    imagesSource: ImagesSource
+) {
+    when (imagesSource) {
+        is ImagesSource.Remote -> HorizontalImagePager(state, imagesSource.urls)
+        is ImagesSource.Local -> HorizontalImagePager(state, imagesSource.byteArrays)
     }
 }

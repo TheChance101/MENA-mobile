@@ -12,10 +12,9 @@ import platform.UIKit.UIImageJPEGRepresentation
 fun UIImage?.toByteArray(): ByteArray? {
     return if (this != null) {
         val imageData = UIImageJPEGRepresentation(this, 100.0)
-            ?: throw IllegalArgumentException("image data is null")
+            ?: return null
         val bytes = imageData.bytes ?: throw IllegalArgumentException("image bytes is null")
         val length = imageData.length
-
         val data: CPointer<ByteVar> = bytes.reinterpret()
         ByteArray(length.toInt()) { index -> data[index] }
     } else {

@@ -109,8 +109,7 @@ private fun AttachmentBottomSheetContent(
         AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_camera,
             titleRes = Res.string.camera,
-            onClick = { attachmentsInteractionListener.onCameraClicked()
-            }
+            onClick = attachmentsInteractionListener::onCameraClicked
         )
     }
 }
