@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.presentation.util
 
-expect class ClipboardManagerImp : ClipboardManager {
+expect class ClipboardManagerImpl : ClipboardManager {
     override fun copy(text: String)
 }
 

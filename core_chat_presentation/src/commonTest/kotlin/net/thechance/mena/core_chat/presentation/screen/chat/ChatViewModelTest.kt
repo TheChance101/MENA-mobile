@@ -6,6 +6,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import dev.icerock.moko.permissions.PermissionsController
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -43,6 +44,7 @@ import kotlin.uuid.Uuid
 class ChatViewModelTest {
     private val repository = mock<ChatRepository>()
     private val chatArgs = mock<ChatArgs>()
+    private val permissionsController = mock<PermissionsController>()
     private val effector = mock<ChatEffector>(MockMode.autofill)
     private lateinit var chatViewModel: ChatViewModel
 
@@ -61,7 +63,7 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
     }
 
@@ -78,7 +80,7 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(
@@ -96,7 +98,7 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         verifySuspend {
@@ -117,7 +119,7 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf(messages.first())
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, testDispatcher)
+        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(

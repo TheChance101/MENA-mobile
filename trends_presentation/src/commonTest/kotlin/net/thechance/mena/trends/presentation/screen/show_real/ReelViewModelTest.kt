@@ -37,7 +37,6 @@ class ReelViewModelTest {
         userName = "Test User",
         profileImageUrl = "https://example.com/profile.jpg",
         isCurrentUserOwner = false,
-        categories = emptyList()
     )
 
 

@@ -27,7 +27,9 @@ sealed interface ErrorState {
     object NoNetwork : ErrorState
     data object OTPExpired : ErrorState
     // endregion
+
     data class SomethingWentWrong(val message: String?) : ErrorState
+    data class IsActiveAddress(val message: String?) : ErrorState
 }
 
 fun handelAuthorizationException(

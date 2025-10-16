@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
+import net.thechance.mena.identity.domain.entity.AddressType
+
 data class AddLocationScreenUIState(
     val addressID: String? = null,
     val latitude: Double = 28.0,
@@ -16,8 +18,3 @@ data class AddLocationScreenUIState(
     val errorMessage: String? = null,
 )
 
-enum class AddressType {
-    Home,
-    Office,
-    Other
-}
