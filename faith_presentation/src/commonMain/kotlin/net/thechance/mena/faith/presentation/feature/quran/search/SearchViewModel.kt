@@ -1,5 +1,8 @@
 package net.thechance.mena.faith.presentation.feature.quran.search
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.quran
@@ -15,6 +18,7 @@ import org.jetbrains.compose.resources.getString
 class SearchViewModel(
     searchArgs: ISearchArgs,
     private val repository: QuranRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<SearchScreenState, SearchEffect>(
     SearchScreenState(
         searchArgs.surahId,
@@ -42,7 +46,8 @@ class SearchViewModel(
                     repository.searchForAyahInSurah(it, query)
                 } ?: repository.searchForAyahInQuran(query)
             },
-            onSuccess = ::onGetSearchResultSuccess
+            onSuccess = ::onGetSearchResultSuccess,
+            dispatcher = dispatcher
         )
     }
 
@@ -71,7 +76,7 @@ class SearchViewModel(
             val hintPostfix = uiState.value.surahName ?: getString(Res.string.quran)
             val hint = getString(Res.string.search_in_surah_hint, hintPostfix)
             updateState { it.copy(hint = hint) }
-        })
+        }, dispatcher = dispatcher)
     }
 
     private fun onGetSearchResultSuccess(ayat: List<Ayah>) {

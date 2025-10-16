@@ -52,7 +52,7 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.gif)
             implementation(libs.kotlinx.datetime)
-
+            implementation(libs.napier)
         }
         iosMain.dependencies {
 
