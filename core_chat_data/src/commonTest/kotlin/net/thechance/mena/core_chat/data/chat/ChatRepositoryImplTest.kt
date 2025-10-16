@@ -22,6 +22,7 @@ import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
 import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
+import net.thechance.mena.core_chat.data.contacts.defaultChatSummaryResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.contacts.jsonHeaders
@@ -29,6 +30,7 @@ import net.thechance.mena.core_chat.data.contacts.jsonSerialization
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
@@ -201,6 +203,45 @@ class ChatRepositoryImplTest {
     }
 
     @Test
+    fun `should return chat summary when getChatsSummary is successful`() = runTest {
+        httpClient = createHttpClient(
+            chatSummaryResponse = { defaultChatSummaryResponse() }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        val result = repository.getChatsSummary(
+            pageNumber = 1,
+            pageSize = 20
+        )
+        assertThat(result.data).isNotEmpty()
+    }
+
+    @Test
+    fun `should throw NotFoundException when getChatsSummary returns error`() = runTest {
+        httpClient = createHttpClient(
+            chatSummaryResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        assertFailsWith<NotFoundException> {
+            repository.getChatsSummary(
+                pageNumber = 1,
+                pageSize = 20
+            )
+        }
+    }
+
+    @Test
     fun `should send message successfully when websocket is connected`() = runTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
@@ -250,6 +291,7 @@ class ChatRepositoryImplTest {
         val flow = repository.observeReadMessages()
         assertThat(flow).isNotNull()
     }
+
     @Test
     fun `should return local messages from database when getLocalMessages is called`() = runTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
@@ -284,7 +326,11 @@ class ChatRepositoryImplTest {
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply { tryEmit("test-message") }
+        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
+            tryEmit(
+                "test-message"
+            )
+        }
 
         val flow = repository.subscribeToMessages(chatId)
 
@@ -292,28 +338,31 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
+    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
 
-        repository.downloadImage(IMAGE_URL)
+            repository.downloadImage(IMAGE_URL)
 
-        verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
-    }
+            verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
+        }
 
     @Test
-    fun `downloadImage should throw OperationFailedException when downloadImage return false`() = runTest {
-        everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
+    fun `downloadImage should throw OperationFailedException when downloadImage return false`() =
+        runTest {
+            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
 
-        assertFailsWith<OperationFailedException> {
-            repository.downloadImage(IMAGE_URL)
+            assertFailsWith<OperationFailedException> {
+                repository.downloadImage(IMAGE_URL)
+            }
         }
-    }
+
 
     private companion object {
         private val chatId = Uuid.random()
         private val userId = Uuid.random()
 
-       const val IMAGE_URL = "http://test.com/image.jpg"
+        const val IMAGE_URL = "http://test.com/image.jpg"
     }
 
 }

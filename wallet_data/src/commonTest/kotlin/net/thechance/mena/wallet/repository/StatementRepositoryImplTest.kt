@@ -14,10 +14,7 @@ import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.database.StatementWithMetaDataDto
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
-import net.thechance.mena.wallet.data.repository.statement.datasource.local.StatementLocalDataSource
 import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSource
-import net.thechance.mena.wallet.data.repository.statement.key
-import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -27,7 +24,6 @@ class StatementRepositoryImplTest {
 
     private lateinit var statementRepository: StatementRepositoryImpl
     private lateinit var statementRemoteDataSource: StatementRemoteDataSource
-    private lateinit var statementLocalDataSource: StatementLocalDataSource
     private lateinit var statementDao: StatementDao
     private val testDispatcher = StandardTestDispatcher()
 
@@ -35,17 +31,15 @@ class StatementRepositoryImplTest {
     @BeforeTest
     fun setup() {
         statementRemoteDataSource = mock<StatementRemoteDataSource>(mode = MockMode.autofill)
-        statementLocalDataSource = mock<StatementLocalDataSource>(mode = MockMode.autofill)
         statementDao = mock<StatementDao>(mode = MockMode.autofill)
         statementRepository =
-            StatementRepositoryImpl(statementRemoteDataSource, statementLocalDataSource, statementDao)
+            StatementRepositoryImpl(statementRemoteDataSource, statementDao)
         Dispatchers.setMain(testDispatcher)
     }
 
     @Test
     fun `getStatementWithMetadata should return statement with metadata when API call is successful`() =
         runTest(testDispatcher) {
-            everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
             everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statementDto
 
             val result = statementRepository.getStatementWithMetadata()
@@ -57,34 +51,9 @@ class StatementRepositoryImplTest {
             assertEquals(LocalDate.parse("2025-10-06"), result.endDate)
         }
 
-    @Test
-    fun `getStatementWithMetadata should return cached statement when called multiple times`() =
-        runTest(testDispatcher) {
-            everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
-            everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statementDto
-
-            val firstResult = statementRepository.getStatementWithMetadata()
-
-            everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns pdfBytes
-            val secondResult = statementRepository.getStatementWithMetadata()
-
-            assertContentEquals(firstResult.byteArray, secondResult.byteArray)
-        }
-
-
-    @Test
-    fun `getCachedStatement should return cached statement from local data source`() = runTest(testDispatcher) {
-        everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns pdfBytes
-
-        val result = statementRepository.getCachedStatement(TransactionFilterParams())
-
-        assertContentEquals(pdfBytes, result)
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `getStatementWithMetadata should fetch new data after expiration time`() = runTest(testDispatcher) {
-        everySuspend { statementLocalDataSource.getStatement(TransactionFilterParams().key()) } returns null
         everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statementDto
 
         val firstResult = statementRepository.getStatementWithMetadata()
