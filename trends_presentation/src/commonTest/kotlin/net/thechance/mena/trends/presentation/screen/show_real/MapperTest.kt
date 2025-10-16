@@ -42,8 +42,8 @@ class ReelExtensionTest {
         private val testCreatedAt = LocalDateTime.parse("2023-10-15T14:30:00")
 
         private val testCategories = listOf(
-            Category(id = "1", name = "Sports", emoji = "🏀"),
-            Category(id = "2", name = "Technology", emoji = "💻")
+            Category(id = "1", name = "Sports", emoji = "🏀", isSelected = false),
+            Category(id = "2", name = "Technology", emoji = "💻", isSelected = false)
         )
 
         // Test Reels
