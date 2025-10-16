@@ -25,6 +25,7 @@ import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.Cha
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -75,7 +76,7 @@ class HomeViewModel(
             val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
             updateState {
                 it.copy(chats =
-                    listOf(newChatSummary)+ it.chats
+                    listOf(newChatSummary) + it.chats
                 )
             }
             return
@@ -122,7 +123,7 @@ class HomeViewModel(
         val updatedChatSummary = chatSummary.copy(
             lastMessage = ChatUiState.MessageUiState(
                 text = (message.content as MessageContent.Text).text,
-                time = getFormattedTime(message.sendAt),
+                time = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(message.sendAt),
                 isMine = message.isMine,
             ),
             status =
@@ -170,7 +171,6 @@ class HomeViewModel(
     }
 
     private fun onLoadChatsSummaryError(throwable: Throwable?) {
-        throwable?.printStackTrace()
         showSnackBar(
             SnackBarData(
                 title = UiText.StringRes(Res.string.something_went_wrong),
@@ -179,7 +179,7 @@ class HomeViewModel(
         )
     }
 
-    private suspend fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
+    private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
         val chats = items.data
             .sortedByDescending { it.lastMessage?.sendAt }
             .map { chat -> chat.toUi() }

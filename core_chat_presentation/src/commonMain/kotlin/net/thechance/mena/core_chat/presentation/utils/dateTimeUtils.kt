@@ -13,7 +13,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 fun LocalDateTime.Companion.now(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime {
     return Clock.System.now().toLocalDateTime(timeZone)
@@ -78,4 +77,16 @@ fun LocalTime.toHoursMinutesAgo(): String {
         else if (hoursAgo == 1) {
             "1 hour ago"
         } else "$hoursAgo hours ago"
+}
+
+fun getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(messageDateTime: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val today = now.date
+    val messageDate = messageDateTime.date
+
+    return when (messageDate) {
+        today -> messageDateTime.formatAsTime()
+        today.minusDays(1) -> "Yesterday"
+        else -> messageDate.format("dd-MM-yyyy")
+    }
 }
