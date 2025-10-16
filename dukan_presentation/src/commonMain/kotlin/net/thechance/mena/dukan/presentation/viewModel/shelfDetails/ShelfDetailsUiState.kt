@@ -4,6 +4,8 @@ import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 
 data class ShelfDetailsUiState(
     val shelfName: String = "",
+    val dukanStyle: Style = Style.NO_IMAGE,
+    val dukancolor: Long = 0L,
     val productsShelf: PagingData<ProductUiState> = PagingData(),
     val productsState: ProductsState = ProductsState.LOADING,
 ) {
@@ -13,12 +15,18 @@ data class ShelfDetailsUiState(
         val imageUrl: String = "",
         val price: Double = 0.0,
         val description: String = "",
-        val showProductQuantity: Boolean = false
+        val inCartQuantity: Int = 0
     )
 
     enum class ProductsState {
         LOADING,
         LOADED,
         EMPTY
+    }
+
+    enum class Style {
+        WIDE_IMAGE,
+        SMALL_IMAGE,
+        NO_IMAGE
     }
 }

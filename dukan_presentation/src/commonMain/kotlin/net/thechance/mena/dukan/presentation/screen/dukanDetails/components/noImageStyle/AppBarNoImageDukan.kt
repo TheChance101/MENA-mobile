@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
@@ -23,11 +22,14 @@ import mena.dukan_presentation.generated.resources.shopping_basket_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.DukanInfo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppBarNoImageDukan(
@@ -90,6 +92,19 @@ private fun AppBarIcon(
             tint = Theme.colorScheme.primary.primary,
             contentDescription = contentDescription,
             modifier = Modifier.size(40.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF2F4F7)
+@Composable
+private fun AppBarNoImageDukanPreview() {
+    MenaTheme {
+        AppBarNoImageDukan(
+            state = DukanInfo(
+                name = "Dukan Name"
+            ),
+            listener = PreviewDukanDetailsInteractionListener
         )
     }
 }

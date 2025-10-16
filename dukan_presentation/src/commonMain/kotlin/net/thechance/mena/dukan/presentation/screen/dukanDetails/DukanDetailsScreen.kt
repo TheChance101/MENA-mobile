@@ -25,7 +25,7 @@ fun DukanDetailsScreen(
         when (effect) {
             DukanDetailsEffects.NavigateBack -> navController.popBackStack()
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
-                DukanRoute.ShelfDetails(effect.id, effect.name)
+                DukanRoute.ShelfDetails(effect.id, effect.name, effect.style, effect.color)
             )
 
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {
@@ -40,13 +40,11 @@ fun DukanDetailsScreen(
             pagerShelf = viewModel.pagerShelf,
             pagerProduct = viewModel.pagerProduct
         )
-
         DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(
             state,
             viewModel,
             viewModel.pagerShelf
         )
-
         DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(
             state,
             viewModel,

@@ -93,12 +93,14 @@ private fun ProductsShelf(
                             productPrice = product.price,
                             productCardBackground = Theme.colorScheme.background.surfaceLow,
                             productAction = {
-                                CartOrQuantityProductComponent(
-                                    showProductQuantity = product.showProductQuantity,
+                                ProductActionIconSmallImageDukan(
+                                    inCartQuantity = product.inCartQuantity,
                                     cartColor = cartColor,
-                                    onCartClick = {
-                                        listener.onCartClick(product.id)
-                                    }
+                                    onAddClick = {
+                                        listener.onAddToCartClick(product.id)
+                                    },
+                                    onPlusClick = {},
+                                    onMinusClick = {}
                                 )
                             }
                         )

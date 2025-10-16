@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
@@ -23,6 +24,7 @@ fun ProductsList(
     pager: Pager<Int, ShelfDetailsUiState.ProductUiState>,
     cartProductIcon: @Composable (productId: String) -> Unit,
     modifier: Modifier = Modifier,
+    productCardBackground: Color? = null,
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -44,7 +46,7 @@ fun ProductsList(
                 productName = product.name,
                 productImageUrl = product.imageUrl,
                 productDescription = product.description,
-                productCardBackground = Theme.colorScheme.background.surfaceLow,
+                productCardBackground = productCardBackground,
                 productPrice = product.price,
                 productAction = { cartProductIcon(product.id) },
             )

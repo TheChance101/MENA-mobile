@@ -194,7 +194,14 @@ class DukanDetailsViewModel(
 
 
     override fun onViewAllShelfProductsClicked(id: String, name: String) {
-        emitEffect(DukanDetailsEffects.NavigateToViewAllShelfProducts(id, name))
+        emitEffect(
+            DukanDetailsEffects.NavigateToViewAllShelfProducts(
+                id = id,
+                name = name,
+                style = state.value.dukanInfo.style.name,
+                color = state.value.dukanInfo.color
+            )
+        )
         updateState {
             copy(
                 shelfIdSelected = id,
@@ -208,7 +215,7 @@ class DukanDetailsViewModel(
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
     }
 
-    override fun onCartClick(productId: String) {
+    override fun onAddToCartClick(productId: String) {
         updateState {
             copy(
                 shelves = shelves.copy(
@@ -216,7 +223,7 @@ class DukanDetailsViewModel(
                         shelf.copy(
                             products = shelf.products.map { product ->
                                 if (product.id == productId) {
-                                    product.copy(showProductQuantity = true)
+                                    product.copy(inCartQuantity = 1)
                                 } else {
                                     product
                                 }

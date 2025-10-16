@@ -5,12 +5,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ProductsHeader
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ShelfWithProductsNoImageDukan(
@@ -30,7 +35,8 @@ fun ShelfWithProductsNoImageDukan(
                     shelf.name
                 )
             },
-            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._8)
+            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._8),
+            viewAllColor = Color(dukanColor)
         )
         shelf.products.forEachIndexed { index, product ->
             val topPadding = if (index > 0) Theme.spacing._8 else 0.dp
@@ -40,13 +46,31 @@ fun ShelfWithProductsNoImageDukan(
                 productDescription = product.description,
                 productPrice = product.price,
                 productAction = {
-                    ProductActionIconNoImageDukan(
+                    ProductActionNoImageDukan(
+                        inCartQuantity = product.inCartQuantity,
                         dukanColor = dukanColor,
-                        onClick = { }
+                        onAddClick = { listener.onAddToCartClick(product.id) },
+                        onPlusClick = { },
+                        onMinusClick = { }
                     )
                 },
                 modifier = Modifier.padding(top = topPadding)
             )
         }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF2F4F7)
+@Composable
+private fun ShelfWithProductsNoImageDukanPreview() {
+    MenaTheme {
+        ShelfWithProductsNoImageDukan(
+            shelf = ShelfUiState(
+                name = "Clothes",
+                products = fakeProducts
+            ),
+            listener = PreviewDukanDetailsInteractionListener,
+            dukanColor = 0xFFFB5B5D
+        )
     }
 }

@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.shelfDetails
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -21,6 +22,7 @@ import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.pagination.PagingSource
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
@@ -59,6 +61,9 @@ private fun ShelfDetailsContent(
 ) {
     OnSystemBackPressed(listener::onBackClicked)
 
+    val dukanColor =
+        if (state.dukancolor != 0L) Color(state.dukancolor) else Theme.colorScheme.primary.primary
+
     Scaffold(
         topBar = {
             AppBar(
@@ -81,7 +86,8 @@ private fun ShelfDetailsContent(
                     ) {
                         Icon(
                             painter = painterResource(Res.drawable.ic_shopping_basket),
-                            contentDescription = stringResource(Res.string.shopping_basket_icon)
+                            contentDescription = stringResource(Res.string.shopping_basket_icon),
+                            tint = dukanColor
                         )
                     }
                 }
@@ -103,10 +109,7 @@ private fun ShelfDetailsPreview() {
     MenaTheme {
         ShelfDetailsContent(
             state = ShelfDetailsUiState(),
-            listener = object : ShelfDetailsInteractionListener {
-                override fun onBackClicked() {}
-                override fun onCartClick(productId: String) {}
-            },
+            listener = PreviewShelfDetailsInteractionListener,
             pager = Pager(
                 config = PagingConfig(),
                 pagingSourceFactory = {

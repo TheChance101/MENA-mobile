@@ -50,7 +50,7 @@ data class DukanDetailsUiState(
         val imageUrl: String = "",
         val price: Double = 0.0,
         val description: String = "",
-        val showProductQuantity: Boolean = false
+        val inCartQuantity: Int = 0
     )
 
     enum class ProductsState {

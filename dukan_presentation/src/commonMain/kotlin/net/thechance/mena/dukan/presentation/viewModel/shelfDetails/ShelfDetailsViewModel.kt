@@ -7,6 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_COLOR
+import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_STYLE
 import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_ID
 import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_NAME
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
@@ -22,7 +24,9 @@ class ShelfDetailsViewModel(
     defaultDispatcher = defaultDispatcher
 ), ShelfDetailsInteractionListener {
     val shelfId: String = requireNotNull(savedStateHandle[SHELF_ID])
-    val shelfNamee: String = requireNotNull(savedStateHandle[SHELF_NAME])
+    val shelfName: String = requireNotNull(savedStateHandle[SHELF_NAME])
+    val dukanStyle: String = requireNotNull(savedStateHandle[DUKAN_STYLE])
+    val dukancolor: Long = requireNotNull(savedStateHandle[DUKAN_COLOR])
 
     val pagerProduct = createPagingSource(
         mapper = { it.toUiState() }
@@ -35,7 +39,13 @@ class ShelfDetailsViewModel(
     }
 
     init {
-        updateState { copy(shelfName = shelfNamee) }
+        updateState {
+            copy(
+                shelfName = this@ShelfDetailsViewModel.shelfName,
+                dukanStyle = ShelfDetailsUiState.Style.valueOf(this@ShelfDetailsViewModel.dukanStyle),
+                dukancolor = this@ShelfDetailsViewModel.dukancolor
+            )
+        }
         loadProductsFromRepository()
     }
 
@@ -78,13 +88,13 @@ class ShelfDetailsViewModel(
         emitEffect(ShelfDetailsEffects.NavigateBack)
     }
 
-    override fun onCartClick(productId: String) {
+    override fun onAddToCartClick(productId: String) {
         updateState {
             copy(
                 productsShelf = productsShelf.copy(
                     items = productsShelf.items.map { product ->
                         if (product.id == productId) {
-                            product.copy(showProductQuantity = true)
+                            product.copy(inCartQuantity = 1)
                         } else {
                             product
                         }

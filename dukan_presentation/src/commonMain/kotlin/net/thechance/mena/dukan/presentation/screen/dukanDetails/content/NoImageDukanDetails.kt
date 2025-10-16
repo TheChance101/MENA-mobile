@@ -89,7 +89,16 @@ private fun synchronizeScrollsAndAlpha(
     val isBestSellingVisible = layoutInfo.visibleItemsInfo
         .any { it.key == "BestSelling" }
 
-    chipsAlphaUpdate(if (isBestSellingVisible) 0f else 1f)
+    val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+    val isScrolledToBottom = if (lastItem != null) {
+        val isLastItem = lastItem.index == layoutInfo.totalItemsCount - 1
+        val isCompletelyVisible = lastItem.offset + lastItem.size <= layoutInfo.viewportEndOffset
+        isLastItem && isCompletelyVisible
+    } else {
+        false
+    }
+
+    chipsAlphaUpdate(if (isBestSellingVisible || isScrolledToBottom) 0f else 1f)
 }
 
 @OptIn(FlowPreview::class)
@@ -175,6 +184,24 @@ private fun NoImageDukanDetailsPreview() {
             override fun onShelfClicked(id: String) {
                 previewState = previewState.copy(
                     shelfIdSelected = id,
+                )
+            }
+
+            override fun onAddToCartClick(productId: String) {
+                previewState = previewState.copy(
+                    shelves = previewState.shelves.copy(
+                        items = previewState.shelves.items.map { shelf ->
+                            shelf.copy(
+                                products = shelf.products.map { product ->
+                                    if (product.id == productId) {
+                                        product.copy(inCartQuantity = 1)
+                                    } else {
+                                        product
+                                    }
+                                }
+                            )
+                        }
+                    )
                 )
             }
         }

@@ -6,7 +6,7 @@ object PreviewShelfDetailsInteractionListener : ShelfDetailsInteractionListener 
     override fun onBackClicked() {
     }
 
-    override fun onCartClick(productId: String) {
+    override fun onAddToCartClick(productId: String) {
 
     }
 }

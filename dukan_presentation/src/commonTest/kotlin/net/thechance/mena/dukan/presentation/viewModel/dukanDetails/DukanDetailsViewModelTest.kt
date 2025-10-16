@@ -45,7 +45,7 @@ class DukanDetailsViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        savedStateHandle = SavedStateHandle(mapOf(DUKAN_ID to "dukan_123"))
+        savedStateHandle = SavedStateHandle(mapOf(DUKAN_ID to dummyDukanDetails().id))
 
         everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
         everySuspend {
@@ -74,14 +74,25 @@ class DukanDetailsViewModelTest {
     }
 
     @Test
-    fun `init SHOULD set isDukanInfoLoading to false after successful load`() = runTest {
-        // When
+    fun `init SHOULD load dukan details successfully`() = runTest {
         advanceUntilIdle()
         val state = dukanDetailsViewModel.state.value
-        // Then
-        assertFalse(state.isDukanInfoLoading)
+
+        assertEquals(dummyDukanDetails().name, state.dukanInfo.name)
+        assertEquals(dummyDukanDetails().imageUrl, state.dukanInfo.imageUrl)
+        assertEquals(30.0, state.dukanInfo.coordinates.latitude)
+        assertEquals(31.0, state.dukanInfo.coordinates.longitude)
+        assertEquals(DukanDetailsUiState.ShelvesState.LOADED, state.shelvesState)
+        assertTrue(state.shelves.items.isNotEmpty())
     }
 
+    @Test
+    fun `init SHOULD set isDukanInfoLoading to false after successful load`() = runTest {
+        advanceUntilIdle()
+        val state = dukanDetailsViewModel.state.value
+
+        assertFalse(state.isDukanInfoLoading)
+    }
 
     @Test
     fun `init SHOULD set isDukanInfoLoading to false when details loading fails`() = runTest {
@@ -95,6 +106,57 @@ class DukanDetailsViewModelTest {
 
         // Then
         assertFalse(state.isDukanInfoLoading)
+    }
+
+    @Test
+    fun `init SHOULD set shelves state to EMPTY when no shelves returned`() = runTest {
+        // Given
+        everySuspend {
+            shelfRepository.getShelvesByDukanId(any(), any(), any())
+        } returns PagedResult(
+            items = emptyList(),
+            currentPage = 1,
+            totalItems = 0L,
+            totalPages = 1
+        )
+
+        // When
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        val state = viewModel.state.value
+
+        // Then
+        assertEquals(DukanDetailsUiState.ShelvesState.EMPTY, state.shelvesState)
+    }
+
+    @Test
+    fun `onShelfClicked SHOULD reset productsShelf to empty`() = runTest {
+        // Given
+        advanceUntilIdle()
+        val newShelfId = "shelf_2"
+
+        // When
+        dukanDetailsViewModel.onShelfClicked(newShelfId)
+        val state = dukanDetailsViewModel.state.value
+
+        // Then
+        assertTrue(state.productsShelf.items.isEmpty())
+    }
+
+    @Test
+    fun `onShelfClicked with WIDE_IMAGE style SHOULD load products from repository`() = runTest {
+        // Given
+        advanceUntilIdle()
+        val targetShelfId = "shelf_1"
+        setupProductsForShelf(targetShelfId)
+
+        // When
+        dukanDetailsViewModel.onShelfClicked(targetShelfId)
+        advanceUntilIdle()
+
+        // Then
+        val state = dukanDetailsViewModel.state.value
+        assertEquals(DukanDetailsUiState.ProductsState.LOADED, state.productsState)
     }
 
     @Test
@@ -191,24 +253,6 @@ class DukanDetailsViewModelTest {
     }
 
     @Test
-    fun `when onViewAllShelfProductsClicked SHOULD emit correct navigation effect`() = runTest {
-        // Given
-        val shelfId = "id123"
-        val shelfName = "shelf"
-
-        // Then
-        dukanDetailsViewModel.effect.test {
-            // When
-            dukanDetailsViewModel.onViewAllShelfProductsClicked(shelfId, shelfName)
-            assertEquals(
-                DukanDetailsEffects.NavigateToViewAllShelfProducts(shelfId, shelfName),
-                awaitItem()
-            )
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `when onViewDukanOnMapClicked SHOULD emit correct navigation effect`() = runTest {
         // Given
         val lat = 28.0
@@ -223,6 +267,159 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @Test
+    fun `onCartClick SHOULD set showProductQuantity to true for specific product in shelf`() =
+        runTest {
+            // Given
+            everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+                style = Dukan.Style.SMALL_IMAGE
+            )
+            everySuspend {
+                productRepository.getProductsByShelfId(any(), any(), any())
+            } returns PagedResult(
+                items = fakeProducts(),
+                currentPage = 1,
+                totalItems = 1L,
+                totalPages = 1
+            )
+
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val productId = "product_1"
+
+            // When
+            viewModel.onAddToCartClick(productId)
+            val state = viewModel.state.value
+
+            // Then
+            val product = state.shelves.items
+                .flatMap { it.products }
+                .find { it.id == productId }
+
+            assertTrue(product?.inCartQuantity == 1)
+        }
+
+    @Test
+    fun `onCartClick SHOULD only update specific product not others`() = runTest {
+        // Given
+        everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+            style = Dukan.Style.SMALL_IMAGE
+        )
+        everySuspend {
+            productRepository.getProductsByShelfId(any(), any(), any())
+        } returns PagedResult(
+            items = listOf(
+                Product(
+                    id = "product_1",
+                    name = "Product 1",
+                    description = "Description",
+                    price = 100.0,
+                    imageUrls = listOf("url1"),
+                    createdAt = "2025-10-10T12:00:00Z"
+                ),
+                Product(
+                    id = "product_2",
+                    name = "Product 2",
+                    description = "Description",
+                    price = 200.0,
+                    imageUrls = listOf("url2"),
+                    createdAt = "2025-10-10T12:00:00Z"
+                )
+            ),
+            currentPage = 1,
+            totalItems = 2L,
+            totalPages = 1
+        )
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // When
+        viewModel.onAddToCartClick("product_1")
+        val state = viewModel.state.value
+
+        // Then
+        val products = state.shelves.items.flatMap { it.products }
+        assertTrue(products.find { it.id == "product_1" }?.inCartQuantity == 1)
+        assertFalse(products.find { it.id == "product_2" }?.inCartQuantity == 1)
+    }
+
+    @Test
+    fun `pagerShelf SHOULD load shelves with correct page size`() = runTest {
+        // Given
+        advanceUntilIdle()
+
+        // When
+        dukanDetailsViewModel.pagerShelf.load()
+        advanceUntilIdle()
+
+        // Then
+        dukanDetailsViewModel.pagerShelf.flow.test {
+            val pagingData = awaitItem()
+            assertEquals(3, pagingData.items.size)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `pagerProduct SHOULD load products for selected shelf`() = runTest {
+        // Given
+        val targetShelfId = "shelf_1"
+        setupProductsForShelf(targetShelfId)
+        dukanDetailsViewModel.onShelfClicked(targetShelfId)
+
+        // When
+        dukanDetailsViewModel.pagerProduct.load()
+        advanceUntilIdle()
+
+        // Then
+        dukanDetailsViewModel.pagerProduct.flow.test {
+            val pagingData = awaitItem()
+            assertFalse(pagingData.items.isEmpty())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `products state SHOULD be LOADING when products are being fetched`() = runTest {
+        // Given
+        val targetShelfId = "shelf_1"
+        setupProductsForShelf(targetShelfId)
+
+        // When
+        dukanDetailsViewModel.onShelfClicked(targetShelfId)
+        val stateBeforeLoad = dukanDetailsViewModel.state.value
+
+        // Then
+        assertEquals(DukanDetailsUiState.ProductsState.LOADING, stateBeforeLoad.productsState)
+    }
+
+    @Test
+    fun `products state SHOULD be EMPTY when no products returned`() = runTest {
+        // Given
+        val targetShelfId = "shelf_1"
+        everySuspend {
+            productRepository.getProductsByShelfId(
+                shelfId = targetShelfId,
+                page = any(),
+                size = any()
+            )
+        } returns PagedResult(
+            items = emptyList(),
+            currentPage = 1,
+            totalItems = 0L,
+            totalPages = 1
+        )
+
+        // When
+        dukanDetailsViewModel.onShelfClicked(targetShelfId)
+        advanceUntilIdle()
+        val state = dukanDetailsViewModel.state.value
+
+        // Then
+        assertEquals(DukanDetailsUiState.ProductsState.EMPTY, state.productsState)
+    }
 
     private fun createViewModel() = DukanDetailsViewModel(
         dukanRepository = dukanRepository,

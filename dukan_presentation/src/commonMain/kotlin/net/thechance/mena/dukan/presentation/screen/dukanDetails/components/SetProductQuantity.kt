@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_icon
 import mena.dukan_presentation.generated.resources.add_product
@@ -25,7 +26,8 @@ import org.jetbrains.compose.resources.stringResource
 fun SetProductQuantity(
     onAddProductClick: () -> Unit,
     onRemoveProductClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cartColor: Color? = null
 ) {
     Row(
         modifier = modifier.background(
@@ -38,7 +40,7 @@ fun SetProductQuantity(
         Icon(
             painter = painterResource(Res.drawable.remove_01),
             contentDescription = stringResource(Res.string.remove_product),
-            tint = Theme.colorScheme.primary.primary,
+            tint = cartColor ?: Theme.colorScheme.primary.primary,
             modifier = modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(
@@ -50,11 +52,12 @@ fun SetProductQuantity(
         Text(
             text = "01",
             style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadePrimary
+            color = cartColor ?: Theme.colorScheme.primary.primary,
         )
         Icon(
             painter = painterResource(Res.drawable.add_icon),
             contentDescription = stringResource(Res.string.add_product),
+            tint = cartColor ?: Theme.colorScheme.primary.primary,
             modifier = modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(
