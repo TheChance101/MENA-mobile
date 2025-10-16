@@ -14,7 +14,7 @@ data class Address(
 )
 
 enum class AddressType() {
-    HOME(),
-    OFFICE(),
-    OTHER()
+    Home(),
+    Office(),
+    Other()
 }

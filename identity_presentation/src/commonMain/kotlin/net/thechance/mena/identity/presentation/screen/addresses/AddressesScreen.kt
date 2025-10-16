@@ -91,7 +91,7 @@ class AddressesScreen :
                             onEditClick = { listener.onEditAddressClicked(it) },
                             isMainAddress = it.isMainAddress,
                             addressDetails = it.addressDetails,
-                            onDeleteClick = { listener.onDeleteAddressClicked(it.id) },
+                            onDeleteClick = { listener.onDeleteAddressClicked(it.id!!) },
                         )
                     }
                 }
@@ -113,9 +113,10 @@ class AddressesScreen :
         when (effect) {
             AddressesScreenUIEffect.NavigateBack -> navigator.pop()
             is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {}
+            }
         }
     }
-}
+
 
 @Preview
 @Composable

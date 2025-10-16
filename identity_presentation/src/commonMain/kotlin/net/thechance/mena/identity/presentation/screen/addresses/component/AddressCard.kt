@@ -121,21 +121,21 @@ private fun PreviewAddressCard() {
     MenaTheme {
         Column {
             AddressCard(
-                addressType = AddressType.HOME,
+                addressType = AddressType.Home,
                 isMainAddress = true,
                 addressDetails = "Karrada, Baghdad 123 St.",
                 onEditClick = {},
                 onDeleteClick = {}
             )
             AddressCard(
-                addressType = AddressType.OFFICE,
+                addressType = AddressType.Office,
                 isMainAddress = true,
                 addressDetails = "Karrada, Baghdad 123 St.",
                 onEditClick = {},
                 onDeleteClick = {}
             )
             AddressCard(
-                addressType = AddressType.OTHER,
+                addressType = AddressType.Other,
                 isMainAddress = true,
                 addressDetails = "Karrada, Baghdad 123 St.",
                 onEditClick = {},

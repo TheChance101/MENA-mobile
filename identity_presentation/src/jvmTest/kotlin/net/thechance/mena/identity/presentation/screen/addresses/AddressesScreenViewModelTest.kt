@@ -10,9 +10,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.domain.repository.AddressRepository
+import net.thechance.mena.identity.domain.repository.AddressesRepository
+import net.thechance.mena.identity.presentation.mapper.toUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -26,7 +26,7 @@ import kotlin.uuid.Uuid
 class AddressesScreenViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val addressRepository: AddressRepository = mockk(relaxed = true)
+    private val addressRepository: AddressesRepository = mockk(relaxed = true)
     private lateinit var viewModel: AddressesScreenViewModel
 
     @BeforeTest
@@ -43,7 +43,8 @@ class AddressesScreenViewModelTest {
     @Test
     fun `init() should fetch addresses and update state on success`() = runTest {
         val fakeAddresses = listOf(createFakeAddress())
-        coEvery { addressRepository.getUserAddresses() } returns fakeAddresses
+        coEvery { addressRepository.getUserAddresses() } returns fakeAddresses.map { it.toUiState() }
+
         viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -91,14 +92,14 @@ class AddressesScreenViewModelTest {
     fun `onConfirmDeleteAddress() should delete address and show success snackbar`() = runTest {
         val address = createFakeAddress()
         coEvery { addressRepository.getUserAddresses() } returns emptyList()
-        coEvery { addressRepository.deleteAddress(address.id) } returns Unit
-        viewModel.onDeleteAddressClicked(address.id)
+        coEvery { addressRepository.deleteAddress(address.id!!) } returns Unit
+        viewModel.onDeleteAddressClicked(address.id!!)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.onConfirmDeleteAddress()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { addressRepository.deleteAddress(address.id) }
+        coVerify { addressRepository.deleteAddress(address.id!!) }
         assertTrue(viewModel.state.value.snackBarUiState.isVisible)
         assertEquals(SnackBarType.SUCCESS, viewModel.state.value.snackBarUiState.snackBarType)
         assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
@@ -132,7 +133,7 @@ class AddressesScreenViewModelTest {
         coEvery { addressRepository.getUserAddresses() } returns emptyList()
         val fakeAddressUIState = AddressUIState(
             id = Uuid.random(),
-            addressType = AddressType.HOME,
+            addressType = AddressType.Home,
             addressDetails = "Test Street 42",
             isMainAddress = true,
             coordinates = CoordinatesUiState(
@@ -149,14 +150,17 @@ class AddressesScreenViewModelTest {
         }
     }
 
-    private fun createFakeAddress(): Address {
-        return Address(
+    private fun createFakeAddress(): AddressUIState {
+        return AddressUIState(
             id = Uuid.random(),
-            addressType = AddressType.HOME,
+            addressType = AddressType.Home,
             isMainAddress = true,
             addressDetails = "123 Fake St",
-            latitude = 0.0,
-            longitude = 0.0
+            coordinates = CoordinatesUiState(
+                latitude = 0.0,
+                longitude = 0.0
+            )
         )
+
     }
 }

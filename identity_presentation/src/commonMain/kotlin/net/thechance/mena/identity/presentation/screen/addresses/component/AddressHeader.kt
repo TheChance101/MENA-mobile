@@ -81,17 +81,17 @@ fun AddressHeader(
 }
 fun mapAddressTypeTitle(addressType: AddressType): StringResource {
     return when (addressType){
-        AddressType.HOME -> Res.string.address_type_home
-        AddressType.OFFICE -> Res.string.address_type_office
-        AddressType.OTHER -> Res.string.address_type_other
+        AddressType.Home -> Res.string.address_type_home
+        AddressType.Office -> Res.string.address_type_office
+        AddressType.Other -> Res.string.address_type_other
 
     }
 }
 fun mapAddressTypeIcon(addressType: AddressType): DrawableResource {
    return when (addressType){
-        AddressType.HOME -> Res.drawable.ic_home
-        AddressType.OFFICE -> Res.drawable.ic_office
-        AddressType.OTHER -> Res.drawable.ic_other_address
+        AddressType.Home -> Res.drawable.ic_home
+        AddressType.Office -> Res.drawable.ic_office
+        AddressType.Other -> Res.drawable.ic_other_address
     }
 }
 
@@ -101,12 +101,12 @@ private fun AddressHeaderPreview() {
     MenaTheme {
         Column {
             AddressHeader(
-                addressType = AddressType.HOME,
+                addressType = AddressType.Home,
                 addressDetails = "Karrada, Baghdad 123 St.",
                 isMainAddress = true
             )
             AddressHeader(
-                addressType = AddressType.OFFICE,
+                addressType = AddressType.Office,
                 addressDetails = "Mansour, Baghdad 456 St.",
                 isMainAddress = false
             )

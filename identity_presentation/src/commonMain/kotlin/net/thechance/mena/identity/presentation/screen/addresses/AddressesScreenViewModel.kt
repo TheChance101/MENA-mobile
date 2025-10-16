@@ -6,7 +6,7 @@ import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.address_deleted_successfully
 import mena.identity_presentation.generated.resources.unexpected_error
-import net.thechance.mena.identity.domain.repository.AddressRepository
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class AddressesScreenViewModel(
-    private val addressRepository: AddressRepository,
+    private val addressesRepository: AddressesRepository,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
 ) : BaseScreenModel<AddressesScreenUIState, AddressesScreenUIEffect>(AddressesScreenUIState()),
@@ -35,6 +35,7 @@ class AddressesScreenViewModel(
 
 
     override fun onClickAddress(addressId: Uuid) {
+       // addressRepository.
     }
 
     override fun onDeleteAddressClicked(addressId: Uuid) = updateState {
@@ -47,7 +48,7 @@ class AddressesScreenViewModel(
 
     override fun onConfirmDeleteAddress() {
         tryToExecute(
-            function = { addressRepository.deleteAddress(state.value.deleteDialogUIState.addressId!!) },
+            function = { addressesRepository.deleteAddress(state.value.deleteDialogUIState.addressId!!) },
             onSuccess = {
                 getUserAddresses()
                 updateState {
@@ -86,7 +87,7 @@ class AddressesScreenViewModel(
 
     private fun getUserAddresses() {
         tryToExecute(
-            function = { addressRepository.getUserAddresses().map { it.toUiState() } },
+            function = { addressesRepository.getUserAddresses().map { it.toUiState() } },
             onSuccess = ::onGetUserAddressesSuccess,
             onError = ::onErrorOccurred,
             dispatcher = dispatcher,

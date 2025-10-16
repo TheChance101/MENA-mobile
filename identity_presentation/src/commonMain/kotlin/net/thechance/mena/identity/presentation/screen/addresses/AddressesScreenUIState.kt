@@ -28,8 +28,8 @@ data class DeleteDialogUIState (
 
 @OptIn(ExperimentalUuidApi::class)
 data class AddressUIState(
-    val id: Uuid,
-    val addressType: AddressType = AddressType.HOME,
+    val id: Uuid?,
+    val addressType: AddressType = AddressType.Home,
     val isMainAddress: Boolean = false,
     val addressDetails: String = "",
     val coordinates: CoordinatesUiState = CoordinatesUiState(),
@@ -52,9 +52,9 @@ enum class SnackBarType {
 fun Address.toUiState(): AddressUIState {
     return AddressUIState(
         id = this.id,
-        addressType = this.addressType,
-        isMainAddress = this.isMainAddress,
-        addressDetails = this.addressDetails,
+        addressType = AddressType.valueOf(this.addressType),
+        isMainAddress = this.isActive,
+        addressDetails = this.addressLine,
         coordinates = CoordinatesUiState(this.latitude, this.longitude),
     )
 }
