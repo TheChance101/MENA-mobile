@@ -51,6 +51,5 @@ internal class MainContainerViewModel(
 
     fun navigateToUpdateInterests() {
         sendEffect(MainContainerEffect.NavigateToUpdateInterests)
-
     }
 }
