@@ -110,6 +110,11 @@
     <string name="favorite_icon">favorite icon</string>
     <string name="share_icon">share icon</string>
     <string name="remove_product">remove_product</string>
+    <string name="wide_dukan_image">Dukan Image</string>
+    <string name="wide_product_image">Product Image</string>
+    <string name="wide_discount_icon">Discount Icon</string>
+
+
 
 
 

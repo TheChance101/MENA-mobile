@@ -19,15 +19,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
+import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
+import mena.dukan_presentation.generated.resources.wide_dukan_image
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -38,7 +39,6 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
 
 @Composable
 fun WideImageDukanDetailsAppBar(
@@ -55,7 +55,7 @@ fun WideImageDukanDetailsAppBar(
         },
         onLeadingClick = onBackClicked,
         trailingContent = {
-            DukanHeaderIcon(
+            WideImageDukanHeaderIcon(
                 icon = painterResource(Res.drawable.ic_shopping_basket),
                 onIconClick = onCartClicked
             )
@@ -95,7 +95,7 @@ fun DukanActionButtons(
 }
 
 @Composable
-private fun DukanHeaderIcon(
+private fun WideImageDukanHeaderIcon(
     icon: Painter,
     isBadgeVisible: Boolean = false,
     onIconClick: () -> Unit
@@ -119,7 +119,7 @@ private fun DukanImageAndTitle(
     ) {
         AsyncImage(
             model = state.imageUrl,
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.wide_dukan_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
@@ -141,7 +141,6 @@ private fun DukanImageAndTitle(
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.primary.onPrimary,
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = Theme.spacing._8, bottom = Theme.spacing._8)
@@ -163,8 +162,6 @@ private fun DukanIconButton(
             .clip(RoundedCornerShape(Theme.radius.full))
             .clickable(
                 onClick = onIconClick,
-                indication = null,
-                interactionSource = null
             )
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
@@ -176,15 +173,11 @@ private fun DukanIconButton(
                 shape = RoundedCornerShape(Theme.radius.full)
             )
     ) {
-        Icon(painter = icon, contentDescription = null, tint = iconColor)
-    }
-}
-
-@Preview(showBackground = true, name = "AppBar")
-@Composable
-private fun WideImageDukanDetailsAppBarPreview() {
-    MenaTheme {
-        WideImageDukanDetailsAppBar(onBackClicked = {}, onCartClicked = {})
+        Icon(
+            painter = icon,
+            contentDescription = stringResource(Res.string.favorite_icon),
+            tint = iconColor
+        )
     }
 }
 

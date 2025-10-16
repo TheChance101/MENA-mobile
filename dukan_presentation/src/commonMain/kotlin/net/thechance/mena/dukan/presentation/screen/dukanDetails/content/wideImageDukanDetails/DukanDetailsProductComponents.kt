@@ -24,6 +24,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.silver_tc
+import mena.dukan_presentation.generated.resources.wide_product_image
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -52,7 +53,7 @@ fun ProductCard(
     ) {
         AsyncImage(
             model = imageUrl,
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.wide_product_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
@@ -82,7 +83,7 @@ fun ProductCard(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.discount_icon),
-                    contentDescription = null,
+                    contentDescription = stringResource(Res.string.discount_icon),
                     modifier = Modifier.padding(end = Theme.spacing._4)
                 )
                 PriceWithIcon(
@@ -98,9 +99,10 @@ fun ProductCard(
 fun LazyGridScope.ProductsGridSection(
     state: DukanDetailsUiState,
 ) {
+    val productCount = 6
     when (state.productsState) {
         DukanDetailsUiState.ProductsState.LOADING -> {
-            items(count = 6) {
+            items(count = productCount) {
                 ProductCard(
                     imageUrl = "",
                     title = "...",

@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.products
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
@@ -79,12 +78,13 @@ fun DukanShelvesSection(
 
 @Composable
 private fun LoadingShelves() {
+    val shelvesCount = 8
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        modifier = Modifier.fillWidthOfParent(16.dp),
+        modifier = Modifier.fillWidthOfParent(Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        items(count = 8) {
+        items(count = shelvesCount) {
             Chip(
                 text = "             ",
                 isSelected = false,
@@ -107,7 +107,7 @@ private fun LoadedShelves(
     LazyRow(
         state = listState,
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        modifier = Modifier.fillWidthOfParent(16.dp),
+        modifier = Modifier.fillWidthOfParent(Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(items = shelves, key = { it.id }) { shelf ->
