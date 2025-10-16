@@ -348,6 +348,42 @@ class StatementsHistoryViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+    @Test
+    fun `onStatementCardClicked should delete statement when PDF does not exist`() =
+        runTest(testDispatcher) {
+
+            everySuspend {
+                statementRepository.getStatements(any(), any())
+            } returns statements
+
+            val statement = statements[0].toUiState()
+
+            everySuspend {
+                pdfHandler.checkIfPdfExists(StorageLocation.Downloads(statement.fileName))
+            } returns false
+
+            everySuspend {
+                statementRepository.deleteStatementById(statement.id)
+            } returns Unit
+            advanceUntilIdle()
+
+            var pdfFound: Boolean? = null
+            viewModel.onStatementCardClicked(
+                statement = statement,
+                onViewStatementAvailable = { isPdfFound ->
+                    pdfFound = isPdfFound
+                }
+            )
+            advanceUntilIdle()
+
+            assertEquals(false, pdfFound)
+
+            verifySuspend {
+                statementRepository.deleteStatementById(statement.id)
+            }
+
+            assertFalse(viewModel.state.value.statements.any { it.id == statement.id })
+        }
 
 
     companion object {
