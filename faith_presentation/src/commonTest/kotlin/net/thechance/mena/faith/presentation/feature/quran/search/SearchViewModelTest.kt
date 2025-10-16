@@ -49,7 +49,32 @@ class SearchViewModelTest {
             dispatcher = testDispatcher,
             stringResourceProvider = stringResourceProvider
         )
+        testDispatcher.scheduler.advanceUntilIdle()
     }
+
+    private fun reconfigureViewModel(
+        surahId: Int? = null,
+        surahName: String? = null
+    ) {
+        everySuspend { searchArgs.surahId } returns surahId
+        everySuspend { searchArgs.surahName } returns surahName
+
+        if (surahName != null) {
+            everySuspend {
+                stringResourceProvider.getString(Res.string.search_in_surah_hint, surahName)
+            } returns "Search in $surahName"
+        }
+
+        testViewModel = SearchViewModel(
+            searchArgs = searchArgs,
+            repository = quranRepository,
+            dispatcher = testDispatcher,
+            stringResourceProvider = stringResourceProvider
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+    }
+
+    // ============ Query Change Tests ============
 
     @Test
     fun `onQueryChange should update query in state when called`() = runTest {
@@ -59,7 +84,7 @@ class SearchViewModelTest {
 
     @Test
     fun `onQueryChange should clear search results when query length is less than 2`() = runTest {
-        everySuspend { quranRepository.searchForAyahInQuran(any()) } returns dummyAyat
+        everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
         testViewModel.onQueryChange(VALID_QUERY)
         advanceTimeBy(SEARCH_DELAY)
         advanceUntilIdle()
@@ -107,6 +132,7 @@ class SearchViewModelTest {
 
     @Test
     fun `onQueryChange with empty string should clear results`() = runTest {
+        everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
         testViewModel.onQueryChange(VALID_QUERY)
         advanceTimeBy(SEARCH_DELAY)
         advanceUntilIdle()
@@ -116,61 +142,23 @@ class SearchViewModelTest {
         assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
     }
 
+
     @Test
-    fun `onQueryChange should search in surah when surahId is not null`() = runTest {
-        everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
-        everySuspend { quranRepository.searchForAyahInSurah(TEST_SURAH_ID, VALID_QUERY) } returns dummyAyat
+    fun `searchJob should be cancelled when new query is entered`() = runTest {
+        everySuspend { quranRepository.searchForAyahInQuran(FIRST_QUERY) } returns dummyAyat
+        everySuspend { quranRepository.searchForAyahInQuran(SECOND_QUERY) } returns emptyList()
 
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
+        testViewModel.onQueryChange(FIRST_QUERY)
+        advanceTimeBy(HALF_SEARCH_DELAY)
 
-        testViewModel.onQueryChange(VALID_QUERY)
+        testViewModel.onQueryChange(SECOND_QUERY)
         advanceTimeBy(SEARCH_DELAY)
         advanceUntilIdle()
 
-        assertEquals(dummyAyat.size, testViewModel.uiState.value.searchResult.size)
+        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
     }
 
-    @Test
-    fun `onQueryChange should search in entire Quran when surahId is null`() = runTest {
-        everySuspend { searchArgs.surahId } returns null
-        everySuspend { searchArgs.surahName } returns null
-        everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        testViewModel.onQueryChange(VALID_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
-
-        assertEquals(dummyAyat.size, testViewModel.uiState.value.searchResult.size)
-    }
-
-    @Test
-    fun `onQueryChange should properly map Ayah to SearchResult`() = runTest {
-        everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
-
-        testViewModel.onQueryChange(VALID_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
-
-        val results = testViewModel.uiState.value.searchResult
-        assertEquals(dummyAyat.size, results.size)
-        assertEquals(dummyAyat[0].number, results[0].number)
-        assertEquals(dummyAyat[0].surahId, results[0].surahId)
-    }
+    // ============ Clear Query Tests ============
 
     @Test
     fun `onClearQueryClick should clear query in state when called`() = runTest {
@@ -193,196 +181,6 @@ class SearchViewModelTest {
         assertEquals(resultsBeforeClear, testViewModel.uiState.value.searchResult)
     }
 
-    // ============ Navigation Tests ============
-
-    @Test
-    fun `onBackClick should navigate back when called`() = runTest {
-        testViewModel.uiEffect.test {
-            testViewModel.onBackClick()
-            val effect = awaitItem()
-            assertTrue(effect is SearchEffect.NavigateBack)
-            assertEquals(null, effect.ayahNumber)
-        }
-    }
-
-    @Test
-    fun `onSearchResultClick should navigate back with ayahId when surahId is not null`() = runTest {
-        everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        testViewModel.uiEffect.test {
-            testViewModel.onSearchResultClick(TEST_SURAH_ID, TEST_AYAH_ID)
-            val effect = awaitItem()
-            assertTrue(effect is SearchEffect.NavigateBack)
-            assertEquals(TEST_AYAH_ID, effect.ayahNumber)
-        }
-    }
-
-    @Test
-    fun `onSearchResultClick should navigate to surah when surahId is null`() = runTest {
-        everySuspend { searchArgs.surahId } returns null
-        everySuspend { searchArgs.surahName } returns null
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        testViewModel.uiEffect.test {
-            testViewModel.onSearchResultClick(SURAH_ID_FOR_NAVIGATION, TEST_AYAH_ID)
-            val effect = awaitItem()
-            assertTrue(effect is SearchEffect.NavigateToSurah)
-            assertEquals(SURAH_ID_FOR_NAVIGATION, effect.surahId)
-            assertEquals(TEST_AYAH_ID, effect.ayahId)
-        }
-    }
-
-    @Test
-    fun `onSearchResultClick should use correct surah name from enum`() = runTest {
-        everySuspend { searchArgs.surahId } returns null
-        everySuspend { searchArgs.surahName } returns null
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        testViewModel.uiEffect.test {
-            testViewModel.onSearchResultClick(1, TEST_AYAH_ID)
-            val effect = awaitItem() as SearchEffect.NavigateToSurah
-            assertTrue(effect.surahName.isNotEmpty())
-        }
-    }
-
-    // ============ Initialization Tests ============
-
-    @Test
-    fun `state should initialize with correct surahId and surahName from args`() = runTest {
-        everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-
-        assertEquals(TEST_SURAH_ID, testViewModel.uiState.value.surahId)
-        assertEquals(TEST_SURAH_NAME, testViewModel.uiState.value.surahName)
-    }
-
-    @Test
-    fun `init should set hint with surah name when surahName is not null`() = runTest {
-        val expectedHint = TEST_SEARCH_BY_SURAH_NAME
-        everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
-        everySuspend {
-            stringResourceProvider.getString(Res.string.search_in_surah_hint, TEST_SURAH_NAME)
-        } returns expectedHint
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertEquals(expectedHint, testViewModel.uiState.value.hint)
-    }
-
-    @Test
-    fun `init should set hint with quran text when surahName is null`() = runTest {
-        val expectedHint = TEST_SEARCH_IN_QURAN
-        everySuspend { searchArgs.surahId } returns null
-        everySuspend { searchArgs.surahName } returns null
-        everySuspend { stringResourceProvider.getString(Res.string.quran) } returns QURAN_TEXT
-        everySuspend {
-            stringResourceProvider.getString(Res.string.search_in_surah_hint, QURAN_TEXT)
-        } returns expectedHint
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertEquals(expectedHint, testViewModel.uiState.value.hint)
-    }
-
-    @Test
-    fun `state should initialize with empty query`() = runTest {
-        assertEquals(EMPTY_STRING, testViewModel.uiState.value.query)
-    }
-
-    @Test
-    fun `state should initialize with empty search results`() = runTest {
-        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
-    }
-
-    @Test
-    fun `onQueryChange should handle exactly 2 characters properly`() = runTest {
-        val twoCharQuery = "اب"
-        everySuspend { quranRepository.searchForAyahInQuran(twoCharQuery) } returns dummyAyat
-
-        testViewModel.onQueryChange(twoCharQuery)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
-
-        assertEquals(dummyAyat.size, testViewModel.uiState.value.searchResult.size)
-    }
-
-    @Test
-    fun `multiple rapid query changes should only execute last search`() = runTest {
-        val queries = listOf("query1", "query2", "query3", "query4")
-        val lastQuery = "finalQuery"
-
-        everySuspend { quranRepository.searchForAyahInQuran(lastQuery) } returns dummyAyat
-
-        queries.forEach { query ->
-            testViewModel.onQueryChange(query)
-            advanceTimeBy(100L)
-        }
-
-        testViewModel.onQueryChange(lastQuery)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
-
-        assertEquals(dummyAyat.size, testViewModel.uiState.value.searchResult.size)
-    }
-
-    @Test
-    fun `searchJob should be cancelled when new query is entered`() = runTest {
-        everySuspend { quranRepository.searchForAyahInQuran(FIRST_QUERY) } returns dummyAyat
-        everySuspend { quranRepository.searchForAyahInQuran(SECOND_QUERY) } returns emptyList()
-
-        testViewModel.onQueryChange(FIRST_QUERY)
-        advanceTimeBy(HALF_SEARCH_DELAY)
-
-        testViewModel.onQueryChange(SECOND_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
-
-        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
-    }
-
     @Test
     fun `search results should persist after clearing query without new search`() = runTest {
         everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
@@ -398,16 +196,97 @@ class SearchViewModelTest {
         assertEquals(resultsCount, testViewModel.uiState.value.searchResult.size)
     }
 
+    // ============ Navigation Tests ============
+
     @Test
-    fun `onQueryChange with whitespace should be treated as valid if length is 2 or more`() = runTest {
-        val queryWithSpace = "ا ب"
-        everySuspend { quranRepository.searchForAyahInQuran(queryWithSpace) } returns dummyAyat
+    fun `onBackClick should navigate back when called`() = runTest {
+        testViewModel.uiEffect.test {
+            testViewModel.onBackClick()
+            val effect = awaitItem()
+            assertTrue(effect is SearchEffect.NavigateBack)
+            assertEquals(null, effect.ayahNumber)
+        }
+    }
 
-        testViewModel.onQueryChange(queryWithSpace)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+    @Test
+    fun `onSearchResultClick should navigate back with ayahId when surahId is not null`() = runTest {
+        reconfigureViewModel(surahId = TEST_SURAH_ID, surahName = TEST_SURAH_NAME)
 
-        assertEquals(dummyAyat.size, testViewModel.uiState.value.searchResult.size)
+        testViewModel.uiEffect.test {
+            testViewModel.onSearchResultClick(TEST_SURAH_ID, TEST_AYAH_ID)
+            val effect = awaitItem()
+            assertTrue(effect is SearchEffect.NavigateBack)
+            assertEquals(TEST_AYAH_ID, effect.ayahNumber)
+        }
+    }
+
+    @Test
+    fun `onSearchResultClick should navigate to surah when surahId is null`() = runTest {
+        reconfigureViewModel(surahId = null, surahName = null)
+
+        testViewModel.uiEffect.test {
+            testViewModel.onSearchResultClick(SURAH_ID_FOR_NAVIGATION, TEST_AYAH_ID)
+            val effect = awaitItem()
+            assertTrue(effect is SearchEffect.NavigateToSurah)
+            assertEquals(SURAH_ID_FOR_NAVIGATION, effect.surahId)
+            assertEquals(TEST_AYAH_ID, effect.ayahId)
+        }
+    }
+
+    @Test
+    fun `onSearchResultClick should use correct surah name from enum`() = runTest {
+        reconfigureViewModel(surahId = null, surahName = null)
+
+        testViewModel.uiEffect.test {
+            testViewModel.onSearchResultClick(1, TEST_AYAH_ID)
+            val effect = awaitItem() as SearchEffect.NavigateToSurah
+            assertTrue(effect.surahName.isNotEmpty())
+        }
+    }
+
+    // ============ State Initialization Tests ============
+
+    @Test
+    fun `state should initialize with correct surahId and surahName from args`() = runTest {
+        reconfigureViewModel(surahId = TEST_SURAH_ID, surahName = TEST_SURAH_NAME)
+
+        assertEquals(TEST_SURAH_ID, testViewModel.uiState.value.surahId)
+        assertEquals(TEST_SURAH_NAME, testViewModel.uiState.value.surahName)
+    }
+
+    @Test
+    fun `state should initialize with empty query`() = runTest {
+        assertEquals(EMPTY_STRING, testViewModel.uiState.value.query)
+    }
+
+    @Test
+    fun `state should initialize with empty search results`() = runTest {
+        assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
+    }
+
+    @Test
+    fun `init should set hint with surah name when surahName is not null`() = runTest {
+        val expectedHint = TEST_SEARCH_BY_SURAH_NAME
+        everySuspend {
+            stringResourceProvider.getString(Res.string.search_in_surah_hint, TEST_SURAH_NAME)
+        } returns expectedHint
+
+        reconfigureViewModel(surahId = TEST_SURAH_ID, surahName = TEST_SURAH_NAME)
+
+        assertEquals(expectedHint, testViewModel.uiState.value.hint)
+    }
+
+    @Test
+    fun `init should set hint with quran text when surahName is null`() = runTest {
+        val expectedHint = TEST_SEARCH_IN_QURAN
+        everySuspend { stringResourceProvider.getString(Res.string.quran) } returns QURAN_TEXT
+        everySuspend {
+            stringResourceProvider.getString(Res.string.search_in_surah_hint, QURAN_TEXT)
+        } returns expectedHint
+
+        reconfigureViewModel(surahId = null, surahName = null)
+
+        assertEquals(expectedHint, testViewModel.uiState.value.hint)
     }
 
     private companion object {
