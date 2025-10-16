@@ -8,10 +8,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.data.dataSource.local.database.IdentityDatabase
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
+import net.thechance.mena.identity.data.repository.AddressesRepositoryImpl
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl
 import net.thechance.mena.identity.data.repository.UserRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.MobileLocationRepositoryImpl
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
@@ -41,6 +43,10 @@ val identityDataModule = module {
 
     single<ResetPasswordRepository> {
         ResetPasswordRepositoryImpl(client = get(named("IdentityClient")))
+    }
+
+    single<AddressesRepository>{
+        AddressesRepositoryImpl(client = get(named(IDENTITY_CLIENT)))
     }
 
     singleOf(::AuthorizationService)

@@ -22,6 +22,7 @@ fun ChatListItem(
     item: ChatListItem,
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
+    onMessageImageClick: (MessageUiState, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,6 +51,7 @@ fun ChatListItem(
                     showMessageInfo = markedMessage.isVisibleMessageInfo,
                     isMarkedLastInSeries = markedMessage.isLastInSeries,
                     onMessageClick = { onMessageClick(markedMessage.id) },
+                    onMessageImageClick = onMessageImageClick,
                     onFailClick = { onFailedMessageClick(markedMessage) },
                     modifier = Modifier
                 )

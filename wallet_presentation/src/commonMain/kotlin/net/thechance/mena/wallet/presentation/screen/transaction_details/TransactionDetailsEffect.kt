@@ -8,5 +8,4 @@ sealed interface TransactionDetailsEffect {
         val mimeType: String
     ) : TransactionDetailsEffect
     data object CaptureImage : TransactionDetailsEffect
-    data object showErrorSnackBar : TransactionDetailsEffect
 }

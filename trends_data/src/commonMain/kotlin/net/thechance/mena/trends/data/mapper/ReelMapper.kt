@@ -15,6 +15,9 @@ internal fun ReelDto.toEntity(): Reel {
         likesCount = likesCount.orZero(),
         viewsCount = viewsCount.orZero(),
         createdAt = createdAt.parseDateStringOrNull(),
+        userName = username,
+        profileImageUrl = profilePictureUrl.orEmpty(),
+        isCurrentUserOwner = isCurrentUserOwner,
         categories = categories?.mapNotNull { it.toEntity() }.orEmpty()
     )
 }

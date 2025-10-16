@@ -4,4 +4,5 @@ sealed interface SurEffect {
     data object NavigateBack : SurEffect
     data object NavigateToBookmark : SurEffect
     data class NavigateToSurahDetails(val surahId: Int, val surahName: String) : SurEffect
+    data object NavigateToSearch : SurEffect
 }

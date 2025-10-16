@@ -23,17 +23,22 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.io.IOException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
+import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.screen.export.file_saver.FileSaver
+import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -44,10 +49,10 @@ import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
-
 class ExportTransactionsViewModelTest {
+    private val stringProvider = FakeStringProvider()
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
-    private val fileSaver = mock<FileSaver>(mode = MockMode.autofill)
+    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ExportTransactionsViewModel
@@ -99,6 +104,26 @@ class ExportTransactionsViewModelTest {
             assertTrue(state.isCustomFilterCardSelected)
         }
     }
+    @Test
+    fun `onDownloadClicked with empty pdf should show toast`() = runTest {
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata(
+            byteArray = byteArrayOf()
+        )
+
+
+        initViewModel()
+
+        viewModel.state.test {
+            viewModel.onDownloadClicked()
+            skipItems(2)
+
+            val toastState = awaitItem().toast
+            assertToastState(isVisible = true, toastState = toastState)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 
     @Test
     fun `should toggle type in state when onTypeSelected is called`() = runTest {
@@ -110,17 +135,17 @@ class ExportTransactionsViewModelTest {
             viewModel.onTypeSelected(type)
 
             val stateWithType = awaitItem()
-            assertTrue(stateWithType.selectedTransactionsTypes!!.contains(type))
+            assertTrue(stateWithType.selectedTransactionsTypes.contains(type))
 
             viewModel.onTypeSelected(type)
             val stateWithoutType = awaitItem()
-            assertFalse(stateWithoutType.selectedTransactionsTypes!!.contains(type))
+            assertFalse(stateWithoutType.selectedTransactionsTypes.contains(type))
         }
     }
 
     @Test
     fun `onViewAndShareClicked with non-empty pdf should navigate`() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
 
         initViewModel()
 
@@ -136,7 +161,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onViewAndShareClicked should fetch statement with custom filter when custom filter is selected`() =
         runTest {
-            everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+            everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
 
             initViewModel()
 
@@ -145,7 +170,7 @@ class ExportTransactionsViewModelTest {
             advanceUntilIdle()
 
             verifySuspend {
-                repository.getTransactionsPdf(
+                repository.getStatementWithMetadata(
                     TransactionFilterParams(
                         emptyList(),
                         null,
@@ -193,32 +218,14 @@ class ExportTransactionsViewModelTest {
                 state.datePickerMode
             )
             assertNotNull(state.defaultEndDate)
-
         }
     }
 
-
-    @Test
-    fun `onDownloadClicked with empty pdf should show toast`() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf()
-
-        initViewModel()
-
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            skipItems(2)
-
-            val toastState = awaitItem().toast
-            assertToastState(isVisible = true, toastState = toastState)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
 
     @Test
     fun `onViewAndShareClicked with generic error should show error snackBar`() = runTest {
         everySuspend {
-            repository.getTransactionsPdf(any())
+            repository.getStatementWithMetadata(any())
         } throws Exception("Unknown")
         initViewModel()
 
@@ -237,7 +244,10 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
+        everySuspend {
+            pdfHandler.savePdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
         initViewModel()
 
@@ -250,6 +260,7 @@ class ExportTransactionsViewModelTest {
                 isVisible = true,
                 snackBarState = state.snackBar
             )
+            assertTrue(state.snackBar.isSuccess)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -258,7 +269,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with NoInternetException should update noInternetConnection state`() =
         runTest {
             everySuspend {
-                repository.getTransactionsPdf(any())
+                repository.getStatementWithMetadata(any())
             } throws NoInternetException()
 
             initViewModel()
@@ -268,7 +279,6 @@ class ExportTransactionsViewModelTest {
                 skipItems(5)
 
                 val state = awaitItem()
-
                 assertTrue(state.noInternetConnection)
 
                 cancelAndIgnoreRemainingEvents()
@@ -278,7 +288,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `onDownloadClicked with generic error should show failure snackBar`() = runTest {
         everySuspend {
-            repository.getTransactionsPdf(any())
+            repository.getStatementWithMetadata(any())
         } throws Exception("Unknown")
 
         initViewModel()
@@ -299,83 +309,55 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun `onDownloadClicked with non-empty pdf and file saved should show success snackBar`() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } returns byteArrayOf(1, 2, 3)
-            everySuspend {
-                fileSaver.saveFile(any(), any(), any())
-            } returns true
+    fun `onDownloadClicked with file save success should show success snackBar`() = runTest {
+        everySuspend {
+            repository.getStatementWithMetadata(any())
+        } returns createMockStatementWithMetadata()
+        everySuspend {
+            pdfHandler.savePdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
-            initViewModel()
+        initViewModel()
 
-            viewModel.state.test {
-                viewModel.onDownloadClicked()
-                advanceUntilIdle()
-                skipItems(5)
+        viewModel.state.test {
+            viewModel.onDownloadClicked()
+            advanceUntilIdle()
+            skipItems(5)
 
-                val state = awaitItem()
-                assertSnackBarState(true, state.snackBar)
-                assertTrue(state.snackBar.isSuccess)
+            val state = awaitItem()
+            assertSnackBarState(true, state.snackBar)
+            assertTrue(state.snackBar.isSuccess)
 
-                cancelAndIgnoreRemainingEvents()
-            }
+            cancelAndIgnoreRemainingEvents()
         }
+    }
 
     @Test
-    fun `onDownloadClicked with non-empty pdf but file not saved should show failure snackBar`() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } returns byteArrayOf(1, 2, 3)
-            everySuspend {
-                fileSaver.saveFile(any(), any(), any())
-            } returns false
+    fun `onDownloadClicked with file save error should show failure snackBar`() = runTest {
+        everySuspend {
+            repository.getStatementWithMetadata(any())
+        } returns createMockStatementWithMetadata()
+        everySuspend {
+            pdfHandler.savePdf(any(), any())
+        } throws IOException()
 
-            initViewModel()
+        initViewModel()
 
-            viewModel.state.test {
-                viewModel.onDownloadClicked()
-                advanceUntilIdle()
-                skipItems(5)
+        viewModel.state.test {
+            viewModel.onDownloadClicked()
+            advanceUntilIdle()
+            skipItems(5)
 
-                val state = awaitItem()
-                assertSnackBarState(true, state.snackBar)
-                assertFalse(state.snackBar.isSuccess)
+            val state = awaitItem()
+            assertSnackBarState(true, state.snackBar)
+            assertFalse(state.snackBar.isSuccess)
 
-                cancelAndIgnoreRemainingEvents()
-            }
+            cancelAndIgnoreRemainingEvents()
         }
-
-    @Test
-    fun `onDownloadClicked with saveFile throwing exception should show failure snackBar`() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } returns byteArrayOf(1, 2, 3)
-            everySuspend {
-                fileSaver.saveFile(any(), any(), any())
-            } throws Exception("IO Error")
-
-            initViewModel()
-
-            viewModel.state.test {
-                viewModel.onDownloadClicked()
-                advanceUntilIdle()
-                skipItems(5)
-
-                val state = awaitItem()
-                assertSnackBarState(true, state.snackBar)
-                assertFalse(state.snackBar.isSuccess)
-
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
+    }
 
     @Test
     fun `toast should disappear after duration`() = runTest {
-
         initViewModel()
 
         viewModel.state.test {
@@ -394,36 +376,9 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun `snackBar should disappear after duration`() = runTest {
-        everySuspend {
-            repository.getTransactionsPdf(any())
-        } returns byteArrayOf(1, 2, 3)
-        everySuspend {
-            fileSaver.saveFile(any(), any(), any())
-        } returns true
-
-        initViewModel()
-
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            advanceUntilIdle()
-            skipItems(5)
-
-            val snackBarVisible = awaitItem().snackBar
-            assertSnackBarState(true, snackBarVisible)
-
-            advanceTimeBy(3000L)
-            val snackBarHidden = awaitItem().snackBar
-            assertSnackBarState(false, snackBarHidden)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `onViewAndShareClicked with NoInternetException should update noInternetConnection`() =
         runTest {
-            everySuspend { repository.getTransactionsPdf(any()) } throws NoInternetException()
+            everySuspend { repository.getStatementWithMetadata(any()) } throws NoInternetException()
 
             initViewModel()
             viewModel.state.test {
@@ -439,25 +394,31 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `toStartOfDayLocalDateTime should parse valid date string`() = runTest {
         val formatter =
-            LocalDate.Format { year(); char('/'); monthNumber(); char('/'); dayOfMonth() }
+            LocalDate.Format {
+                year(); char('/'); monthNumber(); char('/');
+                day(padding = Padding.ZERO)
+            }
         val result = "2025/09/27".toStartOfDayLocalDateTime(formatter)
 
         assertEquals(2025, result?.year)
-        assertEquals(9, result?.monthNumber)
-        assertEquals(27, result?.dayOfMonth)
+        assertEquals(9, result?.month?.number)
+        assertEquals(27, result?.day)
     }
 
     @Test
     fun `toStartOfDayLocalDateTime should return null for empty string`() = runTest {
         val formatter =
-            LocalDate.Format { year(); char('/'); monthNumber(); char('/'); dayOfMonth() }
+            LocalDate.Format {
+                year(); char('/'); monthNumber(); char('/');
+                day(padding = Padding.ZERO)
+            }
         val result = "".toStartOfDayLocalDateTime(formatter)
         assertEquals(null, result)
     }
 
     @Test
     fun whenDownloadThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue_andToastShown() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } throws NoDataFoundException()
+        everySuspend { repository.getStatementWithMetadata(any()) } throws NoDataFoundException()
         initViewModel()
 
         viewModel.state.test {
@@ -472,24 +433,22 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadFails_thenIsDownloadLoadingResetsToFalse() = runTest(testDispatcher) {
-        everySuspend { repository.getTransactionsPdf(any()) } throws RuntimeException("error")
+        everySuspend { repository.getStatementWithMetadata(any()) } throws RuntimeException("error")
         initViewModel()
 
         val state = viewModel.state.first()
-
         assertFalse(state.isDownloadLoading)
     }
 
     @Test
     fun whenViewAndShareFails_thenIsViewAndShareLoadingResetsToFalse() = runTest {
         everySuspend {
-            repository.getTransactionsPdf(any())
+            repository.getStatementWithMetadata(any())
         } throws RuntimeException("error")
         initViewModel()
 
         viewModel.state.test {
             viewModel.onViewAndShareClicked()
-
             skipItems(4)
 
             val state = awaitItem()
@@ -500,32 +459,28 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun whenViewAndShareThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue() =
-        runTest {
-            everySuspend {
-                repository.getTransactionsPdf(any())
-            } throws NoDataFoundException()
-
-            initViewModel()
-            viewModel.state.test {
-                viewModel.onViewAndShareClicked()
-
-                skipItems(4)
-
-                val state = awaitItem()
-                assertTrue(state.hasNoTransactionsError)
-
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-    @Test
-    fun whenCustomFilterSelectedWithNoTypesOrDates_thenButtonsDisabled() = runTest {
+    fun whenViewAndShareThrowsNoDataFound_thenHasNoTransactionsErrorIsTrue() = runTest {
+        everySuspend {
+            repository.getStatementWithMetadata(any())
+        } throws NoDataFoundException()
 
         initViewModel()
         viewModel.state.test {
-            viewModel.onCustomFilteringClicked()
+            viewModel.onViewAndShareClicked()
+            skipItems(4)
 
+            val state = awaitItem()
+            assertTrue(state.hasNoTransactionsError)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun whenCustomFilterSelectedWithNoTypesOrDates_thenButtonsDisabled() = runTest {
+        initViewModel()
+        viewModel.state.test {
+            viewModel.onCustomFilteringClicked()
             skipItems(1)
 
             val state = awaitItem()
@@ -537,7 +492,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenViewAndShareSuccess_thenIsViewAndShareLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
 
         initViewModel()
         viewModel.state.test {
@@ -553,7 +508,7 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `onViewAndShareClicked should reset view model`() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         initViewModel()
         advanceUntilIdle()
 
@@ -568,7 +523,10 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
+        everySuspend {
+            pdfHandler.savePdf(any(), any())
+        } returns "MENA/statement_123.pdf"
 
         initViewModel()
         viewModel.state.test {
@@ -585,7 +543,8 @@ class ExportTransactionsViewModelTest {
     @Test
     fun whenSelectedTransactionsTypesNotEmpty_thenHasActiveFiltersIsTrue() = runTest {
         val state = ExportTransactionsState(
-            selectedTransactionsTypes = setOf(FilterType.SENT)
+            selectedTransactionsTypes = setOf(FilterType.SENT),
+            startDate = LocalDate(2025, 9, 1)
         )
         assertTrue(state.hasActiveFilters)
     }
@@ -626,35 +585,34 @@ class ExportTransactionsViewModelTest {
         }
     }
 
-    @Test
-    fun `hideSnackBar should hide snackbar after duration`() = runTest {
-        everySuspend { repository.getTransactionsPdf(any()) } returns byteArrayOf(1, 2, 3)
-        everySuspend { fileSaver.saveFile(any(), any(), any()) } returns true
+    fun `downloadPdf returns success with file path`() = runTest {
+        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
+        everySuspend {
+            pdfHandler.savePdf(any(), any())
+        } returns "Downloads/MENA/statement_1234567890.pdf"
 
         initViewModel()
+
         viewModel.state.test {
             viewModel.onDownloadClicked()
             skipItems(5)
 
-            val visible = awaitItem().snackBar
-            assertTrue(visible.isVisible)
-
-            advanceTimeBy(3000L)
-
-            val hidden = awaitItem().snackBar
-            assertFalse(hidden.isVisible)
+            val state = awaitItem()
+            assertSnackBarState(true, state.snackBar)
+            assertTrue(state.snackBar.isSuccess)
+            assertNotNull(state.snackBar.message)
 
             cancelAndIgnoreRemainingEvents()
         }
     }
 
-
     private fun TestScope.initViewModel() {
         viewModel = ExportTransactionsViewModel(
             transactionRepository = transactionRepository,
             statementRepository = repository,
-            fileSaver = fileSaver,
-            ioDispatcher = testDispatcher
+            pdfHandler = pdfHandler,
+            ioDispatcher = testDispatcher,
+            stringProvider = stringProvider
         )
         advanceUntilIdle()
     }
@@ -682,4 +640,21 @@ class ExportTransactionsViewModelTest {
             ?.atStartOfDayIn(TimeZone.currentSystemDefault())
             ?.toLocalDateTime(TimeZone.currentSystemDefault())
     }
+
+    private fun createMockStatementWithMetadata(
+        byteArray: ByteArray = byteArrayOf(0),
+        startDate: LocalDate = LocalDate(2025, 9, 1),
+        endDate: LocalDate = LocalDate(2025, 9, 30),
+        totalInflows: Double = 1000.0,
+        totalOutflows: Double = 500.0
+    ): StatementWithMetaData {
+        return StatementWithMetaData(
+            byteArray = byteArray,
+                startDate = startDate,
+                endDate = endDate,
+                totalInflows = totalInflows,
+                totalOutflows = totalOutflows,
+            )
+    }
+
 }

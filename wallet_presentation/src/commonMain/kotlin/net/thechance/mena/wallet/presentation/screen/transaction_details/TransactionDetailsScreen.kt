@@ -13,9 +13,7 @@ import io.github.suwasto.capturablecompose.CaptureController
 import io.github.suwasto.capturablecompose.rememberCaptureController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
-import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.ic_arrow_left
-import mena.wallet_presentation.generated.resources.share_transaction_details_error_msg
 import mena.wallet_presentation.generated.resources.transaction_details_header
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -30,7 +28,6 @@ import net.thechance.mena.wallet.presentation.screen.transaction_details.compone
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -60,7 +57,6 @@ fun TransactionDetailsScreen(
                 onNavigateBackClicked = onNavigateBackClicked,
                 shareImage = imageSharer::shareImage,
                 captureImage = captureController::capture,
-                showSnackBar = viewModel::showSnackBar,
                 onCaptureError = viewModel::onCaptureError
             )
         }
@@ -156,8 +152,7 @@ private suspend fun onTransactionDetailsEffect(
     onNavigateBackClicked: () -> Unit,
     shareImage: suspend (ByteArray, String, String) -> Unit,
     captureImage: suspend () -> Unit,
-    showSnackBar: suspend (StringResource, StringResource, Boolean) -> Unit,
-    onCaptureError: () -> Unit
+    onCaptureError: suspend () -> Unit
 ) {
     when (effect) {
         TransactionDetailsEffect.NavigateBack -> onNavigateBackClicked()
@@ -173,10 +168,6 @@ private suspend fun onTransactionDetailsEffect(
                 onCaptureError()
             }
         }
-
-        TransactionDetailsEffect.showErrorSnackBar -> {
-            showSnackBar(Res.string.error,Res.string.share_transaction_details_error_msg,false)
-        }
     }
 }
 
@@ -191,7 +182,7 @@ private fun TransactionDetailsScreenPreview() {
                 override fun onShareReceiptButtonClicked() {}
                 override fun onScreenShotCaptured(byteArray: ByteArray, fileName: String) {}
                 override fun onRefresh() {}
-                override fun onCaptureError() {}
+                override suspend fun onCaptureError() {}
             },
             captureController = rememberCaptureController()
         )

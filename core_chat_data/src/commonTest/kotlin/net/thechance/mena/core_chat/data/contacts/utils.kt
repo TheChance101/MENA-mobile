@@ -30,6 +30,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -108,6 +109,15 @@ fun MockRequestHandleScope.defaultChatResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultUploadImagesResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        MessageDto.serializer(),
+        createMessageDto()
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 
 fun createRepository(
     contactsProvider: ContactsProvider,
@@ -129,18 +139,22 @@ fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
     messageDao: MessageDao,
+    imageDownloader: ImageDownloader,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
-        chatResponse = chatResponse
+        chatResponse = chatResponse,
+        chatByIdResponse = chatByIdResponse
     )
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
         webSocketManager = webSocketManager,
         messageDao = messageDao,
         json = jsonSerialization,
+        imageDownloader = imageDownloader
     )
 }
 
@@ -150,18 +164,29 @@ fun createHttpClient(
     syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
-        when (request.url.encodedPath) {
-            CONTACTS_ENDPOINT -> contactsResponse?.invoke(this) ?: defaultContactsResponse()
+        val path = request.url.encodedPath
+        when  {
+            path == CONTACTS_ENDPOINT -> contactsResponse?.invoke(this)
+                ?: defaultContactsResponse()
 
-            SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
+            path == SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
                 ?: defaultSyncContactsResponse()
 
-            CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
+            path == CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
                 ?: defaultChatHistoryResponse()
 
-            CHAT_ENDPOINT -> chatResponse?.invoke(this) ?: defaultChatResponse()
+            path == CHAT_ENDPOINT -> chatResponse?.invoke(this)
+                ?: defaultChatResponse()
+
+            path.contains(IMAGES_ENDPOINT) ->
+                imagesResponse?.invoke(this) ?: defaultUploadImagesResponse()
+
+            path.startsWith("$CHAT_ENDPOINT/") ->
+                chatByIdResponse?.invoke(this) ?: defaultChatResponse()
 
             else -> respond(
                 content = "",
@@ -185,3 +210,5 @@ private const val CONTACTS_ENDPOINT = "/chat/contacts"
 private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
 private const val CHAT_ENDPOINT = "/chat"
 private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
+
+private const val IMAGES_ENDPOINT = "/chat/image"

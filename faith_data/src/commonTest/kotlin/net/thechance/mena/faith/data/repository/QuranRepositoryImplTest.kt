@@ -4,10 +4,13 @@ import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.SurahDto
+import net.thechance.mena.faith.data.datastore.ITilawahDataStore
 import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,7 +18,9 @@ import kotlin.test.assertTrue
 class QuranRepositoryImplTest {
 
     private val mockDao: AyahDao = mock(MockMode.autofill)
-    private val repository = QuranRepositoryImpl(mockDao)
+    private val tilawahDataStore: ITilawahDataStore = mock(MockMode.autofill)
+
+    private val repository = QuranRepositoryImpl(mockDao, tilawahDataStore)
 
 
     @Test
@@ -102,10 +107,68 @@ class QuranRepositoryImplTest {
         assertTrue(result.isEmpty())
     }
 
+    @Test
+    fun `getLastAyahForTilawah should return stored ayah when datastore has value`() = runTest {
+        // Given
+
+        everySuspend { tilawahDataStore.getLastAyah() } returns SAVED_TILAWAH_PROGRESS
+
+        // When
+        val result = repository.getLastAyahForTilawah()
+
+        // Then
+        assertEquals(SAVED_TILAWAH_PROGRESS, result)
+    }
+
+    @Test
+    fun `getLastAyahForTilawah should return default ayah when datastore is empty`() = runTest {
+        // Given
+        everySuspend { tilawahDataStore.getLastAyah() } returns null
+
+        // When
+        val result = repository.getLastAyahForTilawah()
+
+        // Then
+        assertEquals(DEFAULT_TILAWAH, result)
+    }
+
+    @Test
+    fun `saveLastAyahForTilawah should call datastore saveLastAyah`() = runTest {
+        // Given
+        val ayahToSave = TILAWAH_AYAH_TO_SAVE
+
+        // When
+        repository.saveLastAyahForTilawah(ayahToSave)
+
+        // Then
+        verifySuspend {
+            tilawahDataStore.saveLastAyah(ayahToSave)
+        }
+    }
+
+
     private companion object {
+
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         const val AL_BAQARAH_NAME = "Al-Baqarah"
 
+        val TILAWAH_AYAH_TO_SAVE = LastAyahForTilawah(
+            number = 3,
+            surahId = 1,
+            surahName = AL_FATIHAH_NAME
+        )
+
+        val DEFAULT_TILAWAH = LastAyahForTilawah(
+            number = 1,
+            surahId = 1,
+            surahName = "Al-Fatiha"
+        )
+
+        val SAVED_TILAWAH_PROGRESS = LastAyahForTilawah(
+            number = 5,
+            surahId = 2,
+            surahName = AL_BAQARAH_NAME
+        )
         val SURAH_DTOS: List<SurahDto> = listOf(
             SurahDto(number = 1, name = AL_FATIHAH_NAME, ayahCount = 7),
             SurahDto(number = 2, name = AL_BAQARAH_NAME, ayahCount = 286)

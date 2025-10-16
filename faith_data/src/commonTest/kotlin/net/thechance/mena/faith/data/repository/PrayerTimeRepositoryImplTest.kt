@@ -1,0 +1,178 @@
+package net.thechance.mena.faith.data.repository
+
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import de.jensklingenberg.ktorfit.Response
+import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
+import net.thechance.mena.faith.data.remote.dto.prayertime.PrayerTimesDto
+import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
+import net.thechance.mena.faith.domain.entity.Location
+import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.faith.domain.exception.FaithException
+import kotlin.test.Test
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
+@OptIn(ExperimentalTime::class)
+class PrayerTimeRepositoryImplTest {
+
+    private val prayerTimeApiService: PrayerTimeApiService = mock(MockMode.autofill)
+    private val prayerTimeRepository = PrayerTimeRepositoryImpl(prayerTimeApiService)
+
+    @Test
+    fun `getPrayerTimes should return list of PrayerTime when api service return valid data`() =
+        runTest {
+            //Given
+            everySuspend {
+                prayerTimeApiService.getPrayerTimes(
+                    date = DATE,
+                    latitude = LAT,
+                    longitude = LONG
+                )
+            } returns makeSuccessFakeResponse(
+                body = fakePrayerTimesDto,
+                successStatus = HttpStatusCode.OK
+            )
+            //When
+            val result = prayerTimeRepository.getPrayerTimes(
+                date = dateInstant,
+                location = Location(latitude = LAT, longitude = LONG),
+                timeZone = timeZone
+            )
+            //Then
+            assertThat(result).isEqualTo(fakePrayerTimes)
+        }
+
+    @Test
+    fun `getPrayerTimes should throw NetworkException when error occur in parsing response body is null`() =
+        runTest {
+            //Given
+            everySuspend {
+                prayerTimeApiService.getPrayerTimes(
+                    date = DATE,
+                    latitude = LAT,
+                    longitude = LONG
+                )
+            } returns makeSuccessFakeResponse(
+                body = null,
+                successStatus = HttpStatusCode.OK
+            )
+            //When & Then
+            assertFailure {
+                prayerTimeRepository.getPrayerTimes(
+                    date = dateInstant,
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
+                )
+            }.isInstanceOf<FaithException.NetworkException>()
+        }
+
+    @Test
+    fun `getPrayerTimes should throw UnauthorizedException when status code is Unauthorized`() =
+        runTest {
+            //Given
+            everySuspend {
+                prayerTimeApiService.getPrayerTimes(
+                    date = DATE,
+                    latitude = LAT,
+                    longitude = LONG
+                )
+            } returns makeFailFakeResponse(errorStatus = HttpStatusCode.Unauthorized)
+            //When & Then
+            assertFailure {
+                prayerTimeRepository.getPrayerTimes(
+                    date = dateInstant,
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
+                )
+            }.isInstanceOf<FaithException.UnauthorizedException>()
+        }
+
+    @Test
+    fun `getPrayerTimes should throw NetworkException when status code is InternalServerError`() =
+        runTest {
+            //Given
+            everySuspend {
+                prayerTimeApiService.getPrayerTimes(
+                    date = DATE,
+                    latitude = LAT,
+                    longitude = LONG
+                )
+            } returns makeFailFakeResponse(errorStatus = HttpStatusCode.InternalServerError)
+            //When & Then
+            assertFailure {
+                prayerTimeRepository.getPrayerTimes(
+                    date = dateInstant,
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
+                )
+            }.isInstanceOf<FaithException.NetworkException>()
+        }
+
+    @Test
+    fun `getPrayerTimes should throw UnknownException when status code is not valuable`() =
+        runTest {
+            //Given
+            everySuspend {
+                prayerTimeApiService.getPrayerTimes(
+                    date = DATE,
+                    latitude = LAT,
+                    longitude = LONG
+                )
+            } returns makeFailFakeResponse(errorStatus = HttpStatusCode.Forbidden)
+            //When & Then
+            assertFailure {
+                prayerTimeRepository.getPrayerTimes(
+                    date = dateInstant,
+                    location = Location(latitude = LAT, longitude = LONG),
+                    timeZone = timeZone
+                )
+            }.isInstanceOf<FaithException.UnknownException>()
+        }
+
+    private fun makeSuccessFakeResponse(
+        body: PrayerTimesDto? = fakePrayerTimesDto,
+        successStatus: HttpStatusCode = HttpStatusCode.OK
+    ): Response<PrayerTimesDto> {
+        val mockHttpResponse: HttpResponse = mock(MockMode.autofill) {
+            everySuspend { status } returns successStatus
+        }
+
+        return Response.success(
+            body = body,
+            rawResponse = mockHttpResponse
+        ) as Response<PrayerTimesDto>
+    }
+
+    private fun makeFailFakeResponse(
+        errorStatus: HttpStatusCode = HttpStatusCode.InternalServerError
+    ): Response<PrayerTimesDto> {
+        val mockHttpResponse: HttpResponse = mock(MockMode.autofill) {
+            everySuspend { status } returns errorStatus
+        }
+
+        return Response.error<PrayerTimesDto>(
+            rawResponse = mockHttpResponse,
+            body = ""
+        ) as Response<PrayerTimesDto>
+    }
+
+    private companion object {
+        val timeZone = TimeZone.of("Africa/Cairo")
+        const val LAT = 30.033333
+        const val LONG = 31.233334
+        const val DATE = "10-10-2025"
+        val dateInstant = Instant.parse("2025-10-10T00:00:00Z") //10-10-2025 00:00
+        val fakePrayerTimesDto = getFakePrayerTimesDto()
+        val fakePrayerTimes: List<PrayerTime> = getPrayerTimesFakeData(timeZone = timeZone)
+    }
+}

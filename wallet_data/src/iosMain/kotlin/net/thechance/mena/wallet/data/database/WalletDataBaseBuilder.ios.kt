@@ -3,12 +3,13 @@ package net.thechance.mena.wallet.data.database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
+import org.koin.core.annotation.Single
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
-
-actual class WalletDatabaseBuilder {
-    actual fun getBuilder(context: Any?): RoomDatabase.Builder<WalletDatabase> {
+@Single
+actual class WalletDatabaseBuilder actual constructor(){
+    actual fun getBuilder(): RoomDatabase.Builder<WalletDatabase> {
         val dbFilePath = documentDirectory() + "/${DataBaseConfig.DATABASE_NAME}"
         return Room.databaseBuilder<WalletDatabase>(
             name = dbFilePath

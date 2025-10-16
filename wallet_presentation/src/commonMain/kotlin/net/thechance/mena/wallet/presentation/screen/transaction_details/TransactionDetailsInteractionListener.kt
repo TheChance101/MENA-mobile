@@ -6,5 +6,5 @@ interface TransactionDetailsInteractionListener {
     fun onShareReceiptButtonClicked()
     fun onScreenShotCaptured(byteArray: ByteArray, fileName: String)
     fun onRefresh()
-    fun onCaptureError()
+    suspend fun onCaptureError()
 }

@@ -30,7 +30,9 @@ import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.bismillah
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_bismillah
+import mena.faith_presentation.generated.resources.ic_search
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
@@ -43,7 +45,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SurahAppBar(
-    surahName: String, onBackClick: () -> Unit
+    surahName: String,
+    onSearchClick: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     AppBar(
         leadingContent = {
@@ -51,9 +55,23 @@ internal fun SurahAppBar(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(Res.string.arrow_left)
             )
-        }, onLeadingClick = onBackClick, title = surahName, contentPadding = PaddingValues(
-            vertical = Theme.spacing._8, horizontal = Theme.spacing._16
-        )
+        },
+        onLeadingClick = onBackClick,
+        title = surahName,
+        contentPadding = PaddingValues(
+            vertical = Theme.spacing._8,
+            horizontal = Theme.spacing._16
+        ),
+        trailingContent = {
+            AppBarOptionContainer(
+                onClick = onSearchClick,
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_search),
+                    contentDescription = stringResource(Res.string.arrow_left)
+                )
+            }
+        }
     )
 }
 
@@ -80,9 +98,10 @@ internal fun BasmalaHeader(
 
 @Composable
 internal fun AnimatedAyahActionButtons(
-    state: SurahScreenState, listener: SurahInteractionListener, modifier: Modifier = Modifier
+    state: SurahScreenState,
+    listener: SurahInteractionListener,
+    modifier: Modifier = Modifier
 ) {
-
     AnimatedVisibility(
         visible = state.isAyahActionButtonsVisible,
         enter = fadeIn(animationSpec = tween(durationMillis = 300)),
@@ -94,13 +113,16 @@ internal fun AnimatedAyahActionButtons(
             AyahActionButtons(
                 onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
                 onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
-                onShareClick = { listener.onShareClick(state.selectedAyah) })
+                onShareClick = { listener.onShareClick(state.selectedAyah) }
+            )
         }
     }
 }
 
 private fun isValidAyahSelection(state: SurahScreenState): Boolean {
-    return state.selectedAyahIndex != null && state.selectedAyahIndex >= 0 && state.selectedAyahIndex < state.ayatOfSurah.size
+    return state.selectedAyahIndex != null &&
+            state.selectedAyahIndex >= 0 &&
+            state.selectedAyahIndex < state.ayatOfSurah.size
 }
 
 @Composable
@@ -108,7 +130,6 @@ fun getAyahTextStyle() = Theme.typography.quran.large.copy(
     textDirection = TextDirection.Rtl,
     textAlign = TextAlign.Justify
 )
-
 
 @Composable
 internal fun UnifiedChunkText(

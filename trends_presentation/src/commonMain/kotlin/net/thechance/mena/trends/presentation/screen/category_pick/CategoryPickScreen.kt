@@ -21,6 +21,7 @@ import mena.trends_presentation.generated.resources.help_text
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -28,6 +29,7 @@ import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -37,7 +39,7 @@ internal fun CategoryPickScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
-    ObserveAsEffect(viewModel.effect) { effect ->
+    ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             is CategoryPickScreenEffect.NavigateBack -> navController.popBackStack()
             is CategoryPickScreenEffect.NavigateToTrends -> navController.navigate(Route.Trends)
@@ -46,14 +48,14 @@ internal fun CategoryPickScreen(
 
     CategoryPickScreenContent(
         state = state,
-        listener = viewModel,
+        listener = viewModel
     )
 }
 
 @Composable
 private fun CategoryPickScreenContent(
     state: CategoryPickScreenState,
-    listener: CategoryPickInteractionListener,
+    listener: CategoryPickInteractionListener
 ) {
     if (state.isLoading.not()) {
         Scaffold(
@@ -62,59 +64,25 @@ private fun CategoryPickScreenContent(
                     onNextClick = listener::onNextClick,
                     isButtonEnabled = state.isNextButtonEnabled(),
                     isButtonLoading = state.isNextButtonLoading,
-                    modifier = Modifier
-                        .padding(
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                        )
+                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
                 )
             }
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16)
             ) {
-                Text(
-                    text = stringResource(Res.string.choose_interests),
-                    style = Theme.typography.title.medium,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .padding(
-                            bottom = Theme.spacing._4,
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            top = 72.dp
-                        )
-                )
-
-                Text(
-                    text = stringResource(Res.string.help_text),
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadeSecondary,
-                    modifier = Modifier
-                        .padding(
-                            bottom = Theme.spacing._24,
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16
-                        )
-                )
-
+                ChooseInterestsMessage()
                 FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            bottom = 100.dp
-                        ),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
                 ) {
                     state.categories.forEach { category ->
                         CategoryItem(
                             category = category,
-                            onClick = { id -> listener.onCategoryClick(id) },
-                            modifier = Modifier
-                                .padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
+                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                            modifier = Modifier.padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
                         )
                     }
                 }
@@ -126,13 +94,45 @@ private fun CategoryPickScreenContent(
 }
 
 @Composable
+private fun ChooseInterestsMessage() {
+    Text(
+        text = stringResource(resource = Res.string.choose_interests),
+        style = Theme.typography.title.medium,
+        color = Theme.colorScheme.shadePrimary,
+        modifier = Modifier.padding(bottom = Theme.spacing._4, top = 72.dp)
+    )
+
+    Text(
+        text = stringResource(resource = Res.string.help_text),
+        style = Theme.typography.body.small,
+        color = Theme.colorScheme.shadeSecondary,
+        modifier = Modifier.padding(bottom = Theme.spacing._24)
+    )
+}
+
+@Composable
 private fun LoadingProgressBar() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Theme.colorScheme.background.surface),
+            .background(color = Theme.colorScheme.background.surface),
         contentAlignment = Alignment.Center
     ) {
         DotsProgressIndicator()
+    }
+}
+
+@Preview
+@Composable
+private fun CategoryPickScreenPreview() {
+    MenaTheme {
+        CategoryPickScreenContent(
+            state = CategoryPickScreenState(),
+            listener = object : CategoryPickInteractionListener {
+                override fun onBackClick() {}
+                override fun onCategoryClick(categoryId: String) {}
+                override fun onNextClick() {}
+            }
+        )
     }
 }

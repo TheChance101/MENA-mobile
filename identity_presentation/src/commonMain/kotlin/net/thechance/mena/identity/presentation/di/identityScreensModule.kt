@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.di
 
+import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
@@ -31,4 +32,5 @@ val identityScreensModule = module {
     factoryOf(::ResetPasswordScreenViewModel)
     factoryOf(::PickLocationScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
+    factoryOf(::AddEditLocationScreenViewModel)
 }

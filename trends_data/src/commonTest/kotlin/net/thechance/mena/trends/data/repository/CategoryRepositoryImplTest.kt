@@ -49,7 +49,7 @@ internal class CategoryRepositoryImplTest {
         networkClient = createCategoryHttpClient { updateInterestsResponse() }
         repository = CategoryRepositoryImpl(networkClient)
 
-        repository.updateUserInterestedCategories(listOf("uuid1"))
+        repository.updateUserCategories(listOf("uuid1"))
 
         verifySuspend { networkClient = createCategoryHttpClient { updateInterestsResponse() } }
     }

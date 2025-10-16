@@ -33,7 +33,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 const val ANIMATION_DURATION = 500
 
 @Composable
-fun TrendsSnackBar(
+internal fun TrendsSnackBar(
     message: String,
     status: SnackBarStatus,
     modifier: Modifier = Modifier,

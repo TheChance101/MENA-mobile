@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -25,6 +26,7 @@ import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededExcepti
 import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
+import kotlin.coroutines.cancellation.CancellationException
 
 internal abstract class BaseViewModel<State, Effect>(
     initialState: State
@@ -76,25 +78,28 @@ internal abstract class BaseViewModel<State, Effect>(
         }
     }
 
-    protected fun <T> tryToCollectFlow(
-        block: () -> Flow<T>,
+    protected fun <R> tryToCollectFlow(
+        block: () -> Flow<R>,
         onStart: () -> Unit = {},
-        onEach: (T) -> Unit,
+        onNewValue: (R) -> Unit,
         onError: (ErrorState) -> Unit,
         onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         scope: CoroutineScope = viewModelScope
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+            if(exception is kotlinx.coroutines.CancellationException) return@CoroutineExceptionHandler
             onError(ErrorState.RequestFailed(exception.message))
         }
 
         return scope.launch(dispatcher + exceptionHandler) {
             block()
+                .flowOn(dispatcher)
                 .onStart { onStart() }
-                .onEach { onEach(it) }
+                .onEach { onNewValue(it) }
                 .onCompletion { throwable ->
                     throwable?.let {
+                        if(throwable is CancellationException) return@onCompletion
                         mapExceptionToErrorState(throwable, onError)
                     } ?: onEnd()
                 }

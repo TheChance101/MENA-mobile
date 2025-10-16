@@ -9,7 +9,7 @@ import kotlin.math.round
 import kotlin.math.sin
 
 class QiblahBearingCalculatorUseCase {
-    fun calculateQiblahAngle(userLocation: Location): Double {
+    fun calculateQiblahAngle(userLocation: Location = Location(29.0735549, 31.1015618)): Double {
         validateCoordinates(location = userLocation)
         val userLatitudeRadians = userLocation.latitude.toRadians()
         val userLongitudeRadians = userLocation.longitude.toRadians()

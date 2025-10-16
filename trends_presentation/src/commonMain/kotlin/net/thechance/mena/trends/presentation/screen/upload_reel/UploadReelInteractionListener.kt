@@ -4,11 +4,7 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 
 interface UploadReelInteractionListener {
     fun onBackClick()
-    fun onRetrieveVideo(
-        file: FileUiState,
-        readBytes: suspend () -> ByteArray
-    )
-    fun onEditVideoClick()
+    fun onRetrieveVideo(file: FileUiState)
     fun onCancelUploadClick()
     fun onDeleteVideoClick()
     fun onRetryUploadClick()

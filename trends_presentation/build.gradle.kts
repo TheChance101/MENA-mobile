@@ -55,6 +55,7 @@ kotlin {
             implementation(libs.resources)
             implementation(libs.kermit)
             implementation(libs.bundles.filekit)
+            implementation(libs.kotlinx.datetime)
         }
         iosMain.dependencies {
 
