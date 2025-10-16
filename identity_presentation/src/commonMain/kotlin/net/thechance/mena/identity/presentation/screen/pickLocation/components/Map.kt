@@ -47,9 +47,7 @@ fun PickLocationMap(
 ) {
     val camera = rememberCameraState(firstPosition = cameraPosition)
 
-    LaunchedEffect(Unit) {
-        camera.animateTo(finalPosition = cameraPosition)
-    }
+    LaunchedEffect(Unit) { camera.animateTo(finalPosition = cameraPosition) }
 
     LaunchedEffect(camera) {
         snapshotFlow { camera.position }.collect { position -> onCameraMoved(position) }
@@ -97,8 +95,8 @@ fun PickLocationMap(
 @Composable
 fun SetAnchorInCenter(
     animateToCurrentLocation: Boolean,
-    longitude : Double?,
-    latitude : Double?,
+    longitude: Double?,
+    latitude: Double?,
     onSetAnchorLocation: (DpOffset) -> Unit,
     camera: CameraState,
     maxWidth: Dp,
@@ -108,7 +106,7 @@ fun SetAnchorInCenter(
     if (animateToCurrentLocation && longitude != null && latitude != null) {
         coroutineScope.launch {
             camera.animateTo(
-                finalPosition = CameraPosition(
+                finalPosition = camera.position.copy(
                     target = Position(
                         longitude = longitude,
                         latitude = latitude
@@ -123,7 +121,6 @@ fun SetAnchorInCenter(
                 ),
             )
         }
-
     }
 }
 

@@ -83,7 +83,6 @@ data class PickLocationScreen(
                             onEditClick = listener::onClickEdit
                         )
                     }
-
                     PrimaryButton(
                         text = stringResource(Res.string.confirm),
                         onClick = listener::onClickConfirm,

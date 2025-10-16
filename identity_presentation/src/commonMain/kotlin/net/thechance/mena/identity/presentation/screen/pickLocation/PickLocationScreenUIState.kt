@@ -7,9 +7,7 @@ import org.maplibre.compose.camera.CameraPosition
 
 data class PickLocationScreenUIState(
     val pointerLocation: DpOffset? = null,
-    val cameraPosition: CameraPosition = CameraPosition(
-        target = Position(20.31852, 20.44519), zoom = 1.0
-    ),
+    val cameraPosition: CameraPosition = CameraPosition(),
     val animateToCurrentLocation: Boolean = false,
     val currentLocation: CoordinatesUiState = CoordinatesUiState(),
     val address: String = "",

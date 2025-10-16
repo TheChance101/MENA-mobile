@@ -52,6 +52,4 @@ val identityScreensModule = module {
     factoryOf(::ProfileScreenViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
-    factoryOf(::AddEditLocationScreenViewModel)
-    factoryOf(::PickLocationScreenViewModel)
 }

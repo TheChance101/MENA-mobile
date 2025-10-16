@@ -22,21 +22,7 @@ class AddEditLocationScreenViewModel(
 ), AddEditLocationScreenInteractionListener {
     init {
         if (addressModel != null) {
-            updateState {
-                copy(
-                    latitude = addressModel.latitude,
-                    longitude = addressModel.longitude,
-                    address = addressModel.addressLine,
-                    animateToCurrentLocation = true,
-                    cameraPosition = CameraPosition(
-                        target = Position(
-                            latitude = addressModel.latitude,
-                            longitude = addressModel.longitude,
-                        ),
-                        zoom = 15.0
-                    )
-                )
-            }
+            updateAddress(addressModel)
         }
     }
 
@@ -164,6 +150,14 @@ class AddEditLocationScreenViewModel(
                 latitude = newAddress.latitude,
                 longitude = newAddress.longitude,
                 address = newAddress.addressLine,
+                animateToCurrentLocation = true,
+                cameraPosition = CameraPosition(
+                    target = Position(
+                        latitude = newAddress.latitude,
+                        longitude = newAddress.longitude,
+                    ),
+                    zoom = 15.0
+                )
             )
         }
     }
