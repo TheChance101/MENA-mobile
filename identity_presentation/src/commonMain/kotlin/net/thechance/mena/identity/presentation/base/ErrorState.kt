@@ -13,6 +13,7 @@ import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
+import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 
@@ -55,6 +56,7 @@ fun handelAuthorizationException(
         is TooManyRequestsException -> onError(ErrorState.TooManyRequests)
         is OtpExpiredException -> onError(ErrorState.OTPExpired)
         is NoNetworkException -> onError(ErrorState.NoNetwork)
+        is UnAuthorizedException -> onError(ErrorState.Unauthorized)
     }
 }
 
