@@ -10,6 +10,9 @@
     <string name="register_prompt">You are new?</string>
     <string name="register_now">Register Now</string>
     <string name="error">Error</string>
+    <string name="unexpected_error">Something went wrong</string>
+    <string name="is_main_address_error">Can't Delete Active Address</string>
+    <string name="success">Success</string>
 
 
     <string name="pick_your_country">Pick Your Country</string>
@@ -61,6 +64,7 @@
     <!-- Add Edit Location Screen -->
     <string name="add_location">Add Location</string>
     <string name="edit_location">Edit Location</string>
+    <string name="save">Save</string>
     <string name="location">Location </string>
     <string name="pick_on_map">( pick on map )</string>
     <string name="address">Address</string>
@@ -101,10 +105,27 @@
 
     <string name="no_saved_locations_title">No saved locations yet!</string>
     <string name="no_saved_locations_message">Click on button below to start add and have your favorite locations status ups.</string>
-    <string name="add_location_button">Add location</string>
     <string name="location_saved_empty_desc">No saved locations icon</string>
 
+
+
+    <string name="address_type_home">Home</string>
+    <string name="address_type_office">Office</string>
+    <string name="address_type_other">Other</string>
+
+    <string name="address_priority_main">Main</string>
+    <string name="address_edit">Edit</string>
+
+    <string name="add_location_button">Add location</string>
+    <string name="delete_address_description">Are you sure you want to delete this location?</string>
+    <string name="delete_address_title">Delete Location</string>
+    <string name="confirmation_dialog_delete">Delete</string>
+
+    <string name="my_location_app_bar_title">My locations</string>
+
+    <string name="address_deleted_successfully">Address deleted successfully</string>
+
     <!--    crop image-->
-    <string name="save">Save</string>
+
     <string name="upload_another_image">Upload another image</string>
 </resources>
