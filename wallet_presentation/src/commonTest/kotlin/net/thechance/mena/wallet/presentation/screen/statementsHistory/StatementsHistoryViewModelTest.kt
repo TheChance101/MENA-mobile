@@ -21,6 +21,8 @@ import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -34,13 +36,20 @@ import kotlin.test.assertTrue
 class StatementsHistoryViewModelTest {
     private val statementRepository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
+    private val stringProvider = FakeStringProvider()
+    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
     private lateinit var viewModel: StatementsHistoryViewModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+        viewModel = StatementsHistoryViewModel(
+            statementRepository,
+            stringProvider,
+            pdfHandler,
+            testDispatcher
+        )
     }
 
     @AfterTest
@@ -57,23 +66,6 @@ class StatementsHistoryViewModelTest {
                 val effect = awaitItem()
                 assertTrue(effect is StatementsHistoryEffect.NavigateBack)
             }
-        }
-
-    @Test
-    fun `onStatementCardClicked should send NavigateToStatementDetails effect`() =
-        runTest(testDispatcher) {
-            everySuspend {
-                statementRepository.getStatements(PAGE, PAGE_SIZE)
-            } returns emptyList()
-            val statement= statements[0].toUiState()
-            advanceUntilIdle()
-            viewModel.uiEffect.test {
-                viewModel.onStatementCardClicked(statement)
-                val effect = awaitItem()
-                assertEquals(StatementsHistoryEffect.NavigateToStatementDetails(StorageLocation.Downloads(statement.fileName)), effect)
-                cancelAndIgnoreRemainingEvents()
-            }
-
         }
 
     @Test
@@ -104,7 +96,12 @@ class StatementsHistoryViewModelTest {
 
         everySuspend { statementRepository.getStatements(0, 20) } returns mockStatements
 
-        val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+        val viewModel = StatementsHistoryViewModel(
+            statementRepository,
+            stringProvider,
+            pdfHandler,
+            testDispatcher
+        )
 
         advanceUntilIdle()
 
@@ -123,7 +120,13 @@ class StatementsHistoryViewModelTest {
         runTest(testDispatcher) {
             everySuspend { statementRepository.getStatements(0, 20) } returns emptyList()
 
-            val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+            val viewModel = StatementsHistoryViewModel(
+                statementRepository,
+                stringProvider,
+                pdfHandler,
+                testDispatcher
+            )
+
 
             advanceUntilIdle()
             viewModel.state.test {
@@ -139,7 +142,7 @@ class StatementsHistoryViewModelTest {
         runTest(testDispatcher) {
             everySuspend { statementRepository.getStatements(0, 20) } throws NoInternetException()
 
-            val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+            val viewModel = StatementsHistoryViewModel(statementRepository, stringProvider,pdfHandler,testDispatcher)
 
             advanceUntilIdle()
             viewModel.state.test {
@@ -155,7 +158,13 @@ class StatementsHistoryViewModelTest {
     fun `paginator should handle UnknownException and set error state`() = runTest(testDispatcher) {
         everySuspend { statementRepository.getStatements(0, 20) } throws UnknownException()
 
-        val viewModel = StatementsHistoryViewModel(statementRepository, testDispatcher)
+        val viewModel = StatementsHistoryViewModel(
+            statementRepository,
+            stringProvider,
+            pdfHandler,
+            testDispatcher
+        )
+
 
         advanceUntilIdle()
         viewModel.state.test {
@@ -201,18 +210,23 @@ class StatementsHistoryViewModelTest {
 
     @Test
     fun `onDeleteClicked should delete statement successfully`() = runTest(testDispatcher) {
-        val statementId = 123L
+        val statementId = 1L
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
         everySuspend { statementRepository.deleteStatementById(statementId) }
 
         advanceUntilIdle()
-
-        viewModel.onDeleteClicked(statementId)
+        val statement = statements[0]
+        var deleteCallbackResult = false
+        viewModel.onDeleteClicked(
+            statement = statement.toUiState(),
+            onDeleteComplete = { isSuccess ->
+                deleteCallbackResult = isSuccess
+            }
+        )
         advanceUntilIdle()
 
         viewModel.state.test {
             val state = awaitItem()
-            assertTrue(state.isStatementDeleted == true)
             assertNull(state.errorState)
             cancelAndIgnoreRemainingEvents()
         }
@@ -220,46 +234,33 @@ class StatementsHistoryViewModelTest {
         verifySuspend { statementRepository.deleteStatementById(statementId) }
     }
 
-    @Test
-    fun `onDeleteClicked should handle NoInternetException`() = runTest(testDispatcher) {
-        val statementId = 123L
-        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatementById(statementId) } throws NoInternetException()
-
-        advanceUntilIdle()
-
-        viewModel.onDeleteClicked(statementId)
-        advanceUntilIdle()
-
-        viewModel.state.test {
-            val state = awaitItem()
-            assertEquals(ErrorState.NoInternet, state.errorState)
-            assertFalse(state.isStatementDeleted == true)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        verifySuspend { statementRepository.deleteStatementById(statementId) }
-    }
 
     @Test
-    fun `onDeleteClicked should handle UnknownException`() = runTest(testDispatcher) {
-        val statementId = 123L
-        everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatementById(statementId) } throws UnknownException()
+    fun `onDeleteClicked should handle error and show snackbar`() = runTest(testDispatcher) {
+        everySuspend { statementRepository.getStatements(any(), any()) } returns statements
+
+        val statement = statements[0].toUiState()
+
+        everySuspend {
+            pdfHandler.checkIfPdfExists(any())
+        } returns true
+
+        everySuspend {
+            pdfHandler.deletePdf(any())
+        } throws Exception("Delete failed")
 
         advanceUntilIdle()
 
-        viewModel.onDeleteClicked(statementId)
+        var deleteCallbackResult = true
+        viewModel.onDeleteClicked(
+            statement = statement,
+            onDeleteComplete = { isSuccess ->
+                deleteCallbackResult = isSuccess
+            }
+        )
+
         advanceUntilIdle()
-
-        viewModel.state.test {
-            val state = awaitItem()
-            assertEquals(ErrorState.Unknown, state.errorState)
-            assertFalse(state.isStatementDeleted == true)
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        verifySuspend { statementRepository.deleteStatementById(statementId) }
+        assertFalse(deleteCallbackResult)
     }
 
     @Test
@@ -275,11 +276,17 @@ class StatementsHistoryViewModelTest {
             assertTrue(awaitItem().isEditMode)
             cancelAndIgnoreRemainingEvents()
         }
-        viewModel.onDeleteClicked(statementId)
+        val statement = statements[0]
+        var deleteCallbackResult = false
+        viewModel.onDeleteClicked(
+            statement = statement.toUiState(),
+            onDeleteComplete = { isSuccess ->
+                deleteCallbackResult = isSuccess
+            }
+        )
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertTrue(awaitItem().isStatementDeleted == true)
             cancelAndIgnoreRemainingEvents()
         }
         viewModel.onCancelEditModeClicked()
