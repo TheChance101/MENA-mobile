@@ -22,7 +22,6 @@ import mena.identity_presentation.generated.resources.ic_address
 import mena.identity_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
@@ -91,16 +90,6 @@ class AddEditLocationScreen(
                         longitude = state.longitude,
                         latitude = state.latitude,
                         animateToCurrentLocation = state.animateToCurrentLocation
-                    )
-                    Text(
-                        "data ${locationData?.address} ${locationData?.latitude} ${locationData?.longitude}",
-                        style = Theme.typography.title.small,
-                        color = Theme.colorScheme.shadePrimary
-                    )
-                    Text(
-                        "data ${state.address} ${state.latitude} ${state.longitude}",
-                        style = Theme.typography.title.small,
-                        color = Theme.colorScheme.shadePrimary
                     )
                 }
 
