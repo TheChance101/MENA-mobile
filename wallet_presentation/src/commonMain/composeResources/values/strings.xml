@@ -133,5 +133,5 @@
     <string name="you_paid">You paid</string>
 
     <string name="file_missing">File Missing</string>
-    <string name="file_missing_description">The statement file could not be found.</string>
+    <string name="file_missing_description">We couldn’t find this statement file. It may have been deleted or moved from your device.</string>
 </resources>
