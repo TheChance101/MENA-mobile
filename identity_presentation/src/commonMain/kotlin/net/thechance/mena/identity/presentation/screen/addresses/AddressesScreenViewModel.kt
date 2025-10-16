@@ -5,7 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.address_deleted_successfully
+import mena.identity_presentation.generated.resources.is_main_address_error
 import mena.identity_presentation.generated.resources.unexpected_error
+import net.thechance.mena.identity.domain.exception.IsActiveAddress
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
@@ -35,7 +37,7 @@ class AddressesScreenViewModel(
 
 
     override fun onClickAddress(addressId: Uuid) {
-       // addressRepository.
+        // addressRepository.
     }
 
     override fun onDeleteAddressClicked(addressId: Uuid) = updateState {
@@ -48,7 +50,14 @@ class AddressesScreenViewModel(
 
     override fun onConfirmDeleteAddress() {
         tryToExecute(
-            function = { addressesRepository.deleteAddress(state.value.deleteDialogUIState.addressId!!) },
+            function = {
+                val address =
+                    state.value.addresses.find { it.id == state.value.deleteDialogUIState.addressId }
+                if (address?.isMainAddress == true) {
+                    throw IsActiveAddress()
+                }
+                addressesRepository.deleteAddress(state.value.deleteDialogUIState.addressId!!)
+            },
             onSuccess = {
                 getUserAddresses()
                 updateState {
@@ -99,17 +108,32 @@ class AddressesScreenViewModel(
     }
 
     private fun onErrorOccurred(errorState: ErrorState) {
-        updateState {
-            copy(
-                snackBarUiState = SnackBarUiState(
-                    snackBarType = SnackBarType.ERROR,
-                    isVisible = true,
-                    message = Res.string.unexpected_error
-                ),
-                errorMessage = mapErrorToMessage(errorState)
-            )
-        }
-    }
+        onDismissDeleteDialog()
+        when (errorState) {
+            is ErrorState.IsActiveAddress -> updateState {
+                copy(
+                    snackBarUiState = SnackBarUiState(
+                        snackBarType = SnackBarType.ERROR,
+                        isVisible = true,
+                        message = Res.string.is_main_address_error
+                    ),
+                    errorMessage = mapErrorToMessage(errorState)
+                )
+            }
 
+            else -> updateState {
+                copy(
+                    snackBarUiState = SnackBarUiState(
+                        snackBarType = SnackBarType.ERROR,
+                        isVisible = true,
+                        message = Res.string.unexpected_error
+                    ),
+                    errorMessage = mapErrorToMessage(errorState)
+                )
+            }
+        }
+
+
+    }
 }
 

@@ -7,12 +7,13 @@ import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
-import net.thechance.mena.identity.presentation.mapper.toUiState
+import net.thechance.mena.identity.presentation.mapper.toEntity
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,7 +44,7 @@ class AddressesScreenViewModelTest {
     @Test
     fun `init() should fetch addresses and update state on success`() = runTest {
         val fakeAddresses = listOf(createFakeAddress())
-        coEvery { addressRepository.getUserAddresses() } returns fakeAddresses.map { it.toUiState() }
+        coEvery { addressRepository.getUserAddresses() } returns fakeAddresses.map { it.toEntity() }
 
         viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
 
@@ -87,19 +88,33 @@ class AddressesScreenViewModelTest {
         assertTrue(viewModel.state.value.deleteDialogUIState.isVisible)
         assertEquals(addressId, viewModel.state.value.deleteDialogUIState.addressId)
     }
+    @Test
+    fun `onConfirmDeleteAddress() should call deleteAddress when address is valid`() = runTest {
+        val address = createFakeAddress().copy(isMainAddress = false)
+        coEvery { addressRepository.getUserAddresses() } returns listOf(address.toEntity())
+        coEvery { addressRepository.deleteAddress(any()) } returns Unit
+
+        viewModel.onDeleteAddressClicked(address.id!!)
+        advanceUntilIdle()
+
+        viewModel.onConfirmDeleteAddress()
+        advanceUntilIdle()
+
+        coVerify(exactly = 1) { addressRepository.deleteAddress(address.id) }
+    }
 
     @Test
     fun `onConfirmDeleteAddress() should delete address and show success snackbar`() = runTest {
         val address = createFakeAddress()
         coEvery { addressRepository.getUserAddresses() } returns emptyList()
-        coEvery { addressRepository.deleteAddress(address.id!!) } returns Unit
+        coEvery { addressRepository.deleteAddress(any()) } returns Unit
         viewModel.onDeleteAddressClicked(address.id!!)
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.onConfirmDeleteAddress()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { addressRepository.deleteAddress(address.id!!) }
+        coVerify { addressRepository.deleteAddress(address.id) }
         assertTrue(viewModel.state.value.snackBarUiState.isVisible)
         assertEquals(SnackBarType.SUCCESS, viewModel.state.value.snackBarUiState.snackBarType)
         assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
@@ -149,12 +164,27 @@ class AddressesScreenViewModelTest {
             cancelAndConsumeRemainingEvents()
         }
     }
+    @Test
+    fun `onConfirmDeleteAddress() should show success snackbar after deletion`() = runTest {
+        val address = createFakeAddress(isMain = false)
+        coEvery { addressRepository.getUserAddresses() } returns listOf(address.toEntity())
+        coEvery { addressRepository.deleteAddress(any()) } returns Unit
 
-    private fun createFakeAddress(): AddressUIState {
+        viewModel.onDeleteAddressClicked(address.id!!)
+        advanceUntilIdle()
+
+        viewModel.onConfirmDeleteAddress()
+        advanceUntilIdle()
+
+        val snackbar = viewModel.state.value.snackBarUiState
+        assertTrue(snackbar.isVisible)
+        assertEquals(SnackBarType.SUCCESS, snackbar.snackBarType)
+    }
+    private fun createFakeAddress(isMain: Boolean =true): AddressUIState {
         return AddressUIState(
             id = Uuid.random(),
             addressType = AddressType.Home,
-            isMainAddress = true,
+            isMainAddress = isMain,
             addressDetails = "123 Fake St",
             coordinates = CoordinatesUiState(
                 latitude = 0.0,

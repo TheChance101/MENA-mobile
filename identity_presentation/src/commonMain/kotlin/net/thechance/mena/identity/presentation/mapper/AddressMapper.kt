@@ -7,7 +7,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiSt
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-fun Address.toUiState() : AddressUIState = AddressUIState(
+fun Address.toEntity() : AddressUIState = AddressUIState(
     id =id,
     addressType = AddressType.valueOf(addressType),
     isMainAddress = isActive,
@@ -15,7 +15,7 @@ fun Address.toUiState() : AddressUIState = AddressUIState(
     coordinates = CoordinatesUiState(latitude, longitude)
 )
 @OptIn(ExperimentalUuidApi::class)
-fun AddressUIState.toUiState() : Address = Address(
+fun AddressUIState.toEntity() : Address = Address(
     id = id,
     latitude = coordinates.latitude,
     longitude = coordinates.longitude,

@@ -12,7 +12,6 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 data class AddressesScreenUIState(
     val addresses: List<AddressUIState> = emptyList(),
-    val addressToDelete: Uuid? = null,
     val deleteDialogUIState: DeleteDialogUIState = DeleteDialogUIState(),
     val errorMessage: String? = null,
     val snackBarUiState :SnackBarUiState= SnackBarUiState()
