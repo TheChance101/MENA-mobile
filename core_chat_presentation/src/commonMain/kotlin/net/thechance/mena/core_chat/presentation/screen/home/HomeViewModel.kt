@@ -68,30 +68,10 @@ class HomeViewModel(
         if (markMessageAsReadEvent == null) return
         if (markMessageAsReadEvent.readByMe.not()) return
 
-        val chatSummary = state.value.chats.firstOrNull { chat ->
-            chat.id == markMessageAsReadEvent.chatId
-        }
-
-        if (chatSummary == null) {
-            val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
-            updateState {
-                it.copy(chats =
-                    listOf(newChatSummary) + it.chats
-                )
-            }
-            return
-        }
-
-        val updatedChatSummary = chatSummary.copy(
-            status = ChatUiState.Status.Read
-        )
+        val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
         updateState {
-            it.copy(
-                chats = state.value.chats
-                    .map { chat ->
-                        if (chat.id == markMessageAsReadEvent.chatId) updatedChatSummary
-                        else chat
-                    }
+            it.copy(chats =
+                listOf(newChatSummary) + it.chats
             )
         }
     }
