@@ -55,7 +55,7 @@ fun AnimatedStatementItem(
     AnimatedVisibility(
         visible = isVisible,
         exit = shrinkVertically(
-            animationSpec = tween(durationMillis = 200, easing = LinearEasing)
+            animationSpec = tween(durationMillis = 300, easing = LinearEasing)
         )
     ) {
         Column {
