@@ -112,7 +112,7 @@ class ChatViewModel(
         }
 
         subscribeToNewMessages(chat.id)
-        subscribeToPendingMessages(chatId)
+        subscribeToPendingMessages(chat.id)
         loadChatHistory(chat.id)
         observeReadMessages()
     }
@@ -294,7 +294,7 @@ class ChatViewModel(
         )
     }
 
-    private fun onLoadChatHistorySuccess(messages: List<Message>) {
+    private suspend fun onLoadChatHistorySuccess(messages: List<Message>) {
         messagesHistoryCache = messages
         rebuildUiMessages()
         chatRepository.markMessagesAsRead(state.value.chatId ?: return)
