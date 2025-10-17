@@ -59,6 +59,7 @@ fun handelAuthorizationException(
         is OtpExpiredException -> onError(ErrorState.OTPExpired)
         is NoNetworkException -> onError(ErrorState.NoNetwork)
         is UnAuthorizedException -> onError(ErrorState.Unauthorized)
+        else -> onError(ErrorState.SomethingWentWrong(exception.message))
     }
 }
 
