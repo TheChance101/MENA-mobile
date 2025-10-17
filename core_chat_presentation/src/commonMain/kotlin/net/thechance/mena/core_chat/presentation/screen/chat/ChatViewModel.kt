@@ -315,17 +315,10 @@ class ChatViewModel(
         val senderId = state.value.chatRequesterId
             ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
-        val combined = (messagesHistoryCache + pendingMessagesCache + newMessages)
+        val newMessages = (messagesHistoryCache + pendingMessagesCache + newMessages)
             .map { it.toUi(senderId) }
 
-        val existingLocal =
-            uiMessages.value.filter { existing -> combined.none { it.id == existing.id } }
-        println("pending: $pendingMessagesCache")
-        println("existingLocal: $existingLocal")
-        println("newMessages: $newMessages")
-        val newList = existingLocal + combined
-
-        _uiMessages.value = combined
+        _uiMessages.value = newMessages
         updateChatListItems(uiMessages.value)
     }
 
