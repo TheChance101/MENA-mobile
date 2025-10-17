@@ -41,30 +41,17 @@ import sv.lib.squircleshape.SquircleShape
 @Composable
 fun Map(
     cameraPosition: CameraPosition,
-    onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val camera = rememberCameraState(firstPosition = cameraPosition)
-    var screenSize by rememberSaveable { mutableStateOf(Pair(0.dp, 0.dp)) }
 
     LaunchedEffect(Unit) {
-        camera.animateTo(
-            finalPosition = cameraPosition,
-        )
+        camera.animateTo(finalPosition = cameraPosition,)
     }
 
     BoxWithConstraints(
         modifier = modifier
     ) {
-
-        LaunchedEffect(maxWidth, maxHeight) {
-            if (maxWidth != screenSize.first || maxHeight != screenSize.second) {
-                screenSize = Pair(maxWidth, maxHeight)
-                onEditClick()
-            }
-        }
-
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
@@ -90,31 +77,6 @@ fun Map(
                     contentDescription = null,
                     modifier = Modifier
                         .size(46.dp, 58.05.dp)
-                )
-            }
-        }
-        Crossfade(
-            modifier = Modifier
-                .align(Alignment.BottomEnd),
-            targetState = cameraPosition.target.latitude != 28.0
-                    && cameraPosition.target.longitude != 29.0
-        ) {
-            if (it) {
-                Image(
-                    modifier = Modifier
-                        .padding(Theme.spacing._4)
-                        .clip(SquircleShape(Theme.radius.md))
-                        .clickable {
-                            onEditClick()
-                        }
-                        .background(Color.Black)
-                        .padding(
-                            horizontal = Theme.spacing._16,
-                            vertical = Theme.spacing._12
-                        )
-                        .size(20.dp),
-                    painter = painterResource(Res.drawable.ic_edit),
-                    contentDescription = null
                 )
             }
         }
