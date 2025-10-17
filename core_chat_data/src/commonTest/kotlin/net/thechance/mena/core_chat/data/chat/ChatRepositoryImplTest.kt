@@ -321,7 +321,8 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should return flow when subscribeToMessages is called`() = runTest {
+    fun `should return flow when getMessages is called and websocket is connected`() = runTest {
+        every { webSocketManager.isConnected() } returns true
         everySuspend { authRepository.getAccessToken() } returns "test-token"
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
@@ -335,6 +336,24 @@ class ChatRepositoryImplTest {
         val flow = repository.getMessages(chatId)
 
         assertThat(flow).isNotNull()
+    }
+
+    @Test
+    fun `getMessages should connect to websocket if websocket is disconnected`() = runTest {
+        every { webSocketManager.isConnected() } returns false
+        everySuspend { authRepository.getAccessToken() } returns "test-token"
+        everySuspend { webSocketManager.connect(any()) } returns Unit
+        everySuspend { webSocketManager.subscribe(any()) } returns Unit
+        everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
+        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
+            tryEmit(
+                "test-message"
+            )
+        }
+
+        repository.getMessages(chatId)
+
+        verifySuspend { webSocketManager.connect(any()) }
     }
 
     @Test
