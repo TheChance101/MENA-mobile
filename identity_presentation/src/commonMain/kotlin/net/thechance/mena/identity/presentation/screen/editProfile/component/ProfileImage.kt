@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components
+package net.thechance.mena.identity.presentation.screen.editProfile.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,11 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
@@ -26,21 +24,19 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.svg.SvgDecoder
 import io.ktor.client.HttpClient
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.pencil_edit
 import mena.identity_presentation.generated.resources.profile_profile_picture_content_description
-import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
 
 @Composable
-fun ProfileInfoContainer(
+fun ProfileImage(
     profilePicture: String,
-    fullName: String,
-    userName: String,
     modifier: Modifier = Modifier,
 ) {
     val shadowColor = Color(0x0F111D2E)
@@ -52,6 +48,7 @@ fun ProfileInfoContainer(
         Box(modifier = Modifier) {
             Box(
                 modifier = Modifier
+                    .padding(bottom = Theme.spacing._16)
                     .border(1.dp, Theme.colorScheme.stroke, CircleShape)
                     .dropShadow(
                         shape = CircleShape,
@@ -90,45 +87,21 @@ fun ProfileInfoContainer(
 
             Box(
                 modifier = Modifier
-                    .padding(end = 15.dp, bottom = 3.dp)
-                    .align(Alignment.BottomEnd)
-                    .size(10.dp)
-                    .border(1.dp, Theme.colorScheme.stroke, CircleShape)
-                    .background(Theme.colorScheme.success, CircleShape)
-            )
-        }
-        Text(
-            text = fullName,
-            style = Theme.typography.label.medium.copy(
-                shadow = androidx.compose.ui.graphics.Shadow(
-                    shadowColor,
-                    Offset(0f, 4f),
-                    4f
+                    .size(32.dp)
+                    .align(Alignment.BottomCenter)
+                    .background(Theme.colorScheme.primary.primary, CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = Theme.colorScheme.background.surface,
+                        shape = CircleShape
+                    )
+                    .padding(Theme.spacing._8)
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.pencil_edit),
+                    contentDescription = null
                 )
-            ),
-            color = Theme.colorScheme.shadePrimary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = Theme.spacing._8)
-        )
-        Text(
-            text = "@$userName",
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadeSecondary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = Theme.spacing._2)
-        )
-    }
-}
-
-
-@Preview()
-@Composable
-fun PreviewProfileInfoContainer() {
-    MenaTheme {
-        ProfileInfoContainer(
-            profilePicture = "https://i.pinimg.com/736x/b4/d6/e5/b4d6e50449fff312606a05bce43cc4c3.jpg",
-            fullName = "Mohammed Ahmed Mansour",
-            userName = "@Mohammed_2025",
-        )
+            }
+        }
     }
 }

@@ -79,7 +79,7 @@ fun ImageCropperComponent(
                 onSaveButtonClicked(imageBitmap)
             },
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = Theme.spacing._12)
                 .align(Alignment.CenterHorizontally)
         )
 

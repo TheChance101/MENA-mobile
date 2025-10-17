@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.phone_number
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -30,7 +29,7 @@ internal fun LabeledInputPhoneNumber(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 4.dp)
+                .padding(bottom = Theme.spacing._4)
         )
         PhoneNumberInput(
             countryCode = countryCode,

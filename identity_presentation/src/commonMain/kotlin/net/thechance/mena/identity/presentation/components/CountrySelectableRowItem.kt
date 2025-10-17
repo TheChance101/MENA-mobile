@@ -61,7 +61,7 @@ internal fun CountrySelectableRowItem(
                 indication = ripple(),
                 interactionSource = remember { MutableInteractionSource() }
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
     ) {
 
         FlagImage(painterResource(selectedCountry.flagImage))
@@ -70,7 +70,7 @@ internal fun CountrySelectableRowItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 8.dp)
+                .padding(end = Theme.spacing._8)
         ) {
             Text(
                 text = stringResource(selectedCountry.countryNameRes),

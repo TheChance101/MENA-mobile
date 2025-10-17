@@ -45,7 +45,7 @@ fun ScaffoldScope.GetImageDialog(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(vertical = 12.dp),
+                .padding(vertical = Theme.spacing._12),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
@@ -57,7 +57,7 @@ fun ScaffoldScope.GetImageDialog(
             )
 
             Option(
-                modifier = Modifier.padding(top = 24.dp),
+                modifier = Modifier.padding(top = Theme.spacing._24),
                 painter = painterResource(Res.drawable.image),
                 title = "Upload image",
                 onClick = { onUploadImage() }
@@ -89,7 +89,7 @@ private fun Option(
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surface)
             .clickable(onClick = { onClick })
-            .padding(12.dp),
+            .padding(Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -100,7 +100,7 @@ private fun Option(
         )
 
         Text(
-            modifier = Modifier.padding(start = 8.dp),
+            modifier = Modifier.padding(start = Theme.spacing._8),
             text = title,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
