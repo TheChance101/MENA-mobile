@@ -37,11 +37,35 @@ class MainContainerViewModelTest {
     fun tearDown() {
         Dispatchers.resetMain()
     }
+
     @Test
     fun `handleGetIsUserCategorySet should update state with isUserCategorySet`() = runTest {
-        viewModel.handleGetIsUserCategorySet(isUserCategorySet = true)
+        viewModel.onUserCategoryStatusReceived(isUserCategorySet = true)
         assertThat(viewModel.state.value.isCategoriesAlreadySelectedByUser).isEqualTo(true)
     }
+
+    @Test
+    fun `handleGetIsUserCategorySet should navigate to home screen when isUserCategorySet is true`() =
+        runTest {
+            viewModel.onUserCategoryStatusReceived(isUserCategorySet = true)
+            viewModel.effect.test {
+                val effect = awaitItem()
+                assertThat(effect).isEqualTo(MainContainerEffect.NavigateToReelHome)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `handleGetIsUserCategorySet should navigate to category pick screen when isUserCategorySet is false`() =
+        runTest {
+            val viewModel =
+                MainContainerViewModel(repository = repository, defaultDispatcher = testDispatcher)
+            viewModel.effect.test {
+                viewModel.onUserCategoryStatusReceived(false)
+                assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToCategoryPick)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `loadCategories should update error state when repository throws exception`() = runTest {

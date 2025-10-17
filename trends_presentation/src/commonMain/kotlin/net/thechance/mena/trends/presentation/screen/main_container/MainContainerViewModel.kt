@@ -15,13 +15,13 @@ internal class MainContainerViewModel(
 ) : BaseViewModel<MainContainerState, MainContainerEffect>(MainContainerState()) {
 
     init {
-        getUserCategoryStatus()
+        checkIfUserSelectedCategories()
     }
 
-    private fun getUserCategoryStatus() {
+    private fun checkIfUserSelectedCategories() {
         tryToExecute(
             block = { repository.isCategoriesAlreadySelectedByUser() },
-            onSuccess = ::handleGetIsUserCategorySet,
+            onSuccess = ::onUserCategoryStatusReceived,
             onError = { errorState ->
                 updateState { copy(error = errorState, isCategoriesAlreadySelectedByUser = false) }
             },
@@ -29,13 +29,13 @@ internal class MainContainerViewModel(
         )
     }
 
-    fun handleGetIsUserCategorySet(isUserCategorySet: Boolean) {
+    fun onUserCategoryStatusReceived(isUserCategorySet: Boolean) {
         updateState { copy(isCategoriesAlreadySelectedByUser = isUserCategorySet) }
         navigateBasedOnCategoryState(isUserCategorySet)
     }
 
-    private fun navigateBasedOnCategoryState(isUserCategorySet: Boolean) {
-        if (isUserCategorySet) {
+    private fun navigateBasedOnCategoryState(hasUserSelectedCategories: Boolean) {
+        if (hasUserSelectedCategories) {
             sendEffect(MainContainerEffect.NavigateToReelHome)
         } else {
             sendEffect(MainContainerEffect.NavigateToCategoryPick)
