@@ -93,7 +93,7 @@ private fun MyAddressesMap(
             baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
             options =
                 MapOptions(
-                    gestureOptions = GestureOptions.Standard,
+                    gestureOptions = GestureOptions.AllDisabled,
                     ornamentOptions = OrnamentOptions.AllDisabled,
                     renderOptions = RenderOptions.Standard
                 )
