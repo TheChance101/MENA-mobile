@@ -6,6 +6,8 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -14,6 +16,7 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -405,6 +408,39 @@ class ChatViewModelTest {
 
         val firstMessage = chatViewModel.state.value.chatListItems.currentUiMessages().first()
         assertThat(firstMessage.status).isEqualTo(MessageStatus.FAILED)
+    }
+
+    @Test
+    fun `onCameraClicked should start getting camera permission when user click it`(){
+        chatViewModel.onCameraClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+        verifySuspend {permissionsController.providePermission(permission = Permission.CAMERA)}
+    }
+
+    @Test
+    fun `onCameraClicked should open camera when permission is granted`(){
+        everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} returns Unit
+        chatViewModel.onCameraClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isCameraOpen).isTrue()
+    }
+
+    @Test
+    fun `onCameraClicked should not open camera when camera permission is declined by user`(){
+        everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} throws DeniedException(Permission.CAMERA)
+        chatViewModel.onCameraClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isCameraOpen).isFalse()
+    }
+
+    @Test
+    fun`onCameraClosed should close camera when clicked`(){
+        chatViewModel.onCameraClosed()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isCameraOpen).isFalse()
     }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
