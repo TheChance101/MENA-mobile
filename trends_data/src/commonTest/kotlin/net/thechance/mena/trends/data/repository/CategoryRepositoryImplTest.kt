@@ -7,7 +7,7 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.engine.mock.toByteArray
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.data.client.NetworkClient
-import net.thechance.mena.trends.data.dto.PatchUserInterestsRequest
+import net.thechance.mena.trends.data.dto.PatchUserCategoriesRequest
 import net.thechance.mena.trends.data.mapper.toEntityList
 import net.thechance.mena.trends.data.repository.util.createCategoryHttpClient
 import net.thechance.mena.trends.data.repository.util.getAllCategoriesResponse
@@ -123,11 +123,11 @@ internal class CategoryRepositoryImplTest {
         var toRemove: List<String>? = null
 
         networkClient = createCategoryHttpClient { request ->
-            val body = jsonSerialization.decodeFromString<PatchUserInterestsRequest>(
+            val body = jsonSerialization.decodeFromString<PatchUserCategoriesRequest>(
                 request.body.toByteArray().decodeToString()
             )
-            toAdd = body.interestsIdsToAdd
-            toRemove = body.interestsIdsToRemove
+            toAdd = body.categoriesIdsToAdd
+            toRemove = body.categoriesIdsToRemove
             patchUserInterestsResponse()
         }
 

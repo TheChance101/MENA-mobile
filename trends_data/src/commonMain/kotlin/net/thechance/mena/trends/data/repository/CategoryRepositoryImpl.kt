@@ -5,8 +5,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.CategoryDto
-import net.thechance.mena.trends.data.dto.PatchUserInterestsRequest
-import net.thechance.mena.trends.data.dto.PatchUserInterestsResponse
+import net.thechance.mena.trends.data.dto.PatchUserCategoriesRequest
+import net.thechance.mena.trends.data.dto.PatchUserCategoriesResponse
 import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UserStatusResponse
 import net.thechance.mena.trends.data.mapper.toEntityList
@@ -53,13 +53,13 @@ internal class CategoryRepositoryImpl(
         val toAdd = currentSelectedIds.filterNot { it in originalSelectedIds }
         val toRemove = originalSelectedIds.filterNot { it in currentSelectedIds }
 
-        safeApiCall<PatchUserInterestsResponse> {
+        safeApiCall<PatchUserCategoriesResponse> {
             networkClient.patch("/$TRENDS_PATH/$CATEGORIES_ENDPOINT") {
                 contentType(ContentType.Application.Json)
                 setBody(
-                    PatchUserInterestsRequest(
-                        interestsIdsToAdd = toAdd,
-                        interestsIdsToRemove = toRemove
+                    PatchUserCategoriesRequest(
+                        categoriesIdsToAdd = toAdd,
+                        categoriesIdsToRemove = toRemove
                     )
                 )
             }

@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class PatchUserInterestsRequest(
+internal data class PatchUserCategoriesRequest(
     @SerialName("add")
-    val interestsIdsToAdd: List<String>? = null,
+    val categoriesIdsToAdd: List<String>? = null,
     @SerialName("remove")
-    val interestsIdsToRemove: List<String>? = null
+    val categoriesIdsToRemove: List<String>? = null
 )
