@@ -169,7 +169,7 @@ private fun UserReelScreenContent(
                     onDeleteClick = listener::onDeleteClick,
                     onDescriptionClick = listener::onDescriptionClick,
                     onPublisherInfoClick = listener::onPublisherInfoClick,
-                    incrementViewsCount = { listener.increaseReelView() },
+                    incrementViewsCount = { listener.increaseReelView(reel.id) },
                     onLikeClick = { listener.onLikeClick(reel.id) }
                 )
             }

@@ -43,7 +43,7 @@ internal class UserReelViewModel(
     private fun createPager(): Flow<PagingData<UserReelUiState>> {
         return createPager(
             scope = viewModelScope,
-            loadPage = { page -> reelsRepository.getFeedReels(page) }
+            loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
@@ -57,9 +57,9 @@ internal class UserReelViewModel(
         sendEffect(UserReelEffect.NavigateToPublisherProfile)
     }
 
-    override fun increaseReelView() {
+    override fun increaseReelView(reelId: String) {
         tryToExecute(
-            block = { reelsRepository.addReelView(userReelArgs.realId) },
+            block = { reelsRepository.addReelView(reelId) },
             onError = { error -> updateState { copy(error = error) } },
             dispatcher = ioDispatcher,
         )
