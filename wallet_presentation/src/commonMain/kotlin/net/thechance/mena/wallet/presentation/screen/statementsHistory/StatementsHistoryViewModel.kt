@@ -71,6 +71,7 @@ class StatementsHistoryViewModel(
                 }
             },
             onError = {
+                onViewStatementAvailable(false)
                 showSnackBar(
                     title = stringProvider.getString(Res.string.unknown_error_title),
                     message = stringProvider.getString(Res.string.unknown_error_description),
@@ -85,22 +86,19 @@ class StatementsHistoryViewModel(
         tryToExecute(
             callee = { deleteStatementPdf(statement = statement) },
             onSuccess = {
-                onDeleteStatementSuccess(
-                    id = statement.id,
-                    onDeleteComplete = { isSuccess ->
-                        if (isSuccess) {
-                            viewModelScope.launch(dispatcherIO) {
-                                showSnackBar(
-                                    title = stringProvider.getString(Res.string.file_missing),
-                                    message = stringProvider.getString(Res.string.file_missing_description),
-                                    isSuccess = false
-                                )
-                            }
-                        }
-                    }
-                )
+                viewModelScope.launch(dispatcherIO) {
+                    delay(DELETE_DELAY_MS)
+
+                    removeStatementFromState(id = statement.id)
+
+                    showSnackBar(
+                        title = stringProvider.getString(Res.string.file_missing),
+                        message = stringProvider.getString(Res.string.file_missing_description),
+                        isSuccess = false
+                    )
+                }
             },
-            onError = {
+            onError = { error ->
                 showSnackBar(
                     title = stringProvider.getString(Res.string.unknown_error_title),
                     message = stringProvider.getString(Res.string.unknown_error_description),
@@ -109,6 +107,14 @@ class StatementsHistoryViewModel(
             },
             dispatcher = dispatcherIO
         )
+    }
+
+    private fun removeStatementFromState(id: Long) {
+        updateState { current ->
+            current.copy(
+                statements = current.statements.filter { it.id != id }
+            )
+        }
     }
 
     override fun onEditClicked() {
@@ -154,14 +160,11 @@ class StatementsHistoryViewModel(
     }
 
     private suspend fun onDeleteStatementSuccess(id: Long, onDeleteComplete: (Boolean) -> Unit) {
-        delay(300)
-        updateState { current ->
-            val updatedList = current.statements.filter { it.id != id }
-            current.copy(
-                statements = updatedList,
-                isEditMode = updatedList.isNotEmpty()
-            )
-        }
+        delay(DELETE_DELAY_MS)
+
+        removeStatementFromState(id = id)
+        updateState { it.copy(isEditMode = it.statements.isNotEmpty()) }
+
         onDeleteComplete(true)
     }
 
@@ -239,5 +242,6 @@ class StatementsHistoryViewModel(
     private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
+        const val DELETE_DELAY_MS = 300L
     }
 }

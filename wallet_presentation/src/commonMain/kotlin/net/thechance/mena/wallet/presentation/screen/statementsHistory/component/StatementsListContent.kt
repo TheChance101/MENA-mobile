@@ -95,7 +95,7 @@ fun StatementsListContent(
         ) { statement ->
             AnimatedStatementItem(
                 statement = statement,
-                isDividerVisible = state.statements.last() != statement,
+                isDividerVisible = statement != state.statements.lastOrNull(),
                 isEditMode = state.isEditMode,
                 cardOffsetX = cardOffsetX.value.roundToInt(),
                 historyIconOffsetX = historyIconOffsetX.value.roundToInt(),

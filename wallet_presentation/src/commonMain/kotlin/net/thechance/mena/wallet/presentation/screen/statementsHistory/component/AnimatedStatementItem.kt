@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,26 +37,26 @@ fun AnimatedStatementItem(
     cardOffsetX: Int,
     historyIconOffsetX: Int,
     deleteButtonOffsetX: Int,
-    shouldAutoDelete: Boolean = false,
     onDeleteClicked: (onDeleteComplete: (isSuccess: Boolean) -> Unit) -> Unit,
     onStatementCardClicked: (onViewStatementAvailable: (isPdfFound: Boolean) -> Unit) -> Unit
 ) {
     var isVisible by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
-
     var isDeleting by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
         targetValue = if (isDeleting) 0f else 1f,
         animationSpec = tween(
-            durationMillis = 200,
+            durationMillis = 300,
             easing = LinearEasing
         )
     )
 
     AnimatedVisibility(
         visible = isVisible,
-        exit = shrinkVertically(animationSpec = tween(durationMillis = 400, easing = LinearEasing))
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = 200, easing = LinearEasing)
+        )
     ) {
         Column {
             Box(
@@ -70,10 +69,7 @@ fun AnimatedStatementItem(
                         isDeleting = true
                         onDeleteClicked { isSuccess ->
                             scope.launch {
-                                if (isSuccess) {
-                                    delay(100)
-                                    isVisible = false
-                                } else {
+                                if (!isSuccess) {
                                     isDeleting = false
                                 }
                             }
@@ -91,15 +87,13 @@ fun AnimatedStatementItem(
                     totalOutflow = statement.totalOutflow.toString(),
                     onStatementCardClicked = {
                         if (!isEditMode) {
-                            isDeleting = true
                             onStatementCardClicked { isPdfFound ->
-                                if (!isPdfFound) {
-                                    scope.launch {
-                                        delay(100)
-                                        isVisible = false
+                                scope.launch {
+                                    if (!isPdfFound) {
+                                        isDeleting = true
+                                        delay(300)
+                                        isDeleting = false
                                     }
-                                } else {
-                                    isDeleting = false
                                 }
                             }
                         }
