@@ -53,8 +53,9 @@ data class PickLocationScreen(
                     onClickBack = listener::onClickBack,
                     backgroundColor = Theme.colorScheme.background.surfaceLow
                 )
-            }
+            },
         ) {
+
             PickLocationMap(
                 cameraPosition = state.cameraPosition,
                 onCameraMoved = listener::onMoveCamera,
@@ -63,7 +64,9 @@ data class PickLocationScreen(
                 isLocked = state.isMapLocked,
                 currentLocation = state.currentLocation,
                 animateToCurrentLocation = state.animateToCurrentLocation,
-                onSetAnchorLocation = listener::onSetAnchorLocation
+                onSetAnchorLocation = listener::onSetAnchorLocation,
+                onUpdateAddress = listener::onUpdateAddress,
+                addressModel = addressModel
             ) {
                 Column(
                     Modifier.padding(Theme.spacing._16).fillMaxSize(),

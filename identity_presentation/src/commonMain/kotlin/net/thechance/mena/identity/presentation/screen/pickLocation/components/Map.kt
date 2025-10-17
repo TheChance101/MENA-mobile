@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_anchor
 import net.thechance.mena.identity.presentation.components.util.MapStyle
+import net.thechance.mena.identity.presentation.screen.pickLocation.AddressModel
 import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
 import org.jetbrains.compose.resources.painterResource
 import org.maplibre.compose.camera.CameraPosition
@@ -41,12 +42,18 @@ fun PickLocationMap(
     onMapClick: (PickLocationScreenUIState.CoordinatesUiState, DpOffset) -> Unit,
     onCameraMoved: (CameraPosition) -> Unit,
     onSetAnchorLocation: (DpOffset) -> Unit,
+    onUpdateAddress: (addressModel: AddressModel?) -> Unit,
+    addressModel: AddressModel?,
     modifier: Modifier = Modifier,
     animateToCurrentLocation: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val camera = rememberCameraState(firstPosition = cameraPosition)
 
+    LaunchedEffect(addressModel) {
+        onUpdateAddress(addressModel)
+    }
+
+    val camera = rememberCameraState(firstPosition = cameraPosition)
     LaunchedEffect(Unit) { camera.animateTo(finalPosition = cameraPosition) }
 
     LaunchedEffect(camera) {

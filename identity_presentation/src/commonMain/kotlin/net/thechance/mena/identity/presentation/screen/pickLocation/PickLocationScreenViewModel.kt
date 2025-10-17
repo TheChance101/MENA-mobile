@@ -20,11 +20,19 @@ class PickLocationScreenViewModel(
     private val addressModel: AddressModel?,
 ) : BaseScreenModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(PickLocationScreenUIState()),
     PickLocationScreenInteractionListener {
+
     init {
+        onUpdateAddress(addressModel)
+    }
+
+    override fun onUpdateAddress(addressModel: AddressModel?) {
         if (addressModel != null) {
             updateState {
                 copy(
-                    currentLocation = Coordinates(addressModel.latitude, addressModel.longitude).toUiState(),
+                    currentLocation = Coordinates(
+                        latitude = addressModel.latitude,
+                        longitude = addressModel.longitude
+                    ).toUiState(),
                     address = addressModel.addressLine,
                     isMapLocked = true,
                     animateToCurrentLocation = true,
@@ -32,165 +40,166 @@ class PickLocationScreenViewModel(
             }
             changeIsConfirmEnabled()
         }
+
     }
 
-        override fun onClickMap(
-            coordinates: PickLocationScreenUIState.CoordinatesUiState,
-            pointerLocation: DpOffset
-        ) {
+    override fun onClickMap(
+        coordinates: PickLocationScreenUIState.CoordinatesUiState,
+        pointerLocation: DpOffset
+    ) {
+        updateState {
+            copy(
+                isMapLocked = true,
+                currentLocation = coordinates,
+                pointerLocation = pointerLocation
+            )
+        }
+        getLocationName()
+    }
+
+    private fun getLocationName() {
+        tryToExecute(
+            function = { mobileLocationRepository.getLocationName(state.value.currentLocation.toEntity()) },
+            onSuccess = ::onGetLocationNameSuccess,
+            onError = ::onError,
+            dispatcher = Dispatchers.Main
+        )
+    }
+
+    private fun onGetLocationNameSuccess(address: String) {
+        updateState { copy(address = address) }
+        changeIsConfirmEnabled()
+    }
+
+    override fun onMoveCamera(
+        cameraPosition: CameraPosition
+    ) {
+        updateState { copy(cameraPosition = cameraPosition, animateToCurrentLocation = false) }
+    }
+
+    override fun onClickEdit() {
+        updateState {
+            copy(
+                address = "",
+                currentLocation = PickLocationScreenUIState.CoordinatesUiState(),
+                pointerLocation = null,
+                isMapLocked = false,
+                animateToCurrentLocation = false
+            )
+        }
+        changeIsConfirmEnabled()
+    }
+
+    override fun onClickGps() {
+        tryToExecute(
+            function = ::onGpsFetch,
+            onSuccess = ::onClickGpsSuccess,
+            onError = ::onClickGpsError,
+            dispatcher = Dispatchers.Main
+        )
+    }
+
+    private suspend fun onGpsFetch(): Coordinates? {
+        updateState { copy(isGpsButtonLoading = true) }
+        return mobileLocationRepository.getCurrentLocation()
+    }
+
+    private fun onClickGpsSuccess(
+        coordinates: Coordinates?
+    ) {
+        if (coordinates != null) {
             updateState {
                 copy(
-                    currentLocation = coordinates,
-                    pointerLocation = pointerLocation,
-                    isMapLocked = true
+                    currentLocation = coordinates.toUiState(),
+                    isMapLocked = true,
+                    animateToCurrentLocation = true,
+                    isGpsButtonLoading = false
                 )
             }
             getLocationName()
         }
+    }
 
-        private fun getLocationName() {
-            tryToExecute(
-                function = { mobileLocationRepository.getLocationName(state.value.currentLocation.toEntity()) },
-                onSuccess = ::onGetLocationNameSuccess,
-                onError = ::onError,
-                dispatcher = Dispatchers.Main
-            )
-        }
+    private fun onClickGpsError(errorState: ErrorState) {
+        checkLocationEnable()
+    }
 
-        private fun onGetLocationNameSuccess(address: String) {
-            updateState { copy(address = address) }
-            changeIsConfirmEnabled()
-        }
+    private fun checkLocationEnable() {
+        tryToExecute(
+            function = { locationForegroundHandler.checkPermission() },
+            onSuccess = ::checkLocationEnableSuccess,
+            ::onError,
+            dispatcher = dispatcher
+        )
+    }
 
-        override fun onMoveCamera(
-            cameraPosition: CameraPosition
-        ) {
-            updateState { copy(cameraPosition = cameraPosition, animateToCurrentLocation = false, isMapLocked = false) }
-        }
-
-        override fun onClickEdit() {
-            updateState {
-                copy(
-                    address = "",
-                    currentLocation = PickLocationScreenUIState.CoordinatesUiState(),
-                    pointerLocation = null,
-                    isMapLocked = false,
-                    animateToCurrentLocation = false
-                )
-            }
-            changeIsConfirmEnabled()
-        }
-
-        override fun onClickGps() {
-            tryToExecute(
-                function = ::onGpsFetch,
-                onSuccess = ::onClickGpsSuccess,
-                onError = ::onClickGpsError,
-                dispatcher = Dispatchers.Main
-            )
-        }
-
-        private suspend fun onGpsFetch(): Coordinates? {
-            updateState { copy(isGpsButtonLoading = true) }
-            return mobileLocationRepository.getCurrentLocation()
-        }
-
-        private fun onClickGpsSuccess(
-            coordinates: Coordinates?
-        ) {
-            if (coordinates != null) {
+    private fun checkLocationEnableSuccess(permissionState: PermissionState) {
+        when (permissionState) {
+            PermissionState.GRANTED -> {
                 updateState {
                     copy(
-                        currentLocation = coordinates.toUiState(),
-                        isMapLocked = true,
-                        animateToCurrentLocation = true,
+                        errorMessage = "Location is turned off",
                         isGpsButtonLoading = false
                     )
                 }
-                getLocationName()
+            }
+
+            PermissionState.DENIED -> {
+                navigateToEnableLocation()
+            }
+
+            PermissionState.NOT_DETERMINED -> {
+                navigateToEnableLocation()
             }
         }
+    }
 
-        private fun onClickGpsError(errorState: ErrorState) {
-            checkLocationEnable()
-        }
-
-        private fun checkLocationEnable() {
-            tryToExecute(
-                function = { locationForegroundHandler.checkPermission() },
-                onSuccess = ::checkLocationEnableSuccess,
-                ::onError,
-                dispatcher = dispatcher
+    private fun onError(errorState: ErrorState) {
+        updateState {
+            copy(
+                errorMessage = mapErrorToMessage(errorState),
+                isGpsButtonLoading = false,
+                address = ""
             )
         }
+        changeIsConfirmEnabled()
+    }
 
-        private fun checkLocationEnableSuccess(permissionState: PermissionState) {
-            when (permissionState) {
-                PermissionState.GRANTED -> {
-                    updateState {
-                        copy(
-                            errorMessage = "Location is turned off",
-                            isGpsButtonLoading = false
-                        )
-                    }
-                }
-
-                PermissionState.DENIED -> {
-                    navigateToEnableLocation()
-                }
-
-                PermissionState.NOT_DETERMINED -> {
-                    navigateToEnableLocation()
-                }
-            }
-        }
-
-        private fun onError(errorState: ErrorState) {
-            updateState {
-                copy(
-                    errorMessage = mapErrorToMessage(errorState),
-                    isGpsButtonLoading = false,
-                    address = ""
-                )
-            }
-            changeIsConfirmEnabled()
-        }
-
-        private fun navigateToEnableLocation() {
-            sendNewEffect(PickLocationScreenUIEffect.NavigateToEnableLocation)
-            updateState { copy(isGpsButtonLoading = false) }
-        }
+    private fun navigateToEnableLocation() {
+        sendNewEffect(PickLocationScreenUIEffect.NavigateToEnableLocation)
+        updateState { copy(isGpsButtonLoading = false) }
+    }
 
 
-        override fun onClickConfirm() {
-            sendNewEffect(
-                PickLocationScreenUIEffect.NavigateBackWithLocation(
-                    AddressModel(
-                        latitude = state.value.currentLocation.latitude,
-                        longitude = state.value.currentLocation.longitude,
-                        addressLine = state.value.address
-                    )
+    override fun onClickConfirm() {
+        sendNewEffect(
+            PickLocationScreenUIEffect.NavigateBackWithLocation(
+                AddressModel(
+                    latitude = state.value.currentLocation.latitude,
+                    longitude = state.value.currentLocation.longitude,
+                    addressLine = state.value.address
                 )
             )
-        }
+        )
+    }
 
-        override fun onClearErrorMessage() {
-            updateState { copy(errorMessage = null) }
-        }
+    override fun onClearErrorMessage() {
+        updateState { copy(errorMessage = null) }
+    }
 
-        override fun onClickBack() {
-            sendNewEffect(PickLocationScreenUIEffect.NavigateBack)
-        }
+    override fun onClickBack() {
+        sendNewEffect(PickLocationScreenUIEffect.NavigateBack)
+    }
 
     override fun onSetAnchorLocation(pointerLocation: DpOffset) {
-        updateState { copy(pointerLocation = pointerLocation) }
+        updateState { copy(pointerLocation = pointerLocation , animateToCurrentLocation = false) }
     }
 
     private fun changeIsConfirmEnabled() {
-            if (state.value.isMapLocked && state.value.address.isNotBlank()) {
-                updateState { copy(isConfirmEnabled = true) }
-            } else {
-                updateState { copy(isConfirmEnabled = false) }
-            }
+        if (state.value.isMapLocked && state.value.address.isNotBlank()) {
+            updateState { copy(isConfirmEnabled = true) }
+        } else {
+            updateState { copy(isConfirmEnabled = false) }
         }
     }
+}

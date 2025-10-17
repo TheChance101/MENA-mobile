@@ -56,7 +56,7 @@ fun AddressCard(
             isMainAddress = isMainAddress
         )
 
-        Map(
+        AddLocationMap(
             modifier = Modifier
                 .padding(vertical = Theme.spacing._8)
                 .clip(RoundedCornerShape(Theme.radius.md))
@@ -74,7 +74,7 @@ fun AddressCard(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Map(
+fun AddLocationMap(
     cameraPosition: CameraPosition,
     modifier: Modifier = Modifier
 ) {

@@ -29,13 +29,16 @@ class AddEditLocationScreenViewModel(
         }
     }
 
-    override fun onClickMap() {
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateToMap(addressModel, ::updateAddress))
-    }
 
     override fun onClickEdit() {
         sendNewEffect(
-            AddEditLocationScreenUIEffect.NavigateToMap(addressModel, ::updateAddress)
+            AddEditLocationScreenUIEffect.NavigateToMap(
+                AddressModel(
+                    state.value.latitude,
+                    state.value.longitude,
+                    state.value.address
+                ), ::updateAddress
+            )
         )
     }
 
@@ -112,7 +115,7 @@ class AddEditLocationScreenViewModel(
         if (state.value.addressID != null) {
             addressesRepository.editAddress(
                 address = Address(
-                    id =Uuid.parse(state.value.addressID!!),
+                    id = Uuid.parse(state.value.addressID!!),
                     latitude = state.value.latitude,
                     longitude = state.value.longitude,
                     addressLine = state.value.address,
@@ -146,6 +149,14 @@ class AddEditLocationScreenViewModel(
                 isLoading = false, errorMessage = mapErrorToMessage(errorState)
             )
         }
+    }
+
+    override fun onClickMap() {
+        sendNewEffect(
+            AddEditLocationScreenUIEffect.NavigateToMap(
+                null, ::updateAddress
+            )
+        )
     }
 
     private fun updateAddress(newAddress: AddressModel) {

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.components
+package net.thechance.mena.identity.presentation.screen.addresses.component
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,7 +24,7 @@ import org.maplibre.compose.util.ClickResult
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun Map(
+fun AddLocationMap(
     cameraPosition: CameraPosition,
     longitude: Double?,
     latitude: Double?,
