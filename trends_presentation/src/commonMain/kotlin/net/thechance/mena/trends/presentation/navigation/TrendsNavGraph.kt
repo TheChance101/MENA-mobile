@@ -41,7 +41,7 @@ fun TrendsNavHost() {
                 MainContainerScreen()
             }
 
-            composable<Route.UpdateInterests> {
+            composable<Route.UpdateCategories> {
                 UpdateCategoriesScreen()
             }
 

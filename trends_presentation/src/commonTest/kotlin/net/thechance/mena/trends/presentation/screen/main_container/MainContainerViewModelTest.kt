@@ -57,10 +57,10 @@ class MainContainerViewModelTest {
     }
 
     @Test
-    fun `navigateToUpdateInterests should navigate to update interests screen`() = runTest {
-        viewModel.navigateToUpdateInterests()
+    fun `navigateToUpdateCategories should navigate to update interests screen`() = runTest {
+        viewModel.navigateToUpdateCategories()
         viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToUpdateInterests)
+            assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToUpdateCategories)
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -46,8 +46,8 @@ internal fun MainContainerScreen(
                 navController.navigate(Route.UploadReel)
             }
 
-            MainContainerEffect.NavigateToUpdateInterests -> {
-                navController.navigate(Route.UpdateInterests)
+            MainContainerEffect.NavigateToUpdateCategories -> {
+                navController.navigate(Route.UpdateCategories)
             }
         }
     }
@@ -57,7 +57,7 @@ internal fun MainContainerScreen(
         onClickCategory = viewModel::navigateToCategories,
         onClickManageTrends = viewModel::navigateToManageTrends,
         onClickUploadReel = viewModel::navigateToUploadReel,
-        onClickUpdateInterests = viewModel::navigateToUpdateInterests
+        onClickUpdateCategories = viewModel::navigateToUpdateCategories
     )
 }
 
@@ -67,7 +67,7 @@ private fun MainContainerScreenContent(
     onClickCategory: () -> Unit, // TODO: REMOVE CALLBACK IN FUTURE
     onClickManageTrends: () -> Unit, // TODO: REMOVE CALLBACK IN FUTURE
     onClickUploadReel: () -> Unit, // TODO: REMOVE CALLBACK IN FUTURE
-    onClickUpdateInterests: () -> Unit // TODO: REMOVE CALLBACK IN FUTURE
+    onClickUpdateCategories: () -> Unit // TODO: REMOVE CALLBACK IN FUTURE
 ) {
     if (state.isCategoriesAlreadySelectedByUser != null) {
         Column(
@@ -103,7 +103,7 @@ private fun MainContainerScreenContent(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = onClickUpdateInterests,
+                    onClick = onClickUpdateCategories,
                 ) {
                     Text("Update Interests", style = Theme.typography.title.medium)
                 }
