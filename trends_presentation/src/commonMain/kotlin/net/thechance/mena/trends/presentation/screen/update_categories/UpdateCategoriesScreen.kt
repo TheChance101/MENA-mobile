@@ -188,7 +188,7 @@ private fun LoadingProgressBar() {
 
 @Preview
 @Composable
-private fun CategoryPickScreenPreview() {
+private fun UpdateCategoriesScreenPreview() {
     MenaTheme {
         UpdateCategoriesScreenContent(
             state = UpdateCategoriesScreenState(),
