@@ -9,8 +9,6 @@ import dev.mokkery.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.quran
@@ -74,8 +72,6 @@ class SearchViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
     }
 
-    // ============ Query Change Tests ============
-
     @Test
     fun `onQueryChange should update query in state when called`() = runTest {
         testViewModel.onQueryChange(TEST_QUERY)
@@ -86,8 +82,8 @@ class SearchViewModelTest {
     fun `onQueryChange should clear search results when query length is less than 2`() = runTest {
         everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
         testViewModel.onQueryChange(VALID_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         testViewModel.onQueryChange(SHORT_QUERY)
 
@@ -100,10 +96,10 @@ class SearchViewModelTest {
         everySuspend { quranRepository.searchForAyahInQuran(SECOND_QUERY) } returns emptyList()
 
         testViewModel.onQueryChange(FIRST_QUERY)
-        advanceTimeBy(HALF_SEARCH_DELAY)
+        testDispatcher.scheduler.advanceTimeBy(HALF_SEARCH_DELAY)
         testViewModel.onQueryChange(SECOND_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
     }
@@ -113,8 +109,8 @@ class SearchViewModelTest {
         everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns emptyList()
 
         testViewModel.onQueryChange(VALID_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
     }
@@ -124,8 +120,8 @@ class SearchViewModelTest {
         everySuspend { quranRepository.searchForAyahInQuran(SINGLE_CHAR_QUERY) } returns dummyAyat
 
         testViewModel.onQueryChange(SINGLE_CHAR_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
     }
@@ -134,8 +130,8 @@ class SearchViewModelTest {
     fun `onQueryChange with empty string should clear results`() = runTest {
         everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
         testViewModel.onQueryChange(VALID_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         testViewModel.onQueryChange(EMPTY_STRING)
 
@@ -149,16 +145,14 @@ class SearchViewModelTest {
         everySuspend { quranRepository.searchForAyahInQuran(SECOND_QUERY) } returns emptyList()
 
         testViewModel.onQueryChange(FIRST_QUERY)
-        advanceTimeBy(HALF_SEARCH_DELAY)
+        testDispatcher.scheduler.advanceTimeBy(HALF_SEARCH_DELAY)
 
         testViewModel.onQueryChange(SECOND_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         assertTrue(testViewModel.uiState.value.searchResult.isEmpty())
     }
-
-    // ============ Clear Query Tests ============
 
     @Test
     fun `onClearQueryClick should clear query in state when called`() = runTest {
@@ -171,8 +165,8 @@ class SearchViewModelTest {
     fun `onClearQueryClick should not clear search results`() = runTest {
         everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
         testViewModel.onQueryChange(VALID_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         val resultsBeforeClear = testViewModel.uiState.value.searchResult
 
@@ -186,8 +180,8 @@ class SearchViewModelTest {
         everySuspend { quranRepository.searchForAyahInQuran(VALID_QUERY) } returns dummyAyat
 
         testViewModel.onQueryChange(VALID_QUERY)
-        advanceTimeBy(SEARCH_DELAY)
-        advanceUntilIdle()
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         val resultsCount = testViewModel.uiState.value.searchResult.size
 
@@ -243,8 +237,6 @@ class SearchViewModelTest {
             assertTrue(effect.surahName.isNotEmpty())
         }
     }
-
-    // ============ State Initialization Tests ============
 
     @Test
     fun `state should initialize with correct surahId and surahName from args`() = runTest {
