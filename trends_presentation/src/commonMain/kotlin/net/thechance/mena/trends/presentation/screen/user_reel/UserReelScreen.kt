@@ -112,7 +112,7 @@ private fun UserReelScreenContent(
                             style = Theme.typography.label.medium,
                             modifier = Modifier
                                 .align(Alignment.End)
-                                .padding(top = 24.dp, bottom = 12.dp, end = 8.dp)
+                                .padding(top = 24.dp, bottom = Theme.spacing._12, end = Theme.spacing._8)
                                 .clickable(
                                     onClick = { listener.onConfirmDeleteClick() },
                                     role = Role.Button,
