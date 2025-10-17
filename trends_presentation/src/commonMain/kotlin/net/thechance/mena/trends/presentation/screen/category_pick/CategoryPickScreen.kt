@@ -42,10 +42,9 @@ internal fun CategoryPickScreen(
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             is CategoryPickScreenEffect.NavigateBack -> navController.popBackStack()
-            is CategoryPickScreenEffect.NavigateToHome -> navController.navigate(Route.ReelHome){
-                popUpTo(Route.Categories){ inclusive = true}
+            is CategoryPickScreenEffect.NavigateToHome -> navController.navigate(Route.ReelHome) {
+                popUpTo(Route.Categories) { inclusive = true }
             }
-
         }
     }
 

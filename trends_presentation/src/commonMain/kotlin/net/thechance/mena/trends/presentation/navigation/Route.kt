@@ -29,5 +29,4 @@ internal sealed interface Route {
 
     @Serializable
     data object ReelHome : Route
-
 }

@@ -54,7 +54,7 @@ internal fun CategoryPublishScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is CategoryPublishEffect.NavigateBack -> navController.popBackStack()
-            is CategoryPublishEffect.NavigateToHome -> navController.navigate(Route.ReelHome){
+            is CategoryPublishEffect.NavigateToHome -> navController.navigate(Route.ReelHome) {
                 popUpTo(Route.MainContainer)
             }
         }
