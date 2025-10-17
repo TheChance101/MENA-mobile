@@ -3,6 +3,7 @@ package net.thechance.mena.trends.presentation.screen.show_real
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -89,7 +90,8 @@ private fun ReelScreenContent(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+                    .padding(horizontal = Theme.spacing._16),
+                contentPadding = PaddingValues(vertical = Theme.spacing._8),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
             ) {
                 items(reels.itemSnapshotList.items) { reel ->
