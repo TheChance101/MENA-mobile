@@ -100,7 +100,7 @@ class ReelViewModelTest {
             val state = awaitItem()
             val updated = state.reels.asSnapshot().first()
 
-            assertThat(updated.likes).isEqualTo(initial.likes + 1)
+            assertThat(updated.likesCount).isEqualTo(initial.likesCount + 1)
             assertThat(updated.isLiked).isTrue()
 
             cancelAndIgnoreRemainingEvents()
@@ -120,7 +120,7 @@ class ReelViewModelTest {
 
         val reverted = viewModel.state.value.reels.asSnapshot().first()
 
-        assertThat(reverted.likes).isEqualTo(initial.likes)
+        assertThat(reverted.likesCount).isEqualTo(initial.likesCount)
         assertThat(reverted.isLiked).isEqualTo(initial.isLiked)
 
         assertThat(viewModel.state.value.error != null).isTrue()

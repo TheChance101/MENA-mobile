@@ -164,7 +164,7 @@ private fun ReelFooterSection(
                     .noRippleClickable { onLikeClick() }
             )
             Text(
-                text = stringResource(Res.string.likes_suffix, reel.likes),
+                text = stringResource(Res.string.likes_suffix, reel.likesCount),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
             )
@@ -181,7 +181,7 @@ private fun ReelFooterSection(
                 modifier = Modifier.size(24.dp)
             )
             Text(
-                text = stringResource(Res.string.views_suffix, reel.views),
+                text = stringResource(Res.string.views_suffix, reel.viewsCount),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
             )

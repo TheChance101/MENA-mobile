@@ -113,8 +113,8 @@ class ReelExtensionTest {
             thumbnailUrl = "thumb1.jpg",
             videoUrl = "video1.mp4",
             description = "Test description",
-            likes = 10,
-            views = 100
+            likesCount = 10,
+            viewsCount = 100
         )
 
         val testTrendUiState2 = ReelUiState(
@@ -125,8 +125,8 @@ class ReelExtensionTest {
             thumbnailUrl = "thumb2.jpg",
             videoUrl = "video2.mp4",
             description = "Another description",
-            likes = 20,
-            views = 200
+            likesCount = 20,
+            viewsCount = 200
         )
 
         val testTrendUiState3 = ReelUiState(
@@ -137,8 +137,8 @@ class ReelExtensionTest {
             thumbnailUrl = "thumb3.jpg",
             videoUrl = "video3.mp4",
             description = "Description with categories",
-            likes = 30,
-            views = 300
+            likesCount = 30,
+            viewsCount = 300
         )
 
         val testTrendUiState4 = ReelUiState(
@@ -149,8 +149,8 @@ class ReelExtensionTest {
             thumbnailUrl = "",
             videoUrl = "",
             description = "",
-            likes = 0,
-            views = 0
+            likesCount = 0,
+            viewsCount = 0
         )
     }
 }

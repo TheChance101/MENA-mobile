@@ -25,7 +25,7 @@ data class ReelUiState(
     val timeAgo: TimeAgoValue? = null,
     val videoUrl: String = "",
     val description: String = "",
-    val likes: Int = 0,
-    val views: Int = 0,
+    val likesCount: Int = 0,
+    val viewsCount: Int = 0,
     val isLiked: Boolean = false
 )

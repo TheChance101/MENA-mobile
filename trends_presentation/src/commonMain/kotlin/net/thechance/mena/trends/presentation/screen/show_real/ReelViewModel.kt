@@ -45,7 +45,7 @@ internal class ReelViewModel(
         updateReelInPagingData(reelId) { reel ->
             reel.copy(
                 isLiked = !reel.isLiked,
-                likes = if (reel.isLiked) reel.likes - 1 else reel.likes + 1
+                likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
             )
         }
     }
@@ -54,7 +54,7 @@ internal class ReelViewModel(
         updateReelInPagingData(reelId) { reel ->
             reel.copy(
                 isLiked = !reel.isLiked,
-                likes = if (reel.isLiked) reel.likes - 1 else reel.likes + 1
+                likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
             )
         }
     }
