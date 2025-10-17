@@ -54,7 +54,7 @@ internal fun UpdateCategoriesScreen(
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             is UpdateCategoriesScreenEffect.NavigateBack -> navController.popBackStack()
-            is UpdateCategoriesScreenEffect.NavigateToTrends -> navController.navigate(Route.Trends)
+            is UpdateCategoriesScreenEffect.NavigateToTrends -> navController.navigate(Route.ReelHome)
         }
     }
 
