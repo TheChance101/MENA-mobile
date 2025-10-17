@@ -62,6 +62,7 @@
     <string name="no_saved_locations_message">انقر على الزر أدناه للبدء بإضافة ومتابعة حالة مواقعك المفضلة.</string>
     <string name="add_location_button">إضافة موقع</string>
     <string name="location_saved_empty_desc">أيقونة عدم وجود مواقع محفوظة</string>
+    <string name="pick_location_title">اختر منطقة</string>
 
 
     <!-- Add Edit Location Screen -->

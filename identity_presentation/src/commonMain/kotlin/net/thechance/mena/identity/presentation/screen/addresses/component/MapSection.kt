@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.components
+package net.thechance.mena.identity.presentation.screen.addresses.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.location
@@ -22,7 +23,13 @@ import sv.lib.squircleshape.SquircleShape
 fun MapSection(
     cameraPosition: CameraPosition,
     onClickEdit: () -> Unit,
-    modifier: Modifier = Modifier
+    onClickMap: () -> Unit,
+    setAnchorLocation: (DpOffset) -> Unit,
+    longitude : Double?,
+    latitude : Double?,
+    modifier: Modifier = Modifier,
+    anchorLocation: DpOffset? = null,
+    animateToCurrentLocation: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -42,13 +49,19 @@ fun MapSection(
                 color = Theme.colorScheme.shadeSecondary
             )
         }
-        Map(
+        AddLocationMap(
             modifier = Modifier
                 .clip(SquircleShape(Theme.radius.md))
                 .fillMaxWidth()
                 .height(244.dp),
             cameraPosition = cameraPosition,
             onEditClick = onClickEdit,
+            onClickMap = onClickMap,
+            longitude = longitude,
+            latitude = latitude,
+            animateToCurrentLocation = animateToCurrentLocation,
+            onSetAnchorLocation = setAnchorLocation,
+            anchorLocation = anchorLocation
         )
     }
 }

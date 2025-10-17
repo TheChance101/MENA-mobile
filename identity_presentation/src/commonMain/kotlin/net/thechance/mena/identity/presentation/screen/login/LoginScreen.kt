@@ -32,7 +32,7 @@ import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.Countr
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.components.LabelInputPassword
+import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreen
@@ -92,7 +92,7 @@ class LoginScreen : BaseScreen<
                         onClickCountry = listener::onPhoneCodeClicked
                     )
 
-                    LabelInputPassword(
+                    LabeledInputPassword(
                         password = state.password,
                         isPasswordVisible = state.isPasswordVisible,
                         onTogglePasswordVisibility = listener::onPasswordVisibilityToggled,

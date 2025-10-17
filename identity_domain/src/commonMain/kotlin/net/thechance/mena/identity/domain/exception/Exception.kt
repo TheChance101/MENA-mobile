@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.domain.exception
 
 abstract class AuthenticationException(message: String) : Exception(message)
+abstract class LocationException(message: String) : Exception(message)
 
 class InvalidCountryCodeException(
     countryCode: String
@@ -30,3 +31,8 @@ class InvalidOTPException : AuthenticationException("Invalid OTP")
 class OtpExpiredException : AuthenticationException("OTP code expired")
 class TooManyRequestsException : AuthenticationException("Too many requests")
 class NoNetworkException : AuthenticationException("No Internet Connection")
+class UnableToFindLocationException() : LocationException("Unable to find location")
+class CannotOpenSettingsException() : LocationException("Cannot open settings")
+class FailedToRequestPermissionException() : LocationException("Failed to request permission")
+class AddressNotFoundException() : LocationException("Address not found")
+

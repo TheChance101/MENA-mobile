@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
-import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.add_location
 import mena.identity_presentation.generated.resources.address
@@ -29,22 +28,26 @@ import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.components.AuthAppBar
-import net.thechance.mena.identity.presentation.components.MapSection
-import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
+import net.thechance.mena.identity.presentation.screen.addresses.component.MapSection
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.AddressModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.maplibre.compose.camera.CameraPosition
+import org.koin.core.parameter.parametersOf
 
 class AddEditLocationScreen(
-    val onSuccess: ()->Unit
-) : BaseScreen<
+    val onSuccess: ()->Unit,
+    private val addressModel: AddressModel?,
+
+    ) : BaseScreen<
         AddEditLocationScreenViewModel,
         AddLocationScreenUIState,
         AddEditLocationScreenUIEffect,
         AddEditLocationScreenInteractionListener>() {
+
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(getScreenModel(parameters = { parametersOf(addressModel) }))
     }
 
     @Composable
@@ -59,7 +62,7 @@ class AddEditLocationScreen(
                         stringResource(Res.string.add_location)
                     else
                         stringResource(Res.string.edit_location),
-                    onBackClicked = listener::onClickBack
+                    onClickBack = listener::onClickBack
                 )
             },
             bottomBar = {
@@ -83,11 +86,14 @@ class AddEditLocationScreen(
 
                 item {
                     MapSection(
-                        cameraPosition = CameraPosition(
-                            target = Position(state.longitude, state.latitude),
-                            zoom = 1.0
-                        ),
+                        cameraPosition = state.cameraPosition,
                         onClickEdit = listener::onClickEdit,
+                        onClickMap = listener::onClickMap,
+                        anchorLocation = state.anchorLocation,
+                        setAnchorLocation = listener::onSetAnchorLocation,
+                        longitude = state.longitude,
+                        latitude = state.latitude,
+                        animateToCurrentLocation = state.animateToCurrentLocation
                     )
                 }
 
@@ -95,9 +101,7 @@ class AddEditLocationScreen(
                     TextField(
                         value = state.address,
                         title = stringResource(Res.string.address),
-                        onValueChanged = { newAddress ->
-                            listener.onChangeAddress(newAddress)
-                        },
+                        onValueChanged = listener::onChangeAddress,
                         readOnly = true,
                         enabled = false,
                         hint = "",
@@ -109,9 +113,7 @@ class AddEditLocationScreen(
                 item {
                     AddressTypeSection(
                         selectedAddressType = state.addressType,
-                        onClickAddressType = { newType ->
-                            listener.onClickAddressType(newType)
-                        }
+                        onClickAddressType = listener::onClickAddressType,
                     )
                 }
 
@@ -132,6 +134,10 @@ class AddEditLocationScreen(
         navigator: Navigator
     ) {
         when (effect) {
+            AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
+            is AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(
+                PickLocationScreen(addressModel = effect.addressModel, onUpdateLocation = effect.onUpdateLocation)
+            )
             AddEditLocationScreenUIEffect.NavigateBack -> {
                 onSuccess()
                 navigator.pop()

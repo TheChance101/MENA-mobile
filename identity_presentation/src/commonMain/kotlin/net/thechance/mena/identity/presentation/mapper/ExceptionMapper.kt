@@ -18,6 +18,10 @@ internal fun mapErrorToMessage(error: ErrorState): String {
         ErrorState.TooManyRequests -> "Too many requests. Please try again later."
         ErrorState.OTPExpired -> "OTP expired"
         ErrorState.NoNetwork -> "No Internet Connection"
+        ErrorState.NoLocationPermission -> "Location permission denied"
+        ErrorState.FailedToOpenSettings -> "Failed to open settings"
+        ErrorState.FailedToRequestPermission -> "Permission not granted"
+        ErrorState.AddressNotFound -> "Address not found"
         is ErrorState.IsActiveAddress -> "Can't Delete Active Address"
     }
 }
