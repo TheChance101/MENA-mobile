@@ -24,7 +24,6 @@ import mena.identity_presentation.generated.resources.ic_anchor_my_locations
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.presentation.components.Map
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.maplibre.compose.camera.CameraPosition
@@ -57,7 +56,7 @@ fun AddressCard(
             isMainAddress = isMainAddress
         )
 
-        Map(
+        MyAddressesMap(
             modifier = Modifier
                 .padding(vertical = Theme.spacing._8)
                 .clip(RoundedCornerShape(Theme.radius.md))
@@ -75,7 +74,7 @@ fun AddressCard(
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AddLocationMap(
+private fun MyAddressesMap(
     cameraPosition: CameraPosition,
     modifier: Modifier = Modifier
 ) {
