@@ -237,7 +237,7 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be false when otherAddressType is null`() = runTest {
         viewModel.onChangeAddress(addressLine)
 
-        viewModel.onClickAddressType(AddressType.Other)
+        viewModel.onClickAddressType(AddressType.Other(""))
 
         viewModel.onChangeOtherAddressType(" ")
 
@@ -249,7 +249,7 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be false when otherAddressType is empty`() = runTest {
         viewModel.onChangeAddress(addressLine)
 
-        viewModel.onClickAddressType(AddressType.Other)
+        viewModel.onClickAddressType(AddressType.Other(""))
 
         assertTrue { !viewModel.state.value.isSaveEnabled }
 
@@ -303,7 +303,7 @@ class AddEditLocationScreenViewModelTest {
                 otherAddress = null,
                 isActive = false
             )
-            viewModel.onClickAddressType(AddressType.Other)
+            viewModel.onClickAddressType(AddressType.Other(""))
 
 
             assertTrue { !viewModel.state.value.isSaveEnabled }
@@ -323,7 +323,7 @@ class AddEditLocationScreenViewModelTest {
                 otherAddress = null,
                 isActive = false
             )
-            viewModel.onClickAddressType(AddressType.Other)
+            viewModel.onClickAddressType(AddressType.Other(""))
             viewModel.onChangeOtherAddressType(" ")
 
 
@@ -381,7 +381,7 @@ class AddEditLocationScreenViewModelTest {
                 otherAddress = null,
                 isActive = false
             )
-            viewModel.onClickAddressType(AddressType.Other)
+            viewModel.onClickAddressType(AddressType.Other("Apartment"))
             viewModel.onChangeOtherAddressType("Apartment")
 
             assertTrue { viewModel.state.value.isSaveEnabled }
