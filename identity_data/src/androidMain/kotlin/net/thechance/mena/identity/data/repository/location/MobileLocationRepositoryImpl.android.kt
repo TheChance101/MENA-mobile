@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.data.repository.location
 
+import dev.jordond.compass.Priority
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.MobileGeolocator
@@ -14,7 +15,7 @@ actual class MobileLocationRepositoryImpl( private val geocoder: GeocoderWrapper
 
     actual override suspend fun getCurrentLocation(): Coordinates? {
         val geolocator: Geolocator = MobileGeolocator()
-        return when (val result = geolocator.current()) {
+        return when (val result = geolocator.current(Priority.HighAccuracy)) {
             is GeolocatorResult.Error -> {
                 throw UnableToFindLocationException()
             }
