@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.show_real
+package net.thechance.mena.trends.presentation.screen.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +34,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.screen.show_real.component.FeedReelCard
+import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -42,24 +42,24 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun ReelHomeScreen(
-    viewModel: ReelViewModel = koinViewModel()
+internal fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            is ReelUiEffect.NavigateToReelDetails ->
+            is HomeUiEffect.NavigateToReelDetails ->
                 navController.navigate(Route.ReelDetails(effect.trendId))
 
-            is ReelUiEffect.NavigateToAddReel ->
+            is HomeUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)
 
-            is ReelUiEffect.NavigateToChangeTags ->
-                navController.navigate(Route.Categories)
+            is HomeUiEffect.NavigateToChangeTags ->
+                navController.navigate(Route.UpdateCategories)
 
-            is ReelUiEffect.NavigateToManageMyTrends ->
+            is HomeUiEffect.NavigateToManageMyTrends ->
                 navController.navigate(Route.ManageReels)
         }
     }
@@ -74,8 +74,8 @@ internal fun ReelHomeScreen(
 
 @Composable
 private fun ReelScreenContent(
-    state: ReelScreenState,
-    listener: ReelInteractionListener,
+    state: HomeScreenState,
+    listener: HomeInteractionListener,
 ) {
     Scaffold(
         topBar = {

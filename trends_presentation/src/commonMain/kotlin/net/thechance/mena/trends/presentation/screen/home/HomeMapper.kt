@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.show_real
+package net.thechance.mena.trends.presentation.screen.home
 
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue

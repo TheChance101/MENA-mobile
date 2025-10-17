@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.show_real.component
+package net.thechance.mena.trends.presentation.screen.home.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -34,7 +34,7 @@ import mena.trends_presentation.generated.resources.views_suffix
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.trends.presentation.screen.show_real.ReelUiState
+import net.thechance.mena.trends.presentation.screen.home.ReelUiState
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.asString
 import org.jetbrains.compose.resources.painterResource

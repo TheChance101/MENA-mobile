@@ -69,14 +69,16 @@ fun createMessage(
     chatId: Uuid = Uuid.random(),
     content: MessageContent = MessageContent.Text("Hello from test"),
     sendAt: LocalDateTime = LocalDateTime.now(),
-    status: MessageStatus = MessageStatus.SENT
+    status: MessageStatus = MessageStatus.SENT,
+    isMine: Boolean = true
 ) = Message(
     id = id,
     senderId = senderId,
     chatId = chatId,
     content = content,
     sendAt = sendAt,
-    status = status
+    status = status,
+    isMine = isMine
 )
 
 fun createMessageDto(
@@ -85,14 +87,16 @@ fun createMessageDto(
     chatId: String = Uuid.random().toString(),
     text: String = "Hello from history",
     sendAt: String = "2025-10-01T12:00:00Z",
-    isRead: Boolean = false
+    isRead: Boolean = false,
+    isMine: Boolean = true
 ) = MessageDto(
     id = id,
     senderId = senderId,
     chatId = chatId,
     text = text,
     sendAt = sendAt,
-    isRead = isRead
+    isRead = isRead,
+    isMine = isMine
 )
 
 fun createChatDto(

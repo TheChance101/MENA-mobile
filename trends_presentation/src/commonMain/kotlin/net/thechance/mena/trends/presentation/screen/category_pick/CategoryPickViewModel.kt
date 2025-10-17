@@ -6,6 +6,7 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
+import net.thechance.mena.trends.presentation.shared.model.mapper.toUserCategoryUiState
 import net.thechance.mena.trends.presentation.shared.model.toggleCategory
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -34,7 +35,7 @@ internal class CategoryPickViewModel(
     }
 
     private fun handleLoadCategoriesSuccess(categories: List<Category>) {
-        updateState { copy(categories = categories.toUiStates()) }
+        updateState { copy(categories = categories.toUserCategoryUiState()) }
     }
 
     override fun onCategoryClick(categoryId: String) = updateState {
@@ -44,7 +45,7 @@ internal class CategoryPickViewModel(
     override fun onNextClick() {
         tryToExecute(
             block = { saveSelectedCategories() },
-            onSuccess = { sendEffect(CategoryPickScreenEffect.NavigateToTrends) },
+            onSuccess = { sendEffect(CategoryPickScreenEffect.NavigateToHome) },
             onStart = ::startSaving,
             onEnd = ::endSaving,
             onError = { errorState -> updateState { copy(error = errorState) } },

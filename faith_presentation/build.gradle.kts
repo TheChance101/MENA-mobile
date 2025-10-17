@@ -53,7 +53,6 @@ kotlin {
             implementation(libs.coil.gif)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
-
         }
         iosMain.dependencies {
 
@@ -93,6 +92,7 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel",
                 "net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel",
                 "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel",
                 "*MapperKt",
             )
         }

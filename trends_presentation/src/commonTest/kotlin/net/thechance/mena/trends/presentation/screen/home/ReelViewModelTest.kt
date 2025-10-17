@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.show_real
+package net.thechance.mena.trends.presentation.screen.home
 
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
@@ -26,19 +26,19 @@ class ReelViewModelTest {
 
     private val repository: ReelsRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel: ReelViewModel
+    private lateinit var viewModel: HomeViewModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = ReelViewModel(repository, testDispatcher)
+        viewModel = HomeViewModel(repository, testDispatcher)
     }
 
     @Test
     fun `onVideoClick should send NavigateToReelDetails effect`() = runTest {
         viewModel.effect.test {
             viewModel.onReelClick("1")
-            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToReelDetails("1"))
+            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToReelDetails("1"))
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -47,7 +47,7 @@ class ReelViewModelTest {
     fun `onAddReelClick should send NavigateToAddReel effect`() = runTest {
         viewModel.effect.test {
             viewModel.onAddReelClick()
-            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToAddReel)
+            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToAddReel)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -56,7 +56,7 @@ class ReelViewModelTest {
     fun `onManageTrendsClick should send NavigateToManageTrends effect`() = runTest {
         viewModel.effect.test {
             viewModel.onManageMyTrendsClick()
-            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToManageMyTrends)
+            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToManageMyTrends)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -65,7 +65,7 @@ class ReelViewModelTest {
     fun `onEditTagsClick should send NavigateToChangeTags effect`() = runTest {
         viewModel.effect.test {
             viewModel.onEditTagsClick()
-            assertThat(awaitItem()).isEqualTo(ReelUiEffect.NavigateToChangeTags)
+            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToChangeTags)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -73,7 +73,7 @@ class ReelViewModelTest {
     @Test
     fun `getTrends should update state when success`() = runTest {
         everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
-        viewModel = ReelViewModel(repository, testDispatcher)
+        viewModel = HomeViewModel(repository, testDispatcher)
         advanceUntilIdle()
         val items = viewModel.state.value.reels?.asSnapshot()
         assertThat(items?.first()?.id).isEqualTo(testReel.id)
@@ -87,7 +87,7 @@ class ReelViewModelTest {
             likesCount = testReel.likesCount + 1
         )
 
-        viewModel = ReelViewModel(repository, testDispatcher)
+        viewModel = HomeViewModel(repository, testDispatcher)
         advanceUntilIdle()
 
         val initial = viewModel.state.value.reels.asSnapshot().first()

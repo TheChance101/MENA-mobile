@@ -1,6 +1,6 @@
-package net.thechance.mena.trends.presentation.screen.show_real
+package net.thechance.mena.trends.presentation.screen.home
 
-interface ReelInteractionListener {
+interface HomeInteractionListener {
     fun onLikeClick(reelId: String)
     fun onAddReelClick()
     fun onEditTagsClick()

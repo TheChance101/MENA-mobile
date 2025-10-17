@@ -4,6 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +21,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -94,16 +97,30 @@ private fun UserReelScreenContent(
                 Dialog(
                     title = stringResource(Res.string.delete_reel),
                     message = stringResource(Res.string.confirmation_message),
-                    buttonText = stringResource(Res.string.delete),
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true,
                     isVisible = state.isConfirmationDialogVisible,
                     onDismiss = { listener.onDismissConfirmationDialog() },
-                    onActionClick = { listener.onConfirmDeleteClick() },
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true,
                     onCancelClick = { listener.onDismissConfirmationDialog() },
                     dialogCornerShape = RoundedCornerShape(Theme.radius.md),
                     cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(Theme.spacing._16)
+                    contentPadding = PaddingValues(Theme.spacing._16),
+                    actionButtons = {
+                        Text(
+                            text = stringResource(Res.string.delete),
+                            color = Theme.colorScheme.error,
+                            style = Theme.typography.label.medium,
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(top = 24.dp, bottom = Theme.spacing._12, end = Theme.spacing._8)
+                                .clickable(
+                                    onClick = { listener.onConfirmDeleteClick() },
+                                    role = Role.Button,
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                )
+                        )
+                    }
                 )
             }
 
@@ -111,21 +128,21 @@ private fun UserReelScreenContent(
                 Dialog(
                     title = stringResource(Res.string.success_delete_title),
                     message = stringResource(Res.string.success_delete_message),
-                    buttonText = "",
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true,
                     isVisible = state.isReelDeleted == true && state.error == null,
                     onDismiss = {
                         listener.onDismissSuccessDialog()
                         listener.onBackClick()
                     },
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true,
                     onCancelClick = {
                         listener.onDismissSuccessDialog()
                         listener.onBackClick()
                     },
                     dialogCornerShape = RoundedCornerShape(Theme.radius.md),
                     cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(Theme.spacing._16)
+                    contentPadding = PaddingValues(Theme.spacing._16),
+                    actionButtons = {}
                 )
             }
 
@@ -133,15 +150,15 @@ private fun UserReelScreenContent(
                 Dialog(
                     title = stringResource(Res.string.fail_delete_title),
                     message = stringResource(Res.string.fail_delete_message),
-                    buttonText = "",
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true,
                     isVisible = state.error != null,
                     onDismiss = { listener.onDismissErrorDialog() },
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true,
                     onCancelClick = { listener.onDismissErrorDialog() },
                     dialogCornerShape = RoundedCornerShape(Theme.radius.md),
                     cancelBackgroundShape = RoundedCornerShape(50),
-                    contentPadding = PaddingValues(Theme.spacing._16)
+                    contentPadding = PaddingValues(Theme.spacing._16),
+                    actionButtons = {}
                 )
             }
         }

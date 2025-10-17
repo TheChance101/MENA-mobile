@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.show_real
+package net.thechance.mena.trends.presentation.screen.home
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -15,11 +15,11 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
-internal class ReelViewModel(
+internal class HomeViewModel(
     @Provided private val repository: ReelsRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ReelScreenState, ReelUiEffect>(ReelScreenState()),
-    ReelInteractionListener {
+) : BaseViewModel<HomeScreenState, HomeUiEffect>(HomeScreenState()),
+    HomeInteractionListener {
 
     init {
         getFeedReels()
@@ -81,19 +81,19 @@ internal class ReelViewModel(
     }
 
     override fun onAddReelClick() {
-        sendEffect(ReelUiEffect.NavigateToAddReel)
+        sendEffect(HomeUiEffect.NavigateToAddReel)
     }
 
     override fun onEditTagsClick() {
-        sendEffect(ReelUiEffect.NavigateToChangeTags)
+        sendEffect(HomeUiEffect.NavigateToChangeTags)
     }
 
     override fun onManageMyTrendsClick() {
-        sendEffect(ReelUiEffect.NavigateToManageMyTrends)
+        sendEffect(HomeUiEffect.NavigateToManageMyTrends)
     }
 
     override fun onReelClick(reelId: String) {
-        sendEffect(ReelUiEffect.NavigateToReelDetails(reelId))
+        sendEffect(HomeUiEffect.NavigateToReelDetails(reelId))
     }
 
     override fun onLikeClick(reelId: String) {

@@ -4,13 +4,17 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import dev.mokkery.verifySuspend
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.toByteArray
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.client.NetworkClient
+import net.thechance.mena.trends.data.dto.PatchUserCategoriesRequest
 import net.thechance.mena.trends.data.mapper.toEntityList
 import net.thechance.mena.trends.data.repository.util.createCategoryHttpClient
 import net.thechance.mena.trends.data.repository.util.getAllCategoriesResponse
 import net.thechance.mena.trends.data.repository.util.isCategoriesAlreadySelectedByUser
+import net.thechance.mena.trends.data.repository.util.jsonSerialization
 import net.thechance.mena.trends.data.repository.util.mockCategories
+import net.thechance.mena.trends.data.repository.util.patchUserInterestsResponse
 import net.thechance.mena.trends.data.repository.util.updateInterestsResponse
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import kotlin.test.Test
@@ -18,7 +22,7 @@ import kotlin.test.Test
 internal class CategoryRepositoryImplTest {
 
     private lateinit var repository: CategoryRepository
-    private lateinit var networkClient: NetworkClient
+    private lateinit var networkClient: HttpClient
 
     @Test
     fun `getAllCategories should return list of mapped categories`() = runTest {
@@ -52,5 +56,84 @@ internal class CategoryRepositoryImplTest {
         repository.updateUserCategories(listOf("uuid1"))
 
         verifySuspend { networkClient = createCategoryHttpClient { updateInterestsResponse() } }
+    }
+
+    @Test
+    fun `patchUserCategories should succeed when API call is successful`() = runTest {
+        networkClient = createCategoryHttpClient { patchUserInterestsResponse() }
+        repository = CategoryRepositoryImpl(networkClient)
+
+        repository.patchUserCategories(
+            originalSelectedIds = listOf("uuid1", "uuid2", "uuid3"),
+            currentSelectedIds = listOf("uuid2", "uuid3", "uuid4", "uuid5")
+        )
+
+        verifySuspend { networkClient = createCategoryHttpClient { patchUserInterestsResponse() } }
+    }
+
+    @Test
+    fun `patchUserCategories should calculate correct categories to add and remove`() = runTest {
+        val (toAdd, toRemove) = capturePatchRequest(
+            originalIds = listOf("uuid1", "uuid2", "uuid3"),
+            currentIds = listOf("uuid2", "uuid3", "uuid4", "uuid5")
+        )
+
+        assertThat(toAdd).isEqualTo(listOf("uuid4", "uuid5"))
+        assertThat(toRemove).isEqualTo(listOf("uuid1"))
+    }
+
+    @Test
+    fun `patchUserCategories should send only new categories when adding`() = runTest {
+        val (toAdd, toRemove) = capturePatchRequest(
+            originalIds = listOf("uuid1", "uuid2"),
+            currentIds = listOf("uuid1", "uuid2", "uuid3")
+        )
+
+        assertThat(toAdd).isEqualTo(listOf("uuid3"))
+        assertThat(toRemove).isEqualTo(emptyList())
+    }
+
+    @Test
+    fun `patchUserCategories should send only removed categories when removing`() = runTest {
+        val (toAdd, toRemove) = capturePatchRequest(
+            originalIds = listOf("uuid1", "uuid2", "uuid3"),
+            currentIds = listOf("uuid2")
+        )
+
+        assertThat(toAdd).isEqualTo(emptyList())
+        assertThat(toRemove).isEqualTo(listOf("uuid1", "uuid3"))
+    }
+
+    @Test
+    fun `patchUserCategories should send empty lists when no changes`() = runTest {
+        val (toAdd, toRemove) = capturePatchRequest(
+            originalIds = listOf("uuid1", "uuid2"),
+            currentIds = listOf("uuid1", "uuid2")
+        )
+
+        assertThat(toAdd).isEqualTo(emptyList())
+        assertThat(toRemove).isEqualTo(emptyList())
+    }
+
+    private suspend fun capturePatchRequest(
+        originalIds: List<String>,
+        currentIds: List<String>
+    ): Pair<List<String>, List<String>> {
+        var toAdd: List<String>? = null
+        var toRemove: List<String>? = null
+
+        networkClient = createCategoryHttpClient { request ->
+            val body = jsonSerialization.decodeFromString<PatchUserCategoriesRequest>(
+                request.body.toByteArray().decodeToString()
+            )
+            toAdd = body.categoriesIdsToAdd
+            toRemove = body.categoriesIdsToRemove
+            patchUserInterestsResponse()
+        }
+
+        repository = CategoryRepositoryImpl(networkClient)
+        repository.patchUserCategories(originalIds, currentIds)
+
+        return Pair(toAdd.orEmpty(), toRemove.orEmpty())
     }
 }

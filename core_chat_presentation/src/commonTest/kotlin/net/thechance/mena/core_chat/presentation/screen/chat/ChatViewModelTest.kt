@@ -6,6 +6,8 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -14,6 +16,7 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,10 +29,13 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -43,6 +49,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class, ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
     private val repository = mock<ChatRepository>()
+    private val userRepository = mock<UserRepository>()
     private val chatArgs = mock<ChatArgs>()
     private val permissionsController = mock<PermissionsController>()
     private val effector = mock<ChatEffector>(MockMode.autofill)
@@ -60,10 +67,10 @@ class ChatViewModelTest {
         everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns emptyList()
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
-        every { repository.subscribeToMessages(chatId) } returns flowOf()
+        every { repository.getMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
     }
 
@@ -77,10 +84,10 @@ class ChatViewModelTest {
         everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns messages
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
-        every { repository.subscribeToMessages(chatId) } returns flowOf()
+        every { repository.getMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(
@@ -95,10 +102,10 @@ class ChatViewModelTest {
         everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } throws Exception()
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
-        every { repository.subscribeToMessages(chatId) } returns flowOf()
+        every { repository.getMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         verifySuspend {
@@ -116,10 +123,10 @@ class ChatViewModelTest {
         everySuspend { repository.getChatById(chatId) } returns mockChat
         everySuspend { repository.loadMessages(chatId) } returns emptyList()
         everySuspend { repository.getLocalMessages(chatId) } returns emptyList()
-        every { repository.subscribeToMessages(chatId) } returns flowOf(messages.first())
+        every { repository.getMessages(chatId) } returns flowOf(messages.first())
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel = ChatViewModel(repository, chatArgs, effector, permissionsController, testDispatcher)
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(
@@ -128,6 +135,17 @@ class ChatViewModelTest {
         ).isEqualTo(
             listOf(messages.first().toUi(chatRequesterId))
         )
+    }
+    @Test
+    fun `init should update user data when receive user data from repository`() {
+
+        everySuspend {userRepository.getUserInfo() } returns user
+        chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, permissionsController, testDispatcher)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.userData.firstName).isEqualTo(user.firstName)
+        assertThat(chatViewModel.state.value.userData.lastName).isEqualTo(user.lastName)
+        assertThat(chatViewModel.state.value.userData.imageUrl).isEqualTo(user.imageUrl)
     }
 
     @Test
@@ -392,6 +410,39 @@ class ChatViewModelTest {
         assertThat(firstMessage.status).isEqualTo(MessageStatus.FAILED)
     }
 
+    @Test
+    fun `onCameraClicked should start getting camera permission when user click it`(){
+        chatViewModel.onCameraClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+        verifySuspend {permissionsController.providePermission(permission = Permission.CAMERA)}
+    }
+
+    @Test
+    fun `onCameraClicked should open camera when permission is granted`(){
+        everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} returns Unit
+        chatViewModel.onCameraClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isCameraOpen).isTrue()
+    }
+
+    @Test
+    fun `onCameraClicked should not open camera when camera permission is declined by user`(){
+        everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} throws DeniedException(Permission.CAMERA)
+        chatViewModel.onCameraClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isCameraOpen).isFalse()
+    }
+
+    @Test
+    fun`onCameraClosed should close camera when clicked`(){
+        chatViewModel.onCameraClosed()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertThat(chatViewModel.state.value.isCameraOpen).isFalse()
+    }
+
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.Message>()
             .map { it.data }
@@ -402,12 +453,17 @@ class ChatViewModelTest {
 
     private companion object {
 
+        val user: User = User(
+            firstName = "ali",
+            lastName = "nawar",
+            imageUrl = ""
+        )
         val chatId = Uuid.parse("11111111-1111-1111-1111-111111111111")
         val chatRequesterId = Uuid.parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
         val chatName = "Noor"
         val chatImage = "https://image.com/noor.jpg"
 
-        val mockChat = net.thechance.mena.core_chat.domain.entity.Chat(
+        val mockChat = Chat(
             id = chatId,
             name = chatName,
             imageUrl = chatImage,
@@ -427,7 +483,8 @@ class ChatViewModelTest {
                     chatId,
                     LocalDateTime.now(),
                     MessageStatus.SENT,
-                    MessageContent.Text("Hello, World")
+                    MessageContent.Text("Hello, World"),
+                    true
                 ),
                 Message(
                     message2Id,
@@ -435,7 +492,8 @@ class ChatViewModelTest {
                     chatId,
                     LocalDateTime.now(),
                     MessageStatus.SENT,
-                    MessageContent.Text("Hello, World2")
+                    MessageContent.Text("Hello, World2"),
+                    false
                 )
             )
     }
