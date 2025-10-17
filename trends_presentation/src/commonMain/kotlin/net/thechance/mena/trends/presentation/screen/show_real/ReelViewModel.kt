@@ -8,8 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -27,27 +25,59 @@ internal class ReelViewModel(
         getFeedReels()
     }
 
-    private fun getFeedReels() {
+    fun toggleReelLike(reelId: String) {
         tryToExecute(
-            block = {
-                createPager(
-                    scope = viewModelScope,
-                    loadPage = { page -> repository.getFeedReels(page) }
-                )
+            onStart = { updateLikesOnUi(reelId) },
+            block = { repository.toggleReelLike(reelId) },
+            onError = { error ->
+                updateLikesOnUi(reelId)
+                updateState { copy(error = error) }
             },
-            onSuccess = ::onReelLoaded,
-            onError = { error -> updateState { copy(error = error) } },
+            dispatcher = ioDispatcher,
+            scope = viewModelScope,
+            onSuccess = { updatedReel ->
+                updateReelInPagingData(reelId) { updatedReel.toUiState() }
+            }
+        )
+    }
+
+    private fun updateLikesOnUi(reelId: String) {
+        updateReelInPagingData(reelId) { reel ->
+            reel.copy(
+                isLiked = !reel.isLiked,
+                likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
+            )
+        }
+    }
+
+    private fun updateReelInPagingData(reelId: String, transform: (ReelUiState) -> ReelUiState) {
+        val currentData = state.value.reelsStateFlow.value
+        val updatedData = currentData.map { reel ->
+            if (reel.id == reelId) transform(reel) else reel
+        }
+        state.value.reelsStateFlow.value = updatedData
+        updateState { copy(reels = state.value.reelsStateFlow) }
+    }
+
+    fun getFeedReels() {
+        tryToCollectFlow(
+            block = ::createPager,
             onStart = { updateState { copy(isLoading = true) } },
+            onNewValue = { uiPagingData ->
+                state.value.reelsStateFlow.value = uiPagingData
+                updateState { copy(reels = reelsStateFlow, isLoading = false) }
+            },
+            onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = ioDispatcher
         )
     }
 
-    private fun onReelLoaded(reelsFlow: Flow<PagingData<Reel>>) {
-        val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
-            pagingData.map { reel -> reel.toUiState() }
-        }
-        updateState { copy(isLoading = false, reels = uiReelsFlow) }
+    private fun createPager(): Flow<PagingData<ReelUiState>> {
+        return createPager(
+            scope = viewModelScope,
+            loadPage = { page -> repository.getFeedReels(page) }
+        ).map { pagingData -> pagingData.map { it.toUiState() } }
     }
 
     override fun onAddReelClick() {
@@ -63,18 +93,10 @@ internal class ReelViewModel(
     }
 
     override fun onReelClick(reelId: String) {
-            sendEffect(ReelUiEffect.NavigateToReelDetails(reelId))
+        sendEffect(ReelUiEffect.NavigateToReelDetails(reelId))
     }
 
     override fun onLikeClick(reelId: String) {
-        state.value.reels?.let { reelsFlow ->
-            val updatedFlow = reelsFlow.map { pagingData ->
-                pagingData.map { uiState ->
-                    if (uiState.id == reelId) uiState.copy(likes = uiState.likes + 1) else uiState
-                }
-            }
-            updateState { copy(reels = updatedFlow) }
-        }
-        //TODO will handle it with like Api
+        toggleReelLike(reelId)
     }
 }

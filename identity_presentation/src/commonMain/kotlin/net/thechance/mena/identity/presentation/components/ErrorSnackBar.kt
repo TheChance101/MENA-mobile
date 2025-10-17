@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error
@@ -25,7 +24,6 @@ import net.thechance.mena.identity.presentation.screen.addresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
 
 @Composable
 internal fun ErrorSnackBar(
@@ -51,12 +49,12 @@ internal fun ErrorSnackBar(
     ) {
         SnackBar(
             title = stringResource(Res.string.error),
-            message = errorMessage ?: "",
+            message = errorMessage.orEmpty(),
             leadingIcon = painterResource(Res.drawable.ic_close_circle),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp)
-                .padding(horizontal = 16.dp)
+                .padding(top = Theme.spacing._12)
+                .padding(horizontal = Theme.spacing._16)
         )
     }
 

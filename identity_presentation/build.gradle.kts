@@ -68,6 +68,7 @@ kotlin {
 
             // maps
             implementation(libs.maplibre.compose)
+            implementation(libs.kotlinx.datetime)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.test)

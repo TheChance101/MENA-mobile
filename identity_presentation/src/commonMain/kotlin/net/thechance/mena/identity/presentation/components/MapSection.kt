@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +18,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.screen.addresses.component.AddLocationMap
 import org.jetbrains.compose.resources.stringResource
 import org.maplibre.compose.camera.CameraPosition
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun MapSection(
@@ -52,7 +52,7 @@ fun MapSection(
         }
         AddLocationMap(
             modifier = Modifier
-                .clip(RoundedCornerShape(Theme.radius.md))
+                .clip(SquircleShape(Theme.radius.md))
                 .fillMaxWidth()
                 .height(244.dp),
             cameraPosition = cameraPosition,

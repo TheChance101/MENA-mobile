@@ -58,7 +58,7 @@ fun ScaffoldScope.CountryPicker(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Theme.colorScheme.background.surface)
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
                     .padding(
                         bottom = WindowInsets.navigationBars.asPaddingValues()
                             .calculateBottomPadding()
@@ -79,13 +79,16 @@ fun ScaffoldScope.CountryPicker(
                 text = stringResource(Res.string.pick_your_country),
                 color = Theme.colorScheme.shadePrimary,
                 style = Theme.typography.title.small,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
+                modifier = Modifier.padding(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._24
+                )
             )
 
             LazyColumn(
                 contentPadding = PaddingValues(bottom = 72.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp)
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+                modifier = Modifier.padding(horizontal = Theme.spacing._16)
             ) {
                 items(
                     items = state.countries,

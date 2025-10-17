@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.di
 
+import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel
 import androidx.compose.ui.graphics.ImageBitmap
 import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreenViewModel
@@ -51,6 +52,7 @@ val identityScreensModule = module {
     factoryOf(::ForgetPasswordScreenViewModel)
     factoryOf(::OtpScreenViewModel)
     factoryOf(::ProfileScreenViewModel)
+    factoryOf(::EditUserProfileViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
     factory { (imageBitmap: ImageBitmap) -> ImageCropperViewModel(imageBitmap) }
     factoryOf(::AddressesScreenViewModel)

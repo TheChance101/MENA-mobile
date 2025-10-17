@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,6 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ImageCropperComponent(
@@ -46,7 +46,7 @@ fun ImageCropperComponent(
             onTransformation = imagCropperUiState::zoomBy,
             updateImageSize = imagCropperUiState::updateImageSize,
             modifier = Modifier
-                .clip(RoundedCornerShape(Theme.radius.lg))
+                .clip(SquircleShape(Theme.radius.lg))
                 .align(Alignment.CenterHorizontally)
                 .fillMaxWidth()
                 .aspectRatio(1f)
@@ -63,7 +63,7 @@ fun ImageCropperComponent(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = Theme.spacing._12)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(SquircleShape(Theme.radius.full))
                 .background(Theme.colorScheme.background.surfaceLow)
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         )
@@ -79,7 +79,7 @@ fun ImageCropperComponent(
                 onSaveButtonClicked(imageBitmap)
             },
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = Theme.spacing._12)
                 .align(Alignment.CenterHorizontally)
         )
 

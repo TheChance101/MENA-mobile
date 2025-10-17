@@ -13,5 +13,6 @@ internal fun Reel.toUserReelUiState() =
         createdAt = createdAt?.timeAgoValue(),
         isCurrentUserOwner = isCurrentUserOwner,
         username = userName,
-        profileImageUrl = profileImageUrl
+        profileImageUrl = profileImageUrl,
+        isLiked = isLiked
     )

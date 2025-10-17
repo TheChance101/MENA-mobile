@@ -23,9 +23,11 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.dismiss
 import mena.identity_presentation.generated.resources.error
 import mena.identity_presentation.generated.resources.ic_close_circle
 import mena.identity_presentation.generated.resources.profile_title
+import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
 import net.thechance.mena.designsystem.presentation.component.button.NegativeButton
@@ -36,6 +38,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
@@ -77,7 +80,7 @@ class ProfileScreen : BaseScreen<
                             style = Theme.typography.label.small
                         )
                         NegativeButton(
-                            text = "Dismiss",
+                            text = stringResource(Res.string.dismiss),
                             onClick = listener::onDismissBottomSheet,
                         )
                     }
@@ -123,8 +126,7 @@ class ProfileScreen : BaseScreen<
                         enter = expandVertically(),
                         exit = shrinkVertically(),
                         modifier = Modifier.fillMaxWidth()
-                    )
-                    {
+                    ) {
                         ProfileInfoContainer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -134,32 +136,38 @@ class ProfileScreen : BaseScreen<
                             userName = state.userName,
                         )
                     }
+
                     InviteFriendsCard(
                         onCLick = listener::onInviteFriendsClicked
                     )
+
                     AccountSettingsSection(
                         onEditProfileInfoClicked = listener::onEditProfileInfoClicked,
                         onChangePasswordClicked = listener::onChangePasswordClicked,
                         onAddressesClicked = listener::onAddressesClicked,
                         onPrivacySettingsClicked = listener::onPrivacySettingsClicked
                     )
+
                     AppSettingsSection(
                         onLanguageClicked = listener::onLanguageClicked,
                         onThemeClicked = listener::onThemeClicked
                     )
+
                     OtherSettingsSection(
                         onPrivacyAndPolicyClicked = listener::onPrivacyAndPolicyClicked,
                         onContactUsClicked = listener::onContactUsClicked
                     )
+
                     Text(
                         modifier = Modifier
                             .padding(vertical = Theme.spacing._16)
                             .align(Alignment.CenterHorizontally),
-                        text = "version ${state.versionNumber}",
+                        text = "${stringResource(Res.string.version)} ${state.versionNumber}",
                         style = Theme.typography.label.small,
                         color = Theme.colorScheme.shadeSecondary,
                     )
                 }
+
                 AnimatedVisibility(
                     visible = state.errorMessage?.isNotEmpty() ?: false,
                     enter = slideInHorizontally(initialOffsetX = { it }),
@@ -168,12 +176,13 @@ class ProfileScreen : BaseScreen<
                 ) {
                     SnackBar(
                         title = stringResource(Res.string.error),
-                        message = state.errorMessage ?: "",
+                        message = state.errorMessage.orEmpty(),
                         leadingIcon = painterResource(Res.drawable.ic_close_circle),
                         modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
                             .padding(horizontal = Theme.spacing._16)
                     )
                 }
+
                 LaunchedEffect(state.errorMessage) {
                     delay(3000)
                     listener.clearErrorMessage()
@@ -187,7 +196,7 @@ class ProfileScreen : BaseScreen<
     ) {
         when (effect) {
             ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
-                navigator.push(RegisterScreen())
+                navigator.push(EditUserProfileScreen())
             }
 
             ProfileScreenUIEffect.NavigateToLocationPickerScreen -> {

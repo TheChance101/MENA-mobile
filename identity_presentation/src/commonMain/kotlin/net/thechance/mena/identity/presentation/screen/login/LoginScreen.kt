@@ -114,7 +114,7 @@ class LoginScreen : BaseScreen<
                         contentPadding = PaddingValues(vertical = 13.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 12.dp)
+                            .padding(bottom = Theme.spacing._12)
                     )
                     AuthPrompt(
                         modifier = Modifier.imePadding(),
@@ -151,7 +151,7 @@ fun ForgetPasswordText(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 4.dp),
+            .padding(top = Theme.spacing._4),
         contentAlignment = Alignment.BottomEnd
     ) {
         TextButton(

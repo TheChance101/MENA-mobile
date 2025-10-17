@@ -58,6 +58,7 @@ class ReelExtensionTest {
             userName = "Alice",
             profileImageUrl = "https://example.com/alice.jpg",
             isCurrentUserOwner = false,
+            isLiked = false
         )
 
         val testReel2 = Reel(
@@ -71,6 +72,7 @@ class ReelExtensionTest {
             userName = "Bob",
             profileImageUrl = "https://example.com/bob.jpg",
             isCurrentUserOwner = true,
+            isLiked = false
         )
 
         val testReel3 = Reel(
@@ -84,6 +86,7 @@ class ReelExtensionTest {
             userName = "Charlie",
             profileImageUrl = "https://example.com/charlie.jpg",
             isCurrentUserOwner = false,
+            isLiked = false
         )
 
         val testReel4 = Reel(
@@ -97,6 +100,7 @@ class ReelExtensionTest {
             userName = "",
             profileImageUrl = "",
             isCurrentUserOwner = false,
+            isLiked = false
         )
 
 
@@ -109,8 +113,8 @@ class ReelExtensionTest {
             thumbnailUrl = "thumb1.jpg",
             videoUrl = "video1.mp4",
             description = "Test description",
-            likes = 10,
-            views = 100
+            likesCount = 10,
+            viewsCount = 100
         )
 
         val testTrendUiState2 = ReelUiState(
@@ -121,8 +125,8 @@ class ReelExtensionTest {
             thumbnailUrl = "thumb2.jpg",
             videoUrl = "video2.mp4",
             description = "Another description",
-            likes = 20,
-            views = 200
+            likesCount = 20,
+            viewsCount = 200
         )
 
         val testTrendUiState3 = ReelUiState(
@@ -133,8 +137,8 @@ class ReelExtensionTest {
             thumbnailUrl = "thumb3.jpg",
             videoUrl = "video3.mp4",
             description = "Description with categories",
-            likes = 30,
-            views = 300
+            likesCount = 30,
+            viewsCount = 300
         )
 
         val testTrendUiState4 = ReelUiState(
@@ -145,8 +149,8 @@ class ReelExtensionTest {
             thumbnailUrl = "",
             videoUrl = "",
             description = "",
-            likes = 0,
-            views = 0
+            likesCount = 0,
+            viewsCount = 0
         )
     }
 }

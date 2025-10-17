@@ -3,6 +3,7 @@ package net.thechance.mena.trends.presentation.screen.show_real
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +64,8 @@ internal fun ReelHomeScreen(
         }
     }
 
+    LaunchedEffect(Unit) { viewModel.getFeedReels() }
+
     ReelScreenContent(
         state = state,
         listener = viewModel,
@@ -86,19 +90,19 @@ private fun ReelScreenContent(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+                    .padding(horizontal = Theme.spacing._16),
+                contentPadding = PaddingValues(vertical = Theme.spacing._8),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
             ) {
                 items(reels.itemSnapshotList.items) { reel ->
-                    reel.let { reel ->
-                        FeedReelCard(
-                            reel = reel,
-                            onLikeClick = { listener.onLikeClick(reel.id) },
-                            onReelClick = { listener.onReelClick(reel.id) }
-                        )
-                    }
+                    FeedReelCard(
+                        reel = reel,
+                        onLikeClick = { listener.onLikeClick(reel.id) },
+                        onReelClick = { listener.onReelClick(reel.id) }
+                    )
                 }
             }
+
             Icon(
                 painter = painterResource(Res.drawable.ic_add_real),
                 contentDescription = stringResource(Res.string.add_reel),

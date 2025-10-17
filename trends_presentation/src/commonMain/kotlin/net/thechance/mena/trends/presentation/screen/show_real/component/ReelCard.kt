@@ -1,5 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.show_real.component
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,13 +22,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.ic_dots
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_heart
 import mena.trends_presentation.generated.resources.just_now
 import mena.trends_presentation.generated.resources.likes
 import mena.trends_presentation.generated.resources.likes_suffix
-import mena.trends_presentation.generated.resources.more_options
 import mena.trends_presentation.generated.resources.profile_image
 import mena.trends_presentation.generated.resources.video_thumbnail
 import mena.trends_presentation.generated.resources.views
@@ -79,7 +80,7 @@ private fun ReelHeaderSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model =  reel.profileImageUrl,
+                model = reel.profileImageUrl,
                 contentDescription = stringResource(Res.string.profile_image),
                 modifier = Modifier
                     .size(40.dp)
@@ -107,7 +108,7 @@ private fun ReelHeaderSection(
         }
 
         AsyncImage(
-            model =  reel.thumbnailUrl,
+            model = reel.thumbnailUrl,
             contentDescription = stringResource(Res.string.video_thumbnail),
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -117,18 +118,6 @@ private fun ReelHeaderSection(
                 .noRippleClickable { onReelClick() },
             alignment = Alignment.Center
         )
-
-        if (reel.description.isBlank()) {
-            Text(
-                text = reel.description,
-                style = Theme.typography.body.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier
-                    .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
-            )
-        } else {
-            Spacer(modifier = Modifier.height(Theme.spacing._12))
-        }
     }
 }
 
@@ -137,10 +126,28 @@ private fun ReelFooterSection(
     reel: ReelUiState,
     onLikeClick: () -> Unit
 ) {
+
+    val likeIconColor by animateColorAsState(
+        targetValue = if (reel.isLiked) Theme.colorScheme.error else Theme.colorScheme.shadeTertiary,
+        animationSpec = tween(durationMillis = 500)
+    )
+
+    if (reel.description.isNotBlank()) {
+        Text(
+            text = reel.description,
+            style = Theme.typography.body.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
+        )
+    } else {
+        Spacer(modifier = Modifier.height(Theme.spacing._12))
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16),
+            .padding(horizontal = Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
@@ -151,13 +158,13 @@ private fun ReelFooterSection(
             Icon(
                 painter = painterResource(Res.drawable.ic_heart),
                 contentDescription = stringResource(Res.string.likes),
-                tint = Theme.colorScheme.shadeTertiary,
+                tint = likeIconColor,
                 modifier = Modifier
                     .size(24.dp)
                     .noRippleClickable { onLikeClick() }
             )
             Text(
-                text = stringResource(Res.string.likes_suffix, reel.likes),
+                text = stringResource(Res.string.likes_suffix, reel.likesCount),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
             )
@@ -174,7 +181,7 @@ private fun ReelFooterSection(
                 modifier = Modifier.size(24.dp)
             )
             Text(
-                text = stringResource(Res.string.views_suffix, reel.views),
+                text = stringResource(Res.string.views_suffix, reel.viewsCount),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
             )

@@ -12,7 +12,8 @@ fun Reel.toUiState(): ReelUiState {
         thumbnailUrl = thumbnailUrl,
         videoUrl = videoUrl,
         description = description,
-        likes = likesCount,
-        views = viewsCount
+        likesCount = likesCount,
+        viewsCount = viewsCount,
+        isLiked = isLiked
     )
 }

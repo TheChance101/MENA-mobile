@@ -57,6 +57,7 @@ actual fun VideoPlayer(
     url: String,
     isReelVisible: Boolean,
     modifier: Modifier,
+    onVideoPlaying: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
@@ -90,6 +91,8 @@ actual fun VideoPlayer(
             player.pause()
             isPaused = true
         }
+
+        onVideoPlaying()
     }
 
     LaunchedEffect(player) {

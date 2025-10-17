@@ -6,9 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.back
 import net.thechance.mena.designsystem.presentation.component.button.NegativeButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 class RegisterScreen :
@@ -27,7 +30,7 @@ class RegisterScreen :
         , contentAlignment = Alignment.Center
         ) {
             NegativeButton(
-                text = "GO BACK",
+                text = stringResource(Res.string.back),
                 onClick = listener::onBackButtonClicked,
             )
         }
