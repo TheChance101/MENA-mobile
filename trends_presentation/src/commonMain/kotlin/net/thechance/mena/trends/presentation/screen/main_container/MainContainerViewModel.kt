@@ -15,13 +15,13 @@ internal class MainContainerViewModel(
 ) : BaseViewModel<MainContainerState, MainContainerEffect>(MainContainerState()) {
 
     init {
-        getUserCategoryStatus()
+        checkIfUserSelectedCategories()
     }
 
-    private fun getUserCategoryStatus() {
+    private fun checkIfUserSelectedCategories() {
         tryToExecute(
             block = { repository.isCategoriesAlreadySelectedByUser() },
-            onSuccess = ::handleGetIsUserCategorySet,
+            onSuccess = ::onUserCategoryStatusReceived,
             onError = { errorState ->
                 updateState { copy(error = errorState, isCategoriesAlreadySelectedByUser = false) }
             },
@@ -29,23 +29,16 @@ internal class MainContainerViewModel(
         )
     }
 
-    fun handleGetIsUserCategorySet(isUserCategorySet: Boolean) {
+    fun onUserCategoryStatusReceived(isUserCategorySet: Boolean) {
         updateState { copy(isCategoriesAlreadySelectedByUser = isUserCategorySet) }
+        navigateBasedOnCategoryState(isUserCategorySet)
     }
 
-    fun navigateToCategories() {
-        if (state.value.isCategoriesAlreadySelectedByUser == true) {
-            sendEffect(MainContainerEffect.NavigateToTrends)
+    private fun navigateBasedOnCategoryState(hasUserSelectedCategories: Boolean) {
+        if (hasUserSelectedCategories) {
+            sendEffect(MainContainerEffect.NavigateToReelHome)
         } else {
             sendEffect(MainContainerEffect.NavigateToCategoryPick)
         }
-    }
-
-    fun navigateToManageTrends() {
-        sendEffect(MainContainerEffect.NavigateToManageTrends)
-    }
-
-    fun navigateToUploadReel() {
-        sendEffect(MainContainerEffect.NavigateToUploadReel)
     }
 }

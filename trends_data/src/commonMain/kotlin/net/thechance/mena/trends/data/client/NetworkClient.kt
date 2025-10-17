@@ -20,6 +20,11 @@ interface NetworkClient {
         block: HttpRequestBuilder.() -> Unit = {}
     ): HttpResponse
 
+    suspend fun patch(
+        urlString: String,
+        block: HttpRequestBuilder.() -> Unit = {}
+    ): HttpResponse
+
     suspend fun delete(
         urlString: String,
         block: HttpRequestBuilder.() -> Unit = {}

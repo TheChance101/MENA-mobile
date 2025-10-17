@@ -19,6 +19,7 @@ internal val fakeReelDtoList = RemotePaginationResponse(
             createdAt = "2025-09-16T15:06:57.507394",
             likesCount = 120,
             viewsCount = 1500,
+            isLiked = true
         )
     ),
     totalResults = 1
@@ -57,6 +58,24 @@ internal fun MockRequestHandleScope.uploadReelThumbnailResponse(
     headers = jsonHeaders
 )
 
+internal fun MockRequestHandleScope.toggleLikeReelResponse(
+    status: HttpStatusCode = HttpStatusCode.OK
+) = respond(
+    content = jsonSerialization.encodeToString(
+        ReelDto.serializer(),
+        fakeReelDtoList.results?.first() ?: ReelDto()
+    ),
+    status = status,
+    headers = jsonHeaders
+)
+
+internal fun MockRequestHandleScope.addViewReelResponse(
+) = respond(
+    content = "",
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 internal fun MockRequestHandleScope.updateReelResponse(
     id: String,
     description: String,
@@ -71,7 +90,10 @@ internal fun MockRequestHandleScope.updateReelResponse(
 internal fun MockRequestHandleScope.uploadReelResponse(
     status: HttpStatusCode = HttpStatusCode.OK
 ) = respond(
-    content = jsonSerialization.encodeToString(UploadReelResponse.serializer(), UploadReelResponse("1")),
+    content = jsonSerialization.encodeToString(
+        UploadReelResponse.serializer(),
+        UploadReelResponse("1")
+    ),
     status = status,
     headers = jsonHeaders
 )

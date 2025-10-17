@@ -111,7 +111,7 @@ fun ProfileInfoContainer(
             modifier = Modifier.padding(top = Theme.spacing._8)
         )
         Text(
-            text = userName,
+            text = "@$userName",
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary,
             textAlign = TextAlign.Center,

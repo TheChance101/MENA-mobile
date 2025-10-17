@@ -38,7 +38,7 @@ private object MessageEventSerializer : KSerializer<MessageEvent> {
         val element = decoder.decodeSerializableValue(JsonElement.serializer()).jsonObject
 
         return when {
-            "readBy" in element ->
+            "readByUserId" in element ->
                 MessageEvent.MarkAsRead(
                     Json.decodeFromJsonElement(
                         MarkAsReadResponse.serializer(),

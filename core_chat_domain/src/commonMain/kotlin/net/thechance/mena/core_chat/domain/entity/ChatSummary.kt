@@ -10,7 +10,7 @@ data class ChatSummary(
     val id: Uuid,
     val name: String,
     val imageUrl: String,
-    val lastMessage: Message,
+    val lastMessage: Message?,
     val unReadMessagesCount: Int
 ) {
     data class Message(

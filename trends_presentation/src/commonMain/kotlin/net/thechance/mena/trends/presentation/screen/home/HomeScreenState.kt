@@ -1,17 +1,19 @@
-package net.thechance.mena.trends.presentation.screen.show_real
+package net.thechance.mena.trends.presentation.screen.home
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 import org.jetbrains.compose.resources.StringResource
 
 
-data class ReelScreenState(
+data class HomeScreenState(
     val isLoading: Boolean = true,
     val error: ErrorState? = null,
     val reels: Flow<PagingData<ReelUiState>> = flowOf(),
+    val reelsStateFlow: MutableStateFlow<PagingData<ReelUiState>> = MutableStateFlow(PagingData.empty()),
     val errorMessage: StringResource? = null,
 )
 
@@ -23,6 +25,7 @@ data class ReelUiState(
     val timeAgo: TimeAgoValue? = null,
     val videoUrl: String = "",
     val description: String = "",
-    val likes: Int = 0,
-    val views: Int = 0
+    val likesCount: Int = 0,
+    val viewsCount: Int = 0,
+    val isLiked: Boolean = false
 )

@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.show_real
+package net.thechance.mena.trends.presentation.screen.home
 
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
@@ -12,7 +12,8 @@ fun Reel.toUiState(): ReelUiState {
         thumbnailUrl = thumbnailUrl,
         videoUrl = videoUrl,
         description = description,
-        likes = likesCount,
-        views = viewsCount
+        likesCount = likesCount,
+        viewsCount = viewsCount,
+        isLiked = isLiked
     )
 }

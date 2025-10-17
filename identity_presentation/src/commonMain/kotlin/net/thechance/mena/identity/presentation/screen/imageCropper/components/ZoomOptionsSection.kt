@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,6 +27,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ZoomOptionsSection(
@@ -110,7 +110,7 @@ private fun ZoomButton(
         contentDescription = contentDescription,
         tint = iconTint,
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(SquircleShape(Theme.radius.full))
             .clickable(
                 onClick = onZoomClicked,
                 enabled = isEnabled

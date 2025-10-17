@@ -11,7 +11,8 @@ data class Message(
     val chatId: Uuid,
     val sendAt: LocalDateTime,
     val status: MessageStatus,
-    val content: MessageContent
+    val content: MessageContent,
+    val isMine: Boolean,
 )
 
 sealed interface MessageContent {

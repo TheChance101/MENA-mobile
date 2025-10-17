@@ -4,12 +4,14 @@ package net.thechance.mena.core_chat.data.source.remote.mapper
 
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -32,7 +34,8 @@ fun MessageDto.toDomain(): Message? {
         chatId = getUuidOrNull(chatId) ?: return null,
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
-        content = content
+        content = content,
+        isMine = isMine
     )
 }
 
@@ -80,7 +83,8 @@ fun MessageLocalDto.toDomain(): Message {
         chatId = Uuid.parse(this.chatId),
         content = content,
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
-        status = status.toDomain()
+        status = status.toDomain(),
+        isMine = true
     )
 }
 
@@ -100,4 +104,12 @@ fun MessageStatus.toLocalDto(): MessageLocalDto.MessageStatus {
         MessageStatus.FAILED -> MessageLocalDto.MessageStatus.FAILED
         MessageStatus.READ -> MessageLocalDto.MessageStatus.READ
     }
+}
+
+fun MarkAsReadResponse.toEntity(): MarkMessageAsReadEvent {
+    return MarkMessageAsReadEvent(
+        readByUserId = Uuid.parse(readByUserId),
+        chatId = Uuid.parse(chatId),
+        readByMe = readByMe
+    )
 }

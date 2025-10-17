@@ -128,4 +128,51 @@
     <!--    crop image-->
 
     <string name="upload_another_image">Upload another image</string>
+
+    <string name="edit_profile_information">Edit profile information</string>
+    <string name="options">Options</string>
+    <string name="back">Back</string>
+
+    <string name="pick_start_date">Pick the start date</string>
+    <string name="pick_end_date">Pick the end date</string>
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+
+    <string name="error_invalid_country_code">Invalid country code</string>
+    <string name="error_invalid_mobile_number">Invalid mobile number</string>
+    <string name="error_invalid_password">Invalid password</string>
+    <string name="error_user_blocked">Too many failed attempts. Please try again later.</string>
+    <string name="error_wrong_password">%1$s</string>
+    <string name="error_location_permission_denied">Location permission denied</string>
+    <string name="error_invalid_credentials">Invalid credentials. Please check your phone number and password.</string>
+    <string name="error_unknown">Something went wrong. Please try again later.</string>
+    <string name="error_unauthorized">You don’t have permission to access the app.</string>
+    <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="error_invalid_otp">Incorrect OTP.</string>
+    <string name="error_too_many_requests">Too many requests. Please try again later.</string>
+    <string name="error_otp_expired">OTP expired</string>
+    <string name="error_no_network">No Internet Connection</string>
+
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="username">Username</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="save_changes">Save changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="gender">Gender</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="version">version</string>
+    <string name="ok">Ok</string>
+
 </resources>

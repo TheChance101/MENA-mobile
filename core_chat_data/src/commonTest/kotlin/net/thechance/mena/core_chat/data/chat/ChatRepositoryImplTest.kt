@@ -30,8 +30,8 @@ import net.thechance.mena.core_chat.data.contacts.jsonSerialization
 import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
-import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
@@ -321,7 +321,8 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should return flow when subscribeToMessages is called`() = runTest {
+    fun `should return flow when getMessages is called and websocket is connected`() = runTest {
+        every { webSocketManager.isConnected() } returns true
         everySuspend { authRepository.getAccessToken() } returns "test-token"
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
@@ -332,7 +333,7 @@ class ChatRepositoryImplTest {
             )
         }
 
-        val flow = repository.subscribeToMessages(chatId)
+        val flow = repository.getMessages(chatId)
 
         assertThat(flow).isNotNull()
     }

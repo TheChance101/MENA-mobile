@@ -10,6 +10,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
+import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import kotlin.test.AfterTest
@@ -207,7 +209,9 @@ class ProfileViewModelTest {
         firstName = "The ",
         lastName = "Chance",
         username = "the-chance",
-        profileImageUrl = ""
+        profileImageUrl = "",
+        birthDate = LocalDate(1900, 1, 1),
+        gender = Gender.MALE,
     )
 }
 
