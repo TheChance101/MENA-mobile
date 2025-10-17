@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.data.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -10,18 +11,24 @@ import io.ktor.http.contentType
 import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
+import net.thechance.mena.dukan.data.repository.dto.DukanResponseDto
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
+import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
 import net.thechance.mena.dukan.data.repository.mapper.toCategoryList
 import net.thechance.mena.dukan.data.repository.mapper.toColorsList
 import net.thechance.mena.dukan.data.repository.mapper.toCreateDukanRequest
+import net.thechance.mena.dukan.data.repository.mapper.toDomain
+import net.thechance.mena.dukan.data.repository.mapper.toDomainPreview
 import net.thechance.mena.dukan.data.repository.mapper.toMyDukanStatus
 import net.thechance.mena.dukan.data.repository.util.buildSinglePartFormData
 import net.thechance.mena.dukan.data.repository.util.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.DukanPreview
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 
 class DukanRepositoryImpl(
     private val client: HttpClient
@@ -75,16 +82,63 @@ class DukanRepositoryImpl(
         return safeApiCall {
             client.post("$BASE_URL/image") {
                 setBody(
-                    buildSinglePartFormData(fileName, fileBytes,"file")
+                    buildSinglePartFormData(fileName, fileBytes, "file")
                 )
             }
         }
+    }
+
+    override suspend fun getEditorPicksDukans(
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview> {
+        val dukansResponse = safeApiCall<PageResponseDto<DukanResponseDto>> {
+            client.get("$BASE_URL/editor_picks") {
+                parameter("page", page)
+                parameter("size", size)
+            }
+        }
+        return dukansResponse.toDomain { it.toDomainPreview() }
+    }
+
+    override suspend fun getBestAroundDukans(
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview> {
+        //todo inject user active location here ......
+        val lat = 33.3128
+        val lng = 44.3615
+        val range = 30000
+        val dukansResponse = safeApiCall<PageResponseDto<DukanResponseDto>> {
+            client.get("$BASE_URL/nearby/best") {
+                parameter("page", page)
+                parameter("size", size)
+                parameter("lat", lat)
+                parameter("lng", lng)
+                parameter("range", range)
+            }
+        }
+        return dukansResponse.toDomain { it.toDomainPreview() }
     }
 
     override suspend fun isDukanNameTaken(name: String): Boolean {
         return safeApiCall<DukanNameResponse> {
             client.get("$BASE_URL/available?name=$name").body()
         }.available.not()
+    }
+
+    override suspend fun getDukansByCategory(
+        categoryId: String,
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview> {
+        val response: PageResponseDto<DukanResponseDto> = safeApiCall {
+            client.get("$BASE_URL/categories/$categoryId") {
+                parameter("page", page)
+                parameter("size", size)
+            }
+        }
+        return response.toDomain(mapper = DukanResponseDto::toDomainPreview)
     }
 
     companion object {

@@ -4,8 +4,10 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isTrue
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
@@ -25,20 +27,6 @@ class ReelViewModelTest {
     private val repository: ReelsRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ReelViewModel
-
-    private val testReel = Reel(
-        id = "1",
-        thumbnailUrl = "thumb.jpg",
-        videoUrl = "video.mp4",
-        description = "description",
-        likesCount = 5,
-        viewsCount = 50,
-        createdAt = null,
-        userName = "Test User",
-        profileImageUrl = "https://example.com/profile.jpg",
-        isCurrentUserOwner = false,
-    )
-
 
     @BeforeTest
     fun setup() {
@@ -94,11 +82,63 @@ class ReelViewModelTest {
     @Test
     fun `onLikeClick should increment likes count`() = runTest {
         everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
+        everySuspend { repository.toggleReelLike("1") } returns testReel.copy(
+            isLiked = true,
+            likesCount = testReel.likesCount + 1
+        )
+
         viewModel = ReelViewModel(repository, testDispatcher)
         advanceUntilIdle()
-        val initial = viewModel.state.value.reels?.asSnapshot()?.first()
+
+        val initial = viewModel.state.value.reels.asSnapshot().first()
+
+        viewModel.state.test {
+
+            viewModel.onLikeClick("1")
+            advanceUntilIdle()
+
+            val state = awaitItem()
+            val updated = state.reels.asSnapshot().first()
+
+            assertThat(updated.likesCount).isEqualTo(initial.likesCount + 1)
+            assertThat(updated.isLiked).isTrue()
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should revert optimistic update when toggleReelLike fails`() = runTest {
+        everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
+        everySuspend { repository.toggleReelLike("1") } throws Exception("Network error")
+
+        advanceUntilIdle()
+        val initial = viewModel.state.value.reels.asSnapshot().first()
+
         viewModel.onLikeClick("1")
-        val updated = viewModel.state.value.reels?.asSnapshot()?.first()
-        assertThat(updated?.likes).isEqualTo(initial!!.likes + 1)
+        advanceUntilIdle()
+
+        val reverted = viewModel.state.value.reels.asSnapshot().first()
+
+        assertThat(reverted.likesCount).isEqualTo(initial.likesCount)
+        assertThat(reverted.isLiked).isEqualTo(initial.isLiked)
+
+        assertThat(viewModel.state.value.error != null).isTrue()
+    }
+
+    companion object {
+        private val testReel = Reel(
+            id = "1",
+            thumbnailUrl = "thumb.jpg",
+            videoUrl = "video.mp4",
+            description = "description",
+            likesCount = 5,
+            viewsCount = 50,
+            createdAt = null,
+            userName = "Test User",
+            profileImageUrl = "https://example.com/profile.jpg",
+            isCurrentUserOwner = false,
+            isLiked = false
+        )
     }
 }

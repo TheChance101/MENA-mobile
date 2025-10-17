@@ -13,4 +13,6 @@ interface ReelsRepository {
     suspend fun uploadReelThumbnail(reelId: String, fileName: String, thumbnail: ByteArray)
     suspend fun getReelDuration(filePath: String): Long?
     suspend fun getReelThumbnail(filePath: String, timeMs: Long = 0L): ByteArray?
+    suspend fun toggleReelLike(reelId: String): Reel
+    suspend fun addReelView(reelId: String)
 }

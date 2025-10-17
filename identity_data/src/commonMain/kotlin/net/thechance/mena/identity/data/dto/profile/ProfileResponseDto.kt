@@ -9,8 +9,12 @@ data class ProfileResponseDto(
     val firstName: String,
     @SerialName("lastName")
     val lastName: String,
-    @SerialName("profileImageUrl")
-    val profileImageUrl: String,
+    @SerialName("imageUrl")
+    val imageUrl: String,
     @SerialName("username")
     val username: String,
+    @SerialName("birthDate")
+    val birthDate: String,
+    @SerialName("gender")
+    val gender: Int,
 )

@@ -39,6 +39,11 @@ class UserRepositoryImpl(
             .flowOn(Dispatchers.IO)
     }
 
+    override suspend fun updateUser(user: User) {
+        // todo add update user from server
+        userDao.upsert(user.toEntity())
+    }
+
     companion object {
         const val PROFILE = "identity/profile/me"
     }

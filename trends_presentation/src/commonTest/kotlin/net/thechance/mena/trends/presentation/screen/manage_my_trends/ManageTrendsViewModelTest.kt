@@ -106,7 +106,8 @@ class ManageTrendsViewModelTest {
             createdAt = LocalDateTime(2002, 2, 22, 2, 22),
             userName = "mTm",
             profileImageUrl = "",
-            isCurrentUserOwner = true
+            isCurrentUserOwner = true,
+            isLiked = false
         )
 
         val reels = listOf(

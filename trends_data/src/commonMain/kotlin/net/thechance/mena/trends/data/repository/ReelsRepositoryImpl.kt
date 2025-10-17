@@ -22,6 +22,7 @@ import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.FEED_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
+import net.thechance.mena.trends.data.util.NetworkConstants.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
@@ -30,6 +31,7 @@ import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
 import net.thechance.mena.trends.data.util.NetworkConstants.USER
 import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
+import net.thechance.mena.trends.data.util.NetworkConstants.VIEW_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.getMediaMimeType
 import net.thechance.mena.trends.data.util.observeUploading
@@ -159,6 +161,18 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun getReelThumbnail(filePath: String, timeMs: Long): ByteArray? {
         return videoFileHandler.extractVideoFrame(filePath, timeMs)
+    }
+
+    override suspend fun toggleReelLike(reelId: String): Reel {
+        return safeApiCall<ReelDto> {
+            networkClient.post(urlString = "$LIKE_REEL_ENDPOINT/$reelId")
+        }.toEntity()
+    }
+
+    override suspend fun addReelView(reelId: String) {
+        safeApiCall<Unit> {
+            networkClient.post(urlString = "$VIEW_REEL_ENDPOINT/$reelId")
+        }
     }
 
     private fun createRequestBody(
