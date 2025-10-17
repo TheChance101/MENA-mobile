@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.data.repository
 
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.CategoryDto
@@ -39,7 +40,7 @@ internal class CategoryRepositoryImpl(
     override suspend fun updateUserCategories(categoriesIds: List<String>) {
         safeApiCall<Unit> {
             networkClient.post("/$TRENDS_PATH/$CATEGORIES_ENDPOINT") {
-                contentType(io.ktor.http.ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
                 setBody(SubmitCategoriesRequestDto(categoriesIds))
             }
         }
@@ -54,7 +55,7 @@ internal class CategoryRepositoryImpl(
 
         safeApiCall<PatchUserInterestsResponse> {
             networkClient.patch("/$TRENDS_PATH/$CATEGORIES_ENDPOINT") {
-                contentType(io.ktor.http.ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
                 setBody(
                     PatchUserInterestsRequest(
                         interestsIdsToAdd = toAdd,
