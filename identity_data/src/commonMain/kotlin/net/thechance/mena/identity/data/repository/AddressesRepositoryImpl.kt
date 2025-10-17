@@ -5,6 +5,7 @@ import net.thechance.mena.identity.data.mapper.toDto
 import net.thechance.mena.identity.data.utils.deleteJson
 import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postJson
+import net.thechance.mena.identity.data.utils.putJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.repository.AddressesRepository
@@ -28,7 +29,7 @@ class AddressesRepositoryImpl(
 
     override suspend fun editAddress(address: Address) {
         return safeWrapper {
-            client.postJson(
+            client.putJson(
                 requestDto = address.toDto(),
                 path = "$ADDRESS_ENDPOINT/${address.id.toString()}"
             )

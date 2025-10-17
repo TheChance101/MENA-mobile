@@ -25,6 +25,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.entity.AddressType.*
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
@@ -83,16 +84,17 @@ fun mapAddressTypeTitle(addressType: AddressType): StringResource {
     return when (addressType){
         AddressType.Home -> Res.string.address_type_home
         AddressType.Office -> Res.string.address_type_office
-        AddressType.Other -> Res.string.address_type_other
+        is AddressType.Other -> Res.string.address_type_other
 
     }
 }
 fun mapAddressTypeIcon(addressType: AddressType): DrawableResource {
    return when (addressType){
-        AddressType.Home -> Res.drawable.ic_home
-        AddressType.Office -> Res.drawable.ic_office
-        AddressType.Other -> Res.drawable.ic_other_address
-    }
+        Home -> Res.drawable.ic_home
+        Office -> Res.drawable.ic_office
+       is AddressType.Other -> Res.drawable.ic_other_address
+
+   }
 }
 
 @Preview

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses
+package net.thechance.mena.identity.presentation.screen.addresses.myAddresses
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +21,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
+import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation.AddEditLocationScreen
+import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenInteractionListener
+import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.component.AddressCard
 import net.thechance.mena.identity.presentation.screen.addresses.component.MyAddressesAppBar
 import org.jetbrains.compose.resources.stringResource
@@ -112,7 +115,11 @@ class AddressesScreen :
     ) {
         when (effect) {
             AddressesScreenUIEffect.NavigateBack -> navigator.pop()
-            is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {}
+            is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
+                navigator.push(AddEditLocationScreen(
+                    onSuccess = { println("callBack")}
+                ))
+            }
             }
         }
     }

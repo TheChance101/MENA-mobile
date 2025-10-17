@@ -2,8 +2,8 @@ package net.thechance.mena.identity.presentation.di
 
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel
 import androidx.compose.ui.graphics.ImageBitmap
-import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation.AddEditLocationScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel

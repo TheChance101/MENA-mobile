@@ -12,6 +12,8 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
+import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation.AddEditLocationScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation.AddEditLocationScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

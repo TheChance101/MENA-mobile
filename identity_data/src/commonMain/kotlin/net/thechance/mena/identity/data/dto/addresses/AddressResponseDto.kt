@@ -15,8 +15,6 @@ data class AddressResponseDto(
     val addressLine: String,
     @SerialName("addressType")
     val addressType: String,
-    @SerialName("otherAddressTyped")
-    val otherAddressType: String?,
     @SerialName("isActive")
     val isActive: Boolean
 )

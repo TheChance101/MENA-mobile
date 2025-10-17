@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses
+package net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -102,8 +102,7 @@ class AddEditLocationScreenViewModel(
                     latitude = state.value.latitude,
                     longitude = state.value.longitude,
                     addressLine = state.value.address,
-                    addressType = state.value.addressType!!.name,
-                    otherAddressType = state.value.otherAddress,
+                    addressType = state.value.addressType!!,
                     isActive = state.value.isActive
                 )
             )
@@ -113,8 +112,7 @@ class AddEditLocationScreenViewModel(
                     latitude = state.value.latitude,
                     longitude = state.value.longitude,
                     addressLine = state.value.address,
-                    addressType = state.value.addressType?.name ?: "",
-                    otherAddressType = state.value.otherAddress,
+                    addressType = state.value.addressType?: AddressType.Home,
                     isActive = state.value.isActive
                 )
             )
@@ -144,13 +142,13 @@ class AddEditLocationScreenViewModel(
             val otherAddressChanged = state.value.otherAddress != state.value.originalOtherAddress
 
             (addressChanged || addressTypeChanged || otherAddressChanged)
-                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
+                    && (state.value.addressType != AddressType.Other("") || (state.value.otherAddress?.isNotBlank()
                 ?: false))
 
         } else {
 
             state.value.address.isNotBlank()
-                    && (state.value.addressType != AddressType.Other || (state.value.otherAddress?.isNotBlank()
+                    && (state.value.addressType != AddressType.Other("") || (state.value.otherAddress?.isNotBlank()
                 ?: false))
                     && state.value.addressType != null
         }

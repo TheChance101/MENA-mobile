@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses
+package net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation
 
 import net.thechance.mena.identity.domain.entity.AddressType
 

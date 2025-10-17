@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses
+package net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -35,7 +35,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.maplibre.compose.camera.CameraPosition
 
-class AddEditLocationScreen : BaseScreen<
+class AddEditLocationScreen(
+    val onSuccess: ()->Unit
+) : BaseScreen<
         AddEditLocationScreenViewModel,
         AddLocationScreenUIState,
         AddEditLocationScreenUIEffect,
@@ -130,8 +132,11 @@ class AddEditLocationScreen : BaseScreen<
         navigator: Navigator
     ) {
         when (effect) {
-            AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
-            AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(RegisterScreen()) //TODO : change it to map screen
+            AddEditLocationScreenUIEffect.NavigateBack -> {
+                onSuccess()
+                navigator.pop()
+            }
+            AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(RegisterScreen())
         }
     }
 
@@ -144,9 +149,10 @@ private fun OtherAddressType(
     otherAddressType: String?,
     onChangeOtherAddressType: (String) -> Unit,
     modifier: Modifier = Modifier,
+
 ) {
     AnimatedVisibility(
-        visible = selectedAddressType == AddressType.Other,
+        visible = selectedAddressType == AddressType.Other(""),
         enter = expandVertically(
             animationSpec = tween(durationMillis = 500)
         ),

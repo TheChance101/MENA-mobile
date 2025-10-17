@@ -68,8 +68,8 @@ fun AddressTypeSection(
             AddressTypeItem(
                 addressIcon = painterResource(Res.drawable.ic_marker),
                 addressType = stringResource(Res.string.other),
-                onAddressClick = { onClickAddressType(AddressType.Other) },
-                isSelected = selectedAddressType == AddressType.Other,
+                onAddressClick = { onClickAddressType(AddressType.Other("")) },
+                isSelected = selectedAddressType == AddressType.Other(""),
             )
         }
     }

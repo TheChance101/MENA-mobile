@@ -9,6 +9,5 @@ data class AddressRequestDto(
     val longitude: Double,
     val addressLine: String,
     val addressType: String,
-    val otherAddressType: String?,
     val isActive: Boolean
 )

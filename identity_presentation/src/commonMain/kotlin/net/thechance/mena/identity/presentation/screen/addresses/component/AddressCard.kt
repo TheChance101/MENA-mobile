@@ -135,7 +135,7 @@ private fun PreviewAddressCard() {
                 onDeleteClick = {}
             )
             AddressCard(
-                addressType = AddressType.Other,
+                addressType = AddressType.Other(""),
                 isMainAddress = true,
                 addressDetails = "Karrada, Baghdad 123 St.",
                 onEditClick = {},
