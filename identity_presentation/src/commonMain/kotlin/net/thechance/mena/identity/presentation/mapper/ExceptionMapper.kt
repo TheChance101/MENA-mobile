@@ -18,6 +18,7 @@ internal fun mapErrorToMessage(error: ErrorState): String {
         ErrorState.TooManyRequests -> "Too many requests. Please try again later."
         ErrorState.OTPExpired -> "OTP expired"
         ErrorState.NoNetwork -> "No Internet Connection"
+        is ErrorState.IsActiveAddress -> "Can't Delete Active Address"
     }
 }
 

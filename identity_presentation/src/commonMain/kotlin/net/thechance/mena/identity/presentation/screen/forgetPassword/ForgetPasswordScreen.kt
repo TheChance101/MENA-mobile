@@ -19,6 +19,7 @@ import mena.identity_presentation.generated.resources.forget_password_prompt_tit
 import mena.identity_presentation.generated.resources.reset_password
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.components.AuthAppBar
@@ -93,7 +94,7 @@ class ForgetPasswordScreen : BaseScreen<
                     contentPadding = PaddingValues(vertical = 13.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 12.dp, top = 24.dp)
+                        .padding(bottom = Theme.spacing._12, top = Theme.spacing._24)
                         .imePadding()
                     )
             }

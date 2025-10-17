@@ -94,6 +94,7 @@ private fun AttachmentBottomSheetContent(
             attachmentsInteractionListener.onGalleryClicked()
         }
     )
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -102,9 +103,7 @@ private fun AttachmentBottomSheetContent(
         AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
-            onClick = {
-                imagePickerLauncher.launch()
-            }
+            onClick = { imagePickerLauncher.launch() }
         )
 
         AttachmentsBottomSheetItem(
@@ -118,7 +117,6 @@ private fun AttachmentBottomSheetContent(
 @Composable
 @Preview()
 private fun PreviewAddPhotoBottomSheet() {
-
     MenaTheme {
         Box(
             modifier = Modifier
@@ -131,10 +129,10 @@ private fun PreviewAddPhotoBottomSheet() {
                     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
                     override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
+                    override fun onCameraClosed() {}
                     override fun onCloseAttachmentClicked() {}
                 }
             )
-
         }
     }
 }

@@ -57,6 +57,7 @@ actual fun VideoPlayer(
     url: String,
     isReelVisible: Boolean,
     modifier: Modifier,
+    onVideoPlaying: () -> Unit,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -111,6 +112,8 @@ actual fun VideoPlayer(
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
         }
+
+        onVideoPlaying()
     }
 
     LaunchedEffect(exoPlayer.isPlaying) {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.app_name
 import mena.identity_presentation.generated.resources.mena_logo
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -40,7 +40,7 @@ internal fun PageDescription(
             ) {
                 Image(
                     painter = painterResource(Res.drawable.mena_logo),
-                    contentDescription = "Mena Logo",
+                    contentDescription = null,
                     modifier = Modifier.size(88.dp)
                 )
                 Text(
@@ -57,7 +57,7 @@ internal fun PageDescription(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp)
+                .padding(top = Theme.spacing._12)
 
         )
         Text(
@@ -66,7 +66,7 @@ internal fun PageDescription(
             color = Theme.colorScheme.shadeSecondary,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp)
+                .padding(bottom = Theme.spacing._24)
         )
     }
 }

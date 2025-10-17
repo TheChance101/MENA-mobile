@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +35,7 @@ import org.maplibre.compose.map.OrnamentOptions
 import org.maplibre.compose.map.RenderOptions
 import org.maplibre.compose.style.BaseStyle
 import org.maplibre.compose.util.ClickResult
+import sv.lib.squircleshape.SquircleShape
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -103,7 +103,7 @@ fun Map(
                 Image(
                     modifier = Modifier
                         .padding(Theme.spacing._4)
-                        .clip(RoundedCornerShape(Theme.radius.md))
+                        .clip(SquircleShape(Theme.radius.md))
                         .clickable {
                             onEditClick()
                         }

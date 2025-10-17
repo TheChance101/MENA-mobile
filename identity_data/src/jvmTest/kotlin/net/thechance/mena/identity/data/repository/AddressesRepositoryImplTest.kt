@@ -10,7 +10,10 @@ import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import org.junit.Test
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class AddressesRepositoryImplTest {
 
     lateinit var client: HttpClient
@@ -64,7 +67,7 @@ class AddressesRepositoryImplTest {
         isActive = false
     )
     val fakeExistingAddress = Address(
-        id = "123",
+        id = Uuid.random(),
         addressLine = "Cairo",
         addressType = "Home",
         latitude = 30.0444,

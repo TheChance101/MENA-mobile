@@ -42,7 +42,7 @@ val faithDataModule = module {
     single<Ktorfit>(named("faithKtorfit")) {
         Ktorfit.Builder()
             .httpClient(get<HttpClient>(named("faithHttpClient")))
-            .baseUrl(get<String>(named("baseUrl")))
+            .baseUrl(get<String>(named("baseUrl")) + "/")
             .converterFactories(ResponseConverterFactory())
             .build()
     }

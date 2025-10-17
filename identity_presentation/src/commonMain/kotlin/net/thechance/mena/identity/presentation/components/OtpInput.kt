@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 internal fun OtpInput(
@@ -84,7 +84,7 @@ private fun OTPCard(
             .size(width = 48.dp, height = 66.dp)
             .background(
                 color = Theme.colorScheme.primary.onPrimary,
-                shape = RoundedCornerShape(size = Theme.radius.md)
+                shape = SquircleShape( Theme.radius.md)
             ),
         contentAlignment = Alignment.Center
     ) {

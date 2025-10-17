@@ -7,7 +7,6 @@ import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
-import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
@@ -23,13 +22,14 @@ class ProfileScreenViewModel(
         setAppVersion()
     }
 
-    private fun setAppVersion(){
+    private fun setAppVersion() {
         updateState {
             copy(
                 versionNumber = appVersion
             )
         }
     }
+
     private fun onErrorOccurred(errorState: ErrorState) {
         updateState {
             copy(
@@ -44,7 +44,7 @@ class ProfileScreenViewModel(
             function = { userRepository.getUser() },
             onNewValue = ::updateUserInfo,
             onError = ::onErrorOccurred,
-            dispatcher =dispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -52,7 +52,7 @@ class ProfileScreenViewModel(
         updateState {
             copy(
                 userName = user.username,
-                fullName = user.firstName + " " + user.lastName,
+                fullName = "${user.firstName} ${user.lastName}",
                 profileImageUrl = user.profileImageUrl,
                 isSuccess = true
             )
