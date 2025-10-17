@@ -4,10 +4,10 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isSuccess
 import dev.mokkery.verifySuspend
+import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.repository.util.VideoFileHandlerMock
 import net.thechance.mena.trends.data.repository.util.addViewReelResponse
 import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
@@ -23,7 +23,7 @@ import kotlin.test.assertFails
 
 internal class ReelRepositoryImplTest {
 
-    private var networkClient: NetworkClient = createReelsHttpClient { getReelsResponse() }
+    private var networkClient: HttpClient = createReelsHttpClient { getReelsResponse() }
     private val videoHandler = VideoFileHandlerMock()
     private var repository = ReelsRepositoryImpl(networkClient, videoHandler)
 

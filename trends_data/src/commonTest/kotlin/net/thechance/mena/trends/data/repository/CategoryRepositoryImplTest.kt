@@ -4,9 +4,9 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import dev.mokkery.verifySuspend
+import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.toByteArray
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.PatchUserCategoriesRequest
 import net.thechance.mena.trends.data.mapper.toEntityList
 import net.thechance.mena.trends.data.repository.util.createCategoryHttpClient
@@ -22,7 +22,7 @@ import kotlin.test.Test
 internal class CategoryRepositoryImplTest {
 
     private lateinit var repository: CategoryRepository
-    private lateinit var networkClient: NetworkClient
+    private lateinit var networkClient: HttpClient
 
     @Test
     fun `getAllCategories should return list of mapped categories`() = runTest {

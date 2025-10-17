@@ -1,9 +1,12 @@
 package net.thechance.mena.trends.data.repository
 
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.PatchUserCategoriesRequest
 import net.thechance.mena.trends.data.dto.PatchUserCategoriesResponse
@@ -22,7 +25,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [CategoryRepository::class])
 internal class CategoryRepositoryImpl(
-    @Provided private val networkClient: NetworkClient
+    @Provided private val networkClient: HttpClient
 ) : CategoryRepository {
 
     override suspend fun getAllCategories(): List<Category> {
