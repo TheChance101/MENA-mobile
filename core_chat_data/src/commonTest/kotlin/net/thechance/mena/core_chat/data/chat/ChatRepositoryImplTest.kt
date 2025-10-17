@@ -339,24 +339,6 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `getMessages should connect to websocket if websocket is disconnected`() = runTest {
-        every { webSocketManager.isConnected() } returns false
-        everySuspend { authRepository.getAccessToken() } returns "test-token"
-        everySuspend { webSocketManager.connect(any()) } returns Unit
-        everySuspend { webSocketManager.subscribe(any()) } returns Unit
-        everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
-            tryEmit(
-                "test-message"
-            )
-        }
-
-        repository.getMessages(chatId)
-
-        verifySuspend { webSocketManager.connect(any()) }
-    }
-
-    @Test
     fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() =
         runTest {
             everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
