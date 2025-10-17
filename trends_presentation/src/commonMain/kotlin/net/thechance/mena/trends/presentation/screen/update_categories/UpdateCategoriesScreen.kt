@@ -62,14 +62,14 @@ internal fun UpdateCategoriesScreen(
         viewModel.getCategories()
     }
 
-    CategoryPickScreenContent(
+    UpdateCategoriesScreenContent(
         state = state,
         listener = viewModel
     )
 }
 
 @Composable
-private fun CategoryPickScreenContent(
+private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
@@ -190,7 +190,7 @@ private fun LoadingProgressBar() {
 @Composable
 private fun CategoryPickScreenPreview() {
     MenaTheme {
-        CategoryPickScreenContent(
+        UpdateCategoriesScreenContent(
             state = UpdateCategoriesScreenState(),
             listener = object : UpdateCategoriesInteractionListener {
                 override fun onBackClick() {}
