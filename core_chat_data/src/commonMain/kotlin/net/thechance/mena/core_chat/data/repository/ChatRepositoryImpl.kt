@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
@@ -137,10 +138,18 @@ class ChatRepositoryImpl(
                         if (source is ImagesSource.Local)
                             source.byteArrays
                         else throw SendMessageFailedException("Failed to send message: Corrupted images")
+                    var remainingImages = byteArrays.toMutableList()
                     sendImagesMessage(
                         imageNames = byteArrays.mapIndexed { index, _ -> "image_$index" },
                         images = byteArrays,
-                        chatId = message.chatId
+                        chatId = message.chatId,
+                        onSuccessImage = { image ->
+                            remainingImages = remainingImages.apply { remove(image) }
+                            messageDao.updateMessageImages(
+                                id = updatedMessage.id,
+                                images = remainingImages
+                            )
+                        }
                     )
                 }
             }
@@ -173,7 +182,8 @@ class ChatRepositoryImpl(
     private suspend fun sendImagesMessage(
         imageNames: List<String>,
         images: List<ByteArray>,
-        chatId: Uuid
+        chatId: Uuid,
+        onSuccessImage: suspend (ByteArray) -> Unit = {}
     ) {
         if (images.size != imageNames.size)
             throw SendMessageFailedException("imageNames and images must have the same size.")
@@ -182,7 +192,7 @@ class ChatRepositoryImpl(
 
         var messageId: String? = null
 
-        files.forEach { imageFile ->
+        files.forEachIndexed { index, imageFile ->
             val multipart = imageFile.buildImageMultiPartFormData(
                 fieldName = IMAGES_FILES_PARAM,
                 chatId = chatId.toString(),
@@ -196,6 +206,8 @@ class ChatRepositoryImpl(
                     setBody(multipart)
                 }
             }
+
+            if (messageResponse != null ) onSuccessImage(imageFile.second)
 
             if (messageId == null && messageResponse != null) {
                 messageId = messageResponse.id

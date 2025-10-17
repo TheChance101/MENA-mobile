@@ -84,6 +84,8 @@ fun MessageLocalDto.toDomain(): Message {
     )
 }
 
+fun List<MessageLocalDto>.toDomain(): List<Message> = map { it.toDomain() }
+
 fun MessageLocalDto.MessageStatus.toDomain(): MessageStatus {
     return when (this) {
         MessageLocalDto.MessageStatus.LOADING -> MessageStatus.LOADING

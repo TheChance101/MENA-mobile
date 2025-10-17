@@ -42,8 +42,8 @@ fun MessageUiState.toEntity(): Message {
 fun List<MessageUiState>.markLastInSeries(): List<MessageUiState> {
     return this.mapIndexed { index, message ->
         val nextIsMine = this.getOrNull(index - 1)?.isMine
-        val isLastInSeries = nextIsMine != message.isMine
-
+        val nextStatus = this.getOrNull(index - 1)?.status
+        val isLastInSeries = nextIsMine != message.isMine || nextStatus != message.status
         message.copy(isLastInSeries = isLastInSeries)
     }
 }
