@@ -17,12 +17,16 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
+import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
 import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
+import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.domain.entity.User
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -62,6 +66,20 @@ class UserRepositoryImplTest {
         val result = userRepositoryImpl.getUser()
 
         assertEquals(result.first(), fakeProfileResponse.toDomain())
+    }
+
+    @Test
+    fun `getUser() should return null when there is no user stored`() = runTest {
+
+        val client = mockHttpClient(fakeProfileResponse)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+
+        coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
+        every { userDao.getUser() } returns flowOf(null)
+
+        val result = userRepositoryImpl.getUser()
+
+        assertEquals(result.first(), null)
     }
 
     @Test
@@ -108,6 +126,15 @@ class UserRepositoryImplTest {
     }
 
     @Test
+    fun `updateUser() should call doe upsert when update user`() = runTest {
+        coEvery { userDao.upsert(any()) } returns Unit
+
+        userRepositoryImpl.updateUser(fakeUser)
+
+        coVerify(exactly = 1) { userDao.upsert(fakeUser.toEntity()) }
+    }
+
+    @Test
     fun `getUser() should return object from User`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
@@ -121,7 +148,7 @@ class UserRepositoryImplTest {
         assertEquals(fakeProfileResponse.firstName, result.first()?.firstName)
         assertEquals(fakeProfileResponse.username, result.first()?.username)
         assertEquals(fakeProfileResponse.lastName, result.first()?.lastName)
-        assertEquals(fakeProfileResponse.profileImageUrl, result.first()?.profileImageUrl)
+        assertEquals(fakeProfileResponse.imageUrl, result.first()?.profileImageUrl)
 
     }
 
@@ -129,7 +156,18 @@ class UserRepositoryImplTest {
     val fakeProfileResponse = ProfileResponseDto(
         firstName = "The",
         lastName = "Chance",
-        username = "TheChance@test.com",
-        profileImageUrl = ""
+        username = "the_chance",
+        imageUrl = "",
+        birthDate = "1999-01-01",
+        gender = UserEntity.MALE,
+    )
+
+    val fakeUser = User(
+        username = "the_chance",
+        firstName = "The",
+        lastName = "Chance",
+        profileImageUrl = "http://image.com",
+        birthDate = LocalDate(1900, 1, 1),
+        gender = Gender.MALE,
     )
 }

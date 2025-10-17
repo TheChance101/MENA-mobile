@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.data.mapper
 
 import net.thechance.mena.trends.data.dto.ReelDto
+import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.data.util.orZero
 import net.thechance.mena.trends.data.util.parseDateStringOrNull
 import net.thechance.mena.trends.domain.entity.Reel
@@ -18,5 +19,6 @@ internal fun ReelDto.toEntity(): Reel {
         userName = username,
         profileImageUrl = profilePictureUrl.orEmpty(),
         isCurrentUserOwner = isCurrentUserOwner,
+        isLiked = isLiked.orFalse()
     )
 }

@@ -6,4 +6,8 @@ interface CategoryRepository {
     suspend fun getAllCategories(): List<Category>
     suspend fun isCategoriesAlreadySelectedByUser(): Boolean
     suspend fun updateUserCategories(categoriesIds: List<String>)
+    suspend fun patchUserCategories(
+        originalSelectedIds: List<String>,
+        currentSelectedIds: List<String>
+    )
 }

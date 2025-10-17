@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,6 +24,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.screen.imageCropper.components.ImageCropperComponent
 import org.jetbrains.compose.resources.painterResource
 import org.koin.core.parameter.parametersOf
+import sv.lib.squircleshape.SquircleShape
 
 class ImageCropperScreen(
     private val image: ImageBitmap,
@@ -60,7 +60,7 @@ class ImageCropperScreen(
                         painter = painterResource(Res.drawable.ic_arrow_left),
                         contentDescription = "back",
                         modifier = Modifier
-                            .clip(RoundedCornerShape(Theme.radius.md))
+                            .clip(SquircleShape(Theme.radius.md))
                             .size(40.dp)
                             .clickable(onClick = listener::onNavigateBack)
                     )

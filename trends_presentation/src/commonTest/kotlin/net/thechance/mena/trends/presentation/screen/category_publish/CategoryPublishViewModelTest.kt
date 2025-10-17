@@ -72,7 +72,7 @@ class CategoryPublishViewModelTest {
         viewModel.effect.test {
             viewModel.onPublishClick()
             val effect = awaitItem()
-            assertTrue(effect is CategoryPublishEffect.NavigateToTrends)
+            assertTrue(effect is CategoryPublishEffect.NavigateToHome)
         }
     }
 

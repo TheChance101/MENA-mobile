@@ -4,25 +4,26 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isSuccess
 import dev.mokkery.verifySuspend
+import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.repository.util.VideoFileHandlerMock
+import net.thechance.mena.trends.data.repository.util.addViewReelResponse
 import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
 import net.thechance.mena.trends.data.repository.util.getReelsResponse
+import net.thechance.mena.trends.data.repository.util.toggleLikeReelResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
-import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.Test
 import kotlin.test.assertFails
 
 internal class ReelRepositoryImplTest {
 
-    private var networkClient: NetworkClient = createReelsHttpClient { getReelsResponse() }
+    private var networkClient: HttpClient = createReelsHttpClient { getReelsResponse() }
     private val videoHandler = VideoFileHandlerMock()
     private var repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
@@ -170,11 +171,41 @@ internal class ReelRepositoryImplTest {
         assertThat(result.isFailure).isEqualTo(true)
         assertThat(result.exceptionOrNull()?.message).isEqualTo("Network Error")
     }
+
+    @Test
+    fun `should toggle like when toggleLike called successfully`() = runTest {
+        networkClient = createReelsHttpClient {
+            toggleLikeReelResponse()
+        }
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
+
+        val result = repository.toggleReelLike(REEL_ID)
+
+        assertThat(result).isEqualTo(fakeReelList.first())
+    }
+
+    @Test
+    fun `should add view when addView called successfully`() = runTest {
+        networkClient = createReelsHttpClient {
+            addViewReelResponse()
+        }
+
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
+
+        val result = runCatching {
+            repository.addReelView(REEL_ID)
+        }
+
+        assertThat(result).isSuccess()
+
+    }
+
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
         const val FAKE_FILE_PATH = "path/to/file"
         const val FAKE_FILE_NAME = "fileName"
         const val FAKE_DURATION = 1000L
+        const val REEL_ID = "12345"
     }
 }

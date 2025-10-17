@@ -22,7 +22,15 @@ data class ChatScreenState(
     val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
     val isAttachmentsOverlayVisible: Boolean = false,
-    val failedMessageToReSend: MessageUiState? = null
+    val isCameraOpen: Boolean = false,
+    val failedMessageToReSend: MessageUiState? = null,
+    val userData: UserData = UserData()
+)
+
+data class UserData(
+    val firstName: String = "",
+    val lastName: String = "",
+    val imageUrl: String = ""
 )
 
 sealed interface ChatListItem {

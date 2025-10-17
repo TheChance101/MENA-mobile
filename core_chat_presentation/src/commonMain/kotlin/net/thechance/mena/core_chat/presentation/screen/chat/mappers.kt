@@ -35,7 +35,8 @@ fun MessageUiState.toEntity(): Message {
         chatId = chatId,
         content = content,
         sendAt = sendTime,
-        status = status
+        status = status,
+        isMine = isMine
     )
 }
 

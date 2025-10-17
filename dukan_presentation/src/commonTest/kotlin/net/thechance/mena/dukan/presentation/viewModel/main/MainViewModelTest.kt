@@ -6,10 +6,13 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
@@ -17,42 +20,51 @@ import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
 
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var dukanRepository: DukanRepository
     private val testDispatcher = StandardTestDispatcher()
 
+    @BeforeTest
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+        everySuspend { dukanRepository.getMyDukanStatus() } returns null
+        everySuspend { dukanRepository.getCategories() } returns emptyList()
+        mainViewModel = MainViewModel(dukanRepository, testDispatcher)
+    }
+
     @Test
-    fun `When a user doesnt have dukan then the DukanStatusUi should be None`() =
-        runTest(testDispatcher) {
-            everySuspend { dukanRepository.getMyDukanStatus() } returns null
+    fun `When a user doesnt have dukan then the DukanStatusUi should be None`() = runTest {
 
-            val mainViewModel = MainViewModel(
-                dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
+        val mainViewModel = MainViewModel(
+            dukanRepository = dukanRepository,
+            dispatcher = testDispatcher
+        )
+
+        mainViewModel.state.test {
+            awaitItem() // initial Loading state
+            val updated = awaitItem() // state after repository returns null
+            assertEquals(
+                expected = MainScreenUiState.DukanState(
+                    name = "",
+                    status = MainScreenUiState.DukanStatusUi.None
+                ),
+                actual = updated.dukanState
             )
-
-            mainViewModel.state.test {
-                awaitItem() // initial Loading state
-                val updated = awaitItem() // state after repository returns null
-                assertEquals(
-                    expected = MainScreenUiState.DukanState(
-                        name = "",
-                        status = MainScreenUiState.DukanStatusUi.None
-                    ),
-                    actual = updated.dukanState
-                )
-                cancelAndIgnoreRemainingEvents()
-            }
+            cancelAndIgnoreRemainingEvents()
         }
+    }
 
     @Test
     fun `When a user has dukan then the DukanStatusUi should be the current dukan status with current dukan name`() =
-        runTest(testDispatcher) {
+        runTest {
             everySuspend { dukanRepository.getMyDukanStatus() } returns MyDukanStatus(
                 status = Dukan.Status.PENDING,
                 dukanName = "Dukan El Sa3ada"
@@ -79,13 +91,8 @@ class MainViewModelTest {
 
     @Test
     fun `When getMyDukanStatus throws DukanNotFoundException the MainViewModelUiState should set ErrorMessage to null`() =
-        runTest(testDispatcher) {
+        runTest {
             everySuspend { dukanRepository.getMyDukanStatus() } throws DukanNotFoundException()
-
-            val mainViewModel = MainViewModel(
-                dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
-            )
 
             mainViewModel.state.test {
                 val result = awaitItem()
@@ -96,15 +103,7 @@ class MainViewModelTest {
 
     @Test
     fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
-        runTest(testDispatcher) {
-            everySuspend { dukanRepository.getMyDukanStatus() } returns null
-
-            val mainViewModel = MainViewModel(
-                dukanRepository = dukanRepository,
-                dispatcher = testDispatcher
-            )
-            advanceUntilIdle()
-
+        runTest {
             mainViewModel.onDukanButtonClicked()
 
             mainViewModel.effect.test {
@@ -116,7 +115,7 @@ class MainViewModelTest {
 
     @Test
     fun `When the dukanStatusUi is pending and user clicks on the Dukan button, then it should emit NavigateToPendingDukanScreen`() =
-        runTest(testDispatcher) {
+        runTest {
             everySuspend { dukanRepository.getMyDukanStatus() } returns MyDukanStatus(
                 status = Dukan.Status.PENDING,
                 dukanName = "Dukan El Sa3ada"
@@ -133,6 +132,112 @@ class MainViewModelTest {
             mainViewModel.effect.test {
                 val currentEffect = awaitItem()
                 assertEquals(MainEffect.NavigateToPendingDukanScreen, currentEffect)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `When the dukanStatusUi is approved and user clicks on the Dukan button, then it should emit NavigateToManageDukanScreen`() =
+        runTest {
+            everySuspend { dukanRepository.getMyDukanStatus() } returns MyDukanStatus(
+                status = Dukan.Status.APPROVED,
+                dukanName = "Dukan El Sa3ada"
+            )
+            val mainViewModel = MainViewModel(
+                dukanRepository = dukanRepository,
+                dispatcher = testDispatcher
+            )
+            advanceUntilIdle()
+
+            mainViewModel.onDukanButtonClicked()
+
+            mainViewModel.effect.test {
+                val currentEffect = awaitItem()
+                assertEquals(MainEffect.NavigateToManageDukanScreen, currentEffect)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `When getCategories throws an exception then errorMessage should be set`() = runTest {
+        everySuspend { dukanRepository.getCategories() } throws Exception("Network failure")
+
+        mainViewModel = MainViewModel(dukanRepository, testDispatcher)
+        advanceUntilIdle()
+
+        mainViewModel.state.test {
+            val result = awaitItem()
+            assertEquals("Network failure", result.errorMessage)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onViewMoreButtonClick SHOULD emit NavigateCategoryToScreen`() = runTest {
+
+        mainViewModel.onViewMoreButtonClick()
+        val actualEffect = mainViewModel.effect.first()
+        val expectedEffect = MainEffect.NavigateCategoryToScreen
+
+        assertEquals(expectedEffect, actualEffect)
+
+    }
+
+    @Test
+    fun `onCategorySelectedClick SHOULD emit NavigateToDukansScreenByCategory with correct categoryId`() =
+        runTest {
+            val categoryId = "1"
+            val categoryName = "Category 1"
+
+            mainViewModel.onCategorySelectedClick(categoryId, categoryName)
+            val actualEffect = mainViewModel.effect.first()
+            val expectedEffect =
+                MainEffect.NavigateToDukansScreenByCategory(categoryId, categoryName)
+            assertEquals(expectedEffect, actualEffect)
+        }
+
+    @Test
+    fun `onNearestDukanClick should emit NavigateSelectedNearsetDukan effect with correct dukanId`() =
+        runTest {
+            val dukanId = "1"
+
+            mainViewModel.onNearestDukanClick(dukanId)
+
+            val actualEffect = mainViewModel.effect.first()
+            val expectedEffect = MainEffect.NavigateSelectedDukan(dukanId)
+            assertEquals(expectedEffect, actualEffect)
+        }
+
+    @Test
+    fun `onEditorPickDukanClick should emit NavigateSelectedDukan effect with correct dukanId`() =
+        runTest {
+            val dukanId = "1"
+
+            mainViewModel.onEditorPickDukanClick(dukanId)
+
+            val actualEffect = mainViewModel.effect.first()
+            val expectedEffect = MainEffect.NavigateSelectedDukan(dukanId)
+            assertEquals(expectedEffect, actualEffect)
+        }
+
+    @Test
+    fun `When getMyDukanStatus throws DukanNotFoundException then dukanState should be None and errorMessage should be set`() =
+        runTest {
+            everySuspend { dukanRepository.getMyDukanStatus() } throws DukanNotFoundException("Dukan not found")
+            everySuspend { dukanRepository.getCategories() } returns emptyList()
+
+            mainViewModel = MainViewModel(dukanRepository, testDispatcher)
+            advanceUntilIdle()
+
+            mainViewModel.state.test {
+                val result = awaitItem()
+                assertEquals(
+                    MainScreenUiState.DukanState(
+                        status = MainScreenUiState.DukanStatusUi.None
+                    ),
+                    result.dukanState
+                )
+                assertEquals("Dukan not found", result.errorMessage)
                 cancelAndIgnoreRemainingEvents()
             }
         }

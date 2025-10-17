@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -28,26 +27,24 @@ internal class UserReelViewModel(
     }
 
     private fun getFeedReals() {
-        tryToExecute(
-            block = {
-                createPager(
-                    scope = viewModelScope,
-                    loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
-                )
-            },
-            onSuccess = ::onGetReelsSuccess,
+        tryToCollectFlow(
+            block = ::createPager,
             onStart = { updateState { copy(isLoading = true) } },
+            onNewValue = { uiPagingData ->
+                state.value.reelsStateFlow.value = uiPagingData
+                updateState { copy(reels = reelsStateFlow, isLoading = false) }
+            },
+            onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher,
-            onError = { error -> updateState { copy(error = error) } }
+            dispatcher = ioDispatcher
         )
     }
 
-    private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
-        val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
-            pagingData.map { reel -> reel.toUserReelUiState() }
-        }
-        updateState { copy(reels = uiReelsFlow) }
+    private fun createPager(): Flow<PagingData<UserReelUiState>> {
+        return createPager(
+            scope = viewModelScope,
+            loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
+        ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
     override fun onDescriptionClick(isCollapsed: Boolean) {
@@ -58,6 +55,60 @@ internal class UserReelViewModel(
 
     override fun onPublisherInfoClick() {
         sendEffect(UserReelEffect.NavigateToPublisherProfile)
+    }
+
+    override fun increaseReelView(reelId: String) {
+        tryToExecute(
+            block = { reelsRepository.addReelView(reelId) },
+            onError = { error -> updateState { copy(error = error) } },
+            dispatcher = ioDispatcher,
+        )
+    }
+
+    override fun onLikeClick(reelId: String) {
+        tryToExecute(
+            onStart = { updateLikesOnUi(reelId) },
+            block = { reelsRepository.toggleReelLike(reelId) },
+            onError = { error ->
+                onLikeClickFailed(reelId)
+                updateState { copy(error = error) }
+            },
+            dispatcher = ioDispatcher,
+            scope = viewModelScope,
+            onSuccess = { updatedReel ->
+                updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() }
+            }
+        )
+    }
+
+    private fun onLikeClickFailed(reelId: String) {
+        updateReelInPagingData(reelId) { reel ->
+            reel.copy(
+                isLiked = !reel.isLiked,
+                likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
+            )
+        }
+    }
+
+    private fun updateReelInPagingData(
+        reelId: String,
+        transform: (UserReelUiState) -> UserReelUiState
+    ) {
+        val currentData = state.value.reelsStateFlow.value
+        val updatedData = currentData.map { reel ->
+            if (reel.id == reelId) transform(reel) else reel
+        }
+        state.value.reelsStateFlow.value = updatedData
+        updateState { copy(reels = reelsStateFlow) }
+    }
+
+    private fun updateLikesOnUi(reelId: String) {
+        updateReelInPagingData(reelId) { reel ->
+            reel.copy(
+                isLiked = !reel.isLiked,
+                likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
+            )
+        }
     }
 
     override fun onBackClick() {

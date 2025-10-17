@@ -2,9 +2,8 @@ package net.thechance.mena.trends.data.repository
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import dev.mokkery.mock
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.UserInfoDto
 import net.thechance.mena.trends.data.repository.util.mockUserInfoHttpClient
 import net.thechance.mena.trends.domain.entity.User
@@ -15,18 +14,18 @@ import kotlin.test.Test
 class UserRepositoryImplTest {
 
     private lateinit var repository: UserRepository
-    private lateinit var networkClient: NetworkClient
+    private lateinit var networkClient: HttpClient
 
     @BeforeTest
     fun setup() {
-        networkClient = mock<NetworkClient>()
+        networkClient = mockUserInfoHttpClient()
         repository = UserRepositoryImpl(networkClient)
     }
 
     @Test
     fun `should return profile entity successfully when network client returns valid profile response`() =
         runTest {
-            val testNetworkClient = mockUserInfoHttpClient(userInfoDto)
+            val testNetworkClient = mockUserInfoHttpClient()
             repository = UserRepositoryImpl(testNetworkClient)
 
             val actualProfile = repository.getCurrentUserInfo()

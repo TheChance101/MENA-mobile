@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.data.repository
 
-import net.thechance.mena.trends.data.client.NetworkClient
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import net.thechance.mena.trends.data.dto.UserInfoDto
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.IDENTITY_PATH
@@ -13,7 +14,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [UserRepository::class])
 internal class UserRepositoryImpl(
-    @Provided private val networkClient: NetworkClient
+    @Provided private val networkClient: HttpClient
 ) : UserRepository {
 
     override suspend fun getCurrentUserInfo(): User {

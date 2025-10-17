@@ -24,5 +24,7 @@ internal data class ReelDto(
     @SerialName("username")
     val username: String = "The Chance",
     @SerialName("profilePictureUrl")
-    val profilePictureUrl: String? = null
+    val profilePictureUrl: String? = null,
+    @SerialName("isLiked")
+    val isLiked: Boolean? = null
 )

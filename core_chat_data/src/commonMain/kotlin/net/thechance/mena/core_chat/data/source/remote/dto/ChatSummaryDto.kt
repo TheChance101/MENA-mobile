@@ -8,7 +8,7 @@ data class ChatSummaryDto(
     @SerialName("id") val id: String,
     @SerialName("name") val name: String,
     @SerialName("imageUrl") val imageUrl: String?,
-    @SerialName("lastMessage") val lastMessage: LastMessageDto,
+    @SerialName("lastMessage") val lastMessage: LastMessageDto?,
     @SerialName("unReadMessagesCount") val unReadMessagesCount: Int
 ) {
     @Serializable

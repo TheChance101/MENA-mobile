@@ -22,6 +22,8 @@ class InvalidCredentialsException : AuthenticationException(
     "user with mobile number, doesn't exist or password is incorrect"
 )
 
+class IsActiveAddress : Exception()
+
 class UnknownException : AuthenticationException("Unknown Exception")
 class UnAuthorizedException : AuthenticationException("user has no access to application")
 class InvalidOTPException : AuthenticationException("Invalid OTP")
