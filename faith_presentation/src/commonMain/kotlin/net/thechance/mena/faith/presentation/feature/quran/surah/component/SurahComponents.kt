@@ -12,10 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -135,11 +131,11 @@ fun getAyahTextStyle() = Theme.typography.quran.large.copy(
 internal fun UnifiedChunkText(
     chunkAyat: List<Ayah>,
     selectedAyahIndex: Int?,
+    textLayoutResult:TextLayoutResult?,
+    onTextLayoutResultChange: (TextLayoutResult?) -> Unit,
     onLongPress: (Ayah) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
-
     val styledText = buildAnnotatedString {
         chunkAyat.forEach { ayah ->
             val color = getAyahTextColor(selectedAyahIndex, ayah.number)
@@ -149,11 +145,10 @@ internal fun UnifiedChunkText(
             append(" ")
         }
     }
-
     BasicText(
         text = styledText,
         style = getAyahTextStyle(),
-        onTextLayout = { textLayoutResult = it },
+        onTextLayout = { onTextLayoutResultChange(it) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._8)
