@@ -30,7 +30,7 @@ internal class ReelViewModel(
             onStart = { updateLikesOnUi(reelId) },
             block = { repository.toggleReelLike(reelId) },
             onError = { error ->
-                onLikeClickFailed(reelId)
+                updateLikesOnUi(reelId)
                 updateState { copy(error = error) }
             },
             dispatcher = ioDispatcher,
@@ -39,15 +39,6 @@ internal class ReelViewModel(
                 updateReelInPagingData(reelId) { updatedReel.toUiState() }
             }
         )
-    }
-
-    private fun onLikeClickFailed(reelId: String) {
-        updateReelInPagingData(reelId) { reel ->
-            reel.copy(
-                isLiked = !reel.isLiked,
-                likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
-            )
-        }
     }
 
     private fun updateLikesOnUi(reelId: String) {

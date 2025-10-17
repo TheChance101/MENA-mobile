@@ -95,13 +95,11 @@ private fun ReelScreenContent(
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
             ) {
                 items(reels.itemSnapshotList.items) { reel ->
-                    reel.let { reel ->
-                        FeedReelCard(
-                            reel = reel,
-                            onLikeClick = { listener.onLikeClick(reel.id) },
-                            onReelClick = { listener.onReelClick(reel.id) }
-                        )
-                    }
+                    FeedReelCard(
+                        reel = reel,
+                        onLikeClick = { listener.onLikeClick(reel.id) },
+                        onReelClick = { listener.onReelClick(reel.id) }
+                    )
                 }
             }
 

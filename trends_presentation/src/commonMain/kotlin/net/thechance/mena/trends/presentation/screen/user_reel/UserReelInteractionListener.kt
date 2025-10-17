@@ -9,6 +9,6 @@ internal interface UserReelInteractionListener {
     fun onDismissErrorDialog()
     fun onDescriptionClick(isCollapsed: Boolean)
     fun onPublisherInfoClick()
-    fun increaseReelView(reelId: String)
+    fun increaseReelView()
     fun onLikeClick(reelId: String)
 }

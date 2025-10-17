@@ -165,13 +165,13 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun toggleReelLike(reelId: String): Reel {
         return safeApiCall<ReelDto> {
-            networkClient.post(urlString = "${LIKE_REEL_ENDPOINT}/$reelId")
+            networkClient.post(urlString = "$LIKE_REEL_ENDPOINT/$reelId")
         }.toEntity()
     }
 
     override suspend fun addReelView(reelId: String) {
         safeApiCall<Unit> {
-            networkClient.post(urlString = "${VIEW_REEL_ENDPOINT}/$reelId")
+            networkClient.post(urlString = "$VIEW_REEL_ENDPOINT/$reelId")
         }
     }
 

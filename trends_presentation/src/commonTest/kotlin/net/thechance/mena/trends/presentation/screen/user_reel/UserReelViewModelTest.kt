@@ -219,10 +219,9 @@ class UserReelViewModelTest {
 
     @Test
     fun `increaseReelView should update error state when repository throws exception`() = runTest {
-        val reelId = "1"
-        everySuspend { mockReelsRepository.addReelView(reelId) } throws Exception("View failed")
+        everySuspend { mockReelsRepository.addReelView(any()) } throws Exception("View failed")
 
-        viewModel.increaseReelView(reelId)
+        viewModel.increaseReelView()
         advanceUntilIdle()
 
         viewModel.state.test {

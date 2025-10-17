@@ -57,9 +57,9 @@ internal class UserReelViewModel(
         sendEffect(UserReelEffect.NavigateToPublisherProfile)
     }
 
-    override fun increaseReelView(reelId: String) {
+    override fun increaseReelView() {
         tryToExecute(
-            block = { reelsRepository.addReelView(reelId) },
+            block = { reelsRepository.addReelView(userReelArgs.realId) },
             onError = { error -> updateState { copy(error = error) } },
             dispatcher = ioDispatcher,
         )
