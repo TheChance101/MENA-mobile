@@ -43,6 +43,7 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
+            snackBarHandler = FakeSnackbarHandler()
         )
     }
 
