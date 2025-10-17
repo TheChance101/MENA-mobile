@@ -7,6 +7,7 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.address_deleted_successfully
 import mena.identity_presentation.generated.resources.is_main_address_error
 import mena.identity_presentation.generated.resources.unexpected_error
+import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.identity.domain.exception.IsActiveAddress
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -37,12 +38,14 @@ class AddressesScreenViewModel(
     override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
 
     override fun onAddButtonClicked() = sendNewEffect(
-        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = null, onSuccess = { getUserAddresses() })
+        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = null, onSuccess = {  onAddEditSuccess(it) })
     )
 
     override fun onEditAddressClicked(addressUIState: AddressUIState) =
         sendNewEffect(
-        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = addressUIState, onSuccess = { getUserAddresses()}))
+            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = addressUIState, onSuccess = {
+                onAddEditSuccess(it)
+            }))
 
     override fun onClickAddress(addressId: Uuid) {
         tryToExecute(
@@ -128,7 +131,7 @@ class AddressesScreenViewModel(
         )
     }
 
-     fun getUserAddresses() {
+    private fun getUserAddresses() {
         tryToExecute(
             function = { addressesRepository.getUserAddresses().map { it.toUiState() } },
             onSuccess = ::onGetUserAddressesSuccess,
@@ -141,6 +144,16 @@ class AddressesScreenViewModel(
         copy(addresses = addresses)
     }
 
+    private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?){
+        println("OnAddEdit")
+        updateState {
+            copy(
+                snackBarUiState = snackBarUiState?:state.value.snackBarUiState,
+            )
+        }
+        getUserAddresses()
+
+    }
     private fun onErrorOccurred(errorState: ErrorState) {
         onDismissDeleteDialog()
         when (errorState) {

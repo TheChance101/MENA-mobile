@@ -5,46 +5,57 @@ import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.add_location
+import mena.identity_presentation.generated.resources.edit_location
+import mena.identity_presentation.generated.resources.error
+import mena.identity_presentation.generated.resources.is_main_address_error
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.AddressModel
+import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.SnackBarType
+import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class AddEditLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val addressModel: AddressModel? = null,
+    private val addressModel: AddressUIState? = null,
 ) : BaseScreenModel<AddLocationScreenUIState, AddEditLocationScreenUIEffect>(
     AddLocationScreenUIState()
 ), AddEditLocationScreenInteractionListener {
     init {
-        if (addressModel != null) {
+        if (addressModel != null)
             updateAddress(addressModel)
-        }
     }
 
 
     override fun onClickEdit() {
         sendNewEffect(
             AddEditLocationScreenUIEffect.NavigateToMap(
-                AddressModel(
-                    state.value.latitude,
-                    state.value.longitude,
-                    state.value.address
+                addressModel = AddressUIState(
+                    id = state.value.addressID?.let { Uuid.parse(it) },
+                    coordinates = CoordinatesUiState(
+                        state.value.latitude,
+                        state.value.longitude
+                    ),
+                    addressDetails = state.value.address
+
                 ), ::updateAddress
             )
         )
     }
 
     override fun onClickBack() {
-
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack())
     }
 
     override fun onClickAddressType(addressType: AddressType) {
@@ -103,14 +114,12 @@ class AddEditLocationScreenViewModel(
                 longitude = longitude,
                 addressType = addressType,
                 originalAddressType = addressType,
-                otherAddress = otherAddress,
                 originalOtherAddress = otherAddress,
                 isActive = isActive
             )
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private suspend fun onSave() {
         if (state.value.addressID != null) {
             addressesRepository.editAddress(
@@ -119,7 +128,12 @@ class AddEditLocationScreenViewModel(
                     latitude = state.value.latitude,
                     longitude = state.value.longitude,
                     addressLine = state.value.address,
-                    addressType = state.value.addressType!!,
+                    addressType =
+                        if(!state.value.otherAddress.isNullOrBlank())
+                            AddressType.Other(state.value.otherAddress!!)
+                    else
+                        state.value.addressType!!,
+
                     isActive = state.value.isActive
                 )
             )
@@ -129,7 +143,12 @@ class AddEditLocationScreenViewModel(
                     latitude = state.value.latitude,
                     longitude = state.value.longitude,
                     addressLine = state.value.address,
-                    addressType = state.value.addressType?: AddressType.Home,
+                    addressType =
+                        if(!state.value.otherAddress.isNullOrBlank())
+                        AddressType.Other(state.value.otherAddress!!)
+                    else
+                        state.value.addressType!!,
+
                     isActive = state.value.isActive
                 )
             )
@@ -138,7 +157,14 @@ class AddEditLocationScreenViewModel(
 
     private fun onSuccess() {
         updateState { copy(isLoading = false) }
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack(
+            SnackBarUiState(
+                isVisible = true,
+                snackBarType = SnackBarType.SUCCESS,
+                message = if(state.value.addressID != null) Res.string.edit_location else Res.string.add_location
+            )
+        )
+        )
     }
 
     private fun onError(errorState: ErrorState) {
@@ -147,6 +173,14 @@ class AddEditLocationScreenViewModel(
                 isLoading = false, errorMessage = mapErrorToMessage(errorState)
             )
         }
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack(
+            SnackBarUiState(
+                isVisible = true,
+                snackBarType = SnackBarType.ERROR,
+                message = Res.string.is_main_address_error
+            )
+        ))
+
     }
 
     override fun onClickMap() {
@@ -157,17 +191,17 @@ class AddEditLocationScreenViewModel(
         )
     }
 
-    private fun updateAddress(newAddress: AddressModel) {
+    private fun updateAddress(newAddress: AddressUIState) {
         updateState {
             copy(
-                latitude = newAddress.latitude,
-                longitude = newAddress.longitude,
-                address = newAddress.addressLine,
+                latitude = newAddress.coordinates.latitude,
+                longitude = newAddress.coordinates.longitude,
+                address = newAddress.addressDetails,
                 animateToCurrentLocation = true,
                 cameraPosition = CameraPosition(
                     target = Position(
-                        latitude = newAddress.latitude,
-                        longitude = newAddress.longitude,
+                        latitude = newAddress.coordinates.latitude,
+                        longitude = newAddress.coordinates.longitude,
                     ),
                     zoom = 15.0
                 )

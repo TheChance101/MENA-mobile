@@ -28,16 +28,18 @@ import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.components.AuthAppBar
+import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.SnackBarType
+import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.addresses.component.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.AddressModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 class AddEditLocationScreen(
-    val onSuccess: ()->Unit,
-    private val addressModel: AddressModel?,
+    val onSuccess: (SnackBarUiState?)->Unit,
+    private val addressModel: AddressUIState?,
 
     ) : BaseScreen<
         AddEditLocationScreenViewModel,
@@ -101,7 +103,9 @@ class AddEditLocationScreen(
                     TextField(
                         value = state.address,
                         title = stringResource(Res.string.address),
-                        onValueChanged = listener::onChangeAddress,
+                        onValueChanged = { newAddress ->
+                            listener.onChangeAddress(newAddress)
+                        },
                         readOnly = true,
                         enabled = false,
                         hint = "",
@@ -113,7 +117,9 @@ class AddEditLocationScreen(
                 item {
                     AddressTypeSection(
                         selectedAddressType = state.addressType,
-                        onClickAddressType = listener::onClickAddressType,
+                        onClickAddressType = { newType ->
+                            listener.onClickAddressType(newType)
+                        }
                     )
                 }
 
@@ -134,15 +140,17 @@ class AddEditLocationScreen(
         navigator: Navigator
     ) {
         when (effect) {
-            AddEditLocationScreenUIEffect.NavigateBack -> navigator.pop()
-            is AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(
-                PickLocationScreen(addressModel = effect.addressModel, onUpdateLocation = effect.onUpdateLocation)
-            )
-            AddEditLocationScreenUIEffect.NavigateBack -> {
-                onSuccess()
+            is AddEditLocationScreenUIEffect.NavigateBack -> {
+                onSuccess(effect.snackBarUiState)
                 navigator.pop()
             }
-            AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(RegisterScreen())
+
+            is AddEditLocationScreenUIEffect.NavigateToMap -> navigator.push(
+                PickLocationScreen(
+                    addressModel = effect.addressModel,
+                    onUpdateLocation = effect.onUpdateLocation
+                )
+            )
         }
     }
 

@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import org.junit.Test
 import kotlin.uuid.ExperimentalUuidApi
@@ -60,19 +61,17 @@ class AddressesRepositoryImplTest {
 
     val fakeNewAddress = Address(
         addressLine = "Cairo",
-        addressType = "Home",
+        addressType = AddressType.getAddressTypeFromString("Home"),
         latitude = 30.0444,
         longitude = 31.2357,
-        otherAddressType = null,
         isActive = false
     )
     val fakeExistingAddress = Address(
         id = Uuid.random(),
         addressLine = "Cairo",
-        addressType = "Home",
+        addressType = AddressType.getAddressTypeFromString("Home"),
         latitude = 30.0444,
         longitude = 31.2357,
-        otherAddressType = null,
         isActive = false
     )
 

@@ -2,6 +2,7 @@ package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
+import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
 import org.maplibre.compose.camera.CameraPosition
 
 interface PickLocationScreenInteractionListener : BaseInteractionListener {
@@ -13,7 +14,7 @@ interface PickLocationScreenInteractionListener : BaseInteractionListener {
     fun onClearErrorMessage()
     fun onClickBack()
     fun onSetAnchorLocation(pointerLocation: DpOffset)
-    fun onUpdateAddress(addressModel: AddressModel?)
+    fun onUpdateAddress(addressModel: AddressUIState?)
 }
 
 

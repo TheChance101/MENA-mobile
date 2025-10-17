@@ -9,15 +9,18 @@ import net.thechance.mena.identity.domain.util.Coordinates
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.maplibre.compose.camera.CameraPosition
+import kotlin.uuid.ExperimentalUuidApi
 
 class PickLocationScreenViewModel(
     private val mobileLocationRepository: MobileLocationRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val locationForegroundHandler: PermissionHandler,
-    private val addressModel: AddressModel?,
+    private val addressModel: AddressUIState?,
 ) : BaseScreenModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(PickLocationScreenUIState()),
     PickLocationScreenInteractionListener {
 
@@ -25,15 +28,15 @@ class PickLocationScreenViewModel(
         onUpdateAddress(addressModel)
     }
 
-    override fun onUpdateAddress(addressModel: AddressModel?) {
+    override fun onUpdateAddress(addressModel: AddressUIState?) {
         if (addressModel != null) {
             updateState {
                 copy(
                     currentLocation = Coordinates(
-                        latitude = addressModel.latitude,
-                        longitude = addressModel.longitude
+                        latitude = addressModel.coordinates.latitude,
+                        longitude = addressModel.coordinates.longitude
                     ).toUiState(),
-                    address = addressModel.addressLine,
+                    address = addressModel.addressDetails,
                     isMapLocked = true,
                     animateToCurrentLocation = true,
                 )
@@ -175,13 +178,15 @@ class PickLocationScreenViewModel(
     }
 
 
+    @OptIn(ExperimentalUuidApi::class)
     override fun onClickConfirm() {
         sendNewEffect(
             PickLocationScreenUIEffect.NavigateBackWithLocation(
-                AddressModel(
-                    latitude = state.value.currentLocation.latitude,
-                    longitude = state.value.currentLocation.longitude,
-                    addressLine = state.value.address
+                AddressUIState(
+                    id = addressModel?.id,
+                    coordinates = CoordinatesUiState(state.value.currentLocation.latitude ,
+                        state.value.currentLocation.longitude) ,
+                    addressDetails = state.value.address
                 )
             )
         )

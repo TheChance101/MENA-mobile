@@ -1,8 +1,9 @@
 package net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation
 
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.AddressModel
+import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
 
 sealed class AddEditLocationScreenUIEffect {
-    data object NavigateBack : AddEditLocationScreenUIEffect()
-    data class NavigateToMap(val addressModel: AddressModel? = null, val onUpdateLocation: (AddressModel) -> Unit) : AddEditLocationScreenUIEffect()
+    data class NavigateBack (val snackBarUiState: SnackBarUiState? = null): AddEditLocationScreenUIEffect()
+    data class NavigateToMap(val addressModel: AddressUIState? = null, val onUpdateLocation: (AddressUIState) -> Unit) : AddEditLocationScreenUIEffect()
 }

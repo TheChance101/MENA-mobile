@@ -105,19 +105,21 @@ class AddressesScreen :
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 28.dp),
-                    onAddLocationClicked = { listener::onAddButtonClicked }
+                    onAddLocationClicked = listener::onAddButtonClicked
                 )
             }
         }
 
     override fun onEffect(
-        effect: AddressesScreenUIEffect, navigator: Navigator
+        effect: AddressesScreenUIEffect,
+        navigator: Navigator
     ) {
         when (effect) {
             AddressesScreenUIEffect.NavigateBack -> navigator.pop()
             is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
                 navigator.push(AddEditLocationScreen(
-                    onSuccess = { println("callBack")}
+                    addressModel = effect.addressUIState,
+                    onSuccess = effect.onSuccess
                 ))
             }
             }
