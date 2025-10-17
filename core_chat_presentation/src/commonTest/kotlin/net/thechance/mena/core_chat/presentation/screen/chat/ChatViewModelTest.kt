@@ -67,7 +67,6 @@ class ChatViewModelTest {
         every { repository.subscribeToMessages(chatId) } returns flowOf()
         every { repository.observeReadMessages() } returns flowOf()
 
-        chatViewModel =
         chatViewModel = ChatViewModel(repository, userRepository, chatArgs, effector, permissionsController, testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
     }
