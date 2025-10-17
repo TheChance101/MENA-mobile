@@ -118,18 +118,6 @@ private fun ReelHeaderSection(
                 .noRippleClickable { onReelClick() },
             alignment = Alignment.Center
         )
-
-        if (reel.description.isBlank()) {
-            Text(
-                text = reel.description,
-                style = Theme.typography.body.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier
-                    .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
-            )
-        } else {
-            Spacer(modifier = Modifier.height(Theme.spacing._12))
-        }
     }
 }
 
@@ -144,10 +132,22 @@ private fun ReelFooterSection(
         animationSpec = tween(durationMillis = 500)
     )
 
+    if (reel.description.isNotBlank()) {
+        Text(
+            text = reel.description,
+            style = Theme.typography.body.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
+        )
+    } else {
+        Spacer(modifier = Modifier.height(Theme.spacing._12))
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16),
+            .padding(horizontal = Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
