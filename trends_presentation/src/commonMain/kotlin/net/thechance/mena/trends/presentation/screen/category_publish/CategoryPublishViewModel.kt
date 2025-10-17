@@ -51,7 +51,7 @@ internal class CategoryPublishViewModel(
     override fun onPublishClick() {
         tryToExecute(
             block = { updateReel() },
-            onSuccess = { sendEffect(CategoryPublishEffect.NavigateToTrends) },
+            onSuccess = { sendEffect(CategoryPublishEffect.NavigateToHome) },
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isPublishButtonLoadingVisible = true) } },
             onEnd = { updateState { copy(isPublishButtonLoadingVisible = false) } },

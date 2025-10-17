@@ -44,7 +44,7 @@ internal class CategoryPickViewModel(
     override fun onNextClick() {
         tryToExecute(
             block = { saveSelectedCategories() },
-            onSuccess = { sendEffect(CategoryPickScreenEffect.NavigateToTrends) },
+            onSuccess = { sendEffect(CategoryPickScreenEffect.NavigateToHome) },
             onStart = ::startSaving,
             onEnd = ::endSaving,
             onError = { errorState -> updateState { copy(error = errorState) } },

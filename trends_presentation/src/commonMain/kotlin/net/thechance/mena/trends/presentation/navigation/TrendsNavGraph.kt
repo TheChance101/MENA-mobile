@@ -53,19 +53,6 @@ fun TrendsNavHost() {
                 UserReelScreen()
             }
 
-            composable<Route.Trends> {
-                // TODO: Just a placeholder for navigation until its user story
-                Text(
-                    text = "Trends Screen",
-                    style = Theme.typography.headline.large,
-                    color = Theme.colorScheme.primary.primary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 100.dp)
-                )
-            }
-
             composable<Route.UploadReel> {
                 UploadReelScreen()
             }
