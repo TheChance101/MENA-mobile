@@ -227,7 +227,7 @@ class SearchViewModelTest {
         testViewModel.uiEffect.test {
             testViewModel.onSearchResultClick(1, TEST_AYAH_ID)
             val effect = awaitItem() as SearchEffect.NavigateToSurah
-            assertTrue(effect.surahName.isNotEmpty())
+            assertEquals( effect.surahName,TEST_FIRST_SURAH)
         }
     }
 
@@ -288,6 +288,7 @@ class SearchViewModelTest {
         const val SECOND_QUERY = "second"
         const val TEST_SURAH_ID = 1
         const val TEST_SURAH_NAME = "Al-Fatiha"
+        const val TEST_FIRST_SURAH = "AlFatihah"
         const val TEST_SEARCH_BY_SURAH_NAME = "Search in Al-Fatiha"
         const val EMPTY_STRING = ""
         const val QURAN_TEXT = "Quran"
