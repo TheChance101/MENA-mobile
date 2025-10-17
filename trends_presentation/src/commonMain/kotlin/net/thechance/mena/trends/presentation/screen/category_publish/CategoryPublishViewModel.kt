@@ -6,9 +6,9 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.presentation.screen.category_pick.toUiStates
 import net.thechance.mena.trends.presentation.screen.category_publish.args.CategoryPublishArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
+import net.thechance.mena.trends.presentation.shared.mapper.toUiStates
 import net.thechance.mena.trends.presentation.shared.model.toggleCategory
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided

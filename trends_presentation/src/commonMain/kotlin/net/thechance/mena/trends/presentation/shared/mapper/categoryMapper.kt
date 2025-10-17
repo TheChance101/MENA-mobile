@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.category_pick
+package net.thechance.mena.trends.presentation.shared.mapper
 
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.presentation.shared.model.CategoryUiState
@@ -8,7 +8,7 @@ internal fun List<Category>.toUiStates(): List<Selectable<CategoryUiState>> {
     return map { category ->
         Selectable(
             value = category.toUiState(),
-            isSelected = false
+            isSelected = category.isSelected
         )
     }
 }

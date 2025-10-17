@@ -40,8 +40,8 @@ internal class CategoryMapperTest {
     @Test
     fun `List of categoryDto toEntity() should map to List of Category correctly`() {
         val categories = categoriesDto.toEntityList()
-        val expectedFirst = Category(id = "uuid 1", name = "Sport", emoji = "⚽")
-        val expectedLast = Category(id = "uuid 2", name = "Music", emoji = "🎵")
+        val expectedFirst = Category(id = "uuid 1", name = "Sport", emoji = "⚽", isSelected = false)
+        val expectedLast = Category(id = "uuid 2", name = "Music", emoji = "🎵", isSelected = false)
 
         assertThat(categories.first()).isEqualTo(expectedFirst)
         assertThat(categories.last()).isEqualTo(expectedLast)
