@@ -425,7 +425,8 @@ class ChatViewModelTest {
                     chatId,
                     LocalDateTime.now(),
                     MessageStatus.SENT,
-                    MessageContent.Text("Hello, World")
+                    MessageContent.Text("Hello, World"),
+                    true
                 ),
                 Message(
                     message2Id,
@@ -433,7 +434,8 @@ class ChatViewModelTest {
                     chatId,
                     LocalDateTime.now(),
                     MessageStatus.SENT,
-                    MessageContent.Text("Hello, World2")
+                    MessageContent.Text("Hello, World2"),
+                    false
                 )
             )
     }
