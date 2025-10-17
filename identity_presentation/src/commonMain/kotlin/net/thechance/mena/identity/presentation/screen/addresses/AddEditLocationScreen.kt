@@ -28,9 +28,9 @@ import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.components.AuthAppBar
-import net.thechance.mena.identity.presentation.components.MapSection
-import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreen
-import net.thechance.mena.identity.presentation.screen.pickLocation.AddressModel
+import net.thechance.mena.identity.presentation.screen.addresses.component.MapSection
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.AddressModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf

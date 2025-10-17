@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.pickLocation.components
+package net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.RepeatMode

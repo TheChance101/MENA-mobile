@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.pickLocation.components
+package net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_anchor
 import net.thechance.mena.identity.presentation.components.util.MapStyle
-import net.thechance.mena.identity.presentation.screen.pickLocation.AddressModel
-import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.AddressModel
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIState
 import org.jetbrains.compose.resources.painterResource
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.CameraState
@@ -78,18 +78,14 @@ fun PickLocationMap(
             cameraState = camera,
             baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
             onMapClick = { position, offset ->
-                if (isLocked) {
-                    ClickResult.Consume
-                } else {
-                    onMapClick(
-                        PickLocationScreenUIState.CoordinatesUiState(
-                            latitude = position.latitude,
-                            longitude = position.longitude
-                        ),
-                        offset,
-                    )
-                    ClickResult.Pass
-                }
+                onMapClick(
+                    PickLocationScreenUIState.CoordinatesUiState(
+                        latitude = position.latitude,
+                        longitude = position.longitude
+                    ),
+                    offset,
+                )
+                ClickResult.Pass
             },
             options = mapOptions(isLocked)
         )

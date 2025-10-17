@@ -13,10 +13,10 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.repository.MobileLocationRepository
-import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenUIState
-import net.thechance.mena.identity.presentation.screen.pickLocation.PickLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.pickLocation.toEntity
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIState
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.toEntity
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.maplibre.compose.camera.CameraPosition

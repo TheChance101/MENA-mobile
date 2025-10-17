@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.pickLocation.components
+package net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
@@ -22,8 +22,7 @@ fun EditMapButton(
     isMapLocked: Boolean,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier,
-
-    ) {
+) {
     Crossfade(
         modifier = modifier,
         targetState = isMapLocked
@@ -31,7 +30,7 @@ fun EditMapButton(
         if (it) {
             Image(
                 modifier = Modifier
-                    .padding(Theme.spacing._4)
+                    .padding( end = 4.dp, start = 4.dp)
                     .clip(RoundedCornerShape(Theme.radius.md))
                     .clickable { onEditClick() }
                     .background(Color.Black)

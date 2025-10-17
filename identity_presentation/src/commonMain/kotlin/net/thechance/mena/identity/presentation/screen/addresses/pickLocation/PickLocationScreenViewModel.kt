@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.pickLocation
+package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
 import kotlinx.coroutines.CoroutineDispatcher
@@ -59,11 +59,15 @@ class PickLocationScreenViewModel(
 
     private fun getLocationName() {
         tryToExecute(
-            function = { mobileLocationRepository.getLocationName(state.value.currentLocation.toEntity()) },
+            function = ::onGetLocationName,
             onSuccess = ::onGetLocationNameSuccess,
             onError = ::onError,
             dispatcher = Dispatchers.Main
         )
+    }
+
+    private suspend fun onGetLocationName(): String {
+        return mobileLocationRepository.getLocationName(state.value.currentLocation.toEntity())
     }
 
     private fun onGetLocationNameSuccess(address: String) {
@@ -192,7 +196,7 @@ class PickLocationScreenViewModel(
     }
 
     override fun onSetAnchorLocation(pointerLocation: DpOffset) {
-        updateState { copy(pointerLocation = pointerLocation , animateToCurrentLocation = false) }
+        updateState { copy(pointerLocation = pointerLocation, animateToCurrentLocation = false) }
     }
 
     private fun changeIsConfirmEnabled() {

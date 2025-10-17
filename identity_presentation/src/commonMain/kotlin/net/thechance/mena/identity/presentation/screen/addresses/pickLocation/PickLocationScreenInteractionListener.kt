@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.pickLocation
+package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener

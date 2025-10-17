@@ -1,7 +1,6 @@
-package net.thechance.mena.identity.presentation.screen.pickLocation
+package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
-import io.github.dellisd.spatialk.geojson.Position
 import net.thechance.mena.identity.domain.util.Coordinates
 import org.maplibre.compose.camera.CameraPosition
 

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.pickLocation
+package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,9 +22,9 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
-import net.thechance.mena.identity.presentation.screen.pickLocation.components.EditMapButton
-import net.thechance.mena.identity.presentation.screen.pickLocation.components.GpsFabButton
-import net.thechance.mena.identity.presentation.screen.pickLocation.components.PickLocationMap
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.EditMapButton
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.GpsFabButton
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.PickLocationMap
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
@@ -73,13 +73,12 @@ data class PickLocationScreen(
                     verticalArrangement = Arrangement.Bottom
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(bottom = 12.dp).fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         GpsFabButton(
                             onClick = listener::onClickGps,
                             isLoading = state.isGpsButtonLoading,
-                            modifier = Modifier.padding(bottom = Theme.spacing._12)
                         )
                         EditMapButton(
                             isMapLocked = state.isMapLocked,
