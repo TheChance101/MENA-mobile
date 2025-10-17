@@ -1,10 +1,8 @@
 package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
@@ -40,83 +38,101 @@ fun AnimatedStatementItem(
     onDeleteClicked: (onDeleteComplete: (isSuccess: Boolean) -> Unit) -> Unit,
     onStatementCardClicked: (onViewStatementAvailable: (isPdfFound: Boolean) -> Unit) -> Unit
 ) {
-    var isVisible by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     var isDeleting by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
         targetValue = if (isDeleting) 0f else 1f,
         animationSpec = tween(
-            durationMillis = 300,
+            durationMillis = 500,
             easing = LinearEasing
         )
     )
 
-    AnimatedVisibility(
-        visible = isVisible,
-        exit = shrinkVertically(
-            animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-        )
-    ) {
-        Column {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                StatementDeleteButton(
-                    isDeleting = isDeleting,
-                    onDeleteClick = {
-                        isDeleting = true
-                        onDeleteClicked { isSuccess ->
-                            scope.launch {
-                                if (!isSuccess) {
-                                    isDeleting = false
-                                }
-                            }
+    val heightProgress by animateFloatAsState(
+        targetValue = if (isDeleting) 0f else 1f,
+        animationSpec = tween(
+            durationMillis = 800,
+            delayMillis = 220,
+            easing = LinearEasing
+        ),
+        finishedListener = {
+            if (isDeleting && it == 0f) {
+                onDeleteClicked { isSuccess ->
+                    scope.launch {
+                        if (!isSuccess) {
+                            isDeleting = false
                         }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .offset { IntOffset(deleteButtonOffsetX, 0) }
-                )
+                    }
+                }
+            }
+        }
+    )
 
-                StatementHistoryCard(
-                    startDate = statement.startDate,
-                    endDate = statement.endDate,
-                    totalInflow = statement.totalInflow.toString(),
-                    totalOutflow = statement.totalOutflow.toString(),
-                    onStatementCardClicked = {
-                        if (!isEditMode) {
-                            onStatementCardClicked { isPdfFound ->
-                                scope.launch {
-                                    if (!isPdfFound) {
-                                        isDeleting = true
-                                        delay(300)
-                                        isDeleting = false
-                                    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .layout { measurable, constraints ->
+                val placeable = measurable.measure(constraints)
+                layout(
+                    width = placeable.width,
+                    height = (placeable.height * heightProgress).toInt()
+                ) {
+                    placeable.placeRelative(0, 0)
+                }
+            }
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            StatementDeleteButton(
+                isDeleting = isDeleting,
+                onDeleteClick = {
+                    isDeleting = true
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .offset { IntOffset(deleteButtonOffsetX, 0) }
+            )
+
+            StatementHistoryCard(
+                startDate = statement.startDate,
+                endDate = statement.endDate,
+                totalInflow = statement.totalInflow.toString(),
+                totalOutflow = statement.totalOutflow.toString(),
+                onStatementCardClicked = {
+                    if (!isEditMode) {
+                        onStatementCardClicked { isPdfFound ->
+                            scope.launch {
+                                if (!isPdfFound) {
+                                    isDeleting = true
                                 }
                             }
                         }
-                    },
-                    isEditMode = isEditMode,
-                    historyIconOffsetX = historyIconOffsetX,
-                    modifier = Modifier
-                        .offset { IntOffset(cardOffsetX, 0) }
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                            transformOrigin = TransformOrigin(0f, 0.3f)
-                        }
-                )
-            }
-            if (isDividerVisible) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(Theme.colorScheme.stroke)
-                )
-            }
+                    }
+                },
+                isEditMode = isEditMode,
+                historyIconOffsetX = historyIconOffsetX,
+                modifier = Modifier
+                    .offset { IntOffset(cardOffsetX, 0) }
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        transformOrigin = TransformOrigin(0f, 0.3f)
+                    }
+            )
+        }
+        if (isDividerVisible && heightProgress > 0f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Theme.colorScheme.stroke)
+                    .graphicsLayer {
+                        alpha = heightProgress
+                    }
+            )
         }
     }
 }
