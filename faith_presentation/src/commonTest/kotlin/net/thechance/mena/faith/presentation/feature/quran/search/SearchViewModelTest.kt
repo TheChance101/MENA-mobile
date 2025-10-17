@@ -3,9 +3,12 @@ package net.thechance.mena.faith.presentation.feature.quran.search
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify.VerifyMode.Companion.exactly
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
@@ -227,7 +230,7 @@ class SearchViewModelTest {
         testViewModel.uiEffect.test {
             testViewModel.onSearchResultClick(1, TEST_AYAH_ID)
             val effect = awaitItem() as SearchEffect.NavigateToSurah
-            assertEquals( effect.surahName,TEST_FIRST_SURAH)
+            assertEquals(effect.surahName, TEST_FIRST_SURAH)
         }
     }
 
@@ -278,6 +281,37 @@ class SearchViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(expectedHint, testViewModel.uiState.value.hint)
+    }
+
+    @Test
+    fun `test searchForAyahInSurah is called when surahId is present`() = runTest {
+        // Given
+        every { searchArgs.surahId } returns TEST_SURAH_ID
+        every { searchArgs.surahName } returns TEST_SURAH_NAME
+        everySuspend {
+            quranRepository.searchForAyahInSurah(
+                TEST_SURAH_ID,
+                TEST_QUERY
+            )
+        } returns dummyAyat
+
+        testViewModel =
+            SearchViewModel(searchArgs, quranRepository, testDispatcher, stringResourceProvider)
+
+        // When
+        testViewModel.onQueryChange(TEST_QUERY)
+        testDispatcher.scheduler.advanceTimeBy(SEARCH_DELAY)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        verifySuspend(exactly(1)) {
+            quranRepository.searchForAyahInSurah(
+                TEST_SURAH_ID,
+                TEST_QUERY
+            )
+        }
+        verifySuspend(exactly(0)) { quranRepository.searchForAyahInQuran(any()) }
+        assertEquals(dummyAyat.size, testViewModel.uiState.value.searchResult.size)
     }
 
     private companion object {
