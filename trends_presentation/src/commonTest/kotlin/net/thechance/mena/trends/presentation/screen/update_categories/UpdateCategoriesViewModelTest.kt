@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.update_interests
+package net.thechance.mena.trends.presentation.screen.update_categories
 
 import app.cash.turbine.test
 import assertk.assertThat
@@ -19,10 +19,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class UpdateInterestsViewModelTest : TestExtensions() {
+class UpdateCategoriesViewModelTest : TestExtensions() {
     private val repository: CategoryRepository = mock<CategoryRepository>(mode = MockMode.autofill)
     private val viewModel by lazy {
-        UpdateInterestsViewModel(
+        UpdateCategoriesViewModel(
             repository = repository,
             defaultDispatcher = testDispatcher
         )
@@ -101,22 +101,21 @@ class UpdateInterestsViewModelTest : TestExtensions() {
 
         viewModel.effect.test {
             val effect = awaitItem()
-            assertTrue(effect is UpdateInterestsScreenEffect.NavigateBack)
+            assertTrue(effect is UpdateCategoriesScreenEffect.NavigateBack)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onSaveClick should called updateUserInterestedCategories from repository with success`() =
+    fun `onSaveClick should sendEffect NavigateToTrends when patchUserCategories is successful`() =
         runTest(testDispatcher) {
-            val selectedIds = listOf(categories.first().id)
-            everySuspend { repository.updateUserCategories(selectedIds) } returns Unit
+            everySuspend { repository.patchUserCategories(any(), any()) } returns Unit
 
             viewModel.onSaveClick()
 
             viewModel.effect.test {
                 val effect = awaitItem()
-                assertTrue(effect is UpdateInterestsScreenEffect.NavigateToTrends)
+                assertTrue(effect is UpdateCategoriesScreenEffect.NavigateToTrends)
                 cancelAndIgnoreRemainingEvents()
             }
         }

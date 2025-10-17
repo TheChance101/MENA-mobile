@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.update_interests
+package net.thechance.mena.trends.presentation.screen.update_categories
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -13,12 +13,12 @@ import org.koin.core.annotation.Provided
 
 
 @KoinViewModel
-internal class UpdateInterestsViewModel(
+internal class UpdateCategoriesViewModel(
     @Provided private val repository: CategoryRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<UpdateInterestsScreenState, UpdateInterestsScreenEffect>(
-    initialState = UpdateInterestsScreenState()
-), UpdateInterestsInteractionListener {
+) : BaseViewModel<UpdateCategoriesScreenState, UpdateCategoriesScreenEffect>(
+    initialState = UpdateCategoriesScreenState()
+), UpdateCategoriesInteractionListener {
 
     init {
         getCategories()
@@ -39,12 +39,12 @@ internal class UpdateInterestsViewModel(
         copy(categories = categories.toggleCategory(categoryId))
     }
 
-    override fun onBackClick() = sendEffect(UpdateInterestsScreenEffect.NavigateBack)
+    override fun onBackClick() = sendEffect(UpdateCategoriesScreenEffect.NavigateBack)
 
     override fun onSaveClick() {
         tryToExecute(
             block = { saveSelectedCategories() },
-            onSuccess = { sendEffect(UpdateInterestsScreenEffect.NavigateToTrends) },
+            onSuccess = { sendEffect(UpdateCategoriesScreenEffect.NavigateToTrends) },
             onStart = { updateState { copy(isSaveButtonLoading = true) } },
             onEnd = { updateState { copy(isSaveButtonLoading = false) } },
             onError = { errorState -> updateState { copy(errorState = errorState) } },

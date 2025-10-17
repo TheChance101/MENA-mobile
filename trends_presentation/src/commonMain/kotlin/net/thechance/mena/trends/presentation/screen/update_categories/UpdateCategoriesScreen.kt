@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.update_interests
+package net.thechance.mena.trends.presentation.screen.update_categories
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -45,16 +45,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun UpdateInterestsScreen(
-    viewModel: UpdateInterestsViewModel = koinViewModel(),
+internal fun UpdateCategoriesScreen(
+    viewModel: UpdateCategoriesViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
-            is UpdateInterestsScreenEffect.NavigateBack -> navController.popBackStack()
-            is UpdateInterestsScreenEffect.NavigateToTrends -> navController.navigate(Route.Trends)
+            is UpdateCategoriesScreenEffect.NavigateBack -> navController.popBackStack()
+            is UpdateCategoriesScreenEffect.NavigateToTrends -> navController.navigate(Route.Trends)
         }
     }
 
@@ -70,8 +70,8 @@ internal fun UpdateInterestsScreen(
 
 @Composable
 private fun CategoryPickScreenContent(
-    state: UpdateInterestsScreenState,
-    listener: UpdateInterestsInteractionListener
+    state: UpdateCategoriesScreenState,
+    listener: UpdateCategoriesInteractionListener
 ) {
     if (state.isLoading.not()) {
         Scaffold(
@@ -191,8 +191,8 @@ private fun LoadingProgressBar() {
 private fun CategoryPickScreenPreview() {
     MenaTheme {
         CategoryPickScreenContent(
-            state = UpdateInterestsScreenState(),
-            listener = object : UpdateInterestsInteractionListener {
+            state = UpdateCategoriesScreenState(),
+            listener = object : UpdateCategoriesInteractionListener {
                 override fun onBackClick() {}
                 override fun onCategoryClick(categoryId: String) {}
                 override fun onSaveClick() {}
