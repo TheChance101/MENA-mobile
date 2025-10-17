@@ -2,6 +2,8 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +15,7 @@ import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_n
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.error_get_user_info
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
+import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
@@ -37,6 +40,7 @@ class ChatViewModel(
     private val userRepository: UserRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
+    private val permissionsController: PermissionsController,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, dispatcher),
     ChatInteractionListener {
@@ -409,9 +413,19 @@ class ChatViewModel(
     }
 
     override fun onCameraClicked() {
-        updateState { it.copy(isAttachmentsOverlayVisible = false) }
+        tryToExecute(
+            execute = { permissionsController.providePermission(permission = Permission.CAMERA) },
+            onSuccess = { onCameraPermissionGranted() },
+            onError = { showSnackBar(Res.string.error, Res.string.permission_denied_title, true) }
+        )
     }
 
+    private fun onCameraPermissionGranted() {
+        updateState { it.copy(isCameraOpen = true, isAttachmentsOverlayVisible = false) }
+    }
+    override fun onCameraClosed() {
+        updateState { it.copy(isCameraOpen = false) }
+    }
     override fun onCloseAttachmentClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }

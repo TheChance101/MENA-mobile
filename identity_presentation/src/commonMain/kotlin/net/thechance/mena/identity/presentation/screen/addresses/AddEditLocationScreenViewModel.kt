@@ -4,10 +4,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+@OptIn(ExperimentalUuidApi::class)
 
 class AddEditLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
@@ -94,7 +98,7 @@ class AddEditLocationScreenViewModel(
         if (state.value.addressID != null) {
             addressesRepository.editAddress(
                 address = Address(
-                    id = state.value.addressID!!,
+                    id =Uuid.parse(state.value.addressID!!),
                     latitude = state.value.latitude,
                     longitude = state.value.longitude,
                     addressLine = state.value.address,

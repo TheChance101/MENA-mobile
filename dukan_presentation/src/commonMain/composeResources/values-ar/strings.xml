@@ -65,7 +65,6 @@
     <string name="edit_product_pencil">تحرير قلم المنتج</string>
     <string name="koin_icon">أيقونة الفلوس</string>
     <string name="discount_icon">أيقونة الخصم</string>
-
     <string name="error_image_max_limit">يمكنك رفع 10 صور كحد أقصى.</string>
     <string name="error_image_size">يجب أن يكون حجم الصورة أقل من 5 ميجابايت.</string>
     <string name="error_upload_failed">فشل الرفع، يرجى المحاولة مرة أخرى.</string>
@@ -73,10 +72,22 @@
     <string name="error_price_invalid">السعر غير صالح.</string>
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و 3000 حرف.</string>
-
     <string name="no_internet_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
     <string name="no_internet_message">تحقق من الاتصال وحاول مرة أخرى</string>
     <string name="retry_button">إعادة المحاولة</string>
     <string name="warning">ايقونة تحذير</string>
     <string name="wifi_image">ايقونة الواي فاي</string>
+    <string name="favorites">المفضلة</string>
+    <string name="no_dukans_title">لا يوجد دكان مرتبط بهذه الفئة!</string>
+    <string name="no_dukans_body">سيظهر هنا عند إضافته.</string>
+    <string name="categories">الفئات</string>
+    <string name="back_to_main_screen_icon">العودة الي الصفحة الرئيسية</string>
+    <string name="category_icon">رمز الفئة</string>
+    <string name="something_went_wrong_while_fetching_categories">حدث خطأ ما اثناء تحميل الفئات المختلفة</string>
+    <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
+    <string name="best_dukans_around_you">أفضل الدكاكين من حولك</string>
+    <string name="editor_pick_dukans">اختيارات المحرر من الدكاكين</string>
+    <string name="what_do_you_need">ماذا تحتاج؟</string>
+    <string name="view_more">مشاهده المزيد</string>
+    <string name="heart_icon">أيقونة القلب</string>
 </resources>
