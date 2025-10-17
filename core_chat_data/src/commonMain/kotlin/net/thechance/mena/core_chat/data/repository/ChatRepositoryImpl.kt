@@ -248,7 +248,6 @@ class ChatRepositoryImpl(
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val QUEUE_MESSAGES = "/queue/messages"
         const val CHAT_ENDPOINT = "/chat"
-
         const val IMAGES_ENDPOINT = "/chat/image"
         const val IMAGES_FILES_PARAM = "images"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
