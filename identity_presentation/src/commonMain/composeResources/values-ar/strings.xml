@@ -80,4 +80,5 @@
     <!--    crop image-->
     <string name="save">حفظ</string>
     <string name="upload_another_image">رفع صورة أخرى</string>
+    <string name="image_preview">عرض الصوره</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.amount_with_currency
@@ -26,6 +28,7 @@ import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.inflows
 import mena.wallet_presentation.generated.resources.outflows
 import mena.wallet_presentation.generated.resources.silvers
+import mena.wallet_presentation.generated.resources.transaction_history
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -41,34 +44,45 @@ fun StatementHistoryCard(
     totalInflow: String,
     totalOutflow: String,
     onStatementCardClicked: () -> Unit,
+    historyIconOffsetX: Int,
     modifier: Modifier = Modifier,
+    isEditMode: Boolean = false
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = Theme.spacing._16)
             .clip(RoundedCornerShape(Theme.spacing._12))
-            .clickable { onStatementCardClicked() },
+            .then(
+                if (isEditMode) {
+                    Modifier
+                } else {
+                    Modifier.clickable { onStatementCardClicked() }
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
-        StatementHistoryIcon()
+        StatementHistoryIcon(
+            modifier = Modifier.offset { IntOffset(historyIconOffsetX, 0) }
+        )
 
         StatementHistoryContent(
             startDate = startDate,
             endDate = endDate,
             totalInflow = totalInflow,
-            totalOutflow = totalOutflow
+            totalOutflow = totalOutflow,
+            isEditMode = isEditMode
         )
     }
 }
 
 @Composable
-private fun StatementHistoryIcon() {
+private fun StatementHistoryIcon(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(Res.drawable.ic_clock),
-        contentDescription = null,
-        modifier = Modifier
+        contentDescription = stringResource(Res.string.transaction_history),
+        modifier = modifier
             .size(48.dp)
             .clip(CircleShape)
             .background(Theme.colorScheme.primary.onPrimary)
@@ -82,8 +96,12 @@ private fun StatementHistoryContent(
     endDate: String,
     totalInflow: String,
     totalOutflow: String,
+    isEditMode: Boolean = false,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)) {
+    Column(
+        modifier = Modifier.padding(start = if (isEditMode) 4.dp else 0.dp),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+    ) {
         Text(
             text = stringResource(Res.string.date_range, startDate, endDate),
             style = Theme.typography.body.small,
@@ -116,7 +134,6 @@ private fun StatementInOutflowRow(totalInflow: String, totalOutflow: String) {
     }
 }
 
-
 @Composable
 private fun FlowItem(
     amount: String,
@@ -142,7 +159,6 @@ private fun FlowItem(
     }
 }
 
-
 @Preview
 @Composable
 private fun StatementItemPreview() {
@@ -152,6 +168,7 @@ private fun StatementItemPreview() {
             endDate = "Aug 27 2025",
             totalInflow = "2000",
             totalOutflow = "4200",
+            historyIconOffsetX = 10,
             onStatementCardClicked = {},
             modifier = Modifier.background(Theme.colorScheme.background.surface)
         )

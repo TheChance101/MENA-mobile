@@ -5,5 +5,5 @@ import net.thechance.mena.identity.domain.entity.User
 
 interface UserRepository {
     suspend fun getUser(): Flow<User?>
-    suspend fun updateUser(user: User)
+    suspend fun updateUser(user: User, shouldUpdateImage: Boolean, imageByteArray: ByteArray?)
 }

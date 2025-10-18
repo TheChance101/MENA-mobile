@@ -9,6 +9,7 @@ data class SurahScreenState(
     val surahName: String = "",
     val selectedAyah: String = "",
     val selectedAyahIndex: Int? = null,
+    val initialAyahToScroll: Int? = null,
     val isLoading: Boolean = false,
     val isBasmalaVisible: Boolean = false
 )

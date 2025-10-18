@@ -5,9 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetails
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetails
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.WideImageDukanDetails
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.noImageDukanDetails.NoImageDukanDetails
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails.WideImageDukanDetails
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
@@ -16,7 +16,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DukanDetailsScreen(
-    dukanId: String,
     viewModel: DukanDetailsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -26,7 +25,7 @@ fun DukanDetailsScreen(
         when (effect) {
             DukanDetailsEffects.NavigateBack -> navController.popBackStack()
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
-                DukanRoute.ShelfDetails(effect.id, effect.name)
+                DukanRoute.ShelfDetails(effect.id, effect.name, effect.style, effect.color)
             )
 
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {
@@ -35,9 +34,23 @@ fun DukanDetailsScreen(
         }
     }
 
-    when (state.style) {
-        DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetails(state, viewModel)
-        DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(state, viewModel)
-        DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(state, viewModel)
+    when (state.dukanInfo.style) {
+        DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetails(
+            state, viewModel,
+            pagerShelf = viewModel.pagerShelf,
+            pagerProduct = viewModel.pagerProduct
+        )
+
+        DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(
+            state,
+            viewModel,
+            viewModel.pagerShelf
+        )
+
+        DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(
+            state,
+            viewModel,
+            viewModel.pagerShelf
+        )
     }
 }

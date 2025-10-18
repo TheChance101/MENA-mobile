@@ -11,40 +11,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toIntSize
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ImageCropperComponent(
     image: Painter,
-    contentDescription: String,
     onSaveButtonClicked: (imageBitmap: ImageBitmap) -> Unit,
     onUploadAnotherImageClicked: (ImageBitmap) -> Unit,
     modifier: Modifier = Modifier,
-    imagCropperUiState: ImageCropperUiState = rememberImageCropState(),
+    imagCropperUiState: ImageCropperUiState = rememberImageCropState(imageSize = image.intrinsicSize.toIntSize()),
     contentPadding: PaddingValues = PaddingValues(16.dp)
 ) {
     val density = LocalDensity.current
     val direction = LocalLayoutDirection.current
 
-    Column(
-        modifier = modifier
-            .padding(contentPadding)
-            .clipToBounds()
-    ) {
+    Column(modifier.padding(contentPadding)) {
         ImageCropperSection(
             image = image,
-            contentDescription = contentDescription,
             scale = imagCropperUiState.state.scale,
             translation = imagCropperUiState.state.translation,
             onTransformation = imagCropperUiState::zoomBy,
-            updateImageSize = imagCropperUiState::updateImageSize,
+            updateComponentSize = imagCropperUiState::updateComponentSize,
+            updateImageSize = imagCropperUiState::resetAndUpdateImageSize,
             modifier = Modifier
                 .clip(SquircleShape(Theme.radius.lg))
                 .align(Alignment.CenterHorizontally)

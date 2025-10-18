@@ -106,6 +106,7 @@
     <string name="rendering_pdf_message">Rendering PDF...</string>
     <string name="unknown_error_title">Unknown error</string>
     <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
+    <string name="remove_statements">Remove Statements</string>
     <string name="inflows">Inflows</string>
     <string name="outflows">Outflows</string>
     <string name="silvers">silvers</string>
@@ -130,6 +131,9 @@
     <string name="connection_lost_try_again">The connection was lost. Please try again.</string>
     <string name="try_again">Try Again</string>
     <string name="payment_failed_description">We couldn’t complete your payment. Please try again.</string>
-    <string name="you_paid">You paid</string>
     <string name="payment_status_crossfade">Payment status transition</string>
+    <string name="you_paid">You paid</string>
+
+    <string name="file_missing">Statement not found</string>
+    <string name="file_missing_description">This statement is no longer available because it was deleted or moved from your device.</string>
 </resources>

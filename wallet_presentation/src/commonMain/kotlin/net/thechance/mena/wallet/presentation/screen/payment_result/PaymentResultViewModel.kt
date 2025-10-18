@@ -31,7 +31,6 @@ class PaymentResultViewModel(
     }
 
     override fun onBackClicked() {
-        resetTryAgainAttempts()
         sendEffect(PaymentResultEffect.NavigateBack)
     }
 
@@ -48,7 +47,6 @@ class PaymentResultViewModel(
     }
 
     override fun onCloseClicked() {
-        resetTryAgainAttempts()
         sendEffect(PaymentResultEffect.NavigateToScreenBeforePaymentProcess)
     }
 
@@ -94,15 +92,6 @@ class PaymentResultViewModel(
 
             else ->
                 updateState { it.copy(paymentStatus = SubmissionStatus.UNKNOWN_ERROR) }
-        }
-    }
-
-    private fun resetTryAgainAttempts() {
-        updateState {
-            it.copy(
-                tryAgainAttempts = 0,
-                isTryAgainButtonEnabled = true
-            )
         }
     }
 }

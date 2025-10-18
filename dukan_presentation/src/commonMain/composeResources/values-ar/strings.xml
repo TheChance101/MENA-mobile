@@ -90,4 +90,12 @@
     <string name="what_do_you_need">ماذا تحتاج؟</string>
     <string name="view_more">مشاهده المزيد</string>
     <string name="heart_icon">أيقونة القلب</string>
+    <string name="all">الجميع</string>
+    <string name="arrow_right_icon">أيقونة السهم الأيمن</string>
+    <string name="best_selling">الأكثر مبيعا</string>
+    <string name="shopping_basket_icon">shopping basket icon</string>
+    <string name="favorite_icon">الأيقونة المفضلة</string>
+    <string name="share_icon">أيقونة المشاركة</string>
+    <string name="remove_product">حذف المنتج</string>
+
 </resources>

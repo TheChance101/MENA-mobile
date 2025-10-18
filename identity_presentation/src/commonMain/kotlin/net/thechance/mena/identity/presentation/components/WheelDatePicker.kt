@@ -61,12 +61,15 @@ fun WheelDatePicker(
     maxYear: Int = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year,
     onDateChange: (day: Int, month: Int, year: Int) -> Unit,
 ) {
+    if (selectedDate == null)
+        return
+
     val monthPagerState = rememberPagerState(
-        initialPage = (selectedDate?.month?.number ?: 1) - 1, pageCount = { 12 }
+        initialPage = (selectedDate.month.number) - 1, pageCount = { 12 }
     )
 
     val yearPagerState = rememberPagerState(
-        initialPage = (selectedDate?.year ?: minYear) - minYear,
+        initialPage = (selectedDate.year) - minYear,
         pageCount = { maxYear - minYear + 1 }
     )
 
@@ -77,7 +80,7 @@ fun WheelDatePicker(
     }
 
     val dayPagerState = rememberPagerState(
-        initialPage = (selectedDate?.day ?: 1) - 1,
+        initialPage = (selectedDate.day) - 1,
         pageCount = { daysInMonth }
     )
 
@@ -88,21 +91,19 @@ fun WheelDatePicker(
     var rowWidth by remember { mutableStateOf(0) }
 
     LaunchedEffect(selectedDate) {
-        selectedDate?.let {
-            val targetYearPage = selectedDate.year - minYear
-            val targetMonthPage = selectedDate.month.number - 1
-            val targetDayPage = selectedDate.day - 1
+        val targetYearPage = selectedDate.year - minYear
+        val targetMonthPage = selectedDate.month.number - 1
+        val targetDayPage = selectedDate.day - 1
 
-            coroutineScope {
-                if (yearPagerState.currentPage != targetYearPage) {
-                    launch { yearPagerState.scrollToPage(targetYearPage) }
-                }
-                if (monthPagerState.currentPage != targetMonthPage) {
-                    launch { monthPagerState.scrollToPage(targetMonthPage) }
-                }
-                if (dayPagerState.currentPage != targetDayPage) {
-                    launch { dayPagerState.scrollToPage(targetDayPage) }
-                }
+        coroutineScope {
+            if (yearPagerState.currentPage != targetYearPage) {
+                launch { yearPagerState.scrollToPage(targetYearPage) }
+            }
+            if (monthPagerState.currentPage != targetMonthPage) {
+                launch { monthPagerState.scrollToPage(targetMonthPage) }
+            }
+            if (dayPagerState.currentPage != targetDayPage) {
+                launch { dayPagerState.scrollToPage(targetDayPage) }
             }
         }
     }

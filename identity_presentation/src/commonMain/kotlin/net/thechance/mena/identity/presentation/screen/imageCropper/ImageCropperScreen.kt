@@ -17,12 +17,15 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.back
 import mena.identity_presentation.generated.resources.ic_arrow_left
+import mena.identity_presentation.generated.resources.image_preview
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.screen.imageCropper.components.ImageCropperComponent
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import sv.lib.squircleshape.SquircleShape
 
@@ -54,11 +57,11 @@ class ImageCropperScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             AppBar(
-                title = "Image preview",
+                title = stringResource(Res.string.image_preview),
                 leadingContent = {
                     Image(
                         painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = "back",
+                        contentDescription = stringResource(Res.string.back),
                         modifier = Modifier
                             .clip(SquircleShape(Theme.radius.md))
                             .size(40.dp)
@@ -71,7 +74,6 @@ class ImageCropperScreen(
 
             ImageCropperComponent(
                 image = BitmapPainter(state.imageBitmap),
-                contentDescription = "selected image to crop",
                 onSaveButtonClicked = listener::onCropImage,
                 onUploadAnotherImageClicked = listener::onChangeImage,
             )

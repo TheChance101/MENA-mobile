@@ -22,6 +22,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModelTest {
@@ -205,7 +207,9 @@ class ProfileViewModelTest {
         assertNull(viewModel.state.value.errorMessage)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private val fakeUser = User(
+        id = Uuid.parse("1bfbf5d8-145d-40e9-abae-8335df3f0a81"),
         firstName = "The ",
         lastName = "Chance",
         username = "the-chance",

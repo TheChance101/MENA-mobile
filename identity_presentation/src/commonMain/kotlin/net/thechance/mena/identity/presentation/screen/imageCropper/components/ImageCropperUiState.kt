@@ -1,24 +1,22 @@
 package net.thechance.mena.identity.presentation.screen.imageCropper.components
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
@@ -41,10 +39,8 @@ class ImageCropperUiState(
     }
 
     fun zoomBy(gestureZoom: Float, pan: Offset) {
-        val scale = (state.scale * gestureZoom).coerceIn(1f, 3f)
-        updateState(
-            state.copy(scale = scale, translation = state.translation + pan)
-        )
+        val scale = (state.scale * gestureZoom).coerceIn(minScale, maxScale)
+        updateState(state.copy(scale = scale, translation = state.translation + pan))
     }
 
     fun zoomIn(value: Float) {
@@ -61,8 +57,13 @@ class ImageCropperUiState(
         updateState(newState = state.copy(scale = minScale, translation = Offset.Zero))
     }
 
-    fun updateImageSize(imageSize: IntSize) {
+    fun resetAndUpdateImageSize(imageSize: IntSize) {
+        reset()
         state = state.copy(imageSize = imageSize)
+    }
+
+    fun updateComponentSize(componentSize: IntSize) {
+        state = state.copy(componentSize = componentSize)
     }
 
     fun cropToBitmap(
@@ -70,107 +71,92 @@ class ImageCropperUiState(
         density: Density,
         layoutDirection: LayoutDirection,
     ): ImageBitmap {
-        val imageBitmap = ImageBitmap(state.imageSize.width, state.imageSize.height)
-        val floatSize = IntSize(state.imageSize.width, state.imageSize.height).toSize()
-        val radius = floatSize.width / 2
+        val imageBitmap = ImageBitmap(state.componentSize.width, state.componentSize.height)
         val canvas = Canvas(imageBitmap)
+        val imageFloatSize = state.imageSize.toSize()
+        val clipPath = createClipPath()
 
         CanvasDrawScope().draw(
             density = density,
             layoutDirection = layoutDirection,
             canvas = canvas,
-            size = floatSize
+            size = imageFloatSize
         ) {
-
-            val path = Path().apply {
-                addOval(
-                    Rect(
-                        left = center.x - radius,
-                        top = center.y - radius,
-                        right = center.x + radius,
-                        bottom = center.y + radius
-                    )
-                )
-            }
-
-            clipPath(
-                path = path
-            ) {
-                with(painter) {
-                    translate(
-                        left = state.translation.x,
-                        top = state.translation.y
-                    ) {
-                        scale(
-                            scale = state.scale
-                        ) {
-                            draw(floatSize)
-                        }
-                    }
-                }
-            }
+            drawOnBitMapCanvas(
+                painter = painter,
+                imageSize = state.imageSize.toSize(),
+                clipPath = clipPath
+            )
         }
 
         return imageBitmap
     }
 
     private fun updateState(newState: ImageCropperUiModel) {
-        val (scale, translation, imageSize) = newState
-        val horizontalBounds = abs((imageSize.width.toFloat() * (scale - 1f)) / 2)
-        val initialVerticalBounds = (imageSize.height - imageSize.width) / 2
-        val newAddedVerticalBounds = (imageSize.height.toFloat() * (scale - 1f)) / 2
-        val verticalBounds = abs(newAddedVerticalBounds + initialVerticalBounds)
-        val maxOffsetOfX = translation.x.coerceIn(-horizontalBounds, horizontalBounds)
-        val maxOffsetOfY = translation.y.coerceIn(-verticalBounds, verticalBounds)
+        val translation = newState.translation
+        val translationXRange = calculateTranslationXRange(newState)
+        val translationYRange = calculateTranslationYRange(newState)
+        val maxOffsetOfX = translation.x.coerceIn(translationXRange)
+        val maxOffsetOfY = translation.y.coerceIn(translationYRange)
 
         state = state.copy(
-            scale = scale,
+            scale = newState.scale,
             translation = translation.copy(maxOffsetOfX, maxOffsetOfY),
-            imageSize = imageSize
+            imageSize = newState.imageSize,
+            componentSize = newState.componentSize
         )
+    }
+
+    private fun createClipPath(): Path {
+        val clipCircleRadius = state.componentSize.width / 2
+        val clipCircleCenter = Offset(
+            x = state.componentSize.width.toFloat() / 2,
+            y = state.componentSize.height.toFloat() / 2
+        )
+        val clipBounds = Rect(
+            left = clipCircleCenter.x - clipCircleRadius,
+            top = clipCircleCenter.y - clipCircleRadius,
+            right = clipCircleCenter.x + clipCircleRadius,
+            bottom = clipCircleCenter.y + clipCircleRadius
+        )
+        return Path().apply { addOval(oval = clipBounds) }
+    }
+
+    private fun DrawScope.drawOnBitMapCanvas(
+        painter: Painter,
+        imageSize: Size,
+        clipPath: Path
+    ) {
+        clipPath(path = clipPath) {
+            with(painter) {
+                translate(left = state.translation.x, top = state.translation.y) {
+                    scale(scale = state.scale, block = { draw(imageSize) })
+                }
+            }
+        }
+    }
+
+    private fun calculateTranslationXRange(newState: ImageCropperUiModel): ClosedFloatingPointRange<Float> {
+        val (scale, _, imageSize, componentSize) = newState
+        val initialHorizontalBounds = abs(imageSize.width - componentSize.width)
+        val newAddedHorizontalBounds = abs(imageSize.width * (scale - 1f)) / 2
+        val minValue = -newAddedHorizontalBounds - initialHorizontalBounds
+        return minValue..newAddedHorizontalBounds
+    }
+
+    private fun calculateTranslationYRange(newState: ImageCropperUiModel): ClosedFloatingPointRange<Float> {
+        val (scale, _, imageSize, componentSize) = newState
+        val initialVerticalBounds = abs(imageSize.height - componentSize.height)
+        val newAddedVerticalBounds = abs(imageSize.height * (scale - 1f)) / 2
+        val minValue = -newAddedVerticalBounds - initialVerticalBounds
+        return minValue..newAddedVerticalBounds
     }
 
     @Stable
     data class ImageCropperUiModel(
         val scale: Float = 1f,
         val translation: Offset = Offset.Zero,
-        val imageSize: IntSize
-    )
-}
-
-val saver = Saver<ImageCropperUiState, Map<String, Any>>(
-    save = { imageState ->
-        mapOf(
-            "scale" to imageState.state.scale,
-            "translation" to imageState.state.translation,
-            "imageSize" to imageState.state.imageSize,
-            "minScale" to imageState.minScale,
-            "maxScale" to imageState.maxScale
-        )
-    },
-    restore = { map ->
-        val uiModel = ImageCropperUiState.ImageCropperUiModel(
-            imageSize = map["imageSize"] as IntSize,
-            scale = map["scale"] as Float,
-            translation = map["translation"] as Offset,
-        )
-
-        ImageCropperUiState(
-            minScale = map["minScale"] as Float,
-            maxScale = map["maxScale"] as Float,
-            initialState = uiModel
-        )
-    }
-)
-
-@Composable
-fun rememberImageCropState(
-    minScale: Float = 1f,
-    maxScale: Float = 3f,
-    imageSize: IntSize = LocalWindowInfo.current.containerSize
-) = rememberSaveable(saver = saver) {
-    ImageCropperUiState(
-        minScale, maxScale,
-        ImageCropperUiState.ImageCropperUiModel(imageSize = imageSize)
+        val imageSize: IntSize,
+        val componentSize: IntSize
     )
 }
