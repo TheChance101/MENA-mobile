@@ -35,7 +35,8 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UserRepositoryImplTest {
+class
+UserRepositoryImplTest {
 
     private val client = mockk<HttpClient>()
     private val userDao = mockk<UserDao>(relaxed = true)
