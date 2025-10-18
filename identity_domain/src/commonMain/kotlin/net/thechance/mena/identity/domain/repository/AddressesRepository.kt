@@ -11,5 +11,5 @@ interface AddressesRepository {
 
     @OptIn(ExperimentalUuidApi::class)
     suspend fun deleteAddress(addressId: Uuid)
-    suspend fun getActiveAddress(): Address
+    suspend fun getActiveAddress(): Address?
 }

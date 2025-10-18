@@ -53,8 +53,8 @@ class AddressesRepositoryImpl(
         )
     }
 
-    override suspend fun getActiveAddress(): Address {
-        return getUserAddresses().first { it.isActive }
+    override suspend fun getActiveAddress(): Address? {
+        return getUserAddresses().firstOrNull { it.isActive }
     }
 
     companion object {
