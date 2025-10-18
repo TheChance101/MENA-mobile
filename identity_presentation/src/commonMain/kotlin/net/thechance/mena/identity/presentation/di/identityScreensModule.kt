@@ -32,7 +32,7 @@ val identityScreensModule = module {
         PickLocationScreenViewModel(
             locationForegroundHandler = get(),
             dispatcher = get(),
-            mobileLocationRepository = get(),
+            addressesRepository = get(),
             addressModel = getOrNull()
         )
     }

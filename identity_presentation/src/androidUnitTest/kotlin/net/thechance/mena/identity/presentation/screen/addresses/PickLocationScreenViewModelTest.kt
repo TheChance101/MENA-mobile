@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
-import net.thechance.mena.identity.domain.repository.MobileLocationRepository
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
@@ -25,7 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class PickLocationScreenViewModelTest {
-    private val mobileLocationRepository = mockk<MobileLocationRepository>()
+    private val mobileLocationRepository = mockk<AddressesRepository>()
     private val locationPermissionHandler = mockk<PermissionHandler>()
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: PickLocationScreenViewModel
