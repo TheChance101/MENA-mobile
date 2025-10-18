@@ -23,7 +23,6 @@ class InvalidCredentialsException : AuthenticationException(
     "user with mobile number, doesn't exist or password is incorrect"
 )
 
-class IsActiveAddress : Exception()
 
 class UnknownException : AuthenticationException("Unknown Exception")
 class UnAuthorizedException : AuthenticationException("user has no access to application")
@@ -35,4 +34,7 @@ class UnableToFindLocationException() : LocationException("Unable to find locati
 class CannotOpenSettingsException() : LocationException("Cannot open settings")
 class FailedToRequestPermissionException() : LocationException("Failed to request permission")
 class AddressNotFoundException() : LocationException("Address not found")
+
+class IsActiveAddress : LocationException("Address is not active")
+
 

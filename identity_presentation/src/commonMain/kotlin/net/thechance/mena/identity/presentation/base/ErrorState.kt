@@ -9,6 +9,7 @@ import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.InvalidPasswordException
+import net.thechance.mena.identity.domain.exception.IsActiveAddress
 import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.exception.OtpExpiredException
@@ -72,6 +73,7 @@ fun handleLocationException(
         is CannotOpenSettingsException -> onError(ErrorState.FailedToOpenSettings)
         is FailedToRequestPermissionException -> onError(ErrorState.FailedToRequestPermission)
         is AddressNotFoundException -> onError(ErrorState.AddressNotFound)
+        is IsActiveAddress -> onError(ErrorState.IsActiveAddress(exception.message))
         else -> onError(ErrorState.SomethingWentWrong(exception.message))
     }
 }
