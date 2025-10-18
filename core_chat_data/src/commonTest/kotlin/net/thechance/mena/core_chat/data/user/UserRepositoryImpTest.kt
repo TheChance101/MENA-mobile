@@ -2,32 +2,22 @@ package net.thechance.mena.core_chat.data.user
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
-import dev.mokkery.mock
 import dev.mokkery.verify
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.request.get
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
-import net.thechance.mena.core_chat.data.contacts.createHttpClient
-import net.thechance.mena.core_chat.data.contacts.defaultUserInfoResponse
-import net.thechance.mena.core_chat.data.contacts.jsonHeaders
-import net.thechance.mena.core_chat.data.contacts.jsonSerialization
+import net.thechance.mena.core_chat.data.createHttpClient
+import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.repository.UserRepositoryImpl
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
-import net.thechance.mena.identity.domain.repository.AuthenticationRepository
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
-import kotlin.uuid.Uuid
 
 class UserRepositoryImpTest {
 

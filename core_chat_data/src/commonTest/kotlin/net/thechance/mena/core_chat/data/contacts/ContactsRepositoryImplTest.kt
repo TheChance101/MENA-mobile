@@ -19,6 +19,10 @@ import net.thechance.mena.core_chat.data.contacts.fakes.FakeDataStore
 import net.thechance.mena.core_chat.data.contacts.fakes.createPagedDataDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContact
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleDeviceContact
+import net.thechance.mena.core_chat.data.createHttpClient
+import net.thechance.mena.core_chat.data.createRepository
+import net.thechance.mena.core_chat.data.mockErrorPagedResponse
+import net.thechance.mena.core_chat.data.mockSuccessPagedResponse
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
