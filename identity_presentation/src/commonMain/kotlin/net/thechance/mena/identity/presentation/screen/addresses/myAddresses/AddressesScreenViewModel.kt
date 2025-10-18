@@ -10,6 +10,7 @@ import mena.identity_presentation.generated.resources.is_main_address_error
 import mena.identity_presentation.generated.resources.unexpected_error
 import net.thechance.mena.identity.domain.exception.IsActiveAddress
 import net.thechance.mena.identity.domain.repository.AddressesRepository
+import net.thechance.mena.identity.domain.service.LocationService
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
@@ -26,12 +27,19 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 class AddressesScreenViewModel(
     private val addressesRepository: AddressesRepository,
+    private val locationService: LocationService,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
 ) : BaseScreenModel<AddressesScreenUIState, AddressesScreenUIEffect>(AddressesScreenUIState()),
     AddressesScreenInteractionListener {
     init {
         getUserAddresses()
+        tryToExecute(
+            function = {locationService.getActiveAddress()},
+            onSuccess = {address-> },
+            onError = ::onErrorOccurred,
+        )
+
     }
 
     override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)

@@ -37,6 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddressTypeSection(
     selectedAddressType: AddressType?,
     onClickAddressType: (AddressType) -> Unit,
+    addressType: String = "",
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -68,8 +69,8 @@ fun AddressTypeSection(
             AddressTypeItem(
                 addressIcon = painterResource(Res.drawable.ic_marker),
                 addressType = stringResource(Res.string.other),
-                onAddressClick = { onClickAddressType(AddressType.Other("")) },
-                isSelected = selectedAddressType == AddressType.Other(""),
+                onAddressClick = { onClickAddressType(AddressType.Other(addressType)) },
+                isSelected = selectedAddressType is AddressType.Other,
             )
         }
     }

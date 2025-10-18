@@ -119,7 +119,9 @@ class AddEditLocationScreen(
                         selectedAddressType = state.addressType,
                         onClickAddressType = { newType ->
                             listener.onClickAddressType(newType)
-                        }
+                        },
+                        addressType = state.otherAddress?:""
+
                     )
                 }
 
@@ -166,7 +168,7 @@ private fun OtherAddressType(
 
     ) {
     AnimatedVisibility(
-        visible = selectedAddressType == AddressType.Other(""),
+        visible = (otherAddressType != null),
         enter = expandVertically(
             animationSpec = tween(durationMillis = 500)
         ),

@@ -39,6 +39,7 @@ class PickLocationScreenViewModel(
                     address = addressModel.addressDetails,
                     isMapLocked = true,
                     animateToCurrentLocation = true,
+                    isMainAddress = addressModel.isMainAddress
                 )
             }
         }
@@ -184,7 +185,8 @@ class PickLocationScreenViewModel(
                     id = addressModel?.id,
                     coordinates = CoordinatesUiState(state.value.currentLocation.latitude ,
                         state.value.currentLocation.longitude) ,
-                    addressDetails = state.value.address
+                    addressDetails = state.value.address,
+                    isMainAddress = state.value.isMainAddress
                 )
             )
         )

@@ -26,6 +26,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.entity.AddressType.*
+import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
@@ -59,7 +60,7 @@ fun AddressHeader(
             Modifier.weight(1f)
         ) {
             Text(
-                text = stringResource(mapAddressTypeTitle(addressType)),
+                text = mapAddressTypeTitle(addressType),
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadePrimary
             )
@@ -80,11 +81,12 @@ fun AddressHeader(
         }
     }
 }
-fun mapAddressTypeTitle(addressType: AddressType): StringResource {
+@Composable
+fun mapAddressTypeTitle(addressType: AddressType): String {
     return when (addressType){
-        AddressType.Home -> Res.string.address_type_home
-        AddressType.Office -> Res.string.address_type_office
-        is AddressType.Other -> Res.string.address_type_other
+        Home -> stringResource(Res.string.address_type_home)
+        Office -> stringResource(Res.string.address_type_office)
+        is Other -> addressType.getAddressType()
 
     }
 }
@@ -92,7 +94,7 @@ fun mapAddressTypeIcon(addressType: AddressType): DrawableResource {
    return when (addressType){
         Home -> Res.drawable.ic_home
         Office -> Res.drawable.ic_office
-       is AddressType.Other -> Res.drawable.ic_other_address
+       is Other -> Res.drawable.ic_other_address
 
    }
 }
@@ -103,12 +105,12 @@ private fun AddressHeaderPreview() {
     MenaTheme {
         Column {
             AddressHeader(
-                addressType = AddressType.Home,
+                addressType = Home,
                 addressDetails = "Karrada, Baghdad 123 St.",
                 isMainAddress = true
             )
             AddressHeader(
-                addressType = AddressType.Office,
+                addressType = Office,
                 addressDetails = "Mansour, Baghdad 456 St.",
                 isMainAddress = false
             )

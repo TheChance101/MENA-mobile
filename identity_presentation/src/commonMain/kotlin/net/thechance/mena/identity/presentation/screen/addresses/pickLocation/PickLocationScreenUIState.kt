@@ -14,7 +14,8 @@ data class PickLocationScreenUIState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isConfirmEnabled: Boolean = false,
-    val isGpsButtonLoading: Boolean = false
+    val isGpsButtonLoading: Boolean = false,
+    val isMainAddress: Boolean = false
 ) {
     data class CoordinatesUiState(
         val latitude: Double = 0.0,

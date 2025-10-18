@@ -44,6 +44,11 @@ class AddEditLocationScreenViewModel(
     override fun onClickAddressType(addressType: AddressType) {
 
         if (addressType == state.value.addressType) return
+        if(addressType == AddressType.Home || addressType == AddressType.Office) {
+            updateState { copy(otherAddress = null) }
+        }else{
+            updateState { copy(otherAddress = "") }
+        }
 
         updateState { copy(addressType = addressType) }
 
@@ -154,8 +159,8 @@ class AddEditLocationScreenViewModel(
                         state.value.latitude,
                         state.value.longitude
                     ),
-                    addressDetails = state.value.address
-
+                    addressDetails = state.value.address,
+                    isMainAddress = state.value.isActive
                 ), ::updateAddressFromPickLocation
             )
         )
@@ -225,9 +230,9 @@ class AddEditLocationScreenViewModel(
                 address = newAddress.addressDetails,
                 originalAddressType = newAddress.addressType,
                 addressType = newAddress.addressType,
-                originalOtherAddress = newAddress.addressType.getAddressType(),
+                originalOtherAddress = if(newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null,
                 addressID = newAddress.id?.toString(),
-                otherAddress = newAddress.addressType.getAddressType(),
+                otherAddress = if(newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null,
                 animateToCurrentLocation = true,
                 cameraPosition = CameraPosition(
                     target = Position(
