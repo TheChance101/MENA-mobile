@@ -109,7 +109,7 @@ android {
 kover.reports {
     verify {
         rule {
-            minBound(75) // This should be 80 later
+            minBound(80)
         }
     }
 
