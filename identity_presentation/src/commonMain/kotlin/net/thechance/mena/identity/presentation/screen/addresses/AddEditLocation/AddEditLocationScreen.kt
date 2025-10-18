@@ -29,7 +29,6 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
-import net.thechance.mena.identity.presentation.screen.addresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.addresses.component.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
@@ -38,7 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 class AddEditLocationScreen(
-    val onSuccess: (SnackBarUiState?)->Unit,
+    val onSuccess: (SnackBarUiState?) -> Unit,
     private val addressModel: AddressUIState?,
 
     ) : BaseScreen<
@@ -83,7 +82,8 @@ class AddEditLocationScreen(
             LazyColumn(
                 modifier = Modifier
                     .background(color = Theme.colorScheme.background.surface)
-                    .padding(horizontal = Theme.spacing._16)
+                    .padding(horizontal = Theme.spacing._16),
+                contentPadding = PaddingValues(bottom = Theme.spacing._16)
             ) {
 
                 item {
@@ -164,7 +164,7 @@ private fun OtherAddressType(
     onChangeOtherAddressType: (String) -> Unit,
     modifier: Modifier = Modifier,
 
-) {
+    ) {
     AnimatedVisibility(
         visible = selectedAddressType == AddressType.Other(""),
         enter = expandVertically(

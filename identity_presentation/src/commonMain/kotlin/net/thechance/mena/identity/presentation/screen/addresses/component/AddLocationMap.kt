@@ -64,7 +64,7 @@ fun AddLocationMap(
             cameraState = camera,
             baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
             onMapClick = { _, _ ->
-                if (anchorLocation == null) {
+                if (longitude == 29.0) {
                     onClickMap()
                 }
                 ClickResult.Consume

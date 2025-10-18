@@ -9,6 +9,8 @@ data class AddLocationScreenUIState(
     val addressID: String? = null,
     val latitude: Double = 28.0,
     val longitude: Double = 29.0,
+    val originalLatitude: Double = 28.0,
+    val originalLongitude: Double = 29.0,
     val address: String = "",
     val addressType: AddressType? = null,
     val otherAddress: String? = null,
