@@ -50,8 +50,18 @@ internal fun Bitmap.rotateImageIfRequired(inputStream: InputStream?): Bitmap {
 
 fun Bitmap?.toByteArray(): ByteArray? {
     return this?.let {
+        var quality = 100
         val stream = ByteArrayOutputStream()
-        it.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        stream.toByteArray()
+        it.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+        var bytes = stream.toByteArray()
+
+        while (bytes.size > 5_000_000 && quality > 10) {
+            quality -= 10
+            stream.reset()
+            it.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+            bytes = stream.toByteArray()
+        }
+
+        bytes
     }
 }

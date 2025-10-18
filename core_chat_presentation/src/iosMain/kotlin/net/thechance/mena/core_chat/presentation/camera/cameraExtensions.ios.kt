@@ -11,8 +11,14 @@ import platform.UIKit.UIImageJPEGRepresentation
 @OptIn(ExperimentalForeignApi::class)
 fun UIImage?.toByteArray(): ByteArray? {
     return if (this != null) {
-        val imageData = UIImageJPEGRepresentation(this, 100.0)
-            ?: return null
+        var quality = 1.0
+        var imageData = UIImageJPEGRepresentation(this, quality) ?: return null
+
+        while (imageData.length.toLong() > 5_000_000 && quality > 0.1) {
+            quality -= 0.1
+            imageData = UIImageJPEGRepresentation(this, quality) ?: break
+        }
+
         val bytes = imageData.bytes ?: throw IllegalArgumentException("image bytes is null")
         val length = imageData.length
         val data: CPointer<ByteVar> = bytes.reinterpret()
