@@ -1,29 +1,27 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
-import androidx.compose.ui.unit.DpOffset
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.delete_address_description
 import mena.identity_presentation.generated.resources.delete_address_title
 import mena.identity_presentation.generated.resources.error
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import org.jetbrains.compose.resources.StringResource
-import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
 @OptIn(ExperimentalUuidApi::class)
 data class AddressesScreenUIState(
     val addresses: List<AddressUIState> = emptyList(),
     val deleteDialogUIState: DeleteDialogUIState = DeleteDialogUIState(),
     val errorMessage: String? = null,
-    val snackBarUiState :SnackBarUiState= SnackBarUiState(),
+    val snackBarUiState: SnackBarUiState = SnackBarUiState(),
     val animateToCurrentLocation: Boolean = false,
-    val currentLocation: DpOffset? = null
-    )
+    val isLoading: Boolean = true
+)
 
 @OptIn(ExperimentalUuidApi::class)
-data class DeleteDialogUIState (
+data class DeleteDialogUIState(
     val title: StringResource = Res.string.delete_address_title,
     val description: StringResource = Res.string.delete_address_description,
     val addressId: Uuid? = null,
@@ -43,15 +41,18 @@ data class CoordinatesUiState(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
 )
+
 data class SnackBarUiState(
     val isVisible: Boolean = false,
     val snackBarType: SnackBarType = SnackBarType.ERROR,
     val message: StringResource = Res.string.error,
 )
+
 enum class SnackBarType {
     ERROR,
     SUCCESS,
 }
+
 @OptIn(ExperimentalUuidApi::class)
 fun Address.toUiState(): AddressUIState {
     return AddressUIState(

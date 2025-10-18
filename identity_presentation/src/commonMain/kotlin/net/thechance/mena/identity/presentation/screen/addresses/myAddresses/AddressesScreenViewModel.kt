@@ -1,11 +1,11 @@
 package net.thechance.mena.identity.presentation.screen.addresses.myAddresses
 
-import androidx.compose.ui.unit.DpOffset
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.address_deleted_successfully
+import mena.identity_presentation.generated.resources.address_activated_successfully
 import mena.identity_presentation.generated.resources.is_main_address_error
 import mena.identity_presentation.generated.resources.unexpected_error
 import net.thechance.mena.identity.domain.exception.IsActiveAddress
@@ -49,7 +49,7 @@ class AddressesScreenViewModel(
     override fun onClickAddress(addressId: Uuid) {
         tryToExecute(
             function = {
-                if (state.value.addresses.find { it.id == addressId }?.isMainAddress==false) {
+                if (state.value.addresses.find { it.id == addressId }?.isMainAddress==false ) {
                     addressesRepository.editAddress(
                         state.value.addresses.find { it.id == addressId }!!.toEntity()
                             .copy(isActive = true)
@@ -63,7 +63,7 @@ class AddressesScreenViewModel(
                         snackBarUiState = SnackBarUiState(
                             snackBarType = SnackBarType.SUCCESS,
                             isVisible = true,
-                            message = Res.string.address_deleted_successfully
+                            message = Res.string.address_activated_successfully
                         ),
                         deleteDialogUIState = DeleteDialogUIState(
                             isVisible = false,
@@ -74,10 +74,6 @@ class AddressesScreenViewModel(
             onError = ::onErrorOccurred,
             dispatcher = dispatcher
         )
-    }
-
-    override fun onSetAnchorLocation(anchorLocation: DpOffset) {
-        updateState { copy(currentLocation = anchorLocation) }
     }
 
     override fun onDeleteAddressClicked(addressId: Uuid) = updateState {
@@ -144,7 +140,7 @@ class AddressesScreenViewModel(
     }
 
     private fun onGetUserAddressesSuccess(addresses: List<AddressUIState>) = updateState {
-        copy(addresses = addresses , animateToCurrentLocation = true)
+        copy(addresses = addresses , animateToCurrentLocation = true , isLoading = false)
     }
 
     private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?){

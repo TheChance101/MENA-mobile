@@ -124,6 +124,7 @@
     <string name="my_location_app_bar_title">My locations</string>
 
     <string name="address_deleted_successfully">Address deleted successfully</string>
+    <string name="address_activated_successfully">Address Activated successfully</string>
 
     <!--    crop image-->
 

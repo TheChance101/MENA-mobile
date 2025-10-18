@@ -1,10 +1,10 @@
 package net.thechance.mena.identity.presentation.screen.addresses.myAddresses
 
-import androidx.compose.ui.unit.DpOffset
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
 @OptIn(ExperimentalUuidApi::class)
 interface AddressesScreenInteractionListener : BaseInteractionListener {
     fun onBackButtonClicked()
@@ -15,5 +15,4 @@ interface AddressesScreenInteractionListener : BaseInteractionListener {
     fun onDismissDeleteDialog()
     fun onDismissSnackBar()
     fun onClickAddress(addressId: Uuid)
-    fun onSetAnchorLocation(anchorLocation: DpOffset)
 }

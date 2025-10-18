@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.screen.addresses.component
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,11 +18,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.ic_anchor
 import mena.identity_presentation.generated.resources.ic_anchor_my_locations
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -45,17 +44,21 @@ fun AddressCard(
     addressDetails: String,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    animateToCurrentLocation: Boolean,
+    onClickAddress: () -> Unit,
     longitude: Double?,
     latitude: Double?,
-    onSetAnchorLocation: (DpOffset) -> Unit,
+    animateToCurrentLocation: Boolean,
 ) {
     Column(
         Modifier.fillMaxWidth()
             .clip(shape = RoundedCornerShape(Theme.radius.lg))
             .background(Theme.colorScheme.background.surfaceLow)
             .padding(Theme.spacing._8).padding(end = 4.dp)
-
+            .clickable {
+                if (isMainAddress != true) {
+                    onClickAddress()
+                }
+            }
     ) {
         AddressHeader(
             addressType = addressType,

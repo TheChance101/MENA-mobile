@@ -94,16 +94,16 @@ class AddressesScreen :
                             isMainAddress = it.isMainAddress,
                             addressDetails = it.addressDetails,
                             onDeleteClick = { listener.onDeleteAddressClicked(it.id!!) },
+                            onClickAddress = { listener.onClickAddress(it.id!!) },
                             animateToCurrentLocation = state.animateToCurrentLocation
                             ,longitude = it.coordinates.longitude,
                             latitude = it.coordinates.latitude,
-                            onSetAnchorLocation = listener::onSetAnchorLocation
                         )
                     }
                 }
             }
 
-            if (state.addresses.isEmpty()) {
+            if (state.addresses.isEmpty() && !state.isLoading) {
                 NoSavedLocationsLayout(
                     modifier = Modifier
                         .fillMaxSize()
