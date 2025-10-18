@@ -1,7 +1,9 @@
 package net.thechance.mena.identity.data.repository
 
 import io.ktor.client.HttpClient
+import net.thechance.mena.identity.data.dto.addresses.AddressResponseDto
 import net.thechance.mena.identity.data.mapper.toDto
+import net.thechance.mena.identity.data.mapper.toEntity
 import net.thechance.mena.identity.data.utils.deleteJson
 import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postJson
@@ -36,8 +38,10 @@ class AddressesRepositoryImpl(
         }
 
     }
-    override suspend fun getUserAddresses(): List<Address> = safeWrapper {
-        client.getJson(ADDRESS_ENDPOINT)
+    override suspend fun getUserAddresses(): List<Address> {
+        return safeWrapper <List<AddressResponseDto>> {
+            client.getJson(ADDRESS_ENDPOINT)
+        }.map { it.toEntity() }
     }
 
     override suspend fun deleteAddress(addressId: Uuid) = safeWrapper {
