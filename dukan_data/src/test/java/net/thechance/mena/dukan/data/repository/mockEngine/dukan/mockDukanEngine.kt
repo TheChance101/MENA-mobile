@@ -31,6 +31,7 @@ import net.thechance.mena.dukan.data.repository.dto.ShelfDto
 import net.thechance.mena.dukan.data.repository.mockEngine.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.jsonSerialization
 import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.uuid.ExperimentalUuidApi
@@ -258,20 +259,21 @@ private class FakeAddressesRepository : AddressesRepository {
                 latitude = 30.0444,
                 longitude = 31.2357,
                 addressLine = "Main Street, Cairo, Egypt",
-                addressType = "Home",
-                otherAddressType = null,
+                addressType = AddressType.Home,
                 isActive = true
             ),
             Address(
                 latitude = 30.0419,
                 longitude = 31.2357,
                 addressLine = "Tahrir Square, Cairo, Egypt",
-                addressType = "Work",
-                otherAddressType = null,
+                addressType = AddressType.Office,
                 isActive = false
             )
         )
     }
 
     override suspend fun deleteAddress(addressId: Uuid) {}
+    override suspend fun getActiveAddress(): Address? {
+        return null
+    }
 }
