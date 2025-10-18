@@ -27,19 +27,12 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 class AddressesScreenViewModel(
     private val addressesRepository: AddressesRepository,
-    private val locationService: LocationService,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 
 ) : BaseScreenModel<AddressesScreenUIState, AddressesScreenUIEffect>(AddressesScreenUIState()),
     AddressesScreenInteractionListener {
     init {
         getUserAddresses()
-        tryToExecute(
-            function = {locationService.getActiveAddress()},
-            onSuccess = {address-> },
-            onError = ::onErrorOccurred,
-        )
-
     }
 
     override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
