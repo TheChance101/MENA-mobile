@@ -16,9 +16,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.preat.peekaboo.image.picker.toImageBitmap
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.decodeToImageBitmap
 
 
 @Composable
@@ -47,7 +47,7 @@ fun ImageGridItem(
             )
 
             is ByteArray -> {
-                val bitmap = imageUrl.decodeToImageBitmap()
+                val bitmap = imageUrl.toImageBitmap()
                 Image(
                     bitmap = bitmap,
                     contentDescription = null,

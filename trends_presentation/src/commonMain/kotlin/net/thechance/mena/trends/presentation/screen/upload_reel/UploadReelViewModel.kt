@@ -105,7 +105,6 @@ internal class UploadReelViewModel(
         updateState {
             copy(
                 uploadingState = UploadReelScreenState.UploadingReelState.SUCCESS,
-                isNextButtonEnabled = true,
             )
         }
         extractFrame()
@@ -121,12 +120,17 @@ internal class UploadReelViewModel(
             },
             onSuccess = ::onExtractFrameSuccess,
             onError = ::onExtractFrameError,
+            onStart = { updateState { copy(isThumbnailLoading = true) } },
+            onEnd = { updateState { copy(isThumbnailLoading = false) } },
             dispatcher = defaultDispatcher
         )
     }
 
     private fun onExtractFrameSuccess(thumbnail: ByteArray?) {
-        updateState { copy( thumbnail = thumbnail ) }
+        updateState { copy(
+            thumbnail = thumbnail,
+            isNextButtonEnabled = true,
+        ) }
     }
 
     private fun onExtractFrameError(errorState: ErrorState) {

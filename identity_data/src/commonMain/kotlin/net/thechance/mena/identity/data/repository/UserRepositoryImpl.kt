@@ -28,7 +28,7 @@ class UserRepositoryImpl(
             try {
                 val user: ProfileResponseDto = client.getJson(path = PROFILE)
                 userDao.upsert(user.toEntity())
-            } catch (ignore: Exception) {
+            } catch (_: Exception) {
             }
         }
 
@@ -37,6 +37,11 @@ class UserRepositoryImpl(
                 userEntity?.toDomain()
             }
             .flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun updateUser(user: User) {
+        // todo add update user from server
+        userDao.upsert(user.toEntity())
     }
 
     companion object {

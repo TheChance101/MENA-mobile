@@ -31,7 +31,6 @@ class SurahViewModelTest {
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val bookmarkRepository: BookmarkRepository = mock(mode = MockMode.autofill)
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
-    private val fakeSnackbarHandler = FakeSnackbarHandler()
 
     private val surahArgs = mock<ISurahArgs>(mode = MockMode.autofill)
 
@@ -44,7 +43,7 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            snackbarHandler = fakeSnackbarHandler
+            snackBarHandler = FakeSnackbarHandler()
         )
     }
 
@@ -99,7 +98,7 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `onAyahLongPress should set selectedAyahIndex to negative value when called with negative index`() =
+    fun `onAyahLongPress should set selectedAyahIndex to zero value when called with negative index`() =
         runTest {
             // Given
             everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
@@ -109,7 +108,7 @@ class SurahViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             // Then
-            assertEquals(NEGATIVE_AYAH_INDEX, testViewModel.uiState.value.selectedAyahIndex)
+            assertEquals(0, testViewModel.uiState.value.selectedAyahIndex)
         }
 
     @Test
@@ -248,7 +247,6 @@ class SurahViewModelTest {
 
     private companion object {
         const val DEFAULT_SURAH_ID = 1
-        const val DEFAULT_SURAH_NAME = "Al-Fatiha"
         const val TEST_AYAH_INDEX = 0
         const val SECOND_AYAH_INDEX = 1
         const val NEGATIVE_AYAH_INDEX = -1

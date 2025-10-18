@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -30,7 +29,7 @@ internal fun AuthPrompt(
             text = message,
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary,
-            modifier = Modifier.padding(end = 4.dp)
+            modifier = Modifier.padding(end = Theme.spacing._4)
         )
         TextButton(
             text = actionLabel,

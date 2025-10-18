@@ -6,14 +6,8 @@ import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
-import io.ktor.client.request.delete
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.put
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -21,8 +15,6 @@ import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import net.thechance.mena.trends.data.client.NetworkClient
-import net.thechance.mena.trends.data.dto.UserInfoDto
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
 val jsonHeaders = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
@@ -38,7 +30,7 @@ internal fun createReelsHttpClient(
             )
         )
     }
-): NetworkClient {
+): HttpClient {
 
     val mockEngine = MockEngine { request ->
         respond(request)
@@ -56,27 +48,8 @@ internal fun createReelsHttpClient(
         }
     }
 
-    return object : NetworkClient {
-        override suspend fun get(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.get(urlString, block)
+    return client
 
-        override suspend fun post(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.post(urlString, block)
-
-        override suspend fun put(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.put(urlString, block)
-
-        override suspend fun delete(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.delete(urlString, block)
-    }
 }
 
 internal fun createCategoryHttpClient(
@@ -90,7 +63,7 @@ internal fun createCategoryHttpClient(
             )
         )
     }
-): NetworkClient {
+): HttpClient {
 
     val mockEngine = MockEngine { request ->
         respond(request)
@@ -105,41 +78,19 @@ internal fun createCategoryHttpClient(
         }
     }
 
-    return object : NetworkClient {
-        override suspend fun get(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse {
-            return client.get(urlString, block)
-        }
-
-        override suspend fun post(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse {
-            return client.post(urlString, block)
-        }
-
-        override suspend fun put(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse {
-            return client.put(urlString, block)
-        }
-
-        override suspend fun delete(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse {
-            return client.delete(urlString, block)
-        }
-    }
+    return client
 }
+
 internal fun mockUserInfoHttpClient(
-    response: UserInfoDto,
     respond: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
         respond(
-            content = Json.encodeToString(UserInfoDto.serializer(), response),
+            content =
+                """{
+                    "username": "nour",
+                    "firstName": "nour",
+                    "lastName": "nour",
+                    "profileImageUrl": "img.png"
+                }""",
             status = HttpStatusCode.OK,
             headers = headersOf(
                 HttpHeaders.ContentType,
@@ -147,7 +98,7 @@ internal fun mockUserInfoHttpClient(
             )
         )
     }
-): NetworkClient {
+): HttpClient {
 
     val mockEngine = MockEngine { request ->
         respond(request)
@@ -165,25 +116,5 @@ internal fun mockUserInfoHttpClient(
         }
     }
 
-    return object : NetworkClient {
-        override suspend fun get(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.get(urlString, block)
-
-        override suspend fun post(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.post(urlString, block)
-
-        override suspend fun put(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.put(urlString, block)
-
-        override suspend fun delete(
-            urlString: String,
-            block: HttpRequestBuilder.() -> Unit
-        ): HttpResponse = client.delete(urlString, block)
-    }
+    return client
 }

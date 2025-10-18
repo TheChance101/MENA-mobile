@@ -15,6 +15,7 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="could_not_load_contacts">Could not load contacts, please try again</string>
     <string name="error">Error</string>
+    <string name="error_get_user_info">"Failed while getting user data"</string>
     <string name="actions">Actions</string>
     <string name="re_send">Re-Send</string>
     <string name="delete_message">Delete message</string>

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +28,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ScaffoldScope.GetImageDialog(
@@ -45,7 +45,7 @@ fun ScaffoldScope.GetImageDialog(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(vertical = 12.dp),
+                .padding(vertical = Theme.spacing._12),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
@@ -57,7 +57,7 @@ fun ScaffoldScope.GetImageDialog(
             )
 
             Option(
-                modifier = Modifier.padding(top = 24.dp),
+                modifier = Modifier.padding(top = Theme.spacing._24),
                 painter = painterResource(Res.drawable.image),
                 title = "Upload image",
                 onClick = { onUploadImage() }
@@ -86,10 +86,10 @@ private fun Option(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surface)
             .clickable(onClick = { onClick })
-            .padding(12.dp),
+            .padding(Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -100,7 +100,7 @@ private fun Option(
         )
 
         Text(
-            modifier = Modifier.padding(start = 8.dp),
+            modifier = Modifier.padding(start = Theme.spacing._8),
             text = title,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary

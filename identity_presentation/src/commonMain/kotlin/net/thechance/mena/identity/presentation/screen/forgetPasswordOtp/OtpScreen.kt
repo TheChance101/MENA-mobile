@@ -45,13 +45,11 @@ data class OtpScreen(
         OtpScreenInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = {
-            parametersOf(
-                phoneNumber,
-                callingCode,
-                countryCode
-            )
-        }))
+        InitScreen(
+            getScreenModel(parameters = {
+                parametersOf(phoneNumber, callingCode, countryCode)
+            })
+        )
     }
 
     @Composable
@@ -63,7 +61,7 @@ data class OtpScreen(
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.reset_password),
-                    onBackClicked = listener::onClickBack
+                    onClickBack = listener::onClickBack
                 )
             }
         ) {
@@ -79,7 +77,7 @@ data class OtpScreen(
                     color = Theme.colorScheme.shadePrimary,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 4.dp)
+                        .padding(bottom = Theme.spacing._4)
                 )
                 OtpInput(
                     otpValue = state.otpValue,
@@ -97,7 +95,7 @@ data class OtpScreen(
                     contentPadding = PaddingValues(vertical = 13.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 12.dp, top = 24.dp)
+                        .padding(bottom = Theme.spacing._12, top = Theme.spacing._24)
                 )
 
                 val minutes = state.timer.toInt() / 60

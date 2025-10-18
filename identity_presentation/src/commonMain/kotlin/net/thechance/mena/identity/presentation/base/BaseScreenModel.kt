@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.LocationException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -49,8 +50,9 @@ abstract class BaseScreenModel<S, E>(initialState: S) : ScreenModel {
         onSuccess: (T) -> Unit,
         onError: (ErrorState) -> Unit,
         inScope: CoroutineScope = screenModelScope,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ): Job {
-        return runWithErrorCheck(onError, inScope) {
+        return runWithErrorCheck(onError, inScope, dispatcher) {
             val result = function()
             onSuccess(result)
         }
@@ -92,6 +94,9 @@ abstract class BaseScreenModel<S, E>(initialState: S) : ScreenModel {
             } catch (exception: AuthenticationException) {
                 exception.printStackTrace()
                 handelAuthorizationException(exception, onError)
+            } catch (exception: LocationException) {
+                exception.printStackTrace()
+                handleLocationException(exception, onError)
             } catch (exception: Exception) {
                 exception.printStackTrace()
                 onError(ErrorState.SomethingWentWrong(exception.message))

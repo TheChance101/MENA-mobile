@@ -116,7 +116,7 @@ class CategoryPickViewModelTest : TestExtensions() {
 
             viewModel.effect.test {
                 val effect = awaitItem()
-                assertTrue(effect is CategoryPickScreenEffect.NavigateToTrends)
+                assertTrue(effect is CategoryPickScreenEffect.NavigateToHome)
                 cancelAndIgnoreRemainingEvents()
             }
         }

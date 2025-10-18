@@ -1,9 +1,15 @@
 package net.thechance.mena.trends.data.repository
 
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import net.thechance.mena.trends.data.client.NetworkClient
-import net.thechance.mena.trends.data.dto.CategoriesResponse
+import net.thechance.mena.trends.data.dto.CategoryDto
+import net.thechance.mena.trends.data.dto.PatchUserCategoriesRequest
+import net.thechance.mena.trends.data.dto.PatchUserCategoriesResponse
 import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UserStatusResponse
 import net.thechance.mena.trends.data.mapper.toEntityList
@@ -19,13 +25,13 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [CategoryRepository::class])
 internal class CategoryRepositoryImpl(
-    @Provided private val networkClient: NetworkClient
+    @Provided private val networkClient: HttpClient
 ) : CategoryRepository {
 
     override suspend fun getAllCategories(): List<Category> {
-        return safeApiCall<CategoriesResponse> {
+        return safeApiCall<List<CategoryDto>> {
             networkClient.get("/$TRENDS_PATH/$CATEGORIES_ENDPOINT")
-        }.categories?.toEntityList().orEmpty()
+        }.toEntityList()
     }
 
     override suspend fun isCategoriesAlreadySelectedByUser(): Boolean {
@@ -37,8 +43,28 @@ internal class CategoryRepositoryImpl(
     override suspend fun updateUserCategories(categoriesIds: List<String>) {
         safeApiCall<Unit> {
             networkClient.post("/$TRENDS_PATH/$CATEGORIES_ENDPOINT") {
-                contentType(io.ktor.http.ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
                 setBody(SubmitCategoriesRequestDto(categoriesIds))
+            }
+        }
+    }
+
+    override suspend fun patchUserCategories(
+        originalSelectedIds: List<String>,
+        currentSelectedIds: List<String>
+    ) {
+        val toAdd = currentSelectedIds.filterNot { it in originalSelectedIds }
+        val toRemove = originalSelectedIds.filterNot { it in currentSelectedIds }
+
+        safeApiCall<PatchUserCategoriesResponse> {
+            networkClient.patch("/$TRENDS_PATH/$CATEGORIES_ENDPOINT") {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    PatchUserCategoriesRequest(
+                        categoriesIdsToAdd = toAdd,
+                        categoriesIdsToRemove = toRemove
+                    )
+                )
             }
         }
     }

@@ -32,7 +32,7 @@ internal fun AuthScreenContainer(
     ) {
         Image(
             painter = painterResource(Res.drawable.login_background),
-            contentDescription = "background",
+            contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds
         )
@@ -51,7 +51,7 @@ internal fun AuthScreenContainer(
                         )
                     )
                 )
-                .padding(vertical = 24.dp, horizontal = 16.dp),
+                .padding(vertical = Theme.spacing._24, horizontal = Theme.spacing._16),
             content = content
         )
 

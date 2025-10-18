@@ -2,7 +2,6 @@ package net.thechance.mena.identity.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,6 +16,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 
 @Composable
@@ -30,7 +30,7 @@ internal fun FlagImage(
         contentScale = ContentScale.FillBounds,
         modifier = modifier
             .size(24.dp)
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(SquircleShape(Theme.radius.full))
     )
 }
 
