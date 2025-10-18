@@ -6,4 +6,8 @@ class LocationService(private val addressRepository: AddressesRepository) {
 
     suspend fun getUserAddresses() =
         addressRepository.getUserAddresses()
+
+    suspend fun getActiveAddress(){
+        addressRepository.getActiveAddress()
+    }
 }

@@ -25,6 +25,7 @@ import mena.identity_presentation.generated.resources.ic_anchor_my_locations
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.presentation.components.util.MapStyle
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.SetAnchorInCenter
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -149,37 +150,44 @@ private fun MyAddressesMap(
     }
 }
 
-
-object MapStyle {
-    const val BRIGHT = "https://tiles.openfreemap.org/styles/bright"
-}
-
 @Preview
 @Composable
 private fun PreviewAddressCard() {
     MenaTheme {
         Column {
-//            AddressCard(
-//                addressType = AddressType.Home,
-//                isMainAddress = true,
-//                addressDetails = "Karrada, Baghdad 123 St.",
-//                onEditClick = {},
-//                onDeleteClick = {}
-//            )
-//            AddressCard(
-//                addressType = AddressType.Office,
-//                isMainAddress = true,
-//                addressDetails = "Karrada, Baghdad 123 St.",
-//                onEditClick = {},
-//                onDeleteClick = {}
-//            )
-//            AddressCard(
-//                addressType = AddressType.Other(""),
-//                isMainAddress = true,
-//                addressDetails = "Karrada, Baghdad 123 St.",
-//                onEditClick = {},
-//                onDeleteClick = {}
-//            )
+            AddressCard(
+                addressType = AddressType.Home,
+                isMainAddress = true,
+                addressDetails = "Karrada, Baghdad 123 St.",
+                onEditClick = {},
+                onDeleteClick = {},
+                onClickAddress = {},
+                longitude = 20.0,
+                latitude = 20.0,
+                animateToCurrentLocation = false
+            )
+            AddressCard(
+                addressType = AddressType.Office,
+                isMainAddress = true,
+                addressDetails = "Karrada, Baghdad 123 St.",
+                onEditClick = {},
+                onClickAddress = {},
+                onDeleteClick = {},
+                longitude = 20.0,
+                latitude = 20.0,
+                animateToCurrentLocation = false
+            )
+            AddressCard(
+                addressType = AddressType.Other(""),
+                isMainAddress = true,
+                addressDetails = "Karrada, Baghdad 123 St.",
+                onEditClick = {},
+                onClickAddress = {},
+                onDeleteClick = {},
+                longitude = 20.0,
+                latitude = 20.0,
+                animateToCurrentLocation = false
+            )
         }
     }
 }

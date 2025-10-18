@@ -13,6 +13,7 @@ import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
 @OptIn(ExperimentalUuidApi::class)
 
 class AddressesRepositoryImpl(
@@ -38,8 +39,9 @@ class AddressesRepositoryImpl(
         }
 
     }
+
     override suspend fun getUserAddresses(): List<Address> {
-        return safeWrapper <List<AddressResponseDto>> {
+        return safeWrapper<List<AddressResponseDto>> {
             client.getJson(ADDRESS_ENDPOINT)
         }.map { it.toEntity() }
     }
@@ -51,9 +53,13 @@ class AddressesRepositoryImpl(
         )
     }
 
+    override suspend fun getActiveAddress(): Address {
+        return getUserAddresses().first { it.isActive }
+    }
+
     companion object {
         const val ADDRESS_ENDPOINT = "identity/addresses"
         const val DELETE_LOCATION_ENDPOINT = "identity/addresses"
-        const val ADDRESS_ID ="id"
+        const val ADDRESS_ID = "id"
     }
 }
