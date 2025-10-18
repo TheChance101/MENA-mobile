@@ -52,7 +52,6 @@ kotlin {
             implementation(projects.designSystem)
             implementation(libs.bundles.filekit)
 
-
             implementation(libs.squircle.shape)
             implementation(compose.runtime)
             implementation(compose.foundation)

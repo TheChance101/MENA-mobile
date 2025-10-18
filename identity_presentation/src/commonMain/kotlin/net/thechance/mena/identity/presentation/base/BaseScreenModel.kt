@@ -47,7 +47,7 @@ abstract class BaseScreenModel<S, E>(initialState: S) : ScreenModel {
 
     protected fun <T> tryToExecute(
         function: suspend () -> T,
-        onSuccess: (T) -> Unit,
+        onSuccess: (T) -> Unit = {},
         onError: (ErrorState) -> Unit,
         inScope: CoroutineScope = screenModelScope,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,

@@ -40,7 +40,8 @@ fun ScaffoldScope.GetImageDialog(
 ) {
     BasicDialog(
         isVisible = isVisible,
-        onDismiss = onDismiss
+        onDismiss = onDismiss,
+        onCancelClick = onDismiss,
     ) {
         Column(
             modifier = Modifier
@@ -60,17 +61,26 @@ fun ScaffoldScope.GetImageDialog(
                 modifier = Modifier.padding(top = Theme.spacing._24),
                 painter = painterResource(Res.drawable.image),
                 title = "Upload image",
-                onClick = { onUploadImage() }
+                onClick = {
+                    onUploadImage()
+                    onDismiss()
+                }
             )
             Option(
                 painter = painterResource(Res.drawable.camera),
                 title = "Take new image",
-                onClick = { onTakeImageFromCamera() }
+                onClick = {
+                    onTakeImageFromCamera()
+                    onDismiss()
+                }
             )
             Option(
                 painter = painterResource(Res.drawable.image_remove),
                 title = "Remove profile image",
-                onClick = { onRemoveImage() }
+                onClick = {
+                    onRemoveImage()
+                    onDismiss()
+                }
             )
         }
     }
@@ -88,7 +98,7 @@ private fun Option(
             .fillMaxWidth()
             .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surface)
-            .clickable(onClick = { onClick })
+            .clickable(onClick = onClick)
             .padding(Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
     ) {

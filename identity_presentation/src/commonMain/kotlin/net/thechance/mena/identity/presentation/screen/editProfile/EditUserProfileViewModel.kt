@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.editProfile
 
+import androidx.compose.ui.graphics.ImageBitmap
 import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -11,11 +12,13 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.getCurrentDate
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
+import net.thechance.mena.identity.presentation.util.PermissionManager
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class EditUserProfileViewModel(
     private val userRepository: UserRepository,
+    private val permissionManager: PermissionManager,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
@@ -123,12 +126,71 @@ class EditUserProfileViewModel(
         sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile)
     }
 
+    override fun onClickShowLogoutOptions() {
+        updateState { copy(showLogoutDialog = true) }
+    }
+
     override fun onChangeDate(day: Int, month: Int, year: Int) {
         updateState { copy(birthDate = LocalDate(year, month, day)) }
     }
 
     override fun clearErrorMessage() {
         updateState { copy(errorMessage = null) }
+    }
+
+    override fun onClickEditImage() {
+        updateState { copy(showEditImageDialog = true) }
+    }
+
+    override fun onDismissEditImageDialog() {
+        updateState { copy(showEditImageDialog = false) }
+    }
+
+    override fun onDismissLogoutDialog() {
+        updateState { copy(showLogoutDialog = false) }
+    }
+
+    override fun onRemoveProfileImage() {
+        updateState {
+            copy(
+                profileImageUrl = "",
+                profileImageBitmap = null,
+            )
+        }
+    }
+
+    override fun onRequireCropImage(imageBitmap: ImageBitmap) {
+        sendNewEffect(
+            EditUserProfileUIEffect.NavigateToCropScreen(
+                imageBitmap = imageBitmap,
+                onResult = { croppedImageBitmap ->
+                    updateState {
+                        copy(
+                            profileImageBitmap = croppedImageBitmap,
+                            shouldUpdateImage = true
+                        )
+                    }
+                }
+            )
+        )
+    }
+
+    override fun onTakeImageFromCamera() {
+        tryToExecute(
+            function = ::onAskForCameraPermission,
+            onError = ::onErrorOccurred
+        )
+    }
+
+    private suspend fun onAskForCameraPermission() {
+        permissionManager.requestCameraPermission(
+            onGranted = { updateState { copy(showCamera = true) } },
+            onDenied = { updateState { copy(errorMessage = "Camera permission required") } }
+        )
+    }
+
+    override fun onOpenCamera() {
+        updateState { copy(showCamera = false) }
     }
 
     private fun onErrorOccurred(errorState: ErrorState) {

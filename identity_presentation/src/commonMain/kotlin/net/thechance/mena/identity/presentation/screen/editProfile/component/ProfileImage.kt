@@ -1,29 +1,36 @@
 package net.thechance.mena.identity.presentation.screen.editProfile.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
-import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
+import coil3.compose.SubcomposeAsyncImage
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.svg.SvgDecoder
 import io.ktor.client.HttpClient
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.not_user_image
 import mena.identity_presentation.generated.resources.pencil_edit
 import mena.identity_presentation.generated.resources.profile_profile_picture_content_description
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -36,11 +43,12 @@ import org.koin.core.qualifier.named
 
 @Composable
 fun ProfileImage(
-    profilePicture: String,
+    profileImageUrl: String,
+    profileImageBitmap: ImageBitmap?,
     modifier: Modifier = Modifier,
+    onEditClicked: () -> Unit,
 ) {
     val shadowColor = Color(0x0F111D2E)
-    val networkClient = koinInject<HttpClient>(named("IdentityClient"))
 
     Column(
         modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
@@ -69,27 +77,27 @@ fun ProfileImage(
                         )
                     )
             ) {
-                AsyncImage(
-                    model = profilePicture,
-                    imageLoader = ImageLoader.Builder(LocalPlatformContext.current)
-                        .components {
-                            add(KtorNetworkFetcherFactory(networkClient))
-                            add(SvgDecoder.Factory())
-                        }
-                        .build(),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = stringResource(Res.string.profile_profile_picture_content_description),
-                    modifier = Modifier
-                        .size(88.dp)
-                        .clip(CircleShape),
-                )
+                if (profileImageBitmap == null) {
+                    AsyncProfileImage(profileImageUrl)
+                } else {
+                    Image(
+                        bitmap = profileImageBitmap,
+                        contentScale = ContentScale.Crop,
+                        contentDescription = stringResource(Res.string.profile_profile_picture_content_description),
+                        modifier = Modifier
+                            .size(88.dp)
+                            .clip(CircleShape),
+                    )
+                }
             }
 
             Box(
                 modifier = Modifier
                     .size(32.dp)
                     .align(Alignment.BottomCenter)
-                    .background(Theme.colorScheme.primary.primary, CircleShape)
+                    .clip(CircleShape)
+                    .background(Theme.colorScheme.primary.primary)
+                    .clickable(onClick = onEditClicked)
                     .border(
                         width = 1.dp,
                         color = Theme.colorScheme.background.surface,
@@ -113,4 +121,45 @@ fun ProfileImage(
             }
         }
     }
+}
+
+@Composable
+fun AsyncProfileImage(imageUrl: String) {
+    val networkClient = koinInject<HttpClient>(named("IdentityClient"))
+    SubcomposeAsyncImage(
+        model = imageUrl,
+        imageLoader = ImageLoader.Builder(LocalPlatformContext.current)
+            .components {
+                add(KtorNetworkFetcherFactory(networkClient))
+                add(SvgDecoder.Factory())
+            }.build(),
+        contentScale = ContentScale.Crop,
+        contentDescription = stringResource(Res.string.profile_profile_picture_content_description),
+        modifier = Modifier
+            .size(88.dp)
+            .clip(CircleShape)
+            .background(Theme.colorScheme.background.surfaceLow),
+        error = {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .blur(
+                            radius = 16.dp,
+                            edgeTreatment = BlurredEdgeTreatment.Unbounded
+                        ),
+                    painter = painterResource(Res.drawable.not_user_image),
+                    contentDescription = null,
+                    tint = Color(0x4D000000)
+                )
+                Icon(
+                    modifier = Modifier,
+                    painter = painterResource(Res.drawable.not_user_image),
+                    contentDescription = null,
+                )
+            }
+        },
+    )
 }
