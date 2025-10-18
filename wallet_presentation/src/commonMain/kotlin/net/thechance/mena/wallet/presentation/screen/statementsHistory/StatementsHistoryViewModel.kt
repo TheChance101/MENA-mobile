@@ -67,7 +67,7 @@ class StatementsHistoryViewModel(
                     sendEffect(StatementsHistoryEffect.NavigateToStatementDetails(fileLocation))
                 } else {
                     onViewStatementAvailable(false)
-                    deleteStatementNotPdfExist(statement)
+                    deleteNotFoundStatement(statement)
                 }
             },
             onError = {
@@ -82,38 +82,39 @@ class StatementsHistoryViewModel(
         )
     }
 
-    private fun deleteStatementNotPdfExist(statement: StatementsHistoryScreenState.StatementItem) {
+
+    private fun deleteNotFoundStatement(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
-            callee = { deleteStatementPdf(statement = statement) },
-            onSuccess = {
-                viewModelScope.launch(dispatcherIO) {
-                    delay(DELETE_DELAY_MS)
-
-                    removeStatementFromState(id = statement.id)
-
-                    showSnackBar(
-                        title = stringProvider.getString(Res.string.file_missing),
-                        message = stringProvider.getString(Res.string.file_missing_description),
-                        isSuccess = false
-                    )
-                }
-            },
-            onError = { error ->
-                showSnackBar(
-                    title = stringProvider.getString(Res.string.unknown_error_title),
-                    message = stringProvider.getString(Res.string.unknown_error_description),
-                    isSuccess = false
-                )
-            },
+            callee = { statementRepository.deleteStatementById(statement.id) },
+            onSuccess = { onDeleteNotFoundStatementSuccess(statement.id) },
+            onError = { onDeleteNotFoundStatementError() },
             dispatcher = dispatcherIO
+        )
+    }
+
+    private suspend fun onDeleteNotFoundStatementSuccess(id: Long) {
+        delay(DELETE_DELAY_MS)
+
+        removeStatementFromState(id = id)
+
+        showSnackBar(
+            title = stringProvider.getString(Res.string.file_missing),
+            message = stringProvider.getString(Res.string.file_missing_description),
+            isSuccess = false
+        )
+    }
+
+    private suspend fun onDeleteNotFoundStatementError() {
+        showSnackBar(
+            title = stringProvider.getString(Res.string.unknown_error_title),
+            message = stringProvider.getString(Res.string.unknown_error_description),
+            isSuccess = false
         )
     }
 
     private fun removeStatementFromState(id: Long) {
         updateState { current ->
-            current.copy(
-                statements = current.statements.filter { it.id != id }
-            )
+            current.copy(statements = current.statements.filter { it.id != id })
         }
     }
 
@@ -159,7 +160,10 @@ class StatementsHistoryViewModel(
         statementRepository.deleteStatementById(statement.id)
     }
 
-    private suspend fun onDeleteStatementSuccess(id: Long, onDeleteComplete: (Boolean) -> Unit) {
+    private suspend fun onDeleteStatementSuccess(
+        id: Long,
+        onDeleteComplete: (Boolean) -> Unit
+    ) {
         delay(DELETE_DELAY_MS)
 
         removeStatementFromState(id = id)

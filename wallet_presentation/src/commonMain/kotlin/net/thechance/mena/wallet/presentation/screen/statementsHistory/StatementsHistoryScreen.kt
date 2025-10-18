@@ -43,6 +43,14 @@ fun StatementHistoryScreen(
         }
     )
 
+    StatementHistoryScreenContent(state = state, listener = viewModel)
+}
+
+@Composable
+private fun StatementHistoryScreenContent(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
     AnimatedContent(
         targetState = state.isEditMode,
         transitionSpec = {
@@ -50,8 +58,11 @@ fun StatementHistoryScreen(
                     fadeOut(animationSpec = tween(500))
         }
     ) { isEditMode ->
-        if (isEditMode) { EditModeContent(state = state, listener = viewModel) }
-        else { NormalModeContent(state = state, listener = viewModel) }
+        if (isEditMode) {
+            EditModeContent(state = state, listener = listener)
+        } else {
+            NormalModeContent(state = state, listener = listener)
+        }
     }
 }
 

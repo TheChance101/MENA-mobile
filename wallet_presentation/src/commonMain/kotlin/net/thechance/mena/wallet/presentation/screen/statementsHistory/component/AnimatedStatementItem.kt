@@ -44,7 +44,7 @@ fun AnimatedStatementItem(
     val scale by animateFloatAsState(
         targetValue = if (isDeleting) 0f else 1f,
         animationSpec = tween(
-            durationMillis = 500,
+            durationMillis = 300,
             easing = LinearEasing
         )
     )
@@ -52,7 +52,7 @@ fun AnimatedStatementItem(
     val heightProgress by animateFloatAsState(
         targetValue = if (isDeleting) 0f else 1f,
         animationSpec = tween(
-            durationMillis = 800,
+            durationMillis = 300,
             delayMillis = 220,
             easing = LinearEasing
         ),
@@ -123,15 +123,12 @@ fun AnimatedStatementItem(
                     }
             )
         }
-        if (isDividerVisible && heightProgress > 0f) {
+        if (isDividerVisible && !isDeleting) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
                     .background(Theme.colorScheme.stroke)
-                    .graphicsLayer {
-                        alpha = heightProgress
-                    }
             )
         }
     }

@@ -134,6 +134,6 @@
     <string name="payment_status_crossfade">Payment status transition</string>
     <string name="you_paid">You paid</string>
 
-    <string name="file_missing">File Missing</string>
-    <string name="file_missing_description">We couldn’t find this statement file. It may have been deleted or moved from your device.</string>
+    <string name="file_missing">Statement not found</string>
+    <string name="file_missing_description">This statement is no longer available because it was deleted or moved from your device.</string>
 </resources>

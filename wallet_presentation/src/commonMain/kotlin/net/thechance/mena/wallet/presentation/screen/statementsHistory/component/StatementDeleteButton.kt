@@ -1,5 +1,6 @@
 package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -41,18 +43,24 @@ fun StatementDeleteButton(
 
         val buttonWidth by animateDpAsState(
             targetValue = if (isDeleting) fullWidth else 48.dp,
-            animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+            animationSpec = tween(durationMillis = 600, easing = LinearEasing)
         )
 
         val buttonHeight by animateDpAsState(
             targetValue = if (isDeleting) fullHeight else 48.dp,
-            animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+            animationSpec = tween(durationMillis = 600, easing = LinearEasing)
+        )
+
+        val buttonOffsetY by animateDpAsState(
+            targetValue = if (isDeleting) (-48).dp else 0.dp,
+            animationSpec = tween(durationMillis = 600, easing = FastOutLinearInEasing)
         )
 
         Box(
             modifier = modifier
                 .height(buttonHeight)
                 .width(buttonWidth)
+                .offset(y = buttonOffsetY)
                 .background(
                     color = Theme.colorScheme.background.bgError,
                     shape = if (isDeleting) RoundedCornerShape(8.dp) else CircleShape
