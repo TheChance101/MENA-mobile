@@ -17,6 +17,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.core_chat.data.contacts.createChatRepository
 import net.thechance.mena.core_chat.data.contacts.createHttpClient
@@ -301,9 +303,10 @@ class ChatRepositoryImplTest {
             message2.toLocalDto()
         )
 
-        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns messageEntities
+        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(messageEntities)
 
-        val result = repository.getLocalMessages(chatId)
+        val result = repository.getLocalMessages(chatId).first()
+
 
         assertThat(result).isNotEmpty()
         assertThat(result.size).isEqualTo(2)
@@ -312,9 +315,9 @@ class ChatRepositoryImplTest {
 
     @Test
     fun `should return empty list when no local messages exist for chat`() = runTest {
-        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns emptyList()
+        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
 
-        val result = repository.getLocalMessages(chatId)
+        val result = repository.getLocalMessages(chatId).first()
 
         assertThat(result.isEmpty()).isTrue()
         verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
