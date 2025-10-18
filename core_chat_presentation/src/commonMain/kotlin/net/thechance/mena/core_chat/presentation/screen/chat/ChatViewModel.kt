@@ -333,10 +333,10 @@ class ChatViewModel(
         val senderId = state.value.chatRequesterId
             ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
 
-        val newMessages = (messagesHistoryCache + pendingMessagesCache + newMessages)
+        val messageList = (messagesHistoryCache + pendingMessagesCache + newMessages)
             .map { it.toUi(senderId) }
 
-        _uiMessages.value = newMessages
+        _uiMessages.value = messageList
         updateChatListItems(uiMessages.value)
     }
 
