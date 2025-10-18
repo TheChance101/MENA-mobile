@@ -8,9 +8,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
+import net.thechance.mena.identity.presentation.util.PermissionManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        PermissionManager.init(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         FileKit.init(this)
