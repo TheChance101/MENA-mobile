@@ -34,7 +34,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.components.LabelInputPassword
+import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import org.jetbrains.compose.resources.stringResource
@@ -59,7 +59,7 @@ class ResetPasswordScreen() :
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.reset_password),
-                    onBackClicked = listener::onClickBack
+                    onClickBack = listener::onClickBack
                 )
             },
             overlays = {
@@ -85,7 +85,7 @@ class ResetPasswordScreen() :
                         subtitle = stringResource(Res.string.reset_password_description),
                     )
 
-                    LabelInputPassword(
+                    LabeledInputPassword(
                         password = state.newPassword,
                         isPasswordVisible = state.isNewPasswordVisible,
                         onChangePassword = listener::onChangeNewPassword,
@@ -95,7 +95,7 @@ class ResetPasswordScreen() :
                         modifier = Modifier.padding(bottom = Theme.spacing._16)
                     )
 
-                    LabelInputPassword(
+                    LabeledInputPassword(
                         password = state.confirmPassword,
                         isPasswordVisible = state.isConfirmPasswordVisible,
                         onChangePassword = listener::onChangeConfirmPassword,

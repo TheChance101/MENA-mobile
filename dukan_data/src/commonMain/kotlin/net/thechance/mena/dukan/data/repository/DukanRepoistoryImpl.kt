@@ -10,6 +10,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
+import net.thechance.mena.dukan.data.repository.dto.DukanDetailsDto
 import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
 import net.thechance.mena.dukan.data.repository.dto.DukanResponseDto
 import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
@@ -17,6 +18,7 @@ import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
 import net.thechance.mena.dukan.data.repository.mapper.toCategoryList
 import net.thechance.mena.dukan.data.repository.mapper.toColorsList
 import net.thechance.mena.dukan.data.repository.mapper.toCreateDukanRequest
+import net.thechance.mena.dukan.data.repository.mapper.toDukan
 import net.thechance.mena.dukan.data.repository.mapper.toDomain
 import net.thechance.mena.dukan.data.repository.mapper.toDomainPreview
 import net.thechance.mena.dukan.data.repository.mapper.toMyDukanStatus
@@ -126,6 +128,14 @@ class DukanRepositoryImpl(
             client.get("$BASE_URL/available?name=$name").body()
         }.available.not()
     }
+
+
+    override suspend fun getDukanDetailsByDukanId(dukanId: String): Dukan {
+        return safeApiCall<DukanDetailsDto> {
+            client.get("$BASE_URL/$dukanId")
+        }.toDukan()
+    }
+
 
     override suspend fun getDukansByCategory(
         categoryId: String,

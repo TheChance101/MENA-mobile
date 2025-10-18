@@ -172,6 +172,11 @@ maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.r
 compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
 compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
 
+# GeoLocation
+permissions-mobile = { module = "dev.jordond.compass:permissions-mobile", version.ref = "compass" }
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+
 # DataStore
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 
@@ -239,7 +244,16 @@ filekit = [
     "filekit-coil"
 ]
 
-geoCoder = ["compass-geocoder", "compass-geocoder-mobile"]
+geoCoder = [
+    "compass-geocoder",
+    "compass-geocoder-mobile"
+]
+
+geoLocation = [
+    "permissions-mobile",
+    "compass-geolocation",
+    "compass-geolocation-mobile"
+]
 
 koin-compose = [
     "koin-core",

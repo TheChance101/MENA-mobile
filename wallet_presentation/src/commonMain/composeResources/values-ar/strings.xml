@@ -102,6 +102,8 @@
     <string name="failed_to_load_date_picker">فشل في تحميل التاريخ</string>
     <string name="unknown_error_title">خطأ غير معروف</string>
     <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
+    <string name="remove_statements">حذف السجلات</string>
+
     <string name="inflows">واردات</string>
     <string name="outflows">صادرات</string>
     <string name="silvers">فضيات</string>
@@ -126,6 +128,9 @@
     <string name="connection_lost_try_again">انقطع الاتصال. يرجى المحاولة مرة أخرى.</string>
     <string name="try_again">حاول مرة أخرى</string>
     <string name="payment_failed_description">تعذر إتمام الدفع. يرجى المحاولة مرة أخرى.</string>
-    <string name="you_paid">لقد دفعت</string>
     <string name="payment_status_crossfade">الانتقال بين حالات الدفع</string>
+    <string name="you_paid">لقد دفعت</string>
+
+    <string name="file_missing">الملف غير موجود</string>
+    <string name="file_missing_description">تعذر العثور على ملف البيان هذا. قد يكون قد تم حذفه أو نقله من جهازك.</string>
 </resources>

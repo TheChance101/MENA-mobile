@@ -45,13 +45,11 @@ data class OtpScreen(
         OtpScreenInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = {
-            parametersOf(
-                phoneNumber,
-                callingCode,
-                countryCode
-            )
-        }))
+        InitScreen(
+            getScreenModel(parameters = {
+                parametersOf(phoneNumber, callingCode, countryCode)
+            })
+        )
     }
 
     @Composable
@@ -63,7 +61,7 @@ data class OtpScreen(
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.reset_password),
-                    onBackClicked = listener::onClickBack
+                    onClickBack = listener::onClickBack
                 )
             }
         ) {

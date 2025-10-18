@@ -31,9 +31,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-
 class UserRepositoryImplTest {
 
     private val client = mockk<HttpClient>()
@@ -126,15 +127,6 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `updateUser() should call doe upsert when update user`() = runTest {
-        coEvery { userDao.upsert(any()) } returns Unit
-
-        userRepositoryImpl.updateUser(fakeUser)
-
-        coVerify(exactly = 1) { userDao.upsert(fakeUser.toEntity()) }
-    }
-
-    @Test
     fun `getUser() should return object from User`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
@@ -152,8 +144,17 @@ class UserRepositoryImplTest {
 
     }
 
+    @Test
+    fun `updateUser() should call upsert user when try to update user`() = runTest {
+        val client = mockHttpClient(fakeProfileResponse)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl.updateUser(fakeUser, false, null)
+        coVerify { userDao.upsert(any()) }
+    }
+
 
     val fakeProfileResponse = ProfileResponseDto(
+        id = "1bfbf5d8-145d-40e9-abae-8335df3f0a81",
         firstName = "The",
         lastName = "Chance",
         username = "the_chance",
@@ -162,7 +163,9 @@ class UserRepositoryImplTest {
         gender = UserEntity.MALE,
     )
 
+    @OptIn(ExperimentalUuidApi::class)
     val fakeUser = User(
+        id = Uuid.parse("1bfbf5d8-145d-40e9-abae-8335df3f0a81"),
         username = "the_chance",
         firstName = "The",
         lastName = "Chance",

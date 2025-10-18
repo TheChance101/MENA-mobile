@@ -1,11 +1,8 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.wallet.domain.repository
 
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
-import kotlin.uuid.ExperimentalUuidApi
 
 interface StatementRepository {
     suspend fun getStatementWithMetadata(

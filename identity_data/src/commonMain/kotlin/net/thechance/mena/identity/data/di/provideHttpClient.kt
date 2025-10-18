@@ -27,15 +27,10 @@ internal fun provideHttpClient(
     engine: HttpClientEngine, settings: Settings, baseUrl: String, refreshToken: suspend () -> Unit
 ): HttpClient {
     return HttpClient(engine) {
-        defaultRequest {
-            url(baseUrl)
-        }
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                })
-        }
+        defaultRequest { url(baseUrl) }
+
+        install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
+
         install(Logging) {
             level = LogLevel.ALL
             logger = object : Logger {

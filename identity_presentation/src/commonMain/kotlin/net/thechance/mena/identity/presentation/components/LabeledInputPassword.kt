@@ -19,7 +19,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun LabelInputPassword(
+internal fun LabeledInputPassword(
     password: String,
     isPasswordVisible: Boolean,
     onChangePassword: (String) -> Unit,

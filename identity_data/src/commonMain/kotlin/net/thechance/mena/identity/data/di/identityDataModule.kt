@@ -12,8 +12,10 @@ import net.thechance.mena.identity.data.repository.AddressesRepositoryImpl
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl
 import net.thechance.mena.identity.data.repository.UserRepositoryImpl
+import net.thechance.mena.identity.data.repository.location.MobileLocationRepositoryImpl
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.service.AuthorizationService
@@ -29,21 +31,24 @@ private const val BASE_URL = "baseUrl"
 expect val IdentityPlatformModule: Module
 val identityDataModule = module {
     single { CIO.create() }
+    singleOf(::Settings)
 
     single<UserRepository> {
-        UserRepositoryImpl(
-            client = get(named(IDENTITY_CLIENT)),
-            userDao = get()
-        )
+        UserRepositoryImpl(client = get(named(IDENTITY_CLIENT)), userDao = get())
     }
-    singleOf(::ResetPasswordRepositoryImpl) bind ResetPasswordRepository::class
+
     single<AuthenticationRepository> {
-        AuthenticationRepositoryImpl(
-            client = get(named(IDENTITY_CLIENT)),
-            settings = get()
-        )
+        AuthenticationRepositoryImpl(client = get(named(IDENTITY_CLIENT)), settings = get())
     }
-    singleOf(::Settings)
+
+    single<ResetPasswordRepository> {
+        ResetPasswordRepositoryImpl(client = get(named("IdentityClient")))
+    }
+
+    single<AddressesRepository>{
+        AddressesRepositoryImpl(client = get(named(IDENTITY_CLIENT)))
+    }
+
     singleOf(::AuthorizationService)
     single(named(IDENTITY_CLIENT)) {
         provideHttpClient(
@@ -53,24 +58,11 @@ val identityDataModule = module {
             refreshToken = { get<AuthorizationService>().refreshToken() }
         )
     }
-    single { provideDatabaseBuilder() }
-    single<IdentityDatabase> { getRoomDatabase(builder = get()) }
-    single<UserDao> { get<IdentityDatabase>().getUserDao() }
 
     single { provideDatabaseBuilder() }
     single<IdentityDatabase> { getRoomDatabase(builder = get()) }
     single<UserDao> { get<IdentityDatabase>().getUserDao() }
 
-    single<ResetPasswordRepository> {
-        ResetPasswordRepositoryImpl(
-            client = get(named(IDENTITY_CLIENT))
-        )
-    }
-    single<AddressesRepository>{
-        AddressesRepositoryImpl(
-            client = get(named(IDENTITY_CLIENT))
-        )
-    }
 }
 
 fun getRoomDatabase(builder: RoomDatabase.Builder<IdentityDatabase>): IdentityDatabase {

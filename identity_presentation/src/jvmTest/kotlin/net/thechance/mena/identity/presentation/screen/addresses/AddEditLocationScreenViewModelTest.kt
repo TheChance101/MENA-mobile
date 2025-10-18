@@ -34,7 +34,8 @@ class AddEditLocationScreenViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher)
+        viewModel =
+            AddEditLocationScreenViewModel(addressesRepository, testDispatcher, null)
     }
 
     @AfterTest

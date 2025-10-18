@@ -16,7 +16,10 @@ import kotlin.uuid.ExperimentalUuidApi
 fun PagedDataDto<ChatSummaryDto>.toPagedListOfChatSummary(): PagedData<ChatSummary> {
     val pagedData = this
     return PagedData(
-        data = pagedData.data.orEmpty().toListOfChatSummary(),
+        data = pagedData.data
+            .orEmpty()
+            .toListOfChatSummary()
+            .filter { chatSummary -> chatSummary.lastMessage != null },
         totalItems = pagedData.totalItems ?: 0,
         isLastPage = (pagedData.pageNumber ?: 0) >= (pagedData.totalPages ?: 0)
     )

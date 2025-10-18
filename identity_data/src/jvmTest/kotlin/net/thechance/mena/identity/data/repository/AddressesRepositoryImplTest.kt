@@ -38,6 +38,24 @@ class AddressesRepositoryImplTest {
     }
 
     @Test
+    fun `getUserAddresses() should not throw exception when server returns 200`() = runTest {
+        client = mockHttpClient(Unit)
+
+        addressRepositoryImpl = AddressesRepositoryImpl(client)
+
+        addressRepositoryImpl.editAddress(fakeExistingAddress)
+    }
+
+    @Test
+    fun `deleteAddress() should not throw exception when server returns 200`() = runTest {
+        client = mockHttpClient(Unit)
+
+        addressRepositoryImpl = AddressesRepositoryImpl(client)
+
+        addressRepositoryImpl.editAddress(fakeExistingAddress)
+    }
+
+    @Test
     fun `createAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest {
         client = mockHttpClientError(HttpStatusCode.Unauthorized)
 
@@ -54,6 +72,28 @@ class AddressesRepositoryImplTest {
         addressRepositoryImpl = AddressesRepositoryImpl(client)
 
         assertFailure { addressRepositoryImpl.editAddress(fakeExistingAddress) }
+            .isInstanceOf<UnAuthorizedException>()
+    }
+
+    @Test
+    fun `getUserAddresses() should throw Unauthorized Exceptions when server returns 401`() =
+        runTest {
+            client = mockHttpClientError(HttpStatusCode.Unauthorized)
+
+            addressRepositoryImpl = AddressesRepositoryImpl(client)
+
+            assertFailure { addressRepositoryImpl.getUserAddresses() }
+                .isInstanceOf<UnAuthorizedException>()
+        }
+
+
+    @Test
+    fun `deleteAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest {
+        client = mockHttpClientError(HttpStatusCode.Unauthorized)
+
+        addressRepositoryImpl = AddressesRepositoryImpl(client)
+
+        assertFailure { addressRepositoryImpl.deleteAddress(Uuid.random()) }
             .isInstanceOf<UnAuthorizedException>()
     }
 
