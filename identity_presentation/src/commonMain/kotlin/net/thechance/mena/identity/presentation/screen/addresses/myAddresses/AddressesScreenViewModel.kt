@@ -4,13 +4,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.address_deleted_successfully
 import mena.identity_presentation.generated.resources.address_activated_successfully
+import mena.identity_presentation.generated.resources.address_deleted_successfully
 import mena.identity_presentation.generated.resources.is_main_address_error
 import mena.identity_presentation.generated.resources.unexpected_error
 import net.thechance.mena.identity.domain.exception.IsActiveAddress
 import net.thechance.mena.identity.domain.repository.AddressesRepository
-import net.thechance.mena.identity.domain.service.LocationService
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
@@ -23,6 +22,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.addresses.toUiState
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+
 
 @OptIn(ExperimentalUuidApi::class)
 class AddressesScreenViewModel(
@@ -38,19 +38,24 @@ class AddressesScreenViewModel(
     override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
 
     override fun onAddButtonClicked() = sendNewEffect(
-        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = null, onSuccess = {  onAddEditSuccess(it) })
+        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
+            addressUIState = null,
+            onSuccess = { onAddEditSuccess(it) })
     )
 
     override fun onEditAddressClicked(addressUIState: AddressUIState) =
         sendNewEffect(
-            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = addressUIState, onSuccess = {
-                onAddEditSuccess(it)
-            }))
+            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
+                addressUIState = addressUIState,
+                onSuccess = {
+                    onAddEditSuccess(it)
+                })
+        )
 
     override fun onClickAddress(addressId: Uuid) {
         tryToExecute(
             function = {
-                if (state.value.addresses.find { it.id == addressId }?.isMainAddress==false ) {
+                if (state.value.addresses.find { it.id == addressId }?.isMainAddress == false) {
                     addressesRepository.editAddress(
                         state.value.addresses.find { it.id == addressId }!!.toEntity()
                             .copy(isActive = true)
@@ -141,18 +146,19 @@ class AddressesScreenViewModel(
     }
 
     private fun onGetUserAddressesSuccess(addresses: List<AddressUIState>) = updateState {
-        copy(addresses = addresses , animateToCurrentLocation = true , isLoading = false)
+        copy(addresses = addresses, animateToCurrentLocation = true, isLoading = false)
     }
 
-    private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?){
+    private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?) {
         updateState {
             copy(
-                snackBarUiState = snackBarUiState?:state.value.snackBarUiState,
+                snackBarUiState = snackBarUiState ?: state.value.snackBarUiState,
             )
         }
         getUserAddresses()
 
     }
+
     private fun onErrorOccurred(errorState: ErrorState) {
         onDismissDeleteDialog()
         when (errorState) {
