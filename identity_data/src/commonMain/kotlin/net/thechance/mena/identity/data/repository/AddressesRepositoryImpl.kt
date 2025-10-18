@@ -42,7 +42,7 @@ class AddressesRepositoryImpl(
 
     override suspend fun deleteAddress(addressId: Uuid) = safeWrapper {
         client.deleteJson(
-            path = DELETE_LOCATION_ENDPOINT,
+            path = "$DELETE_LOCATION_ENDPOINT/$addressId",
             queryParams = mapOf(ADDRESS_ID to addressId.toString())
         )
     }
