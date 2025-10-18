@@ -41,9 +41,7 @@ class PickLocationScreenViewModel(
                     animateToCurrentLocation = true,
                 )
             }
-            changeIsConfirmEnabled()
         }
-
     }
 
     override fun onClickMap(

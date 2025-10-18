@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.addresses.myAddresses
 
+import androidx.compose.ui.unit.DpOffset
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -7,7 +8,6 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.address_deleted_successfully
 import mena.identity_presentation.generated.resources.is_main_address_error
 import mena.identity_presentation.generated.resources.unexpected_error
-import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.identity.domain.exception.IsActiveAddress
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -15,7 +15,6 @@ import net.thechance.mena.identity.presentation.base.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toEntity
 import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
-import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenInteractionListener
 import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.DeleteDialogUIState
 import net.thechance.mena.identity.presentation.screen.addresses.SnackBarType
@@ -75,6 +74,10 @@ class AddressesScreenViewModel(
             onError = ::onErrorOccurred,
             dispatcher = dispatcher
         )
+    }
+
+    override fun onSetAnchorLocation(anchorLocation: DpOffset) {
+        updateState { copy(currentLocation = anchorLocation) }
     }
 
     override fun onDeleteAddressClicked(addressId: Uuid) = updateState {
@@ -141,11 +144,10 @@ class AddressesScreenViewModel(
     }
 
     private fun onGetUserAddressesSuccess(addresses: List<AddressUIState>) = updateState {
-        copy(addresses = addresses)
+        copy(addresses = addresses , animateToCurrentLocation = true)
     }
 
     private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?){
-        println("OnAddEdit")
         updateState {
             copy(
                 snackBarUiState = snackBarUiState?:state.value.snackBarUiState,

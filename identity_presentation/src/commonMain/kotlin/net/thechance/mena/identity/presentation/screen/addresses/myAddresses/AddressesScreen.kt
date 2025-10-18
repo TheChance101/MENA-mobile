@@ -22,7 +22,6 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
 import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation.AddEditLocationScreen
-import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenInteractionListener
 import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.component.AddressCard
 import net.thechance.mena.identity.presentation.screen.addresses.component.MyAddressesAppBar
@@ -95,6 +94,10 @@ class AddressesScreen :
                             isMainAddress = it.isMainAddress,
                             addressDetails = it.addressDetails,
                             onDeleteClick = { listener.onDeleteAddressClicked(it.id!!) },
+                            animateToCurrentLocation = state.animateToCurrentLocation
+                            ,longitude = it.coordinates.longitude,
+                            latitude = it.coordinates.latitude,
+                            onSetAnchorLocation = listener::onSetAnchorLocation
                         )
                     }
                 }

@@ -38,21 +38,7 @@ class AddEditLocationScreenViewModel(
     }
 
 
-    override fun onClickEdit() {
-        sendNewEffect(
-            AddEditLocationScreenUIEffect.NavigateToMap(
-                addressModel = AddressUIState(
-                    id = state.value.addressID?.let { Uuid.parse(it) },
-                    coordinates = CoordinatesUiState(
-                        state.value.latitude,
-                        state.value.longitude
-                    ),
-                    addressDetails = state.value.address
 
-                ), ::updateAddress
-            )
-        )
-    }
 
     override fun onClickBack() {
         sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack())
@@ -183,6 +169,22 @@ class AddEditLocationScreenViewModel(
 
     }
 
+    override fun onClickEdit() {
+        sendNewEffect(
+            AddEditLocationScreenUIEffect.NavigateToMap(
+                addressModel = AddressUIState(
+                    id = state.value.addressID?.let { Uuid.parse(it) },
+                    coordinates = CoordinatesUiState(
+                        state.value.latitude,
+                        state.value.longitude
+                    ),
+                    addressDetails = state.value.address
+
+                ), ::updateAddress
+            )
+        )
+    }
+
     override fun onClickMap() {
         sendNewEffect(
             AddEditLocationScreenUIEffect.NavigateToMap(
@@ -197,6 +199,9 @@ class AddEditLocationScreenViewModel(
                 latitude = newAddress.coordinates.latitude,
                 longitude = newAddress.coordinates.longitude,
                 address = newAddress.addressDetails,
+                addressType = newAddress.addressType,
+                originalAddressType = newAddress.addressType,
+                addressID = newAddress.id.toString(),
                 animateToCurrentLocation = true,
                 cameraPosition = CameraPosition(
                     target = Position(
@@ -207,6 +212,7 @@ class AddEditLocationScreenViewModel(
                 )
             )
         }
+        changeIsSaveEnabled()
     }
 
     private fun changeIsSaveEnabled() {

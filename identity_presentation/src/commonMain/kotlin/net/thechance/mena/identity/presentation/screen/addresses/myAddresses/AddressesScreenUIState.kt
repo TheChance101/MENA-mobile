@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
+import androidx.compose.ui.unit.DpOffset
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.delete_address_description
 import mena.identity_presentation.generated.resources.delete_address_title
@@ -8,6 +9,7 @@ import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import org.jetbrains.compose.resources.StringResource
+import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
@@ -15,8 +17,10 @@ data class AddressesScreenUIState(
     val addresses: List<AddressUIState> = emptyList(),
     val deleteDialogUIState: DeleteDialogUIState = DeleteDialogUIState(),
     val errorMessage: String? = null,
-    val snackBarUiState :SnackBarUiState= SnackBarUiState()
-)
+    val snackBarUiState :SnackBarUiState= SnackBarUiState(),
+    val animateToCurrentLocation: Boolean = false,
+    val currentLocation: DpOffset? = null
+    )
 
 @OptIn(ExperimentalUuidApi::class)
 data class DeleteDialogUIState (

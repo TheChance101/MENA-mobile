@@ -3,7 +3,7 @@ package net.thechance.mena.identity.presentation.screen.addresses.component
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,13 +17,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.ic_anchor
 import mena.identity_presentation.generated.resources.ic_anchor_my_locations
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.SetAnchorInCenter
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.maplibre.compose.camera.CameraPosition
@@ -42,6 +45,10 @@ fun AddressCard(
     addressDetails: String,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
+    animateToCurrentLocation: Boolean,
+    longitude: Double?,
+    latitude: Double?,
+    onSetAnchorLocation: (DpOffset) -> Unit,
 ) {
     Column(
         Modifier.fillMaxWidth()
@@ -62,11 +69,11 @@ fun AddressCard(
                 .clip(RoundedCornerShape(Theme.radius.md))
                 .fillMaxWidth()
                 .height(88.dp),
-            cameraPosition = CameraPosition(
-                target = Position(31.0, 30.0),
-                zoom = 15.0
-            ),
+            animateToCurrentLocation = animateToCurrentLocation,
+            longitude = longitude,
+            latitude = latitude,
         )
+
 
         AddressActions(onEditClick = onEditClick, onDeleteClick = onDeleteClick)
     }
@@ -75,18 +82,45 @@ fun AddressCard(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun MyAddressesMap(
-    cameraPosition: CameraPosition,
+    animateToCurrentLocation: Boolean,
+    longitude: Double?,
+    latitude: Double?,
     modifier: Modifier = Modifier
 ) {
-    val camera = rememberCameraState(firstPosition = cameraPosition)
-    LaunchedEffect(Unit) {
-        camera.animateTo(
-            finalPosition = cameraPosition,
+    val camera =
+        rememberCameraState(
+            firstPosition = CameraPosition(
+                target = Position(
+                    longitude = longitude ?: 20.0,
+                    latitude = latitude ?: 20.0
+                ), zoom = 14.0
+            )
         )
+
+    if (longitude != null && latitude != null) {
+        LaunchedEffect(Unit) {
+            camera.animateTo(
+                finalPosition = CameraPosition(
+                    target = Position(
+                        longitude = longitude,
+                        latitude = latitude
+                    ), zoom = 14.0
+                ),
+            )
+        }
     }
-    Box(
+
+    BoxWithConstraints(
         modifier = modifier
     ) {
+        SetAnchorInCenter(
+            animateToCurrentLocation = animateToCurrentLocation,
+            longitude = longitude,
+            latitude = latitude,
+            camera = camera,
+            maxWidth = maxWidth,
+            maxHeight = maxHeight,
+        )
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
@@ -98,6 +132,7 @@ private fun MyAddressesMap(
                     renderOptions = RenderOptions.Standard
                 )
         )
+
         Image(
             painter = painterResource(Res.drawable.ic_anchor_my_locations),
             contentDescription = null,
@@ -111,6 +146,7 @@ private fun MyAddressesMap(
     }
 }
 
+
 object MapStyle {
     const val BRIGHT = "https://tiles.openfreemap.org/styles/bright"
 }
@@ -120,27 +156,27 @@ object MapStyle {
 private fun PreviewAddressCard() {
     MenaTheme {
         Column {
-            AddressCard(
-                addressType = AddressType.Home,
-                isMainAddress = true,
-                addressDetails = "Karrada, Baghdad 123 St.",
-                onEditClick = {},
-                onDeleteClick = {}
-            )
-            AddressCard(
-                addressType = AddressType.Office,
-                isMainAddress = true,
-                addressDetails = "Karrada, Baghdad 123 St.",
-                onEditClick = {},
-                onDeleteClick = {}
-            )
-            AddressCard(
-                addressType = AddressType.Other(""),
-                isMainAddress = true,
-                addressDetails = "Karrada, Baghdad 123 St.",
-                onEditClick = {},
-                onDeleteClick = {}
-            )
+//            AddressCard(
+//                addressType = AddressType.Home,
+//                isMainAddress = true,
+//                addressDetails = "Karrada, Baghdad 123 St.",
+//                onEditClick = {},
+//                onDeleteClick = {}
+//            )
+//            AddressCard(
+//                addressType = AddressType.Office,
+//                isMainAddress = true,
+//                addressDetails = "Karrada, Baghdad 123 St.",
+//                onEditClick = {},
+//                onDeleteClick = {}
+//            )
+//            AddressCard(
+//                addressType = AddressType.Other(""),
+//                isMainAddress = true,
+//                addressDetails = "Karrada, Baghdad 123 St.",
+//                onEditClick = {},
+//                onDeleteClick = {}
+//            )
         }
     }
 }

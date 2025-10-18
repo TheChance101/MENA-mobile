@@ -100,7 +100,7 @@ fun SetAnchorInCenter(
     animateToCurrentLocation: Boolean,
     longitude: Double?,
     latitude: Double?,
-    onSetAnchorLocation: (DpOffset) -> Unit,
+    onSetAnchorLocation: (DpOffset) -> Unit = {},
     camera: CameraState,
     maxWidth: Dp,
     maxHeight: Dp,
