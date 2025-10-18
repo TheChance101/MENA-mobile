@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package net.thechance.mena.core_chat.data.contacts
+package net.thechance.mena.core_chat.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
