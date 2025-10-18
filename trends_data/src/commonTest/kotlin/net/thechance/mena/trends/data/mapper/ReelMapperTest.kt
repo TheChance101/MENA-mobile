@@ -6,7 +6,6 @@ import assertk.assertions.isNull
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.ReelDto
-import net.thechance.mena.trends.domain.entity.Category
 import kotlin.test.Test
 
 internal class ReelMapperTest {
@@ -51,49 +50,6 @@ internal class ReelMapperTest {
         val reel = dto.toEntity()
 
         assertThat(reel.createdAt).isNull()
-    }
-
-    @Test
-    fun `ReelDTO with null categories should map to empty list`() {
-        val dto = ReelDto(categories = null)
-
-        val reel = dto.toEntity()
-
-        assertThat(reel.categories).isEqualTo(emptyList())
-    }
-
-    @Test
-    fun `ReelDTO with valid categories should map correctly`() {
-        val dto = ReelDto(categories = categoriesDto)
-
-        val reel = dto.toEntity()
-
-        assertThat(reel.categories.first().id).isEqualTo(categoriesDto.first().id)
-        assertThat(reel.categories.first().name).isEqualTo(categoriesDto.first().name)
-        assertThat(reel.categories.first().emoji).isEqualTo(categoriesDto.first().emoji)
-
-        assertThat(reel.categories.last().id).isEqualTo(categoriesDto.last().id)
-        assertThat(reel.categories.last().name).isEqualTo(categoriesDto.last().name)
-        assertThat(reel.categories.last().emoji).isEqualTo(categoriesDto.last().emoji)
-
-        assertThat(reel.categories.size).isEqualTo(2)
-    }
-
-    @Test
-    fun `ReelDTO with some invalid categories should ignore nulls`() {
-        val dto = ReelDto(
-            categories = listOf(
-                CategoryDto(id = "1", name = "Comedy", emoji = "⚽"),
-                CategoryDto(id = "3", name = null, emoji = null),
-                CategoryDto(id = null, name = "NoId", emoji = null)
-            )
-        )
-
-        val reel = dto.toEntity()
-
-        assertThat(reel.categories.size).isEqualTo(2)
-        assertThat(reel.categories.first()).isEqualTo(Category("1", "Comedy", "⚽"))
-        assertThat(reel.categories.last()).isEqualTo(Category("3", "", ""))
     }
 
     private companion object {

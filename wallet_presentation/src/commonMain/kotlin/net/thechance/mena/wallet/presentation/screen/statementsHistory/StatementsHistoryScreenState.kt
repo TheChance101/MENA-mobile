@@ -13,6 +13,7 @@ data class StatementsHistoryScreenState(
     val errorState: ErrorState? = null,
     val endOfPages: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
+    val isEditMode: Boolean = false,
 ) {
     data class StatementItem(
         val id: Long,

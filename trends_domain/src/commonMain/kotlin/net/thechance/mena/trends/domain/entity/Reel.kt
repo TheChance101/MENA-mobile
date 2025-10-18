@@ -13,5 +13,5 @@ data class Reel(
     val userName: String,
     val profileImageUrl: String,
     val isCurrentUserOwner: Boolean,
-    val categories: List<Category>
+    val isLiked: Boolean
 )

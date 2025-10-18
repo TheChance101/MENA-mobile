@@ -1,20 +1,24 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -24,7 +28,7 @@ import net.thechance.mena.wallet.presentation.screen.statementsHistory.Statement
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionLoadingState
 import net.thechance.mena.wallet.presentation.utils.PaginationTrigger
 import org.jetbrains.compose.resources.stringResource
-import kotlin.uuid.ExperimentalUuidApi
+import kotlin.math.roundToInt
 
 @Composable
 fun StatementsListContent(
@@ -32,7 +36,6 @@ fun StatementsListContent(
     state: StatementsHistoryScreenState,
     modifier: Modifier = Modifier
 ) {
-
     val listState = rememberLazyListState()
 
     PaginationTrigger(
@@ -42,6 +45,43 @@ fun StatementsListContent(
         loadNextItems = listener::onNextPageRequested
     )
 
+    val density = LocalDensity.current
+    val maxRevealDistance = with(density) { 60.dp.toPx() }
+    val historyIconRevealDistance = with(density) { 20.dp.toPx() }
+    val deleteButtonStartOffset = with(density) { 70.dp.toPx() }
+
+    val cardOffsetX = remember { Animatable(0f) }
+    val historyIconOffsetX = remember { Animatable(0f) }
+    val deleteButtonOffsetX = remember { Animatable(deleteButtonStartOffset) }
+
+    LaunchedEffect(state.isEditMode) {
+        val animationSpec: AnimationSpec<Float> = tween(
+            durationMillis = 400,
+            easing = LinearEasing
+        )
+
+        launch {
+            cardOffsetX.animateTo(
+                targetValue = if (state.isEditMode) -maxRevealDistance else 0f,
+                animationSpec = animationSpec
+            )
+        }
+
+        launch {
+            historyIconOffsetX.animateTo(
+                targetValue = if (state.isEditMode) -historyIconRevealDistance else 0f,
+                animationSpec = animationSpec
+            )
+        }
+
+        launch {
+            deleteButtonOffsetX.animateTo(
+                targetValue = if (state.isEditMode) 0f else deleteButtonStartOffset,
+                animationSpec = animationSpec
+            )
+        }
+    }
+
     LazyColumn(
         modifier = modifier
             .background(Theme.colorScheme.background.surface)
@@ -49,31 +89,36 @@ fun StatementsListContent(
         contentPadding = PaddingValues(bottom = Theme.spacing._16),
         state = listState
     ) {
-        items(state.statements) { statement ->
-            StatementHistoryCard(
-                startDate = statement.startDate,
-                endDate = statement.endDate,
-                totalInflow = statement.totalInflow.toString(),
-                totalOutflow = statement.totalOutflow.toString(),
-                onStatementCardClicked = { listener.onStatementCardClicked(statement) }
+        items(
+            items = state.statements,
+            key = { it.id }
+        ) { statement ->
+            AnimatedStatementItem(
+                statement = statement,
+                isDividerVisible = statement != state.statements.lastOrNull(),
+                isEditMode = state.isEditMode,
+                cardOffsetX = cardOffsetX.value.roundToInt(),
+                historyIconOffsetX = historyIconOffsetX.value.roundToInt(),
+                deleteButtonOffsetX = deleteButtonOffsetX.value.roundToInt(),
+                onDeleteClicked = { onDeleteComplete ->
+                    listener.onDeleteClicked(
+                        statement = statement,
+                        onDeleteComplete = onDeleteComplete
+                    )
+                },
+                onStatementCardClicked = { onViewStatementAvailable ->
+                    listener.onStatementCardClicked(
+                        statement,
+                        onViewStatementAvailable = onViewStatementAvailable
+                    )
+                }
             )
-
-            if (state.statements.last() != statement) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(Theme.colorScheme.stroke)
-                )
-            }
         }
 
         if (state.isPaginationLoading) {
             item {
                 TransactionLoadingState(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Theme.spacing._16)
+                    modifier = Modifier.fillMaxWidth().padding(vertical = Theme.spacing._16)
                 )
             }
         }

@@ -39,48 +39,33 @@ class MainContainerViewModelTest {
     }
 
     @Test
-    fun `navigateToUploadReel should navigate to upload reel screen`() = runTest {
-        viewModel.navigateToUploadReel()
-        viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToUploadReel)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `navigateToManageTrends should navigate to manage trends screen`() = runTest {
-        viewModel.navigateToManageTrends()
-        viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToManageTrends)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `navigateToCategories should navigate to categories screen when when user categories are not set`() =
-        runTest {
-            viewModel.handleGetIsUserCategorySet(isUserCategorySet = false)
-            viewModel.effect.test {
-                viewModel.navigateToCategories()
-                assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToCategoryPick)
-            }
-        }
-
-    @Test
-    fun `navigateToCategories should navigate to trends screen when user categories are already set`() =
-        runTest {
-            viewModel.handleGetIsUserCategorySet(isUserCategorySet = true)
-            viewModel.effect.test {
-                viewModel.navigateToCategories()
-                assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToTrends)
-            }
-        }
-
-    @Test
     fun `handleGetIsUserCategorySet should update state with isUserCategorySet`() = runTest {
-        viewModel.handleGetIsUserCategorySet(isUserCategorySet = true)
+        viewModel.onUserCategoryStatusReceived(isUserCategorySet = true)
         assertThat(viewModel.state.value.isCategoriesAlreadySelectedByUser).isEqualTo(true)
     }
+
+    @Test
+    fun `handleGetIsUserCategorySet should navigate to home screen when isUserCategorySet is true`() =
+        runTest {
+            viewModel.onUserCategoryStatusReceived(isUserCategorySet = true)
+            viewModel.effect.test {
+                val effect = awaitItem()
+                assertThat(effect).isEqualTo(MainContainerEffect.NavigateToReelHome)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `handleGetIsUserCategorySet should navigate to category pick screen when isUserCategorySet is false`() =
+        runTest {
+            val viewModel =
+                MainContainerViewModel(repository = repository, defaultDispatcher = testDispatcher)
+            viewModel.effect.test {
+                viewModel.onUserCategoryStatusReceived(false)
+                assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToCategoryPick)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `loadCategories should update error state when repository throws exception`() = runTest {

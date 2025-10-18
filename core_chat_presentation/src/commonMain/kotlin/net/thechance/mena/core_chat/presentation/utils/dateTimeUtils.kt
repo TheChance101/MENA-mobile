@@ -78,3 +78,14 @@ fun LocalTime.toHoursMinutesAgo(): String {
             "1 hour ago"
         } else "$hoursAgo hours ago"
 }
+
+fun getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(dateTime: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    val today = now
+
+    return when (dateTime.date) {
+        today.date -> dateTime.formatAsTime()
+        today.date.minusDays(1) -> "Yesterday"
+        else -> dateTime.date.format("dd-MM-yyyy")
+    }
+}

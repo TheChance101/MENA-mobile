@@ -15,25 +15,35 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.core_chat.data.contacts.createChatRepository
-import net.thechance.mena.core_chat.data.contacts.createHttpClient
-import net.thechance.mena.core_chat.data.contacts.defaultChatHistoryResponse
-import net.thechance.mena.core_chat.data.contacts.defaultChatResponse
+import net.thechance.mena.core_chat.data.createChatRepository
+import net.thechance.mena.core_chat.data.createHttpClient
+import net.thechance.mena.core_chat.data.defaultChatHistoryResponse
+import net.thechance.mena.core_chat.data.defaultChatResponse
+import net.thechance.mena.core_chat.data.defaultChatSummaryResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
+import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
-import net.thechance.mena.core_chat.data.contacts.jsonHeaders
-import net.thechance.mena.core_chat.data.contacts.jsonSerialization
-import net.thechance.mena.core_chat.data.contacts.mockErrorPagedResponse
+import net.thechance.mena.core_chat.data.defaultUploadImagesResponse
+import net.thechance.mena.core_chat.data.jsonHeaders
+import net.thechance.mena.core_chat.data.jsonSerialization
+import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -201,6 +211,45 @@ class ChatRepositoryImplTest {
     }
 
     @Test
+    fun `should return chat summary when getChatsSummary is successful`() = runTest {
+        httpClient = createHttpClient(
+            chatSummaryResponse = { defaultChatSummaryResponse() }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        val result = repository.getChatsSummary(
+            pageNumber = 1,
+            pageSize = 20
+        )
+        assertThat(result.data).isNotEmpty()
+    }
+
+    @Test
+    fun `should throw NotFoundException when getChatsSummary returns error`() = runTest {
+        httpClient = createHttpClient(
+            chatSummaryResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        assertFailsWith<NotFoundException> {
+            repository.getChatsSummary(
+                pageNumber = 1,
+                pageSize = 20
+            )
+        }
+    }
+
+    @Test
     fun `should send message successfully when websocket is connected`() = runTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
@@ -260,9 +309,10 @@ class ChatRepositoryImplTest {
             message2.toLocalDto()
         )
 
-        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns messageEntities
+        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(messageEntities)
 
-        val result = repository.getLocalMessages(chatId)
+        val result = repository.getLocalMessages(chatId).first()
+
 
         assertThat(result).isNotEmpty()
         assertThat(result.size).isEqualTo(2)
@@ -271,16 +321,17 @@ class ChatRepositoryImplTest {
 
     @Test
     fun `should return empty list when no local messages exist for chat`() = runTest {
-        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns emptyList()
+        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
 
-        val result = repository.getLocalMessages(chatId)
+        val result = repository.getLocalMessages(chatId).first()
 
         assertThat(result.isEmpty()).isTrue()
         verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
     }
 
     @Test
-    fun `should return flow when subscribeToMessages is called`() = runTest {
+    fun `should return flow when getMessages is called and websocket is connected`() = runTest {
+        every { webSocketManager.isConnected() } returns true
         everySuspend { authRepository.getAccessToken() } returns "test-token"
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
@@ -291,7 +342,7 @@ class ChatRepositoryImplTest {
             )
         }
 
-        val flow = repository.subscribeToMessages(chatId)
+        val flow = repository.getMessages(chatId)
 
         assertThat(flow).isNotNull()
     }
@@ -315,6 +366,115 @@ class ChatRepositoryImplTest {
                 repository.downloadImage(IMAGE_URL)
             }
         }
+
+    @Test
+    fun `should return chat summary when getChatSummaryById is successful`() = runTest {
+        val testChatId = Uuid.random()
+        val dto = createChatSummaryDto(id = testChatId.toString(), name = "Summary Chat")
+
+        httpClient = createHttpClient(
+            chatByIdResponse = {
+                respond(
+                    content = jsonSerialization.encodeToString(ChatSummaryDto.serializer(), dto),
+                    status = HttpStatusCode.OK,
+                    headers = jsonHeaders
+                )
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        val result = repository.getChatSummaryById(testChatId)
+
+        assertThat(result.id).isEqualTo(testChatId)
+        assertThat(result.name).isEqualTo("Summary Chat")
+    }
+
+    @Test
+    fun `should throw NotFoundException when getChatSummaryById returns 404`() = runTest {
+        val testChatId = Uuid.random()
+
+        httpClient = createHttpClient(
+            chatByIdResponse = { respond("", HttpStatusCode.NotFound, jsonHeaders) }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        assertFailsWith<NotFoundException> {
+            repository.getChatSummaryById(testChatId)
+        }
+    }
+
+    @Test
+    fun `should send image message successfully when websocket connected and images uploaded`() = runTest {
+        every { webSocketManager.isConnected() } returns true
+        everySuspend { messageDao.insertMessage(any()) } returns Unit
+        everySuspend { messageDao.updateMessageImages(any(), any()) } returns Unit
+        everySuspend { messageDao.deleteMessage(any()) } returns Unit
+
+        httpClient = createHttpClient(
+            imagesResponse = { defaultUploadImagesResponse() }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        val byteArrays = listOf(ByteArray(10), ByteArray(20))
+        val message = createMessage(
+            senderId = userId,
+            chatId = chatId,
+            content = MessageContent.Images(ImagesSource.Local(byteArrays))
+        )
+
+        repository.sendMessage(message)
+
+        verifySuspend { messageDao.insertMessage(any()) }
+        verifySuspend { messageDao.updateMessageImages(any(), any()) }
+        verifySuspend { messageDao.deleteMessage(any()) }
+    }
+
+
+    @Test
+    fun `should mark message as FAILED when image upload throws exception`() = runTest {
+        every { webSocketManager.isConnected() } returns true
+        everySuspend { messageDao.insertMessage(any()) } returns Unit
+        everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
+
+        // Simulate failed upload
+        httpClient = createHttpClient(
+            imagesResponse = { respondError(HttpStatusCode.InternalServerError) }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageDao = messageDao,
+            imageDownloader = imageDownloader
+        )
+
+        val byteArrays = listOf(ByteArray(10))
+        val message = createMessage(
+            senderId = userId,
+            chatId = chatId,
+            content = MessageContent.Images(ImagesSource.Local(byteArrays))
+        )
+
+        assertFailsWith<SendMessageFailedException> {
+            repository.sendMessage(message)
+        }
+
+        verifySuspend { messageDao.updateMessageStatus(any(), MessageLocalDto.MessageStatus.FAILED) }
+    }
 
 
     private companion object {

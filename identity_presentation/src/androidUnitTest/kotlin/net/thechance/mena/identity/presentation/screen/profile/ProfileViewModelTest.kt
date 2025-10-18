@@ -10,15 +10,20 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
+import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProfileViewModelTest {
@@ -202,11 +207,15 @@ class ProfileViewModelTest {
         assertNull(viewModel.state.value.errorMessage)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private val fakeUser = User(
+        id = Uuid.parse("1bfbf5d8-145d-40e9-abae-8335df3f0a81"),
         firstName = "The ",
         lastName = "Chance",
         username = "the-chance",
-        profileImageUrl = ""
+        profileImageUrl = "",
+        birthDate = LocalDate(1900, 1, 1),
+        gender = Gender.MALE,
     )
 }
 

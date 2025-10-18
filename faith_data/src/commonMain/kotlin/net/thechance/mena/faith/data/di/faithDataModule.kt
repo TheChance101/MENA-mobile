@@ -1,10 +1,15 @@
 package net.thechance.mena.faith.data.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
 import io.ktor.client.HttpClient
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.QuranDatabase
+import net.thechance.mena.faith.data.datastore.ITilawahDataStore
+import net.thechance.mena.faith.data.datastore.TilawahDataStore
+import net.thechance.mena.faith.data.datastore.createDataStore
 import net.thechance.mena.faith.data.remote.client.NetworkClient
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
@@ -37,7 +42,7 @@ val faithDataModule = module {
     single<Ktorfit>(named("faithKtorfit")) {
         Ktorfit.Builder()
             .httpClient(get<HttpClient>(named("faithHttpClient")))
-            .baseUrl(get<String>(named("baseUrl")))
+            .baseUrl(get<String>(named("baseUrl")) + "/")
             .converterFactories(ResponseConverterFactory())
             .build()
     }
@@ -51,4 +56,8 @@ val faithDataModule = module {
     }
 
     singleOf(::BookmarkRepositoryImpl) bind BookmarkRepository::class
+
+    single<DataStore<Preferences>> { createDataStore() }
+    singleOf(::TilawahDataStore) bind ITilawahDataStore::class
+
 }

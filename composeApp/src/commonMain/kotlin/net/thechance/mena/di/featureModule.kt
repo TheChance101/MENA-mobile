@@ -6,6 +6,7 @@ import net.thechance.mena.dukan.data.di.dukanDataModule
 import net.thechance.mena.dukan.domain.di.dukanDomainModule
 import net.thechance.mena.dukan.presentation.di.dukanPresentationModule
 import net.thechance.mena.faith.data.di.faithDataModule
+import net.thechance.mena.faith.domain.di.faithDomainModule
 import net.thechance.mena.faith.presentation.di.faithPresentationModule
 import net.thechance.mena.identity.data.di.IdentityPlatformModule
 import net.thechance.mena.identity.data.di.identityDataModule
@@ -38,6 +39,7 @@ val featureModule = module {
 
         faithPresentationModule,
         faithDataModule,
+        faithDomainModule,
         WalletDataModule().module,
         WalletDomainModule().module,
         WalletPresentationModule().module,

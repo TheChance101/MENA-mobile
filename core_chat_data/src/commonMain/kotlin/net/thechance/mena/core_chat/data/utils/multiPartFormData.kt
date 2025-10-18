@@ -1,3 +1,4 @@
+
 package net.thechance.mena.core_chat.data.utils
 
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -6,25 +7,27 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 
 
-fun List<Pair<String, ByteArray>>.buildMultiPartFormData(
-    fieldName: String
+fun Pair<String, ByteArray>.buildImageMultiPartFormData(
+    fieldName: String,
+    chatId: String,
+    messageId: String?
 ): MultiPartFormDataContent {
+    val (name, byteArray) = this
+    val extension = byteArray.getExtension()
+    val formattedFileName = formatFileName(name, extension)
+
     return MultiPartFormDataContent(
         formData {
-
-            forEach { (name, byteArray) ->
-                val extension = byteArray.getExtension()
-                val formattedFileName = formatFileName(name, extension)
-
-                append(
-                    fieldName,
-                    byteArray,
-                    Headers.build {
-                        append(HttpHeaders.ContentType, imageExtensionToMimeType(extension))
-                        append(HttpHeaders.ContentDisposition, """filename="$formattedFileName"""")
-                    }
-                )
-            }
+            append("chatId", chatId)
+            messageId?.let { append("messageId", it) }
+            append(
+                fieldName,
+                byteArray,
+                Headers.build {
+                    append(HttpHeaders.ContentType, imageExtensionToMimeType(extension))
+                    append(HttpHeaders.ContentDisposition, """filename="$formattedFileName"""")
+                }
+            )
         }
     )
 }

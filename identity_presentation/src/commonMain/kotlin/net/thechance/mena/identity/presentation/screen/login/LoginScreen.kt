@@ -32,7 +32,7 @@ import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.Countr
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.components.LabelInputPassword
+import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreen
@@ -92,7 +92,7 @@ class LoginScreen : BaseScreen<
                         onClickCountry = listener::onPhoneCodeClicked
                     )
 
-                    LabelInputPassword(
+                    LabeledInputPassword(
                         password = state.password,
                         isPasswordVisible = state.isPasswordVisible,
                         onTogglePasswordVisibility = listener::onPasswordVisibilityToggled,
@@ -114,7 +114,7 @@ class LoginScreen : BaseScreen<
                         contentPadding = PaddingValues(vertical = 13.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 12.dp)
+                            .padding(bottom = Theme.spacing._12)
                     )
                     AuthPrompt(
                         modifier = Modifier.imePadding(),
@@ -151,7 +151,7 @@ fun ForgetPasswordText(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 4.dp),
+            .padding(top = Theme.spacing._4),
         contentAlignment = Alignment.BottomEnd
     ) {
         TextButton(

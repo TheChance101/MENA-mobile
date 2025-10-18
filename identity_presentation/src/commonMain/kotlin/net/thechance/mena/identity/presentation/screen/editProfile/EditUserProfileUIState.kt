@@ -1,0 +1,23 @@
+package net.thechance.mena.identity.presentation.screen.editProfile
+
+import androidx.compose.ui.graphics.ImageBitmap
+import kotlinx.datetime.LocalDate
+import net.thechance.mena.identity.domain.entity.Gender
+import kotlin.uuid.ExperimentalUuidApi
+
+data class EditUserProfileUIState @OptIn(ExperimentalUuidApi::class) constructor(
+    val username: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
+    val profileImageUrl: String = "",
+    val profileImageBitmap: ImageBitmap? = null,
+    val birthDate: LocalDate? = null,
+    val gender: Gender = Gender.MALE,
+    val showEditImageDialog: Boolean = false,
+    val showLogoutDialog: Boolean = false,
+    val showCamera: Boolean = false,
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val errorMessage: String? = null,
+    val shouldUpdateImage: Boolean = false,
+)

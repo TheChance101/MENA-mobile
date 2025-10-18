@@ -15,12 +15,12 @@ data class MainScreenState(
 
 data class PrayerTimesUiState(
     val prayers: List<PrayerUiModel>,
-    val currentPrayerIndex: Int
+    val nextPrayerIndex: Int
 )
 
 data class TilawahUiState(
     val surahName: String,
-    val ayahNumber: String,
+    val ayahNumber: Int,
     val surahId: Int
 )
 

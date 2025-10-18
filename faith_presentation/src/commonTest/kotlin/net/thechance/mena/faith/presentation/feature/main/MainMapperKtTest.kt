@@ -83,8 +83,8 @@ class MainMapperKtTest {
             PrayerName.FAJR, PrayerName.DHUHR, PrayerName.ASR, PrayerName.MAGHRIB, PrayerName.ISHA
         )
         assertEquals(expectedOrder, uiState.prayers.map { it.name })
-        assertNotNull(uiState.currentPrayerIndex)
-        assertEquals(2, uiState.currentPrayerIndex)
+        assertNotNull(uiState.nextPrayerIndex)
+        assertEquals(2, uiState.nextPrayerIndex)
     }
 
     @Test
@@ -104,9 +104,9 @@ class MainMapperKtTest {
         val afterUi = prayers.toUi(base + 15.hours)
 
         // Then
-        assertEquals(0, beforeUi.currentPrayerIndex)
+        assertEquals(1, beforeUi.nextPrayerIndex)
         assertEquals(PrayerName.FAJR, beforeUi.prayers[0].name)
-        assertEquals(0, afterUi.currentPrayerIndex)
+        assertEquals(0, afterUi.nextPrayerIndex)
         assertEquals(PrayerName.FAJR, afterUi.prayers[0].name)
     }
 
@@ -124,8 +124,8 @@ class MainMapperKtTest {
         val uiState = prayers.toUi(base)
 
         // Then
-        assertEquals(1, uiState.currentPrayerIndex)
-        assertEquals(PrayerName.DHUHR, uiState.prayers[uiState.currentPrayerIndex].name)
+        assertEquals(1, uiState.nextPrayerIndex)
+        assertEquals(PrayerName.DHUHR, uiState.prayers[uiState.nextPrayerIndex].name)
     }
 
     @Test
@@ -143,7 +143,7 @@ class MainMapperKtTest {
 
         // Then
         assertEquals(3, uiState.prayers.size)
-        assertNotNull(uiState.currentPrayerIndex)
+        assertNotNull(uiState.nextPrayerIndex)
     }
 
     companion object {

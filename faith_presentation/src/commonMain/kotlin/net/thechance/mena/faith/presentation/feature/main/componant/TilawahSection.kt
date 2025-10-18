@@ -89,7 +89,7 @@ fun TilawahSection(
                         color = Theme.colorScheme.shadePrimary
                     )
                     Text(
-                        text = tilawahUiState?.ayahNumber ?: stringResource(Res.string.ayah_number),
+                        text = stringResource(Res.string.ayah_number, tilawahUiState?.ayahNumber ?: "1"),
                         style = Theme.typography.label.small,
                         color = Theme.colorScheme.shadeSecondary
                     )

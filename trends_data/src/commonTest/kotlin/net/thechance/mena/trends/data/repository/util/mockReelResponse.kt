@@ -3,7 +3,6 @@ package net.thechance.mena.trends.data.repository.util
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UploadReelResponse
@@ -20,10 +19,7 @@ internal val fakeReelDtoList = RemotePaginationResponse(
             createdAt = "2025-09-16T15:06:57.507394",
             likesCount = 120,
             viewsCount = 1500,
-            categories = listOf(
-                CategoryDto(id = "1", name = "Comedy", emoji = "😂"),
-                CategoryDto(id = "2", name = "Tech", emoji = "💻")
-            )
+            isLiked = true
         )
     ),
     totalResults = 1
@@ -62,6 +58,24 @@ internal fun MockRequestHandleScope.uploadReelThumbnailResponse(
     headers = jsonHeaders
 )
 
+internal fun MockRequestHandleScope.toggleLikeReelResponse(
+    status: HttpStatusCode = HttpStatusCode.OK
+) = respond(
+    content = jsonSerialization.encodeToString(
+        ReelDto.serializer(),
+        fakeReelDtoList.results?.first() ?: ReelDto()
+    ),
+    status = status,
+    headers = jsonHeaders
+)
+
+internal fun MockRequestHandleScope.addViewReelResponse(
+) = respond(
+    content = "",
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 internal fun MockRequestHandleScope.updateReelResponse(
     id: String,
     description: String,
@@ -76,7 +90,10 @@ internal fun MockRequestHandleScope.updateReelResponse(
 internal fun MockRequestHandleScope.uploadReelResponse(
     status: HttpStatusCode = HttpStatusCode.OK
 ) = respond(
-    content = jsonSerialization.encodeToString(UploadReelResponse.serializer(), UploadReelResponse("1")),
+    content = jsonSerialization.encodeToString(
+        UploadReelResponse.serializer(),
+        UploadReelResponse("1")
+    ),
     status = status,
     headers = jsonHeaders
 )

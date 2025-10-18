@@ -1,15 +1,7 @@
 package net.thechance.mena.identity.data.repository
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.engine.mock.respondError
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.headersOf
-import io.ktor.serialization.kotlinx.json.json
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -25,18 +17,24 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.serialization.json.Json
+import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
+import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
 import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
+import net.thechance.mena.identity.data.utils.mockHttpClient
+import net.thechance.mena.identity.data.utils.mockHttpClientError
+import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.domain.entity.User
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-
 class UserRepositoryImplTest {
 
     private val client = mockk<HttpClient>()
@@ -57,40 +55,6 @@ class UserRepositoryImplTest {
         Dispatchers.resetMain()
     }
 
-    private fun mockHttpClient(response: ProfileResponseDto): HttpClient {
-        return io.ktor.client.HttpClient(MockEngine) {
-            install(ContentNegotiation) {
-                json()
-            }
-            engine {
-                addHandler { request ->
-                    respond(
-                        content = Json.encodeToString(response),
-                        status = HttpStatusCode.OK,
-                        headers = headersOf(
-                            HttpHeaders.ContentType, ContentType.Application.Json.toString()
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun mockHttpClientError(status: HttpStatusCode): HttpClient {
-        return io.ktor.client.HttpClient(MockEngine) {
-            install(ContentNegotiation) {
-                json()
-            }
-            engine {
-                addHandler {
-                    respondError(
-                        status = status
-                    )
-                }
-            }
-        }
-    }
-
     @Test
     fun `getUser() should return user stored in local database`() = runTest {
 
@@ -103,6 +67,20 @@ class UserRepositoryImplTest {
         val result = userRepositoryImpl.getUser()
 
         assertEquals(result.first(), fakeProfileResponse.toDomain())
+    }
+
+    @Test
+    fun `getUser() should return null when there is no user stored`() = runTest {
+
+        val client = mockHttpClient(fakeProfileResponse)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+
+        coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
+        every { userDao.getUser() } returns flowOf(null)
+
+        val result = userRepositoryImpl.getUser()
+
+        assertEquals(result.first(), null)
     }
 
     @Test
@@ -149,21 +127,6 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUser() should call saveUserInfo after successful remote fetch`() = runTest {
-
-        val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
-
-        coEvery { userDao.upsert(any()) } returns Unit
-        every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
-
-        val result  = userRepositoryImpl.getUser().first()
-
-        testDispatcher.scheduler.advanceUntilIdle()
-        coVerify(exactly = 1) { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) }
-    }
-
-    @Test
     fun `getUser() should return object from User`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
@@ -177,15 +140,37 @@ class UserRepositoryImplTest {
         assertEquals(fakeProfileResponse.firstName, result.first()?.firstName)
         assertEquals(fakeProfileResponse.username, result.first()?.username)
         assertEquals(fakeProfileResponse.lastName, result.first()?.lastName)
-        assertEquals(fakeProfileResponse.profileImageUrl, result.first()?.profileImageUrl)
+        assertEquals(fakeProfileResponse.imageUrl, result.first()?.profileImageUrl)
 
+    }
+
+    @Test
+    fun `updateUser() should call upsert user when try to update user`() = runTest {
+        val client = mockHttpClient(fakeProfileResponse)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl.updateUser(fakeUser, false, null)
+        coVerify { userDao.upsert(any()) }
     }
 
 
     val fakeProfileResponse = ProfileResponseDto(
+        id = "1bfbf5d8-145d-40e9-abae-8335df3f0a81",
         firstName = "The",
         lastName = "Chance",
-        username = "TheChance@test.com",
-        profileImageUrl = ""
+        username = "the_chance",
+        imageUrl = "",
+        birthDate = "1999-01-01",
+        gender = UserEntity.MALE,
+    )
+
+    @OptIn(ExperimentalUuidApi::class)
+    val fakeUser = User(
+        id = Uuid.parse("1bfbf5d8-145d-40e9-abae-8335df3f0a81"),
+        username = "the_chance",
+        firstName = "The",
+        lastName = "Chance",
+        profileImageUrl = "http://image.com",
+        birthDate = LocalDate(1900, 1, 1),
+        gender = Gender.MALE,
     )
 }

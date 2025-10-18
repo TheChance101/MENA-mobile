@@ -11,14 +11,20 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.component.FaithSnackBar
@@ -125,7 +131,25 @@ private fun AyatOfSurah(
             }
         }
     }
-
+    var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+    var chunkAyat by remember { mutableStateOf(listOf<Ayah>()) }
+    TrackFirstVisibleAyah(
+        lazyListState = lazyListState,
+        ayahChunks = ayahChunks,
+        isBasmalaVisible = state.isBasmalaVisible,
+        listener = listener,
+        textLayoutResult = textLayoutResult
+    )
+    HandleInitialScroll(
+        initialAyahToScroll = state.initialAyahToScroll,
+        selectedAyahIndex = state.selectedAyahIndex,
+        isBasmalaVisible = state.isBasmalaVisible,
+        lazyListState = lazyListState,
+        highlightAyah = listener::highlightAyah,
+        chunkAyat = chunkAyat,
+        textLayoutResult = textLayoutResult,
+        onInitialScrollDone = listener::onInitialAyahScrolled
+    )
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         state = lazyListState
@@ -140,8 +164,7 @@ private fun AyatOfSurah(
         }
 
         items(preRenderedChunks.size) { chunkIndex ->
-            val chunkAyat = ayahChunks[chunkIndex]
-
+            chunkAyat = ayahChunks[chunkIndex]
             UnifiedChunkText(
                 chunkAyat = chunkAyat,
                 selectedAyahIndex = state.selectedAyahIndex,
@@ -151,11 +174,18 @@ private fun AyatOfSurah(
                         ayahIndex = ayah.number
                     )
                 },
-                onDismiss = { listener.onDismissActionButtons() }
+                onDismiss = { listener.onDismissActionButtons() },
+                textLayoutResult = textLayoutResult,
+                onTextLayoutResultChange = { textLayoutResult = it }
             )
         }
     }
     HideAyahActionButtonsOnScroll(lazyListState, state, listener)
+    LaunchedEffect(state.isBasmalaVisible) {
+        if (state.isBasmalaVisible) {
+            listener.onFirstVisibleAyahChanged(state.ayatOfSurah.firstOrNull()?.number ?: 1)
+        }
+    }
 }
 
 @Composable
@@ -176,6 +206,114 @@ private fun HideAyahActionButtonsOnScroll(
             }
         }
     }
+}
+
+@Composable
+private fun HandleInitialScroll(
+    initialAyahToScroll: Int?,
+    selectedAyahIndex: Int?,
+    isBasmalaVisible: Boolean,
+    lazyListState: LazyListState,
+    chunkAyat: List<Ayah>,
+    textLayoutResult: TextLayoutResult?,
+    highlightAyah: (Int) -> Unit,
+    onInitialScrollDone: () -> Unit
+) {
+    val navController = LocalNavController.current
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(
+        navController.currentBackStackEntry?.savedStateHandle?.get<Int>("ayahNumber"),
+        selectedAyahIndex
+    ) {
+        navController.currentBackStackEntry?.savedStateHandle?.get<Int>("ayahNumber")?.let {
+            highlightAyah(it)
+        }
+        if (selectedAyahIndex == null) {
+            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("ayahNumber")
+        }
+    }
+    LaunchedEffect(initialAyahToScroll) {
+        initialAyahToScroll?.let { ayahNumber ->
+            val chunkIndex = (ayahNumber - 1) / AYAT_PER_PAGE
+            val scrollIndex = if (isBasmalaVisible) chunkIndex + 1 else chunkIndex
+            lazyListState.scrollToItem(scrollIndex)
+        }
+    }
+    LaunchedEffect(textLayoutResult, initialAyahToScroll) {
+        if (textLayoutResult == null || initialAyahToScroll == null) return@LaunchedEffect
+        val targetAyah = chunkAyat.find { it.number == initialAyahToScroll }
+        if (targetAyah != null) {
+            val ayahIndexInChunk = chunkAyat.indexOf(targetAyah)
+            val startCharOffset = chunkAyat.take(ayahIndexInChunk).sumOf { it.content.length + 1 }
+            val lineIndex = textLayoutResult.getLineForOffset(startCharOffset)
+            val lineTopOffset = textLayoutResult.getLineTop(lineIndex).toInt()
+            val chunkIndex = ((targetAyah.number - 1) / AYAT_PER_PAGE)
+            val scrollIndex = if (isBasmalaVisible) chunkIndex + 1 else chunkIndex
+            coroutineScope.launch {
+                lazyListState.animateScrollToItem(
+                    index = scrollIndex,
+                    scrollOffset = lineTopOffset
+                )
+            }
+            onInitialScrollDone()
+        }
+    }
+}
+
+@Composable
+private fun TrackFirstVisibleAyah(
+    lazyListState: LazyListState,
+    ayahChunks: List<List<Ayah>>,
+    isBasmalaVisible: Boolean,
+    listener: SurahInteractionListener,
+    textLayoutResult: TextLayoutResult?
+) {
+    var lastReportedAyahNumber by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(lazyListState, textLayoutResult) {
+        snapshotFlow {
+            lazyListState.firstVisibleItemIndex to lazyListState.firstVisibleItemScrollOffset
+        }
+            .collect { (firstVisibleIndex, scrollOffset) ->
+                val chunkIndex = if (isBasmalaVisible) firstVisibleIndex - 1
+                else firstVisibleIndex
+
+                if (chunkIndex >= 0 && chunkIndex < ayahChunks.size && textLayoutResult != null) {
+                    val chunk = ayahChunks[chunkIndex]
+
+                    val firstVisibleAyahNumber = getFirstVisibleAyahInChunk(
+                        chunk = chunk,
+                        textLayoutResult = textLayoutResult,
+                        scrollOffset = scrollOffset
+                    )
+
+                    if (firstVisibleAyahNumber != null && firstVisibleAyahNumber != lastReportedAyahNumber) {
+                        lastReportedAyahNumber = firstVisibleAyahNumber
+                        listener.onFirstVisibleAyahChanged(firstVisibleAyahNumber)
+                    }
+                }
+            }
+    }
+}
+
+private fun getFirstVisibleAyahInChunk(
+    chunk: List<Ayah>,
+    textLayoutResult: TextLayoutResult,
+    scrollOffset: Int
+): Int? {
+    var currentCharPosition = 0
+
+    chunk.forEach { ayah ->
+        val ayahLength = ayah.content.length
+        val lineForOffset = textLayoutResult.getLineForOffset(currentCharPosition)
+        val lineTop = textLayoutResult.getLineTop(lineForOffset)
+
+        if (lineTop.toInt() >= scrollOffset) return ayah.number
+
+        currentCharPosition += ayahLength + 1
+    }
+
+    return chunk.firstOrNull()?.number
 }
 
 private const val AYAT_PER_PAGE = 70

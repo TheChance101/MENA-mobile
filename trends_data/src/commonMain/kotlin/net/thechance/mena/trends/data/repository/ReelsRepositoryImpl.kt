@@ -1,9 +1,14 @@
 package net.thechance.mena.trends.data.repository
 
+import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
+import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
@@ -14,26 +19,28 @@ import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.io.buffered
-import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
 import net.thechance.mena.trends.data.util.NetworkConstants.FEED_ENDPOINT
-import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
+import net.thechance.mena.trends.data.util.NetworkConstants.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
+import net.thechance.mena.trends.data.util.NetworkConstants.USER
 import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
+import net.thechance.mena.trends.data.util.NetworkConstants.VIEW_REEL_ENDPOINT
+import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.getMediaMimeType
-import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
+import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -42,7 +49,7 @@ import org.koin.core.annotation.Single
 
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
-    @Provided private val networkClient: NetworkClient,
+    @Provided private val networkClient: HttpClient,
     @Provided private val videoFileHandler: VideoFileHandler
 ) : ReelsRepository {
 
@@ -52,17 +59,21 @@ internal class ReelsRepositoryImpl(
         }
     }
 
-    override suspend fun getAllReels(pageNumber: Int): List<Reel> {
+    override suspend fun getAllCurrentUserReels(pageNumber: Int): List<Reel> {
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
-            networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT") {
+            networkClient.get("$TRENDS_PATH/$USER/$REELS_ENDPOINT") {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
-        }.results?.map { it.toEntity() } ?: emptyList()
+        }.results?.map { it.toEntity() }.orEmpty()
     }
 
-    override suspend fun getFeedReels(page: Int): List<Reel> {
+    override suspend fun getFeedReels(page: Int, reelId: String?): List<Reel> {
+        val endpoint = reelId?.let {
+            "$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT/$it"
+        } ?: "$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT"
+
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
-            networkClient.get("$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT") {
+            networkClient.get(endpoint) {
                 parameter(PAGE_PARAMETER, page)
             }
         }.results.orEmpty().map { it.toEntity() }
@@ -154,6 +165,18 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun getReelThumbnail(filePath: String, timeMs: Long): ByteArray? {
         return videoFileHandler.extractVideoFrame(filePath, timeMs)
+    }
+
+    override suspend fun toggleReelLike(reelId: String): Reel {
+        return safeApiCall<ReelDto> {
+            networkClient.post(urlString = "$LIKE_REEL_ENDPOINT/$reelId")
+        }.toEntity()
+    }
+
+    override suspend fun addReelView(reelId: String) {
+        safeApiCall<Unit> {
+            networkClient.post(urlString = "$VIEW_REEL_ENDPOINT/$reelId")
+        }
     }
 
     private fun createRequestBody(

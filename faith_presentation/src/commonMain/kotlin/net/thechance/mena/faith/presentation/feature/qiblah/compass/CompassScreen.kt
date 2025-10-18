@@ -290,7 +290,7 @@ private fun QiblahTopBar(uiState: CompassScreenState) {
         )
 
         Text(
-            text = uiState.currentLocation.cityName,
+            text = uiState.currentLocationUi.cityName,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)

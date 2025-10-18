@@ -18,6 +18,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.confirm_password_label
 import mena.identity_presentation.generated.resources.new_password_title
+import mena.identity_presentation.generated.resources.ok
 import mena.identity_presentation.generated.resources.reset
 import mena.identity_presentation.generated.resources.reset_password
 import mena.identity_presentation.generated.resources.reset_password_description
@@ -33,7 +34,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.components.LabelInputPassword
+import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import org.jetbrains.compose.resources.stringResource
@@ -58,7 +59,7 @@ class ResetPasswordScreen() :
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.reset_password),
-                    onBackClicked = listener::onClickBack
+                    onClickBack = listener::onClickBack
                 )
             },
             overlays = {
@@ -84,24 +85,24 @@ class ResetPasswordScreen() :
                         subtitle = stringResource(Res.string.reset_password_description),
                     )
 
-                    LabelInputPassword(
+                    LabeledInputPassword(
                         password = state.newPassword,
                         isPasswordVisible = state.isNewPasswordVisible,
                         onChangePassword = listener::onChangeNewPassword,
                         onTogglePasswordVisibility = listener::onToggleNewPasswordVisibility,
                         label = stringResource(Res.string.new_password_title),
                         errorMessage = state.newPasswordErrorMessage,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = Theme.spacing._16)
                     )
 
-                    LabelInputPassword(
+                    LabeledInputPassword(
                         password = state.confirmPassword,
                         isPasswordVisible = state.isConfirmPasswordVisible,
                         onChangePassword = listener::onChangeConfirmPassword,
                         onTogglePasswordVisibility = listener::onToggleConfirmPasswordVisibility,
                         label = stringResource(Res.string.confirm_password_label),
                         errorMessage = state.confirmPasswordErrorMessage,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = Theme.spacing._16)
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -152,7 +153,7 @@ private fun ScaffoldScope.ResetPasswordDialog(
         onCancelClick = onClick::invoke,
         actionButtons = {
             TextButton(
-                text = "Ok",
+                text = stringResource(Res.string.ok),
                 onClick = onClick::invoke,
                 modifier = Modifier
                     .align(Alignment.End)

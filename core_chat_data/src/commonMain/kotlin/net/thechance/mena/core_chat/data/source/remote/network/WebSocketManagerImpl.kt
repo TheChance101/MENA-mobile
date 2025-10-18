@@ -102,16 +102,30 @@ class WebSocketManagerImpl(
     }
 
     private suspend fun sendConnectFrame() {
-        sendFrame("CONNECT\naccept-version:1.2\nheart-beat:10000,10000\n\n\u0000")
+        sendFrame(
+            "CONNECT\n" +
+                    "accept-version:1.2\n" +
+                    "heart-beat:10000,10000\n" +
+                    "\n\u0000"
+        )
     }
 
     override suspend fun subscribe(destination: String) {
-        val frame = "SUBSCRIBE\nid:sub-0\ndestination:$destination\n\n\u0000"
+        val frame =
+            "SUBSCRIBE\n" +
+                    "id:sub-0\n" +
+                    "destination:$destination\n" +
+                    "\n\u0000"
         sendFrame(frame)
     }
 
     override suspend fun sendTextFrame(destination: String, payload: String) {
-        val frameText = "SEND\ndestination:$destination\n\n$payload\n\n\u0000"
+        val frameText =
+            "SEND\n" +
+                    "destination:$destination\n" +
+                    "\n" +
+                    "$payload\n" +
+                    "\n\u0000"
         sendFrame(frameText)
     }
 

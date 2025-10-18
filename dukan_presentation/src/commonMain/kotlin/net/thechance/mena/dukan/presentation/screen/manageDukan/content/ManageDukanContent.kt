@@ -186,7 +186,7 @@ private fun ManageDukanContentPreview() {
             listener = PreviewManageDukanInteractionListener,
             pager = Pager(
                 config = PagingConfig(),
-                pagingSourceFactory = { FakeProductPagingSource() }
+                pagingSourceFactory = { FakeProductPagingSource }
             )
         )
     }

@@ -1,21 +1,29 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -30,31 +38,28 @@ class UserReelViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val mockReelsRepository: ReelsRepository = mock(MockMode.autofill) {
-        everySuspend { deleteReelById("1") } returns Unit
-    }
-
+    private val mockReelsRepository: ReelsRepository = mock(MockMode.autofill)
     private val userReelArgs: UserReelArgs = mock(MockMode.autofill) {
-        every { realId } returns "1"
+        every { realId } returns "2"
     }
 
-    private val viewModel by lazy {
-        UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
-    }
+    private lateinit var viewModel: UserReelViewModel
+
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
     }
 
     @Test
     fun `should initialize UserReelUiState with default state`() = runTest {
         viewModel.state.test {
+            skipItems(1)
             val initialState = awaitItem()
 
             assertFalse(initialState.isLoading)
             assertNull(initialState.error)
-            assertEquals("Istanbul Squad", initialState.username)
             assertFalse(initialState.isConfirmationDialogVisible)
             assertNull(initialState.isReelDeleted)
             assertFalse(initialState.isDescriptionExpanded)
@@ -63,27 +68,44 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `onDescriptionClick should expand description when called with collapsed state`() = runTest {
-        viewModel.onDescriptionClick(isCollapsed = false)
+    fun `viewmodel should update state by reels when getFeedReels return data`() =
+        runTest(testDispatcher) {
+            everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertTrue(state.isDescriptionExpanded)
-            cancelAndIgnoreRemainingEvents()
+            advanceUntilIdle()
+
+            viewModel.state.test {
+                val state = awaitItem()
+                val reelsSnapshot = state.reels.asSnapshot()
+                assertThat(reelsSnapshot).isEqualTo(expectedReelUiStateList)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `onDescriptionClick should collapse description when called with expanded state`() = runTest {
-        viewModel.onDescriptionClick(isCollapsed = true)
-        testDispatcher.scheduler.advanceUntilIdle()
+    fun `onDescriptionClick should expand description when called with collapsed state`() =
+        runTest {
+            viewModel.onDescriptionClick(isCollapsed = false)
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertFalse(state.isDescriptionExpanded)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.isDescriptionExpanded)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
+
+    @Test
+    fun `onDescriptionClick should collapse description when called with expanded state`() =
+        runTest {
+            viewModel.onDescriptionClick(isCollapsed = true)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.state.test {
+                val state = awaitItem()
+                assertFalse(state.isDescriptionExpanded)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `onBackClick should send NavigateBack effect when called`() = runTest {
@@ -121,15 +143,20 @@ class UserReelViewModelTest {
 
     @Test
     fun `onConfirmDeleteClick should delete reel successfully when is called`() = runTest {
+
+        everySuspend { mockReelsRepository.deleteReelById("1") }
+
+
         viewModel.onConfirmDeleteClick()
 
         viewModel.state.test {
             skipItems(1)
+
             val state2 = awaitItem()
 
             assertFalse(state2.isConfirmationDialogVisible)
 
-            assertEquals(true ,state2.isReelDeleted)
+            assertEquals(true, state2.isReelDeleted)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -158,20 +185,172 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `onConfirmDeleteClick should update error state when repository throws exception`() = runTest {
+    fun `onConfirmDeleteClick should update error state when repository throws exception`() =
+        runTest {
 
-        val errorMockRepository: ReelsRepository = mock(MockMode.autofill) {
-            everySuspend { deleteReelById("1") } throws Exception()
+            val errorMockRepository: ReelsRepository = mock(MockMode.autofill) {
+                everySuspend { deleteReelById("1") } throws Exception()
+            }
+
+            val errorViewModel =
+                UserReelViewModel(userReelArgs, errorMockRepository, testDispatcher)
+
+            errorViewModel.onConfirmDeleteClick()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            errorViewModel.state.test {
+                val errorState = awaitItem()
+                assertNotNull(errorState.error is ErrorState)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 
-        val errorViewModel = UserReelViewModel(userReelArgs, errorMockRepository, testDispatcher)
+    @Test
+    fun `onPublisherInfoClick should send NavigateToPublisherProfile effect when called`() =
+        runTest {
+            viewModel.onPublisherInfoClick()
 
-        errorViewModel.onConfirmDeleteClick()
-        testDispatcher.scheduler.advanceUntilIdle()
+            viewModel.effect.test {
+                val effect = awaitItem()
+                assertTrue(effect is UserReelEffect.NavigateToPublisherProfile)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
-        errorViewModel.state.test {
+    @Test
+    fun `increaseReelView should update error state when repository throws exception`() = runTest {
+        everySuspend { mockReelsRepository.addReelView(any()) } throws Exception("View failed")
+
+        viewModel.increaseReelView("2")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertNotNull(state.error)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should optimistically update likes count and isLiked state`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns reel2.copy(
+            isLiked = true,
+            likesCount = 51
+        )
+
+        advanceUntilIdle()
+
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val updatedState = awaitItem()
+            val updatedReel = updatedState.reels.asSnapshot().first()
+
+            assertThat(updatedReel.likesCount).isEqualTo(reel2.likesCount + 1)
+            assertThat(updatedReel.isLiked).isEqualTo(!reel2.isLiked)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should update reel with server response on success`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
+        val updatedReel = reel2.copy(isLiked = true, likesCount = 51)
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns updatedReel
+
+        advanceUntilIdle()
+
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val reel = state.reels.asSnapshot().first()
+
+            assertThat(reel.likesCount).isEqualTo(51)
+            assertThat(reel.isLiked).isEqualTo(true)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should revert optimistic update when repository throws exception`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
+        everySuspend { mockReelsRepository.toggleReelLike("2") } throws Exception("Like failed")
+
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val initialReel = state.reels.asSnapshot().first()
+
+            viewModel.onLikeClick("2")
+
+            advanceUntilIdle()
+
             val errorState = awaitItem()
-            assertNotNull(errorState.error is ErrorState)
+            val revertedReel = errorState.reels.asSnapshot().first()
+
+            assertThat(revertedReel.likesCount).isEqualTo(initialReel.likesCount)
+            assertThat(revertedReel.isLiked).isEqualTo(initialReel.isLiked)
+            assertNotNull(errorState.error)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onLikeClick should decrement likes when reel is already liked`() = runTest {
+        val likedReel = reel2.copy(isLiked = true, likesCount = 51)
+        everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns listOf(likedReel)
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns likedReel.copy(
+            isLiked = false,
+            likesCount = 50
+        )
+
+        advanceUntilIdle()
+        val initialReel = viewModel.state.value.reels.asSnapshot().first()
+
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        val updatedReel = viewModel.state.value.reels.asSnapshot().first()
+
+        assertThat(updatedReel.likesCount).isEqualTo(initialReel.likesCount - 1)
+        assertThat(updatedReel.isLiked).isEqualTo(false)
+    }
+
+    @Test
+    fun `updateReelInPagingData should only update the specific reel by id`() = runTest {
+        everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
+        everySuspend { mockReelsRepository.toggleReelLike("2") } returns reel2.copy(
+            isLiked = true,
+            likesCount = 51
+        )
+
+        advanceUntilIdle()
+        viewModel.onLikeClick("2")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val reelsSnapshot = state.reels.asSnapshot().first()
+
+            assertThat(reelsSnapshot.likesCount).isEqualTo(51)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onDismissErrorDialog should clear error and dismiss dialogs when called`() = runTest {
+        viewModel.onDismissErrorDialog()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertNull(state.error)
+            assertNull(state.isReelDeleted)
+            assertFalse(state.isConfirmationDialogVisible)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -179,5 +358,63 @@ class UserReelViewModelTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+
+    private companion object {
+        val reel1 = Reel(
+            id = "1",
+            thumbnailUrl = "thumb1.jpg",
+            videoUrl = "video1.mp4",
+            description = "First reel",
+            likesCount = 100,
+            viewsCount = 1000,
+            createdAt = LocalDateTime(2002, 2, 22, 2, 22),
+            userName = "Nour",
+            profileImageUrl = "",
+            isCurrentUserOwner = true,
+            isLiked = false
+        )
+
+        val reel2 = Reel(
+            id = "2",
+            thumbnailUrl = "thumb2.jpg",
+            videoUrl = "video2.mp4",
+            description = "second reel",
+            likesCount = 50,
+            viewsCount = 100,
+            createdAt = LocalDateTime(2002, 2, 22, 2, 22),
+            userName = "hend",
+            profileImageUrl = "",
+            isCurrentUserOwner = false,
+            isLiked = false
+        )
+
+        val feedReels = listOf(reel2, reel1)
+
+        val expectedReelUiStateList = listOf(
+            UserReelUiState(
+                id = "2",
+                videoUrl = "video2.mp4",
+                description = "second reel",
+                likesCount = 50,
+                viewsCount = 100,
+                createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
+                isCurrentUserOwner = false,
+                username = "hend",
+                profileImageUrl = "",
+            ),
+            UserReelUiState(
+                id = "1",
+                videoUrl = "video1.mp4",
+                description = "First reel",
+                likesCount = 100,
+                viewsCount = 1000,
+                createdAt = LocalDateTime(2002, 2, 22, 2, 22).timeAgoValue(),
+                isCurrentUserOwner = true,
+                username = "Nour",
+                profileImageUrl = "",
+            )
+        )
     }
 }

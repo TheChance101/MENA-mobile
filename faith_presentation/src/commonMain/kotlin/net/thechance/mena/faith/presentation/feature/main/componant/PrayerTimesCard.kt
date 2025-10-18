@@ -1,13 +1,11 @@
 package net.thechance.mena.faith.presentation.feature.main.componant
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,19 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.am_label
@@ -40,23 +33,20 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.feature.main.PrayerTimesUiState
+import net.thechance.mena.faith.presentation.feature.main.PrayerUiModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun PrayerTimesCard(
-    prayerTimesUiState: PrayerTimesUiState?,
-) {
+fun PrayerTimesCard(prayerTimesUiState: PrayerTimesUiState?) {
     if (prayerTimesUiState == null) return
 
-    var rowWidth by remember { mutableStateOf(0f) }
-
     Box(
-        modifier = Modifier.aspectRatio(2.65f)
+        modifier = Modifier
+            .aspectRatio(2.65f)
             .clip(RoundedCornerShape(Theme.radius.lg))
-            .background(Theme.colorScheme.background.surfaceLow)
+            .background(Theme.colorScheme.background.surfaceLow),
     ) {
-
         Image(
             painter = painterResource(Res.drawable.ic_mosque_bg),
             contentDescription = stringResource(Res.string.mosque_image_description),
@@ -74,69 +64,72 @@ fun PrayerTimesCard(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .fillMaxHeight()
-                .offset(x = (16).dp),
-            contentScale = ContentScale.Fit,
+                .padding(start = 22.dp),
+            contentScale = ContentScale.Crop,
         )
 
-        Row(
+        LazyRow(
             modifier = Modifier
                 .fillMaxSize()
-                .onGloballyPositioned { coordinates ->
-                    rowWidth = coordinates.size.width.toFloat()
-                }
-                .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
-                .horizontalScroll(rememberScrollState()),
+                .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            contentPadding = PaddingValues(horizontal = Theme.spacing._12),
         ) {
-            prayerTimesUiState.prayers.forEach { prayer ->
-                Column(
-                    modifier = Modifier.padding(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(prayer.displayName),
-                        color = Theme.colorScheme.secondary.secondaryText,
-                        style = Theme.typography.label.small
-                    )
-                    Text(
-                        text = prayer.time,
-                        color = Theme.colorScheme.secondary.secondary,
-                        style = Theme.typography.title.medium
-                    )
-                    Text(
-                        text = if (prayer.isAM) stringResource(Res.string.am_label)
-                        else stringResource(Res.string.pm_label),
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.shadeSecondary
-                    )
-                }
+            itemsIndexed(prayerTimesUiState.prayers) { index, prayer ->
+                PrayerItem(
+                    prayer = prayer,
+                    isNextPrayer = index == prayerTimesUiState.nextPrayerIndex,
+                )
             }
         }
+    }
+}
 
-        val offsetAdjustment = when {
-            rowWidth > 1500f -> 38.dp
-            else -> 8.dp
+@Composable
+private fun PrayerItem(
+    prayer: PrayerUiModel,
+    isNextPrayer: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(bottom = Theme.spacing._12)
+                .padding(horizontal = Theme.spacing._2, vertical = Theme.spacing._8),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = stringResource(prayer.displayName),
+                color = Theme.colorScheme.secondary.secondaryText,
+                style = Theme.typography.label.small,
+            )
+            Text(
+                text = prayer.time,
+                color = Theme.colorScheme.secondary.secondary,
+                style = Theme.typography.title.medium,
+            )
+            Text(
+                text = if (prayer.isAM) stringResource(Res.string.am_label)
+                        else stringResource(Res.string.pm_label),
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.secondary.secondaryText,
+            )
         }
 
-        val itemWidth = if (prayerTimesUiState.prayers.isNotEmpty()) rowWidth / prayerTimesUiState.prayers.size else 0f
-
-        val indicatorOffsetPx by animateDpAsState(
-            targetValue = with(LocalDensity.current) {
-                (itemWidth * prayerTimesUiState.currentPrayerIndex + itemWidth / 2).toDp() + offsetAdjustment
-            },
-            label = "prayer_indicator_animation"
-        )
-
-        Icon(
-            painter = painterResource(Res.drawable.ic_triangle_down),
-            contentDescription = null,
-            tint = Theme.colorScheme.secondary.secondaryText,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .offset(x = indicatorOffsetPx, y = 4.dp)
-                .size(16.dp)
-        )
+        if (isNextPrayer) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_triangle_down),
+                contentDescription = null,
+                tint = Theme.colorScheme.secondary.secondaryText,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .size(Theme.spacing._16),
+            )
+        }
     }
 }

@@ -83,4 +83,7 @@
     <string name="months_ago">منذ %1$d شهر</string>
     <string name="years_ago">منذ %1$d سنة</string>
 
+    <string name="pause_icon">ايقونه توقف</string>
+    <string name="avatar_image">صورة الشخص</string>
+
 </resources>

@@ -67,7 +67,7 @@
     <string name="add_product">Add product</string>
     <string name="edit_shelf">Edit shelf</string>"
     <string name="this_shelf_is_empty">This shelf is empty</string>"
-    <string name="products">products</string>
+    <string name="products">Products</string>
     <string name="delete_shelf_success">Delete shelf successfully.</string>
     <string name="delete_shelf_title">Delete shelf</string>
     <string name="delete_shelf_description">Are you sure you want to delete this shelf?</string>
@@ -96,7 +96,6 @@
     <string name="one_selection_for_each_product">One selection for each product</string>
     <string name="add_product_success">Add product successfully.</string>
     <string name="image_size_mb">%1$d MB</string>
-
     <string name="error_image_max_limit">You can upload a maximum of 10 images.</string>
     <string name="error_image_size">Image size should be less than 5 MB.</string>
     <string name="error_upload_failed">Upload failed, please try again.</string>
@@ -104,11 +103,37 @@
     <string name="error_price_invalid">Price is invalid.</string>
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
     <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
+    <string name="all">All</string>
+    <string name="arrow_right_icon">arrow right icon</string>
+    <string name="best_selling">Best Selling</string>
+    <string name="shopping_basket_icon">shopping basket icon</string>
+    <string name="favorite_icon">favorite icon</string>
+    <string name="share_icon">share icon</string>
+    <string name="remove_product">remove_product</string>
+    <string name="wide_dukan_image">Dukan Image</string>
+    <string name="wide_product_image">Product Image</string>
+    <string name="wide_discount_icon">Discount Icon</string>
+
+
+
 
     <string name="no_internet_title">Oops! It looks like you’re offline.</string>
     <string name="no_internet_message">Check your connection and try again</string>
     <string name="retry_button">Re-try</string>
     <string name="warning">Warning Image</string>
     <string name="wifi_image">Wifi Image</string>
+    <string name="best_dukans_around_you">Best Dukans around you</string>
+    <string name="editor_pick_dukans">Editor Pick Dukans</string>
+    <string name="what_do_you_need">what do you need?</string>
+    <string name="categories">Categories</string>
+    <string name="back_to_main_screen_icon">Back to main screen icon</string>
+    <string name="category_icon">Category Icon</string>
+    <string name="something_went_wrong_while_fetching_categories">Something went wrong while fetching categories</string>
+    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="view_more">View more</string>
+    <string name="heart_icon">Heart Icon</string>
+    <string name="favorites">Favorites</string>
+    <string name="no_dukans_title">There is no dukan related to this category!</string>
+    <string name="no_dukans_body">It will appear here when it added.</string>
 
 </resources>

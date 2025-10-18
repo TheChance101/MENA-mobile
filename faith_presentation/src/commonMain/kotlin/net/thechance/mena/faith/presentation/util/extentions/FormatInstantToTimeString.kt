@@ -10,7 +10,11 @@ fun formatInstantToTimeString(instant: Instant): String {
     val instant = Instant.fromEpochMilliseconds(instant.toEpochMilliseconds())
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 
-    val hour = localDateTime.hour.toString().padStart(2, '0')
+    val hour =
+        localDateTime.hour
+            .let { if (it > 12) it - 12 else it }
+            .toString()
+            .padStart(2, '0')
     val minute = localDateTime.minute.toString().padStart(2, '0')
 
     return "$hour:$minute"

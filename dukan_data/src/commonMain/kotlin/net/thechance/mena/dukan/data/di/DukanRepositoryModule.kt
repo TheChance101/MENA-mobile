@@ -24,7 +24,7 @@ internal val dukanRepositoryModule = module {
             baseUrl = get<String>(named("baseUrl"))
         )
     }
-    single<DukanRepository> { DukanRepositoryImpl(get(named("dukanClient"))) }
+    single<DukanRepository> { DukanRepositoryImpl(client = get(named("dukanClient")), locationService = get()) }
     single<ProductRepository> { DukanProductRepositoryImpl(get(named("dukanClient"))) }
     single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
     singleOf(::MobileGeocoderWrapper) { bind<GeocoderWrapper>() }

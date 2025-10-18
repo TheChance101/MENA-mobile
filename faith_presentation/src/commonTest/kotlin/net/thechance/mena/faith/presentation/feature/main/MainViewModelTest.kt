@@ -12,9 +12,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import kotlin.test.BeforeTest
@@ -92,10 +92,10 @@ class MainViewModelTest {
 
         // When
         viewModel.uiEffect.test {
-            viewModel.onContinueTilawahClick(SURAH_ID, SURAH_NAME)
+            viewModel.onContinueTilawahClick(SURAH_ID, SURAH_NAME, AYAH_NUMBER)
 
             // Then
-            assertEquals(MainScreenEffect.NavigateToSurah(SURAH_ID, SURAH_NAME), awaitItem())
+            assertEquals(MainScreenEffect.NavigateToSurah(SURAH_ID, SURAH_NAME,AYAH_NUMBER), awaitItem())
         }
     }
 
@@ -156,7 +156,7 @@ class MainViewModelTest {
     private companion object {
         const val SURAH_ID = 1
         const val SURAH_NAME = "Al-Fatihah"
-
+        const val AYAH_NUMBER = 1
         @OptIn(ExperimentalTime::class)
         private val now = Instant.fromEpochSeconds(1_700_000_000)
 
@@ -170,11 +170,10 @@ class MainViewModelTest {
             PrayerTime(PrayerName.ISHA, now + 13.hours, "1446-04-10")
         )
 
-        val fakeAyah = Ayah(
+        val fakeAyah = LastAyahForTilawah(
             number = 1,
             surahId = SURAH_ID,
-            content = "In the name of Allah, the Most Gracious, the Most Merciful",
-            plainContent = "Bismillah ir-Rahman ir-Rahim"
+            surahName = SURAH_NAME
         )
     }
 }
