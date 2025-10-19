@@ -57,11 +57,10 @@ fun SmallImageStyle(
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(
+                onClick = onClick,
                 indication = null,
                 interactionSource = MutableInteractionSource()
-            ) {
-                onClick()
-            }.then(
+            ).then(
                 if (isSelected) Modifier.border(
                     1.dp,
                     Theme.colorScheme.primary.primary,

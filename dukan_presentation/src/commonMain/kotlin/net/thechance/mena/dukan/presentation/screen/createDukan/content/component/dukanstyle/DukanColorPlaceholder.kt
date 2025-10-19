@@ -40,11 +40,10 @@ fun ColorOptionsPlaceholder(
             .background(Theme.colorScheme.background.surface)
             .border(1.dp, backgroundColor, RoundedCornerShape(Theme.radius.full))
             .clickable(
+                onClick = onClick,
                 indication = null,
                 interactionSource = MutableInteractionSource()
-            ) {
-                onClick()
-            },
+            ),
         contentAlignment = Alignment.Center
     ) {
         Box(
