@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.createDukan.content.compone
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,7 +44,12 @@ fun WideImageStyle(
             .height(198.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow)
-            .clickable(onClick = onClick)
+            .clickable(
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            ) {
+                onClick()
+            }
             .then(
                 if (isSelected) Modifier.border(
                     1.dp,
@@ -53,7 +59,7 @@ fun WideImageStyle(
                 else Modifier
             ),
     ) {
-        Column{
+        Column {
             WideImageBox(modifier = Modifier.padding(Theme.spacing._4))
             ShimmerRow(selectedColor)
             repeat(3) {
