@@ -21,7 +21,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
-import net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation.AddEditLocationScreen
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.component.AddressCard
 import net.thechance.mena.identity.presentation.screen.addresses.component.MyAddressesAppBar
@@ -74,44 +74,44 @@ class AddressesScreen :
                 )
             }
         ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = Theme.spacing._16),
-                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
-                ) {
-                    item {
-                        MyAddressesAppBar(
-                            title = stringResource(Res.string.my_location_app_bar_title),
-                            onBackClicked = listener::onBackButtonClicked,
-                            onAddClicked = listener::onAddButtonClicked
-                        )
-                    }
-                    items(state.addresses) {
-                        AddressCard(
-                            addressType = it.addressType,
-                            onEditClick = { listener.onEditAddressClicked(it) },
-                            isMainAddress = it.isMainAddress,
-                            addressDetails = it.addressDetails,
-                            onDeleteClick = { listener.onDeleteAddressClicked(it.id!!) },
-                            onClickAddress = { listener.onClickAddress(it.id!!) },
-                            animateToCurrentLocation = state.animateToCurrentLocation
-                            ,longitude = it.coordinates.longitude,
-                            latitude = it.coordinates.latitude,
-                        )
-                    }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = Theme.spacing._16),
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+            ) {
+                item {
+                    MyAddressesAppBar(
+                        title = stringResource(Res.string.my_location_app_bar_title),
+                        onBackClicked = listener::onBackButtonClicked,
+                        onAddClicked = listener::onAddButtonClicked
+                    )
+                }
+                items(state.addresses) {
+                    AddressCard(
+                        addressType = it.addressType,
+                        onEditClick = { listener.onEditAddressClicked(it) },
+                        isMainAddress = it.isMainAddress,
+                        addressDetails = it.addressDetails,
+                        onDeleteClick = { listener.onDeleteAddressClicked(it.id!!) },
+                        onClickAddress = { listener.onClickAddress(it.id!!) },
+                        animateToCurrentLocation = state.animateToCurrentLocation,
+                        longitude = it.coordinates.longitude,
+                        latitude = it.coordinates.latitude,
+                    )
                 }
             }
-
-            if (state.addresses.isEmpty() && !state.isLoading) {
-                NoSavedLocationsLayout(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 28.dp),
-                    onAddLocationClicked = listener::onAddButtonClicked
-                )
-            }
         }
+
+        if (state.addresses.isEmpty() && !state.isLoading) {
+            NoSavedLocationsLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 28.dp),
+                onAddLocationClicked = listener::onAddButtonClicked
+            )
+        }
+    }
 
     override fun onEffect(
         effect: AddressesScreenUIEffect,
@@ -120,14 +120,16 @@ class AddressesScreen :
         when (effect) {
             AddressesScreenUIEffect.NavigateBack -> navigator.pop()
             is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
-                navigator.push(AddEditLocationScreen(
-                    addressModel = effect.addressUIState,
-                    onSuccess = effect.onSuccess
-                ))
-            }
+                navigator.push(
+                    AddEditLocationScreen(
+                        addressModel = effect.addressUIState,
+                        onSuccess = effect.onSuccess
+                    )
+                )
             }
         }
     }
+}
 
 
 @Preview

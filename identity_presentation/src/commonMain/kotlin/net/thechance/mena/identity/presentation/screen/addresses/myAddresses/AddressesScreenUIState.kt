@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 data class AddressesScreenUIState(
     val addresses: List<AddressUIState> = emptyList(),
     val deleteDialogUIState: DeleteDialogUIState = DeleteDialogUIState(),
-    val errorMessage: String? = null,
+    val errorMessage: StringResource? = null,
     val snackBarUiState: SnackBarUiState = SnackBarUiState(),
     val animateToCurrentLocation: Boolean = false,
     val isLoading: Boolean = true
