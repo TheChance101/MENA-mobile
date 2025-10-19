@@ -4,6 +4,9 @@ import androidx.compose.ui.unit.DpOffset
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_location_is_turned_off
+import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.MobileLocationRepository
 import net.thechance.mena.identity.domain.util.Coordinates
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -144,7 +147,7 @@ class PickLocationScreenViewModel(
             PermissionState.GRANTED -> {
                 updateState {
                     copy(
-                        errorMessage = "Location is turned off",
+                        errorMessage = Res.string.error_location_is_turned_off,
                         isGpsButtonLoading = false
                     )
                 }
@@ -185,6 +188,7 @@ class PickLocationScreenViewModel(
                     id = addressModel?.id,
                     coordinates = CoordinatesUiState(state.value.currentLocation.latitude ,
                         state.value.currentLocation.longitude) ,
+                    addressType = addressModel?.addressType ?: AddressType.Home ,
                     addressDetails = state.value.address,
                     isMainAddress = state.value.isMainAddress
                 )
