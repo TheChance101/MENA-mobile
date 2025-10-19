@@ -34,7 +34,7 @@ class NetworkClient : KoinComponent {
             }
 
             install(Logging) {
-                level = LogLevel.ALL
+                level = LogLevel.HEADERS
                 filter { request ->
                     request.body !is MultiPartFormDataContent
                 }
@@ -50,6 +50,14 @@ class NetworkClient : KoinComponent {
                     loadTokens {
                         BearerTokens(
                             accessToken = authorizationService.getAccessToken(),
+                            refreshToken = authorizationService.refreshToken()
+                        )
+                    }
+
+                    refreshTokens {
+                        val newAccessToken = authorizationService.refreshToken()
+                        BearerTokens(
+                            accessToken = newAccessToken,
                             refreshToken = authorizationService.refreshToken()
                         )
                     }
