@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.resetPassword
 
+import org.jetbrains.compose.resources.StringResource
+
 data class ResetPasswordScreenUIState(
     val newPassword: String = "",
     val confirmPassword: String = "",
@@ -7,7 +9,7 @@ data class ResetPasswordScreenUIState(
     val isConfirmPasswordVisible: Boolean = false,
     val isLoading: Boolean = false,
     val isResetEnabled: Boolean = false,
-    val errorMessage: String? = null,
+    val errorMessage: StringResource? = null,
     val newPasswordErrorMessage: String? = null,
     val confirmPasswordErrorMessage: String? = null,
     val isDialogVisible: Boolean = false
