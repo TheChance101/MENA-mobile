@@ -97,7 +97,7 @@ class CreateProductViewModel(
     }
 
     private suspend fun onUploadImageBlock(image: ImageFile) {
-        if (isUploadImageValid(image).not())
+        if (isUploadImageValidToCrop(image).not())
             awaitCancellation()
 
         val imageSrc = image.toImageSrc()
@@ -109,70 +109,54 @@ class CreateProductViewModel(
         }
     }
 
-    private suspend fun isUploadImageValid(image: ImageFile): Boolean {
+    private suspend fun isUploadImageValidToCrop(image: ImageFile): Boolean {
         val imageSizeInMegabyte = image.size().toDouble() / BYTES_PER_MEGABYTE
         val imageBitmap = image.toImageBitmap()
         val imageAspectRatio = imageBitmap.width.toFloat() / imageBitmap.height.toFloat()
         val imageSrc = image.toImageSrc()
 
         return when {
-            state.value.images.size >= IMAGE_MAX_LIMIT -> {
-                updateState {
-                    copy(
-                        snackBarUiState = SnackBarUiState(
-                            message = Res.string.error_image_max_limit,
-                            snackBarType = SnackBarType.ERROR
-                        ),
-                        showSnackBar = true,
-                    )
-                }
-                false
-            }
-
-            imageSizeInMegabyte > IMAGE_MAX_SIZE_IN_MB -> {
-                updateState {
-                    copy(
-                        snackBarUiState = SnackBarUiState(
-                            message = Res.string.error_image_size,
-                            snackBarType = SnackBarType.ERROR
-                        ),
-                        showSnackBar = true,
-                        showCropImage = false,
-                        selectedImage = null
-                    )
-                }
-                false
-            }
-
-            imageAspectRatio == IMAGE_ASPECT_RATIO -> {
-                updateState {
-                    copy(
-                        images = images + ProductImageUi(
-                            image = imageBitmap,
-                            imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
-                            imageState = ProductImageState.SUCCESS,
-                        )
-                    ).updateButtonState()
-                }
-                false
-            }
-
-            imageSrc == null -> {
-                updateState {
-                    copy(
-                        snackBarUiState = SnackBarUiState(
-                            message = Res.string.error_upload_failed,
-                            snackBarType = SnackBarType.ERROR
-                        ),
-                        showSnackBar = true,
-                    )
-                }
-                false
-            }
-
+            state.value.images.size >= IMAGE_MAX_LIMIT -> handleUploadImageError(resErrorMessage = Res.string.error_image_max_limit)
+            imageSizeInMegabyte > IMAGE_MAX_SIZE_IN_MB -> handleUploadImageError(resErrorMessage = Res.string.error_image_size)
+            imageSrc == null -> handleUploadImageError(resErrorMessage = Res.string.error_upload_failed)
+            imageAspectRatio == IMAGE_ASPECT_RATIO -> addImageToList(
+                imageBitmap = imageBitmap,
+                imageSizeInMegabyte = imageSizeInMegabyte
+            )
             else -> true
         }
 
+    }
+
+    private fun handleUploadImageError(resErrorMessage: StringResource): Boolean {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = resErrorMessage,
+                    snackBarType = SnackBarType.ERROR
+                ),
+                showSnackBar = true,
+                showCropImage = false,
+                selectedImage = null
+            )
+        }
+        return false
+    }
+
+    private fun addImageToList(
+        imageBitmap: ImageBitmap,
+        imageSizeInMegabyte: Double
+    ): Boolean {
+        updateState {
+            copy(
+                images = images + ProductImageUi(
+                    image = imageBitmap,
+                    imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
+                    imageState = ProductImageState.SUCCESS,
+                )
+            ).updateButtonState()
+        }
+        return false
     }
 
     fun onCroppedImage(imageBitmap: ImageBitmap) {
@@ -252,7 +236,7 @@ class CreateProductViewModel(
 
         productRepository.uploadProductImages(
             fileName = state.value.images.map {
-                state.value.productName.trim().replace(" ","_") +
+                state.value.productName.trim().replace(" ", "_") +
                         it.image.toPngByteArray().toFileName()
             },
             fileBytes = state.value.images.map { it.image.toPngByteArray() },
