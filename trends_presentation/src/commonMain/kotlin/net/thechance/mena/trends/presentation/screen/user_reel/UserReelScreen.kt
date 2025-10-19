@@ -235,7 +235,7 @@ private fun ReelContent(
         onVideoPlaying = incrementViewsCount
     ) {
         Box(Modifier.fillMaxSize()) {
-            UsersReAct(
+            UsersReact(
                 viewCount = reel.viewsCount.toString(),
                 likeCount = reel.likesCount.toString(),
                 isCurrentUserOwner = reel.isCurrentUserOwner,
@@ -325,7 +325,7 @@ private fun PublisherInfo(
 }
 
 @Composable
-private fun UsersReAct(
+private fun UsersReact(
     likeCount: String,
     viewCount: String,
     isCurrentUserOwner: Boolean,

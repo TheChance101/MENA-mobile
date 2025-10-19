@@ -53,7 +53,7 @@ internal class CategoryRepositoryImplTest {
         networkClient = createCategoryHttpClient { updateInterestsResponse() }
         repository = CategoryRepositoryImpl(networkClient)
 
-        repository.updateUserCategories(listOf("uuid1"))
+        repository.initializeUserCategories(listOf("uuid1"))
 
         verifySuspend { networkClient = createCategoryHttpClient { updateInterestsResponse() } }
     }
@@ -63,7 +63,7 @@ internal class CategoryRepositoryImplTest {
         networkClient = createCategoryHttpClient { patchUserInterestsResponse() }
         repository = CategoryRepositoryImpl(networkClient)
 
-        repository.patchUserCategories(
+        repository.updateUserCategories(
             originalSelectedIds = listOf("uuid1", "uuid2", "uuid3"),
             currentSelectedIds = listOf("uuid2", "uuid3", "uuid4", "uuid5")
         )
@@ -132,7 +132,7 @@ internal class CategoryRepositoryImplTest {
         }
 
         repository = CategoryRepositoryImpl(networkClient)
-        repository.patchUserCategories(originalIds, currentIds)
+        repository.updateUserCategories(originalIds, currentIds)
 
         return Pair(toAdd.orEmpty(), toRemove.orEmpty())
     }
