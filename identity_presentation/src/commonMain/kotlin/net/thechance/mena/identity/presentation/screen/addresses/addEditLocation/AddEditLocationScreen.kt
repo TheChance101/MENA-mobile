@@ -37,7 +37,7 @@ class AddEditLocationScreen(
 
     ) : BaseScreen<
         AddEditLocationScreenViewModel,
-        AddLocationScreenUIState,
+        AddEditLocationScreenUIState,
         AddEditLocationScreenUIEffect,
         AddEditLocationScreenInteractionListener>() {
 
@@ -49,7 +49,7 @@ class AddEditLocationScreen(
     @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun OnRender(
-        state: AddLocationScreenUIState,
+        state: AddEditLocationScreenUIState,
         listener: AddEditLocationScreenInteractionListener
     ) {
         Scaffold(

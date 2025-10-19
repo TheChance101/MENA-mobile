@@ -27,8 +27,8 @@ class AddEditLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     addressModel: AddressUIState? = null,
-) : BaseScreenModel<AddLocationScreenUIState, AddEditLocationScreenUIEffect>(
-    AddLocationScreenUIState()
+) : BaseScreenModel<AddEditLocationScreenUIState, AddEditLocationScreenUIEffect>(
+    AddEditLocationScreenUIState()
 ), AddEditLocationScreenInteractionListener {
 
     init {
@@ -199,7 +199,7 @@ class AddEditLocationScreenViewModel(
         updateState { copy(isSaveEnabled = isEnabled) }
     }
 
-    private fun isAddressInputValid(currentState: AddLocationScreenUIState): Boolean {
+    private fun isAddressInputValid(currentState: AddEditLocationScreenUIState): Boolean {
         return when (currentState.addressUIState.addressType) {
             AddressType.Home -> true
             AddressType.Office -> true
@@ -208,7 +208,7 @@ class AddEditLocationScreenViewModel(
         }
     }
 
-    private fun hasAddressChanged(currentState: AddLocationScreenUIState): Boolean {
+    private fun hasAddressChanged(currentState: AddEditLocationScreenUIState): Boolean {
         return currentState.addressUIState.addressDetails != currentState.originalAddressUIState.addressDetails ||
                 currentState.addressUIState.addressType != currentState.originalAddressUIState.addressType ||
                 currentState.addressUIState.otherAddressType != currentState.originalAddressUIState.otherAddressType ||

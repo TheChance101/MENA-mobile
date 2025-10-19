@@ -10,7 +10,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-data class AddLocationScreenUIState(
+data class AddEditLocationScreenUIState(
     val addressUIState: AddEditAddressUIState = AddEditAddressUIState(),
     val originalAddressUIState: AddEditAddressUIState = AddEditAddressUIState(),
     val isSaveEnabled: Boolean = false,
