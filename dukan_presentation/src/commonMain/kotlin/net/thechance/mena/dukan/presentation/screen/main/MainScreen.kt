@@ -49,9 +49,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
-val categorySectionItemKey = "0"
-val bestAroundSectionItemKey = "1"
-val editorPickSectionItemKey = "2"
+const val categorySectionItemKey = "0"
+const val bestAroundSectionItemKey = "1"
+const val editorPickSectionItemKey = "2"
+
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel()
@@ -116,17 +117,17 @@ private fun MainContent(
 
         val mainListState = rememberLazyListState()
 
+
         val isBestAroundVisible by remember {
             snapshotFlow {
                 mainListState.layoutInfo.visibleItemsInfo.any { it.key == bestAroundSectionItemKey }
             }.distinctUntilChanged()
-        }.collectAsStateWithLifecycle(initialValue =  false)
+        }.collectAsStateWithLifecycle(initialValue = false)
 
-        val isEditorPickSectionScrollingEnabled = !isBestAroundVisible
-        LazyColumn (
+        LazyColumn(
             state = mainListState
-        ){
-            item(categorySectionItemKey){
+        ) {
+            item(categorySectionItemKey) {
                 Text(
                     text = stringResource(Res.string.what_do_you_need),
                     style = Theme.typography.title.small,
@@ -144,7 +145,7 @@ private fun MainContent(
                 )
             }
 
-            item(bestAroundSectionItemKey){
+            item(bestAroundSectionItemKey) {
                 if (state.bestNearestDukans.items.isNotEmpty()) {
                     Text(
                         text = stringResource(Res.string.best_dukans_around_you),
@@ -165,7 +166,7 @@ private fun MainContent(
                 )
             }
 
-            item(editorPickSectionItemKey){
+            item(editorPickSectionItemKey) {
                 Text(
                     stringResource(Res.string.editor_pick_dukans),
                     style = Theme.typography.title.small,
@@ -181,7 +182,7 @@ private fun MainContent(
                     state = state,
                     onDukanClick = listener::onEditorPickDukanClick,
                     pager = editorPickDukanPager,
-                    isScrollingEnabled = isEditorPickSectionScrollingEnabled
+                    isScrollingEnabled = isBestAroundVisible.not()
                 )
             }
 
