@@ -4,6 +4,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -41,13 +42,10 @@ import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.reload
 import mena.wallet_presentation.generated.resources.silver_coin
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import androidx.compose.foundation.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.UiState
-import net.thechance.mena.wallet.presentation.base.UiState.Idle.isSuccess
 import net.thechance.mena.wallet.presentation.utils.formatBalance
 import net.thechance.mena.wallet.presentation.utils.noRippleClickable
 import net.thechance.mena.wallet.presentation.utils.toDp
