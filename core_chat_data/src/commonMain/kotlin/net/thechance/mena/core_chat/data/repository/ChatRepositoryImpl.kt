@@ -27,6 +27,7 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
+import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
@@ -59,16 +60,16 @@ class ChatRepositoryImpl(
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    override suspend fun loadMessages(chatId: Uuid): List<Message> {
+    override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
         return tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
             client.get(CHAT_HISTORY_ENDPOINT) {
                 parameter(CHAT_ID_PARAMETER, chatId)
-                parameter(PAGE_NUMBER_PARAMETER, PAGE_NUMBER)
-                parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
+                parameter(PAGE_NUMBER_PARAMETER, page)
+                parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
-        }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
+        }?.toPagedListOfMessages() ?: throw NotFoundException("Response body is null")
     }
 
     override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {

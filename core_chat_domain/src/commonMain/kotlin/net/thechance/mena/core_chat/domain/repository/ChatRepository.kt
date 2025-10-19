@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 @ExperimentalUuidApi
 interface ChatRepository {
     suspend fun sendMessage(message: Message)
-    suspend fun loadMessages(chatId: Uuid): List<Message>
+    suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message>
     suspend fun deleteMessage(message: Message)
     fun getMessages(chatId: Uuid? = null): Flow<Message>
     fun observeReadMessages(): Flow<MarkMessageAsReadEvent>
