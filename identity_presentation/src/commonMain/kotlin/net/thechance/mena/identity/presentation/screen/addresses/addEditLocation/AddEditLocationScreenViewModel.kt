@@ -156,7 +156,7 @@ class AddEditLocationScreenViewModel(
                 addressUIState = addressUIState.copy(
                     coordinates = newAddress.coordinates,
                     addressDetails = newAddress.addressDetails,
-                    addressType = if(addressUIState.addressType != null ) newAddress.addressType else null,
+                    addressType = if (addressUIState.addressType != null || updateOriginals) newAddress.addressType else null,
                     otherAddressType = if (newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null,
                     addressID = newAddress.id,
                     isMainAddress = newAddress.isMainAddress
