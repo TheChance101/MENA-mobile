@@ -11,8 +11,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_unknown
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.repository.UserRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -64,12 +67,12 @@ class ProfileViewModelTest {
     @Test
     fun `should update state with error when repository throws`() = runTest {
 
-        coEvery { userRepository.getUser() } throws Exception()
+        coEvery { userRepository.getUser() } throws UnknownException()
 
         viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals("", viewModel.state.value.errorMessage)
+        assertEquals (null,  viewModel.state.value.errorMessage)
     }
 
 

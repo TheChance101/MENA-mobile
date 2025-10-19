@@ -10,6 +10,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_invalid_mobile_number
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
@@ -59,7 +61,7 @@ class LoginViewModelTest {
     @Test
     fun `should show invalid mobile number message when mobile number is wrong`() = runTest {
 
-        val errorMessage = "Invalid mobile number"
+        val errorMessage = Res.string.error_invalid_mobile_number
         coEvery { useCase.login(any(), any(), any()) } throws InvalidMobileNumberException("")
 
         viewModel.onLoginClicked()
