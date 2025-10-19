@@ -1,11 +1,16 @@
-package net.thechance.mena.identity.presentation.components
+package net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -17,7 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.address_type
 import mena.identity_presentation.generated.resources.home
+import mena.identity_presentation.generated.resources.ic_add_location
 import mena.identity_presentation.generated.resources.ic_home
 import mena.identity_presentation.generated.resources.ic_marker
 import mena.identity_presentation.generated.resources.ic_office
@@ -26,6 +33,7 @@ import mena.identity_presentation.generated.resources.other
 import mena.identity_presentation.generated.resources.type
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.AddressType
@@ -37,7 +45,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddressTypeSection(
     selectedAddressType: AddressType?,
     onClickAddressType: (AddressType) -> Unit,
-    addressType: String = "",
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -69,7 +76,7 @@ fun AddressTypeSection(
             AddressTypeItem(
                 addressIcon = painterResource(Res.drawable.ic_marker),
                 addressType = stringResource(Res.string.other),
-                onAddressClick = { onClickAddressType(AddressType.Other(addressType)) },
+                onAddressClick = { onClickAddressType(AddressType.Other("")) },
                 isSelected = selectedAddressType is AddressType.Other,
             )
         }
@@ -122,6 +129,38 @@ private fun AddressTypeItem(
         )
     }
 
+}
+
+
+@Composable
+ fun OtherAddressType(
+    selectedAddressType: AddressType?,
+    otherAddressType: String?,
+    onChangeOtherAddressType: (String) -> Unit,
+    modifier: Modifier = Modifier,
+
+    ) {
+    AnimatedVisibility(
+        visible = selectedAddressType is AddressType.Other,
+        enter = expandVertically(
+            animationSpec = tween(durationMillis = 500)
+        ),
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = 500)
+        )
+    ) {
+
+        TextField(
+            value = otherAddressType ?: "",
+            onValueChanged = onChangeOtherAddressType,
+            title = stringResource(Res.string.address_type),
+            hint = "",
+            leadingIcon = painterResource(Res.drawable.ic_add_location),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = Theme.spacing._12)
+        )
+    }
 }
 
 @Preview
