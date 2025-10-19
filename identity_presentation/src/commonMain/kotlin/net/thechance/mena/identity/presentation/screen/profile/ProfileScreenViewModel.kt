@@ -34,7 +34,7 @@ class ProfileScreenViewModel(
         updateState {
             copy(
                 isLoading = false,
-                errorMessage = ""
+                errorMessage = null
             )
         }
     }
