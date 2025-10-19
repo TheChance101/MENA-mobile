@@ -5,13 +5,11 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.mockkery)
     alias(libs.plugins.kover)
     alias(libs.plugins.cocoapods)
 }
 
 kotlin {
-    jvm()
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
@@ -46,6 +44,12 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
         }
+        androidUnitTest.dependencies{
+            implementation(libs.kotlin.test)
+            implementation(libs.bundles.jvm.test)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
+        }
         commonMain.dependencies {
             implementation(projects.identityApi)
             implementation(projects.identityDomain)
@@ -68,12 +72,6 @@ kotlin {
             // maps
             implementation(libs.maplibre.compose)
             implementation(libs.kotlinx.datetime)
-        }
-        jvmTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.bundles.jvm.test)
-            implementation(libs.turbine)
-            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
