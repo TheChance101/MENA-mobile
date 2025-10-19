@@ -14,7 +14,7 @@ object PreviewCreateDukanInteractionListener : CreateDukanInteractionListener {
     override fun onButtonClicked() {}
     override fun onBackClicked() {}
     override fun onColorClicked(color: ColorUiState) {}
-    override fun onStyleClicked(style: Dukan.Style) {}
+    override fun onStyleClicked(style: CreateDukanUiState.Style) {}
     override fun onClickUploadImage(image: ImageSrc) {}
     override fun onNameChanged(name: String) {}
     override fun onCategorySelected(category: DukanCategoryUiState): Boolean = true
