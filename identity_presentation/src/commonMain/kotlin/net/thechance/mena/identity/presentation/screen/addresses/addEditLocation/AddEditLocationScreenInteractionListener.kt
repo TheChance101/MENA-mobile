@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation
+package net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
 
 import androidx.compose.ui.unit.DpOffset
 import net.thechance.mena.identity.domain.entity.AddressType
@@ -10,7 +10,6 @@ interface AddEditLocationScreenInteractionListener : BaseInteractionListener {
     fun onClickBack()
     fun onClickAddressType(addressType: AddressType)
     fun onClickSave()
-    fun onChangeAddress(newAddress: String)
     fun onChangeOtherAddressType(newType: String)
     fun onSetAnchorLocation(anchorLocation: DpOffset)
 }

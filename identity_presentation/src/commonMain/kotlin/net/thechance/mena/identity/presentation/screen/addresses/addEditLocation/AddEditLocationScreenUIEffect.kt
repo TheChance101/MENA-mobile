@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation
+package net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
 
 import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState

@@ -1,9 +1,5 @@
-package net.thechance.mena.identity.presentation.screen.addresses.AddEditLocation
+package net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,26 +11,25 @@ import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.add_location
 import mena.identity_presentation.generated.resources.address
-import mena.identity_presentation.generated.resources.address_type
 import mena.identity_presentation.generated.resources.edit_location
-import mena.identity_presentation.generated.resources.ic_add_location
 import mena.identity_presentation.generated.resources.ic_address
 import mena.identity_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.AddressTypeSection
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.OtherAddressType
 import net.thechance.mena.identity.presentation.screen.addresses.component.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
 
 class AddEditLocationScreen(
     val onSuccess: (SnackBarUiState?) -> Unit,
@@ -51,6 +46,7 @@ class AddEditLocationScreen(
         InitScreen(getScreenModel(parameters = { parametersOf(addressModel) }))
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun OnRender(
         state: AddLocationScreenUIState,
@@ -59,7 +55,7 @@ class AddEditLocationScreen(
         Scaffold(
             topBar = {
                 AuthAppBar(
-                    title = if (state.addressID == null)
+                    title = if (state.addressUIState.addressID == null)
                         stringResource(Res.string.add_location)
                     else
                         stringResource(Res.string.edit_location),
@@ -93,19 +89,17 @@ class AddEditLocationScreen(
                         onClickMap = listener::onClickMap,
                         anchorLocation = state.anchorLocation,
                         setAnchorLocation = listener::onSetAnchorLocation,
-                        longitude = state.longitude,
-                        latitude = state.latitude,
+                        longitude = state.addressUIState.coordinates.longitude,
+                        latitude = state.addressUIState.coordinates.latitude,
                         animateToCurrentLocation = state.animateToCurrentLocation
                     )
                 }
 
                 item {
                     TextField(
-                        value = state.address,
+                        value = state.addressUIState.addressDetails,
                         title = stringResource(Res.string.address),
-                        onValueChanged = { newAddress ->
-                            listener.onChangeAddress(newAddress)
-                        },
+                        onValueChanged = {},
                         readOnly = true,
                         enabled = false,
                         hint = "",
@@ -116,19 +110,17 @@ class AddEditLocationScreen(
 
                 item {
                     AddressTypeSection(
-                        selectedAddressType = state.addressType,
+                        selectedAddressType = state.addressUIState.addressType,
                         onClickAddressType = { newType ->
                             listener.onClickAddressType(newType)
                         },
-                        addressType = state.otherAddress?:""
-
                     )
                 }
 
                 item {
                     OtherAddressType(
-                        selectedAddressType = state.addressType,
-                        otherAddressType = state.otherAddress,
+                        selectedAddressType = state.addressUIState.addressType,
+                        otherAddressType = state.addressUIState.otherAddressType,
                         onChangeOtherAddressType = listener::onChangeOtherAddressType,
                     )
                 }
@@ -159,35 +151,5 @@ class AddEditLocationScreen(
 
 }
 
-@Composable
-private fun OtherAddressType(
-    selectedAddressType: AddressType?,
-    otherAddressType: String?,
-    onChangeOtherAddressType: (String) -> Unit,
-    modifier: Modifier = Modifier,
-
-    ) {
-    AnimatedVisibility(
-        visible = (otherAddressType != null),
-        enter = expandVertically(
-            animationSpec = tween(durationMillis = 500)
-        ),
-        exit = shrinkVertically(
-            animationSpec = tween(durationMillis = 500)
-        )
-    ) {
-
-        TextField(
-            value = otherAddressType ?: "",
-            onValueChanged = onChangeOtherAddressType,
-            title = stringResource(Res.string.address_type),
-            hint = "",
-            leadingIcon = painterResource(Res.drawable.ic_add_location),
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(top = Theme.spacing._12)
-        )
-    }
-}
 
 
