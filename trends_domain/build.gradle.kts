@@ -60,6 +60,7 @@ kover.reports {
                 "**.repository.**",
                 "**.entity.**",
                 "**.exception.**",
+                "**.model.**",
                 "**org.koin.ksp.generated**",
             )
         }
