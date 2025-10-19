@@ -37,6 +37,7 @@ class WalletViewModel(
     private fun getBalance() {
         tryToExecute(
             onStart = ::onGetBalanceStart,
+            onFinish = ::onGetBalanceFinish,
             callee = { balanceRepository.getBalance() },
             onSuccess = ::onGetBalanceSuccess,
             onError = ::onGetBalanceError,
@@ -45,15 +46,19 @@ class WalletViewModel(
     }
 
     private fun onGetBalanceStart() {
-        updateState { it.copy(balance = UiState.Loading) }
+        updateState { it.copy(isLoading = true) }
+    }
+
+    private fun onGetBalanceFinish(){
+        updateState { it.copy(isLoading = false) }
     }
 
     private fun onGetBalanceSuccess(balance: Double) {
-        updateState { it.copy(balance = UiState.Success(balance)) }
+        updateState { it.copy(balance = balance)}
     }
 
     private suspend fun onGetBalanceError(error: ErrorState) {
-        updateState { it.copy(balance = UiState.Error(error)) }
+        updateState { it.copy(errorState = error) }
         val errorMessage = when (error) {
             ErrorState.NoInternet -> Res.string.no_internet_title
             else -> Res.string.balance_fetch_error_description

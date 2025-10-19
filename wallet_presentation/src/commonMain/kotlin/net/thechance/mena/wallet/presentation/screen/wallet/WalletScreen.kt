@@ -75,8 +75,7 @@ private fun WalletContent(
 ) {
     WalletScaffold(
         modifier = Modifier
-            .background(Theme.colorScheme.background.surface)
-            .statusBarsPadding(),
+            .background(Theme.colorScheme.background.surface) ,
         topBar = {
             AppBar(
                 title = stringResource(Res.string.my_wallet),
@@ -100,10 +99,13 @@ private fun WalletContent(
         ) {
             BalanceCard(
                 balance = state.balance,
+                isLoading = state.isLoading,
+                errorState = state.errorState,
                 onRetry = interactionListener::onRetryLoadBalanceClicked,
                 modifier = Modifier
                     .padding(top = 16.dp)
             )
+
             LabeledButtonWithCircularIcon(
                 icon = painterResource(Res.drawable.ic_clock),
                 contentDescription = stringResource(Res.string.transactions_history),
@@ -123,6 +125,7 @@ private fun WalletContent(
                     .fillMaxWidth()
                     .padding(top = Theme.spacing._16)
             )
+
             LabeledButtonWithCircularIcon(
                 icon = painterResource(Res.drawable.ic_send),
                 contentDescription = stringResource(Res.string.confirm_payment_header),
@@ -157,7 +160,7 @@ private fun WalletScreenPreview() {
     MenaTheme {
         WalletContent(
             state = WalletScreenState(
-                balance = UiState.Success(530320.55)
+                balance = 530320.55
             ),
             interactionListener = object : WalletInteractionListener {
                 override fun onBackClicked() {}
