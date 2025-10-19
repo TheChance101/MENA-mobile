@@ -66,8 +66,6 @@ data class PickLocationScreen(
                 currentLocation = state.currentLocation,
                 animateToCurrentLocation = state.animateToCurrentLocation,
                 onSetAnchorLocation = listener::onSetAnchorLocation,
-                onUpdateAddress = listener::onUpdateAddress,
-                addressModel = addressModel
             ) {
                 Column(
                     Modifier.padding(Theme.spacing._16).fillMaxSize(),

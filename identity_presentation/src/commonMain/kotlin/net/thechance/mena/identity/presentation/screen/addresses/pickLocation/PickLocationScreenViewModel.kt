@@ -25,10 +25,11 @@ class PickLocationScreenViewModel(
     PickLocationScreenInteractionListener {
 
     init {
-        onUpdateAddress(addressModel)
+        if (addressModel != null)
+            updateAddress(addressModel)
     }
 
-    override fun onUpdateAddress(addressModel: AddressUIState?) {
+    fun updateAddress(addressModel: AddressUIState?) {
         if (addressModel != null) {
             updateState {
                 copy(
@@ -183,8 +184,10 @@ class PickLocationScreenViewModel(
             PickLocationScreenUIEffect.NavigateBackWithLocation(
                 AddressUIState(
                     id = addressModel?.id,
-                    coordinates = CoordinatesUiState(state.value.currentLocation.latitude ,
-                        state.value.currentLocation.longitude) ,
+                    coordinates = CoordinatesUiState(
+                        state.value.currentLocation.latitude,
+                        state.value.currentLocation.longitude
+                    ),
                     addressDetails = state.value.address,
                     isMainAddress = state.value.isMainAddress
                 )
