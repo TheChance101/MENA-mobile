@@ -64,8 +64,8 @@ class StatementDetailsViewModelTest {
         initViewModel()
 
         val finalState = viewModel.state.value
-        assertTrue(finalState.statement is Success)
-        assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement.data)
+        assertTrue(finalState.statement.isNotEmpty())
+        assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement)
     }
 
     @Test
@@ -112,7 +112,7 @@ class StatementDetailsViewModelTest {
             initViewModel()
 
             val finalState = viewModel.state.value
-            assertTrue(finalState.statement is Success)
+            assertTrue(finalState.statement.isNotEmpty())
         }
 
     private fun TestScope.initViewModel() {
@@ -135,6 +135,4 @@ class StatementDetailsViewModelTest {
             totalOutflows = totalOutflows,
         )
     }
-
-
 }
