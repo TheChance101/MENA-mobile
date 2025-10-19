@@ -2,18 +2,14 @@ package net.thechance.mena.dukan.presentation.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -118,16 +114,15 @@ private fun MainContent(
         },
     ) {
 
-        var isEditorPickSectionScrollingEnabled by remember { mutableStateOf(false) }
         val mainListState = rememberLazyListState()
-        LaunchedEffect(mainListState) {
+
+        val isBestAroundVisible by remember {
             snapshotFlow {
                 mainListState.layoutInfo.visibleItemsInfo.any { it.key == bestAroundSectionItemKey }
             }.distinctUntilChanged()
-                .collect { isBestAroundVisible ->
-                    isEditorPickSectionScrollingEnabled = !isBestAroundVisible
-                }
-        }
+        }.collectAsStateWithLifecycle(initialValue =  false)
+
+        val isEditorPickSectionScrollingEnabled = !isBestAroundVisible
         LazyColumn (
             state = mainListState
         ){
