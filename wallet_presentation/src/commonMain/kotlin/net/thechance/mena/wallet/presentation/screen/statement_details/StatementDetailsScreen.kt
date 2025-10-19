@@ -104,41 +104,32 @@ private fun StatementDetailsContent(
                 onClick = listener::onShareClicked,
                 trailingIcon = painterResource(Res.drawable.ic_share_),
                 iconSize = 20.dp,
-                isLoading = state.statement is UiState.Loading,
+                isLoading = state.isLoading,
             )
         },
     ) {
-        StatementViewer(statement = state.statement) {
-            listener.onRetryClicked()
-        }
+        StatementViewer(state = state, onRetry = { listener.onRetryClicked() })
     }
 }
 
 @Composable
 fun StatementViewer(
-    statement: UiState<ByteArray>,
+    state: StatementDetailsScreenState,
     onRetry: () -> Unit
 ) {
-    when (statement) {
-        is UiState.Error -> {
-            if (statement.error is ErrorState.NoInternet)
-                ErrorView(
-                    image = painterResource(Res.drawable.img_no_internet),
-                    title = stringResource(Res.string.no_internet_title),
-                    description = stringResource(Res.string.no_internet_content),
-                    onRetry = onRetry
-                )
-            else
-                ErrorView(onRetry = onRetry)
+    when {
+        state.errorState != null -> {
+            ErrorView(onRetry = onRetry)
         }
 
-        UiState.Loading ->
+        state.isLoading ->
             Box(modifier = Modifier.fillMaxSize()) {
                 ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
-        is UiState.Success<ByteArray> -> PdfViewer(pdf = statement.data)
-        UiState.Idle -> Unit
+        else -> {
+            PdfViewer(pdf = state.statement)
+        }
     }
 }
 
