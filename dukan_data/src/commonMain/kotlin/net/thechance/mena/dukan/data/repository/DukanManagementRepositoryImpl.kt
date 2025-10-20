@@ -17,12 +17,12 @@ import net.thechance.mena.dukan.data.mapper.toColorsList
 import net.thechance.mena.dukan.data.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.mapper.toDukan
 import net.thechance.mena.dukan.data.mapper.toMyDukanStatus
-import net.thechance.mena.dukan.data.util.constants.ApiConstants.DUKAN_BASE_PATH
+import net.thechance.mena.dukan.data.util.constants.EndPoints.DUKAN_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.entity.MyDukanStatus
+import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 
 class DukanManagementRepositoryImpl(

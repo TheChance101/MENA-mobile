@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.domain.repository
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.entity.MyDukanStatus
+import net.thechance.mena.dukan.domain.model.MyDukanStatus
 
 interface DukanManagementRepository {
     suspend fun createDukan(dukan: Dukan)

@@ -13,7 +13,7 @@ import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.data.mapper.toCreateShelfRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toShelf
-import net.thechance.mena.dukan.data.util.constants.ApiConstants.SHELF_BASE_PATH
+import net.thechance.mena.dukan.data.util.constants.EndPoints.SHELF_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository

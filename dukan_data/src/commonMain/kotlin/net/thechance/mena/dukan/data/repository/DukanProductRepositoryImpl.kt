@@ -12,11 +12,11 @@ import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toCreateProductRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
-import net.thechance.mena.dukan.data.util.constants.ApiConstants.PRODUCT_BASE_PATH
+import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.repository.ProductRepository
-import net.thechance.mena.dukan.domain.util.CreateProductParams
+import net.thechance.mena.dukan.domain.model.CreateProductParams
 import net.thechance.mena.dukan.domain.util.PagedResult
 
 class DukanProductRepositoryImpl(

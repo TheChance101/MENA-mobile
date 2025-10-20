@@ -8,7 +8,7 @@ import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.entity.MyDukanStatus
+import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)

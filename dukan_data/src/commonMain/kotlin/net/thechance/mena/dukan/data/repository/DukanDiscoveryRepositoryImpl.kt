@@ -7,7 +7,7 @@ import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanResponseDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toDomainPreview
-import net.thechance.mena.dukan.data.util.constants.ApiConstants.DUKAN_BASE_PATH
+import net.thechance.mena.dukan.data.util.constants.EndPoints.DUKAN_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.DukanPreview
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository

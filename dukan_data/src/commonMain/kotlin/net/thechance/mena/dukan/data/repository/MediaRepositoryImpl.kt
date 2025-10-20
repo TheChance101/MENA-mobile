@@ -5,8 +5,8 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import net.thechance.mena.dukan.data.util.constants.ApiConstants.DUKAN_BASE_PATH
-import net.thechance.mena.dukan.data.util.constants.ApiConstants.PRODUCT_BASE_PATH
+import net.thechance.mena.dukan.data.util.constants.EndPoints.DUKAN_BASE_PATH
+import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.buildMultiPartFormData
 import net.thechance.mena.dukan.data.util.network.buildSinglePartFormData
 import net.thechance.mena.dukan.data.util.network.safeApiCall

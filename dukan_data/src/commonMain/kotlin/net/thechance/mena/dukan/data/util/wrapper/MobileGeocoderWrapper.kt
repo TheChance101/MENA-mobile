@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.data.wrapper
+package net.thechance.mena.dukan.data.util.wrapper
 
 import dev.jordond.compass.Coordinates
 import dev.jordond.compass.Place

@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.data.repository
 
-import net.thechance.mena.dukan.data.wrapper.GeocoderWrapper
+import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 

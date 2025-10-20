@@ -8,8 +8,8 @@ import net.thechance.mena.dukan.data.repository.LocationRepositoryImpl
 import net.thechance.mena.dukan.data.repository.MediaRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
 import net.thechance.mena.dukan.data.util.network.buildClient
-import net.thechance.mena.dukan.data.wrapper.GeocoderWrapper
-import net.thechance.mena.dukan.data.wrapper.MobileGeocoderWrapper
+import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
+import net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
@@ -28,17 +28,16 @@ internal val dukanRepositoryModule = module {
             baseUrl = get<String>(named("baseUrl"))
         )
     }
-    single<ProductRepository> { DukanProductRepositoryImpl(get(named("dukanClient"))) }
-    single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
-    singleOf(::MobileGeocoderWrapper) { bind<GeocoderWrapper>() }
-    singleOf(::LocationRepositoryImpl) { bind<LocationRepository>() }
-    single<DukanManagementRepository> { DukanManagementRepositoryImpl(client = get(named("dukanClient"))) }
-    single<MediaRepository> { MediaRepositoryImpl(client = get(named("dukanClient"))) }
     single<DukanDiscoveryRepository> {
         DukanDiscoveryRepositoryImpl(
             client = get(named("dukanClient")),
             locationService = get()
         )
     }
-
+    single<ProductRepository> { DukanProductRepositoryImpl(get(named("dukanClient"))) }
+    single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
+    single<DukanManagementRepository> { DukanManagementRepositoryImpl(client = get(named("dukanClient"))) }
+    single<MediaRepository> { MediaRepositoryImpl(client = get(named("dukanClient"))) }
+    singleOf(::MobileGeocoderWrapper) { bind<GeocoderWrapper>() }
+    singleOf(::LocationRepositoryImpl) { bind<LocationRepository>() }
 }

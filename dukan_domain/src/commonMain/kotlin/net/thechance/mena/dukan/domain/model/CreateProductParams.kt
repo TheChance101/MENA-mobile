@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.domain.util
+package net.thechance.mena.dukan.domain.model
 
 data class CreateProductParams(
     val name: String,

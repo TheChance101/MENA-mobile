@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.DukanPreview
-import net.thechance.mena.dukan.domain.entity.MyDukanStatus
+import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 import kotlin.uuid.ExperimentalUuidApi
 
