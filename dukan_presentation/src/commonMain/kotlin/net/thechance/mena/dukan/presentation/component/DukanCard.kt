@@ -27,12 +27,12 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.animation.skeletonLoading
-import net.thechance.mena.dukan.presentation.viewModel.dukans.DukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DukanCard(
-    dukan: DukanUiState,
+    dukan: CategoryDukansUiState.DukanUiState,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFavorite: Boolean = false,
@@ -64,7 +64,7 @@ fun DukanCard(
 
 @Composable
 private fun BoxScope.DukanCardContent(
-    dukan: DukanUiState,
+    dukan: CategoryDukansUiState.DukanUiState,
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit
 ) {
@@ -121,7 +121,7 @@ private fun BoxScope.DukanCardContent(
 private fun DukanCardLoadingPreview() {
     MenaTheme {
         DukanCard(
-            dukan = DukanUiState(),
+            dukan = CategoryDukansUiState.DukanUiState(),
             onClick = {},
             isLoading = true
         )
@@ -133,7 +133,7 @@ private fun DukanCardLoadingPreview() {
 private fun DukanCardFavoritePreview() {
     MenaTheme {
         DukanCard(
-            dukan = DukanUiState(
+            dukan = CategoryDukansUiState.DukanUiState(
                 id = "dukan1",
                 name = "Dukan",
                 imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400"
@@ -149,7 +149,7 @@ private fun DukanCardFavoritePreview() {
 private fun DukanCardEmptyImagePreview() {
     MenaTheme {
         DukanCard(
-            dukan = DukanUiState(
+            dukan = CategoryDukansUiState.DukanUiState(
                 id = "dukan2",
                 name = "Dukan Without Image",
                 imageUrl = ""
