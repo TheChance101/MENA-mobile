@@ -6,9 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
-import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -17,16 +14,9 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
-import net.thechance.mena.core_chat.presentation.components.SnackBarData
-import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
-import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
-import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
-import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
-import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.uuid.ExperimentalUuidApi
@@ -37,9 +27,9 @@ class HomeViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
-    effector: ChatEffector,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector, dispatcher), HomeScreenInteractionListener {
+) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
+    HomeScreenInteractionListener {
 
     private val paginator by lazy {
         Paginator(
@@ -64,7 +54,6 @@ class HomeViewModel(
         tryToCollect(
             collect = { messageRepository.observeReadMessages() },
             onCollect = ::onCollectMarkAsReadEvent,
-            onError = { },
         )
     }
 
@@ -74,15 +63,16 @@ class HomeViewModel(
 
         val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
         updateState {
-            it.copy(chats =
-                listOf(newChatSummary) + it.chats.filter { it.id != newChatSummary.id }
+            it.copy(
+                chats =
+                    listOf(newChatSummary) + it.chats.filter { it.id != newChatSummary.id }
             )
         }
     }
 
     private fun listenToIncomingMessages() {
         tryToCollect(
-            collect = {messageRepository.getMessages() },
+            collect = { messageRepository.getMessages() },
             onCollect = ::onCollectMessage,
             onError = { },
         )
@@ -97,8 +87,9 @@ class HomeViewModel(
         if (chatSummary == null) {
             val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
             updateState {
-                it.copy(chats =
-                    listOf(newChatSummary) + it.chats
+                it.copy(
+                    chats =
+                        listOf(newChatSummary) + it.chats
                 )
             }
             return
@@ -155,12 +146,12 @@ class HomeViewModel(
     }
 
     private fun onLoadChatsSummaryError(throwable: Throwable?) {
-        showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.something_went_wrong),
-                message = UiText.DynamicString(value = throwable?.message.toString()),
-            )
-        )
+//        showSnackBar(
+//            SnackBarData(
+//                title = UiText.StringRes(Res.string.something_went_wrong),
+//                message = UiText.DynamicString(value = throwable?.message.toString()),
+//            )
+//        )
     }
 
     private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
@@ -173,32 +164,21 @@ class HomeViewModel(
 
     override fun onNewChatClicked() {
         tryToExecute(
-            onStart = { updateState { it.copy(isLoading = false) } },
             execute = { contactsRepository.getSyncStatus() },
             onSuccess = { isSynced ->
-                updateState { it.copy(isSynced = isSynced, isLoading = false) }
+                updateState { it.copy(isSynced = isSynced) }
                 if (isSynced) {
-                    navigate(ContactsRoute)
+                    emitEffect(HomeScreenEffect.NavigateToContacts)
                 } else {
-                    navigate(SyncContactsRoute(forceSync = false))
+                    emitEffect(HomeScreenEffect.NavigateToSyncContacts)
                 }
             },
-            onError = ::onGetSyncStatusError
-        )
-    }
-
-    private fun onGetSyncStatusError(throwable: Throwable?) {
-        showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.something_went_wrong),
-                message = UiText.StringRes(Res.string.could_not_sync_contacts_message),
-            )
         )
     }
 
     override fun onChatClicked(chat: ChatUiState) {
-        navigate(
-            ChatDetailsRoute(
+        emitEffect(
+            HomeScreenEffect.NavigateToChat(
                 chatId = chat.id.toString(),
                 chatName = chat.name,
             )
@@ -214,7 +194,7 @@ class HomeViewModel(
     }
 
     override fun onWalletClicked() {
-        navigate(WalletRoute)
+        emitEffect(HomeScreenEffect.NavigateToWallet)
     }
 
     companion object {
