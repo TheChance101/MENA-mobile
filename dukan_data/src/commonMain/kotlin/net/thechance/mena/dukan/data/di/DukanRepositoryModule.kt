@@ -12,6 +12,11 @@ import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
 import net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
+import net.thechance.mena.dukan.data.repository.location.GeocoderWrapper
+import net.thechance.mena.dukan.data.repository.location.LocationRepositoryImpl
+import net.thechance.mena.dukan.data.repository.location.MobileGeocoderWrapper
+import net.thechance.mena.dukan.data.repository.util.buildApiClient
+import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -23,7 +28,7 @@ import org.koin.dsl.module
 
 internal val dukanRepositoryModule = module {
     single<HttpClient>(named("dukanClient")) {
-        buildClient(
+        buildApiClient(
             authorizationService = get(),
             baseUrl = get<String>(named("baseUrl"))
         )

@@ -5,48 +5,32 @@ package net.thechance.mena.core_chat.data.chat
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
-import assertk.assertions.isNotNull
-import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
-import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.core_chat.data.createChatRepository
-import net.thechance.mena.core_chat.data.createHttpClient
-import net.thechance.mena.core_chat.data.defaultChatHistoryResponse
-import net.thechance.mena.core_chat.data.defaultChatResponse
-import net.thechance.mena.core_chat.data.defaultChatSummaryResponse
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
-import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
-import net.thechance.mena.core_chat.data.defaultUploadImagesResponse
+import net.thechance.mena.core_chat.data.createChatRepository
+import net.thechance.mena.core_chat.data.createHttpClient
+import net.thechance.mena.core_chat.data.defaultChatResponse
+import net.thechance.mena.core_chat.data.defaultChatSummaryResponse
 import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
-import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
-import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException
-import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -80,7 +64,6 @@ class ChatRepositoryImplTest {
             imageDownloader = imageDownloader
         )
     }
-
 
     @Test
     fun `should return chat when getChatByContactUserId is successful`() = runTest {

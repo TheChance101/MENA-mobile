@@ -17,7 +17,7 @@ import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.exceptions.ShelfNameTakenException
+import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
@@ -171,7 +171,7 @@ class CreateShelfViewModelTest {
             val title = "Existing Shelf"
             createShelfViewModel.onTitleChanged(title)
 
-            everySuspend { shelfRepository.createShelf(any()) } throws ShelfNameTakenException()
+            everySuspend { shelfRepository.createShelf(any()) } throws DuplicateNameException()
 
             createShelfViewModel.onCreateButtonClicked()
             testDispatcher.scheduler.advanceUntilIdle()

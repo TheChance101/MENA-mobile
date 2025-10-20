@@ -9,7 +9,7 @@ import org.jetbrains.compose.resources.StringResource
 object PreviewManageDukanInteractionListener : ManageDukanInteractionListener {
     override fun onBackButtonClicked() {}
     override fun onDismissSnackBar() {}
-    override fun onShowSnackBar(
+    override fun onShelfAdded(
         message: StringResource,
         type: SnackBarType
     ) {

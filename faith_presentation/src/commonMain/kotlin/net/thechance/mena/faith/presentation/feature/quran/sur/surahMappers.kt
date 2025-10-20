@@ -236,14 +236,5 @@ private val surahDrawableMap: Map<Surah.SurahOrder, DrawableResource> = mapOf(
     Surah.SurahOrder.AnNas to Res.drawable.ic_an_nas
 )
 
-fun Surah.toUi() = SurScreenState.SurahUiState(
-    id = id,
-    surahOrder = order.order,
-    arabicNameImg = getSurahNameDrawableResource(order),
-    surahName = name,
-    ayatCount = ayahCount,
-    isMakki = order.isMakkia
-)
-
-private fun getSurahNameDrawableResource(order: Surah.SurahOrder): DrawableResource =
+internal fun getSurahNameDrawableResource(order: Surah.SurahOrder): DrawableResource =
     surahDrawableMap[order] ?: Res.drawable.ic_surah_name_place_holder

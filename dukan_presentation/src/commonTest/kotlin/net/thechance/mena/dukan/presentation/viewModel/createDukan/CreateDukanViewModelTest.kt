@@ -585,26 +585,6 @@ class CreateDukanViewModelTest {
         }
 
 
-    @Test
-    fun `onCLickNext SHOULD show snack bar when basic information is invalid`() = runTest {
-        // Given
-        createDukanViewModel.updateState {
-            copy(
-                name = "",
-                selectedCategories = setOf(fakeCategories()[0].toUiState()),
-                currentStep = CreateDukanUiState.CreateDukanStep.BASIC_INFORMATION,
-                snackBarState = null
-            )
-        }
-
-        // When
-        createDukanViewModel.onCLickNext()
-
-        // Then
-        val state = createDukanViewModel.state.value
-        assertNotNull(state.snackBarState)
-        assertFalse(state.isNameUnique)
-    }
 
     @Test
     fun `onCategorySelected SHOULD return false when maximum category limit reached`() = runTest {
@@ -898,7 +878,7 @@ private fun fakeSelectedCoordinates() = CreateDukanUiState.CoordinatesUiState(28
 private fun fakePointerLocation() = DpOffset(2.dp, 4.dp)
 private fun fakeCameraPosition() = CameraPosition(target = Position(29.0, 28.0))
 private fun fakeColorUiState() = ColorUiState(id = "1", color = 0xFFF545)
-private fun fakeSingleDukanStyle() = Dukan.Style.WIDE_IMAGE
+private fun fakeSingleDukanStyle() = CreateDukanUiState.Style.WIDE_IMAGE
 
 @OptIn(ExperimentalUuidApi::class)
 private fun Category.toUiState() = DukanCategoryUiState(

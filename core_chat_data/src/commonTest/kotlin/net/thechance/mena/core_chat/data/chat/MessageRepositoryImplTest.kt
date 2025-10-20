@@ -74,9 +74,9 @@ class MessageRepositoryImplTest {
             httpClient = httpClient
         )
 
-        val result = repository.loadMessages(chatId)
+        val result = repository.loadMessages(chatId, 1, 40)
 
-        assertThat(result).isNotEmpty()
+        assertThat(result.data).isNotEmpty()
     }
 
     @Test
@@ -104,7 +104,7 @@ class MessageRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.loadMessages(chatId)
+            repository.loadMessages(chatId, 1, 40)
         }
     }
 

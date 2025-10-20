@@ -134,7 +134,7 @@ class CreateDukanMapperTest {
         currentLocation = CreateDukanUiState.CoordinatesUiState(10.0, 20.0),
         address = "Cairo",
         selectedColor = ColorUiState("c1", 0xFF112233),
-        selectedStyle = Dukan.Style.NO_IMAGE
+        selectedStyle = CreateDukanUiState.Style.NO_IMAGE
     )
     private companion object{
         @OptIn(ExperimentalUuidApi::class)

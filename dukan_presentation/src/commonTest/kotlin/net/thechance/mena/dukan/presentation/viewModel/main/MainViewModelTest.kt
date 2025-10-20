@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.model.MyDukanStatus
-import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainEffect
@@ -98,7 +98,7 @@ class MainViewModelTest {
     @Test
     fun `When getMyDukanStatus throws DukanNotFoundException the MainViewModelUiState should set ErrorMessage to null`() =
         runTest {
-            everySuspend { dukanManagementRepository.getMyDukanStatus() } throws DukanNotFoundException()
+            everySuspend { dukanManagementRepository.getMyDukanStatus() } throws NoSuchItemException()
 
             mainViewModel.state.test {
                 val result = awaitItem()
@@ -235,7 +235,7 @@ class MainViewModelTest {
     @Test
     fun `When getMyDukanStatus throws DukanNotFoundException then dukanState should be None and errorMessage should be set`() =
         runTest {
-            everySuspend { dukanManagementRepository.getMyDukanStatus() } throws DukanNotFoundException(
+            everySuspend { dukanManagementRepository.getMyDukanStatus() } throws NoSuchItemException(
                 "Dukan not found"
             )
             everySuspend { dukanManagementRepository.getCategories() } returns emptyList()

@@ -41,7 +41,7 @@ class NetworkClient(
                 level = LogLevel.ALL
                 logger = object : Logger {
                     override fun log(message: String) {
-                        Napier.d("Http client: $message", tag = "HttpClient")
+                        Napier.d(message = "Http client: $message", tag = "HttpClient")
                     }
                 }
             }

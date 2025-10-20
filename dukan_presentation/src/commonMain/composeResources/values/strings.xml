@@ -114,8 +114,8 @@
     <string name="wide_product_image">Product Image</string>
     <string name="wide_discount_icon">Discount Icon</string>
 
-
-
+    <string name="dukan_creation_failed">Dukan creation failed</string>"
+    <string name="invalid_image_format">Invalid image format</string>"
 
     <string name="no_internet_title">Oops! It looks like you’re offline.</string>
     <string name="no_internet_message">Check your connection and try again</string>
