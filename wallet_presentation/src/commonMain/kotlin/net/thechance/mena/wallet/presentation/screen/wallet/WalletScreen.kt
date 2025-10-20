@@ -96,9 +96,7 @@ private fun WalletContent(
                 .padding(top = 16.dp)
         ) {
             BalanceCard(
-                balance = state.balanceState.balance,
-                isLoading = state.balanceState.isLoading,
-                errorState = state.balanceState.errorState,
+                state = state.balanceState,
                 onRetry = interactionListener::onRetryLoadBalanceClicked,
                 modifier = Modifier
                     .padding(top = 16.dp)
