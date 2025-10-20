@@ -54,7 +54,7 @@ kover.reports {
 
     filters {
         includes {
-            classes("*Validator")
+            classes("**.validation.**")
         }
 
         excludes {
