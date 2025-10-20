@@ -77,11 +77,11 @@ class ContactsRepositoryImpl(
         }
     }
 
-    override suspend fun setSyncStatus(state: Boolean) {
+    override suspend fun updateSyncStatus(isSynced: Boolean) {
         return tryCall(
             defaultException = { DataStoreException("error with data store", it) }) {
             dataStore.edit { preferences ->
-                preferences[USER_SYNCED_STATE_KEY] = state
+                preferences[USER_SYNCED_STATE_KEY] = isSynced
             }
         }
     }

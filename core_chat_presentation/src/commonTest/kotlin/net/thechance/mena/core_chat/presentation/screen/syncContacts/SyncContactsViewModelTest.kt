@@ -64,7 +64,7 @@ class SyncContactsViewModelTest {
     @Test
     fun `should set isFirstSync to false and call syncContacts when forceSync is true`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
-        everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
+        everySuspend { contactsRepository.updateSyncStatus(true) } returns Unit
         everySuspend { effector.showSnackBar(any()) } returns Unit
         everySuspend { effector.popBackStack(any()) } returns Unit
 
@@ -108,7 +108,7 @@ class SyncContactsViewModelTest {
         runTest {
             everySuspend { permissionsController.providePermission(Permission.CONTACTS) } returns Unit
             everySuspend { contactsRepository.syncContacts() } returns Unit
-            everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
+            everySuspend { contactsRepository.updateSyncStatus(true) } returns Unit
             everySuspend { effector.showSnackBar(any()) } returns Unit
             everySuspend { effector.popBackStack() } returns Unit
             everySuspend { effector.navigate(any(), any(), any()) } returns Unit
@@ -217,7 +217,7 @@ class SyncContactsViewModelTest {
     @Test
     fun `onBackClicked should pop back stack when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
-        everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
+        everySuspend { contactsRepository.updateSyncStatus(true) } returns Unit
         everySuspend { effector.showSnackBar(any()) } returns Unit
         everySuspend { effector.popBackStack(*anyVarargs()) } returns Unit
 
@@ -269,7 +269,7 @@ class SyncContactsViewModelTest {
     @Test
     fun `onGoToSettingsClicked should call openAppSettings when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
-        everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
+        everySuspend { contactsRepository.updateSyncStatus(true) } returns Unit
         everySuspend { effector.showSnackBar(any()) } returns Unit
         everySuspend { settingsOpener.openSettings() } returns Unit
 

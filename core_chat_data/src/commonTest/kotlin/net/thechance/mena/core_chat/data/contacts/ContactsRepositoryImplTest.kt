@@ -267,7 +267,7 @@ class ContactsRepositoryImplTest {
     fun `should set user synced state to true when setSyncStatus is called with true`() =
         runTest {
 
-            repository.setSyncStatus(true)
+            repository.updateSyncStatus(true)
 
 
             assertThat(mockDataStore.getSyncStatus()).isTrue()
@@ -277,7 +277,7 @@ class ContactsRepositoryImplTest {
     fun `should set user synced state to false when setSyncStatus is called with false`() =
         runTest {
 
-            repository.setSyncStatus(false)
+            repository.updateSyncStatus(false)
 
 
             assertThat(mockDataStore.getSyncStatus()).isFalse()
@@ -290,7 +290,7 @@ class ContactsRepositoryImplTest {
 
 
         assertFailsWith<DataStoreException> {
-            repository.setSyncStatus(true)
+            repository.updateSyncStatus(true)
         }
     }
 
@@ -330,7 +330,7 @@ class ContactsRepositoryImplTest {
     @Test
     fun `should set synced state to true when setSyncStatus is called with true`() = runTest {
 
-        repository.setSyncStatus(true)
+        repository.updateSyncStatus(true)
 
 
         assertThat(mockDataStore.getSyncStatus()).isTrue()
@@ -340,7 +340,7 @@ class ContactsRepositoryImplTest {
     fun `should set synced state to false when setSyncStatus is called with false`() =
         runTest {
 
-            repository.setSyncStatus(false)
+            repository.updateSyncStatus(false)
 
 
             assertThat(mockDataStore.getSyncStatus()).isFalse()

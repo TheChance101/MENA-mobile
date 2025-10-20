@@ -9,5 +9,5 @@ interface ContactsRepository {
     suspend fun getUserContacts(pageNumber: Int): PagedData<Contact>
     suspend fun syncContacts()
     suspend fun getSyncStatus(): Boolean
-    suspend fun setSyncStatus(state: Boolean)
+    suspend fun updateSyncStatus(isSynced: Boolean)
 }
