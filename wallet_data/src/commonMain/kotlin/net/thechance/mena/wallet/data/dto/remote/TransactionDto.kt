@@ -8,15 +8,15 @@ data class TransactionDto(
     @SerialName("id")
     val id: String,
     @SerialName("senderName")
-    val senderName: String?,
+    val senderName: String? = null,
     @SerialName("receiverName")
-    val receiverName: String?,
+    val receiverName: String? = null,
     @SerialName("status")
-    val status: String?,
+    val status: String? = null,
     @SerialName("type")
-    val type: String?,
+    val type: String? = null,
     @SerialName("createdAt")
-    val createdAt: String?,
+    val createdAt: String? = null,
     @SerialName("amount")
-    val amount: Double?
+    val amount: Double? = null
 )

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PendingTransactionRequestBody(
     @SerialName("amount")
-    val amount: Double?,
+    val amount: Double? = null,
     @SerialName("receiverId")
-    val receiverId: String?,
+    val receiverId: String? = null,
 )

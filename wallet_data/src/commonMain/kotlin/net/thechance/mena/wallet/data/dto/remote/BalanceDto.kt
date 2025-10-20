@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BalanceDto(
     @SerialName("balance")
-    val balance: Double?
+    val balance: Double? = null
 )
