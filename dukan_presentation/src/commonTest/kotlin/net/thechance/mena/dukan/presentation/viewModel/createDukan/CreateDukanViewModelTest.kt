@@ -21,8 +21,9 @@ import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import org.maplibre.compose.camera.CameraPosition
@@ -38,22 +39,25 @@ import kotlin.test.assertTrue
 class CreateDukanViewModelTest {
 
     private val locationRepository = mock<LocationRepository>(mode = MockMode.autofill)
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
+    private val mediaRepository = mock<MediaRepository>(mode = MockMode.autofill)
     private lateinit var createDukanViewModel: CreateDukanViewModel
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        everySuspend { dukanRepository.getDukanStyles() } returns fakeDukanStyle()
-        everySuspend { dukanRepository.getDukanColors() } returns fakeDukanColor()
-        everySuspend { dukanRepository.getCategories() } returns fakeCategories()
-        everySuspend { dukanRepository.isDukanNameTaken(any()) } returns false
+        everySuspend { dukanManagementRepository.getDukanStyles() } returns fakeDukanStyle()
+        everySuspend { dukanManagementRepository.getDukanColors() } returns fakeDukanColor()
+        everySuspend { dukanManagementRepository.getCategories() } returns fakeCategories()
+        everySuspend { dukanManagementRepository.isDukanNameTaken(any()) } returns false
 
 
         createDukanViewModel = CreateDukanViewModel(
-            dukanRepository,
-            locationRepository,
+            dukanManagementRepository = dukanManagementRepository,
+            mediaRepository = mediaRepository,
+            locationRepository = locationRepository,
             testDispatcher
         )
     }
@@ -400,8 +404,7 @@ class CreateDukanViewModelTest {
         createDukanViewModel.updateState {
             copy(
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 )
             )
         }
@@ -722,8 +725,7 @@ class CreateDukanViewModelTest {
         createDukanViewModel.updateState {
             copy(
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 )
             )
         }
@@ -746,8 +748,7 @@ class CreateDukanViewModelTest {
                 name = testName,
                 selectedCategories = testCategories,
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 ),
                 isNameUnique = false
             )
@@ -803,8 +804,7 @@ class CreateDukanViewModelTest {
         createDukanViewModel.updateState {
             copy(
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 )
             )
         }
@@ -820,7 +820,7 @@ class CreateDukanViewModelTest {
 
     @Test
     fun `checkNameUniqueness SHOULD show snackbar WHEN name taken`() = runTest {
-        everySuspend { dukanRepository.isDukanNameTaken(any()) } returns true
+        everySuspend { dukanManagementRepository.isDukanNameTaken(any()) } returns true
         createDukanViewModel.onNameChanged("Test")
         createDukanViewModel.onCategorySelected(fakeCategories()[0].toUiState())
 
@@ -861,9 +861,7 @@ private fun fakeDukanColor(): List<Color> {
 
 private fun fakeDukanStyle(): List<Dukan.Style> {
     return listOf(
-        Dukan.Style.WIDE_IMAGE,
-        Dukan.Style.SMALL_IMAGE,
-        Dukan.Style.NO_IMAGE
+        Dukan.Style.WIDE_IMAGE, Dukan.Style.SMALL_IMAGE, Dukan.Style.NO_IMAGE
     )
 }
 
@@ -887,7 +885,5 @@ private fun fakeColorUiState() = ColorUiState(id = "1", color = 0xFFF545)
 private fun fakeSingleDukanStyle() = Dukan.Style.WIDE_IMAGE
 
 private fun Category.toUiState() = DukanCategoryUiState(
-    id = id,
-    name = name,
-    imageUrl = imageUrl
+    id = id, name = name, imageUrl = imageUrl
 )

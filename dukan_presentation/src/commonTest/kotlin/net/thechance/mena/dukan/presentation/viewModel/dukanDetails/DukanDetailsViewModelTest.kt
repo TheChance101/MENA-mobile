@@ -19,7 +19,7 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
@@ -34,7 +34,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class DukanDetailsViewModelTest {
 
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
     private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
@@ -47,7 +48,7 @@ class DukanDetailsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle(mapOf(DUKAN_ID to dummyDukanDetails().id))
 
-        everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
         everySuspend {
             shelfRepository.getShelvesByDukanId(any(), any(), any())
         } returns PagedResult(
@@ -97,7 +98,9 @@ class DukanDetailsViewModelTest {
     @Test
     fun `init SHOULD set isDukanInfoLoading to false when details loading fails`() = runTest {
         // Given
-        everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } throws Exception("Network Error")
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } throws Exception(
+            "Network Error"
+        )
 
         // When
         val errorViewModel = createViewModel()
@@ -271,7 +274,7 @@ class DukanDetailsViewModelTest {
     fun `onCartClick SHOULD set showProductQuantity to true for specific product in shelf`() =
         runTest {
             // Given
-            everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+            everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
                 style = Dukan.Style.SMALL_IMAGE
             )
             everySuspend {
@@ -303,7 +306,7 @@ class DukanDetailsViewModelTest {
     @Test
     fun `onCartClick SHOULD only update specific product not others`() = runTest {
         // Given
-        everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
             style = Dukan.Style.SMALL_IMAGE
         )
         everySuspend {
@@ -422,7 +425,7 @@ class DukanDetailsViewModelTest {
     }
 
     private fun createViewModel() = DukanDetailsViewModel(
-        dukanRepository = dukanRepository,
+        dukanManagementRepository = dukanManagementRepository,
         shelfRepository = shelfRepository,
         productRepository = productRepository,
         defaultDispatcher = testDispatcher,

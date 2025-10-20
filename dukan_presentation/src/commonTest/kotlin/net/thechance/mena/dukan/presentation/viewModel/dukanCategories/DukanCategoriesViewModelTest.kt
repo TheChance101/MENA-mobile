@@ -15,7 +15,7 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong_while_fetching_categories
 import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -25,7 +25,7 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class DukanCategoriesViewModelTest {
 
-    private val dukanRepository = mock<DukanRepository>()
+    private val dukanManagementRepository = mock<DukanManagementRepository>()
     lateinit var viewModel: DukanCategoriesViewModel
 
     val testDispatcher = StandardTestDispatcher()
@@ -33,12 +33,18 @@ class DukanCategoriesViewModelTest {
 
     @BeforeTest
     fun setup() {
-        viewModel = DukanCategoriesViewModel(dukanRepository = dukanRepository,defaultDispatcher = testDispatcher)
+        viewModel = DukanCategoriesViewModel(
+            dukanManagementRepository = dukanManagementRepository,
+            defaultDispatcher = testDispatcher
+        )
     }
 
     @Test
     fun `init with default dispatcher`() = scope.runTest {
-        val viewModel = DukanCategoriesViewModel(dukanRepository = dukanRepository, defaultDispatcher = testDispatcher)
+        val viewModel = DukanCategoriesViewModel(
+            dukanManagementRepository = dukanManagementRepository,
+            defaultDispatcher = testDispatcher
+        )
         assertNotNull(viewModel)
     }
 
@@ -46,9 +52,12 @@ class DukanCategoriesViewModelTest {
     @Test
     fun `initScope - get all dukan categories`() = scope.runTest {
 
-        everySuspend { dukanRepository.getCategories() } returns dummyCategories
+        everySuspend { dukanManagementRepository.getCategories() } returns dummyCategories
 
-        viewModel = DukanCategoriesViewModel(dukanRepository = dukanRepository,defaultDispatcher = testDispatcher)
+        viewModel = DukanCategoriesViewModel(
+            dukanManagementRepository = dukanManagementRepository,
+            defaultDispatcher = testDispatcher
+        )
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -64,9 +73,12 @@ class DukanCategoriesViewModelTest {
     fun `initScope - update error message when repository throws NoInternetException`() =
         scope.runTest {
 
-            everySuspend { dukanRepository.getCategories() } throws NoInternetException()
+            everySuspend { dukanManagementRepository.getCategories() } throws NoInternetException()
 
-            viewModel = DukanCategoriesViewModel(dukanRepository = dukanRepository,defaultDispatcher = testDispatcher)
+            viewModel = DukanCategoriesViewModel(
+                dukanManagementRepository = dukanManagementRepository,
+                defaultDispatcher = testDispatcher
+            )
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -81,9 +93,12 @@ class DukanCategoriesViewModelTest {
     @Test
     fun `initScope - update error message when repository throws DukanException`() = scope.runTest {
 
-        everySuspend { dukanRepository.getCategories() } throws DukanException()
+        everySuspend { dukanManagementRepository.getCategories() } throws DukanException()
 
-        viewModel = DukanCategoriesViewModel(dukanRepository = dukanRepository,defaultDispatcher = testDispatcher)
+        viewModel = DukanCategoriesViewModel(
+            dukanManagementRepository = dukanManagementRepository,
+            defaultDispatcher = testDispatcher
+        )
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -113,10 +128,13 @@ class DukanCategoriesViewModelTest {
         val fakeCategoryId = "14"
 
         viewModel.effect.test {
-            viewModel.onCategoryClicked(fakeCategoryName,fakeCategoryId)
+            viewModel.onCategoryClicked(fakeCategoryName, fakeCategoryId)
             val currentEffect = awaitItem()
             assertEquals(
-                expected = DukanCategoriesEffects.NavigateToDukansOfCategory(fakeCategoryName,fakeCategoryId),
+                expected = DukanCategoriesEffects.NavigateToDukansOfCategory(
+                    fakeCategoryName,
+                    fakeCategoryId
+                ),
                 actual = currentEffect
             )
         }
@@ -124,9 +142,12 @@ class DukanCategoriesViewModelTest {
 
     @Test
     fun `onDismissSnackBar - update snackBarUiState to null`() = scope.runTest {
-        everySuspend { dukanRepository.getCategories() } throws DukanException()
+        everySuspend { dukanManagementRepository.getCategories() } throws DukanException()
 
-        viewModel = DukanCategoriesViewModel(dukanRepository = dukanRepository,defaultDispatcher = testDispatcher)
+        viewModel = DukanCategoriesViewModel(
+            dukanManagementRepository = dukanManagementRepository,
+            defaultDispatcher = testDispatcher
+        )
         advanceUntilIdle()
 
         viewModel.state.test {

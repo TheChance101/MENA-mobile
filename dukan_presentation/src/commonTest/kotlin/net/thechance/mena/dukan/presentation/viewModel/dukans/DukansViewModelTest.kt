@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.DukanPreview
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class DukansViewModelTest {
 
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val dukanDiscoveryRepository = mock<DukanDiscoveryRepository>(mode = MockMode.autofill)
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var dukansViewModel: DukansViewModel
     private val testDispatcher = StandardTestDispatcher()
@@ -45,7 +45,7 @@ class DukansViewModelTest {
         )
 
         everySuspend {
-            dukanRepository.getDukansByCategory(
+            dukanDiscoveryRepository.getDukansByCategory(
                 categoryId = any(),
                 page = any(),
                 size = any()
@@ -58,7 +58,7 @@ class DukansViewModelTest {
         )
 
         dukansViewModel = DukansViewModel(
-            dukanRepository = dukanRepository,
+            dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = savedStateHandle,
             defaultDispatcher = testDispatcher
         )
@@ -220,7 +220,7 @@ class DukansViewModelTest {
         )
 
         val emptyViewModel = DukansViewModel(
-            dukanRepository = dukanRepository,
+            dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = emptySavedStateHandle,
             defaultDispatcher = testDispatcher
         )
@@ -244,7 +244,7 @@ class DukansViewModelTest {
         val nullSavedStateHandle = SavedStateHandle(emptyMap())
 
         val nullViewModel = DukansViewModel(
-            dukanRepository = dukanRepository,
+            dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = nullSavedStateHandle,
             defaultDispatcher = testDispatcher
         )
