@@ -17,4 +17,5 @@ actual class WalletDatabaseBuilder actual constructor() {
         )
     }
 }
+
 private const val DATABASE_NAME = "wallet.db"

@@ -4,8 +4,8 @@ import io.ktor.client.statement.HttpResponse
 import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
-import net.thechance.mena.wallet.data.mapper.toStatementEntityList
 import net.thechance.mena.wallet.data.mapper.toLocal
+import net.thechance.mena.wallet.data.mapper.toStatementEntityList
 import net.thechance.mena.wallet.data.mapper.toStatementRequest
 import net.thechance.mena.wallet.data.mapper.toStatementWithMetaData
 import net.thechance.mena.wallet.data.network_client.NetworkClient

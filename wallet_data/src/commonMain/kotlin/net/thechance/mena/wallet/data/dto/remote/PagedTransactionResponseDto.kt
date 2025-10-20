@@ -4,15 +4,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PagedTransactionResponseDto (
+data class PagedTransactionResponseDto(
     @SerialName("totalElements")
-    val totalElements : Long? ,
+    val totalElements: Long?,
     @SerialName("page")
-    val page : Long?,
+    val page: Long?,
     @SerialName("pageSize")
-    val pageSize : Long?,
+    val pageSize: Long?,
     @SerialName("totalPages")
-    val totalPages : Long?,
+    val totalPages: Long?,
     @SerialName("transactions")
-    val transactions : List<TransactionDto>?
+    val transactions: List<TransactionDto>?
 )

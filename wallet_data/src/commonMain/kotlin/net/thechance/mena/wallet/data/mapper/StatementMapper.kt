@@ -20,13 +20,14 @@ fun TransactionFilterParams.toStatementRequest(): HttpRequestBuilder.() -> Unit 
     startDate?.let { parameter("startDate", it.toString()) }
     endDate?.let { parameter("endDate", it.toString()) }
 }
+
 @OptIn(ExperimentalUuidApi::class)
 fun Statement.toLocal(): LocalStatement {
     return LocalStatement(
-        startDate=startDate.toString(),
-        endDate=endDate.toString(),
-        totalInflows=totalInflows,
-        totalOutflows=totalOutflows,
+        startDate = startDate.toString(),
+        endDate = endDate.toString(),
+        totalInflows = totalInflows,
+        totalOutflows = totalOutflows,
         fileName = fileName
     )
 }

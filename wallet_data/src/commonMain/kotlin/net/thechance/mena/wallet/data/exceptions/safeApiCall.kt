@@ -8,8 +8,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
-import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 
 suspend inline fun <reified T> safeApiCall(
