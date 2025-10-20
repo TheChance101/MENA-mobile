@@ -25,10 +25,14 @@ import mena.wallet_presentation.generated.resources.share
 import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.model.FilterStatus
+import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsListener
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
@@ -36,6 +40,7 @@ import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsL
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -167,5 +172,33 @@ private fun onTransactionHistoryEffect(
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
             navigateToTransactionDetails(effect.id)
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TransactionHistoryContentPreview() {
+    MenaTheme {
+        TransactionHistoryContent(
+            state = TransactionHistoryScreenState(
+            ),
+            interactionListener = object : TransactionHistoryInteractionListener {
+                override fun onBackClicked() {}
+                override fun onTransactionCardClicked(id: Uuid) {}
+                override fun onExportClicked() {}
+                override fun onFilterClicked() {}
+                override fun onNextPageRequested() {}
+                override fun onDismissFilter() {}
+                override fun onFilterTypeSelected(type: FilterType) {}
+                override fun onFilterStatusSelected(status: FilterStatus) {}
+                override fun onResetFilterClicked() {}
+                override fun onApplyFilterClicked() {}
+                override fun onStartDateClicked() {}
+                override fun onEndDateClicked() {}
+                override fun onDismissDatePicker() {}
+                override fun onPickDateClicked(date: LocalDate) {}
+                override fun onRetryLoadTransactionHistoryClicked() {}
+            }
+        )
     }
 }
