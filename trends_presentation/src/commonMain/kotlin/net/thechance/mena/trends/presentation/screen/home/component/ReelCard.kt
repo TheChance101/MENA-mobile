@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.home.component
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +16,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.launch
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_heart
@@ -126,6 +131,8 @@ private fun ReelFooterSection(
     reel: ReelUiState,
     onLikeClick: () -> Unit
 ) {
+    val scale = remember { Animatable(1f) }
+    val scope = rememberCoroutineScope()
 
     val likeIconColor by animateColorAsState(
         targetValue = if (reel.isLiked) Theme.colorScheme.error else Theme.colorScheme.shadeTertiary,
@@ -161,8 +168,16 @@ private fun ReelFooterSection(
                 tint = likeIconColor,
                 modifier = Modifier
                     .size(24.dp)
-                    .noRippleClickable { onLikeClick() }
+                    .scale(scale.value)
+                    .noRippleClickable {
+                        onLikeClick()
+                        scope.launch {
+                            scale.animateTo(1.4f, tween(200))
+                            scale.animateTo(1f, tween(200))
+                        }
+                    }
             )
+
             Text(
                 text = stringResource(Res.string.likes_suffix, reel.likesCount),
                 style = Theme.typography.body.small,

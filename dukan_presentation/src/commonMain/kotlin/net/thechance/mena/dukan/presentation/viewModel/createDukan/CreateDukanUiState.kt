@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
 import io.github.dellisd.spatialk.geojson.Position
-import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import org.maplibre.compose.camera.CameraPosition
 
@@ -29,9 +28,9 @@ data class CreateDukanUiState(
     val selectedImage: ImageSrc? = null,
     val isImageBeingCropped: Boolean = false,
     val dukanColors: List<ColorUiState> = emptyList(),
-    val dukanStyles: List<DukanStyleUiState> = defaultDukanStyles,
+    val dukanStyles: List<DukanStyleUiState> = emptyList(),
     val selectedColor: ColorUiState? = null,
-    val selectedStyle: Dukan.Style? = null,
+    val selectedStyle: Style? = null,
     val errorMessage: String? = null
 ) {
 
@@ -50,10 +49,16 @@ data class CreateDukanUiState(
             val steps = entries
         }
     }
+
+    enum class Style {
+        WIDE_IMAGE,
+        SMALL_IMAGE,
+        NO_IMAGE
+    }
 }
 
 data class DukanStyleUiState(
-    val style: Dukan.Style,
+    val style: CreateDukanUiState.Style,
     val name: String,
 )
 

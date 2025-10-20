@@ -1,4 +1,3 @@
-
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
@@ -52,7 +51,7 @@ kotlin {
 }
 
 ksp {
-    arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_CONFIG_CHECK", "true")
 }
 
 dependencies {
@@ -82,15 +81,15 @@ kover.reports {
     }
 
     filters {
-        excludes {
-            packages("mena.trends_data.generated.resources*")
+        includes {
             classes(
-                "**.di.**",
-                "**.dto.**",
-                "**.util.**",
-                "**.client.**",
-                "**org.koin.ksp.generated**",
+                "**.repository.**",
+                "**.mapper.**",
             )
+        }
+
+        excludes {
+            classes("**org.koin.ksp.generated**")
         }
     }
 }

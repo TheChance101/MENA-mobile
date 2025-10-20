@@ -34,6 +34,7 @@ import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
+import net.thechance.mena.identity.domain.util.Coordinates
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -275,5 +276,13 @@ private class FakeAddressesRepository : AddressesRepository {
     override suspend fun deleteAddress(addressId: Uuid) {}
     override suspend fun getActiveAddress(): Address? {
         return null
+    }
+
+    override suspend fun getCurrentLocation(): Coordinates? {
+        return null
+    }
+
+    override suspend fun getLocationName(coordinates: Coordinates): String {
+        return ""
     }
 }

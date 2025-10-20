@@ -149,14 +149,14 @@ internal class ReelRepositoryImplTest {
 
     @Test
     fun `getReelThumbnail should call extractVideoFrame`() = runTest {
-        repository.getReelThumbnail(FAKE_FILE_PATH)
+        repository.extractReelThumbnail(FAKE_FILE_PATH)
 
         verifySuspend { videoHandler.extractVideoFrame(FAKE_FILE_PATH)  }
     }
 
     @Test
     fun `getReelDuration should return thumbnail bytearray when extractVideoFrame called`() = runTest {
-        val thumbnailByteArray = repository.getReelThumbnail(FAKE_FILE_PATH)
+        val thumbnailByteArray = repository.extractReelThumbnail(FAKE_FILE_PATH)
 
         assertThat(thumbnailByteArray?.size).isEqualTo(2)
     }

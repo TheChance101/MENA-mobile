@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -36,8 +37,9 @@ class HomeViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
-    effector: ChatEffector
-) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector), HomeScreenInteractionListener {
+    effector: ChatEffector,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector, dispatcher), HomeScreenInteractionListener {
 
     private val paginator by lazy {
         Paginator(
@@ -46,7 +48,7 @@ class HomeViewModel(
             onRequest = ::getChatsSummary,
             getNextKey = { currentPage, _ -> currentPage + 1 },
             onError = ::onLoadChatsSummaryError,
-            onSuccess = { result, newPage -> onLoadChatsSummarySuccess(result) },
+            onSuccess = { result, _ -> onLoadChatsSummarySuccess(result) },
             endReached = { _, result -> result.isLastPage }
         )
     }

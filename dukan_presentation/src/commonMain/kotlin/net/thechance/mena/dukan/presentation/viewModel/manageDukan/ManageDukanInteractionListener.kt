@@ -6,7 +6,7 @@ import org.jetbrains.compose.resources.StringResource
 interface ManageDukanInteractionListener {
     fun onBackButtonClicked()
     fun onDismissSnackBar()
-    fun onShowSnackBar(message: StringResource, type: SnackBarType)
+    fun onShelfAdded(message: StringResource, type: SnackBarType)
     fun onDismissDeleteShelfConfirmationDialog()
     fun onShowDeleteShelfDailog(shelfId: String)
     fun onDeleteConfirmed(shelfId: String)
