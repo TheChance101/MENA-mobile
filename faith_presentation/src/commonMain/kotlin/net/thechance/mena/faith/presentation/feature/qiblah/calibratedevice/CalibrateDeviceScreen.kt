@@ -20,20 +20,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.calibrate_device
 import mena.faith_presentation.generated.resources.calibrate_device_animation
 import mena.faith_presentation.generated.resources.continue_btn
+import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.motion_configuration
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.Button
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
-import net.thechance.mena.faith.presentation.component.BackIcon
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -53,17 +58,18 @@ fun CalibrateDeviceScreen(
 }
 
 @Composable
-private fun Content(
-    listener: CalibrateDeviceInteractionListener,
-) {
+private fun Content(listener: CalibrateDeviceInteractionListener) {
     Scaffold(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.calibrate_device),
                 leadingContent = {
-                    BackIcon()
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_arrow_left),
+                        contentDescription = stringResource(Res.string.arrow_left)
+                    )
                 },
-                onLeadingClick = listener::onBackClick,
+                onLeadingClick = listener::onBackClick
             )
         },
         bottomBar = {
@@ -131,6 +137,19 @@ private fun ConfigurationMessage() {
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(vertical = Theme.spacing._16)
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun CalibrateDeviceScreenPreview() {
+    QuranTheme {
+        Content(
+            listener = object : CalibrateDeviceInteractionListener {
+                override fun onBackClick() {}
+                override fun onContinueClick() {}
+            }
         )
     }
 }

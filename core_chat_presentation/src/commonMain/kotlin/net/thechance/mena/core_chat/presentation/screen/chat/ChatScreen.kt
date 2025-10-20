@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +28,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInpu
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
+import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -56,6 +58,8 @@ fun ChatScreenContent(
     state: ChatScreenState,
     interactions: ChatInteractionListener
 ) {
+    val chatListState = rememberLazyListState()
+
     val cameraManager = rememberCameraManager(
         onResult = { sharedImageByteArray  ->
             sharedImageByteArray?.let {
@@ -70,6 +74,7 @@ fun ChatScreenContent(
             cameraManager.launch()
         }
     }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -107,6 +112,7 @@ fun ChatScreenContent(
             ChatList(
                 items = state.chatListItems,
                 chatAvatarUrl = state.chatAvatarUrl,
+                chatListState = chatListState,
                 onMessageClick = interactions::onMessageClicked,
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
@@ -142,4 +148,11 @@ fun ChatScreenContent(
             )
         }
     }
+
+    PaginationTrigger(
+        list = state.chatListItems,
+        listState = chatListState,
+        remainingItemsToLoadNextPage = 15,
+        loadNextItems = interactions::onMessagesScrolled
+    )
 }

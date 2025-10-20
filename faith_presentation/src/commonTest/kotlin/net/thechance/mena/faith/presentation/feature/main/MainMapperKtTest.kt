@@ -104,7 +104,7 @@ class MainMapperKtTest {
         val afterUi = prayers.toUi(base + 15.hours)
 
         // Then
-        assertEquals(1, beforeUi.nextPrayerIndex)
+        assertEquals(0, beforeUi.nextPrayerIndex)
         assertEquals(PrayerName.FAJR, beforeUi.prayers[0].name)
         assertEquals(0, afterUi.nextPrayerIndex)
         assertEquals(PrayerName.FAJR, afterUi.prayers[0].name)

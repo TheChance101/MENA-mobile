@@ -21,6 +21,8 @@ interface MessageListInteractionListener {
     fun onDeleteFailedMessageClicked()
     fun onResendMessageClicked()
     fun onResendMessageDialogDismissed()
+
+    fun onMessagesScrolled()
 }
 
 interface AttachmentsInteractionListener {

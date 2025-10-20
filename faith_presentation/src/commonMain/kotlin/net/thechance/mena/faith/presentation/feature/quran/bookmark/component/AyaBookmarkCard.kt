@@ -19,11 +19,11 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.component.DotSeparator
+import net.thechance.mena.faith.presentation.components.DotSeparator
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
-import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.TimeAgo
-import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.getTimeAgo
+import net.thechance.mena.faith.presentation.feature.quran.bookmark.TimeAgo
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getTimeAgo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

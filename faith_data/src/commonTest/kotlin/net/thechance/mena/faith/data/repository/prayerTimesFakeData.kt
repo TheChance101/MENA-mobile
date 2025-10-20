@@ -3,10 +3,10 @@ package net.thechance.mena.faith.data.repository
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import net.thechance.mena.faith.data.remote.dto.prayertime.GregorianDateDto
-import net.thechance.mena.faith.data.remote.dto.prayertime.HijriDateDto
-import net.thechance.mena.faith.data.remote.dto.prayertime.PrayerDateDto
-import net.thechance.mena.faith.data.remote.dto.prayertime.PrayerTimesDto
+import net.thechance.mena.faith.data.remote.model.prayertime.GregorianDateDto
+import net.thechance.mena.faith.data.remote.model.prayertime.HijriDateDto
+import net.thechance.mena.faith.data.remote.model.prayertime.PrayerDateDto
+import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import kotlin.time.ExperimentalTime

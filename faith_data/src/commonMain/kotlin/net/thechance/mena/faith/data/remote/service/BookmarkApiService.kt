@@ -8,9 +8,9 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 
-import net.thechance.mena.faith.data.remote.dto.PageResponse
-import net.thechance.mena.faith.data.remote.dto.bookmark.AddBookmarkRequest
-import net.thechance.mena.faith.data.remote.dto.bookmark.AyahBookmarkDto
+import net.thechance.mena.faith.data.remote.model.PageResponse
+import net.thechance.mena.faith.data.remote.model.bookmark.AddBookmarkRequest
+import net.thechance.mena.faith.data.remote.model.bookmark.AyahBookmarkDto
 
 interface BookmarkApiService {
 

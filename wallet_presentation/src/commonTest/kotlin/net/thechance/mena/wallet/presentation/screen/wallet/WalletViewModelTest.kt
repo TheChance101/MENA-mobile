@@ -19,7 +19,6 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import kotlin.test.AfterTest
@@ -48,14 +47,14 @@ class WalletViewModelTest {
     }
 
     @Test
-    fun `getBalance should set balance with loading when initially called`() = runTest {
+    fun `getBalance should trigger loading when initially called`() = runTest {
         val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
 
         viewModel.state.test {
             skipItems(1)
 
-            val loadingState = awaitItem()
-            assertTrue(loadingState.balance is UiState.Loading)
+            val loadingState = awaitItem().balanceState.isLoading
+            assertTrue(loadingState)
 
             cancelAndIgnoreRemainingEvents()
         }
@@ -71,7 +70,7 @@ class WalletViewModelTest {
 
         viewModel.state.test {
             val successState = awaitItem()
-            assertEquals(UiState.Success(expectedBalance), successState.balance)
+            assertEquals(expectedBalance, successState.balanceState.balance)
         }
     }
 
@@ -85,8 +84,8 @@ class WalletViewModelTest {
         viewModel.state.test {
             skipItems(2)
 
-            val errorState = awaitItem()
-            assertEquals(UiState.Error(ErrorState.Unknown), errorState.balance)
+            val errorState = awaitItem().balanceState.errorState
+            assertEquals(ErrorState.Unknown, errorState)
 
             cancelAndIgnoreRemainingEvents()
         }
