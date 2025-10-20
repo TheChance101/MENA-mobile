@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.data.repository.util
+package net.thechance.mena.dukan.data.util.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineConfig
