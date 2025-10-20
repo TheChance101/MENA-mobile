@@ -67,8 +67,8 @@ class ChatViewModelTest {
 
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
         everySuspend { messageRepository.loadMessages(chatId) } returns emptyList()
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { messageRepository.getMessages(chatId) } returns flowOf()
+        everySuspend { messageRepository.observeLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.observeMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(
@@ -92,8 +92,8 @@ class ChatViewModelTest {
     fun `init should update chat list when its loaded messages successfully`() {
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
         everySuspend { messageRepository.loadMessages(chatId) } returns messages
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { messageRepository.getMessages(chatId) } returns flowOf()
+        everySuspend { messageRepository.observeLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.observeMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(
@@ -118,8 +118,8 @@ class ChatViewModelTest {
     fun `init should send snack bar effect when its LOADING the messages failed`() {
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
         everySuspend { messageRepository.loadMessages(chatId) } throws Exception()
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { messageRepository.getMessages(chatId) } returns flowOf()
+        everySuspend { messageRepository.observeLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.observeMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(
@@ -147,8 +147,8 @@ class ChatViewModelTest {
     fun `init should update uiMessage and chatListItems when receive new message`() {
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
         everySuspend { messageRepository.loadMessages(chatId) } returns emptyList()
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { messageRepository.getMessages(chatId) } returns flowOf(messages.first())
+        everySuspend { messageRepository.observeLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.observeMessages(chatId) } returns flowOf(messages.first())
         every { messageRepository.observeReadMessages() } returns flowOf()
         messageRepository
         chatViewModel = ChatViewModel(

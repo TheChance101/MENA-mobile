@@ -65,12 +65,12 @@ class MessageRepositoryImpl(
         messageDao.deleteMessage(message.id.toString())
     }
 
-    override fun getLocalMessages(chatId: Uuid): Flow<List<Message>> {
+    override fun observeLocalMessages(chatId: Uuid): Flow<List<Message>> {
         val failedEntities = messageDao.getMessagesByChat(chatId.toString())
         return failedEntities.map { it.toDomain() }
     }
 
-    override fun getMessages(chatId: Uuid?): Flow<Message> {
+    override fun observeMessages(chatId: Uuid?): Flow<Message> {
         if (webSocketManager.isConnected().not()) initializeWebsocketConnection()
         return messageFlows.filter { chatId == null || it.chatId == chatId }
     }

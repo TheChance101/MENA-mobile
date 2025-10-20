@@ -250,7 +250,7 @@ class ChatViewModel(
 
     private fun subscribeToNewMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { messageRepository.getMessages(chatId) },
+            collect = { messageRepository.observeMessages(chatId) },
             onCollect = ::onCollectNewMessage,
             onError = {
                 showSnackBar(
@@ -273,7 +273,7 @@ class ChatViewModel(
 
     private fun subscribeToPendingMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { messageRepository.getLocalMessages(chatId) },
+            collect = { messageRepository.observeLocalMessages(chatId) },
             onCollect = ::onCollectPendingMessages
         )
     }

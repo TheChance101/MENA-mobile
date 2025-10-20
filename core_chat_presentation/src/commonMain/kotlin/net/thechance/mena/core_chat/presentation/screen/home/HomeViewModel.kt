@@ -80,7 +80,7 @@ class HomeViewModel(
 
     private fun listenToIncomingMessages() {
         tryToCollect(
-            collect = {messageRepository.getMessages() },
+            collect = {messageRepository.observeMessages() },
             onCollect = ::onCollectMessage,
             onError = { },
         )
