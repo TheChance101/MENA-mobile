@@ -4,8 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import net.thechance.mena.trends.data.dto.UserDto
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.data.util.NetworkConstants.IDENTITY_PATH
-import net.thechance.mena.trends.data.util.NetworkConstants.PROFILE_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkConstants.USER_INFO_ENDPOINT
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.UserRepository
@@ -19,7 +18,7 @@ internal class UserRepositoryImpl(
 
     override suspend fun getCurrentUserInfo(): User {
         return safeApiCall<UserDto> {
-            networkClient.get("/$IDENTITY_PATH/$PROFILE_ENDPOINT")
+            networkClient.get(USER_INFO_ENDPOINT)
         }.toEntity()
     }
 }

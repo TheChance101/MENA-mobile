@@ -24,7 +24,7 @@ import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.data.util.NetworkConstants.FEED_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkConstants.REELS_FEED_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
 import net.thechance.mena.trends.data.util.NetworkConstants.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
@@ -68,8 +68,8 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun getFeedReels(page: Int, reelId: String?): List<Reel> {
         val endpoint = reelId?.let {
-            "$FEED_ENDPOINT/$it"
-        } ?: FEED_ENDPOINT
+            "$REELS_FEED_ENDPOINT/$it"
+        } ?: REELS_FEED_ENDPOINT
 
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
             networkClient.get(endpoint) {
