@@ -1,7 +1,7 @@
 package net.thechance.mena.core_chat.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
