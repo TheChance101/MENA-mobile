@@ -108,8 +108,6 @@ private fun TransactionDetailsScreenContent(
                     }
                 }
 
-                state.errorState != null -> ErrorView(onRetry = { interactionListener.onRefresh() })
-
                 else -> {
                     TransactionDetailsSuccessContent(
                         state = state,

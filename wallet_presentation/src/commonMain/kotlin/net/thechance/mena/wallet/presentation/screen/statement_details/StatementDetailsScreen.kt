@@ -106,25 +106,22 @@ private fun StatementDetailsContent(
                 isLoading = state.isLoading,
             )
         },
+        onRetry = { listener.onRetryClicked() },
+        errorState = state.errorState
     ) {
-        StatementViewer(state = state, onRetry = { listener.onRetryClicked() })
+        StatementViewer(state = state)
     }
 }
 
 @Composable
 fun StatementViewer(
     state: StatementDetailsScreenState,
-    onRetry: () -> Unit
 ) {
     when {
         state.isLoading ->
             Box(modifier = Modifier.fillMaxSize()) {
                 ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
             }
-
-        state.errorState != null -> {
-            ErrorView(onRetry = onRetry)
-        }
 
         else -> {
             PdfViewer(pdf = state.statement)

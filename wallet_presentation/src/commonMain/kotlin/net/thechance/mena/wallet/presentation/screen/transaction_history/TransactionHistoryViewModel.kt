@@ -14,6 +14,7 @@ import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
@@ -299,7 +300,10 @@ class TransactionHistoryViewModel(
     }
 
     private fun onPaginationError(throwable: Throwable?) {
-        updateState { it.copy(errorState = ErrorState.Unknown) }
+        when (throwable) {
+            is NoInternetException -> updateState { it.copy(errorState = ErrorState.NoInternet) }
+            else -> updateState { it.copy(errorState = ErrorState.Unknown) }
+        }
     }
 
     private fun showInvalidDatesSnackBar() {

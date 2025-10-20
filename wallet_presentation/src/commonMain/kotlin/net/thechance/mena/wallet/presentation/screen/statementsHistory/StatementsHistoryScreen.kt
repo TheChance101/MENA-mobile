@@ -73,7 +73,7 @@ private fun EditModeContent(
 ) {
     WalletScaffold(
         topBar = { EditModeAppBar(listener = listener) },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) }
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
     ) { StatementHistoryBody(state = state, listener = listener) }
 }
 

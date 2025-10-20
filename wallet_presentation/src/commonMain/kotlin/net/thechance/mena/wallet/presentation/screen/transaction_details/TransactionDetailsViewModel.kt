@@ -26,7 +26,8 @@ class TransactionDetailsViewModel(
     @Provided private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
-    TransactionDetailsScreenState()), TransactionDetailsInteractionListener {
+    TransactionDetailsScreenState()
+), TransactionDetailsInteractionListener {
 
     val id = transactionDetailsArgs.id
 
@@ -42,6 +43,7 @@ class TransactionDetailsViewModel(
                 )
             },
             onSuccess = ::onGetTransactionDetailsSuccess,
+            onFinish = ::onGetTransactionDetailsFinish,
             onError = ::onGetTransactionDetailsError,
             onStart = ::onGetTransactionDetailsStart,
             dispatcher = ioDispatcher
@@ -55,11 +57,15 @@ class TransactionDetailsViewModel(
     }
 
     private fun onGetTransactionDetailsError(errorState: ErrorState) {
-        updateState { it.copy(isLoading = false, errorState = errorState) }
+        updateState { it.copy(errorState = errorState) }
     }
 
     private fun onGetTransactionDetailsStart() {
         updateState { it.copy(isLoading = true) }
+    }
+
+    private fun onGetTransactionDetailsFinish() {
+        updateState { it.copy(isLoading = false) }
     }
 
     override fun onBackButtonClicked() {
@@ -92,7 +98,8 @@ class TransactionDetailsViewModel(
         showSnackBar(
             title = stringProvider.getString(Res.string.error),
             message = stringProvider.getString(Res.string.share_transaction_details_error_msg),
-            isSuccess = false)
+            isSuccess = false
+        )
     }
 
     private suspend fun showSnackBar(

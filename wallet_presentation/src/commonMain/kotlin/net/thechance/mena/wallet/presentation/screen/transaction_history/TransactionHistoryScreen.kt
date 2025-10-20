@@ -136,9 +136,6 @@ fun TransactionHistoryContent(
                 }
             }
 
-            state.errorState != null ->
-                ErrorView(onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
-
             state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
                 TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
             }
