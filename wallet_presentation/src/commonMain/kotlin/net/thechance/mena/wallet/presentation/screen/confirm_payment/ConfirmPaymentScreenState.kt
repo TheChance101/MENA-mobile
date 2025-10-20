@@ -15,7 +15,8 @@ data class ConfirmPaymentScreenState(
     data class PaymentUiState(
         val amount: String = "",
         val status: Boolean = false,
-        val balance: String = ""
+        val balance: String = "",
+        val userMessage: String = ""
     )
 
     data class ReceiverUiState(
