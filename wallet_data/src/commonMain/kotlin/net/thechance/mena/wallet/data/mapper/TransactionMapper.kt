@@ -3,8 +3,8 @@ package net.thechance.mena.wallet.data.mapper
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.wallet.data.dto.TransactionDto
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.domain.entity.TransactionStatus
+import net.thechance.mena.wallet.domain.entity.TransactionType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
