@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,19 +23,22 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.component.FaithSnackBar
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.BasmalaHeader
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.UnifiedChunkAyat
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -69,7 +73,7 @@ fun SurahScreen(
 
 @Composable
 private fun Content(
-    state: SurahScreenState,
+    state: SurahUiState,
     listener: SurahInteractionListener,
     snackBarState: SnackBarState,
     modifier: Modifier = Modifier
@@ -115,7 +119,7 @@ private fun Content(
 @Composable
 private fun AyatOfSurah(
     listener: SurahInteractionListener,
-    state: SurahScreenState,
+    state: SurahUiState,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -151,7 +155,7 @@ private fun AyatOfSurah(
 private fun SetupScrollTracking(
     lazyListState: LazyListState,
     ayahChunks: List<List<Ayah>>,
-    state: SurahScreenState,
+    state: SurahUiState,
     listener: SurahInteractionListener,
     textLayoutResult: TextLayoutResult?,
     currentChunkAyat: List<Ayah>
@@ -166,7 +170,7 @@ private fun SetupScrollTracking(
 
     HandleInitialScroll(
         initialAyahToScroll = state.initialAyahToScroll,
-        selectedAyahIndex = state.selectedAyahIndex,
+        selectedAyahIndex = state.selectedAyahNumber,
         isBasmalaVisible = state.isBasmalaVisible,
         lazyListState = lazyListState,
         highlightAyah = listener::highlightAyah,
@@ -242,7 +246,7 @@ private fun HandleInitialScroll(
 @Composable
 private fun HideAyahActionButtonsOnScroll(
     lazyListState: LazyListState,
-    state: SurahScreenState,
+    state: SurahUiState,
     listener: SurahInteractionListener
 ) {
     LaunchedEffect(lazyListState, state.isAyahActionButtonsVisible) {
@@ -256,7 +260,7 @@ private fun HideAyahActionButtonsOnScroll(
 
 @Composable
 private fun InitializeBasmalaTilawahPosition(
-    state: SurahScreenState,
+    state: SurahUiState,
     listener: SurahInteractionListener
 ) {
     LaunchedEffect(state.isBasmalaVisible) {
@@ -269,7 +273,7 @@ private fun InitializeBasmalaTilawahPosition(
 private fun AyahList(
     modifier: Modifier,
     lazyListState: LazyListState,
-    state: SurahScreenState,
+    state: SurahUiState,
     ayahChunks: List<List<Ayah>>,
     preRenderedChunks: List<AnnotatedString>,
     listener: SurahInteractionListener,
@@ -284,7 +288,7 @@ private fun AyahList(
         if (state.isBasmalaVisible) {
             item {
                 BasmalaHeader(
-                    selectedAyahIndex = state.selectedAyahIndex,
+                    selectedAyahIndex = state.selectedAyahNumber,
                     onDismissActionButtons = listener::onDismissActionButtons
                 )
             }
@@ -296,7 +300,7 @@ private fun AyahList(
 
             UnifiedChunkAyat(
                 chunkAyat = chunkAyat,
-                selectedAyahIndex = state.selectedAyahIndex,
+                selectedAyahIndex = state.selectedAyahNumber,
                 onLongPress = { ayah ->
                     listener.onAyahLongPress(
                         ayahContent = ayah.plainContent,
@@ -464,3 +468,80 @@ private fun getAyahLineTopPosition(
 }
 
 private const val AYAT_PER_PAGE = 70
+
+@Composable
+@Preview
+private fun SurahScreenPreview() {
+    QuranTheme {
+        CompositionLocalProvider(LocalNavController provides rememberNavController()) {
+            Content(
+                state = SurahUiState(
+                    surahId = 1,
+                    surahName = "Al-Fatiha",
+                    ayatOfSurah = listOf(
+                        Ayah(
+                            number = 1,
+                            surahId = 1,
+                            content = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                            plainContent = "بسم الله الرحمن الرحيم"
+                        ),
+                        Ayah(
+                            number = 2,
+                            surahId = 1,
+                            content = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+                            plainContent = "الحمد لله رب العالمين"
+                        ),
+                        Ayah(
+                            number = 3,
+                            surahId = 1,
+                            content = "الرَّحْمَٰنِ الرَّحِيمِ",
+                            plainContent = "الرحمن الرحيم"
+                        ),
+                        Ayah(
+                            number = 4,
+                            surahId = 1,
+                            content = "مَالِكِ يَوْمِ الدِّينِ",
+                            plainContent = "مالك يوم الدين"
+                        ),
+                        Ayah(
+                            number = 5,
+                            surahId = 1,
+                            content = "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+                            plainContent = "إياك نعبد وإياك نستعين"
+                        ),
+                        Ayah(
+                            number = 6,
+                            surahId = 1,
+                            content = "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+                            plainContent = "اهدنا الصراط المستقيم"
+                        ),
+                        Ayah(
+                            number = 7,
+                            surahId = 1,
+                            content = "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
+                            plainContent = "صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين"
+                        )
+                    ),
+                    isBasmalaVisible = true,
+                    selectedAyahNumber = null,
+                    isAyahActionButtonsVisible = false,
+                    initialAyahToScroll = null
+                ),
+                listener = object : SurahInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onDismissActionButtons() {}
+                    override fun onShareClick(ayahContent: String) {}
+                    override fun onBookmarkClick(ayahNumber: Int) {}
+                    override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
+                    override fun onSearchClick() {}
+                    override fun onCopyClick(ayahContent: String) {}
+                    override fun onInitialAyahScrolled() {}
+                    override fun highlightAyah(ayahNumber: Int) {}
+                    override fun updateContinueTilawah(ayahNumber: Int) {}
+
+                },
+                snackBarState = SnackBarState()
+            )
+        }
+    }
+}

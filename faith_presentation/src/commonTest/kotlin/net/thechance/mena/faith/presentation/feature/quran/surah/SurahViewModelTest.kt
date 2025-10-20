@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.utils.ClipboardManager
@@ -311,7 +312,7 @@ class SurahViewModelTest {
         advanceUntilIdle()
 
         // When
-        testViewModel.onFirstVisibleAyahChanged(TRACKED_AYAH_NUMBER)
+        testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
         advanceUntilIdle()
     }
 
@@ -332,7 +333,7 @@ class SurahViewModelTest {
             advanceUntilIdle()
 
             // When
-            testViewModel.onFirstVisibleAyahChanged(TRACKED_AYAH_NUMBER)
+            testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
             advanceUntilIdle()
         }
 
@@ -354,7 +355,7 @@ class SurahViewModelTest {
             advanceUntilIdle()
 
             // When
-            testViewModel.onFirstVisibleAyahChanged(TRACKED_AYAH_NUMBER)
+            testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
             advanceUntilIdle()
 
         }
@@ -423,7 +424,6 @@ class SurahViewModelTest {
 
 
     private companion object {
-
         const val TRACKED_AYAH_NUMBER = 5
         const val DEFAULT_SURAH_ID = 1
         const val TEST_AYAH_INDEX = 0
@@ -438,6 +438,7 @@ class SurahViewModelTest {
         const val AYAH_TO_SHARE = "Ayah to share"
         const val EMPTY_STRING = ""
         const val AYAH_CONTENT = "Test ayah content"
+        const val AYAH_TO_COPY = "Test ayah to copy"
         const val SURAH_BAQARAH = "Al-Baqarah"
         const val SURAH_BAQARAH_ID = 2
         private val dummyAyat = listOf(
