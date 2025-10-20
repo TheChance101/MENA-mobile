@@ -100,8 +100,8 @@ fun TransactionHistoryContent(
                     onDismiss = interactionListener::onDismissFilter,
                     onClickAddFilter = interactionListener::onApplyFilterClicked,
                     onResetClicked = interactionListener::onResetFilterClicked,
-                    onTypeToggled = interactionListener::selectFilterType,
-                    onStatusSelected = interactionListener::selectFilterStatus,
+                    onTypeToggled = interactionListener::onFilterTypeSelected,
+                    onStatusSelected = interactionListener::onFilterStatusSelected,
                     onStartDateClicked = interactionListener::onStartDateClicked,
                     onEndDateClicked = interactionListener::onEndDateClicked
                 )
