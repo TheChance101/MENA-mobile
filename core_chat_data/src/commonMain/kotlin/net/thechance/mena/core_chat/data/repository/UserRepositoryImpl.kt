@@ -11,7 +11,7 @@ import net.thechance.mena.core_chat.domain.repository.UserRepository
 
 class UserRepositoryImpl(
     private val client: HttpClient,
-    ): BaseRepository, UserRepository {
+    ): BaseRepository(), UserRepository {
     override suspend fun getUserInfo(): User {
         return tryNetworkCall<UserDto>(
             bodyType = typeInfo<UserDto>()

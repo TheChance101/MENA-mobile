@@ -11,7 +11,7 @@ import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.UnAuthorizedException
 import net.thechance.mena.core_chat.domain.exception.UnknownException
 
-interface BaseRepository {
+abstract class BaseRepository {
 
     suspend fun <T> tryNetworkCall(
         defaultException: (Throwable) -> ChatException = { e ->

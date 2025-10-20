@@ -25,7 +25,7 @@ class ChatRepositoryImpl(
     private val client: HttpClient,
     private val webSocketManager: WebSocketManager,
     private val imageDownloader: ImageDownloader,
-) : ChatRepository, BaseRepository {
+) : ChatRepository, BaseRepository() {
 
     override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {
         return tryNetworkCall<PagedDataDto<ChatSummaryDto>>(

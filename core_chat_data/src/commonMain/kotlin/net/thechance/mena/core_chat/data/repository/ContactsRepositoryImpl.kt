@@ -30,7 +30,7 @@ class ContactsRepositoryImpl(
     private val client: HttpClient,
     private val contactsProvider: ContactsProvider,
     private val dataStore: DataStore<Preferences>
-) : ContactsRepository, BaseRepository {
+) : ContactsRepository, BaseRepository() {
 
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun getUserContacts(pageNumber: Int): PagedData<Contact> {

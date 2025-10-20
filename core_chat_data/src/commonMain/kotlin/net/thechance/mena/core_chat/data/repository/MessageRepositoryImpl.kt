@@ -46,7 +46,7 @@ class MessageRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val messageDao: MessageDao,
     private val json: Json,
-) : BaseRepository, MessageRepository {
+) : BaseRepository(), MessageRepository {
     private val messageFlows = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)
