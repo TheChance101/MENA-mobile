@@ -14,7 +14,6 @@ import java.io.File
 // Chosen as a good balance between rendering time and image sharpness
 private const val IMAGE_SCALE = 1.67f
 
-
 actual suspend fun splitPdfToPngs(pdfData: ByteArray): List<ByteArray> = withContext(Dispatchers.IO) {
     runCatching {
         val fileManager = GlobalContext.get().get<FileManager>()

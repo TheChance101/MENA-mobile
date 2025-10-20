@@ -7,7 +7,7 @@ interface FileSharer {
 }
 
 @Single
-expect class FileSharerImpl() : FileSharer {
+expect class FileSharerImpl(fileManager: FileManager) : FileSharer {
     override suspend fun shareFile(
         fileBytes: ByteArray,
         fileName: String,

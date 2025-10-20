@@ -6,14 +6,14 @@ import android.content.Intent
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 import org.koin.core.context.GlobalContext
 import java.io.File
 
 @Single
-actual class FileSharerImpl : FileSharer {
+actual class FileSharerImpl actual constructor(@Provided private val fileManager: FileManager) : FileSharer {
     private val context = GlobalContext.get().get<Context>()
-    private val fileManager = GlobalContext.get().get<FileManager>()
 
     actual override suspend fun shareFile(
         fileBytes: ByteArray,
