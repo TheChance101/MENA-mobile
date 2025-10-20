@@ -73,7 +73,8 @@ class ChatViewModelTest {
                 any(),
                 any()
             )
-        } returns PagedData(emptyList(), 0, true) everySuspend {
+        } returns PagedData(emptyList(), 0, true)
+        everySuspend {
             messageRepository.getLocalMessages(
                 chatId
             )
@@ -105,7 +106,8 @@ class ChatViewModelTest {
             messages,
             messages.size,
             false
-        ) everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        )
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
         every { messageRepository.getMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
 

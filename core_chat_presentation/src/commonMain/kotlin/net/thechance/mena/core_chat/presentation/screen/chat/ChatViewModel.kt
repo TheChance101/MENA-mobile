@@ -459,6 +459,7 @@ class ChatViewModel(
             chatHistoryPaginator.loadNextItems()
         }
     }
+
     companion object {
         const val PAGE_SIZE = 40
         const val INITIAL_PAGE = 0
