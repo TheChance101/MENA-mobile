@@ -1,19 +1,18 @@
 package net.thechance.mena.wallet.data.repository.transaction
 
 import io.ktor.client.request.setBody
-import kotlinx.datetime.LocalDate
-import net.thechance.mena.wallet.data.dto.FirstTransactionDateDto
-import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
-import net.thechance.mena.wallet.data.dto.PendingTransactionRequestBody
-import net.thechance.mena.wallet.data.dto.TransactionDto
-import net.thechance.mena.wallet.data.dto.TransactionReceiverDto
-import net.thechance.mena.wallet.data.exceptions.safeApiCall
+import net.thechance.mena.wallet.data.dto.remote.FirstTransactionDateDto
+import net.thechance.mena.wallet.data.dto.remote.PagedTransactionResponseDto
+import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
+import net.thechance.mena.wallet.data.dto.remote.TransactionDto
+import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
+import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
+import net.thechance.mena.wallet.data.mapper.toTransactionEntityList
 import net.thechance.mena.wallet.data.network_client.NetworkClient
-import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
+import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.koin.core.annotation.Single
 import kotlin.uuid.ExperimentalUuidApi
@@ -28,33 +27,24 @@ class TransactionRepositoryImpl(
         page: Int,
         pageSize: Int,
         transactionFilterParams: TransactionFilterParams?
-    ): List<Transaction> {
-        return safeApiCall<PagedTransactionResponseDto> {
-            networkClient.get(
-                urlString = TRANSACTION_PATH,
-                block = transactionFilterParams?.toRequest(page = page, pageSize = pageSize) ?: {}
-            )
-        }.transactions.orEmpty().map { it.toEntity() }
-    }
+    ) = safeApiCall<PagedTransactionResponseDto> {
+        networkClient.get(
+            urlString = TRANSACTION_PATH,
+            block = transactionFilterParams?.toRequest(page = page, pageSize = pageSize) ?: {}
+        )
+    }.transactions.toTransactionEntityList()
 
-    override suspend fun getTransactionById(transactionId: Uuid): Transaction {
-        return safeApiCall<TransactionDto> {
-            networkClient.get("$TRANSACTION_PATH/$transactionId")
-        }.toEntity()
-    }
+    override suspend fun getTransactionById(transactionId: Uuid) = safeApiCall<TransactionDto> {
+        networkClient.get(getTransactionByIdPath(transactionId))
+    }.toEntity()
 
-    override suspend fun getFirstTransactionDate(): LocalDate? {
-        return safeApiCall<FirstTransactionDateDto> {
-            networkClient.get(FIRST_TRANSACTION_DATE_PATH)
-        }.firstTransactionDate
-    }
+    override suspend fun getFirstTransactionDate() = safeApiCall<FirstTransactionDateDto> {
+        networkClient.get(FIRST_TRANSACTION_DATE_PATH)
+    }.firstTransactionDate
 
-    override suspend fun addPendingTransaction(
-        receiverId: Uuid,
-        amount: Double
-    ): Uuid {
+    override suspend fun addPendingTransaction(receiverId: Uuid, amount: Double): Uuid {
         return safeApiCall<Uuid> {
-            networkClient.post("$TRANSACTION_PATH$ADD_TRANSACTION") {
+            networkClient.post(ADD_TRANSACTION_PATH) {
                 setBody(
                     PendingTransactionRequestBody(
                         amount = amount,
@@ -67,7 +57,7 @@ class TransactionRepositoryImpl(
 
     override suspend fun getTransactionReceiver(transactionId: Uuid): TransactionReceiver {
         return safeApiCall<TransactionReceiverDto> {
-            networkClient.get("${TRANSACTION_PATH}/$transactionId$RECEIVER_DETAILS")
+            networkClient.get(getTransactionReceiverPath(transactionId))
         }.toEntity()
     }
 
@@ -76,6 +66,9 @@ class TransactionRepositoryImpl(
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/p2p/initiate"
         const val RECEIVER_DETAILS = "/receiver-details"
+        const val ADD_TRANSACTION_PATH = "$TRANSACTION_PATH$ADD_TRANSACTION"
+        fun getTransactionByIdPath(transactionId: Uuid) = "$TRANSACTION_PATH/$transactionId"
+        fun getTransactionReceiverPath(transactionId: Uuid) =
+            "$TRANSACTION_PATH/$transactionId$RECEIVER_DETAILS"
     }
-
 }

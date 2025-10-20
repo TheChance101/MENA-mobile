@@ -73,7 +73,7 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onStyleClicked(style: Dukan.Style) {
+    override fun onStyleClicked(style: CreateDukanUiState.Style) {
         updateState { copy(selectedStyle = style) }
         updateNextButtonEnableState()
     }
@@ -102,7 +102,7 @@ class CreateDukanViewModel(
     private fun updateScreenStateWithStyles(dukanStyles: List<Dukan.Style>) {
         val stylesUiState = dukanStyles.map { style ->
             DukanStyleUiState(
-                style = style,
+                style = style.toUiStyle(),
                 name = style.toUiStyleName()
             )
         }
