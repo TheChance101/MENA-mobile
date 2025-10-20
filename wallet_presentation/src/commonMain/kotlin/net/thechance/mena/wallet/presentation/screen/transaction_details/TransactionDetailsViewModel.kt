@@ -24,7 +24,7 @@ class TransactionDetailsViewModel(
     @Provided private val transactionDetailsArgs: TransactionDetailsArgs,
     @Provided val transactionRepository: TransactionRepository,
     @Provided private val stringProvider: StringProvider,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
     TransactionDetailsScreenState()), TransactionDetailsInteractionListener {
 
@@ -44,7 +44,7 @@ class TransactionDetailsViewModel(
             onSuccess = ::onGetTransactionDetailsSuccess,
             onError = ::onGetTransactionDetailsError,
             onStart = ::onGetTransactionDetailsStart,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 

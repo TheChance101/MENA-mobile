@@ -23,7 +23,7 @@ class ConfirmPaymentViewModel(
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val paymentRepository: PaymentRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
@@ -56,7 +56,7 @@ class ConfirmPaymentViewModel(
             onSuccess = ::onGetUserBalanceSuccess,
             onError = ::onGetUserBalanceError,
             onStart = { updateState { it.copy(isGetBalanceLoading = true) } },
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -66,7 +66,7 @@ class ConfirmPaymentViewModel(
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onGetReceiverInfoError,
             onStart = { updateState { it.copy(isGetUserLoading = true) } },
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -131,7 +131,7 @@ class ConfirmPaymentViewModel(
             },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 }

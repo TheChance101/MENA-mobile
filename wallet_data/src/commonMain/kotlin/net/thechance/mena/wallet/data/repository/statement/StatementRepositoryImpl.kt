@@ -43,12 +43,12 @@ class StatementRepositoryImpl(
             statementDao.insertStatement(statement.toLocal())
         }
 
-    override suspend fun deleteStatementById(id: Long) =
+    override suspend fun deleteStatementById(id: String) =
         safeCall({ UnknownException("Failed to delete statement") }) {
             statementDao.deleteStatementById(id)
         }
 
-    override suspend fun getStatementById(id: Long): Statement =
+    override suspend fun getStatementById(id: String): Statement =
         safeCall({ UnknownException("Failed to get statement") }) {
             statementDao.getStatementById(id).toEntity()
         }

@@ -56,7 +56,7 @@ class ConfirmPaymentViewModelTest {
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
                 paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
+                dispatcher = testDispatcher
             )
 
             viewModel.state.test {
@@ -78,7 +78,7 @@ class ConfirmPaymentViewModelTest {
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
                 paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
+                dispatcher = testDispatcher
             )
 
             viewModel.state.test {
@@ -103,7 +103,7 @@ class ConfirmPaymentViewModelTest {
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
                 paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
+                dispatcher = testDispatcher
             )
 
             viewModel.state.test {
@@ -130,7 +130,7 @@ class ConfirmPaymentViewModelTest {
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
                 paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
+                dispatcher = testDispatcher
             )
 
             viewModel.state.test {
@@ -154,7 +154,7 @@ class ConfirmPaymentViewModelTest {
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
                 paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
+                dispatcher = testDispatcher
             )
 
             viewModel.state.test {
@@ -175,7 +175,7 @@ class ConfirmPaymentViewModelTest {
             balanceRepository = balanceRepository,
             transactionRepository = transactionRepository,
             paymentRepository = paymentRepository,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.uiEffect.test {
@@ -194,7 +194,7 @@ class ConfirmPaymentViewModelTest {
             balanceRepository = balanceRepository,
             transactionRepository = transactionRepository,
             paymentRepository = paymentRepository,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.state.test {

@@ -611,7 +611,7 @@ class ExportTransactionsViewModelTest {
             transactionRepository = transactionRepository,
             statementRepository = repository,
             pdfHandler = pdfHandler,
-            ioDispatcher = testDispatcher,
+            dispatcher = testDispatcher,
             stringProvider = stringProvider
         )
         advanceUntilIdle()
