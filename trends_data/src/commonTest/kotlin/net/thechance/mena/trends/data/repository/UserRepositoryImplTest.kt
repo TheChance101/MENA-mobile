@@ -4,7 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.dto.UserInfoDto
+import net.thechance.mena.trends.data.dto.UserDto
 import net.thechance.mena.trends.data.repository.util.mockUserInfoHttpClient
 import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.UserRepository
@@ -39,7 +39,7 @@ class UserRepositoryImplTest {
             lastName = "nour",
             profileImageUrl = "img.png"
         )
-        val userInfoDto = UserInfoDto(
+        val userDto = UserDto(
             username = "nour",
             firstName = "nour",
             lastName = "nour",

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import net.thechance.mena.trends.domain.entity.UploadReelProgress
+import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -78,16 +78,33 @@ internal class UploadReelViewModel(
         updateState { copy(uploadingState = UploadReelScreenState.UploadingReelState.UPLOADING) }
     }
 
-    private fun onCollectUploadProgress(progress: UploadReelProgress) {
-        val uploadingProgress = progress.numberOfUploadedBytes / progress.totalBytes.toFloat()
+    private fun onCollectUploadProgress(progress: UploadReelStatus) {
+        when (progress) {
+            is UploadReelStatus.UploadReelProgress ->
+                onUploadReelProgress(uploadReelProgress = progress)
+
+            is UploadReelStatus.UploadReelSuccess -> onUploadReelSuccess(uploadReelSuccess = progress)
+        }
+    }
+
+    private fun onUploadReelProgress(uploadReelProgress: UploadReelStatus.UploadReelProgress) {
+        val uploadingProgress =
+            uploadReelProgress.numberOfUploadedBytes / uploadReelProgress.totalBytes.toFloat()
         updateState {
             copy(
-                reelId = progress.reelId.takeIf(String::isNotEmpty),
                 uploadingProgress = uploadingProgress,
                 sizeUploaded = formatBytes(
-                    bytes = progress.numberOfUploadedBytes,
+                    bytes = uploadReelProgress.numberOfUploadedBytes,
                     withUnit = false
                 )
+            )
+        }
+    }
+
+    private fun onUploadReelSuccess(uploadReelSuccess: UploadReelStatus.UploadReelSuccess) {
+        updateState {
+            copy(
+                reelId = uploadReelSuccess.reelId,
             )
         }
     }
@@ -113,9 +130,9 @@ internal class UploadReelViewModel(
     private fun extractFrame() {
         tryToExecute(
             block = {
-                reelsRepository.getReelThumbnail(
+                reelsRepository.extractReelThumbnail(
                     filePath = state.value.selectedFile.filePath,
-                    timeMs = 1L
+                    timeInMillis = 1L
                 )
             },
             onSuccess = ::onExtractFrameSuccess,
@@ -127,10 +144,12 @@ internal class UploadReelViewModel(
     }
 
     private fun onExtractFrameSuccess(thumbnail: ByteArray?) {
-        updateState { copy(
-            thumbnail = thumbnail,
-            isNextButtonEnabled = true,
-        ) }
+        updateState {
+            copy(
+                thumbnail = thumbnail,
+                isNextButtonEnabled = true,
+            )
+        }
     }
 
     private fun onExtractFrameError(errorState: ErrorState) {
@@ -141,7 +160,7 @@ internal class UploadReelViewModel(
         uploadThumbnail()
     }
 
-    private fun uploadThumbnail(){
+    private fun uploadThumbnail() {
         tryToExecute(
             block = {
                 state.value.reelId?.let { reelId ->
@@ -168,7 +187,7 @@ internal class UploadReelViewModel(
         updateState { copy(isNextButtonLoading = false) }
     }
 
-    private fun onUploadThumbnailSuccess(){
+    private fun onUploadThumbnailSuccess() {
         state.value.reelId?.let {
             sendEffect(UploadReelScreenEffect.NavigateToAddDescription(it))
         }
