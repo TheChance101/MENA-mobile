@@ -6,7 +6,7 @@ import net.thechance.mena.wallet.data.dto.remote.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
 import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
-import net.thechance.mena.wallet.data.exceptions.safeApiCall
+import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.mapper.toTransactionEntityList

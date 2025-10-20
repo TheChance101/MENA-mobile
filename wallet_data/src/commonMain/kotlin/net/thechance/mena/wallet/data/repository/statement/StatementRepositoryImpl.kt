@@ -2,14 +2,16 @@ package net.thechance.mena.wallet.data.repository.statement
 
 import io.ktor.client.statement.HttpResponse
 import net.thechance.mena.wallet.data.database.StatementDao
-import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toLocal
 import net.thechance.mena.wallet.data.mapper.toStatementEntityList
 import net.thechance.mena.wallet.data.mapper.toStatementRequest
 import net.thechance.mena.wallet.data.mapper.toStatementWithMetaData
 import net.thechance.mena.wallet.data.network_client.NetworkClient
+import net.thechance.mena.wallet.data.utils.safeApiCall
+import net.thechance.mena.wallet.data.utils.safeCall
 import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import org.koin.core.annotation.Single
@@ -31,21 +33,25 @@ class StatementRepositoryImpl(
 
     override suspend fun getStatements(page: Int, pageSize: Int): List<Statement> {
         val offset = (page - 1) * pageSize
-        return statementDao.getAllStatement(limit = pageSize, offset = offset).toStatementEntityList()
+        return safeCall({ UnknownException("Failed to get statements") }) {
+            statementDao.getAllStatement(limit = pageSize, offset = offset).toStatementEntityList()
+        }
     }
 
-    override suspend fun insertStatement(statement: Statement) {
-        statementDao.insertStatement(statement.toLocal())
-    }
+    override suspend fun insertStatement(statement: Statement) =
+        safeCall({ UnknownException("Failed to insert statement") }) {
+            statementDao.insertStatement(statement.toLocal())
+        }
 
+    override suspend fun deleteStatementById(id: Long) =
+        safeCall({ UnknownException("Failed to delete statement") }) {
+            statementDao.deleteStatementById(id)
+        }
 
-    override suspend fun deleteStatementById(id: Long) {
-        statementDao.deleteStatementById(id)
-    }
-
-    override suspend fun getStatementById(id: Long): Statement {
-        return statementDao.getStatementById(id).toEntity()
-    }
+    override suspend fun getStatementById(id: Long): Statement =
+        safeCall({ UnknownException("Failed to get statement") }) {
+            statementDao.getStatementById(id).toEntity()
+        }
 
     companion object {
         const val STATEMENT_PATH = "wallet/transactions/statement"

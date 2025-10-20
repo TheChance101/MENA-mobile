@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.data.exceptions
+package net.thechance.mena.wallet.data.utils
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
@@ -8,6 +8,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
+import net.thechance.mena.wallet.data.dto.ErrorDto
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
