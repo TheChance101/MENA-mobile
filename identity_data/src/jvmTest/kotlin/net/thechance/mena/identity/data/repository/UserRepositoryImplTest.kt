@@ -64,7 +64,7 @@ class UserRepositoryImplTest {
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertEquals(result.first(), fakeProfileResponse.toDomain())
     }
@@ -78,7 +78,7 @@ class UserRepositoryImplTest {
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.getUser() } returns flowOf(null)
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertEquals(result.first(), null)
     }
@@ -92,7 +92,7 @@ class UserRepositoryImplTest {
 
             every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-            val result = userRepositoryImpl.getUser()
+            val result = userRepositoryImpl.observeUser()
 
             assertEquals(fakeProfileResponse.toDomain(), result.first())
 
@@ -106,7 +106,7 @@ class UserRepositoryImplTest {
 
             every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-            userRepositoryImpl.getUser().first()
+            userRepositoryImpl.observeUser().first()
 
             coVerify(exactly = 0) { userDao.upsert(any()) }
 
@@ -121,7 +121,7 @@ class UserRepositoryImplTest {
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.getUser() } returns emptyFlow()
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertTrue(result.toList().isEmpty())
     }
@@ -135,7 +135,7 @@ class UserRepositoryImplTest {
         coEvery { userDao.upsert(any()) } returns Unit
         every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertEquals(fakeProfileResponse.firstName, result.first()?.firstName)
         assertEquals(fakeProfileResponse.username, result.first()?.username)

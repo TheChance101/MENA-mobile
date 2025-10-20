@@ -36,7 +36,7 @@ class ProfileViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        coEvery { userRepository.getUser() } returns flowOf(fakeUser)
+        coEvery { userRepository.observeUser() } returns flowOf(fakeUser)
         viewModel = ProfileScreenViewModel(
             userRepository,
             "",
@@ -64,7 +64,7 @@ class ProfileViewModelTest {
     @Test
     fun `should update state with error when repository throws`() = runTest {
 
-        coEvery { userRepository.getUser() } throws Exception()
+        coEvery { userRepository.observeUser() } throws Exception()
 
         viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
