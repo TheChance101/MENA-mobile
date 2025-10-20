@@ -3,6 +3,7 @@ package net.thechance.mena.wallet.data.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import net.thechance.mena.wallet.data.dto.local.LocalStatement
 
 @Dao
 interface StatementDao {

@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.data.database
+package net.thechance.mena.wallet.data.dto.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

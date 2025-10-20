@@ -6,7 +6,7 @@ import io.ktor.client.request.parameter
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import kotlinx.datetime.LocalDate
-import net.thechance.mena.wallet.data.database.LocalStatement
+import net.thechance.mena.wallet.data.dto.local.LocalStatement
 import net.thechance.mena.wallet.data.database.StatementWithMetaDataDto
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData

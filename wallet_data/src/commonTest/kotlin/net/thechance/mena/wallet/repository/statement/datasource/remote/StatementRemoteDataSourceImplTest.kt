@@ -13,7 +13,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import net.thechance.mena.wallet.data.database.LocalStatement
+import net.thechance.mena.wallet.data.dto.local.LocalStatement
 import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSourceImpl

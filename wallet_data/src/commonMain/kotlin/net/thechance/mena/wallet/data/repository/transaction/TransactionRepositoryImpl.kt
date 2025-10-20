@@ -2,11 +2,11 @@ package net.thechance.mena.wallet.data.repository.transaction
 
 import io.ktor.client.request.setBody
 import kotlinx.datetime.LocalDate
-import net.thechance.mena.wallet.data.dto.FirstTransactionDateDto
-import net.thechance.mena.wallet.data.dto.PagedTransactionResponseDto
-import net.thechance.mena.wallet.data.dto.PendingTransactionRequestBody
-import net.thechance.mena.wallet.data.dto.TransactionDto
-import net.thechance.mena.wallet.data.dto.TransactionReceiverDto
+import net.thechance.mena.wallet.data.dto.remote.FirstTransactionDateDto
+import net.thechance.mena.wallet.data.dto.remote.PagedTransactionResponseDto
+import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
+import net.thechance.mena.wallet.data.dto.remote.TransactionDto
+import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
