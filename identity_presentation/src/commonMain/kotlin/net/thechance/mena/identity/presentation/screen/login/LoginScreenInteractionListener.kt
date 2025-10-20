@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.login
 
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.menaCountries.MenaCountry
 
 interface LoginScreenInteractionListener : BaseInteractionListener {
 

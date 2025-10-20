@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.forgetPassword
 
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.menaCountries.MenaCountry
 
 data class ForgetPasswordScreenUIState(
     val phoneNumber: String = "",

@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.menaCountries.MenaCountry
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

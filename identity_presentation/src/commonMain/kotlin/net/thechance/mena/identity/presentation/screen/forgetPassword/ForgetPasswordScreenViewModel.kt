@@ -8,7 +8,7 @@ import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class ForgetPasswordScreenViewModel(
