@@ -15,7 +15,7 @@ fun List<TransactionDto>?.toTransactionEntityList(): List<Transaction> {
 fun TransactionDto.toEntity(): Transaction {
     return Transaction(
         id = id.toUuidOrNull()?: throw UnknownException("Invalid transaction id"),
-        createdAt = createdAt.toDateTime(),
+        createdAt = parseLocalDateTimeOrDefault(createdAt),
         status = TransactionStatus.valueOfOrDefault(status),
         senderName = senderName ?: "",
         receiverName = receiverName ?: "",

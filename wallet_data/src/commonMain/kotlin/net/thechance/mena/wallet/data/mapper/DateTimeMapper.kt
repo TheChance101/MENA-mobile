@@ -4,12 +4,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 
-fun String?.toDate() = this?.let {
+fun parseLocalDateOrDefault(value: String?) = value?.let {
     runCatching { LocalDate.parse(it) }
         .getOrDefault(DEFAULT_DATE)
 } ?: DEFAULT_DATE
 
-fun String?.toDateTime() = this?.let {
+fun parseLocalDateTimeOrDefault(value: String?) = value?.let {
     runCatching { LocalDateTime.parse(it) }
         .getOrDefault(DEFAULT_DATE_TIME)
 } ?: DEFAULT_DATE_TIME

@@ -38,8 +38,8 @@ fun List<LocalStatement>.toStatementEntityList(): List<Statement> {
 @OptIn(ExperimentalUuidApi::class)
 fun LocalStatement.toEntity(): Statement {
     return Statement(
-        startDate = this.startDate.toDate(),
-        endDate = this.endDate.toDate(),
+        startDate = parseLocalDateOrDefault(this.startDate),
+        endDate = parseLocalDateOrDefault(this.endDate),
         totalInflows = totalInflows,
         totalOutflows = totalOutflows,
         id = id,
@@ -55,8 +55,8 @@ suspend fun HttpResponse.toStatementWithMetaData(): StatementWithMetaData {
 
     return StatementWithMetaData(
         byteArray = readRawBytes(),
-        startDate = start.toDate(),
-        endDate = end.toDate(),
+        startDate = parseLocalDateOrDefault(start),
+        endDate = parseLocalDateOrDefault(end),
         totalInflows = inflows,
         totalOutflows = outflows,
     )
