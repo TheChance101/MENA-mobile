@@ -30,6 +30,11 @@ fun Statement.toLocal(): LocalStatement {
         fileName = fileName
     )
 }
+
+fun List<LocalStatement>.toStatementEntityList(): List<Statement> {
+    return this.map { it.toEntity() }
+}
+
 @OptIn(ExperimentalUuidApi::class)
 fun LocalStatement.toEntity(): Statement {
     return Statement(

@@ -8,6 +8,10 @@ import net.thechance.mena.wallet.domain.model.TransactionType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+fun List<TransactionDto>?.toTransactionEntityList(): List<Transaction> {
+    return this?.map { it.toEntity() }.orEmpty()
+}
+
 @OptIn(ExperimentalUuidApi::class)
 fun TransactionDto.toEntity(): Transaction {
     return Transaction(
@@ -20,17 +24,4 @@ fun TransactionDto.toEntity(): Transaction {
         type = type?.let { TransactionType.valueOf(type) } ?: TransactionType.SENT,
     )
 
-}
-
-@OptIn(ExperimentalUuidApi::class)
-fun Transaction.toDto(): TransactionDto {
-    return TransactionDto(
-        id = id.toString(),
-        createdAt = createdAt.toString(),
-        status = status.toString(),
-        senderName = senderName,
-        receiverName = receiverName,
-        amount = amount,
-        type = type.toString()
-    )
 }

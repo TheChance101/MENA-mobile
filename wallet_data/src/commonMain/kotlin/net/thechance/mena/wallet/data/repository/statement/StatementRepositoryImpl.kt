@@ -4,12 +4,12 @@ import io.ktor.client.statement.HttpResponse
 import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
+import net.thechance.mena.wallet.data.mapper.toStatementEntityList
 import net.thechance.mena.wallet.data.mapper.toLocal
 import net.thechance.mena.wallet.data.mapper.toStatementRequest
 import net.thechance.mena.wallet.data.mapper.toStatementWithMetaData
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Statement
-import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import org.koin.core.annotation.Single
@@ -22,22 +22,16 @@ class StatementRepositoryImpl(
 
     override suspend fun getStatementWithMetadata(
         filterRequestParams: TransactionFilterParams?
-    ): StatementWithMetaData {
-        return safeApiCall<HttpResponse> {
-            networkClient.get(
-                urlString = STATEMENT_PATH,
-                block = filterRequestParams?.toStatementRequest() ?: {}
-            )
-        }.toStatementWithMetaData()
-    }
+    ) = safeApiCall<HttpResponse> {
+        networkClient.get(
+            urlString = STATEMENT_PATH,
+            block = filterRequestParams?.toStatementRequest() ?: {}
+        )
+    }.toStatementWithMetaData()
 
-    override suspend fun getStatements(
-        page: Int,
-        pageSize: Int
-    ): List<Statement> {
+    override suspend fun getStatements(page: Int, pageSize: Int): List<Statement> {
         val offset = (page - 1) * pageSize
-        return statementDao.getAllStatement(limit = pageSize, offset = offset)
-            .map { it.toEntity() }
+        return statementDao.getAllStatement(limit = pageSize, offset = offset).toStatementEntityList()
     }
 
     override suspend fun insertStatement(statement: Statement) {
