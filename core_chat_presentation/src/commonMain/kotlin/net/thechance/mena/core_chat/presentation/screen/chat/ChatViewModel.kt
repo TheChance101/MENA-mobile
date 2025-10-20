@@ -267,7 +267,7 @@ class ChatViewModel(
 
         newMessages = newMessages.toMutableList().apply { add(0, message) }
         rebuildUiMessages()
-        messageRepository.markMessagesAsRead(message.chatId)
+        messageRepository.markMessagesAsReadById(message.chatId)
 
     }
 
@@ -304,7 +304,7 @@ class ChatViewModel(
     private suspend fun onLoadChatHistorySuccess(messages: List<Message>) {
         messagesHistoryCache = messages
         rebuildUiMessages()
-        messageRepository.markMessagesAsRead(state.value.chatId ?: return)
+        messageRepository.markMessagesAsReadById(state.value.chatId ?: return)
 
     }
 

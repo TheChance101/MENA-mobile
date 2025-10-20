@@ -14,5 +14,5 @@ interface MessageRepository {
     fun observeMessages(chatId: Uuid? = null): Flow<Message>
     fun observeReadMessages(): Flow<MarkMessageAsReadEvent>
     fun observeLocalMessages(chatId: Uuid): Flow<List<Message>>
-    suspend fun markMessagesAsRead(chatId: Uuid)
+    suspend fun markMessagesAsReadById(chatId: Uuid)
 }

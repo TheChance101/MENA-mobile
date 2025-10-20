@@ -209,7 +209,7 @@ class MessageRepositoryImpl(
         }
     }
 
-    override suspend fun markMessagesAsRead(chatId: Uuid) {
+    override suspend fun markMessagesAsReadById(chatId: Uuid) {
         webSocketManager.sendTextFrame(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
