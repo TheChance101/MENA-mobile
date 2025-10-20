@@ -20,10 +20,7 @@ data class TransactionDetailsScreenRoute(
 }
 
 fun NavGraphBuilder.transactionDetailsScreenRoute(navController: NavController){
-    composable<TransactionDetailsScreenRoute> { backStackEntry ->
-        TransactionDetailsScreen(
-            onNavigateBackClicked = { navController.popBackStack() },
-            id = backStackEntry.toRoute<TransactionDetailsScreenRoute>().id
-        )
+    composable<TransactionDetailsScreenRoute> {
+        TransactionDetailsScreen(onNavigateBackClicked = { navController.popBackStack() })
     }
 }
