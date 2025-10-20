@@ -12,6 +12,7 @@ import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -97,8 +98,8 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(4)
-            val state = awaitItem()
+            advanceUntilIdle()
+            val state = expectMostRecentItem()
             assertEquals(receiverUiState1, state.receiverUiState)
             cancelAndIgnoreRemainingEvents()
         }
@@ -113,7 +114,7 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(3)
+            skipItems(4)
             val state = awaitItem()
             assertEquals(ErrorState.Unknown, state.errorState)
             cancelAndIgnoreRemainingEvents()
@@ -129,7 +130,7 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(4)
+            skipItems(5)
             val state = awaitItem()
             assertEquals(ErrorState.Unknown, state.errorState)
             cancelAndIgnoreRemainingEvents()
@@ -157,7 +158,7 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(3)
+            skipItems(6)
             viewModel.onRefresh()
             val state = awaitItem()
             assertTrue(state.isLoading)
