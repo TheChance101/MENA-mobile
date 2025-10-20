@@ -171,7 +171,7 @@ class ConfirmPaymentViewModelTest {
         const val balance1 = 500045.2102
         const val amount1 = 5000.0
 
-        const val balance1_ui = "500,045.22"
+        const val balance1_ui = "500,045.21"
         const val amount1_ui = "5,000"
         const val receiverName1 = "nour"
         val status1 = true
