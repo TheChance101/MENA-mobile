@@ -35,20 +35,15 @@ import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
-import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun StatementDetailsScreen(
     onNavigateBackClicked: () -> Unit,
-    statementLocation: StorageLocation,
-    viewModel: StatementDetailsViewModel = koinViewModel(
-        parameters = { parametersOf(statementLocation) }
-    ),
+    viewModel: StatementDetailsViewModel = koinViewModel(),
     pdfHandler: PdfHandler = koinInject()
 ) {
 

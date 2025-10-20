@@ -16,10 +16,11 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 class StatementDetailsViewModel(
     @Provided private val pdfHandler: PdfHandler,
-    @Provided private val statementLocation: StorageLocation,
+    @Provided private val statementDetailsArgs: StatementDetailsArgs,
     private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementDetailsScreenState, StatementDetailsEffect>
     (StatementDetailsScreenState()), StatementDetailsInteractionListener {
+    val statementLocation = statementDetailsArgs.statementLocation
 
     init {
         getStatementPdf(statementLocation)

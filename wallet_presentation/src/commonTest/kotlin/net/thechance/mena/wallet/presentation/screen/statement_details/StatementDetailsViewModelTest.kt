@@ -30,7 +30,11 @@ class StatementDetailsViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
-    private val statementLocation = StorageLocation.Cache("test_statement.pdf")
+    private val statementLocation1 = StorageLocation.Cache("test_statement.pdf")
+    private val statementDetailsArgs = object : StatementDetailsArgs{
+        override val statementLocation: StorageLocation
+            get() = statementLocation1
+    }
     private lateinit var viewModel: StatementDetailsViewModel
 
     @BeforeTest
@@ -46,7 +50,7 @@ class StatementDetailsViewModelTest {
     @Test
     fun `onNavigateBackClicked should send NavigateBack effect when called`() =
         runTest(testDispatcher) {
-            viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
+            initViewModel()
 
             viewModel.uiEffect.test {
                 viewModel.onNavigateBackClicked()
@@ -116,7 +120,7 @@ class StatementDetailsViewModelTest {
         }
 
     private fun TestScope.initViewModel() {
-        viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
+        viewModel = StatementDetailsViewModel(pdfHandler,statementDetailsArgs, testDispatcher)
         advanceUntilIdle()
     }
 

@@ -17,11 +17,6 @@ fun NavGraphBuilder.statementDetailsScreenRoute(navController: NavController){
     composable<StatementDetailsScreenRoute>(
         typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
     ) { backStackEntry ->
-        val statementLocation = backStackEntry.toRoute<StatementDetailsScreenRoute>().statementLocation
-
-        StatementDetailsScreen(
-            onNavigateBackClicked = { navController.popBackStack() },
-            statementLocation = statementLocation
-        )
+        StatementDetailsScreen(onNavigateBackClicked = { navController.popBackStack() },)
     }
 }
