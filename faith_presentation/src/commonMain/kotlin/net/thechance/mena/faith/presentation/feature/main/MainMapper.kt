@@ -14,7 +14,7 @@ import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
-import net.thechance.mena.faith.presentation.util.extentions.formatInstantToTimeString
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatInstantToTimeString
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import kotlin.time.ExperimentalTime

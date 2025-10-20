@@ -9,8 +9,8 @@ import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.util.extentions.getHijriDate
-import net.thechance.mena.faith.presentation.util.extentions.getSunriseTime
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriDate
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getSunriseTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -18,8 +18,8 @@ class MainViewModel(
     private val quranRepository: QuranRepository,
     private val prayerTimeRepository: PrayerTimeRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : BaseViewModel<MainScreenState, MainScreenEffect>(
-    initialState = MainScreenState(),
+) : BaseViewModel<MainUiState, MainScreenEffect>(
+    initialState = MainUiState(),
 ), MainInteractionListener {
 
     init {
@@ -35,6 +35,7 @@ class MainViewModel(
     private fun loadPrayerTimes() {
         tryToExecute(
             execute = {
+                //TODO: get default location
                 val defaultLocation = Location(latitude = 30.186173, longitude = 31.158446)
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),

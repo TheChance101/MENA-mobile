@@ -864,7 +864,7 @@ private fun fakeSelectedCoordinates() = CreateDukanUiState.CoordinatesUiState(28
 private fun fakePointerLocation() = DpOffset(2.dp, 4.dp)
 private fun fakeCameraPosition() = CameraPosition(target = Position(29.0, 28.0))
 private fun fakeColorUiState() = ColorUiState(id = "1", color = 0xFFF545)
-private fun fakeSingleDukanStyle() = Dukan.Style.WIDE_IMAGE
+private fun fakeSingleDukanStyle() = CreateDukanUiState.Style.WIDE_IMAGE
 
 private fun Category.toUiState() = DukanCategoryUiState(
     id = id,

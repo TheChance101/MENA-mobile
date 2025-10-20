@@ -18,30 +18,36 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.cash.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
+import kotlinx.coroutines.flow.flowOf
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.bookmarks
 import mena.faith_presentation.generated.resources.empty_state_bookmark_description
 import mena.faith_presentation.generated.resources.empty_state_bookmark_image
 import mena.faith_presentation.generated.resources.empty_state_bookmark_title
+import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.component.BackIcon
-import net.thechance.mena.faith.presentation.component.FaithSnackBar
-import net.thechance.mena.faith.presentation.component.SwappableCard
-import net.thechance.mena.faith.presentation.extensions.paging.isEmpty
-import net.thechance.mena.faith.presentation.extensions.paging.isNotEmpty
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
+import net.thechance.mena.faith.presentation.components.SwappableCard
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.AyaBookmarkCard
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.utils.extentions.paging.isEmpty
+import net.thechance.mena.faith.presentation.utils.extentions.paging.isNotEmpty
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -68,9 +74,9 @@ fun BookmarkScreen(
 
 @Composable
 private fun Content(
-    uiState: BookmarksScreenState,
-    listener: BookmarkInteractionListener,
-    snackBarState: SnackBarState
+    uiState: BookMarkUiState,
+    snackBarState: SnackBarState,
+    listener: BookmarkInteractionListener
 ) {
     val bookmarks = uiState.bookmarks.collectAsLazyPagingItems()
 
@@ -81,8 +87,13 @@ private fun Content(
                 contentPadding = PaddingValues(
                     horizontal = Theme.spacing._16, vertical = Theme.spacing._8
                 ),
-                leadingContent = { BackIcon() },
-                onLeadingClick = listener::onBackClick,
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_arrow_left),
+                        contentDescription = stringResource(Res.string.arrow_left)
+                    )
+                },
+                onLeadingClick = listener::onBackClick
             )
         },
         snakeBar = {
@@ -139,7 +150,7 @@ private fun EmptyBookmarkState() {
 
 @Composable
 private fun BookmarkItems(
-    bookmarks: LazyPagingItems<BookmarksScreenState.BookmarkCardUiState>,
+    bookmarks: LazyPagingItems<BookMarkUiState.BookmarkCardUiState>,
     onRemoveBookmarkClick: (Int) -> Unit,
 ) {
     LazyColumn(
@@ -170,5 +181,52 @@ private fun BookmarkItems(
                 )
             }
         }
+    }
+}
+
+
+@Composable
+@Preview
+private fun BookmarkScreenPreview() {
+    QuranTheme {
+        Content(
+            uiState = BookMarkUiState(
+                bookmarks = flowOf(
+                    PagingData.from(
+                        listOf(
+                            BookMarkUiState.BookmarkCardUiState(
+                                bookmarkId = 1,
+                                surahName = "Al-Fatihah",
+                                ayaNumber = 3,
+                                ayaText = "الرَّحْمَٰنِ الرَّحِيمِ",
+                                createdAt = TimeAgo(amount = 2, unit = TimeUnit.HOURS)
+                            ),
+                            BookMarkUiState.BookmarkCardUiState(
+                                bookmarkId = 2,
+                                surahName = "Al-Baqarah",
+                                ayaNumber = 255,
+                                ayaText = "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
+                                createdAt = TimeAgo(amount = 1, unit = TimeUnit.DAYS)
+                            ),
+                            BookMarkUiState.BookmarkCardUiState(
+                                bookmarkId = 3,
+                                surahName = "Al-Ikhlas",
+                                ayaNumber = 1,
+                                ayaText = "قُلْ هُوَ اللَّهُ أَحَدٌ",
+                                createdAt = TimeAgo(amount = 3, unit = TimeUnit.DAYS)
+                            )
+                        )
+                    )
+                ),
+                isLoading = false,
+                error = null
+            ),
+            listener = object : BookmarkInteractionListener {
+                override fun onBackClick() {}
+                override fun onDeleteBookmarkClick(id: Int) {}
+                override fun onStartTilawahClick() {}
+            },
+            snackBarState = SnackBarState()
+        )
     }
 }

@@ -12,7 +12,7 @@ suspend inline fun <reified T> executeApiSafely(
 ): T {
     val response = runCatching { apiCall() }
         .onFailure { e ->
-            Napier.d("Network error: ${e.message}")
+            Napier.d(message = "Network error: ${e.message}")
             throw mapToNetworkException(e)
         }
         .getOrThrow()
@@ -21,38 +21,38 @@ suspend inline fun <reified T> executeApiSafely(
         HttpStatusCode.OK -> {
             runCatching {
                 response.body() ?: run {
-                    Napier.d("Response body is null")
+                    Napier.d(message = "Response body is null")
                     throw FaithException.NetworkException
                 }
             }
                 .onFailure { e ->
-                    Napier.d("Error parsing response: ${e.message}")
+                    Napier.d(message = "Error parsing response: ${e.message}")
                     throw FaithException.NetworkException
                 }
                 .getOrThrow()
         }
 
         HttpStatusCode.Unauthorized -> {
-            Napier.d("Unauthorized access")
+            Napier.d(message = "Unauthorized access")
             throw FaithException.UnauthorizedException
         }
 
         HttpStatusCode.TooManyRequests -> {
-            Napier.d("Too many requests")
+            Napier.d(message = "Too many requests")
             throw FaithException.NetworkException
         }
 
         HttpStatusCode.RequestTimeout -> {
-            Napier.d("Request timed out")
+            Napier.d(message = "Request timed out")
             throw FaithException.NetworkException
         }
 
         else -> {
             if (response.status.value in 500..599) {
-                Napier.d("Server error: ${response.status.value}")
+                Napier.d(message = "Server error: ${response.status.value}")
                 throw FaithException.NetworkException
             } else {
-                Napier.d("Unknown error: ${response.status.value}")
+                Napier.d(message = "Unknown error: ${response.status.value}")
                 throw FaithException.UnknownException
             }
         }

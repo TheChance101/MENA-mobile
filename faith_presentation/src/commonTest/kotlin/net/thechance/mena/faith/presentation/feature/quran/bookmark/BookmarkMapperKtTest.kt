@@ -3,8 +3,6 @@ package net.thechance.mena.faith.presentation.feature.quran.bookmark
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.entity.Surah
-import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.TimeAgo
-import net.thechance.mena.faith.presentation.extensions.timeFormatingHelper.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Clock
@@ -104,7 +102,7 @@ class BookmarkMapperKtTest {
 
         fun expectedUiState(
             bookmark: AyahBookmark,
-        ) = BookmarksScreenState.BookmarkCardUiState(
+        ) = BookMarkUiState.BookmarkCardUiState(
             bookmarkId = bookmark.id,
             surahName = bookmark.surah.name,
             ayaNumber = bookmark.ayah.number,

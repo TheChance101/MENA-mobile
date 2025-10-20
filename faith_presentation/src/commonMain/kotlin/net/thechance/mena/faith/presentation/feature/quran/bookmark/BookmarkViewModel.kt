@@ -25,12 +25,11 @@ import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    snackbarHandler: SnackbarHandler,
-) : BaseViewModel<BookmarksScreenState, BookmarkEffect>(
-    BookmarksScreenState(),
-    snackbarHandler = snackbarHandler
-),
-    BookmarkInteractionListener {
+    snackBarHandler: SnackbarHandler
+) : BaseViewModel<BookMarkUiState, BookmarkEffect>(
+    BookMarkUiState(),
+    snackbarHandler = snackBarHandler
+), BookmarkInteractionListener {
 
     private val cachedBookmarksFlow = createBookmarksPagingSource()
         .map { pagingData -> pagingData.map { bookmark -> bookmark.toUiState() } }
@@ -59,10 +58,7 @@ class BookmarkViewModel(
             execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
             onSuccess = { onDeleteBookmarkSuccess() },
-            onError = { error ->
-                removeDeletedBookmarkId(bookmarkId)
-                handleErrorState(error)
-            }
+            onError = { removeDeletedBookmarkId(bookmarkId) }
         )
     }
 
@@ -81,7 +77,7 @@ class BookmarkViewModel(
         }
     }
 
-    private fun onDeleteBookmarkSuccess() = showSnackBar(
+    private fun onDeleteBookmarkSuccess() = snackbarHandler.showSnackBar(
         message = Res.string.bookmark_removed_successfully,
         status = SnackBarState.Status.Success,
         scope = viewModelScope
@@ -93,7 +89,4 @@ class BookmarkViewModel(
         }
     }
 
-    private fun handleErrorState(throwable: Throwable) {
-        // TODO: handle error here
-    }
 }

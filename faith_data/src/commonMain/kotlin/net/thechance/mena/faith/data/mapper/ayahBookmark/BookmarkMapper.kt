@@ -6,7 +6,7 @@ import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.database.SurahDto
 import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toSurah
-import net.thechance.mena.faith.data.remote.dto.bookmark.AyahBookmarkDto
+import net.thechance.mena.faith.data.remote.model.bookmark.AyahBookmarkDto
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant

@@ -4,19 +4,22 @@ import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Dukan.Coordinates
-import net.thechance.mena.dukan.domain.entity.Dukan.Style
 
-val defaultDukanStyles = Style.entries.map { style ->
-    DukanStyleUiState(
-        style = style,
-        name = style.toUiStyleName()
-    )
+fun Dukan.Style.toUiStyle(): CreateDukanUiState.Style = when (this) {
+    Dukan.Style.WIDE_IMAGE -> CreateDukanUiState.Style.WIDE_IMAGE
+    Dukan.Style.SMALL_IMAGE -> CreateDukanUiState.Style.SMALL_IMAGE
+    Dukan.Style.NO_IMAGE -> CreateDukanUiState.Style.NO_IMAGE
+}
+fun Dukan.Style.toUiStyleName(): String = when (this) {
+    Dukan.Style.WIDE_IMAGE -> "Wide image with list products"
+    Dukan.Style.SMALL_IMAGE -> "Small image with grid products"
+    Dukan.Style.NO_IMAGE -> "No dukan image"
 }
 
-fun Style.toUiStyleName(): String = when (this) {
-    Style.WIDE_IMAGE -> "Wide image with list products"
-    Style.SMALL_IMAGE -> "Small image with grid products"
-    Style.NO_IMAGE -> "No dukan image"
+fun CreateDukanUiState.Style.toEntityStyle(): Dukan.Style = when (this) {
+    CreateDukanUiState.Style.WIDE_IMAGE -> Dukan.Style.WIDE_IMAGE
+    CreateDukanUiState.Style.SMALL_IMAGE -> Dukan.Style.SMALL_IMAGE
+    CreateDukanUiState.Style.NO_IMAGE -> Dukan.Style.NO_IMAGE
 }
 
 fun Color.toUiColor(): ColorUiState {
@@ -55,8 +58,8 @@ fun CreateDukanUiState.toEntity() = Dukan(
     coordinates = currentLocation.toEntity(),
     address = address,
     status = Dukan.Status.PENDING,
-    color = selectedColor?.toEntity()!!,
-    style = selectedStyle!!
+    color = selectedColor?.toEntity()?: Color(id = "", hexCode = ""),
+    style = selectedStyle?.toEntityStyle()?: Dukan.Style.WIDE_IMAGE
 )
 
 fun CreateDukanUiState.CoordinatesUiState.toEntity() = Coordinates(

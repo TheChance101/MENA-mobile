@@ -108,7 +108,7 @@ class SurViewModelTest {
     }
 
     private companion object {
-        val emptyUiState = SurScreenState(emptyList())
+        val emptyUiState = SurUiState(emptyList())
         const val AL_FATIHAH_ID = 1
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         val surList = listOf(
@@ -127,7 +127,7 @@ class SurViewModelTest {
         )
 
         val surahUiList = listOf(
-            SurScreenState.SurahUiState(
+            SurUiState.SurahUiState(
                 id = 1,
                 surahOrder = 1,
                 arabicNameImg = Res.drawable.ic_al_fatihah,
@@ -135,7 +135,7 @@ class SurViewModelTest {
                 ayatCount = 7,
                 isMakki = true
             ),
-            SurScreenState.SurahUiState(
+            SurUiState.SurahUiState(
                 id = 2,
                 surahOrder = 2,
                 arabicNameImg = Res.drawable.ic_al_baqarah,

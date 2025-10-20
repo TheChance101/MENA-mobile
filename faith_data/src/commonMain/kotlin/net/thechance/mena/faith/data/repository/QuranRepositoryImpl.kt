@@ -2,7 +2,7 @@ package net.thechance.mena.faith.data.repository
 
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.AyahDto
-import net.thechance.mena.faith.data.datastore.ITilawahDataStore
+import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.data.utils.executeLocalSafely
@@ -13,7 +13,7 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 
 class QuranRepositoryImpl(
     val ayahDao: AyahDao,
-    val tilawahDataStore: ITilawahDataStore
+    val tilawahDataStore: TilawahDataStore
 ) : QuranRepository {
 
     override suspend fun getAllSur(): List<Surah> =
@@ -39,7 +39,7 @@ class QuranRepositoryImpl(
         query: String,
     ): List<Ayah> =
         executeLocalSafely {
-            ayahDao.searchForAyahInSurah(surahId, query).map(AyahDto::toAyah)
+            ayahDao.searchForAyahInSurah(surahId = surahId, query = query).map(AyahDto::toAyah)
         }
 
     override suspend fun searchForAyahInQuran(query: String): List<Ayah> =
