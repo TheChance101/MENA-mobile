@@ -23,35 +23,33 @@ actual class FileManagerImpl : FileManager {
         data: ByteArray,
         location: StorageLocation,
         mimeType: String
-    ): String = withContext(Dispatchers.IO) {
+    ): String = io {
         when (location) {
             is StorageLocation.Cache -> saveToCache(data, location.fileName)
             is StorageLocation.Downloads -> saveToDownloads(data, location.fileName, mimeType)
         }
     }
 
-    actual override suspend fun readFile(location: StorageLocation): ByteArray = withContext(Dispatchers.IO) {
+    actual override suspend fun readFile(location: StorageLocation): ByteArray = io {
         when (location) {
             is StorageLocation.Cache -> readFromCache(location.fileName)
             is StorageLocation.Downloads -> readFromDownloads(location.fileName)
         }
     }
 
-    actual override suspend fun deleteFile(location: StorageLocation){
-        withContext(Dispatchers.IO) {
-            when (location) {
-                is StorageLocation.Cache -> deleteFromCache(location.fileName)
-                is StorageLocation.Downloads -> deleteFromDownloads(location.fileName)
-            }
+    actual override suspend fun deleteFile(location: StorageLocation) = io {
+        when (location) {
+            is StorageLocation.Cache -> deleteFromCache(location.fileName)
+            is StorageLocation.Downloads -> deleteFromDownloads(location.fileName)
         }
     }
 
-    actual override suspend fun checkIfFileExists(location: StorageLocation): Boolean = withContext(Dispatchers.IO) {
-        when (location) {
-            is StorageLocation.Cache -> checkIfCacheFileExists(location.fileName)
-            is StorageLocation.Downloads -> checkIfDownloadFileExists(location.fileName)
+    actual override suspend fun checkIfFileExists(location: StorageLocation): Boolean = io {
+            when (location) {
+                is StorageLocation.Cache -> checkIfCacheFileExists(location.fileName)
+                is StorageLocation.Downloads -> checkIfDownloadFileExists(location.fileName)
+            }
         }
-    }
 
     private fun saveToCache(data: ByteArray, fileName: String): String {
         val file = File(context.cacheDir, fileName)
@@ -153,13 +151,13 @@ actual class FileManagerImpl : FileManager {
         return file.readBytes()
     }
 
-    private fun deleteFromCache(fileName: String): Boolean {
+    private fun deleteFromCache(fileName: String) {
         val file = File(context.cacheDir, fileName)
-        return file.exists() && file.delete()
+        if(file.exists()) file.delete()
     }
 
-    private fun deleteFromDownloads(fileName: String): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    private fun deleteFromDownloads(fileName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             deleteFromMediaStore(fileName)
         } else {
             deleteFromLegacyStorage(fileName)
@@ -167,23 +165,22 @@ actual class FileManagerImpl : FileManager {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun deleteFromMediaStore(fileName: String): Boolean {
+    private fun deleteFromMediaStore(fileName: String) {
         val resolver = context.contentResolver
         val collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI
         val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
         val selectionArgs = arrayOf(fileName)
 
-        val deletedRows = resolver.delete(collection, selection, selectionArgs)
-        return deletedRows > 0
+        resolver.delete(collection, selection, selectionArgs)
     }
 
     @Suppress("DEPRECATION")
-    private fun deleteFromLegacyStorage(fileName: String): Boolean {
+    private fun deleteFromLegacyStorage(fileName: String) {
         val downloadsDir = Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS
         )
         val file = File(File(downloadsDir, APP_DOWNLOADS_FOLDER), fileName)
-        return file.exists() && file.delete()
+        if (file.exists()) file.delete()
     }
 
     private fun checkIfCacheFileExists(fileName: String): Boolean {
@@ -207,9 +204,10 @@ actual class FileManagerImpl : FileManager {
         val selection = "${MediaStore.MediaColumns.DISPLAY_NAME} = ?"
         val selectionArgs = arrayOf(fileName)
 
-        return resolver.query(collection, projection, selection, selectionArgs, null)?.use { cursor ->
-            cursor.moveToFirst()
-        } ?: false
+        return resolver.query(collection, projection, selection, selectionArgs, null)
+            ?.use { cursor ->
+                cursor.moveToFirst()
+            } ?: false
     }
 
     private fun checkIfLegacyStorageFileExists(fileName: String): Boolean {
@@ -219,6 +217,8 @@ actual class FileManagerImpl : FileManager {
         val file = File(File(downloadsDir, APP_DOWNLOADS_FOLDER), fileName)
         return file.exists()
     }
+
+    private suspend fun <T> io(block: () -> T): T = withContext(Dispatchers.IO) { block() }
 
     companion object {
         private const val DOWNLOAD_DIR_BASE = "Download"

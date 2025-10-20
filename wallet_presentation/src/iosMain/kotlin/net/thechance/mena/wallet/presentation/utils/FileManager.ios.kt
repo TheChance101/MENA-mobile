@@ -31,44 +31,37 @@ actual class FileManagerImpl : FileManager {
         data: ByteArray,
         location: StorageLocation,
         mimeType: String
-    ): String {
-        return withContext(Dispatchers.IO) {
-            when (location) {
-                is StorageLocation.Cache -> saveToCache(data, location.fileName)
-                is StorageLocation.Downloads -> saveToDocuments(data, location.fileName)
-            }
+    ): String = io {
+        when (location) {
+            is StorageLocation.Cache -> saveToCache(data, location.fileName)
+            is StorageLocation.Downloads -> saveToDocuments(data, location.fileName)
         }
     }
 
-    actual override suspend fun readFile(location: StorageLocation): ByteArray {
-        return withContext(Dispatchers.IO) {
-            val path = getFilePath(location)
+    actual override suspend fun readFile(location: StorageLocation): ByteArray = io {
+        val path = getFilePath(location)
 
-            val nsData = NSData.dataWithContentsOfFile(path)
-                ?: throw FileNotFoundException("File not found: $path")
+        val nsData = NSData.dataWithContentsOfFile(path)
+            ?: throw FileNotFoundException("File not found: $path")
 
-            nsData.toByteArray()
-        }
+        nsData.toByteArray()
     }
+
     @OptIn(ExperimentalForeignApi::class)
-    actual override suspend fun deleteFile(location: StorageLocation) {
-        withContext(Dispatchers.IO) {
-            val fileManager = NSFileManager.defaultManager
-            val path = getFilePath(location)
+    actual override suspend fun deleteFile(location: StorageLocation) = io {
+        val fileManager = NSFileManager.defaultManager
+        val path = getFilePath(location)
 
-            if (fileManager.fileExistsAtPath(path)) {
-                fileManager.removeItemAtPath(path, error = null)
-            }
+        if (fileManager.fileExistsAtPath(path)) {
+            fileManager.removeItemAtPath(path, error = null)
         }
     }
 
-    actual override suspend fun checkIfFileExists(location: StorageLocation): Boolean {
-        return withContext(Dispatchers.IO) {
-            val fileManager = NSFileManager.defaultManager
-            val path = getFilePath(location)
+    actual override suspend fun checkIfFileExists(location: StorageLocation): Boolean = io {
+        val fileManager = NSFileManager.defaultManager
+        val path = getFilePath(location)
 
-            fileManager.fileExistsAtPath(path)
-        }
+        fileManager.fileExistsAtPath(path)
     }
 
     @OptIn(ExperimentalForeignApi::class)
@@ -139,6 +132,7 @@ actual class FileManagerImpl : FileManager {
                 val tempDir = NSTemporaryDirectory()
                 "$tempDir${location.fileName}"
             }
+
             is StorageLocation.Downloads -> {
                 val documentsPath = getDocumentsDirectory()
                 "$documentsPath/${APP_DOWNLOADS_FOLDER}/${location.fileName}"
@@ -155,6 +149,8 @@ actual class FileManagerImpl : FileManager {
         }
         return byteArray
     }
+
+    private suspend fun <T> io(block: () -> T): T = withContext(Dispatchers.IO) { block() }
 
     private companion object {
         // Chosen as a good balance between rendering time and image sharpness
