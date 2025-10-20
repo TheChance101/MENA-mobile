@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -22,18 +22,17 @@ import kotlin.uuid.Uuid
 fun ChatList(
     items: List<ChatListItem>,
     chatAvatarUrl: String,
+    chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (MessageUiState, Int) -> Unit,
-    onFailedMessageClick: (MessageUiState) -> Unit,
+    onFailedMessageClick: (MessageUiState) -> Unit
 ) {
-
-    val chatListState = rememberLazyListState()
-
-    LaunchedEffect(items.size) {
-        if (items.isNotEmpty()) {
+    if (items.isNotEmpty()) {
+        LaunchedEffect(items[0]) {
             chatListState.animateScrollToItem(0)
         }
     }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -62,7 +61,7 @@ fun ChatList(
                 item = item,
                 chatAvatarUrl = chatAvatarUrl,
                 onMessageClick = onMessageClick,
-                onMessageImageClick= onMessageImageClick,
+                onMessageImageClick = onMessageImageClick,
                 onFailedMessageClick = onFailedMessageClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )

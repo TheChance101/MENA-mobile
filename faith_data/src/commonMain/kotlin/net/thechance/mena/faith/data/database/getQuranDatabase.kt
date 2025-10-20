@@ -6,4 +6,4 @@ import kotlinx.coroutines.IO
 
 fun getQuranDatabase(
     builder: RoomDatabase.Builder<QuranDatabase>
-): QuranDatabase = builder.setQueryCoroutineContext(Dispatchers.IO).build()
+): QuranDatabase = builder.setQueryCoroutineContext(context = Dispatchers.IO).build()

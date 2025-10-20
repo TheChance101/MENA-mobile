@@ -10,16 +10,13 @@ import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.Cali
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel
-import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
+import net.thechance.mena.faith.presentation.feature.quran.search.args.SearchArgs
 import net.thechance.mena.faith.presentation.feature.quran.search.args.SearchArgsImpl
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel
-import net.thechance.mena.faith.presentation.feature.quran.surah.args.ISurahArgs
+import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgsImpl
-import net.thechance.mena.faith.presentation.util.provider.StringResourceProviderImpl
-import net.thechance.mena.faith.presentation.util.provider.StringResourceProvider
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -28,9 +25,8 @@ internal val faithViewModelModule = module {
     factory<CoroutineDispatcher> { Dispatchers.IO }
     single<SnackbarHandler> { DefaultSnackbarHandlerImpl() }
 
-    factoryOf(::SurahArgsImpl) bind ISurahArgs::class
-    factoryOf(::SearchArgsImpl) bind ISearchArgs::class
-    singleOf(::StringResourceProviderImpl) bind StringResourceProvider::class
+    factoryOf(::SurahArgsImpl) bind SurahArgs::class
+    factoryOf(::SearchArgsImpl) bind SearchArgs::class
     viewModelOf(::SurahViewModel)
     viewModelOf(::SurViewModel)
     viewModelOf(::BookmarkViewModel)

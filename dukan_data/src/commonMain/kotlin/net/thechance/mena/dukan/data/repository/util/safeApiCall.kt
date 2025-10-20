@@ -5,9 +5,15 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.io.IOException
 import net.thechance.mena.dukan.data.repository.dto.DukanErrorCodes
 import net.thechance.mena.dukan.data.repository.dto.ErrorResponse
+import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
+import net.thechance.mena.dukan.domain.exceptions.DeletionNotAllowedException
 import net.thechance.mena.dukan.domain.exceptions.DukanException
-import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
+import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
+import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
+import net.thechance.mena.dukan.domain.exceptions.UnAuthorizedException
+import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 
 suspend inline fun <reified T> safeApiCall(
     crossinline block: suspend () -> HttpResponse
@@ -41,7 +47,7 @@ suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
             throw mapErrorResponseToException(errorResponse)
         }
 
-        401 -> throw DukanException("Unauthorized")
+        401 -> throw UnAuthorizedException("Unauthorized")
         404 -> {
             val errorResponse = try {
                 response.body<ErrorResponse>()
@@ -51,9 +57,15 @@ suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
             throw mapErrorResponseToException(errorResponse)
         }
 
-        408 -> throw DukanException("Request timeout")
-        429 -> throw DukanException("Too many requests")
-        in 500..599 -> throw DukanException("Server error")
+        409 -> {
+            val errorResponse = try {
+                response.body<ErrorResponse>()
+            } catch (_: Exception) {
+                ErrorResponse("Conflict")
+            }
+            throw mapErrorResponseToException(errorResponse)
+        }
+
         else -> throw DukanException("Unexpected error")
     }
 }
@@ -61,16 +73,16 @@ suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
 fun mapErrorResponseToException(errorResponse: ErrorResponse): Exception {
     val errorCode = errorResponse.errorCode
     return when (errorCode) {
-        DukanErrorCodes.DUKAN_CREATION_FAILED -> DukanException("Dukan creation failed: ${errorResponse.message}")
-        DukanErrorCodes.DUKAN_NOT_FOUND -> DukanNotFoundException("Dukan not found: ${errorResponse.message}")
-        DukanErrorCodes.INVALID_IMAGE_FORMAT -> DukanException("Invalid image format: ${errorResponse.message}")
-        DukanErrorCodes.IMAGE_UPLOAD_FAILED -> DukanException("Image upload failed: ${errorResponse.message}")
-        DukanErrorCodes.PRODUCT_NOT_FOUND -> DukanNotFoundException("Product not found: ${errorResponse.message}")
-        DukanErrorCodes.DUKAN_PRODUCT_CREATION_FAILED -> DukanException("Product creation failed: ${errorResponse.message}")
-        DukanErrorCodes.PRODUCT_NAME_ALREADY_TAKEN -> DukanException("Product name already taken: ${errorResponse.message}")
-        DukanErrorCodes.SHELF_DELETION_NOT_ALLOWED -> DukanException("Shelf deletion not allowed: ${errorResponse.message}")
-        DukanErrorCodes.SHELF_NOT_FOUND -> DukanNotFoundException("Shelf not found: ${errorResponse.message}")
-        DukanErrorCodes.SHELF_NAME_ALREADY_TAKEN -> DukanException("Shelf name already taken: ${errorResponse.message}")
+        DukanErrorCodes.DUKAN_CREATION_FAILED -> CreationFailedException("Dukan creation failed: ${errorResponse.message}")
+        DukanErrorCodes.DUKAN_NOT_FOUND -> NoSuchItemException("Dukan not found: ${errorResponse.message}")
+        DukanErrorCodes.INVALID_IMAGE_FORMAT -> InvalidImageFormatException("Invalid image format: ${errorResponse.message}")
+        DukanErrorCodes.IMAGE_UPLOAD_FAILED -> UploadingFailedException("Image upload failed: ${errorResponse.message}")
+        DukanErrorCodes.PRODUCT_NOT_FOUND -> NoSuchItemException("Product not found: ${errorResponse.message}")
+        DukanErrorCodes.DUKAN_PRODUCT_CREATION_FAILED -> CreationFailedException("Product creation failed: ${errorResponse.message}")
+        DukanErrorCodes.PRODUCT_NAME_ALREADY_TAKEN -> DuplicateNameException("Product name already taken: ${errorResponse.message}")
+        DukanErrorCodes.SHELF_DELETION_NOT_ALLOWED -> DeletionNotAllowedException("Shelf deletion not allowed: ${errorResponse.message}")
+        DukanErrorCodes.SHELF_NOT_FOUND -> NoSuchItemException("Shelf not found: ${errorResponse.message}")
+        DukanErrorCodes.SHELF_NAME_ALREADY_TAKEN -> DuplicateNameException("Shelf name already taken: ${errorResponse.message}")
         else -> DukanException(errorResponse.message)
     }
 }

@@ -26,14 +26,13 @@ import mena.faith_presentation.generated.resources.error_unauthorized
 import mena.faith_presentation.generated.resources.error_unknown
 import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
-import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 
 
 @KoverIgnore
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     initialState: UI_STATE,
-    private val snackbarHandler: SnackbarHandler = SnackbarHandler.Empty,
+    protected val snackbarHandler: SnackbarHandler = SnackbarHandler.Empty,
 ) : ViewModel(), SnackbarHandler by snackbarHandler {
 
     private val _uiState = MutableStateFlow(initialState)
@@ -55,7 +54,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     protected fun <T> tryToExecute(
         execute: suspend () -> T,
         onSuccess: (suspend (T) -> Unit)? = null,
-        onError: suspend (Throwable) -> Unit = ::handleError,
+        onError: suspend (ErrorState) -> Unit = {},
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -65,7 +64,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         return inScope.launch(dispatcher) {
             val handler = CoroutineExceptionHandler { _, throwable ->
                 inScope.launch {
-                    onError(throwable)
+                    onError(mapExceptionToErrorState(throwable))
                 }
             }
             inScope.launch(dispatcher + handler) {
@@ -73,14 +72,14 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
                 delay(delayMillis)
                 runCatching { execute() }
                     .onSuccess { result -> onSuccess?.invoke(result) }
-                    .onFailure { throwable -> onError(throwable) }
+                    .onFailure { throwable -> onError(mapExceptionToErrorState(throwable)) }
                 onFinally()
             }
         }
     }
 
     protected fun <T> tryToCollect(
-        onError: suspend (Throwable) -> Unit = ::handleError,
+        onError: suspend (ErrorState) -> Unit = {},
         onEmitNewValue: (T) -> Unit = {},
         coroutineScope: CoroutineScope = viewModelScope,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -90,28 +89,29 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
             try {
                 block()
                     .catch {
-                        onError(it)
+                        onError(
+                            mapExceptionToErrorState(it)
+                        )
                     }.collect {
                         onEmitNewValue(it)
                     }
             } catch (e: Throwable) {
-                onError(e)
+                onError(
+                    mapExceptionToErrorState(e)
+                )
             }
         }
     }
 
-
-    private fun handleError(error: Throwable) {
-        val faithError = error as? FaithException ?: FaithException.UnknownException
-        val message = faithError.toStringResource()
-        showSnackBar(
-            message = message,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope
+    protected fun mapExceptionToErrorState(throwable: Throwable): ErrorState {
+        val faithException = throwable as? FaithException ?: FaithException.UnknownException
+        return ErrorState(
+            message = mapExceptionToMessage(faithException),
+            exception = faithException
         )
     }
 
-    private fun FaithException.toStringResource() = when (this) {
+    private fun mapExceptionToMessage(exception: FaithException) = when (exception) {
         FaithException.NetworkException -> Res.string.error_network
         FaithException.NoInternetException -> Res.string.error_no_internet
         FaithException.UnauthorizedException -> Res.string.error_unauthorized
