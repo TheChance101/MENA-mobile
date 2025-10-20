@@ -34,7 +34,7 @@ import kotlin.uuid.Uuid
 class TransactionHistoryViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     private val stringProvider: StringProvider,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
     TransactionHistoryScreenState()
 ), TransactionHistoryInteractionListener {
@@ -165,7 +165,7 @@ class TransactionHistoryViewModel(
             callee = { transactionRepository.getFirstTransactionDate() },
             onSuccess = ::onGetFirstTransactionDateSuccess,
             onError = ::onGetFirstTransactionDateError,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -251,7 +251,7 @@ class TransactionHistoryViewModel(
     }
 
     private fun loadNextTransactions() {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch(dispatcher) {
             paginator.loadNextItems()
         }
     }
@@ -350,7 +350,7 @@ class TransactionHistoryViewModel(
         )
     }
 
-    companion object {
+   private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
     }

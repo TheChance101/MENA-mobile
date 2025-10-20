@@ -288,7 +288,7 @@ class TransactionHistoryViewModelTest {
         viewModel = TransactionHistoryViewModel(
             transactionRepository = transactionRepository,
             stringProvider = stringProvider,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
         advanceUntilIdle()
     }
