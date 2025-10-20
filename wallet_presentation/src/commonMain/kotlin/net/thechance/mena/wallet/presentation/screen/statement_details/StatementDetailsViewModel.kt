@@ -44,7 +44,7 @@ class StatementDetailsViewModel(
     override fun onShareClicked() {
         if (currentState.statement is UiState.Success) {
             val statement = (currentState.statement as UiState.Success<ByteArray>).data
-            sendEffect(StatementDetailsEffect.ShareStatement(statement))
+            sendEffect(StatementDetailsEffect.ShareStatement(statement, "statement.pdf"))
         }
     }
 

@@ -22,6 +22,7 @@ import mena.wallet_presentation.generated.resources.img_no_internet
 import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.share_button_title
+import mena.wallet_presentation.generated.resources.share_pdf
 import mena.wallet_presentation.generated.resources.statement
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -33,9 +34,10 @@ import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.PdfViewer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
+import net.thechance.mena.wallet.presentation.utils.FileSharer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -49,7 +51,7 @@ fun StatementDetailsScreen(
     viewModel: StatementDetailsViewModel = koinViewModel(
         parameters = { parametersOf(statementLocation) }
     ),
-    pdfHandler: PdfHandler = koinInject()
+    fileSharer: FileSharer = koinInject()
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -60,7 +62,7 @@ fun StatementDetailsScreen(
             handleEffects(
                 effect = effect,
                 onNavigateBackClicked = onNavigateBackClicked,
-                shareStatement = pdfHandler::sharePdf
+                shareStatement = fileSharer::shareFile
             )
         }
     )
@@ -145,12 +147,17 @@ fun StatementViewer(
 private suspend fun handleEffects(
     effect: StatementDetailsEffect,
     onNavigateBackClicked: () -> Unit,
-    shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
+    shareStatement: suspend (statement: ByteArray, fileName: String, mimeType: String, shareTitle: String) -> Unit
 ) {
     when (effect) {
         StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
         is StatementDetailsEffect.ShareStatement -> {
-            shareStatement(effect.statement, "statement.pdf")
+            shareStatement(
+                effect.statement,
+                effect.fileName,
+                "application/pdf",
+                getString(Res.string.share_pdf)
+            )
         }
     }
 }

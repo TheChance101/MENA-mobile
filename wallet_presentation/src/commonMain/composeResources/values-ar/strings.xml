@@ -133,4 +133,6 @@
 
     <string name="file_missing">الملف غير موجود</string>
     <string name="file_missing_description">تعذر العثور على ملف البيان هذا. قد يكون قد تم حذفه أو نقله من جهازك.</string>
+    <string name="share_image">مشاركة الصورة</string>
+    <string name="share_pdf">مشاركة الملف</string>
 </resources>
