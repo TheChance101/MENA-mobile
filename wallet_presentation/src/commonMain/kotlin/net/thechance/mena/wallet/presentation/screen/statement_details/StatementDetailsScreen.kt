@@ -18,9 +18,6 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share_
-import mena.wallet_presentation.generated.resources.img_no_internet
-import mena.wallet_presentation.generated.resources.no_internet_content
-import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.share_button_title
 import mena.wallet_presentation.generated.resources.share_pdf
 import mena.wallet_presentation.generated.resources.statement
@@ -28,12 +25,12 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.PdfViewer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.FileSharer
+import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.jetbrains.compose.resources.getString
@@ -145,7 +142,7 @@ private suspend fun handleEffects(
             shareStatement(
                 effect.statement,
                 effect.fileName,
-                "application/pdf",
+                MimeType.PDF,
                 getString(Res.string.share_pdf)
             )
         }

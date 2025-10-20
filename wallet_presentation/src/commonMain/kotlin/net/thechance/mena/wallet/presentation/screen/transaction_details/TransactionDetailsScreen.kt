@@ -152,7 +152,7 @@ private fun TransactionDetailsSuccessContent(
 private suspend fun onTransactionDetailsEffect(
     effect: TransactionDetailsEffect,
     onNavigateBackClicked: () -> Unit,
-    shareImage: suspend (ByteArray, String, String, String) -> Unit,
+    shareImage: suspend (image: ByteArray, fileName: String, mimeType: String, shareTitle: String) -> Unit,
     captureImage: suspend () -> Unit,
     onCaptureError: suspend () -> Unit
 ) {
