@@ -863,10 +863,10 @@ private fun fakeLocationAddress() = "Egypt"
 private fun fakeSelectedCoordinates() = CreateDukanUiState.CoordinatesUiState(28.0, 29.0)
 private fun fakePointerLocation() = DpOffset(2.dp, 4.dp)
 private fun fakeCameraPosition() = CameraPosition(target = Position(29.0, 28.0))
-private fun fakeColorUiState() = ColorUiState(id = "1", color = 0xFFF545)
+private fun fakeColorUiState() = CreateDukanUiState.ColorUiState(id = "1", color = 0xFFF545)
 private fun fakeSingleDukanStyle() = CreateDukanUiState.Style.WIDE_IMAGE
 
-private fun Category.toUiState() = DukanCategoryUiState(
+private fun Category.toUiState() = CreateDukanUiState.DukanCategoryUiState(
     id = id,
     name = name,
     imageUrl = imageUrl
