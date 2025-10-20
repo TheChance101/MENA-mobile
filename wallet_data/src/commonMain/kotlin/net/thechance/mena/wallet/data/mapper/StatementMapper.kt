@@ -7,7 +7,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.dto.local.LocalStatement
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
@@ -39,8 +38,8 @@ fun List<LocalStatement>.toStatementEntityList(): List<Statement> {
 @OptIn(ExperimentalUuidApi::class)
 fun LocalStatement.toEntity(): Statement {
     return Statement(
-        startDate = LocalDate.parse(this.startDate),
-        endDate = LocalDate.parse(this.endDate),
+        startDate = this.startDate.toDate(),
+        endDate = this.endDate.toDate(),
         totalInflows = totalInflows,
         totalOutflows = totalOutflows,
         id = id,
@@ -56,8 +55,8 @@ suspend fun HttpResponse.toStatementWithMetaData(): StatementWithMetaData {
 
     return StatementWithMetaData(
         byteArray = readRawBytes(),
-        startDate = LocalDate.parse(start),
-        endDate = LocalDate.parse(end),
+        startDate = start.toDate(),
+        endDate = end.toDate(),
         totalInflows = inflows,
         totalOutflows = outflows,
     )
