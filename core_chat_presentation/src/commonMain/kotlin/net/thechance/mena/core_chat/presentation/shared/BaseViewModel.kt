@@ -39,7 +39,7 @@ open class BaseViewModel<S, E>(
     private val _effect = MutableSharedFlow<E>()
     val effect = _effect.asSharedFlow()
 
-    fun updateState(updater: (S) -> S) = _state.update(updater)
+    protected fun updateState(updater: (S) -> S) = _state.update(updater)
 
     fun emitEffect(effect: E) {
         viewModelScope.launch(defaultDispatcher) {
