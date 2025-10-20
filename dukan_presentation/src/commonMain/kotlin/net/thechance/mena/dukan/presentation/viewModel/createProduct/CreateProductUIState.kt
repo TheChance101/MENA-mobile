@@ -7,7 +7,7 @@ import net.thechance.mena.dukan.presentation.component.productImage.ProductImage
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-data class ProductUiState(
+data class CreateProductUiState(
     val isAddButtonLoading: Boolean = false,
     val isAddButtonEnabled: Boolean = false,
     val shelves: List<ShelfUiState> = emptyList(),
