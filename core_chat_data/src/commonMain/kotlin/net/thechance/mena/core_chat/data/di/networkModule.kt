@@ -1,12 +1,12 @@
 package net.thechance.mena.core_chat.data.di
 
 import kotlinx.serialization.json.Json
-import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
 import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.httpClientEngineFactory
+import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -33,7 +33,7 @@ internal val networkModule = module {
         )
     }
 
-    single<ImageDownloader> { ImageDownloaderImp() }
+    single<ImageDownloaderService> { ImageDownloaderImp() }
 }
 
 private const val BASE_URL = "baseUrl"
