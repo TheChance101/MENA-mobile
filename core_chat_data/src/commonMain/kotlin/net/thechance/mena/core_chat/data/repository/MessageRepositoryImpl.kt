@@ -26,6 +26,7 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
 import net.thechance.mena.core_chat.domain.entity.ImageData
@@ -46,7 +47,7 @@ class MessageRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val messageDao: MessageDao,
     private val json: Json,
-) : BaseRepository(), MessageRepository {
+) : MessageRepository {
     private val messageFlows = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)

@@ -18,6 +18,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toListOfContactCreationRequestDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfContacts
+import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ContactSyncFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
@@ -25,12 +26,13 @@ import net.thechance.mena.core_chat.domain.exception.DataStoreException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.core_chat.data.source.local.datastore.tryCall
 
 class ContactsRepositoryImpl(
     private val client: HttpClient,
     private val contactsProvider: ContactsProvider,
     private val dataStore: DataStore<Preferences>
-) : ContactsRepository, BaseRepository() {
+) : ContactsRepository{
 
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun getUserContacts(pageNumber: Int): PagedData<Contact> {
