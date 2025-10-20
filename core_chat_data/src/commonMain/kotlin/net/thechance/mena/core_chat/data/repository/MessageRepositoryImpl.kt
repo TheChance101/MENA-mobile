@@ -28,7 +28,7 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessa
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
@@ -95,7 +95,7 @@ class MessageRepositoryImpl(
                 is MessageContent.Images -> {
                     val source = content.source
                     val byteArrays =
-                        if (source is ImagesSource.Local)
+                        if (source is ImageData.Local)
                             source.byteArrays
                         else throw SendMessageFailedException("Failed to send message: Corrupted images")
                     var remainingImages = byteArrays.toMutableList()

@@ -32,7 +32,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -222,7 +222,7 @@ class MessageRepositoryImplTest {
             val message = createMessage(
                 senderId = userId,
                 chatId = chatId,
-                content = MessageContent.Images(ImagesSource.Local(byteArrays))
+                content = MessageContent.Images(ImageData.Local(byteArrays))
             )
 
             repository.sendMessage(message)
@@ -252,7 +252,7 @@ class MessageRepositoryImplTest {
         val message = createMessage(
             senderId = userId,
             chatId = chatId,
-            content = MessageContent.Images(ImagesSource.Local(byteArrays))
+            content = MessageContent.Images(ImageData.Local(byteArrays))
         )
 
         assertFailsWith<SendMessageFailedException> {
