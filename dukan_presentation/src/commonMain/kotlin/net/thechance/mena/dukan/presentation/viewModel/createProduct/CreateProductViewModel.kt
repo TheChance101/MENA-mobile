@@ -69,7 +69,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onShelfSelect(shelfUiState: ShelfUiState) {
+    override fun onShelfSelect(shelfUiState: ProductUiState.ShelfUiState) {
         updateState {
             copy(
                 shelves = shelves.map { shelfItem ->
@@ -155,7 +155,7 @@ class CreateProductViewModel(
     ): Boolean {
         updateState {
             copy(
-                images = images + ProductImageUi(
+                images = images + ProductUiState.ProductImageUi(
                     image = imageBitmap,
                     imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
                     imageState = ProductImageState.SUCCESS,
@@ -172,7 +172,7 @@ class CreateProductViewModel(
         )
     }
 
-    private fun onCroppedImageBlock(imageBitmap: ImageBitmap): ProductImageUi {
+    private fun onCroppedImageBlock(imageBitmap: ImageBitmap): ProductUiState.ProductImageUi {
         updateState {
             copy(
                 selectedImage = null,
@@ -183,14 +183,14 @@ class CreateProductViewModel(
         val imageByteArray = imageBitmap.toPngByteArray().size.toDouble()
         val imageSizeInMegabyte = imageByteArray / BYTES_PER_MEGABYTE
 
-        return ProductImageUi(
+        return ProductUiState.ProductImageUi(
             image = imageBitmap,
             imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
             imageState = ProductImageState.SUCCESS,
         )
     }
 
-    private fun onCroppedImageSuccess(productImage: ProductImageUi) {
+    private fun onCroppedImageSuccess(productImage: ProductUiState.ProductImageUi) {
         updateState {
             copy(images = images + productImage).updateButtonState()
         }
