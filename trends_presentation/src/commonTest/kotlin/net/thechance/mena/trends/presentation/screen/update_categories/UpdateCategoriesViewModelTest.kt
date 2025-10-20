@@ -109,7 +109,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
     @Test
     fun `onSaveClick should sendEffect NavigateToTrends when patchUserCategories is successful`() =
         runTest(testDispatcher) {
-            everySuspend { repository.patchUserCategories(any(), any()) } returns Unit
+            everySuspend { repository.updateUserCategories(any(), any()) } returns Unit
 
             viewModel.onSaveClick()
 
@@ -124,7 +124,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
     fun `onSaveClick should set errorState when patchUserCategories throws exception`() =
         runTest(testDispatcher) {
             everySuspend {
-                repository.patchUserCategories(any(), any())
+                repository.updateUserCategories(any(), any())
             } throws Exception()
 
             viewModel.onSaveClick()

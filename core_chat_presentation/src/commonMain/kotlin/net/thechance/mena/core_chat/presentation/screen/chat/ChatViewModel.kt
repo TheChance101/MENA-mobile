@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import androidx.lifecycle.viewModelScope
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
@@ -10,6 +11,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
@@ -26,12 +28,14 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
+import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import org.jetbrains.compose.resources.StringResource
@@ -59,6 +63,17 @@ class ChatViewModel(
 
     private var hasResentPendingMessages = false
 
+    private val chatHistoryPaginator by lazy {
+        Paginator(
+            initialKey = INITIAL_PAGE,
+            onLoadUpdated = { },
+            onRequest = ::getChatHistory,
+            getNextKey = { currentPage, _ -> currentPage + 1 },
+            onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) },
+            onSuccess = { result, newPage -> onGetChatHistorySuccess(result) },
+            endReached = { _, result -> result.isLastPage }
+        )
+    }
 
     init {
         val chatId = getUuidOrNull(chatArgs.chatId)
@@ -118,9 +133,9 @@ class ChatViewModel(
             )
         }
 
+        onMessagesScrolled()
         subscribeToNewMessages(chat.id)
         subscribeToPendingMessages(chat.id)
-        loadChatHistory(chat.id)
         observeReadMessages()
     }
 
@@ -293,16 +308,17 @@ class ChatViewModel(
         rebuildUiMessages()
     }
 
-    private fun loadChatHistory(chatId: Uuid) {
-        tryToExecute(
-            execute = { messageRepository.loadMessages(chatId) },
-            onSuccess = ::onLoadChatHistorySuccess,
-            onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) }
+    private suspend fun getChatHistory(page: Int): PagedData<Message> {
+        val chatId = state.value.chatId ?: return PagedData(emptyList(), 0, false)
+        return messageRepository.loadMessages(
+            chatId = chatId,
+            page = page,
+            pageSize = PAGE_SIZE
         )
     }
 
-    private suspend fun onLoadChatHistorySuccess(messages: List<Message>) {
-        messagesHistoryCache = messages
+    private suspend fun onGetChatHistorySuccess(messages: PagedData<Message>) {
+        messagesHistoryCache = messagesHistoryCache.toMutableList().apply { addAll(messages.data) }
         rebuildUiMessages()
         messageRepository.markMessagesAsRead(state.value.chatId ?: return)
 
@@ -436,5 +452,16 @@ class ChatViewModel(
 
     override fun onCloseAttachmentClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onMessagesScrolled() {
+        viewModelScope.launch {
+            chatHistoryPaginator.loadNextItems()
+        }
+    }
+
+    companion object {
+        const val PAGE_SIZE = 40
+        const val INITIAL_PAGE = 0
     }
 }

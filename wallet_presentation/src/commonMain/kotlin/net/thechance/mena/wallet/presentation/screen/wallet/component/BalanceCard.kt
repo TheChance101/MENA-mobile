@@ -4,6 +4,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -41,13 +42,11 @@ import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.reload
 import mena.wallet_presentation.generated.resources.silver_coin
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import androidx.compose.foundation.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.UiState
-import net.thechance.mena.wallet.presentation.base.UiState.Idle.isSuccess
+import net.thechance.mena.wallet.presentation.screen.wallet.WalletScreenState
 import net.thechance.mena.wallet.presentation.utils.formatBalance
 import net.thechance.mena.wallet.presentation.utils.noRippleClickable
 import net.thechance.mena.wallet.presentation.utils.toDp
@@ -57,7 +56,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BalanceCard(
-    balance: UiState<Double>,
+    state: WalletScreenState.BalanceUiState,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -78,14 +77,16 @@ fun BalanceCard(
         val parentWidthPx = with(LocalDensity.current) { maxWidth.toPx() }
 
         AnimatedCoinImage(
-            isBalanceLoaded = balance.isSuccess,
+            isBalanceLoaded = !state.isLoading && state.errorState == null,
             modifier = Modifier
                 .padding(top = 12.dp)
                 .align(Alignment.TopCenter)
         )
 
         BalanceInfoSection(
-            balance = balance,
+            balance = state.balance,
+            isLoading = state.isLoading,
+            errorState = state.errorState,
             parentWidthPx = parentWidthPx,
             onRetry = onRetry,
             modifier = Modifier
@@ -131,7 +132,9 @@ private fun AnimatedCoinImage(
 
 @Composable
 private fun BalanceInfoSection(
-    balance: UiState<Double>,
+    balance: Double,
+    isLoading: Boolean,
+    errorState: ErrorState?,
     parentWidthPx: Float,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
@@ -154,6 +157,8 @@ private fun BalanceInfoSection(
     ) {
         BalanceContent(
             balance = balance,
+            isLoading = isLoading,
+            errorState = errorState,
             onRetry = onRetry,
             modifier = Modifier.padding(top = 45.dp)
         )
@@ -169,7 +174,9 @@ private fun BalanceInfoSection(
 
 @Composable
 private fun BalanceContent(
-    balance: UiState<Double>,
+    balance: Double,
+    isLoading: Boolean,
+    errorState: ErrorState?,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -183,15 +190,15 @@ private fun BalanceContent(
         targetState = balance,
         modifier = modifier.fillMaxWidth().height(balanceTextHeight)
     ) { balanceState ->
-        when (balanceState) {
-            is UiState.Loading -> {
+        when {
+            isLoading -> {
                 ThreeDotsLoadingIndicator(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 14.5.dp)
                 )
             }
 
-            is UiState.Error -> {
-                val errorMessage = when (balanceState.error) {
+            errorState != null -> {
+                val errorMessage = when (errorState) {
                     ErrorState.NoInternet -> stringResource(Res.string.no_internet_content)
                     else -> stringResource(Res.string.couldnt_load_tap_to_retry)
                 }
@@ -202,17 +209,15 @@ private fun BalanceContent(
                 )
             }
 
-            is UiState.Success -> {
+            else -> {
                 Text(
-                    text = formatBalance(balanceState.data),
+                    text = formatBalance(balanceState),
                     style = balanceTextStyle,
                     color = Theme.colorScheme.shadePrimary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-
-            else -> Unit
         }
     }
 }
@@ -249,9 +254,25 @@ private fun BalanceCardPreview() {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            BalanceCard(balance = UiState.Loading, onRetry = {})
-            BalanceCard(balance = UiState.Success(530320.55), onRetry = {})
-            BalanceCard(balance = UiState.Error(ErrorState.NoInternet), onRetry = {})
+            BalanceCard(
+                WalletScreenState.BalanceUiState(
+                    balance = 0.0,
+                    isLoading = true,
+                    errorState = null
+                ), onRetry = {})
+            BalanceCard(
+                WalletScreenState.BalanceUiState(
+                    balance = 530320.55,
+                    isLoading = false,
+                    errorState = null
+                ), onRetry = {})
+            BalanceCard(
+                WalletScreenState.BalanceUiState(
+                    balance = 0.0,
+                    isLoading = false,
+                    errorState = ErrorState.NoInternet
+                ),
+                onRetry = {})
         }
     }
 }

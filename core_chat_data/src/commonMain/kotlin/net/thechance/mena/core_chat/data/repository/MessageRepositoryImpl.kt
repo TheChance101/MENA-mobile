@@ -24,6 +24,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
@@ -32,7 +33,9 @@ import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -49,16 +52,16 @@ class MessageRepositoryImpl(
     private val scope = CoroutineScope(Dispatchers.IO)
 
 
-    override suspend fun loadMessages(chatId: Uuid): List<Message> {
+    override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
         return tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
             client.get(CHAT_HISTORY_ENDPOINT) {
                 parameter(CHAT_ID_PARAMETER, chatId)
-                parameter(PAGE_NUMBER_PARAMETER, PAGE_NUMBER)
-                parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
+                parameter(PAGE_NUMBER_PARAMETER, page)
+                parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
-        }?.data?.mapNotNull { it.toDomain() } ?: emptyList()
+        }?.toPagedListOfMessages() ?: throw NotFoundException("Response body is null")
     }
 
     override suspend fun deleteMessage(message: Message) {
@@ -219,8 +222,6 @@ class MessageRepositoryImpl(
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
-        const val PAGE_SIZE = 1000
-        const val PAGE_NUMBER = 0
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val SEND_MESSAGE_DESTINATION = "/app/chat.privateMessage"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"

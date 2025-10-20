@@ -33,6 +33,7 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
@@ -66,8 +67,18 @@ class ChatViewModelTest {
         every { chatArgs.chatName } returns chatName
 
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
-        everySuspend { messageRepository.loadMessages(chatId) } returns emptyList()
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        everySuspend {
+            messageRepository.loadMessages(
+                chatId,
+                any(),
+                any()
+            )
+        } returns PagedData(emptyList(), 0, true)
+        everySuspend {
+            messageRepository.getLocalMessages(
+                chatId
+            )
+        } returns flowOf(emptyList())
         every { messageRepository.getMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
 
@@ -91,7 +102,11 @@ class ChatViewModelTest {
     @Test
     fun `init should update chat list when its loaded messages successfully`() {
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
-        everySuspend { messageRepository.loadMessages(chatId) } returns messages
+        everySuspend { messageRepository.loadMessages(chatId, 0, 40) } returns PagedData(
+            messages,
+            messages.size,
+            false
+        )
         everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
         every { messageRepository.getMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
@@ -110,14 +125,13 @@ class ChatViewModelTest {
         assertThat(
             chatViewModel.state.value.chatListItems.currentUiMessages()
                 .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        )
-            .isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
+        ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
     }
 
     @Test
     fun `init should send snack bar effect when its LOADING the messages failed`() {
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
-        everySuspend { messageRepository.loadMessages(chatId) } throws Exception()
+        everySuspend { messageRepository.loadMessages(chatId, any(), any()) } throws Exception()
         everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
         every { messageRepository.getMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
@@ -146,11 +160,17 @@ class ChatViewModelTest {
     @Test
     fun `init should update uiMessage and chatListItems when receive new message`() {
         everySuspend { chatRepository.getChatById(chatId) } returns mockChat
-        everySuspend { messageRepository.loadMessages(chatId) } returns emptyList()
+        everySuspend {
+            messageRepository.loadMessages(
+                chatId,
+                any(),
+                any()
+            )
+        } returns PagedData(emptyList(), 80, false)
         everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
         every { messageRepository.getMessages(chatId) } returns flowOf(messages.first())
         every { messageRepository.observeReadMessages() } returns flowOf()
-        messageRepository
+
         chatViewModel = ChatViewModel(
             chatRepository,
             messageRepository,
@@ -169,6 +189,7 @@ class ChatViewModelTest {
             listOf(messages.first().toUi(chatRequesterId))
         )
     }
+
 
     @Test
     fun `init should update user data when receive user data from repository`() {

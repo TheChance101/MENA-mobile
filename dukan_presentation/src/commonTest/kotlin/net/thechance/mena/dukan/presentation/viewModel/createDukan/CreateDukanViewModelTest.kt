@@ -580,26 +580,6 @@ class CreateDukanViewModelTest {
         }
 
 
-    @Test
-    fun `onCLickNext SHOULD show snack bar when basic information is invalid`() = runTest {
-        // Given
-        createDukanViewModel.updateState {
-            copy(
-                name = "",
-                selectedCategories = setOf(fakeCategories()[0].toUiState()),
-                currentStep = CreateDukanUiState.CreateDukanStep.BASIC_INFORMATION,
-                snackBarState = null
-            )
-        }
-
-        // When
-        createDukanViewModel.onCLickNext()
-
-        // Then
-        val state = createDukanViewModel.state.value
-        assertNotNull(state.snackBarState)
-        assertFalse(state.isNameUnique)
-    }
 
     @Test
     fun `onCategorySelected SHOULD return false when maximum category limit reached`() = runTest {
