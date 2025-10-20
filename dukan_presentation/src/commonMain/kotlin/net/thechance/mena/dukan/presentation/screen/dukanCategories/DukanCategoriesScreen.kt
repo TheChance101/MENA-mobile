@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +26,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.CategoryCard
+import net.thechance.mena.dukan.presentation.component.LazyVerticalGridItems
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -104,8 +103,6 @@ private fun DukanCategoriesContent(
             onCategoryClick = interactionListener::onCategoryClicked
         )
     }
-
-
 }
 
 @Composable
@@ -135,8 +132,8 @@ private fun CategoriesList(
     categories: List<CategoryUiState>,
     onCategoryClick: (categoryName: String, categoryId: String) -> Unit
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = categoryItemSize),
+    LazyVerticalGridItems(
+        grid = GridCells.Adaptive(minSize = categoryItemSize),
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             start = Theme.spacing._16,
@@ -144,19 +141,16 @@ private fun CategoriesList(
             top = Theme.spacing._12,
             bottom = Theme.spacing._16
         ),
-        verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._8),
-    ) {
-        items(
-            items = categories,
-            key = { it.id },
-            contentType = { "CategoryCard" }
-        ) { category ->
-            CategoryCard(
-                title = category.name,
-                imageUrl = category.imageUrl,
-                onClick = { onCategoryClick(category.name, category.id) },
-            )
-        }
+        horizontalArrangement = Arrangement.Start,
+        items = categories,
+        key = { it.id },
+        contentType = { "CategoryCard" }
+    ) { category ->
+        CategoryCard(
+            title = category.name,
+            imageUrl = category.imageUrl,
+            onClick = { onCategoryClick(category.name, category.id) },
+        )
     }
 }
 
