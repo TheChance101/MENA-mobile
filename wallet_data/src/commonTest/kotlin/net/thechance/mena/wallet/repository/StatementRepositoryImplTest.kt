@@ -1,9 +1,15 @@
 package net.thechance.mena.wallet.repository
 
 import dev.mokkery.MockMode
-import dev.mokkery.answering.returns
-import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
+import io.ktor.client.request.HttpResponseData
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -12,9 +18,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.database.StatementDao
-import net.thechance.mena.wallet.data.database.StatementWithMetaDataDto
+import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
-import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSource
+import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -23,24 +29,22 @@ import kotlin.test.assertEquals
 class StatementRepositoryImplTest {
 
     private lateinit var statementRepository: StatementRepositoryImpl
-    private lateinit var statementRemoteDataSource: StatementRemoteDataSource
+    private lateinit var networkClient: NetworkClient
     private lateinit var statementDao: StatementDao
     private val testDispatcher = StandardTestDispatcher()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setup() {
-        statementRemoteDataSource = mock<StatementRemoteDataSource>(mode = MockMode.autofill)
         statementDao = mock<StatementDao>(mode = MockMode.autofill)
-        statementRepository =
-            StatementRepositoryImpl(statementRemoteDataSource, statementDao)
         Dispatchers.setMain(testDispatcher)
     }
 
     @Test
     fun `getStatementWithMetadata should return statement with metadata when API call is successful`() =
         runTest(testDispatcher) {
-            everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statementDto
+            networkClient = createNetworkClient(getRespond = successPdfResponse)
+            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             val result = statementRepository.getStatementWithMetadata()
 
@@ -54,7 +58,8 @@ class StatementRepositoryImplTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `getStatementWithMetadata should fetch new data after expiration time`() = runTest(testDispatcher) {
-        everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statementDto
+        networkClient = createNetworkClient(getRespond = successPdfResponse)
+        statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
         val firstResult = statementRepository.getStatementWithMetadata()
         advanceUntilIdle()
@@ -67,12 +72,19 @@ class StatementRepositoryImplTest {
 
     private companion object {
         val pdfBytes = ByteArray(5) { it.toByte() }
-        val statementDto = StatementWithMetaDataDto(
-            byteArray = pdfBytes,
-            startDate = "2025-09-25",
-            endDate = "2025-10-06",
-            totalInflows = 99.80,
-            totalOutflows = 520.75
-        )
+
+        val successPdfResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
+            respond(
+                content = pdfBytes,
+                status = HttpStatusCode.OK,
+                headers = headersOf(
+                    HttpHeaders.ContentType to listOf(ContentType.Application.Pdf.toString()),
+                    "X-Statement-Total-Inflows" to listOf("99.80"),
+                    "X-Statement-Total-Outflows" to listOf("520.75"),
+                    "X-Statement-Start-Date" to listOf("2025-09-25"),
+                    "X-Statement-End-Date" to listOf("2025-10-06")
+                )
+            )
+        }
     }
 }

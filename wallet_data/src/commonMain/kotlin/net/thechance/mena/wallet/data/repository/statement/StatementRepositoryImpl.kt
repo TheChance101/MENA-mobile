@@ -1,10 +1,13 @@
 package net.thechance.mena.wallet.data.repository.statement
 
+import io.ktor.client.statement.HttpResponse
 import net.thechance.mena.wallet.data.database.StatementDao
+import net.thechance.mena.wallet.data.exceptions.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toLocal
+import net.thechance.mena.wallet.data.mapper.toStatementRequest
 import net.thechance.mena.wallet.data.mapper.toStatementWithMetaData
-import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSource
+import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
@@ -13,16 +16,19 @@ import org.koin.core.annotation.Single
 
 @Single
 class StatementRepositoryImpl(
-    private val statementRemoteDataSource: StatementRemoteDataSource,
+    private val networkClient: NetworkClient,
     private val statementDao: StatementDao
 ) : StatementRepository {
 
     override suspend fun getStatementWithMetadata(
         filterRequestParams: TransactionFilterParams?
     ): StatementWithMetaData {
-        return statementRemoteDataSource
-            .getStatementWithMetaData(filterRequestParams)
-            .toStatementWithMetaData()
+        return safeApiCall<HttpResponse> {
+            networkClient.get(
+                urlString = STATEMENT_PATH,
+                block = filterRequestParams?.toStatementRequest() ?: {}
+            )
+        }.toStatementWithMetaData()
     }
 
     override suspend fun getStatements(
@@ -46,5 +52,8 @@ class StatementRepositoryImpl(
     override suspend fun getStatementById(id: Long): Statement {
         return statementDao.getStatementById(id).toEntity()
     }
-}
 
+    companion object {
+        const val STATEMENT_PATH = "wallet/transactions/statement"
+    }
+}
