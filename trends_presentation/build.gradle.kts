@@ -81,8 +81,8 @@ kotlin {
 }
 
 ksp {
-    arg("KOIN_USE_COMPOSE_VIEWMODEL","true")
-    arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
+    arg("KOIN_CONFIG_CHECK", "true")
 }
 
 dependencies {
@@ -115,16 +115,13 @@ kover.reports {
 
     filters {
         includes {
-            classes("**.*ViewModel")
+            classes("*ViewModel")
         }
 
         excludes {
-            packages("mena.trends_presentation.generated.resources*")
             classes(
-                "**.di.**",
-                "**.navigation.**",
-                "**.shared.**",
                 "**org.koin.ksp.generated**",
+                "**.shared.**"
             )
         }
     }
