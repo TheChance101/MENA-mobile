@@ -1,9 +1,8 @@
-package net.thechance.mena.wallet.presentation
+package net.thechance.mena.wallet.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import net.thechance.mena.wallet.api.WalletApi
-import net.thechance.mena.wallet.presentation.navigation.NavigationHost
-import net.thechance.mena.wallet.presentation.navigation.WalletMainScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.route.WalletMainScreenRoute
 import org.koin.core.annotation.Single
 
 @Single([WalletApi::class])

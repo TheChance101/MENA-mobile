@@ -11,7 +11,7 @@ import net.thechance.mena.identity.presentation.api.IdentityFeatureApiImpl
 import net.thechance.mena.trends.api.TrendsApi
 import net.thechance.mena.trends.presentation.navigation.TrendsApiImpl
 import net.thechance.mena.wallet.api.WalletApi
-import net.thechance.mena.wallet.presentation.WalletApiImpl
+import net.thechance.mena.wallet.presentation.navigation.WalletApiImpl
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
