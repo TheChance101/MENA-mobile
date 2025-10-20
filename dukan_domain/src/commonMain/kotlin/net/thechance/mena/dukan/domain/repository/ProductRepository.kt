@@ -9,12 +9,7 @@ interface ProductRepository {
     suspend fun createProduct(params: CreateProductParams): String
     suspend fun getProductsByShelfId(
         shelfId: String,
-        page:Int,
-        size:Int
+        page: Int,
+        size: Int
     ): PagedResult<Product>
-    suspend fun uploadProductImages(
-        fileName: List<String>,
-        fileBytes: List<ByteArray>,
-        productId: String
-    ): List<String>
 }

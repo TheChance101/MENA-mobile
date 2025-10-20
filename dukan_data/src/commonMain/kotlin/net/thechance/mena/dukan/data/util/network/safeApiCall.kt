@@ -1,10 +1,10 @@
-package net.thechance.mena.dukan.data.repository.util
+package net.thechance.mena.dukan.data.util.network
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import kotlinx.io.IOException
-import net.thechance.mena.dukan.data.repository.dto.DukanErrorCodes
-import net.thechance.mena.dukan.data.repository.dto.ErrorResponse
+import net.thechance.mena.dukan.data.dto.ErrorResponse
+import net.thechance.mena.dukan.data.util.constants.DukanErrorCodes
 import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException

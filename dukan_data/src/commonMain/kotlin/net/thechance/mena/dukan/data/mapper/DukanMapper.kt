@@ -1,10 +1,10 @@
-package net.thechance.mena.dukan.data.repository.mapper
+package net.thechance.mena.dukan.data.mapper
 
-import net.thechance.mena.dukan.data.repository.dto.CreateDukanRequest
-import net.thechance.mena.dukan.data.repository.dto.DukanCategoryDto
-import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
-import net.thechance.mena.dukan.data.repository.dto.DukanDetailsDto
-import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
+import net.thechance.mena.dukan.data.dto.dukan.CreateDukanRequest
+import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
+import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan

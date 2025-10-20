@@ -1,7 +1,7 @@
-package net.thechance.mena.dukan.data.repository.mapper
+package net.thechance.mena.dukan.data.mapper
 
-import net.thechance.mena.dukan.data.repository.dto.CreateShelfRequest
-import net.thechance.mena.dukan.data.repository.dto.ShelfDto
+import net.thechance.mena.dukan.data.dto.shelf.CreateShelfRequest
+import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.domain.entity.Shelf
 
 fun Shelf.toCreateShelfRequest(): CreateShelfRequest {

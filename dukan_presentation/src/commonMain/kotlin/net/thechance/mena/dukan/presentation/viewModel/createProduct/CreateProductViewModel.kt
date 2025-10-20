@@ -15,6 +15,7 @@ import mena.dukan_presentation.generated.resources.error_price_invalid
 import mena.dukan_presentation.generated.resources.error_price_not_positive
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -30,6 +31,7 @@ import org.jetbrains.compose.resources.StringResource
 class CreateProductViewModel(
     private val productRepository: ProductRepository,
     private val shelfRepository: ShelfRepository,
+    private val mediaRepository: MediaRepository,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ProductUiState, CreateProductEffect>(
     initialState = ProductUiState(),
@@ -123,6 +125,7 @@ class CreateProductViewModel(
                 imageBitmap = imageBitmap,
                 imageSizeInMegabyte = imageSizeInMegabyte
             )
+
             else -> true
         }
 
@@ -234,7 +237,7 @@ class CreateProductViewModel(
             params = state.value.toCreateProductParam(state.value.selectedShelf!!.id)
         )
 
-        productRepository.uploadProductImages(
+        mediaRepository.uploadProductImages(
             fileName = state.value.images.map {
                 state.value.productName.trim().replace(" ", "_") +
                         it.image.toPngByteArray().toFileName()

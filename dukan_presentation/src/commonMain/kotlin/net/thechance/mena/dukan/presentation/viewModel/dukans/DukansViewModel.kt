@@ -6,14 +6,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class DukansViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanDiscoveryRepository: DukanDiscoveryRepository,
     private val savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<DukansUiState, DukansEffects>(
@@ -56,7 +56,7 @@ class DukansViewModel(
         val pager = createPagingSource(
             mapper = { it.toUiState() }
         ) { pageNumber ->
-            dukanRepository.getDukansByCategory(
+            dukanDiscoveryRepository.getDukansByCategory(
                 categoryId = categoryId,
                 page = pageNumber,
                 size = 20

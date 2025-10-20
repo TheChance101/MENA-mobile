@@ -1,7 +1,7 @@
-package net.thechance.mena.dukan.data.repository.mapper
+package net.thechance.mena.dukan.data.mapper
 
-import net.thechance.mena.dukan.data.repository.dto.product.CreateProductRequest
-import net.thechance.mena.dukan.data.repository.dto.product.ProductDto
+import net.thechance.mena.dukan.data.dto.product.CreateProductRequest
+import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.util.CreateProductParams
 

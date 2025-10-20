@@ -1,6 +1,6 @@
-package net.thechance.mena.dukan.data.repository.mapper
+package net.thechance.mena.dukan.data.mapper
 
-import net.thechance.mena.dukan.data.repository.dto.DukanResponseDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanResponseDto
 import net.thechance.mena.dukan.domain.entity.DukanPreview
 
 
