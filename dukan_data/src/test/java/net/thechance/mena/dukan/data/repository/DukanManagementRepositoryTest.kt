@@ -66,32 +66,22 @@ class DukanManagementRepositoryTest {
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getCategories returns mapped categories`() = runTest {
         val categories = dukanManagementRepository.getCategories()
-        assertEquals(
-            listOf(
-                Category(Uuid.random(), "Category 1", ""),
-                Category(Uuid.random(), "Category 2", ""),
-                Category(Uuid.random(), "Category 3", "")
-            ),
-            categories
-        )
+        val expectedNames = listOf("Category 1", "Category 2", "Category 3")
+        val actualNames = categories.map { it.name }
+
+        assertEquals(expectedNames, actualNames)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getDukanColors returns mapped colors`() = runTest {
         val colors = dukanManagementRepository.getDukanColors()
-        assertEquals(
-            listOf(
-                Color(Uuid.random(), "#FF0000"),
-                Color(Uuid.random(), "#00FF00"),
-                Color(Uuid.random(), "#0000FF")
-            ),
-            colors
-        )
+        val expectedHexCodes = listOf("#FF0000", "#00FF00", "#0000FF")
+        val actualHexCodes = colors.map { it.hexCode }
+
+        assertEquals(expectedHexCodes, actualHexCodes)
     }
 
     @Test
@@ -130,15 +120,12 @@ class DukanManagementRepositoryTest {
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getDukanDetailsByDukanId should map id correctly`() = runTest {
-        // Arrange
-        val dukanId = Uuid.random()
+        val dukanId = "dukan123"
         val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
 
-        // Act
-        val details = repo.getDukanDetailsByDukanId(dukanId.toString())
+        val details = repo.getDukanDetailsByDukanId(dukanId)
 
-        // Assert
-        assertEquals(dukanId, details.id)
+        assertEquals(dukanId, details.id.toString())
     }
 
     @Test
@@ -167,18 +154,14 @@ class DukanManagementRepositoryTest {
         assertEquals("123 Test St, Cairo, Egypt", details.address)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getDukanDetailsByDukanId should map color correctly`() = runTest {
-        // Arrange
         val dukanId = "dukan123"
         val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
 
-        // Act
         val details = repo.getDukanDetailsByDukanId(dukanId)
 
-        // Assert
-        assertEquals(Color(Uuid.random(), "#FF0000"), details.color)
+        assertEquals("#FF0000", details.color.hexCode)
     }
 
     @Test

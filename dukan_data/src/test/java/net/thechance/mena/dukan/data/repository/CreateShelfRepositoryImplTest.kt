@@ -111,18 +111,16 @@ class CreateShelfRepositoryImplTest {
     @Test
     fun `getMyDukanShelves returns correct first shelf id`() = runTest {
         // Given
-        val id = Uuid.random()
+        val expectedId = Uuid.parse("11111111-1111-1111-1111-111111111111")
         val repository = createShelfRepository(
-            shelvesResponse = {
-                defaultShelvesResponse()
-            }
+            shelvesResponse = { defaultShelvesResponse() }
         )
 
         // When
         val shelves = repository.getMyDukanShelves()
 
         // Then
-        assertEquals(id, shelves[0].id)
+        assertEquals(expectedId, shelves[0].id)
     }
 
     @Test
