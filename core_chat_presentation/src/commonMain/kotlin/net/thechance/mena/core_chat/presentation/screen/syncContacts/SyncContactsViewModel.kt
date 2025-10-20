@@ -7,9 +7,17 @@ import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.contacts_permission_required_message
+import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
+import mena.core_chat_presentation.generated.resources.permission_denied_title
+import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.SettingsOpener
+import net.thechance.mena.core_chat.presentation.utils.UiText
+import org.jetbrains.compose.resources.StringResource
 
 class SyncContactsViewModel(
     private val contactsRepository: ContactsRepository,
@@ -64,22 +72,20 @@ class SyncContactsViewModel(
         when (throwable) {
             is DeniedAlwaysException -> {
                 updateState { it.copy(isLoading = false, isPermissionDeniedPermanently = true) }
-//                showSnackBar(
-//                    snackBarData = SnackBarData(
-//                        title = UiText.StringRes(Res.string.permission_denied_title),
-//                        message = UiText.StringRes(Res.string.contacts_permission_required_message),
-//                    )
-//                )
+                showSnackBar(
+                    titleStringResource = Res.string.permission_denied_title,
+                    messageStringResource = Res.string.contacts_permission_required_message,
+                    isError = true
+                )
             }
 
             is DeniedException -> {
                 updateState { it.copy(isLoading = false) }
-//                showSnackBar(
-//                    SnackBarData(
-//                        title = UiText.StringRes(Res.string.permission_denied_title),
-//                        message = UiText.StringRes(Res.string.contacts_permission_required_message),
-//                    )
-//                )
+                showSnackBar(
+                    titleStringResource = Res.string.permission_denied_title,
+                    messageStringResource = Res.string.contacts_permission_required_message,
+                    isError = true
+                )
             }
 
             else -> onError()
@@ -116,12 +122,27 @@ class SyncContactsViewModel(
 
     private fun onError() {
         updateState { it.copy(isLoading = false) }
-//        showSnackBar(
-//            SnackBarData(
-//                title = UiText.StringRes(Res.string.something_went_wrong),
-//                message = UiText.StringRes(Res.string.could_not_sync_contacts_message),
-//            )
-//        )
+        showSnackBar(
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_sync_contacts_message,
+            isError = true
+        )
+    }
+
+    private fun showSnackBar(
+        titleStringResource: StringResource,
+        messageStringResource: StringResource,
+        isError: Boolean
+    ) {
+        emitEffect(
+            SyncContactsScreenEffect.ShowSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(titleStringResource),
+                    message = UiText.StringRes(messageStringResource),
+                    isError = isError
+                )
+            )
+        )
     }
 }
 

@@ -6,25 +6,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import net.thechance.mena.core_chat.presentation.components.AnimatedSnackBarHost
-import net.thechance.mena.core_chat.presentation.components.SnackBarData
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.AnimatedSnackBarHost
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarHostController
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
-import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
+
+val LocalNavController = staticCompositionLocalOf<NavController> {
+    error("No NavController provided")
+}
 
 @Composable
 fun ChatNavHost(
@@ -32,18 +35,14 @@ fun ChatNavHost(
 ) {
 
     val navController = rememberNavController()
-    var snackBarDataState by remember {
-        mutableStateOf(
-            SnackBarData(title = UiText.DynamicString(), message = UiText.DynamicString())
-        )
-    }
-    var isSnackBarVisible by remember { mutableStateOf(false) }
+    val snackBarHostController = remember { SnackBarHostController() }
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         CompositionLocalProvider(
-            LocalNavController provides navController
+            LocalNavController provides navController,
+            LocalSnackBarHostController provides snackBarHostController
         ) {
             NavHost(
                 modifier = Modifier.fillMaxSize(),
@@ -66,11 +65,7 @@ fun ChatNavHost(
                     .padding(horizontal = Theme.spacing._16),
                 contentAlignment = Alignment.TopCenter
             ) {
-                AnimatedSnackBarHost(
-                    isVisible = isSnackBarVisible,
-                    data = snackBarDataState,
-                    onDismiss = { isSnackBarVisible = false }
-                )
+                AnimatedSnackBarHost(snackBarHostController)
             }
         }
     }

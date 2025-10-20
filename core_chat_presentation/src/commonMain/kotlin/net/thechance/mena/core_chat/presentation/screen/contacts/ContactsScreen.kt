@@ -28,8 +28,9 @@ import mena.core_chat_presentation.generated.resources.loading
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.presentation.components.ErrorView
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
-import net.thechance.mena.core_chat.presentation.navigation.EffectHandler
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.ContactsList
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.IS_SYNC_SUCCESS
@@ -141,6 +142,7 @@ private fun EffectsHandler(
     effects: SharedFlow<ContactsScreenEffect>,
     onSyncSuccess: () -> Unit
 ) {
+    val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
 
     val stateFlow = navController.currentBackStackEntry
@@ -176,6 +178,10 @@ private fun EffectsHandler(
 
             ContactsScreenEffect.NavigateToSyncContacts -> {
                 navController.navigate(SyncContactsRoute(forceSync = true))
+            }
+
+            is ContactsScreenEffect.ShowSnackBar -> {
+                snackBarHostController.showSnackBar(effect.snackBarData)
             }
         }
     }

@@ -28,7 +28,6 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.test.AfterTest
@@ -43,7 +42,6 @@ class HomeViewModelTest {
     private val chatRepository = mock<ChatRepository>(MockMode.autofill)
     private val messageRepository = mock<MessageRepository>(MockMode.autofill)
     private val balanceRepository = mock<BalanceRepository>(MockMode.autofill)
-    private val effector = mock<ChatEffector>(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -400,7 +398,6 @@ class HomeViewModelTest {
             chatRepository = chatRepository,
             messageRepository = messageRepository,
             balanceRepository = balanceRepository,
-            effector = effector,
             dispatcher = testDispatcher
         )
     }

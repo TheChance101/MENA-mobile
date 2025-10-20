@@ -6,6 +6,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.could_not_load_chats
+import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -14,11 +17,14 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -37,7 +43,7 @@ class HomeViewModel(
             onLoadUpdated = ::changeLoadingState,
             onRequest = ::getChatsSummary,
             getNextKey = { currentPage, _ -> currentPage + 1 },
-            onError = ::onLoadChatsSummaryError,
+            onError = { onLoadChatsSummaryError() },
             onSuccess = { result, _ -> onLoadChatsSummarySuccess(result) },
             endReached = { _, result -> result.isLastPage }
         )
@@ -145,13 +151,12 @@ class HomeViewModel(
         )
     }
 
-    private fun onLoadChatsSummaryError(throwable: Throwable?) {
-//        showSnackBar(
-//            SnackBarData(
-//                title = UiText.StringRes(Res.string.something_went_wrong),
-//                message = UiText.DynamicString(value = throwable?.message.toString()),
-//            )
-//        )
+    private fun onLoadChatsSummaryError() {
+        showSnackBar(
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_load_chats,
+            isError = true
+        )
     }
 
     private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
@@ -195,6 +200,22 @@ class HomeViewModel(
 
     override fun onWalletClicked() {
         emitEffect(HomeScreenEffect.NavigateToWallet)
+    }
+
+    private fun showSnackBar(
+        titleStringResource: StringResource,
+        messageStringResource: StringResource,
+        isError: Boolean = false
+    ) {
+        emitEffect(
+            HomeScreenEffect.ShowSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(titleStringResource),
+                    message = UiText.StringRes(messageStringResource),
+                    isError = isError
+                )
+            )
+        )
     }
 
     companion object {

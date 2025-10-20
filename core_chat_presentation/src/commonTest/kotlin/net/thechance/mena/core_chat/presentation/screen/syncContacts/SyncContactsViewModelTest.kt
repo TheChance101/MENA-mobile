@@ -26,7 +26,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.utils.SettingsOpener
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -38,7 +37,6 @@ class SyncContactsViewModelTest {
     private val contactsRepository = mock<ContactsRepository>()
     private val permissionsController = mock<PermissionsController>()
     private val settingsOpener = mock<SettingsOpener>()
-    private val effector = mock<ChatEffector>()
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -217,7 +215,6 @@ class SyncContactsViewModelTest {
             permissionsController,
             createSyncContactsScreenArgs(forceSyncParam),
             settingsOpener,
-            effector,
             testDispatcher
         )
     }

@@ -23,8 +23,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.camera.rememberCameraManager
-import net.thechance.mena.core_chat.presentation.navigation.EffectHandler
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
@@ -67,7 +68,7 @@ fun ChatScreenContent(
     val chatListState = rememberLazyListState()
 
     val cameraManager = rememberCameraManager(
-        onResult = { sharedImageByteArray  ->
+        onResult = { sharedImageByteArray ->
             sharedImageByteArray?.let {
                 interactions.onSendImageClicked(listOf(sharedImageByteArray))
             }
@@ -146,7 +147,7 @@ fun ChatScreenContent(
         AnimatedVisibility(
             visible = state.isAttachmentsOverlayVisible,
             enter = slideInVertically(initialOffsetY = { it }),
-            exit= slideOutVertically(targetOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it }),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             AttachmentsBottomSheet(
@@ -167,13 +168,17 @@ fun ChatScreenContent(
 private fun EffectsHandler(
     effects: SharedFlow<ChatScreenEffect>,
 ) {
-
+    val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
 
     EffectHandler(effects) { effect ->
         when (effect) {
             is ChatScreenEffect.NavigateBack -> {
                 navController.popBackStack()
+            }
+
+            is ChatScreenEffect.ShowSnackBar -> {
+                snackBarHostController.showSnackBar(effect.snackBarData)
             }
         }
     }

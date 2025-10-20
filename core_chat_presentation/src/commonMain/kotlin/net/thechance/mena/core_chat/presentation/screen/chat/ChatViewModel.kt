@@ -32,8 +32,10 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -384,18 +386,20 @@ class ChatViewModel(
         tryToExecute(
             execute = { chatRepository.downloadImage(url) },
             onSuccess = { onDownloadImageSuccess() },
-            onError = {
-                showSnackBar(
-                    Res.string.error,
-                    Res.string.error_failed_to_download_image,
-                    true
-                )
-            }
+            onError = { onDownloadImageError() }
         )
     }
 
     private fun onDownloadImageSuccess() {
         showSnackBar(Res.string.success, Res.string.image_saved_successfully, isError = false)
+    }
+
+    private fun onDownloadImageError() {
+        showSnackBar(
+            Res.string.error,
+            Res.string.error_failed_to_download_image,
+            true
+        )
     }
 
     override fun onCloseImageViewClicked() {
@@ -413,13 +417,15 @@ class ChatViewModel(
         messageStringResource: StringResource,
         isError: Boolean = false
     ) {
-//        showSnackBar(
-//            SnackBarData(
-//                title = UiText.StringRes(titleStringResource),
-//                message = UiText.StringRes(messageStringResource),
-//                isError = isError
-//            )
-//        )
+        emitEffect(
+            ChatScreenEffect.ShowSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(titleStringResource),
+                    message = UiText.StringRes(messageStringResource),
+                    isError = isError
+                )
+            )
+        )
     }
 
     override fun onAttachmentClicked() {

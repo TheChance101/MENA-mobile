@@ -29,8 +29,9 @@ import mena.core_chat_presentation.generated.resources.ic_plus
 import mena.core_chat_presentation.generated.resources.mena
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
-import net.thechance.mena.core_chat.presentation.navigation.EffectHandler
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
 import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
@@ -210,7 +211,7 @@ private fun ChatsSummaryList(
 private fun EffectsHandler(
     effects: SharedFlow<HomeScreenEffect>,
 ) {
-
+    val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
 
     EffectHandler(effects = effects) { effect ->
@@ -235,6 +236,10 @@ private fun EffectsHandler(
 
             HomeScreenEffect.NavigateToWallet -> {
                 navController.navigate(WalletRoute)
+            }
+
+            is HomeScreenEffect.ShowSnackBar -> {
+                snackBarHostController.showSnackBar(effect.snackBarData)
             }
         }
     }

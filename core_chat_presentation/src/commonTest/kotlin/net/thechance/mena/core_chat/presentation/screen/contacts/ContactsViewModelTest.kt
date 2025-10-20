@@ -27,7 +27,6 @@ import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.IS_SYNC_SUCCESS
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -38,16 +37,12 @@ import kotlin.uuid.Uuid
 class ContactsViewModelTest {
     private val contactsRepository = mock<ContactsRepository>()
     private val chatRepository = mock<ChatRepository>()
-    private val effector = mock<ChatEffector>()
 
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        everySuspend { effector.setNavigationArgs(any()) } returns Unit
-        val fakeFlow = MutableSharedFlow<Map<String, Any>>()
-        every { effector.popBackStackArgsFlow } returns fakeFlow
     }
 
     @AfterTest
@@ -89,7 +84,6 @@ class ContactsViewModelTest {
 
     @Test
     fun `onBackClicked should call popBackStack when invoked`() = runTest {
-        everySuspend { effector.popBackStack() } returns Unit
         val viewModel = createViewModel()
         advanceUntilIdle()
 
@@ -178,7 +172,7 @@ class ContactsViewModelTest {
         }
 
     private fun createViewModel(): ContactsViewModel {
-        return ContactsViewModel(contactsRepository, chatRepository, effector, testDispatcher)
+        return ContactsViewModel(contactsRepository, chatRepository, testDispatcher)
     }
 
     private companion object {

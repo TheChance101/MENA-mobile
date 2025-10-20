@@ -10,7 +10,6 @@ import assertk.assertions.isTrue
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
-import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
@@ -37,8 +36,7 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
-import net.thechance.mena.core_chat.presentation.components.SnackBarData
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.test.AfterTest
@@ -54,7 +52,6 @@ class ChatViewModelTest {
     private val userRepository = mock<UserRepository>()
     private val chatArgs = mock<ChatArgs>()
     private val permissionsController = mock<PermissionsController>()
-    private val effector = mock<ChatEffector>(MockMode.autofill)
     private lateinit var chatViewModel: ChatViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -347,7 +344,6 @@ class ChatViewModelTest {
             messageRepository,
             userRepository,
             chatArgs,
-            effector,
             permissionsController,
             testDispatcher
         )

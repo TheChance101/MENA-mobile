@@ -9,13 +9,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.contact_not_mena_user
+import mena.core_chat_presentation.generated.resources.could_not_load_the_contacts
+import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ChatException
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BasePagingSource
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
+import net.thechance.mena.core_chat.presentation.utils.UiText
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -67,12 +74,11 @@ class ContactsViewModel(
 
     override fun onContactClicked(contactUserId: Uuid?) {
         if (contactUserId == null) {
-//            showSnackBar(
-//                SnackBarData(
-//                    title = UiText.StringRes(Res.string.something_went_wrong),
-//                    message = UiText.StringRes(Res.string.contact_not_mena_user),
-//                )
-//            )
+            showSnackBar(
+                titleStringResource = Res.string.something_went_wrong,
+                messageStringResource = Res.string.contact_not_mena_user,
+                isError = true
+            )
             return
         }
         navigateToChatByUserId(contactUserId)
@@ -96,21 +102,35 @@ class ContactsViewModel(
     }
 
     private fun onContactClickError() {
-//        showSnackBar(
-//            SnackBarData(
-//                title = UiText.StringRes(Res.string.something_went_wrong),
-//                message = UiText.StringRes(Res.string.contact_not_mena_user),
-//            )
-//        )
+        showSnackBar(
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.contact_not_mena_user,
+            isError = true
+        )
     }
 
     private fun onDataLoadError() {
-//        showSnackBar(
-//            SnackBarData(
-//                title = UiText.StringRes(Res.string.something_went_wrong),
-//                message = UiText.StringRes(Res.string.could_not_load_the_contacts),
-//            )
-//        )
+        showSnackBar(
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_load_the_contacts,
+            isError = true
+        )
+    }
+
+    private fun showSnackBar(
+        titleStringResource: StringResource,
+        messageStringResource: StringResource,
+        isError: Boolean = false
+    ) {
+        emitEffect(
+            ContactsScreenEffect.ShowSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(titleStringResource),
+                    message = UiText.StringRes(messageStringResource),
+                    isError = isError
+                )
+            )
+        )
     }
 
     private fun createContactsPagingSource(onError: ((ChatException) -> Unit)? = { onDataLoadError() })
