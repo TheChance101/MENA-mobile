@@ -1,5 +1,8 @@
 package net.thechance.mena.core_chat.data.source.remote.network
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.Foundation.dataWithContentsOfURL
@@ -14,13 +17,14 @@ import platform.darwin.dispatch_semaphore_signal
 import platform.darwin.dispatch_semaphore_wait
 
 
-actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean {
-    return try {
-        val nsUrl = NSURL.URLWithString(url) ?: return false
-        val data = NSData.dataWithContentsOfURL(nsUrl) ?: return false
+actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean = withContext(
+    Dispatchers.IO){
+    return@withContext try {
+        val nsUrl = NSURL.URLWithString(url) ?: return@withContext false
+        val data = NSData.dataWithContentsOfURL(nsUrl) ?: return@withContext false
         val image = UIImage(data = data)
 
-        val jpegData = UIImageJPEGRepresentation(image, 1.0) ?: return false
+        val jpegData = UIImageJPEGRepresentation(image, 1.0) ?: return@withContext false
 
         var success = false
 
