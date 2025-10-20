@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import net.thechance.mena.dukan.domain.exceptions.DukanNotFoundException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
@@ -158,7 +158,7 @@ class MainViewModel(
 
     private fun onGetDukanStateError(error: Throwable) {
         when (error) {
-            is DukanNotFoundException -> updateState {
+            is NoSuchItemException -> updateState {
                 copy(
                     errorMessage = error.message,
                     dukanState = MainScreenUiState.DukanState(

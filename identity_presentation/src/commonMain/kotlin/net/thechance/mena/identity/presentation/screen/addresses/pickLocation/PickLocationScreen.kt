@@ -66,8 +66,6 @@ data class PickLocationScreen(
                 currentLocation = state.currentLocation,
                 animateToCurrentLocation = state.animateToCurrentLocation,
                 onSetAnchorLocation = listener::onSetAnchorLocation,
-                onUpdateAddress = listener::onUpdateAddress,
-                addressModel = addressModel
             ) {
                 Column(
                     Modifier.padding(Theme.spacing._16).fillMaxSize(),
@@ -99,7 +97,7 @@ data class PickLocationScreen(
             }
         }
         ErrorSnackBar(
-            errorMessage = state.errorMessage,
+            errorMessage = state.errorMessage?.let { stringResource(it) },
             onDismiss = listener::onClearErrorMessage,
             modifier = Modifier.statusBarsPadding()
         )

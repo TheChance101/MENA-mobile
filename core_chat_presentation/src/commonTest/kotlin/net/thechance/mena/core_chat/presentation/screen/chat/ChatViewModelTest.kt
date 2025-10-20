@@ -33,7 +33,10 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.model.PagedData
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
@@ -47,7 +50,8 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
-    private val repository = mock<ChatRepository>()
+    private val chatRepository = mock<ChatRepository>()
+    private val messageRepository = mock<MessageRepository>()
     private val userRepository = mock<UserRepository>()
     private val chatArgs = mock<ChatArgs>()
     private val permissionsController = mock<PermissionsController>()
@@ -63,11 +67,13 @@ class ChatViewModelTest {
         every { chatArgs.chatId } returns chatId.toString()
         every { chatArgs.chatName } returns chatName
 
-        everySuspend { repository.getChatById(chatId) } returns chat
-        everySuspend { repository.loadMessages(chatId) } returns emptyList()
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns flowOf()
-        every { repository.observeReadMessages() } returns flowOf()
+        everySuspend { chatRepository.getChatById(chatId) } returns chat
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(emptyList(), 0, true)
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.getMessages(chatId) } returns flowOf()
+        every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -80,10 +86,12 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update chat list when its loaded messages successfully`() {
-        everySuspend { repository.loadMessages(chatId) } returns messages
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns flowOf()
-        every { repository.observeReadMessages() } returns flowOf()
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns messages
+        every { messageRepository.getMessages(chatId) } returns flowOf()
+        every { messageRepository.observeReadMessages() } returns flowOf()
+        everySuspend {
+            messageRepository.loadMessages(chatId, 0, 40)
+        } returns PagedData(messages, messages.size, false)
 
         val chatViewModel = createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -91,16 +99,16 @@ class ChatViewModelTest {
         assertThat(
             chatViewModel.state.value.chatListItems.currentUiMessages()
                 .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        )
-            .isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
+        ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
     }
 
     @Test
     fun `init should send snack bar effect when loading messages failed`() {
-        everySuspend { repository.loadMessages(chatId) } throws Exception()
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns flowOf()
-        every { repository.observeReadMessages() } returns flowOf()
+        everySuspend { chatRepository.getChatById(chatId) } returns chat
+        everySuspend { messageRepository.loadMessages(chatId, any(), any()) } throws Exception()
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.getMessages(chatId) } returns flowOf()
+        every { messageRepository.observeReadMessages() } returns flowOf()
 
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -109,11 +117,12 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update uiMessage and chatListItems when receive new message`() {
-        everySuspend { repository.getChatById(chatId) } returns chat
-        everySuspend { repository.loadMessages(chatId) } returns emptyList()
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns flowOf(messages.first())
-        every { repository.observeReadMessages() } returns flowOf()
+        everySuspend { chatRepository.getChatById(chatId) } returns chat
+        every { messageRepository.getMessages(chatId) } returns flowOf(messages.first())
+        every { messageRepository.observeReadMessages() } returns flowOf()
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(emptyList(), 80, false)        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
 
         val chatViewModel = createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -125,6 +134,7 @@ class ChatViewModelTest {
             listOf(messages.first().toUi(chatRequesterId))
         )
     }
+
     @Test
     fun `init should update user data when receive user data from repository`() {
         everySuspend {userRepository.getUserInfo() } returns user
@@ -165,7 +175,7 @@ class ChatViewModelTest {
     @Test
     fun `onSendMessageClicked should update current messages with sent state and reset the user input when its successfully sent `() {
         val inputMessage = "hi"
-        everySuspend { repository.sendMessage(any()) } returns Unit
+        everySuspend { messageRepository.sendMessage(any()) } returns Unit
         chatViewModel.onInputMessageChanged(inputMessage)
 
         chatViewModel.onSendMessageClicked()
@@ -179,7 +189,7 @@ class ChatViewModelTest {
         val inputMessage = "hi"
         chatViewModel.onInputMessageChanged(inputMessage)
 
-        everySuspend { repository.sendMessage(any()) } throws Exception("Send failed")
+        everySuspend { messageRepository.sendMessage(any()) } throws Exception("Send failed")
 
         chatViewModel.onSendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -209,7 +219,7 @@ class ChatViewModelTest {
     fun `onDeleteFailedMessageClick should delete the clicked failed message when its call`() {
         val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
         chatViewModel.onFailedMessageClicked(msgUi)
-        everySuspend { repository.deleteMessage(any()) } returns Unit
+        everySuspend { messageRepository.deleteMessage(any()) } returns Unit
 
         chatViewModel.onDeleteFailedMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -221,14 +231,14 @@ class ChatViewModelTest {
     fun `onResendMessageClick should remove the failed message when resend message success`() {
         val failedMessage = messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
         chatViewModel.onFailedMessageClicked(failedMessage)
-        everySuspend { repository.sendMessage(any()) } returns Unit
+        everySuspend { messageRepository.sendMessage(any()) } returns Unit
 
         chatViewModel.onResendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
         val finalMessages = chatViewModel.state.value.chatListItems.currentUiMessages()
         assertThat(finalMessages.isEmpty()).isTrue()
-        verifySuspend { repository.sendMessage(any()) }
+        verifySuspend { messageRepository.sendMessage(any()) }
     }
 
     @Test
@@ -246,19 +256,19 @@ class ChatViewModelTest {
 
     @Test
     fun `onDownloadImageClicked should call repository and show success snackbar on success`() {
-        everySuspend { repository.downloadImage(imageUrl) } returns Unit
+        everySuspend { chatRepository.downloadImage(imageUrl) } returns Unit
 
         chatViewModel.onDownloadImageClicked(imageUrl)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        verifySuspend { repository.downloadImage(imageUrl) }
+        verifySuspend { chatRepository.downloadImage(imageUrl) }
         verifySuspend { effector.showSnackBar(any()) }
     }
 
     @Test
     fun `onDownloadImageClicked should show error snackbar on failure`() {
 
-        everySuspend { repository.downloadImage(imageUrl) } throws Exception()
+        everySuspend { chatRepository.downloadImage(imageUrl) } throws Exception()
 
         chatViewModel.onDownloadImageClicked(imageUrl)
         testDispatcher.scheduler.advanceUntilIdle()
@@ -287,7 +297,7 @@ class ChatViewModelTest {
 
 
     @Test
-    fun `onCameraClicked should check for camera permission when called`(){
+    fun `onCameraClicked should check for camera permission when called`() {
         chatViewModel.onCameraClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -295,7 +305,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onCameraClicked should open camera when permission is granted`(){
+    fun `onCameraClicked should open camera when permission is granted`() {
         everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} returns Unit
 
         chatViewModel.onCameraClicked()
@@ -305,7 +315,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onCameraClicked should not open camera when camera permission is denied`(){
+    fun `onCameraClicked should not open camera when camera permission is denied`() {
         everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} throws DeniedException(Permission.CAMERA)
 
         chatViewModel.onCameraClicked()
@@ -315,7 +325,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun`onCameraClosed should close camera when called`(){
+    fun`onCameraClosed should close camera when called`() {
         chatViewModel.onCameraClosed()
         testDispatcher.scheduler.advanceUntilIdle()
 

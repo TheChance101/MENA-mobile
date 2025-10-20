@@ -81,4 +81,32 @@
     <string name="save">حفظ</string>
     <string name="upload_another_image">رفع صورة أخرى</string>
     <string name="image_preview">عرض الصوره</string>
+
+    <!-- Error Messages -->
+
+    <string name="error_unknown">حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقًا.</string>
+    <string name="error_no_internet_connection">لا يوجد اتصال بالإنترنت</string>
+    <string name="error_too_many_requests">تم إرسال طلبات كثيرة جدًا. يرجى المحاولة مرة أخرى لاحقًا.</string>
+
+    <string name="error_invalid_credentials">البيانات غير صحيحة. يرجى التحقق من رقم الهاتف وكلمة المرور.</string>
+    <string name="error_invalid_country_code">رمز الدولة غير صالح</string>
+    <string name="error_invalid_mobile_number">رقم الهاتف غير صالح</string>
+    <string name="error_invalid_password">كلمة المرور غير صالحة</string>
+    <string name="error_user_blocked">محاولات فاشلة كثيرة جدًا. يرجى المحاولة مرة أخرى لاحقًا.</string>
+    <string name="error_unauthorized">ليس لديك الصلاحية للوصول إلى التطبيق.</string>
+    <string name="error_invalid_otp">رمز التحقق (OTP) غير صحيح.</string>
+    <string name="error_otp_expired">انتهت صلاحية رمز التحقق (OTP).</string>
+
+    <string name="error_location_permission_denied">تم رفض إذن الوصول إلى الموقع</string>
+    <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
+    <string name="error_permission_not_granted">لم يتم منح الإذن</string>
+
+    <string name="error_address_not_found">لم يتم العثور على العنوان</string>
+    <string name="error_cannot_delete_active_address">لا يمكن حذف العنوان الأساسي</string>
+    <string name="error_location_is_turned_off">"الموقع مُغلق"</string>
+    <string name="error_username_required">يرجى إدخال حقل اسم المستخدم</string>
+    <string name="error_firstname_required">يرجى إدخال حقل الاسم الأول</string>
+    <string name="error_lastname_required">يرجى إدخال حقل الاسم الأخير</string>
+    <string name="error_password_mismatch">كلمتا المرور غير متطابقتين.</string>
+    <string name="error_camera_permission_required">مطلوب إذن الوصول إلى الكاميرا</string>
 </resources>

@@ -26,6 +26,7 @@ import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
+import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
@@ -172,7 +173,6 @@ fun createRepository(
 fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
-    messageDao: MessageDao,
     imageDownloader: ImageDownloader,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -188,12 +188,22 @@ fun createChatRepository(
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
         webSocketManager = webSocketManager,
-        messageDao = messageDao,
-        json = jsonSerialization,
         imageDownloader = imageDownloader
     )
-}
 
+}
+fun createMessageRepository(
+    httpClient: HttpClient,
+    webSocketManager: WebSocketManager,
+    messageDao: MessageDao,
+): MessageRepositoryImpl {
+    return MessageRepositoryImpl(
+        webSocketManager = webSocketManager,
+        messageDao = messageDao,
+        client =httpClient,
+        json = jsonSerialization
+    )
+}
 
 fun createHttpClient(
     contactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,

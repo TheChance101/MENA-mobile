@@ -3,6 +3,8 @@ package net.thechance.mena.identity.presentation.screen.resetPassword
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_password_mismatch
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -57,7 +59,7 @@ class ResetPasswordScreenViewModel(
 
     override fun onClickResetPassword() {
         if (state.value.newPassword != state.value.confirmPassword) {
-            updateState { copy(errorMessage = "New password and confirm password do not match.") }
+            updateState { copy(errorMessage = Res.string.error_password_mismatch) }
             return
         }
 

@@ -6,12 +6,18 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.datetime.LocalDate
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_camera_permission_required
+import mena.identity_presentation.generated.resources.error_firstname_required
+import mena.identity_presentation.generated.resources.error_lastname_required
+import mena.identity_presentation.generated.resources.error_username_required
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.getCurrentDate
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.ErrorState
+import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -71,15 +77,15 @@ class EditUserProfileViewModel(
 
     override fun onClickSaveButton() {
         if (state.value.username.isEmpty()) {
-            updateState { copy(errorMessage = "Please enter the Username field") }
+            updateState { copy(errorMessage = Res.string.error_username_required) }
             return
         }
         if (state.value.firstName.isEmpty()) {
-            updateState { copy(errorMessage = "Please enter the First name field") }
+            updateState { copy(errorMessage = Res.string.error_firstname_required) }
             return
         }
         if (state.value.lastName.isEmpty()) {
-            updateState { copy(errorMessage = "Please enter the Last name field") }
+            updateState { copy(errorMessage = Res.string.error_lastname_required) }
             return
         }
 
@@ -185,7 +191,7 @@ class EditUserProfileViewModel(
     private suspend fun onAskForCameraPermission() {
         permissionManager.requestCameraPermission(
             onGranted = { updateState { copy(showCamera = true) } },
-            onDenied = { updateState { copy(errorMessage = "Camera permission required") } }
+            onDenied = { updateState { copy(errorMessage = Res.string.error_camera_permission_required) } }
         )
     }
 
@@ -194,6 +200,6 @@ class EditUserProfileViewModel(
     }
 
     private fun onErrorOccurred(errorState: ErrorState) {
-        updateState { copy(isLoading = false, errorMessage = errorState.toString()) }
+        updateState { copy(isLoading = false, errorMessage = mapErrorToMessage(errorState)) }
     }
 }

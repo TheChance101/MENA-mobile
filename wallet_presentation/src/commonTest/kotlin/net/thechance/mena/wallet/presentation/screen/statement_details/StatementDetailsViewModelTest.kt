@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.repository.StatementRepository
-import net.thechance.mena.wallet.presentation.base.UiState.Success
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
@@ -64,8 +63,8 @@ class StatementDetailsViewModelTest {
         initViewModel()
 
         val finalState = viewModel.state.value
-        assertTrue(finalState.statement is Success)
-        assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement.data)
+        assertTrue(finalState.statement.isNotEmpty())
+        assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement)
     }
 
     @Test
@@ -112,7 +111,7 @@ class StatementDetailsViewModelTest {
             initViewModel()
 
             val finalState = viewModel.state.value
-            assertTrue(finalState.statement is Success)
+            assertTrue(finalState.statement.isNotEmpty())
         }
 
     private fun TestScope.initViewModel() {
@@ -135,6 +134,4 @@ class StatementDetailsViewModelTest {
             totalOutflows = totalOutflows,
         )
     }
-
-
 }

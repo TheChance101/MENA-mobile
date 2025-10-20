@@ -115,7 +115,7 @@ data class OtpScreen(
             }
         }
         ErrorSnackBar(
-            errorMessage = state.errorMessage,
+            errorMessage = state.errorMessage?.let { stringResource(it) },
             onDismiss = listener::onClearErrorMessage,
             modifier = Modifier.statusBarsPadding()
         )

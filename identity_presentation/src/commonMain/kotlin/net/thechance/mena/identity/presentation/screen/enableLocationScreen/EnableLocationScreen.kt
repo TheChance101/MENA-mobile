@@ -48,7 +48,7 @@ class EnableLocationScreen : BaseScreen<
                     modifier = Modifier.padding(horizontal = 28.dp)
                 )
                 ErrorSnackBar(
-                    errorMessage = state.errorMessage,
+                    errorMessage = state.errorMessage?.let { stringResource(it) },
                     onDismiss = listener::onClearErrorMessage,
                     modifier = Modifier.statusBarsPadding().align(Alignment.TopCenter)
                 )

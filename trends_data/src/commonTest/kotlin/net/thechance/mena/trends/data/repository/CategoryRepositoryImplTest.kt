@@ -7,7 +7,7 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.toByteArray
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.dto.PatchUserCategoriesRequest
+import net.thechance.mena.trends.data.dto.UpdateUserCategoriesRequest
 import net.thechance.mena.trends.data.mapper.toEntityList
 import net.thechance.mena.trends.data.repository.util.createCategoryHttpClient
 import net.thechance.mena.trends.data.repository.util.getAllCategoriesResponse
@@ -53,17 +53,17 @@ internal class CategoryRepositoryImplTest {
         networkClient = createCategoryHttpClient { updateInterestsResponse() }
         repository = CategoryRepositoryImpl(networkClient)
 
-        repository.updateUserCategories(listOf("uuid1"))
+        repository.initializeUserCategories(listOf("uuid1"))
 
         verifySuspend { networkClient = createCategoryHttpClient { updateInterestsResponse() } }
     }
 
     @Test
-    fun `patchUserCategories should succeed when API call is successful`() = runTest {
+    fun `updateUserCategories should succeed when API call is successful`() = runTest {
         networkClient = createCategoryHttpClient { patchUserInterestsResponse() }
         repository = CategoryRepositoryImpl(networkClient)
 
-        repository.patchUserCategories(
+        repository.updateUserCategories(
             originalSelectedIds = listOf("uuid1", "uuid2", "uuid3"),
             currentSelectedIds = listOf("uuid2", "uuid3", "uuid4", "uuid5")
         )
@@ -72,7 +72,7 @@ internal class CategoryRepositoryImplTest {
     }
 
     @Test
-    fun `patchUserCategories should calculate correct categories to add and remove`() = runTest {
+    fun `updateUserCategories should calculate correct categories to add and remove`() = runTest {
         val (toAdd, toRemove) = capturePatchRequest(
             originalIds = listOf("uuid1", "uuid2", "uuid3"),
             currentIds = listOf("uuid2", "uuid3", "uuid4", "uuid5")
@@ -83,7 +83,7 @@ internal class CategoryRepositoryImplTest {
     }
 
     @Test
-    fun `patchUserCategories should send only new categories when adding`() = runTest {
+    fun `updateUserCategories should send only new categories when adding`() = runTest {
         val (toAdd, toRemove) = capturePatchRequest(
             originalIds = listOf("uuid1", "uuid2"),
             currentIds = listOf("uuid1", "uuid2", "uuid3")
@@ -94,7 +94,7 @@ internal class CategoryRepositoryImplTest {
     }
 
     @Test
-    fun `patchUserCategories should send only removed categories when removing`() = runTest {
+    fun `updateUserCategories should send only removed categories when removing`() = runTest {
         val (toAdd, toRemove) = capturePatchRequest(
             originalIds = listOf("uuid1", "uuid2", "uuid3"),
             currentIds = listOf("uuid2")
@@ -105,7 +105,7 @@ internal class CategoryRepositoryImplTest {
     }
 
     @Test
-    fun `patchUserCategories should send empty lists when no changes`() = runTest {
+    fun `updateUserCategories should send empty lists when no changes`() = runTest {
         val (toAdd, toRemove) = capturePatchRequest(
             originalIds = listOf("uuid1", "uuid2"),
             currentIds = listOf("uuid1", "uuid2")
@@ -123,7 +123,7 @@ internal class CategoryRepositoryImplTest {
         var toRemove: List<String>? = null
 
         networkClient = createCategoryHttpClient { request ->
-            val body = jsonSerialization.decodeFromString<PatchUserCategoriesRequest>(
+            val body = jsonSerialization.decodeFromString<UpdateUserCategoriesRequest>(
                 request.body.toByteArray().decodeToString()
             )
             toAdd = body.categoriesIdsToAdd
@@ -132,7 +132,7 @@ internal class CategoryRepositoryImplTest {
         }
 
         repository = CategoryRepositoryImpl(networkClient)
-        repository.patchUserCategories(originalIds, currentIds)
+        repository.updateUserCategories(originalIds, currentIds)
 
         return Pair(toAdd.orEmpty(), toRemove.orEmpty())
     }

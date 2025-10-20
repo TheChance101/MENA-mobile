@@ -28,7 +28,6 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.PdfViewer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
@@ -104,41 +103,32 @@ private fun StatementDetailsContent(
                 onClick = listener::onShareClicked,
                 trailingIcon = painterResource(Res.drawable.ic_share_),
                 iconSize = 20.dp,
-                isLoading = state.statement is UiState.Loading,
+                isLoading = state.isLoading,
             )
         },
     ) {
-        StatementViewer(statement = state.statement) {
-            listener.onRetryClicked()
-        }
+        StatementViewer(state = state, onRetry = { listener.onRetryClicked() })
     }
 }
 
 @Composable
 fun StatementViewer(
-    statement: UiState<ByteArray>,
+    state: StatementDetailsScreenState,
     onRetry: () -> Unit
 ) {
-    when (statement) {
-        is UiState.Error -> {
-            if (statement.error is ErrorState.NoInternet)
-                ErrorView(
-                    image = painterResource(Res.drawable.img_no_internet),
-                    title = stringResource(Res.string.no_internet_title),
-                    description = stringResource(Res.string.no_internet_content),
-                    onRetry = onRetry
-                )
-            else
-                ErrorView(onRetry = onRetry)
-        }
-
-        UiState.Loading ->
+    when {
+        state.isLoading ->
             Box(modifier = Modifier.fillMaxSize()) {
                 ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
-        is UiState.Success<ByteArray> -> PdfViewer(pdf = statement.data)
-        UiState.Idle -> Unit
+        state.errorState != null -> {
+            ErrorView(onRetry = onRetry)
+        }
+
+        else -> {
+            PdfViewer(pdf = state.statement)
+        }
     }
 }
 

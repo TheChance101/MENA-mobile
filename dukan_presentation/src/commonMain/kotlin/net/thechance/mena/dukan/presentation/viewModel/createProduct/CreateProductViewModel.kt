@@ -14,7 +14,12 @@ import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_price_invalid
 import mena.dukan_presentation.generated.resources.error_price_not_positive
 import mena.dukan_presentation.generated.resources.error_upload_failed
+import mena.dukan_presentation.generated.resources.invalid_image_format
+import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -44,7 +49,7 @@ class CreateProductViewModel(
         tryToExecute(
             block = shelfRepository::getMyDukanShelves,
             onSuccess = ::onGetShelvesSuccess,
-            onError = ::onErrorSnackBar
+            onError = ::onErrorGettingShelves
         )
     }
 
@@ -92,12 +97,12 @@ class CreateProductViewModel(
     override fun onUploadImageClick(image: ImageFile) {
         tryToExecute(
             block = { onUploadImageBlock(image) },
-            onError = ::onErrorSnackBar
+            onError = ::onErrorUploadingImages
         )
     }
 
     private suspend fun onUploadImageBlock(image: ImageFile) {
-        if (isUploadImageValid(image).not())
+        if (isUploadImageValidToCrop(image).not())
             awaitCancellation()
 
         val imageSrc = image.toImageSrc()
@@ -109,77 +114,61 @@ class CreateProductViewModel(
         }
     }
 
-    private suspend fun isUploadImageValid(image: ImageFile): Boolean {
+    private suspend fun isUploadImageValidToCrop(image: ImageFile): Boolean {
         val imageSizeInMegabyte = image.size().toDouble() / BYTES_PER_MEGABYTE
         val imageBitmap = image.toImageBitmap()
         val imageAspectRatio = imageBitmap.width.toFloat() / imageBitmap.height.toFloat()
         val imageSrc = image.toImageSrc()
 
         return when {
-            state.value.images.size >= IMAGE_MAX_LIMIT -> {
-                updateState {
-                    copy(
-                        snackBarUiState = SnackBarUiState(
-                            message = Res.string.error_image_max_limit,
-                            snackBarType = SnackBarType.ERROR
-                        ),
-                        showSnackBar = true,
-                    )
-                }
-                false
-            }
-
-            imageSizeInMegabyte > IMAGE_MAX_SIZE_IN_MB -> {
-                updateState {
-                    copy(
-                        snackBarUiState = SnackBarUiState(
-                            message = Res.string.error_image_size,
-                            snackBarType = SnackBarType.ERROR
-                        ),
-                        showSnackBar = true,
-                        showCropImage = false,
-                        selectedImage = null
-                    )
-                }
-                false
-            }
-
-            imageAspectRatio == IMAGE_ASPECT_RATIO -> {
-                updateState {
-                    copy(
-                        images = images + ProductImageUi(
-                            image = imageBitmap,
-                            imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
-                            imageState = ProductImageState.SUCCESS,
-                        )
-                    ).updateButtonState()
-                }
-                false
-            }
-
-            imageSrc == null -> {
-                updateState {
-                    copy(
-                        snackBarUiState = SnackBarUiState(
-                            message = Res.string.error_upload_failed,
-                            snackBarType = SnackBarType.ERROR
-                        ),
-                        showSnackBar = true,
-                    )
-                }
-                false
-            }
+            state.value.images.size >= IMAGE_MAX_LIMIT -> handleUploadImageError(resErrorMessage = Res.string.error_image_max_limit)
+            imageSizeInMegabyte > IMAGE_MAX_SIZE_IN_MB -> handleUploadImageError(resErrorMessage = Res.string.error_image_size)
+            imageSrc == null -> handleUploadImageError(resErrorMessage = Res.string.error_upload_failed)
+            imageAspectRatio == IMAGE_ASPECT_RATIO -> addImageToList(
+                imageBitmap = imageBitmap,
+                imageSizeInMegabyte = imageSizeInMegabyte
+            )
 
             else -> true
         }
 
     }
 
+    private fun handleUploadImageError(resErrorMessage: StringResource): Boolean {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = resErrorMessage,
+                    snackBarType = SnackBarType.ERROR
+                ),
+                showSnackBar = true,
+                showCropImage = false,
+                selectedImage = null
+            )
+        }
+        return false
+    }
+
+    private fun addImageToList(
+        imageBitmap: ImageBitmap,
+        imageSizeInMegabyte: Double
+    ): Boolean {
+        updateState {
+            copy(
+                images = images + ProductImageUi(
+                    image = imageBitmap,
+                    imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
+                    imageState = ProductImageState.SUCCESS,
+                )
+            ).updateButtonState()
+        }
+        return false
+    }
+
     fun onCroppedImage(imageBitmap: ImageBitmap) {
         tryToExecute(
             block = { onCroppedImageBlock(imageBitmap) },
             onSuccess = ::onCroppedImageSuccess,
-            onError = ::onErrorSnackBar
         )
     }
 
@@ -252,7 +241,7 @@ class CreateProductViewModel(
 
         productRepository.uploadProductImages(
             fileName = state.value.images.map {
-                state.value.productName.trim().replace(" ","_") +
+                state.value.productName.trim().replace(" ", "_") +
                         it.image.toPngByteArray().toFileName()
             },
             fileBytes = state.value.images.map { it.image.toPngByteArray() },
@@ -261,13 +250,9 @@ class CreateProductViewModel(
     }
 
     private fun onAddProductSuccess(unit: Unit) {
+        showSnackBar(message = Res.string.add_product_success, type = SnackBarType.SUCCESS)
         updateState {
             copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.add_product_success,
-                    snackBarType = SnackBarType.SUCCESS
-                ),
-                showSnackBar = true,
                 isAddButtonLoading = false,
                 images = images.map { it.copy(imageState = ProductImageState.SUCCESS) },
             )
@@ -276,14 +261,10 @@ class CreateProductViewModel(
     }
 
     private fun onAddProductError(throwable: Throwable) {
+        showSnackBar(message = Res.string.error_general, type = SnackBarType.ERROR)
         updateState {
             copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.error_general,
-                    snackBarType = SnackBarType.ERROR
-                ),
                 images = images.map { it.copy(imageState = ProductImageState.SUCCESS) },
-                showSnackBar = true,
                 isAddButtonLoading = false,
                 isUploadingImageEnabled = true,
                 isTextFieldEnabled = true,
@@ -301,16 +282,22 @@ class CreateProductViewModel(
         }
     }
 
-    private fun onErrorSnackBar(throwable: Throwable) {
-        updateState {
-            copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.error_general,
-                    snackBarType = SnackBarType.ERROR
-                ),
-                showSnackBar = true,
-            )
+    private fun onErrorGettingShelves(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_general
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+    }
+
+    private fun onErrorUploadingImages(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            is UploadingFailedException -> Res.string.error_upload_failed
+            is InvalidImageFormatException -> Res.string.invalid_image_format
+            else -> Res.string.error_general
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun ProductUiState.updateButtonState(): ProductUiState {
@@ -319,15 +306,7 @@ class CreateProductViewModel(
 
     private fun isProductDetailsValid(productErrorMessage: StringResource?): Boolean {
         return if (productErrorMessage != null) {
-            updateState {
-                copy(
-                    snackBarUiState = SnackBarUiState(
-                        message = productErrorMessage,
-                        snackBarType = SnackBarType.ERROR
-                    ),
-                    showSnackBar = true,
-                )
-            }
+            showSnackBar(message = productErrorMessage, type = SnackBarType.ERROR)
             false
         } else {
             true
@@ -342,6 +321,18 @@ class CreateProductViewModel(
             productUiState.description.trim().isEmpty() -> false
             productUiState.images.map { it.image }.isEmpty() -> false
             else -> true
+        }
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                ),
+                showSnackBar = true
+            )
         }
     }
 
