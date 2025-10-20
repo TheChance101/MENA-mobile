@@ -19,7 +19,6 @@ import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
-import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
@@ -101,13 +100,15 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD select first shelf with correct id`() = runTest {
         // When
         manageDukanViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals("shelf_1", state.selectedShelf?.id)
+            val expectedFirstShelfId = dummyShelves.first().id
+            assertEquals(expectedFirstShelfId.toString(), state.selectedShelf?.id)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -159,19 +160,23 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onEditShelfClicked SHOULD emit NavigateToEditShelf effect`() = runTest {
+        // Given
+        val firstShelf = dummyShelves.first()
+        manageDukanViewModel.updateState { copy(selectedShelf = firstShelf.toUiState()) }
+
         // When
         manageDukanViewModel.onEditShelfClicked()
 
         // Then
         manageDukanViewModel.effect.test {
-            assertEquals(
-                ManageDukanEffect.NavigateToManageShelf(
-                    shelfId = "shelf_1",
-                    shelfTitle = "Electronics"
-                ), awaitItem()
+            val expectedEffect = ManageDukanEffect.NavigateToManageShelf(
+                shelfId = firstShelf.id.toString(),
+                shelfTitle = firstShelf.name
             )
+            assertEquals(expectedEffect, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -353,7 +358,8 @@ class ManageDukanViewModelTest {
     @Test
     fun `onShelfAddedSuccessfully SHOULD include new shelf in refreshed list`() = runTest {
         // Given
-        val newShelves = dummyShelves + Shelf(Uuid.random(), "New Shelf")
+        val newShelf = Shelf(Uuid.random(), "New Shelf")
+        val newShelves = dummyShelves + newShelf
         everySuspend { shelfRepository.getMyDukanShelves() } returns newShelves
 
         // When
@@ -362,7 +368,7 @@ class ManageDukanViewModelTest {
 
         // Then
         val state = manageDukanViewModel.state.value
-        assertTrue(state.shelves.any { it.id == "shelf_4" })
+        assertTrue(state.shelves.any { it.id == newShelf.id.toString() })
     }
 
 
@@ -434,14 +440,16 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD select first shelf by default from mock data`() = runTest {
         // When
         manageDukanViewModel.state.test {
             val state = awaitItem()
             // Then
+            val expectedFirstShelfId = dummyShelves.first().id
             assertNotNull(state.selectedShelf)
-            assertEquals("shelf_1", state.selectedShelf.id)
+            assertEquals(expectedFirstShelfId.toString(), state.selectedShelf.id)
             assertEquals("Electronics", state.selectedShelf.name)
             cancelAndIgnoreRemainingEvents()
         }
@@ -553,15 +561,15 @@ private fun dummyShelvesUiState(): List<ShelfUiState> {
 @OptIn(ExperimentalUuidApi::class)
 private val dummyShelves = listOf(
     Shelf(
-        id = Uuid.random(),
+        id = Uuid.parse("8a0f5a2c-3c5b-4e2e-b7a1-9e54ac62f391"),
         name = "Electronics"
     ),
     Shelf(
-        id = Uuid.random(),
+        id = Uuid.parse("1c93b72a-9a1e-4c85-8e17-2a785df9c44d"),
         name = "Clothing"
     ),
     Shelf(
-        id = Uuid.random(),
+        id = Uuid.parse("6fe75d89-f8f8-4993-a277-52c0706fb666"),
         name = "Books"
     )
 )

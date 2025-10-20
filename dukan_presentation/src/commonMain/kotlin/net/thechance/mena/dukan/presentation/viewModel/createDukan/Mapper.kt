@@ -35,7 +35,7 @@ fun Color.toUiColor(): ColorUiState {
 
 @OptIn(ExperimentalUuidApi::class)
 fun ColorUiState.toEntity() = Color(
-    id = Uuid.random(),
+    id = Uuid.parse(id),
     hexCode = "#${color.toULong().toString(16).padStart(8, '0').uppercase()}"
 )
 
@@ -52,7 +52,7 @@ fun List<Category>.toUiState(): List<DukanCategoryUiState> {
 
 @OptIn(ExperimentalUuidApi::class)
 fun DukanCategoryUiState.toEntity() = Category(
-    id = Uuid.random(),
+    id = Uuid.parse(id),
     name = name,
     imageUrl = imageUrl
 )

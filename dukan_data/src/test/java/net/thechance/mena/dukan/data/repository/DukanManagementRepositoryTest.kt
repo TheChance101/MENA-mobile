@@ -19,7 +19,7 @@ import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class DukanRepositoryImplTest {
+class DukanManagementRepositoryTest {
     private val dukanManagementRepository: DukanManagementRepositoryImpl =
         createDukanManagementRepository()
     private val mediaRepository: MediaRepositoryImpl = createMediaRepository()

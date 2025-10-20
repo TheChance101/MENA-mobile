@@ -32,7 +32,7 @@ class CreateDukanMapperTest {
         val color = Color(id = uuid, hexCode = "#FF0000") // red
         val uiColor = color.toUiColor()
 
-        assertEquals("1", uiColor.id)
+        assertEquals(uuid.toString(), uiColor.id)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -133,7 +133,7 @@ class CreateDukanMapperTest {
         selectedCategories = setOf(DukanCategoryUiState( uuid.toString(), "Fruits", "f.png")),
         currentLocation = CreateDukanUiState.CoordinatesUiState(10.0, 20.0),
         address = "Cairo",
-        selectedColor = ColorUiState("c1", 0xFF112233),
+        selectedColor = ColorUiState(uuid.toString(), 0xFF112233),
         selectedStyle = CreateDukanUiState.Style.NO_IMAGE
     )
     private companion object{

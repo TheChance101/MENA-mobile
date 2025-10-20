@@ -852,21 +852,21 @@ private fun fakeDukanStyle(): List<Dukan.Style> {
 private fun fakeCategories(): List<Category> {
     return listOf(
         Category(
-            id = Uuid.random(),
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174000"),
             name = "Electronics",
             imageUrl = "https://example.com/electronics.png"
         ),
         Category(
-            id = Uuid.random(),
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174001"),
             name = "Clothes",
             imageUrl = "https://example.com/clothes.png"
         ),
         Category(
-            id = Uuid.random(),
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"),
             name = "Groceries",
             imageUrl = "https://example.com/groceries.png"
         ),
-        Category(id = Uuid.random(), name = "Books", imageUrl = "https://example.com/books.png")
+        Category(id =  Uuid.parse("123e4567-e89b-12d3-a456-426614174003"), name = "Books", imageUrl = "https://example.com/books.png")
     )
 }
 

@@ -270,19 +270,19 @@ class DukansViewModelTest {
 private fun dummyDukansUiState(): List<DukanUiState> {
     return listOf(
         DukanUiState(
-            id = "dukan1",
+            id = "123e4567-e89b-12d3-a456-426614174001",
             name = "Electronics Store",
             imageUrl = "https://example.com/electronics.jpg",
             isFavorite = false
         ),
         DukanUiState(
-            id = "dukan2",
+            id = "123e4567-e89b-12d3-a456-426614174002",
             name = "Tech Hub",
             imageUrl = "https://example.com/tech.jpg",
             isFavorite = true
         ),
         DukanUiState(
-            id = "dukan3",
+            id ="123e4567-e89b-12d3-a456-426614174003",
             name = "Gadget World",
             imageUrl = "https://example.com/gadget.jpg",
             isFavorite = false
@@ -293,17 +293,17 @@ private fun dummyDukansUiState(): List<DukanUiState> {
 @OptIn(ExperimentalUuidApi::class)
 private val dummyDukanPreviews = listOf(
     DukanPreview(
-        id = Uuid.random(),
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174001"),
         name = "Electronics Store",
         imageUrl = "https://example.com/electronics.jpg"
     ),
     DukanPreview(
-        id = Uuid.random(),
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"),
         name = "Tech Hub",
         imageUrl = "https://example.com/tech.jpg"
     ),
     DukanPreview(
-        id = Uuid.random(),
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
         name = "Gadget World",
         imageUrl = "https://example.com/gadget.jpg"
     )
