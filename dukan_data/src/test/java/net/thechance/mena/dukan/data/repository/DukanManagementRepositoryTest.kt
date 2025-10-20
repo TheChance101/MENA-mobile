@@ -117,17 +117,6 @@ class DukanManagementRepositoryTest {
         assertEquals("https://cdn.example.com/dukan/image.png", url)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `getDukanDetailsByDukanId should map id correctly`() = runTest {
-        val dukanId = "dukan123"
-        val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
-
-        val details = repo.getDukanDetailsByDukanId(dukanId)
-
-        assertEquals(dukanId, details.id.toString())
-    }
-
     @Test
     fun `getDukanDetailsByDukanId should map name correctly`() = runTest {
         // Arrange

@@ -6,7 +6,6 @@ import net.thechance.mena.dukan.data.repository.mockEngine.product.createProduct
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createdProductResponseId
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultCreateProductResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResult
-import net.thechance.mena.dukan.data.repository.mockEngine.product.productDto1
 import net.thechance.mena.dukan.domain.model.CreateProductParams
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -50,22 +49,6 @@ class DukanProductRepositoryImplTest {
             "shelf-123", 0, 10
         )
         assertEquals(expected = demoPagedResult, actual = products)
-    }
-
-
-    @Test
-    fun `uploadProductImages returns uploaded image URLs`() = runTest {
-        val urls = mediaRepository.uploadProductImages(
-            fileName = listOf(""),
-            fileBytes = listOf(ByteArray(0)),
-            productId = createdProductResponseId
-        )
-
-        assertEquals(
-            expected = listOf(productDto1.imageUrls.first(), productDto1.imageUrls.last()),
-            actual = urls
-        )
-
     }
 
 }

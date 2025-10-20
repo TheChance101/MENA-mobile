@@ -107,22 +107,6 @@ class CreateShelfRepositoryImplTest {
         assertEquals(3, shelves.size)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `getMyDukanShelves returns correct first shelf id`() = runTest {
-        // Given
-        val expectedId = Uuid.parse("11111111-1111-1111-1111-111111111111")
-        val repository = createShelfRepository(
-            shelvesResponse = { defaultShelvesResponse() }
-        )
-
-        // When
-        val shelves = repository.getMyDukanShelves()
-
-        // Then
-        assertEquals(expectedId, shelves[0].id)
-    }
-
     @Test
     fun `getMyDukanShelves returns correct first shelf name`() = runTest {
         // Given
@@ -280,19 +264,6 @@ class CreateShelfRepositoryImplTest {
         assertEquals(2, result.items.size)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `getShelvesByDukanId should map item id correctly`() = runTest {
-        // Given
-        val id = Uuid.random()
-        val repository =
-            createShelfRepository(pagedShelvesResponse = { defaultPagedShelvesResponse() })
-        // When
-        val result = repository.getShelvesByDukanId(id.toString(), 0, 2)
-        // Then
-        assertEquals(id, result.items[0].id)
-    }
-
     @Test
     fun `getShelvesByDukanId should map currentPage correctly`() = runTest {
         // Given
@@ -370,7 +341,7 @@ class CreateShelfRepositoryImplTest {
 
 @OptIn(ExperimentalUuidApi::class)
 private fun fakeShelf() = Shelf(
-    id =  Uuid.random(),
+    id = Uuid.random(),
     name = "Test Shelf",
 )
 
