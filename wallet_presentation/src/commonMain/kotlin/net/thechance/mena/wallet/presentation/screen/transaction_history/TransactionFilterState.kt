@@ -5,7 +5,6 @@ import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 
-//can i move it to screen state
 data class TransactionFilterState(
     val selectedTypes: Set<FilterType> = emptySet(),
     val selectedStatus: FilterStatus = FilterStatus.ALL,
