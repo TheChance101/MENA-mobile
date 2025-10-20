@@ -22,8 +22,8 @@ import net.thechance.mena.dukan.presentation.component.productCard.LoadingProduc
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ProductsList
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductsState
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductsState
 
 @Composable
 fun ManageDukanProducts(
