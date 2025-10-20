@@ -89,7 +89,7 @@ class StatementsHistoryViewModel(
 
     private fun deleteNotFoundStatement(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
-            callee = { statementRepository.deleteStatementById(statement.id.toString()) },
+            callee = { statementRepository.deleteStatementById(statement.id) },
             onSuccess = { onDeleteNotFoundStatementSuccess(statement.id) },
             onError = { onDeleteNotFoundStatementError() },
             dispatcher = dispatcher
@@ -161,7 +161,7 @@ class StatementsHistoryViewModel(
             pdfHandler.deletePdf(fileLocation)
         }
 
-        statementRepository.deleteStatementById(statement.id.toString())
+        statementRepository.deleteStatementById(statement.id)
     }
 
     private suspend fun onDeleteStatementSuccess(

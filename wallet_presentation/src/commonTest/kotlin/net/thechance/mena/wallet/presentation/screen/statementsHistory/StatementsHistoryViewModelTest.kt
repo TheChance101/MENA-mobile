@@ -229,9 +229,9 @@ class StatementsHistoryViewModelTest {
 
     @Test
     fun `onDeleteClicked should delete statement successfully`() = runTest(testDispatcher) {
-        val statementId = Uuid.random()
+        val statementId = statements[0].id
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatementById(statementId.toString()) }
+        everySuspend { statementRepository.deleteStatementById(statementId) }
 
         advanceUntilIdle()
         val statement = statements[0]
@@ -250,7 +250,7 @@ class StatementsHistoryViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        verifySuspend { statementRepository.deleteStatementById(statementId.toString()) }
+        verifySuspend { statementRepository.deleteStatementById(statementId) }
     }
 
 
@@ -286,7 +286,7 @@ class StatementsHistoryViewModelTest {
     fun `edit mode flow - activate, delete, then cancel`() = runTest(testDispatcher) {
         val statementId = Uuid.random()
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
-        everySuspend { statementRepository.deleteStatementById(statementId.toString()) }
+        everySuspend { statementRepository.deleteStatementById(statementId) }
 
         advanceUntilIdle()
 
@@ -366,7 +366,7 @@ class StatementsHistoryViewModelTest {
             } returns false
 
             everySuspend {
-                statementRepository.deleteStatementById(statement.id.toString())
+                statementRepository.deleteStatementById(statement.id)
             } returns Unit
             advanceUntilIdle()
 
@@ -382,7 +382,7 @@ class StatementsHistoryViewModelTest {
             assertEquals(false, pdfFound)
 
             verifySuspend {
-                statementRepository.deleteStatementById(statement.id.toString())
+                statementRepository.deleteStatementById(statement.id)
             }
 
             assertFalse(viewModel.state.value.statements.any { it.id == statement.id })
