@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukans.component
+package net.thechance.mena.dukan.presentation.screen.categoryDukans.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +16,7 @@ import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeDukanPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukansList
-import net.thechance.mena.dukan.presentation.viewModel.dukans.DukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

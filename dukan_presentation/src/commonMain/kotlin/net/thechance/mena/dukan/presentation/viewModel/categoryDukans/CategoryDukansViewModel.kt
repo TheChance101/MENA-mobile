@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.viewModel.dukans
+package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -11,15 +11,16 @@ import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
-
-class DukansViewModel(
+import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukansState
+class CategoryDukansViewModel(
     private val dukanRepository: DukanRepository,
     private val savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<DukansUiState, DukansEffects>(
-    initialState = DukansUiState(),
+) : BaseViewModel<CategoryDukansUiState, CategoryDukansEffects>(
+    initialState = CategoryDukansUiState(),
     defaultDispatcher = defaultDispatcher
-), DukansInteractionListener {
+), CategoryDukansInteractionListener {
 
     private var pager: Pager<Int, DukanUiState>? = null
 
@@ -28,11 +29,11 @@ class DukansViewModel(
     }
 
     override fun onBackClick() {
-        emitEffect(DukansEffects.NavigateBack)
+        emitEffect(CategoryDukansEffects.NavigateBack)
     }
 
     override fun onDukanClick(dukan: DukanUiState) {
-        emitEffect(DukansEffects.NavigateToDukanDetails(dukan.id))
+        emitEffect(CategoryDukansEffects.NavigateToDukanDetails(dukan.id))
     }
 
     override fun onFavoriteClick(dukan: DukanUiState) {
@@ -140,12 +141,11 @@ class DukansViewModel(
         }
     }
 
-    private fun getDukansState(dukans: PagingData<DukanUiState>): DukansState {
+    private fun getDukansState(dukans: PagingData<DukanUiState>): CategoryDukansUiState.DukansState {
         return when {
             dukans.isLoading && dukans.items.isEmpty() -> DukansState.LOADING
             dukans.items.isEmpty() -> DukansState.EMPTY
             else -> DukansState.LOADED
         }
     }
-
 }

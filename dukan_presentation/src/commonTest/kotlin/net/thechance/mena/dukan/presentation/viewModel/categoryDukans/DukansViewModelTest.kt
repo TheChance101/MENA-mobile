@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.viewModel.dukans
+package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
@@ -30,7 +30,7 @@ class DukansViewModelTest {
 
     private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
     private lateinit var savedStateHandle: SavedStateHandle
-    private lateinit var dukansViewModel: DukansViewModel
+    private lateinit var dukansViewModel: CategoryDukansViewModel
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -57,7 +57,7 @@ class DukansViewModelTest {
             totalItems = dummyDukanPreviews.size.toLong()
         )
 
-        dukansViewModel = DukansViewModel(
+        dukansViewModel = CategoryDukansViewModel(
             dukanRepository = dukanRepository,
             savedStateHandle = savedStateHandle,
             defaultDispatcher = testDispatcher
@@ -116,7 +116,7 @@ class DukansViewModelTest {
         dukansViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals(DukansState.LOADED, state.dukansState)
+            assertEquals(CategoryDukansUiState.DukansState.LOADED, state.dukansState)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -128,7 +128,7 @@ class DukansViewModelTest {
 
         // Then
         dukansViewModel.effect.test {
-            assertEquals(DukansEffects.NavigateBack, awaitItem())
+            assertEquals(CategoryDukansEffects.NavigateBack, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -143,7 +143,7 @@ class DukansViewModelTest {
 
         // Then
         dukansViewModel.effect.test {
-            assertEquals(DukansEffects.NavigateToDukanDetails(dukan.id), awaitItem())
+            assertEquals(CategoryDukansEffects.NavigateToDukanDetails(dukan.id), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -219,7 +219,7 @@ class DukansViewModelTest {
             )
         )
 
-        val emptyViewModel = DukansViewModel(
+        val emptyViewModel = CategoryDukansViewModel(
             dukanRepository = dukanRepository,
             savedStateHandle = emptySavedStateHandle,
             defaultDispatcher = testDispatcher
@@ -243,7 +243,7 @@ class DukansViewModelTest {
         // Given
         val nullSavedStateHandle = SavedStateHandle(emptyMap())
 
-        val nullViewModel = DukansViewModel(
+        val nullViewModel = CategoryDukansViewModel(
             dukanRepository = dukanRepository,
             savedStateHandle = nullSavedStateHandle,
             defaultDispatcher = testDispatcher
@@ -265,21 +265,21 @@ class DukansViewModelTest {
 
 // ===== FAKE DATA FUNCTIONS =====
 
-private fun dummyDukansUiState(): List<DukanUiState> {
+private fun dummyDukansUiState(): List<CategoryDukansUiState.DukanUiState> {
     return listOf(
-        DukanUiState(
+        CategoryDukansUiState.DukanUiState(
             id = "dukan1",
             name = "Electronics Store",
             imageUrl = "https://example.com/electronics.jpg",
             isFavorite = false
         ),
-        DukanUiState(
+        CategoryDukansUiState.DukanUiState(
             id = "dukan2",
             name = "Tech Hub",
             imageUrl = "https://example.com/tech.jpg",
             isFavorite = true
         ),
-        DukanUiState(
+        CategoryDukansUiState.DukanUiState(
             id = "dukan3",
             name = "Gadget World",
             imageUrl = "https://example.com/gadget.jpg",
