@@ -3,6 +3,7 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -245,6 +246,23 @@ class SurahViewModelTest {
         assertEquals(AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
     }
 
+    @Test
+    fun `updateContinueTilawah should save last ayah for tilawah correctly`() = runTest {
+        // Given
+        every { surahArgs.surahId } returns SURAH_BAQARAH_ID
+        every { surahArgs.surahName } returns SURAH_BAQARAH
+        everySuspend { quranRepository.saveLastAyahForTilawah(any()) } returns Unit
+
+        // When
+        testViewModel.updateContinueTilawah(5)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(SURAH_BAQARAH_ID, surahArgs.surahId)
+        assertEquals(SURAH_BAQARAH, surahArgs.surahName)
+    }
+
+
     private companion object {
         const val DEFAULT_SURAH_ID = 1
         const val TEST_AYAH_INDEX = 0
@@ -260,6 +278,8 @@ class SurahViewModelTest {
         const val EMPTY_STRING = ""
         const val AYAH_CONTENT = "Test ayah content"
         const val AYAH_TO_COPY = "Ayah to copy"
+        const val SURAH_BAQARAH = "Al-Baqarah"
+        const val SURAH_BAQARAH_ID = 2
         private val dummyAyat = listOf(
             Ayah(
                 number = 1,
