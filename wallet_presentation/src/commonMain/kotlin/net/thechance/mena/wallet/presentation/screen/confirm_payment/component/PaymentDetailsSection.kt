@@ -39,6 +39,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 internal fun PaymentDetailsSection(
     payment: PaymentUiState,
     receiver: ReceiverUiState,
+    userMessage: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -57,7 +58,7 @@ internal fun PaymentDetailsSection(
             modifier = Modifier
                 .padding(top = Theme.spacing._16)
                 .fillMaxWidth(),
-            text = payment.userMessage,
+            text = userMessage,
             style = Theme.typography.body.small,
             color = if (payment.status) Theme.colorScheme.shadeSecondary else Theme.colorScheme.error,
             textAlign = TextAlign.Center
@@ -178,7 +179,11 @@ private fun ReceiverInfo(
 private fun PaymentDetailsSectionPreview() {
     MenaTheme {
         Scaffold {
-            PaymentDetailsSection(payment = PaymentUiState(), receiver = ReceiverUiState())
+            PaymentDetailsSection(
+                payment = PaymentUiState(),
+                userMessage = "",
+                receiver = ReceiverUiState()
+            )
         }
     }
 }

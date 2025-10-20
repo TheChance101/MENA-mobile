@@ -45,7 +45,6 @@ class ConfirmPaymentViewModel(
     }
 
     override fun onPayButtonClicked() {
-        updateState { it.copy(isPayButtonLoading = true) }
         submitTransaction(transactionId)
     }
 
@@ -58,10 +57,7 @@ class ConfirmPaymentViewModel(
     private fun getUserBalance() {
         tryToExecute(
             callee = { balanceRepository.getBalance() },
-            onSuccess = {
-                onGetUserBalanceSuccess(it)
-                updateUserMessage()
-            },
+            onSuccess = ::onGetUserBalanceSuccess,
             onError = ::onGetUserBalanceError,
             onStart = { updateState { it.copy(isGetBalanceLoading = true) } },
             dispatcher = ioDispatcher
@@ -69,7 +65,7 @@ class ConfirmPaymentViewModel(
     }
 
     private suspend fun updateUserMessage() {
-        val resId = if (state.value.paymentUiState.status) {
+        val userMessage = if (state.value.paymentUiState.status) {
             stringProvider.getString(
                 Res.string.confirm_payment_content_success,
                 state.value.paymentUiState.balance
@@ -81,7 +77,7 @@ class ConfirmPaymentViewModel(
             )
         }
         updateState {
-            it.copy(userMessage = resId)
+            it.copy(userMessage = userMessage)
         }
     }
 
@@ -95,7 +91,7 @@ class ConfirmPaymentViewModel(
         )
     }
 
-    private fun onGetUserBalanceSuccess(balance: Double) {
+    private suspend fun onGetUserBalanceSuccess(balance: Double) {
         updateState {
             it.copy(
                 isGetBalanceLoading = false,
@@ -106,6 +102,7 @@ class ConfirmPaymentViewModel(
                 )
             )
         }
+        updateUserMessage()
     }
 
     private fun onGetUserBalanceError(errorState: ErrorState) {
@@ -154,6 +151,7 @@ class ConfirmPaymentViewModel(
             callee = {
                 paymentRepository.submitTransaction(transactionId)
             },
+            onStart = { updateState { it.copy(isPayButtonLoading = true) } },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
             dispatcher = ioDispatcher
