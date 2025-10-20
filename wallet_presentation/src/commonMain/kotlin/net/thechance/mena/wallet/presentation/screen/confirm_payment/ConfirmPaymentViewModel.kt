@@ -27,7 +27,7 @@ class ConfirmPaymentViewModel(
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val paymentRepository: PaymentRepository,
-    private val stringProvider: StringProvider,
+    @Provided private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
