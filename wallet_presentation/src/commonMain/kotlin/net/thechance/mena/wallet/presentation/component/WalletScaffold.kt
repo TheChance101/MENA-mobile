@@ -29,6 +29,7 @@ fun WalletScaffold(
     bottomContent: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     errorState: ErrorState? = null,
+    isLoading: Boolean = false,
     onRetry: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
@@ -42,14 +43,19 @@ fun WalletScaffold(
             topBar = { topBar?.invoke() },
             overlays = overlays ?: {},
             content = {
-                when (errorState) {
-                    is ErrorState.NoInternet -> {
+                when {
+                    errorState is ErrorState.NoInternet -> {
                         ErrorView(
                             image = painterResource(Res.drawable.img_no_internet),
                             title = stringResource(Res.string.no_internet_title),
                             description = stringResource(Res.string.no_internet_content),
                             onRetry = onRetry ?: {}
                         )
+                    }
+                    isLoading -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
                     }
                     else -> {
                         content()

@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
+import net.thechance.mena.wallet.presentation.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import org.koin.compose.koinInject
 

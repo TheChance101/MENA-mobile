@@ -3,13 +3,11 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -32,7 +30,6 @@ import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -127,16 +124,10 @@ fun TransactionHistoryContent(
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
+        isLoading = state.isLoading,
         onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
     {
-        when {
-            state.isLoading -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
-
-            state.errorState != null ->
+        when {state.errorState != null ->
                 ErrorView(onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
 
             state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
