@@ -116,7 +116,7 @@ class TransactionHistoryViewModel(
         onDismissDatePicker()
     }
 
-    override fun selectFilterType(type: FilterType) {
+    override fun onFilterTypeSelected(type: FilterType) {
         updateState {
             val currentTypes = it.filterState.selectedTypes.toMutableSet()
             if (currentTypes.contains(type)) {
@@ -129,7 +129,7 @@ class TransactionHistoryViewModel(
     }
 
 
-    override fun selectFilterStatus(status: FilterStatus) {
+    override fun onFilterStatusSelected(status: FilterStatus) {
         updateState { it.copy(filterState = it.filterState.copy(selectedStatus = status)) }
     }
 
