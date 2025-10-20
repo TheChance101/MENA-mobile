@@ -5,8 +5,6 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.io.IOException
 import net.thechance.mena.dukan.data.dto.ErrorResponse
 import net.thechance.mena.dukan.data.util.constants.DukanErrorCodes
-import net.thechance.mena.dukan.data.repository.dto.DukanErrorCodes
-import net.thechance.mena.dukan.data.repository.dto.ErrorResponse
 import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
 import net.thechance.mena.dukan.domain.exceptions.DeletionNotAllowedException
 import net.thechance.mena.dukan.domain.exceptions.DukanException

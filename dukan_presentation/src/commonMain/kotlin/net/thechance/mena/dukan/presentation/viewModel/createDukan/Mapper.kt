@@ -4,7 +4,6 @@ import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Dukan.Coordinates
-import net.thechance.mena.dukan.domain.entity.Dukan.Style
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -13,6 +12,7 @@ fun Dukan.Style.toUiStyle(): CreateDukanUiState.Style = when (this) {
     Dukan.Style.SMALL_IMAGE -> CreateDukanUiState.Style.SMALL_IMAGE
     Dukan.Style.NO_IMAGE -> CreateDukanUiState.Style.NO_IMAGE
 }
+
 fun Dukan.Style.toUiStyleName(): String = when (this) {
     Dukan.Style.WIDE_IMAGE -> "Wide image with list products"
     Dukan.Style.SMALL_IMAGE -> "Small image with grid products"
@@ -66,8 +66,8 @@ fun CreateDukanUiState.toEntity() = Dukan(
     coordinates = currentLocation.toEntity(),
     address = address,
     status = Dukan.Status.PENDING,
-    color = selectedColor?.toEntity()?: Color(id = "", hexCode = ""),
-    style = selectedStyle?.toEntityStyle()?: Dukan.Style.WIDE_IMAGE
+    color = selectedColor?.toEntity() ?: Color(id = Uuid.random(), hexCode = ""),
+    style = selectedStyle?.toEntityStyle() ?: Dukan.Style.WIDE_IMAGE
 )
 
 fun CreateDukanUiState.CoordinatesUiState.toEntity() = Coordinates(

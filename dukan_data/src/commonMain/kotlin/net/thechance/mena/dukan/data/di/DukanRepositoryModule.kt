@@ -7,16 +7,11 @@ import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
 import net.thechance.mena.dukan.data.repository.LocationRepositoryImpl
 import net.thechance.mena.dukan.data.repository.MediaRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
-import net.thechance.mena.dukan.data.util.network.buildClient
+import net.thechance.mena.dukan.data.util.network.buildApiClient
 import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
 import net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
-import net.thechance.mena.dukan.data.repository.location.GeocoderWrapper
-import net.thechance.mena.dukan.data.repository.location.LocationRepositoryImpl
-import net.thechance.mena.dukan.data.repository.location.MobileGeocoderWrapper
-import net.thechance.mena.dukan.data.repository.util.buildApiClient
-import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
