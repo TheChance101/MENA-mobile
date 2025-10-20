@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.domain.entity.UploadReelProgress
+import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingReelState
@@ -35,7 +35,7 @@ class UploadReelViewModelTest : TestExtensions() {
         everySuspend { uploadReel(any(), any(), any()) } returns emptyFlow()
         everySuspend { uploadReelThumbnail(any(), any(), any()) } returns Unit
         everySuspend { getReelDuration(any()) } returns VALID_DURATION
-        everySuspend { getReelThumbnail(any(), any()) } returns byteArray
+        everySuspend { extractReelThumbnail(any(), any()) } returns byteArray
     }
     private val validator: VideoValidator = VideoValidator()
 
@@ -106,7 +106,7 @@ class UploadReelViewModelTest : TestExtensions() {
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
-        verifySuspend { repository.getReelThumbnail(any(), any<Long>()) }
+        verifySuspend { repository.extractReelThumbnail(any(), any<Long>()) }
     }
 
     @Test
@@ -121,7 +121,7 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onRetrieveVideo should update state with error if extractFrame failed`() = runTest(testDispatcher) {
-        everySuspend { repository.getReelThumbnail(any(), any<Long>()) } throws Exception("")
+        everySuspend { repository.extractReelThumbnail(any(), any<Long>()) } throws Exception("")
 
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
@@ -339,8 +339,8 @@ class UploadReelViewModelTest : TestExtensions() {
         const val VALID_SIZE = 50 * 1024 * 1024L
         const val VALID_DURATION = 30_000L
         val byteArray = ByteArray(0)
-        val uploadInProgress = UploadReelProgress("", 50, 100)
-        val uploadDone = UploadReelProgress("id1", 100, 100)
+        val uploadInProgress = UploadReelStatus.UploadReelProgress( 50, 100)
+        val uploadDone = UploadReelStatus.UploadReelSuccess("id1",)
 
         val initialScreenState = UploadReelScreenState()
         val initialFileState = FileUiState()

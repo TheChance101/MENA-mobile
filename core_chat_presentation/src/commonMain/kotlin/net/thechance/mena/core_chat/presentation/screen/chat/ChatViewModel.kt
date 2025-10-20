@@ -27,6 +27,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
@@ -40,6 +41,7 @@ import kotlin.uuid.Uuid
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
+    private val messageRepository: MessageRepository,
     private val userRepository: UserRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
@@ -56,7 +58,6 @@ class ChatViewModel(
     private var newMessages: List<Message> = emptyList()
 
     private var hasResentPendingMessages = false
-
 
 
     init {
@@ -80,7 +81,7 @@ class ChatViewModel(
         }
     }
 
-    private fun getUserInfo(){
+    private fun getUserInfo() {
         tryToExecute(
             execute = { userRepository.getUserInfo() },
             onSuccess = ::onGetUserDataSuccess,
@@ -89,12 +90,17 @@ class ChatViewModel(
     }
 
     private fun onGetUserDataSuccess(user: User) {
-        updateState { state -> state.copy(userData = UserData(
-            firstName = user.firstName,
-            lastName = user.lastName,
-            imageUrl = user.imageUrl.orEmpty()
-        )) }
+        updateState { state ->
+            state.copy(
+                userData = UserData(
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    imageUrl = user.imageUrl.orEmpty()
+                )
+            )
+        }
     }
+
     private fun onGetUserDataError(t: Throwable) {
         showSnackBar(
             titleStringResource = Res.string.error,
@@ -102,6 +108,7 @@ class ChatViewModel(
             isError = true
         )
     }
+
     private fun onGetChatSuccess(chat: Chat) {
         updateState { state ->
             state.copy(
@@ -151,7 +158,7 @@ class ChatViewModel(
         )
 
         tryToExecute(
-            execute = { chatRepository.sendMessage(message.toEntity()) },
+            execute = { messageRepository.sendMessage(message.toEntity()) },
             onSuccess = { onSendMessageSuccess(message) }
         )
     }
@@ -180,7 +187,7 @@ class ChatViewModel(
         updateState { state -> state.copy(inputMessage = "") }
 
         tryToExecute(
-            execute = { chatRepository.sendMessage(message.toEntity()) },
+            execute = { messageRepository.sendMessage(message.toEntity()) },
             onSuccess = { onSendMessageSuccess(message) }
         )
     }
@@ -208,7 +215,7 @@ class ChatViewModel(
         val failedMessage = state.value.failedMessageToReSend ?: return
 
         tryToExecute(
-            execute = { chatRepository.deleteMessage(failedMessage.toEntity()) },
+            execute = { messageRepository.deleteMessage(failedMessage.toEntity()) },
             onSuccess = { onDeleteFailedMessageSuccess(failedMessage) }
         )
     }
@@ -243,7 +250,7 @@ class ChatViewModel(
 
     private fun subscribeToNewMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { chatRepository.getMessages(chatId) },
+            collect = { messageRepository.getMessages(chatId) },
             onCollect = ::onCollectNewMessage,
             onError = {
                 showSnackBar(
@@ -260,13 +267,13 @@ class ChatViewModel(
 
         newMessages = newMessages.toMutableList().apply { add(0, message) }
         rebuildUiMessages()
-        chatRepository.markMessagesAsRead(message.chatId)
+        messageRepository.markMessagesAsRead(message.chatId)
 
     }
 
     private fun subscribeToPendingMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { chatRepository.getLocalMessages(chatId) },
+            collect = { messageRepository.getLocalMessages(chatId) },
             onCollect = ::onCollectPendingMessages
         )
     }
@@ -288,7 +295,7 @@ class ChatViewModel(
 
     private fun loadChatHistory(chatId: Uuid) {
         tryToExecute(
-            execute = { chatRepository.loadMessages(chatId) },
+            execute = { messageRepository.loadMessages(chatId) },
             onSuccess = ::onLoadChatHistorySuccess,
             onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) }
         )
@@ -297,13 +304,13 @@ class ChatViewModel(
     private suspend fun onLoadChatHistorySuccess(messages: List<Message>) {
         messagesHistoryCache = messages
         rebuildUiMessages()
-        chatRepository.markMessagesAsRead(state.value.chatId ?: return)
+        messageRepository.markMessagesAsRead(state.value.chatId ?: return)
 
     }
 
     private fun observeReadMessages() {
         tryToCollect(
-            collect = { chatRepository.observeReadMessages() },
+            collect = { messageRepository.observeReadMessages() },
             onCollect = ::onCollectReadMessagesEvent
         )
     }
@@ -422,9 +429,11 @@ class ChatViewModel(
     private fun onCameraPermissionGranted() {
         updateState { it.copy(isCameraOpen = true, isAttachmentsOverlayVisible = false) }
     }
+
     override fun onCameraClosed() {
         updateState { it.copy(isCameraOpen = false) }
     }
+
     override fun onCloseAttachmentClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }

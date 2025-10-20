@@ -59,7 +59,7 @@ internal class UpdateCategoriesViewModel(
         val currentSelectedIds = state.value.categories
             .filter { it.isSelected }.mapNotNull { it.value.id }
 
-        repository.patchUserCategories(originalSelectedIds, currentSelectedIds)
+        repository.updateUserCategories(originalSelectedIds, currentSelectedIds)
     }
 
     private fun handleLoadCategoriesSuccess(categories: List<Category>) {
