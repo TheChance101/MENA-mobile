@@ -2,13 +2,15 @@ package net.thechance.mena.dukan.data.dto.dukan
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
-data class CreateDukanRequest(
+data class CreateDukanRequest @OptIn(ExperimentalUuidApi::class) constructor(
     @SerialName("name")
     val name: String,
     @SerialName("categoryIds")
-    val categoryIds: Set<String>,
+    val categoryIds: Set<Uuid>,
     @SerialName("address")
     val address: String,
     @SerialName("latitude")
@@ -16,7 +18,7 @@ data class CreateDukanRequest(
     @SerialName("longitude")
     val longitude: Double,
     @SerialName("colorId")
-    val colorId: String,
+    val colorId: Uuid,
     @SerialName("style")
     val style: String
 )

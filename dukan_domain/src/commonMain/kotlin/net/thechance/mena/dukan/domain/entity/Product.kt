@@ -1,7 +1,10 @@
 package net.thechance.mena.dukan.domain.entity
 
-data class Product(
-    val id: String,
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+data class Product @OptIn(ExperimentalUuidApi::class) constructor(
+    val id: Uuid,
     val name: String,
     val description: String,
     val price: Double,

@@ -1,14 +1,13 @@
 package net.thechance.mena.dukan.presentation.viewModel.createProduct
 
-import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.util.CreateProductParams
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 fun Shelf.toUiState(): ShelfUiState {
     return ShelfUiState(
-        id = id,
+        id = id.toString(),
         name = name,
     )
 }

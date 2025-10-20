@@ -4,8 +4,9 @@ import net.thechance.mena.dukan.data.dto.product.CreateProductRequest
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.util.CreateProductParams
+import kotlin.uuid.ExperimentalUuidApi
 
-fun  CreateProductParams.toCreateProductRequest(): CreateProductRequest {
+fun CreateProductParams.toCreateProductRequest(): CreateProductRequest {
     return CreateProductRequest(
         name = name,
         description = description,
@@ -14,6 +15,7 @@ fun  CreateProductParams.toCreateProductRequest(): CreateProductRequest {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 fun ProductDto.toDomain(): Product = Product(
     id = id,
     name = name,

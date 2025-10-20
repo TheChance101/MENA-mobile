@@ -9,7 +9,9 @@ import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.MyDukanStatus
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 fun Dukan.toCreateDukanRequest(): CreateDukanRequest {
     return CreateDukanRequest(
         name = name,
@@ -22,6 +24,7 @@ fun Dukan.toCreateDukanRequest(): CreateDukanRequest {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 fun List<DukanCategoryDto>.toCategoryList(): List<Category> {
     return map {
         Category(
@@ -32,6 +35,7 @@ fun List<DukanCategoryDto>.toCategoryList(): List<Category> {
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 fun List<DukanColorDto>.toColorsList(): List<Color> {
     return map {
         Color(
@@ -50,6 +54,7 @@ fun MyDukanStatusDto.toMyDukanStatus(): MyDukanStatus {
 }
 
 
+@OptIn(ExperimentalUuidApi::class)
 fun DukanDetailsDto.toDukan(): Dukan {
     return Dukan(
         id = id,
