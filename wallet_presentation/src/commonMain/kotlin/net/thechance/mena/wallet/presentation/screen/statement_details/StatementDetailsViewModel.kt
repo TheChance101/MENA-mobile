@@ -65,7 +65,7 @@ class StatementDetailsViewModel(
         if (pdf == null) {
             updateState { it.copy(errorState = ErrorState.NoDataFound) }
         } else {
-            updateState { it.copy(statement = pdf) }
+            updateState { it.copy(statement = pdf, errorState = null) }
         }
     }
 

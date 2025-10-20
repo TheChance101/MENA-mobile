@@ -46,6 +46,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.screen.wallet.WalletScreenState
 import net.thechance.mena.wallet.presentation.utils.formatBalance
 import net.thechance.mena.wallet.presentation.utils.noRippleClickable
 import net.thechance.mena.wallet.presentation.utils.toDp
@@ -55,9 +56,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BalanceCard(
-    balance: Double,
-    isLoading: Boolean,
-    errorState: ErrorState?,
+    state: WalletScreenState.BalanceUiState,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -78,16 +77,16 @@ fun BalanceCard(
         val parentWidthPx = with(LocalDensity.current) { maxWidth.toPx() }
 
         AnimatedCoinImage(
-            isBalanceLoaded = !isLoading && errorState == null,
+            isBalanceLoaded = !state.isLoading && state.errorState == null,
             modifier = Modifier
                 .padding(top = 12.dp)
                 .align(Alignment.TopCenter)
         )
 
         BalanceInfoSection(
-            balance = balance,
-            isLoading = isLoading,
-            errorState = errorState,
+            balance = state.balance,
+            isLoading = state.isLoading,
+            errorState = state.errorState,
             parentWidthPx = parentWidthPx,
             onRetry = onRetry,
             modifier = Modifier
@@ -255,9 +254,25 @@ private fun BalanceCardPreview() {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            BalanceCard(balance =0.0, isLoading = true, errorState = null, onRetry = {})
-            BalanceCard(balance = 530320.55, isLoading = false, errorState = null, onRetry = {})
-            BalanceCard(balance = 0.0, isLoading = false, errorState = ErrorState.NoInternet, onRetry = {})
+            BalanceCard(
+                WalletScreenState.BalanceUiState(
+                    balance = 0.0,
+                    isLoading = true,
+                    errorState = null
+                ), onRetry = {})
+            BalanceCard(
+                WalletScreenState.BalanceUiState(
+                    balance = 530320.55,
+                    isLoading = false,
+                    errorState = null
+                ), onRetry = {})
+            BalanceCard(
+                WalletScreenState.BalanceUiState(
+                    balance = 0.0,
+                    isLoading = false,
+                    errorState = ErrorState.NoInternet
+                ),
+                onRetry = {})
         }
     }
 }

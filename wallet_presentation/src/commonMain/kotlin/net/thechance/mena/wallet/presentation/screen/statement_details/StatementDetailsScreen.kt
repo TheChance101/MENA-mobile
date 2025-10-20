@@ -117,14 +117,14 @@ fun StatementViewer(
     onRetry: () -> Unit
 ) {
     when {
-        state.errorState != null -> {
-            ErrorView(onRetry = onRetry)
-        }
-
         state.isLoading ->
             Box(modifier = Modifier.fillMaxSize()) {
                 ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
             }
+
+        state.errorState != null -> {
+            ErrorView(onRetry = onRetry)
+        }
 
         else -> {
             PdfViewer(pdf = state.statement)
