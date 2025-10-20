@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.domain.model.UploadReelState
+import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingReelState
@@ -339,8 +339,8 @@ class UploadReelViewModelTest : TestExtensions() {
         const val VALID_SIZE = 50 * 1024 * 1024L
         const val VALID_DURATION = 30_000L
         val byteArray = ByteArray(0)
-        val uploadInProgress = UploadReelState.UploadReelProgress( 50, 100)
-        val uploadDone = UploadReelState.UploadReelSuccess("id1",)
+        val uploadInProgress = UploadReelStatus.UploadReelProgress( 50, 100)
+        val uploadDone = UploadReelStatus.UploadReelSuccess("id1",)
 
         val initialScreenState = UploadReelScreenState()
         val initialFileState = FileUiState()

@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import net.thechance.mena.trends.domain.model.UploadReelState
+import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -78,16 +78,16 @@ internal class UploadReelViewModel(
         updateState { copy(uploadingState = UploadReelScreenState.UploadingReelState.UPLOADING) }
     }
 
-    private fun onCollectUploadProgress(progress: UploadReelState) {
+    private fun onCollectUploadProgress(progress: UploadReelStatus) {
         when (progress) {
-            is UploadReelState.UploadReelProgress ->
+            is UploadReelStatus.UploadReelProgress ->
                 onUploadReelProgress(uploadReelProgress = progress)
 
-            is UploadReelState.UploadReelSuccess -> onUploadReelSuccess(uploadReelSuccess = progress)
+            is UploadReelStatus.UploadReelSuccess -> onUploadReelSuccess(uploadReelSuccess = progress)
         }
     }
 
-    private fun onUploadReelProgress(uploadReelProgress: UploadReelState.UploadReelProgress) {
+    private fun onUploadReelProgress(uploadReelProgress: UploadReelStatus.UploadReelProgress) {
         val uploadingProgress =
             uploadReelProgress.numberOfUploadedBytes / uploadReelProgress.totalBytes.toFloat()
         updateState {
@@ -101,7 +101,7 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onUploadReelSuccess(uploadReelSuccess: UploadReelState.UploadReelSuccess) {
+    private fun onUploadReelSuccess(uploadReelSuccess: UploadReelStatus.UploadReelSuccess) {
         updateState {
             copy(
                 reelId = uploadReelSuccess.reelId,

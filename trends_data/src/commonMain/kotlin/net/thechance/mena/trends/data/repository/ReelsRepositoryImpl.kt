@@ -41,7 +41,7 @@ import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.model.UploadReelState
+import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
@@ -96,18 +96,18 @@ internal class ReelsRepositoryImpl(
         filePath: String,
         fileName: String,
         size: Long
-    ): Flow<UploadReelState> {
+    ): Flow<UploadReelStatus> {
         return channelFlow {
             val response = getUploadReelResponse(filePath, fileName, size) { sent, total ->
                 send(
-                    UploadReelState.UploadReelProgress(
+                    UploadReelStatus.UploadReelProgress(
                         numberOfUploadedBytes = sent,
                         totalBytes = total
                     )
                 )
             }
             send(
-                UploadReelState.UploadReelSuccess(
+                UploadReelStatus.UploadReelSuccess(
                     reelId = response.reelId.orEmpty(),
                 )
             )

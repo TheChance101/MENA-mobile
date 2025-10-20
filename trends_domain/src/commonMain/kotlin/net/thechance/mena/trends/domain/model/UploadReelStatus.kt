@@ -1,14 +1,14 @@
 package net.thechance.mena.trends.domain.model
 
 
-sealed interface UploadReelState {
+sealed interface UploadReelStatus {
 
     data class UploadReelProgress(
         val numberOfUploadedBytes: Long,
         val totalBytes: Long
-    ) : UploadReelState
+    ) : UploadReelStatus
 
     data class UploadReelSuccess(
         val reelId: String
-    ) : UploadReelState
+    ) : UploadReelStatus
 }
