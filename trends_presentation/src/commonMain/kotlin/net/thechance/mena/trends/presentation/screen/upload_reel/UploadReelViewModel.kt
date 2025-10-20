@@ -130,7 +130,7 @@ internal class UploadReelViewModel(
     private fun extractFrame() {
         tryToExecute(
             block = {
-                reelsRepository.getReelThumbnail(
+                reelsRepository.extractReelThumbnail(
                     filePath = state.value.selectedFile.filePath,
                     timeInMillis = 1L
                 )

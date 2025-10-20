@@ -35,7 +35,7 @@ class UploadReelViewModelTest : TestExtensions() {
         everySuspend { uploadReel(any(), any(), any()) } returns emptyFlow()
         everySuspend { uploadReelThumbnail(any(), any(), any()) } returns Unit
         everySuspend { getReelDuration(any()) } returns VALID_DURATION
-        everySuspend { getReelThumbnail(any(), any()) } returns byteArray
+        everySuspend { extractReelThumbnail(any(), any()) } returns byteArray
     }
     private val validator: VideoValidator = VideoValidator()
 
@@ -106,7 +106,7 @@ class UploadReelViewModelTest : TestExtensions() {
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
-        verifySuspend { repository.getReelThumbnail(any(), any<Long>()) }
+        verifySuspend { repository.extractReelThumbnail(any(), any<Long>()) }
     }
 
     @Test
@@ -121,7 +121,7 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onRetrieveVideo should update state with error if extractFrame failed`() = runTest(testDispatcher) {
-        everySuspend { repository.getReelThumbnail(any(), any<Long>()) } throws Exception("")
+        everySuspend { repository.extractReelThumbnail(any(), any<Long>()) } throws Exception("")
 
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()

@@ -24,12 +24,12 @@ import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.data.util.NetworkConstants.REELS_FEED_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
 import net.thechance.mena.trends.data.util.NetworkConstants.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkConstants.PROFILE_REELS_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkConstants.REELS_FEED_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
@@ -160,7 +160,7 @@ internal class ReelsRepositoryImpl(
         return videoFileHandler.getDuration(filePath)
     }
 
-    override suspend fun getReelThumbnail(filePath: String, timeInMillis: Long): ByteArray? {
+    override suspend fun extractReelThumbnail(filePath: String, timeInMillis: Long): ByteArray? {
         return videoFileHandler.extractVideoFrame(filePath, timeInMillis)
     }
 
