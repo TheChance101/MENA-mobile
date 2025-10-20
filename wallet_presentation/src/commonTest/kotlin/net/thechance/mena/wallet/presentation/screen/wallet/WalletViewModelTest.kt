@@ -53,7 +53,7 @@ class WalletViewModelTest {
         viewModel.state.test {
             skipItems(1)
 
-            val loadingState = awaitItem().isLoading
+            val loadingState = awaitItem().balanceState.isLoading
             assertTrue(loadingState)
 
             cancelAndIgnoreRemainingEvents()
@@ -70,7 +70,7 @@ class WalletViewModelTest {
 
         viewModel.state.test {
             val successState = awaitItem()
-            assertEquals(expectedBalance, successState.balance)
+            assertEquals(expectedBalance, successState.balanceState.balance)
         }
     }
 
@@ -84,7 +84,7 @@ class WalletViewModelTest {
         viewModel.state.test {
             skipItems(2)
 
-            val errorState = awaitItem().errorState
+            val errorState = awaitItem().balanceState.errorState
             assertEquals(ErrorState.Unknown, errorState)
 
             cancelAndIgnoreRemainingEvents()
