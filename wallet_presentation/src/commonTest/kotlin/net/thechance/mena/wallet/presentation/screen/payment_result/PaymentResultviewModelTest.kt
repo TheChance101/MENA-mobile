@@ -14,7 +14,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -25,7 +25,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PaymentResultViewModelTest {
-    private val paymentRepository = mock<PaymentRepository>(mode = MockMode.autofill)
+    private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     private val transactionId = Uuid.random()
@@ -47,7 +47,7 @@ class PaymentResultViewModelTest {
     @Test
     fun `initial state should set paymentStatus from args`() = runTest {
         val viewModel = PaymentResultViewModel(
-            paymentRepository = paymentRepository,
+            transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
             ioDispatcher = testDispatcher
         )
@@ -61,7 +61,7 @@ class PaymentResultViewModelTest {
     @Test
     fun `onBackClicked should send NavigateBack effect`() = runTest {
         val viewModel = PaymentResultViewModel(
-            paymentRepository = paymentRepository,
+            transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
             ioDispatcher = testDispatcher
         )
@@ -75,7 +75,7 @@ class PaymentResultViewModelTest {
     @Test
     fun `onCancelClicked should send NavigateToScreenBeforePaymentProcess effect`() = runTest {
         val viewModel = PaymentResultViewModel(
-            paymentRepository = paymentRepository,
+            transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
             ioDispatcher = testDispatcher
         )
@@ -89,7 +89,7 @@ class PaymentResultViewModelTest {
     @Test
     fun `onShowTransactionDetailsClicked should send NavigateToTransactionDetails effect with correct id`() = runTest {
         val viewModel = PaymentResultViewModel(
-            paymentRepository = paymentRepository,
+            transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
             ioDispatcher = testDispatcher
         )
@@ -105,10 +105,10 @@ class PaymentResultViewModelTest {
 
     @Test
     fun `onTryAgainClicked should update state with CONNECTION_LOST on error`() = runTest {
-        everySuspend { paymentRepository.submitTransaction(transactionId) } throws NoInternetException()
+        everySuspend { transactionRepository.submitTransaction(transactionId) } throws NoInternetException()
 
         val viewModel = PaymentResultViewModel(
-            paymentRepository = paymentRepository,
+            transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
             ioDispatcher = testDispatcher
         )

@@ -70,12 +70,20 @@ class TransactionRepositoryImpl(
             networkClient.get("${TRANSACTION_PATH}/$transactionId$RECEIVER_DETAILS")
         }.toEntity()
     }
+    override suspend fun submitTransaction(transactionId: Uuid) {
+        safeApiCall<Unit> {
+            networkClient.post("$PAYMENT_PATH/$transactionId$SUBMIT_PAYMENT_PATH")
+        }
+    }
+
 
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/p2p/initiate"
         const val RECEIVER_DETAILS = "/receiver-details"
+        const val PAYMENT_PATH = "/wallet/payment"
+        const val SUBMIT_PAYMENT_PATH = "/submit"
     }
 
 }

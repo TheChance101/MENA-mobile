@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
@@ -22,7 +21,6 @@ class ConfirmPaymentViewModel(
     @Provided private val args: ConfirmPaymentArgs,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
-    @Provided private val paymentRepository: PaymentRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
@@ -127,7 +125,7 @@ class ConfirmPaymentViewModel(
     private fun submitTransaction(transactionId: Uuid) {
         tryToExecute(
             callee = {
-                paymentRepository.submitTransaction(transactionId)
+                transactionRepository.submitTransaction(transactionId)
             },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,

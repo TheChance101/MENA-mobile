@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import kotlin.test.AfterTest
@@ -32,7 +31,6 @@ import kotlin.uuid.Uuid
 class ConfirmPaymentViewModelTest {
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val balanceRepository = mock<BalanceRepository>(mode = MockMode.autofill)
-    private val paymentRepository = mock<PaymentRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -55,7 +53,6 @@ class ConfirmPaymentViewModelTest {
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
                 ioDispatcher = testDispatcher
             )
 
@@ -77,7 +74,6 @@ class ConfirmPaymentViewModelTest {
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
                 ioDispatcher = testDispatcher
             )
 
@@ -102,7 +98,6 @@ class ConfirmPaymentViewModelTest {
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
                 ioDispatcher = testDispatcher
             )
 
@@ -129,7 +124,6 @@ class ConfirmPaymentViewModelTest {
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
                 ioDispatcher = testDispatcher
             )
 
@@ -153,7 +147,6 @@ class ConfirmPaymentViewModelTest {
                 args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
                 balanceRepository = balanceRepository,
                 transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
                 ioDispatcher = testDispatcher
             )
 
@@ -174,7 +167,6 @@ class ConfirmPaymentViewModelTest {
             args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
             balanceRepository = balanceRepository,
             transactionRepository = transactionRepository,
-            paymentRepository = paymentRepository,
             ioDispatcher = testDispatcher
         )
 
@@ -193,7 +185,6 @@ class ConfirmPaymentViewModelTest {
             args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
             balanceRepository = balanceRepository,
             transactionRepository = transactionRepository,
-            paymentRepository = paymentRepository,
             ioDispatcher = testDispatcher
         )
 

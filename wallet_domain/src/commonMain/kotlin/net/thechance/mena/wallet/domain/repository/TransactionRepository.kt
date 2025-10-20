@@ -22,4 +22,5 @@ interface TransactionRepository {
         amount: Double
     ): Uuid
     suspend fun getTransactionReceiver(transactionId: Uuid): TransactionReceiver
+    suspend fun submitTransaction(transactionId: Uuid)
 }
