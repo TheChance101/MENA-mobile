@@ -1,27 +1,30 @@
 package net.thechance.mena.dukan.data.repository
 
-import io.ktor.client.engine.mock.respond
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanManagementRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanRepository
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createMediaRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultCreateResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultDukanDetailsResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultNameAvailableResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultStatusResponse
-import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.entity.MyDukanStatus
+import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class DukanRepositoryImplTest {
-    private val repository: DukanRepositoryImpl = createDukanRepository()
+    private val dukanManagementRepository: DukanManagementRepositoryImpl =
+        createDukanManagementRepository()
+    private val mediaRepository: MediaRepositoryImpl = createMediaRepository()
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `createDukan calls the correct endpoint`() = runTest {
         var called = false
@@ -34,9 +37,9 @@ class DukanRepositoryImplTest {
 
         repo.createDukan(
             Dukan(
-                id = "123",
+                id = Uuid.random(),
                 name = "Test Dukan",
-                color = Color("Red", "#FF0000"),
+                color = Color(Uuid.random(), "#FF0000"),
                 style = Dukan.Style.WIDE_IMAGE,
                 imageUrl = "",
                 categories = emptySet<Category>(),
@@ -63,27 +66,29 @@ class DukanRepositoryImplTest {
         )
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getCategories returns mapped categories`() = runTest {
-        val categories = repository.getCategories()
+        val categories = dukanManagementRepository.getCategories()
         assertEquals(
             listOf(
-                Category("1", "Category 1", ""),
-                Category("2", "Category 2", ""),
-                Category("3", "Category 3", "")
+                Category(Uuid.random(), "Category 1", ""),
+                Category(Uuid.random(), "Category 2", ""),
+                Category(Uuid.random(), "Category 3", "")
             ),
             categories
         )
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getDukanColors returns mapped colors`() = runTest {
-        val colors = repository.getDukanColors()
+        val colors = dukanManagementRepository.getDukanColors()
         assertEquals(
             listOf(
-                Color("Red", "#FF0000"),
-                Color("Green", "#00FF00"),
-                Color("Blue", "#0000FF")
+                Color(Uuid.random(), "#FF0000"),
+                Color(Uuid.random(), "#00FF00"),
+                Color(Uuid.random(), "#0000FF")
             ),
             colors
         )
@@ -91,7 +96,7 @@ class DukanRepositoryImplTest {
 
     @Test
     fun `getDukanStyles returns styles as enums`() = runTest {
-        val styles = repository.getDukanStyles()
+        val styles = dukanManagementRepository.getDukanStyles()
         assertEquals(
             listOf(Dukan.Style.WIDE_IMAGE, Dukan.Style.NO_IMAGE),
             styles
@@ -100,7 +105,7 @@ class DukanRepositoryImplTest {
 
     @Test
     fun `isDukanNameTaken returns false for available name`() = runTest {
-        val isTaken = repository.isDukanNameTaken("some_name")
+        val isTaken = dukanManagementRepository.isDukanNameTaken("some_name")
         assertFalse(isTaken)
     }
 
@@ -115,24 +120,25 @@ class DukanRepositoryImplTest {
 
     @Test
     fun `uploadDukanImage returns image URL`() = runTest {
-        val url = repository.uploadDukanImage(
+        val url = mediaRepository.uploadDukanImage(
             fileName = "image.png",
             fileBytes = ByteArray(0)
         )
         assertEquals("https://cdn.example.com/dukan/image.png", url)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getDukanDetailsByDukanId should map id correctly`() = runTest {
         // Arrange
-        val dukanId = "dukan123"
+        val dukanId = Uuid.random()
         val repo = createDukanRepository(dukanDetailsResponse = { defaultDukanDetailsResponse() })
 
         // Act
-        val details = repo.getDukanDetailsByDukanId(dukanId)
+        val details = repo.getDukanDetailsByDukanId(dukanId.toString())
 
         // Assert
-        assertEquals("dukan123", details.id)
+        assertEquals(dukanId, details.id)
     }
 
     @Test
@@ -161,6 +167,7 @@ class DukanRepositoryImplTest {
         assertEquals("123 Test St, Cairo, Egypt", details.address)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getDukanDetailsByDukanId should map color correctly`() = runTest {
         // Arrange
@@ -171,7 +178,7 @@ class DukanRepositoryImplTest {
         val details = repo.getDukanDetailsByDukanId(dukanId)
 
         // Assert
-        assertEquals(Color("Red", "#FF0000"), details.color)
+        assertEquals(Color(Uuid.random(), "#FF0000"), details.color)
     }
 
     @Test

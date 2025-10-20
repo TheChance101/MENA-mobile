@@ -15,6 +15,8 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class CreateShelfRepositoryImplTest {
 
@@ -105,9 +107,11 @@ class CreateShelfRepositoryImplTest {
         assertEquals(3, shelves.size)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getMyDukanShelves returns correct first shelf id`() = runTest {
         // Given
+        val id = Uuid.random()
         val repository = createShelfRepository(
             shelvesResponse = {
                 defaultShelvesResponse()
@@ -118,7 +122,7 @@ class CreateShelfRepositoryImplTest {
         val shelves = repository.getMyDukanShelves()
 
         // Then
-        assertEquals("1", shelves[0].id)
+        assertEquals(id, shelves[0].id)
     }
 
     @Test
@@ -278,15 +282,17 @@ class CreateShelfRepositoryImplTest {
         assertEquals(2, result.items.size)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getShelvesByDukanId should map item id correctly`() = runTest {
         // Given
+        val id = Uuid.random()
         val repository =
             createShelfRepository(pagedShelvesResponse = { defaultPagedShelvesResponse() })
         // When
-        val result = repository.getShelvesByDukanId("dukan123", 0, 2)
+        val result = repository.getShelvesByDukanId(id.toString(), 0, 2)
         // Then
-        assertEquals("1", result.items[0].id)
+        assertEquals(id, result.items[0].id)
     }
 
     @Test
@@ -364,8 +370,9 @@ class CreateShelfRepositoryImplTest {
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeShelf() = Shelf(
-    id = "123",
+    id =  Uuid.random(),
     name = "Test Shelf",
 )
 
