@@ -103,26 +103,26 @@ class WebSocketManagerImpl(
 
     private suspend fun sendConnectFrame() {
         sendFrame(
-            "CONNECT\n" +
-                    "accept-version:1.2\n" +
-                    "heart-beat:10000,10000\n" +
+            "$CONNECT\n" +
+                    "$ACCEPT_VERSION\n" +
+                    "$HEARTBEAT\n" +
                     "\n\u0000"
         )
     }
 
     override suspend fun subscribe(destination: String) {
         val frame =
-            "SUBSCRIBE\n" +
+            "$SUBSCRIBE\n" +
                     "id:sub-0\n" +
-                    "destination:$destination\n" +
+                    "$DESTINATION:$destination\n" +
                     "\n\u0000"
         sendFrame(frame)
     }
 
     override suspend fun sendTextFrame(destination: String, payload: String) {
         val frameText =
-            "SEND\n" +
-                    "destination:$destination\n" +
+            "$SEND\n" +
+                    "$DESTINATION:$destination\n" +
                     "\n" +
                     "$payload\n" +
                     "\n\u0000"
@@ -142,5 +142,11 @@ class WebSocketManagerImpl(
     private companion object {
         const val WEB_SOCKETS_ENDPOINT = "/ws"
         const val RECONNECT_DELAY = 5000L
+        const val CONNECT = "CONNECT"
+        const val SUBSCRIBE = "SUBSCRIBE"
+        const val SEND = "SEND"
+        const val ACCEPT_VERSION = "accept-version:1.2"
+        const val HEARTBEAT = "heart-beat:10000,10000"
+        const val DESTINATION = "destination"
     }
 }
