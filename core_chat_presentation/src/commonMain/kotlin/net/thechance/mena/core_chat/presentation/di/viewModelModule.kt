@@ -17,7 +17,8 @@ internal val viewModelModule = module {
             contactsRepository = get(),
             effector = get(),
             chatRepository = get(),
-            balanceRepository = get()
+            balanceRepository = get(),
+            messageRepository = get()
         )
     }
     viewModel {
@@ -33,5 +34,5 @@ internal val viewModelModule = module {
             dispatcher = get(named(CHAT_IO_DISPATCHER))
         )
     }
-    viewModel { ChatViewModel(chatRepository = get(), userRepository =  get(), chatArgs =  get(), effector = get(), permissionsController = get(), dispatcher = get(named(CHAT_IO_DISPATCHER))) }
+    viewModel { ChatViewModel(chatRepository = get(), userRepository =  get(), chatArgs =  get(), effector = get(), permissionsController = get(), dispatcher = get(named(CHAT_IO_DISPATCHER)), messageRepository = get()) }
 }
