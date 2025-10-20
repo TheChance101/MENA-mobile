@@ -22,21 +22,21 @@ fun CreateDukanUiState.Style.toEntityStyle(): Dukan.Style = when (this) {
     CreateDukanUiState.Style.NO_IMAGE -> Dukan.Style.NO_IMAGE
 }
 
-fun Color.toUiColor(): ColorUiState {
-    return ColorUiState(
+fun Color.toUiColor(): CreateDukanUiState.ColorUiState {
+    return CreateDukanUiState.ColorUiState(
         id = id,
         color = hexCode.removePrefix("#").toLong(16) or 0xFF000000
     )
 }
 
-fun ColorUiState.toEntity() = Color(
+fun CreateDukanUiState.ColorUiState.toEntity() = Color(
     id = id,
     hexCode = "#${color.toULong().toString(16).padStart(8, '0').uppercase()}"
 )
 
-fun List<Category>.toUiState(): List<DukanCategoryUiState> {
+fun List<Category>.toUiState(): List<CreateDukanUiState.DukanCategoryUiState> {
     return map { category ->
-        DukanCategoryUiState(
+        CreateDukanUiState.DukanCategoryUiState(
             id = category.id,
             name = category.name,
             imageUrl = category.imageUrl
@@ -44,7 +44,7 @@ fun List<Category>.toUiState(): List<DukanCategoryUiState> {
     }
 }
 
-fun DukanCategoryUiState.toEntity() = Category(
+fun CreateDukanUiState.DukanCategoryUiState.toEntity() = Category(
     id = id,
     name = name,
     imageUrl = imageUrl
