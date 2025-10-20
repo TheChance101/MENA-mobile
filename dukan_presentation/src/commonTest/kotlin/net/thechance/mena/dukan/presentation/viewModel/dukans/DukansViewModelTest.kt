@@ -24,6 +24,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DukansViewModelTest {
@@ -288,19 +290,20 @@ private fun dummyDukansUiState(): List<DukanUiState> {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private val dummyDukanPreviews = listOf(
     DukanPreview(
-        id = "dukan1",
+        id = Uuid.random(),
         name = "Electronics Store",
         imageUrl = "https://example.com/electronics.jpg"
     ),
     DukanPreview(
-        id = "dukan2",
+        id = Uuid.random(),
         name = "Tech Hub",
         imageUrl = "https://example.com/tech.jpg"
     ),
     DukanPreview(
-        id = "dukan3",
+        id = Uuid.random(),
         name = "Gadget World",
         imageUrl = "https://example.com/gadget.jpg"
     )

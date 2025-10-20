@@ -21,6 +21,7 @@ import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_price_invalid
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.productImage.ProductImageState
@@ -31,12 +32,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateProductViewModelTest {
 
     private val productRepository = mock<ProductRepository>()
     private val shelfRepository = mock<ShelfRepository>()
+    private val mediaRepository = mock<MediaRepository>()
     private lateinit var viewModel: CreateProductViewModel
     private val dispatcher = StandardTestDispatcher()
     private val scope = TestScope(dispatcher)
@@ -44,15 +48,16 @@ class CreateProductViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        viewModel = CreateProductViewModel(productRepository, shelfRepository, dispatcher)
+        viewModel = CreateProductViewModel(productRepository, shelfRepository,mediaRepository, dispatcher)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getShelves Should update emit success state`() = scope.runTest {
-        val shelves = listOf(Shelf("1", "Shelf1"), Shelf("2", "Shelf2"))
+        val shelves = listOf(Shelf(Uuid.random(), "Shelf1"), Shelf(Uuid.random(), "Shelf2"))
         everySuspend { shelfRepository.getMyDukanShelves() } returns shelves
 
-        viewModel = CreateProductViewModel(productRepository, shelfRepository, dispatcher)
+        viewModel = CreateProductViewModel(productRepository, shelfRepository,mediaRepository, dispatcher)
         advanceUntilIdle()
 
         viewModel.state.test {

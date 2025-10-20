@@ -34,6 +34,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateDukanViewModelTest {
@@ -850,12 +852,13 @@ class CreateDukanViewModelTest {
 
 // ===== FAKE DATA FUNCTIONS =====
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeDukanColor(): List<Color> {
     return listOf(
-        Color(id = "1", hexCode = "#F77053"),
-        Color(id = "2", hexCode = "#F4C343"),
-        Color(id = "3", hexCode = "#C30C30"),
-        Color(id = "4", hexCode = "#30ABE8")
+        Color(id = Uuid.random(), hexCode = "#F77053"),
+        Color(id = Uuid.random(), hexCode = "#F4C343"),
+        Color(id = Uuid.random(), hexCode = "#C30C30"),
+        Color(id = Uuid.random(), hexCode = "#30ABE8")
     )
 }
 
@@ -865,12 +868,25 @@ private fun fakeDukanStyle(): List<Dukan.Style> {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeCategories(): List<Category> {
     return listOf(
-        Category(id = "1", name = "Electronics", imageUrl = "https://example.com/electronics.png"),
-        Category(id = "2", name = "Clothes", imageUrl = "https://example.com/clothes.png"),
-        Category(id = "3", name = "Groceries", imageUrl = "https://example.com/groceries.png"),
-        Category(id = "4", name = "Books", imageUrl = "https://example.com/books.png")
+        Category(
+            id = Uuid.random(),
+            name = "Electronics",
+            imageUrl = "https://example.com/electronics.png"
+        ),
+        Category(
+            id = Uuid.random(),
+            name = "Clothes",
+            imageUrl = "https://example.com/clothes.png"
+        ),
+        Category(
+            id = Uuid.random(),
+            name = "Groceries",
+            imageUrl = "https://example.com/groceries.png"
+        ),
+        Category(id = Uuid.random(), name = "Books", imageUrl = "https://example.com/books.png")
     )
 }
 
@@ -884,6 +900,7 @@ private fun fakeCameraPosition() = CameraPosition(target = Position(29.0, 28.0))
 private fun fakeColorUiState() = ColorUiState(id = "1", color = 0xFFF545)
 private fun fakeSingleDukanStyle() = Dukan.Style.WIDE_IMAGE
 
+@OptIn(ExperimentalUuidApi::class)
 private fun Category.toUiState() = DukanCategoryUiState(
-    id = id, name = name, imageUrl = imageUrl
+    id = id.toString(), name = name, imageUrl = imageUrl
 )

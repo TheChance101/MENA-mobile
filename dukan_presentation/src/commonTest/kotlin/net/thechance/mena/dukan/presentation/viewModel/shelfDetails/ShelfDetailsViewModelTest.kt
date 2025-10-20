@@ -26,6 +26,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShelfDetailsViewModelTest {
@@ -42,9 +44,10 @@ class ShelfDetailsViewModelTest {
             savedStateHandle = handle
         )
 
+    @OptIn(ExperimentalUuidApi::class)
     private val dummyProducts = listOf(
         Product(
-            id = "product_1",
+            id = Uuid.random(),
             name = "Laptop",
             description = "High-end laptop",
             price = 1200.0,
@@ -52,7 +55,7 @@ class ShelfDetailsViewModelTest {
             createdAt = ""
         ),
         Product(
-            id = "product_2",
+            id = Uuid.random(),
             name = "Mouse",
             description = "Wireless mouse",
             price = 25.0,
@@ -60,7 +63,7 @@ class ShelfDetailsViewModelTest {
             createdAt = ""
         ),
         Product(
-            id = "product_3",
+            id = Uuid.random(),
             name = "Keyboard",
             description = "Mechanical keyboard",
             price = 75.0,

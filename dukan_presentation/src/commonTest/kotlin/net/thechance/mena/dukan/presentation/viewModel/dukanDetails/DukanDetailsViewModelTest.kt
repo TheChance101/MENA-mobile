@@ -30,6 +30,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DukanDetailsViewModelTest {
@@ -43,6 +45,7 @@ class DukanDetailsViewModelTest {
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var dukanDetailsViewModel: DukanDetailsViewModel
 
+    @OptIn(ExperimentalUuidApi::class)
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -270,6 +273,7 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onCartClick SHOULD set showProductQuantity to true for specific product in shelf`() =
         runTest {
@@ -303,6 +307,7 @@ class DukanDetailsViewModelTest {
             assertTrue(product?.inCartQuantity == 1)
         }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onCartClick SHOULD only update specific product not others`() = runTest {
         // Given
@@ -314,7 +319,7 @@ class DukanDetailsViewModelTest {
         } returns PagedResult(
             items = listOf(
                 Product(
-                    id = "product_1",
+                    id = Uuid.random(),
                     name = "Product 1",
                     description = "Description",
                     price = 100.0,
@@ -322,7 +327,7 @@ class DukanDetailsViewModelTest {
                     createdAt = "2025-10-10T12:00:00Z"
                 ),
                 Product(
-                    id = "product_2",
+                    id = Uuid.random(),
                     name = "Product 2",
                     description = "Description",
                     price = 200.0,
@@ -444,27 +449,30 @@ class DukanDetailsViewModelTest {
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private fun dummyDukanDetails() = Dukan(
-    id = "dukan_123",
+    id = Uuid.random(),
     name = "Test Dukan",
     address = "123 Test Street",
     imageUrl = "https://example.com/image.png",
     coordinates = Dukan.Coordinates(latitude = 30.0, longitude = 31.0),
-    color = Color(id = "color_1", hexCode = "#FF0000"),
+    color = Color(id = Uuid.random(), hexCode = "#FF0000"),
     style = Dukan.Style.WIDE_IMAGE,
     categories = emptySet(),
     status = Dukan.Status.APPROVED,
 )
 
+@OptIn(ExperimentalUuidApi::class)
 private fun dummyShelves() = listOf(
-    Shelf(id = "shelf_1", name = "Electronics"),
-    Shelf(id = "shelf_2", name = "Clothing"),
-    Shelf(id = "shelf_3", name = "Books")
+    Shelf(id = Uuid.random(), name = "Electronics"),
+    Shelf(id = Uuid.random(), name = "Clothing"),
+    Shelf(id = Uuid.random(), name = "Books")
 )
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeProducts(): List<Product> = listOf(
     Product(
-        id = "product_1",
+        id = Uuid.random(),
         name = "Laptop",
         description = "A cool laptop",
         price = 1200.0,

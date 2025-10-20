@@ -24,8 +24,8 @@ import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DukanException
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
@@ -37,6 +37,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageDukanViewModelTest {
@@ -346,10 +348,11 @@ class ManageDukanViewModelTest {
     }
 
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onShelfAddedSuccessfully SHOULD include new shelf in refreshed list`() = runTest {
         // Given
-        val newShelves = dummyShelves + Shelf("shelf_4", "New Shelf")
+        val newShelves = dummyShelves + Shelf(Uuid.random(), "New Shelf")
         everySuspend { shelfRepository.getMyDukanShelves() } returns newShelves
 
         // When
@@ -546,26 +549,28 @@ private fun dummyShelvesUiState(): List<ShelfUiState> {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private val dummyShelves = listOf(
     Shelf(
-        id = "shelf_1",
+        id = Uuid.random(),
         name = "Electronics"
     ),
     Shelf(
-        id = "shelf_2",
+        id = Uuid.random(),
         name = "Clothing"
     ),
     Shelf(
-        id = "shelf_3",
+        id = Uuid.random(),
         name = "Books"
     )
 )
 
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeProducts(): List<Product> {
     return listOf(
         Product(
-            id = "product_1",
+            id = Uuid.random(),
             name = "iPhone 15",
             description = "Latest iPhone model",
             price = 999.99,
@@ -573,7 +578,7 @@ private fun fakeProducts(): List<Product> {
             imageUrls = listOf("https://example.com/iphone.jpg")
         ),
         Product(
-            id = "product_2",
+            id = Uuid.random(),
             name = "MacBook Pro",
             description = "Professional laptop",
             price = 1999.99,
@@ -581,7 +586,7 @@ private fun fakeProducts(): List<Product> {
             createdAt = "2023-08-01T10:00:00Z",
         ),
         Product(
-            id = "product_3",
+            id = Uuid.random(),
             name = "T-Shirt",
             description = "Cotton t-shirt",
             price = 29.99,
