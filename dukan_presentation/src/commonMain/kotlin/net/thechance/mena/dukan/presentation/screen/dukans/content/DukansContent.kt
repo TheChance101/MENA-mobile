@@ -21,10 +21,10 @@ import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeDukanPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukansInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.dukans.DukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansState
 import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansUiState.DukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukans.DukansUiState.DukansState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

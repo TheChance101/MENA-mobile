@@ -1,20 +1,17 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanCategories
 
-
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.something_went_wrong
-import mena.dukan_presentation.generated.resources.something_went_wrong_while_fetching_categories
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.DukanRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import org.jetbrains.compose.resources.StringResource
-
 
 class DukanCategoriesViewModel(
     private val dukanRepository: DukanRepository,
@@ -36,11 +33,11 @@ class DukanCategoriesViewModel(
         )
     }
 
-    private suspend fun getCategoriesBlock(): List<CategoryUiState> {
+    private suspend fun getCategoriesBlock(): List<DukanCategoriesUiState.CategoryUiState> {
         return dukanRepository.getCategories().map { it.toUiState() }
     }
 
-    private fun onGetCategoriesSuccess(categories: List<CategoryUiState>) {
+    private fun onGetCategoriesSuccess(categories: List<DukanCategoriesUiState.CategoryUiState>) {
         updateState { copy(categories = categories) }
     }
 
@@ -83,5 +80,4 @@ class DukanCategoriesViewModel(
             )
         }
     }
-
 }
