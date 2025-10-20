@@ -7,12 +7,13 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @ExperimentalUuidApi
-interface MessageRepository {
+interface
+MessageRepository {
     suspend fun sendMessage(message: Message)
     suspend fun loadMessages(chatId: Uuid): List<Message>
     suspend fun deleteMessage(message: Message)
-    fun observeMessages(chatId: Uuid? = null): Flow<Message>
+    fun observeMessagesForChatOrAll(chatId: Uuid? = null): Flow<Message>
     fun observeReadMessages(): Flow<MarkMessageAsReadEvent>
-    fun observeLocalMessages(chatId: Uuid): Flow<List<Message>>
-    suspend fun markMessagesAsReadById(chatId: Uuid)
+    fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>>
+    suspend fun markMessagesOfChatAsRead(chatId: Uuid)
 }

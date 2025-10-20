@@ -250,7 +250,7 @@ class ChatViewModel(
 
     private fun subscribeToNewMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { messageRepository.observeMessages(chatId) },
+            collect = { messageRepository.observeMessagesForChatOrAll(chatId) },
             onCollect = ::onCollectNewMessage,
             onError = {
                 showSnackBar(
@@ -267,13 +267,13 @@ class ChatViewModel(
 
         newMessages = newMessages.toMutableList().apply { add(0, message) }
         rebuildUiMessages()
-        messageRepository.markMessagesAsReadById(message.chatId)
+        messageRepository.markMessagesOfChatAsRead(message.chatId)
 
     }
 
     private fun subscribeToPendingMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { messageRepository.observeLocalMessages(chatId) },
+            collect = { messageRepository.observePendingMessagesByChatId(chatId) },
             onCollect = ::onCollectPendingMessages
         )
     }
@@ -304,7 +304,7 @@ class ChatViewModel(
     private suspend fun onLoadChatHistorySuccess(messages: List<Message>) {
         messagesHistoryCache = messages
         rebuildUiMessages()
-        messageRepository.markMessagesAsReadById(state.value.chatId ?: return)
+        messageRepository.markMessagesOfChatAsRead(state.value.chatId ?: return)
 
     }
 

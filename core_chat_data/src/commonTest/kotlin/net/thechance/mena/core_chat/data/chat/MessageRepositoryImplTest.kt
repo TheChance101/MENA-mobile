@@ -166,7 +166,7 @@ class MessageRepositoryImplTest {
             messageEntities
         )
 
-        val result = repository.observeLocalMessages(chatId).first()
+        val result = repository.observePendingMessagesByChatId(chatId).first()
 
 
         assertThat(result).isNotEmpty()
@@ -178,7 +178,7 @@ class MessageRepositoryImplTest {
     fun `should return empty list when no local messages exist for chat`() = runTest {
         everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
 
-        val result = repository.observeLocalMessages(chatId).first()
+        val result = repository.observePendingMessagesByChatId(chatId).first()
 
         assertThat(result.isEmpty()).isTrue()
         verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
@@ -196,7 +196,7 @@ class MessageRepositoryImplTest {
             )
         }
 
-        val flow = repository.observeMessages(chatId)
+        val flow = repository.observeMessagesForChatOrAll(chatId)
 
         assertThat(flow).isNotNull()
     }

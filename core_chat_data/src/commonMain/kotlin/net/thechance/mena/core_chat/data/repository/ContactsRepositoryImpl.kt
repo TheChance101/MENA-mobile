@@ -68,7 +68,7 @@ class ContactsRepositoryImpl(
         )
     }
 
-    override suspend fun getSyncStatus(): Boolean {
+    override suspend fun getHasUserSyncedContactsStatus(): Boolean {
         return tryCall(
             defaultException = { DataStoreException("error with data store", it) }) {
             dataStore.data.map {
@@ -77,7 +77,7 @@ class ContactsRepositoryImpl(
         }
     }
 
-    override suspend fun updateSyncStatus(isSynced: Boolean) {
+    override suspend fun setHasUserSyncedContactsStatus(isSynced: Boolean) {
         return tryCall(
             defaultException = { DataStoreException("error with data store", it) }) {
             dataStore.edit { preferences ->

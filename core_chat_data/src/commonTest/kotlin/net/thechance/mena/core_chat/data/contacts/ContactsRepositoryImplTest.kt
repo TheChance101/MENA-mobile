@@ -222,7 +222,7 @@ class ContactsRepositoryImplTest {
     @Test
     fun `should return false when getSyncStatus is called and state is not set`() = runTest {
 
-        val result = repository.getSyncStatus()
+        val result = repository.getHasUserSyncedContactsStatus()
 
 
         assertThat(result).isFalse()
@@ -234,7 +234,7 @@ class ContactsRepositoryImplTest {
         mockDataStore.setSyncStatus(true)
 
 
-        val result = repository.getSyncStatus()
+        val result = repository.getHasUserSyncedContactsStatus()
 
 
         assertThat(result).isTrue()
@@ -246,7 +246,7 @@ class ContactsRepositoryImplTest {
         mockDataStore.setSyncStatus(false)
 
 
-        val result = repository.getSyncStatus()
+        val result = repository.getHasUserSyncedContactsStatus()
 
 
         assertThat(result).isFalse()
@@ -259,7 +259,7 @@ class ContactsRepositoryImplTest {
 
 
         assertFailsWith<DataStoreException> {
-            repository.getSyncStatus()
+            repository.getHasUserSyncedContactsStatus()
         }
     }
 
@@ -267,7 +267,7 @@ class ContactsRepositoryImplTest {
     fun `should set user synced state to true when setSyncStatus is called with true`() =
         runTest {
 
-            repository.updateSyncStatus(true)
+            repository.setHasUserSyncedContactsStatus(true)
 
 
             assertThat(mockDataStore.getSyncStatus()).isTrue()
@@ -277,7 +277,7 @@ class ContactsRepositoryImplTest {
     fun `should set user synced state to false when setSyncStatus is called with false`() =
         runTest {
 
-            repository.updateSyncStatus(false)
+            repository.setHasUserSyncedContactsStatus(false)
 
 
             assertThat(mockDataStore.getSyncStatus()).isFalse()
@@ -290,7 +290,7 @@ class ContactsRepositoryImplTest {
 
 
         assertFailsWith<DataStoreException> {
-            repository.updateSyncStatus(true)
+            repository.setHasUserSyncedContactsStatus(true)
         }
     }
 
@@ -300,7 +300,7 @@ class ContactsRepositoryImplTest {
         mockDataStore.setSyncStatus(true)
 
 
-        val result = repository.getSyncStatus()
+        val result = repository.getHasUserSyncedContactsStatus()
 
 
         assertThat(result).isTrue()
@@ -312,7 +312,7 @@ class ContactsRepositoryImplTest {
         mockDataStore.setSyncStatus(false)
 
 
-        val result = repository.getSyncStatus()
+        val result = repository.getHasUserSyncedContactsStatus()
 
 
         assertThat(result).isFalse()
@@ -321,7 +321,7 @@ class ContactsRepositoryImplTest {
     @Test
     fun `should return false when getSyncStatus is not set`() = runTest {
 
-        val result = repository.getSyncStatus()
+        val result = repository.getHasUserSyncedContactsStatus()
 
 
         assertThat(result).isFalse()
@@ -330,7 +330,7 @@ class ContactsRepositoryImplTest {
     @Test
     fun `should set synced state to true when setSyncStatus is called with true`() = runTest {
 
-        repository.updateSyncStatus(true)
+        repository.setHasUserSyncedContactsStatus(true)
 
 
         assertThat(mockDataStore.getSyncStatus()).isTrue()
@@ -340,7 +340,7 @@ class ContactsRepositoryImplTest {
     fun `should set synced state to false when setSyncStatus is called with false`() =
         runTest {
 
-            repository.updateSyncStatus(false)
+            repository.setHasUserSyncedContactsStatus(false)
 
 
             assertThat(mockDataStore.getSyncStatus()).isFalse()

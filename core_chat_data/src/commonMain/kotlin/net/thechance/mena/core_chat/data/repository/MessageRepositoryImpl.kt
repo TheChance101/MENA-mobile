@@ -65,12 +65,12 @@ class MessageRepositoryImpl(
         messageDao.deleteMessage(message.id.toString())
     }
 
-    override fun observeLocalMessages(chatId: Uuid): Flow<List<Message>> {
+    override fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>> {
         val failedEntities = messageDao.getMessagesByChat(chatId.toString())
         return failedEntities.map { it.toDomain() }
     }
 
-    override fun observeMessages(chatId: Uuid?): Flow<Message> {
+    override fun observeMessagesForChatOrAll(chatId: Uuid?): Flow<Message> {
         if (webSocketManager.isConnected().not()) initializeWebsocketConnection()
         return messageFlows.filter { chatId == null || it.chatId == chatId }
     }
@@ -209,7 +209,7 @@ class MessageRepositoryImpl(
         }
     }
 
-    override suspend fun markMessagesAsReadById(chatId: Uuid) {
+   override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
         webSocketManager.sendTextFrame(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
