@@ -49,10 +49,7 @@ class TransactionRepositoryImpl(
         }.firstTransactionDate
     }
 
-    override suspend fun addPendingTransaction(
-        receiverId: Uuid,
-        amount: Double
-    ): Uuid {
+    override suspend fun addPendingTransaction(receiverId: Uuid, amount: Double): Uuid {
         return safeApiCall<Uuid> {
             networkClient.post("$TRANSACTION_PATH$ADD_TRANSACTION") {
                 setBody(

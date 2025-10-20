@@ -17,18 +17,13 @@ class StatementRepositoryImpl(
     private val statementDao: StatementDao
 ) : StatementRepository {
 
-    override suspend fun getStatementWithMetadata(
-        filterRequestParams: TransactionFilterParams?
-    ): StatementWithMetaData {
+    override suspend fun getStatementWithMetadata(filterRequestParams: TransactionFilterParams?): StatementWithMetaData {
         return statementRemoteDataSource
             .getStatementWithMetaData(filterRequestParams)
             .toStatementWithMetaData()
     }
 
-    override suspend fun getStatements(
-        page: Int,
-        pageSize: Int
-    ): List<Statement> {
+    override suspend fun getStatements(page: Int, pageSize: Int): List<Statement> {
         val offset = (page - 1) * pageSize
         return statementDao.getAllStatement(limit = pageSize, offset = offset)
             .map { it.toEntity() }
