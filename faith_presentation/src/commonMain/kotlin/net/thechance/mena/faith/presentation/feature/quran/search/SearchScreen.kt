@@ -42,12 +42,14 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
-import net.thechance.mena.faith.presentation.component.DotSeparator
+import net.thechance.mena.faith.presentation.components.DotSeparator
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.getAyahTextStyle
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -84,7 +86,7 @@ fun SearchScreen(
 
 @Composable
 private fun Content(
-    state: SearchScreenState,
+    state: SearchUiState,
     listener: SearchInteractionListener
 ) {
     Scaffold(topBar = {
@@ -206,7 +208,7 @@ private fun StartOrEmptyState(
 private fun ResultList(
     isNotBlankQuery: Boolean,
     isNotEmptyResult: Boolean,
-    result: List<SearchResult>,
+    result: List<SearchUiState.SearchResult>,
     onSearchClick: (surahId: Int, ayahId: Int) -> Unit
 ) {
     if (isNotBlankQuery && isNotEmptyResult) LazyColumn(
@@ -275,6 +277,50 @@ private fun SurahAndAyaInfo(
             text = stringResource(Res.string.aya, ayaNumber),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.medium,
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun SearchScreenPreview() {
+    QuranTheme {
+        Content(
+            state = SearchUiState(
+                surahId = null,
+                surahName = null,
+                query = "الرحمن",
+                hint = "ابحث في القرآن",
+                searchResult = listOf(
+                    SearchUiState.SearchResult(
+                        surahId = 1,
+                        surahName = "الفاتحة",
+                        number = 3,
+                        content = "الرَّحْمَٰنِ الرَّحِيمِ",
+                        plainContent = "الرحمن الرحيم"
+                    ),
+                    SearchUiState.SearchResult(
+                        surahId = 55,
+                        surahName = "الرحمن",
+                        number = 1,
+                        content = "الرَّحْمَٰنُ",
+                        plainContent = "الرحمن"
+                    ),
+                    SearchUiState.SearchResult(
+                        surahId = 2,
+                        surahName = "البقرة",
+                        number = 163,
+                        content = "وَإِلَٰهُكُمْ إِلَٰهٌ وَاحِدٌ ۖ لَّا إِلَٰهَ إِلَّا هُوَ الرَّحْمَٰنُ الرَّحِيمُ",
+                        plainContent = "والهكم اله واحد لا اله الا هو الرحمن الرحيم"
+                    )
+                )
+            ),
+            listener = object : SearchInteractionListener {
+                override fun onQueryChange(query: String) {}
+                override fun onClearQueryClick() {}
+                override fun onBackClick() {}
+                override fun onSearchResultClick(surahId: Int, ayahId: Int) {}
+            }
         )
     }
 }

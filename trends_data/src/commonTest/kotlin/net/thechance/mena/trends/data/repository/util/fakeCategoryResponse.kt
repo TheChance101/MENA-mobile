@@ -5,7 +5,7 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpStatusCode
 import net.thechance.mena.trends.data.dto.CategoryDto
-import net.thechance.mena.trends.data.dto.PatchUserCategoriesResponse
+import net.thechance.mena.trends.data.dto.UpdateUserCategoriesResponse
 import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UserStatusResponse
 
@@ -38,8 +38,8 @@ internal fun MockRequestHandleScope.isCategoriesAlreadySelectedByUser() = respon
 
 internal fun MockRequestHandleScope.patchUserInterestsResponse() = respond(
     content = jsonSerialization.encodeToString(
-        PatchUserCategoriesResponse.serializer(),
-        PatchUserCategoriesResponse(
+        UpdateUserCategoriesResponse.serializer(),
+        UpdateUserCategoriesResponse(
             updatedCategories = listOf(
                 CategoryDto("uuid2", "Sport", "⚽", true),
                 CategoryDto("uuid3", "tech", "🖥️", true)

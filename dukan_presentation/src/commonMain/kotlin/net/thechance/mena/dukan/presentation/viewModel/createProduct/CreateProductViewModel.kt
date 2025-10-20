@@ -14,7 +14,12 @@ import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_price_invalid
 import mena.dukan_presentation.generated.resources.error_price_not_positive
 import mena.dukan_presentation.generated.resources.error_upload_failed
+import mena.dukan_presentation.generated.resources.invalid_image_format
+import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -44,7 +49,7 @@ class CreateProductViewModel(
         tryToExecute(
             block = shelfRepository::getMyDukanShelves,
             onSuccess = ::onGetShelvesSuccess,
-            onError = ::onErrorSnackBar
+            onError = ::onErrorGettingShelves
         )
     }
 
@@ -92,7 +97,7 @@ class CreateProductViewModel(
     override fun onUploadImageClick(image: ImageFile) {
         tryToExecute(
             block = { onUploadImageBlock(image) },
-            onError = ::onErrorSnackBar
+            onError = ::onErrorUploadingImages
         )
     }
 
@@ -123,6 +128,7 @@ class CreateProductViewModel(
                 imageBitmap = imageBitmap,
                 imageSizeInMegabyte = imageSizeInMegabyte
             )
+
             else -> true
         }
 
@@ -163,7 +169,6 @@ class CreateProductViewModel(
         tryToExecute(
             block = { onCroppedImageBlock(imageBitmap) },
             onSuccess = ::onCroppedImageSuccess,
-            onError = ::onErrorSnackBar
         )
     }
 
@@ -245,13 +250,9 @@ class CreateProductViewModel(
     }
 
     private fun onAddProductSuccess(unit: Unit) {
+        showSnackBar(message = Res.string.add_product_success, type = SnackBarType.SUCCESS)
         updateState {
             copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.add_product_success,
-                    snackBarType = SnackBarType.SUCCESS
-                ),
-                showSnackBar = true,
                 isAddButtonLoading = false,
                 images = images.map { it.copy(imageState = ProductImageState.SUCCESS) },
             )
@@ -260,14 +261,10 @@ class CreateProductViewModel(
     }
 
     private fun onAddProductError(throwable: Throwable) {
+        showSnackBar(message = Res.string.error_general, type = SnackBarType.ERROR)
         updateState {
             copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.error_general,
-                    snackBarType = SnackBarType.ERROR
-                ),
                 images = images.map { it.copy(imageState = ProductImageState.SUCCESS) },
-                showSnackBar = true,
                 isAddButtonLoading = false,
                 isUploadingImageEnabled = true,
                 isTextFieldEnabled = true,
@@ -285,16 +282,22 @@ class CreateProductViewModel(
         }
     }
 
-    private fun onErrorSnackBar(throwable: Throwable) {
-        updateState {
-            copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.error_general,
-                    snackBarType = SnackBarType.ERROR
-                ),
-                showSnackBar = true,
-            )
+    private fun onErrorGettingShelves(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_general
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+    }
+
+    private fun onErrorUploadingImages(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            is UploadingFailedException -> Res.string.error_upload_failed
+            is InvalidImageFormatException -> Res.string.invalid_image_format
+            else -> Res.string.error_general
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun ProductUiState.updateButtonState(): ProductUiState {
@@ -303,15 +306,7 @@ class CreateProductViewModel(
 
     private fun isProductDetailsValid(productErrorMessage: StringResource?): Boolean {
         return if (productErrorMessage != null) {
-            updateState {
-                copy(
-                    snackBarUiState = SnackBarUiState(
-                        message = productErrorMessage,
-                        snackBarType = SnackBarType.ERROR
-                    ),
-                    showSnackBar = true,
-                )
-            }
+            showSnackBar(message = productErrorMessage, type = SnackBarType.ERROR)
             false
         } else {
             true
@@ -326,6 +321,18 @@ class CreateProductViewModel(
             productUiState.description.trim().isEmpty() -> false
             productUiState.images.map { it.image }.isEmpty() -> false
             else -> true
+        }
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                ),
+                showSnackBar = true
+            )
         }
     }
 

@@ -6,7 +6,7 @@ import net.thechance.mena.faith.presentation.navigation.Route
 
 class SearchArgsImpl(
     savedStateHandle: SavedStateHandle,
-) : ISearchArgs {
+) : SearchArgs {
     override val surahId: Int? = savedStateHandle.toRoute<Route.SearchRoute>().surahId
     override val surahName: String? = savedStateHandle.toRoute<Route.SearchRoute>().surahName
 }

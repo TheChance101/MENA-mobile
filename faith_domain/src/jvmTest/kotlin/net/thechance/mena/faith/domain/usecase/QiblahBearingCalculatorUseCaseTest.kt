@@ -94,6 +94,110 @@ class QiblahBearingCalculatorUseCaseTest {
         assertTrue(result in RANGE_ANGLE_START..RANGE_ANGLE_END)
     }
 
+    @Test
+    fun `getShortestAngleDifference should return zero when from and to are same`() {
+        // Given
+        val from = ZERO_ANGLE
+        val to = ZERO_ANGLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertEquals(ZERO_ANGLE, result)
+    }
+
+    @Test
+    fun `getShortestAngleDifference should return positive diff when to is greater than from`() {
+        // Given
+        val from = SMALL_ANGLE
+        val to = MEDIUM_ANGLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertEquals(EXPECTED_DIFF_40, result)
+    }
+
+    @Test
+    fun `getShortestAngleDifference should return negative diff when to is less than from`() {
+        // Given
+        val from = MEDIUM_ANGLE
+        val to = SMALL_ANGLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertEquals(EXPECTED_NEGATIVE_40, result)
+    }
+
+    @Test
+    fun `getShortestAngleDifference should return shortest path when crossing 0 degrees`() {
+        // Given
+        val from = LARGE_ANGLE
+        val to = SMALL_ANGLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertEquals(EXPECTED_DIFF_20, result)
+    }
+
+    @Test
+    fun `getShortestAngleDifference should return shortest path when crossing 360 degrees`() {
+        // Given
+        val from = SMALL_ANGLE
+        val to = LARGE_ANGLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertEquals(EXPECTED_NEGATIVE_20, result)
+    }
+
+    @Test
+    fun `getShortestAngleDifference should handle 180 degree difference`() {
+        // Given
+        val from = ZERO_ANGLE
+        val to = STRAIGHT_ANGLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertTrue(result == STRAIGHT_ANGLE || result == -STRAIGHT_ANGLE)
+    }
+
+    @Test
+    fun `getShortestAngleDifference should handle full circle rotation`() {
+        // Given
+        val from = ZERO_ANGLE
+        val to = FULL_CIRCLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertEquals(ZERO_ANGLE, result)
+    }
+
+    @Test
+    fun `getShortestAngleDifference should handle negative angles`() {
+        // Given
+        val from = NEGATIVE_ANGLE
+        val to = SMALL_ANGLE
+
+        // When
+        val result = calculator.getShortestAngleDifference(from, to)
+
+        // Then
+        assertEquals(EXPECTED_DIFF_20, result)
+    }
+
     private companion object {
         val KAABA_LOCATION = demoLocation(latitude = 21.4225, longitude = 39.8262)
         val GAZA_LOCATION = demoLocation(latitude = 31.5017, longitude = 34.4668)
@@ -118,6 +222,17 @@ class QiblahBearingCalculatorUseCaseTest {
         const val ZERO_LOCATION = 0.0
         const val RANGE_ANGLE_START = 0.0
         const val RANGE_ANGLE_END = 360.0
+        const val ZERO_ANGLE = 0f
+        const val SMALL_ANGLE = 10f
+        const val MEDIUM_ANGLE = 50f
+        const val LARGE_ANGLE = 350f
+        const val STRAIGHT_ANGLE = 180f
+        const val FULL_CIRCLE = 360f
+        const val NEGATIVE_ANGLE = -10f
+        const val EXPECTED_DIFF_40 = 40f
+        const val EXPECTED_DIFF_20 = 20f
+        const val EXPECTED_NEGATIVE_40 = -40f
+        const val EXPECTED_NEGATIVE_20 = -20f
 
         fun demoLocation(latitude: Double = ZERO_LOCATION, longitude: Double = ZERO_LOCATION) =
             Location(latitude = latitude, longitude = longitude)

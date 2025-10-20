@@ -117,7 +117,8 @@ kover.reports {
             classes(
                 "*SyncContactsViewModel*",
                 "*ContactsViewModel*",
-                "*ChatViewModel*"
+                "*ChatViewModel*",
+                "*HomeViewModel*"
             )
         }
     }

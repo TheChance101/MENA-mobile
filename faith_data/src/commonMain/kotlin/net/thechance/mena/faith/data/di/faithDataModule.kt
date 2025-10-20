@@ -7,8 +7,8 @@ import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
 import io.ktor.client.HttpClient
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.QuranDatabase
-import net.thechance.mena.faith.data.datastore.ITilawahDataStore
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
+import net.thechance.mena.faith.data.datastore.TilawahDataStoreImpl
 import net.thechance.mena.faith.data.datastore.createDataStore
 import net.thechance.mena.faith.data.remote.client.NetworkClient
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
@@ -58,6 +58,6 @@ val faithDataModule = module {
     singleOf(::BookmarkRepositoryImpl) bind BookmarkRepository::class
 
     single<DataStore<Preferences>> { createDataStore() }
-    singleOf(::TilawahDataStore) bind ITilawahDataStore::class
+    singleOf(::TilawahDataStoreImpl) bind TilawahDataStore::class
 
 }

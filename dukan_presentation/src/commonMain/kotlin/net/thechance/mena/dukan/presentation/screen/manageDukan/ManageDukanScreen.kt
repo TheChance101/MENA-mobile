@@ -26,7 +26,7 @@ fun ManageDukanScreen(
 
     navController.currentBackStackEntry?.apply {
         ObserveSavedStateEvent<String>(CreateShelfArgs.createShelfSnackBar) { message ->
-            viewModel.onShowSnackBar(
+            viewModel.onShelfAdded(
                 message = Res.string.add_shelf_successfully,
                 type = SnackBarType.SUCCESS
             )

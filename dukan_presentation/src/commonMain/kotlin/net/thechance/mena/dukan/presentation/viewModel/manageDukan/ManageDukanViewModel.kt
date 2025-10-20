@@ -13,7 +13,11 @@ import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.dismiss_description
 import mena.dukan_presentation.generated.resources.dismiss_title
 import mena.dukan_presentation.generated.resources.error_for_delete_shelf
+import mena.dukan_presentation.generated.resources.error_general
+import mena.dukan_presentation.generated.resources.no_internet_message
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.exceptions.DeletionNotAllowedException
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -40,7 +44,7 @@ class ManageDukanViewModel(
         emitEffect(ManageDukanEffect.NavigateBack)
     }
 
-    override fun onShowSnackBar(message: StringResource, type: SnackBarType) {
+    override fun onShelfAdded(message: StringResource, type: SnackBarType) {
         updateState {
             copy(
                 snackBarState = SnackBarUiState(
@@ -97,7 +101,7 @@ class ManageDukanViewModel(
     }
 
     override fun onShelfAddedSuccessfully() {
-        onShowSnackBar(message = Res.string.add_shelf_successfully, type = SnackBarType.SUCCESS)
+        onShelfAdded(message = Res.string.add_shelf_successfully, type = SnackBarType.SUCCESS)
         loadShelves()
     }
 
@@ -222,12 +226,17 @@ class ManageDukanViewModel(
     private fun onDeleteShelfSuccess(unit: Unit) {
         onDismissDeleteShelfConfirmationDialog()
         loadShelves()
-        onShowSnackBar(type = SnackBarType.SUCCESS, message = Res.string.delete_shelf_success)
+        showSnackBar(type = SnackBarType.SUCCESS, message = Res.string.delete_shelf_success)
     }
 
     private fun onDeleteShelfError(throwable: Throwable) {
         onDismissDeleteShelfConfirmationDialog()
-        onShowSnackBar(type = SnackBarType.ERROR, message = Res.string.error_for_delete_shelf)
+        val messageRes = when(throwable){
+            is NoInternetException -> Res.string.no_internet_message
+            is DeletionNotAllowedException -> Res.string.error_for_delete_shelf
+            else -> Res.string.error_general
+        }
+        showSnackBar(type = SnackBarType.ERROR, message = messageRes)
     }
 
     private fun onProductsLoaded(products: PagingData<ProductUiState>) {
@@ -257,6 +266,17 @@ class ManageDukanViewModel(
                     totalProducts = result.totalItems
                 )
             }
+        }
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType){
+        updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    snackBarType = type,
+                    message = message
+                )
+            )
         }
     }
 }

@@ -4,11 +4,15 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.failed_to_create_shelf
+import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.exceptions.ShelfNameTakenException
+import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
+import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
@@ -75,22 +79,14 @@ class CreateShelfViewModel(
     }
 
     private fun onCreateShelfError(throwable: Throwable) {
-        updateState { copy(isLoading = false) }
-        when (throwable) {
-            is ShelfNameTakenException -> {
-                showSnackBar(
-                    message = Res.string.shelf_name_is_already_exist,
-                    type = SnackBarType.ERROR
-                )
-            }
-
-            else -> {
-                showSnackBar(
-                    message = Res.string.something_went_wrong,
-                    type = SnackBarType.ERROR
-                )
-            }
+        val messageRes = when (throwable) {
+            is CreationFailedException -> Res.string.failed_to_create_shelf
+            is DuplicateNameException -> Res.string.shelf_name_is_already_exist
+            is NoInternetException -> Res.string.no_internet_message
+            else -> Res.string.something_went_wrong
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+        updateState { copy(isLoading = false) }
     }
 
     private fun showSnackBar(message: StringResource, type: SnackBarType) {

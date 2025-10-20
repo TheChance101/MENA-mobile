@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import androidx.lifecycle.viewModelScope
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
@@ -10,6 +11,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
@@ -26,11 +28,14 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
+import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import org.jetbrains.compose.resources.StringResource
@@ -40,6 +45,7 @@ import kotlin.uuid.Uuid
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
+    private val messageRepository: MessageRepository,
     private val userRepository: UserRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
@@ -57,7 +63,17 @@ class ChatViewModel(
 
     private var hasResentPendingMessages = false
 
-
+    private val chatHistoryPaginator by lazy {
+        Paginator(
+            initialKey = INITIAL_PAGE,
+            onLoadUpdated = { },
+            onRequest = ::getChatHistory,
+            getNextKey = { currentPage, _ -> currentPage + 1 },
+            onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) },
+            onSuccess = { result, newPage -> onGetChatHistorySuccess(result) },
+            endReached = { _, result -> result.isLastPage }
+        )
+    }
 
     init {
         val chatId = getUuidOrNull(chatArgs.chatId)
@@ -80,7 +96,7 @@ class ChatViewModel(
         }
     }
 
-    private fun getUserInfo(){
+    private fun getUserInfo() {
         tryToExecute(
             execute = { userRepository.getUserInfo() },
             onSuccess = ::onGetUserDataSuccess,
@@ -89,12 +105,17 @@ class ChatViewModel(
     }
 
     private fun onGetUserDataSuccess(user: User) {
-        updateState { state -> state.copy(userData = UserData(
-            firstName = user.firstName,
-            lastName = user.lastName,
-            imageUrl = user.imageUrl.orEmpty()
-        )) }
+        updateState { state ->
+            state.copy(
+                userData = UserData(
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    imageUrl = user.imageUrl.orEmpty()
+                )
+            )
+        }
     }
+
     private fun onGetUserDataError(t: Throwable) {
         showSnackBar(
             titleStringResource = Res.string.error,
@@ -102,6 +123,7 @@ class ChatViewModel(
             isError = true
         )
     }
+
     private fun onGetChatSuccess(chat: Chat) {
         updateState { state ->
             state.copy(
@@ -111,9 +133,9 @@ class ChatViewModel(
             )
         }
 
+        onMessagesScrolled()
         subscribeToNewMessages(chat.id)
         subscribeToPendingMessages(chat.id)
-        loadChatHistory(chat.id)
         observeReadMessages()
     }
 
@@ -151,7 +173,7 @@ class ChatViewModel(
         )
 
         tryToExecute(
-            execute = { chatRepository.sendMessage(message.toEntity()) },
+            execute = { messageRepository.sendMessage(message.toEntity()) },
             onSuccess = { onSendMessageSuccess(message) }
         )
     }
@@ -180,7 +202,7 @@ class ChatViewModel(
         updateState { state -> state.copy(inputMessage = "") }
 
         tryToExecute(
-            execute = { chatRepository.sendMessage(message.toEntity()) },
+            execute = { messageRepository.sendMessage(message.toEntity()) },
             onSuccess = { onSendMessageSuccess(message) }
         )
     }
@@ -208,7 +230,7 @@ class ChatViewModel(
         val failedMessage = state.value.failedMessageToReSend ?: return
 
         tryToExecute(
-            execute = { chatRepository.deleteMessage(failedMessage.toEntity()) },
+            execute = { messageRepository.deleteMessage(failedMessage.toEntity()) },
             onSuccess = { onDeleteFailedMessageSuccess(failedMessage) }
         )
     }
@@ -243,7 +265,7 @@ class ChatViewModel(
 
     private fun subscribeToNewMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { chatRepository.getMessages(chatId) },
+            collect = { messageRepository.getMessages(chatId) },
             onCollect = ::onCollectNewMessage,
             onError = {
                 showSnackBar(
@@ -260,13 +282,13 @@ class ChatViewModel(
 
         newMessages = newMessages.toMutableList().apply { add(0, message) }
         rebuildUiMessages()
-        chatRepository.markMessagesAsRead(message.chatId)
+        messageRepository.markMessagesAsRead(message.chatId)
 
     }
 
     private fun subscribeToPendingMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { chatRepository.getLocalMessages(chatId) },
+            collect = { messageRepository.getLocalMessages(chatId) },
             onCollect = ::onCollectPendingMessages
         )
     }
@@ -286,24 +308,25 @@ class ChatViewModel(
         rebuildUiMessages()
     }
 
-    private fun loadChatHistory(chatId: Uuid) {
-        tryToExecute(
-            execute = { chatRepository.loadMessages(chatId) },
-            onSuccess = ::onLoadChatHistorySuccess,
-            onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) }
+    private suspend fun getChatHistory(page: Int): PagedData<Message> {
+        val chatId = state.value.chatId ?: return PagedData(emptyList(), 0, false)
+        return messageRepository.loadMessages(
+            chatId = chatId,
+            page = page,
+            pageSize = PAGE_SIZE
         )
     }
 
-    private suspend fun onLoadChatHistorySuccess(messages: List<Message>) {
-        messagesHistoryCache = messages
+    private suspend fun onGetChatHistorySuccess(messages: PagedData<Message>) {
+        messagesHistoryCache = messagesHistoryCache.toMutableList().apply { addAll(messages.data) }
         rebuildUiMessages()
-        chatRepository.markMessagesAsRead(state.value.chatId ?: return)
+        messageRepository.markMessagesAsRead(state.value.chatId ?: return)
 
     }
 
     private fun observeReadMessages() {
         tryToCollect(
-            collect = { chatRepository.observeReadMessages() },
+            collect = { messageRepository.observeReadMessages() },
             onCollect = ::onCollectReadMessagesEvent
         )
     }
@@ -422,10 +445,23 @@ class ChatViewModel(
     private fun onCameraPermissionGranted() {
         updateState { it.copy(isCameraOpen = true, isAttachmentsOverlayVisible = false) }
     }
+
     override fun onCameraClosed() {
         updateState { it.copy(isCameraOpen = false) }
     }
+
     override fun onCloseAttachmentClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
+    }
+
+    override fun onMessagesScrolled() {
+        viewModelScope.launch {
+            chatHistoryPaginator.loadNextItems()
+        }
+    }
+
+    companion object {
+        const val PAGE_SIZE = 40
+        const val INITIAL_PAGE = 0
     }
 }
