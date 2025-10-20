@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.statement_details
+package net.thechance.mena.wallet.presentation.screen.statement_details.args
 
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.serialization.json.Json

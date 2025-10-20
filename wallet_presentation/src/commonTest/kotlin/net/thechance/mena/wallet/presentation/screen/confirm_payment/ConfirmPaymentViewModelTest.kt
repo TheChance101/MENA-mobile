@@ -20,6 +20,7 @@ import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,7 +35,7 @@ class ConfirmPaymentViewModelTest {
     private val balanceRepository = mock<BalanceRepository>(mode = MockMode.autofill)
     private val paymentRepository = mock<PaymentRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private val confirmPaymentArgs: ConfirmPaymentArgs = object : ConfirmPaymentArgs{
+    private val confirmPaymentArgs: ConfirmPaymentArgs = object : ConfirmPaymentArgs {
         override val transactionId: String
             get() = receiver1Id.toString()
         override val amount: Double

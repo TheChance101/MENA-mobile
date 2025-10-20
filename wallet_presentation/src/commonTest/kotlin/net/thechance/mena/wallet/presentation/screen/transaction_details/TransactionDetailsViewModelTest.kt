@@ -28,6 +28,7 @@ import net.thechance.mena.wallet.domain.model.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -41,7 +42,7 @@ class TransactionDetailsViewModelTest {
     private val stringProvider = FakeStringProvider()
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private val transactionDetailsArgs : TransactionDetailsArgs = object : TransactionDetailsArgs{
+    private val transactionDetailsArgs : TransactionDetailsArgs = object : TransactionDetailsArgs {
         override val id: String
             get() = transaction1Id.toString()
     }

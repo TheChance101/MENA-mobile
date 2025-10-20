@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.confirm_payment
+package net.thechance.mena.wallet.presentation.screen.confirm_payment.args
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute

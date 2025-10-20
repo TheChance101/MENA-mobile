@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.screen.payment_result.args.PaymentResultArgs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -31,7 +32,7 @@ class PaymentResultViewModelTest {
     private val transactionId1 = Uuid.random()
     private val receiverName1 = "user1"
     private val amount1 = 20.0
-    private val paymentResultArgs = object : PaymentResultArgs{
+    private val paymentResultArgs = object : PaymentResultArgs {
         override val transactionId: String
             get() = transactionId1.toString()
         override val submitTransactionResultStatus: String
