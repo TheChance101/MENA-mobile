@@ -179,9 +179,9 @@ private fun SetupScrollTracking(
         onInitialScrollDone = listener::onInitialAyahScrolled
     )
 
-    HideAyahActionButtonsOnScroll(lazyListState, state, listener)
+    HideAyahActionButtonsOnScroll(lazyListState = lazyListState, state = state, listener = listener)
 
-    InitializeBasmalaTilawahPosition(state, listener)
+    InitializeBasmalaTilawahPosition(state = state, listener = listener)
 }
 
 @Composable
@@ -198,11 +198,14 @@ private fun TrackContinueTilawahPosition(
         snapshotFlow {
             lazyListState.firstVisibleItemIndex to lazyListState.firstVisibleItemScrollOffset
         }.collect { (firstVisibleItemIndex, scrollOffset) ->
-            val chunkIndex = getChunkIndexFromVisibleItem(firstVisibleItemIndex, isBasmalaVisible)
+            val chunkIndex = getChunkIndexFromVisibleItem(
+                visibleItemIndex = firstVisibleItemIndex,
+                isBasmalaVisible = isBasmalaVisible
+            )
 
             val currentTextLayout = textLayoutResult ?: return@collect
 
-            if (canDetermineVisibleAyah(chunkIndex, ayahChunks)) {
+            if (canDetermineVisibleAyah(chunkIndex = chunkIndex, ayahChunks = ayahChunks)) {
                 val chunk = ayahChunks[chunkIndex]
                 val visibleAyahNumber = findFirstVisibleAyahInChunk(
                     chunk = chunk,
@@ -210,7 +213,11 @@ private fun TrackContinueTilawahPosition(
                     scrollOffset = scrollOffset
                 )
 
-                if (isNewAyahVisible(visibleAyahNumber, lastReportedAyahNumber)) {
+                if (isNewAyahVisible(
+                        currentAyahNumber = visibleAyahNumber,
+                        previousAyahNumber = lastReportedAyahNumber
+                    )
+                ) {
                     lastReportedAyahNumber = visibleAyahNumber
                     if (visibleAyahNumber != null)
                         listener.updateContinueTilawah(visibleAyahNumber)
@@ -231,8 +238,15 @@ private fun HandleInitialScroll(
     highlightAyah: (Int) -> Unit,
     onInitialScrollDone: () -> Unit
 ) {
-    HandleBackStackAyahHighlight(selectedAyahIndex, highlightAyah)
-    ScrollToInitialChunk(initialAyahToScroll, isBasmalaVisible, lazyListState)
+    HandleBackStackAyahHighlight(
+        selectedAyahIndex = selectedAyahIndex,
+        highlightAyah = highlightAyah
+    )
+    ScrollToInitialChunk(
+        initialAyahToScroll = initialAyahToScroll,
+        isBasmalaVisible = isBasmalaVisible,
+        lazyListState = lazyListState
+    )
     AnimateScrollToExactAyahPosition(
         textLayoutResult = textLayoutResult,
         initialAyahToScroll = initialAyahToScroll,
@@ -383,14 +397,23 @@ private fun AnimateScrollToExactAyahPosition(
         textLayoutResult,
         initialAyahToScroll
     ) {
-        if (!shouldPerformPreciseScroll(
-                textLayoutResult,
-                initialAyahToScroll
-            )
+        if (!shouldPerformPreciseScroll(textLayoutResult, initialAyahToScroll)
         ) return@LaunchedEffect
-        val targetAyah = findAyahByNumber(chunkAyat, initialAyahToScroll!!) ?: return@LaunchedEffect
-        val lineTopOffset = calculateAyahLineTopOffset(targetAyah, chunkAyat, textLayoutResult!!)
-        val scrollIndex = calculateScrollIndex(targetAyah.number, isBasmalaVisible)
+
+        val targetAyah = findAyahByNumber(chunkAyat = chunkAyat, ayahNumber = initialAyahToScroll!!)
+            ?: return@LaunchedEffect
+
+        val lineTopOffset = calculateAyahLineTopOffset(
+            targetAyah = targetAyah,
+            chunkAyat = chunkAyat,
+            textLayoutResult = textLayoutResult!!
+        )
+
+        val scrollIndex = calculateScrollIndex(
+            ayahNumber = targetAyah.number,
+            isBasmalaVisible = isBasmalaVisible
+        )
+
         coroutineScope.launch {
             lazyListState.animateScrollToItem(
                 index = scrollIndex,

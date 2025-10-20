@@ -38,7 +38,6 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 internal fun SurahAppBar(
     surahName: String,
