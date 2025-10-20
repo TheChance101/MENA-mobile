@@ -17,8 +17,8 @@ import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.Paginator
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.koin.android.annotation.KoinViewModel
@@ -27,8 +27,8 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 class StatementsHistoryViewModel(
     @Provided private val statementRepository: StatementRepository,
-    private val stringProvider: StringProvider,
-    @Provided private val pdfHandler: PdfHandler,
+    @Provided private val stringProvider: StringProvider,
+    @Provided private val fileManager: FileManager,
     private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementsHistoryScreenState, StatementsHistoryEffect>
     (StatementsHistoryScreenState()), StatementsHistoryInteractionListener {
@@ -60,7 +60,7 @@ class StatementsHistoryViewModel(
         val fileLocation = StorageLocation.Downloads(statement.fileName)
 
         tryToExecute(
-            callee = { pdfHandler.checkIfPdfExists(fileLocation) },
+            callee = { fileManager.checkIfFileExists(fileLocation) },
             onSuccess = { fileExists ->
                 if (fileExists) {
                     onViewStatementAvailable(true)
@@ -153,8 +153,8 @@ class StatementsHistoryViewModel(
     private suspend fun deleteStatementPdf(statement: StatementsHistoryScreenState.StatementItem) {
         val fileLocation = StorageLocation.Downloads(statement.fileName)
 
-        if (pdfHandler.checkIfPdfExists(fileLocation)) {
-            pdfHandler.deletePdf(fileLocation)
+        if (fileManager.checkIfFileExists(fileLocation)) {
+            fileManager.deleteFile(fileLocation)
         }
 
         statementRepository.deleteStatementById(statement.id)

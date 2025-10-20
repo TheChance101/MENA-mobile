@@ -34,7 +34,7 @@ import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.jetbrains.compose.resources.StringResource
@@ -47,8 +47,8 @@ import kotlin.time.ExperimentalTime
 class ExportTransactionsViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val statementRepository: StatementRepository,
-    @Provided private val pdfHandler: PdfHandler,
-    private val stringProvider: StringProvider,
+    @Provided private val fileManager: FileManager,
+    @Provided private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
     ExportTransactionsState()
@@ -261,9 +261,10 @@ class ExportTransactionsViewModel(
     private fun saveStatementToCache(statement: StatementWithMetaData) {
         tryToExecute(
             callee = {
-                pdfHandler.savePdf(
-                    byteArray = statement.byteArray,
-                    location = StorageLocation.Cache(getUniqueStatementFileName())
+                fileManager.saveFile(
+                    data = statement.byteArray,
+                    location = StorageLocation.Cache(getUniqueStatementFileName()),
+                    mimeType = MIMETYPE_PDF
                 )
             },
             onSuccess = ::onSaveStatementToCacheSuccess,
@@ -341,9 +342,10 @@ class ExportTransactionsViewModel(
     private fun downloadStatement(statement: StatementWithMetaData) {
         tryToExecute(
             callee = {
-                pdfHandler.savePdf(
-                    byteArray = statement.byteArray,
-                    location = StorageLocation.Downloads(getUniqueStatementFileName())
+                fileManager.saveFile(
+                    data = statement.byteArray,
+                    location = StorageLocation.Downloads(getUniqueStatementFileName()),
+                    mimeType = MIMETYPE_PDF
                 )
             },
             onSuccess = { filePath -> onDownloadSuccess(filePath, statement) },
@@ -513,5 +515,8 @@ class ExportTransactionsViewModel(
         return this
             ?.takeIf { it.isNotEmpty() }
             ?.let { LocalDate.parse(it, formatter) }
+    }
+    private companion object {
+        const val MIMETYPE_PDF = "application/pdf"
     }
 }

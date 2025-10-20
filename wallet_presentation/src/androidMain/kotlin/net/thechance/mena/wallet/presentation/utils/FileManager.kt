@@ -9,13 +9,17 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Single
+import org.koin.core.context.GlobalContext
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 
-class FileManager(private val context: Context) {
+@Single
+actual class FileManagerImpl : FileManager {
+    private val context = GlobalContext.get().get<Context>()
 
-    suspend fun saveFile(
+    actual override suspend fun saveFile(
         data: ByteArray,
         location: StorageLocation,
         mimeType: String
@@ -26,14 +30,14 @@ class FileManager(private val context: Context) {
         }
     }
 
-    suspend fun readFile(location: StorageLocation): ByteArray = withContext(Dispatchers.IO) {
+    actual override suspend fun readFile(location: StorageLocation): ByteArray = withContext(Dispatchers.IO) {
         when (location) {
             is StorageLocation.Cache -> readFromCache(location.fileName)
             is StorageLocation.Downloads -> readFromDownloads(location.fileName)
         }
     }
 
-    suspend fun deleteFile(location: StorageLocation){
+    actual override suspend fun deleteFile(location: StorageLocation){
         withContext(Dispatchers.IO) {
             when (location) {
                 is StorageLocation.Cache -> deleteFromCache(location.fileName)
@@ -42,7 +46,7 @@ class FileManager(private val context: Context) {
         }
     }
 
-    suspend fun checkIfFileExists(location: StorageLocation): Boolean = withContext(Dispatchers.IO) {
+    actual override suspend fun checkIfFileExists(location: StorageLocation): Boolean = withContext(Dispatchers.IO) {
         when (location) {
             is StorageLocation.Cache -> checkIfCacheFileExists(location.fileName)
             is StorageLocation.Downloads -> checkIfDownloadFileExists(location.fileName)
