@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
-data class ProductDto @OptIn(ExperimentalUuidApi::class) constructor(
+data class ProductDto(
     @SerialName("id")
     val id: Uuid,
 

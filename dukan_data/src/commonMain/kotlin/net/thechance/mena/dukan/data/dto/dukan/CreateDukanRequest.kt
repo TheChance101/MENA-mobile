@@ -5,8 +5,9 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
-data class CreateDukanRequest @OptIn(ExperimentalUuidApi::class) constructor(
+data class CreateDukanRequest(
     @SerialName("name")
     val name: String,
     @SerialName("categoryIds")

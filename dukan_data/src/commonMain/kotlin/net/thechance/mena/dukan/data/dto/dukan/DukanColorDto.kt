@@ -11,8 +11,9 @@ data class DukanColorsResponse(
     val colors: List<DukanColorDto>,
 )
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
-data class DukanColorDto @OptIn(ExperimentalUuidApi::class) constructor(
+data class DukanColorDto(
     @SerialName("id")
     val id: Uuid,
     @SerialName("hexCode")

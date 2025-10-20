@@ -12,8 +12,9 @@ data class DukanCategoryResponse(
     val categories: List<DukanCategoryDto>
 )
 
+@OptIn(ExperimentalUuidApi::class)
 @Serializable
-data class DukanCategoryDto @OptIn(ExperimentalUuidApi::class) constructor(
+data class DukanCategoryDto(
     @SerialName("id")
     val id: Uuid,
     @SerialName("title")
