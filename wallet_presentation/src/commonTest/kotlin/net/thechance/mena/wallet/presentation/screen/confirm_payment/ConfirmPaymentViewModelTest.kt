@@ -34,6 +34,13 @@ class ConfirmPaymentViewModelTest {
     private val balanceRepository = mock<BalanceRepository>(mode = MockMode.autofill)
     private val paymentRepository = mock<PaymentRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
+    private val confirmPaymentArgs: ConfirmPaymentArgs = object : ConfirmPaymentArgs{
+        override val transactionId: String
+            get() = receiver1Id.toString()
+        override val amount: Double
+            get() = amount1
+
+    }
 
     @BeforeTest
     fun setup() {
@@ -51,13 +58,7 @@ class ConfirmPaymentViewModelTest {
             everySuspend { balanceRepository.getBalance() } returns balance1
             everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
-            val viewModel = ConfirmPaymentViewModel(
-                args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                balanceRepository = balanceRepository,
-                transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(1)
@@ -73,13 +74,7 @@ class ConfirmPaymentViewModelTest {
             everySuspend { balanceRepository.getBalance() } returns balance1
             everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
-            val viewModel = ConfirmPaymentViewModel(
-                args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                balanceRepository = balanceRepository,
-                transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(2)
@@ -98,13 +93,7 @@ class ConfirmPaymentViewModelTest {
             everySuspend { balanceRepository.getBalance() } returns balance1
             everySuspend { transactionRepository.getTransactionReceiver(any()) } returns transactionReceiver1
 
-            val viewModel = ConfirmPaymentViewModel(
-                args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                balanceRepository = balanceRepository,
-                transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(4)
@@ -125,13 +114,7 @@ class ConfirmPaymentViewModelTest {
             everySuspend { balanceRepository.getBalance() } throws expectedError
             everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
-            val viewModel = ConfirmPaymentViewModel(
-                args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                balanceRepository = balanceRepository,
-                transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(3)
@@ -149,13 +132,7 @@ class ConfirmPaymentViewModelTest {
             everySuspend { balanceRepository.getBalance() } returns balance1
             everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } throws expectedError
 
-            val viewModel = ConfirmPaymentViewModel(
-                args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-                balanceRepository = balanceRepository,
-                transactionRepository = transactionRepository,
-                paymentRepository = paymentRepository,
-                ioDispatcher = testDispatcher
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(4)
@@ -170,13 +147,7 @@ class ConfirmPaymentViewModelTest {
         everySuspend { balanceRepository.getBalance() } returns balance1
         everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
-        val viewModel = ConfirmPaymentViewModel(
-            args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-            balanceRepository = balanceRepository,
-            transactionRepository = transactionRepository,
-            paymentRepository = paymentRepository,
-            ioDispatcher = testDispatcher
-        )
+        val viewModel = viewmodelSetup()
 
         viewModel.uiEffect.test {
             viewModel.onBackButtonClicked()
@@ -189,13 +160,7 @@ class ConfirmPaymentViewModelTest {
         everySuspend { balanceRepository.getBalance() } returns balance1
         everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
-        val viewModel = ConfirmPaymentViewModel(
-            args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
-            balanceRepository = balanceRepository,
-            transactionRepository = transactionRepository,
-            paymentRepository = paymentRepository,
-            ioDispatcher = testDispatcher
-        )
+        val viewModel = viewmodelSetup()
 
         viewModel.state.test {
             skipItems(3)
@@ -205,6 +170,14 @@ class ConfirmPaymentViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    private fun viewmodelSetup() = ConfirmPaymentViewModel(
+            args = confirmPaymentArgs,
+            balanceRepository = balanceRepository,
+            transactionRepository = transactionRepository,
+            paymentRepository = paymentRepository,
+            ioDispatcher = testDispatcher
+        )
 
     private companion object {
         val receiver1Id = Uuid.random()

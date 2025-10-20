@@ -5,7 +5,6 @@ package net.thechance.mena.wallet.presentation.navigation.route
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
 import kotlin.uuid.ExperimentalUuidApi
@@ -25,8 +24,6 @@ fun NavGraphBuilder.confirmPaymentScreenRoute(navController: NavController){
     composable<ConfirmPaymentScreenRoute> { backStackEntry ->
         ConfirmPaymentScreen(
             onNavigateBackClicked = navController::popBackStack,
-            transactionId = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().transactionId,
-            amount = backStackEntry.toRoute<ConfirmPaymentScreenRoute>().amount,
             navigateToPaymentResultScreen = { receiverName, amount, transactionId, submitTransactionResultStatus ->
                 navController.navigate(
                     PaymentResultScreenRoute(
