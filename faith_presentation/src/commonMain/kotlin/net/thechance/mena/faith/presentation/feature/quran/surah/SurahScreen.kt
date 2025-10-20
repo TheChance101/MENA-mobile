@@ -316,8 +316,8 @@ private fun AyahList(
 }
 
 @Composable
-private fun rememberPreRenderedChunks(ayahChunks: List<List<Ayah>>) =
-    remember(ayahChunks) {
+private fun rememberPreRenderedChunks(ayahChunks: List<List<Ayah>>): List<AnnotatedString> {
+    return remember(ayahChunks) {
         ayahChunks.map { chunk ->
             buildAnnotatedString {
                 chunk.forEachIndexed { index, ayah ->
@@ -327,7 +327,7 @@ private fun rememberPreRenderedChunks(ayahChunks: List<List<Ayah>>) =
             }
         }
     }
-
+}
 
 @Composable
 private fun HandleBackStackAyahHighlight(
