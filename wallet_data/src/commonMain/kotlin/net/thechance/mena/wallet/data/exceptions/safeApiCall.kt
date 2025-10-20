@@ -4,6 +4,8 @@ import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.isSuccess
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
@@ -11,24 +13,32 @@ import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 
 suspend inline fun <reified T> safeApiCall(
-    crossinline execute: suspend () -> HttpResponse
+    noinline execute: suspend () -> HttpResponse
 ): T {
-    val response = try {
+    val response = executeRequest(execute)
+    return handleResponse(response)
+}
+
+suspend fun executeRequest(execute: suspend () -> HttpResponse): HttpResponse {
+    return try {
         execute()
     } catch (e: IOException) {
-        throw NoInternetException(e.message ?: "")
+        throw NoInternetException(e.message.orEmpty())
     } catch (e: Exception) {
-        throw UnknownException(e.message ?: "")
+        throw UnknownException(e.message.orEmpty())
     }
-    if (response.status.value == StatusCodes.NO_CONTENT) {
-        throw NoDataFoundException("No Data Found: " + parseErrorMessage(response))
-    }
-    return when (response.status.value) {
-        in StatusCodes.SUCCESS_START..StatusCodes.SUCCESS_END -> parseBody<T>(response)
-        StatusCodes.UNAUTHORIZED -> throw UnknownException("Unauthorized: " + parseErrorMessage(response))
-        StatusCodes.REQUEST_TIMEOUT -> throw UnknownException("Request timeout: " + parseErrorMessage(response))
-        StatusCodes.TOO_MANY_REQUESTS -> throw UnknownException("Too many requests: " + parseErrorMessage(response))
-        in StatusCodes.SERVER_ERROR_START..StatusCodes.SERVER_ERROR_END -> throw UnknownException("Server error: " + parseErrorMessage(response))
+}
+
+suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
+    if (response.status.value == HttpStatusCode.NoContent.value) throw NoDataFoundException("No Data Found: " + parseErrorMessage(response))
+
+    if (response.status.isSuccess()) { return parseBody<T>(response)}
+
+    when (response.status) {
+        HttpStatusCode.Unauthorized -> throw UnknownException("Unauthorized: " + parseErrorMessage(response))
+        HttpStatusCode.RequestTimeout -> throw UnknownException("Request timeout: " + parseErrorMessage(response))
+        HttpStatusCode.TooManyRequests -> throw UnknownException("Too many requests: " + parseErrorMessage(response))
+        in getServerErrorRange() -> throw UnknownException("Server error: " + parseErrorMessage(response))
         else -> throw UnknownException(parseErrorMessage(response))
     }
 }
@@ -39,9 +49,9 @@ suspend inline fun <reified T> parseBody(response: HttpResponse): T {
     }
     return try {
         response.body()
-    } catch (e: SerializationException) {
+    } catch (_: SerializationException) {
         throw UnknownException("Error parsing response")
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         throw UnknownException("Unexpected error parsing response")
     }
 }
@@ -49,18 +59,9 @@ suspend inline fun <reified T> parseBody(response: HttpResponse): T {
 suspend fun parseErrorMessage(response: HttpResponse): String {
     return try {
         response.body<ErrorDto>().message ?: "Unexpected error"
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         "Unexpected error"
     }
 }
 
-object StatusCodes {
-    const val NO_CONTENT = 204
-    const val UNAUTHORIZED = 401
-    const val REQUEST_TIMEOUT = 408
-    const val TOO_MANY_REQUESTS = 429
-    const val SERVER_ERROR_START = 500
-    const val SERVER_ERROR_END = 599
-    const val SUCCESS_START = 200
-    const val SUCCESS_END = 299
-}
+fun getServerErrorRange() = HttpStatusCode.InternalServerError..HttpStatusCode.InsufficientStorage
