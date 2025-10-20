@@ -34,7 +34,6 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.model.PagedData
-import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
@@ -86,7 +85,7 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update chat list when its loaded messages successfully`() {
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns messages
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(messages)
         every { messageRepository.getMessages(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
         everySuspend {
@@ -122,7 +121,8 @@ class ChatViewModelTest {
         every { messageRepository.observeReadMessages() } returns flowOf()
         everySuspend {
             messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(emptyList(), 80, false)        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        } returns PagedData(emptyList(), 80, false)
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
 
         val chatViewModel = createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -137,7 +137,7 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update user data when receive user data from repository`() {
-        everySuspend {userRepository.getUserInfo() } returns user
+        everySuspend { userRepository.getUserInfo() } returns user
 
         val chatViewModel = createViewModel()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -229,7 +229,8 @@ class ChatViewModelTest {
 
     @Test
     fun `onResendMessageClick should remove the failed message when resend message success`() {
-        val failedMessage = messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+        val failedMessage =
+            messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
         chatViewModel.onFailedMessageClicked(failedMessage)
         everySuspend { messageRepository.sendMessage(any()) } returns Unit
 
@@ -301,12 +302,12 @@ class ChatViewModelTest {
         chatViewModel.onCameraClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        verifySuspend {permissionsController.providePermission(permission = Permission.CAMERA)}
+        verifySuspend { permissionsController.providePermission(permission = Permission.CAMERA) }
     }
 
     @Test
     fun `onCameraClicked should open camera when permission is granted`() {
-        everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} returns Unit
+        everySuspend { permissionsController.providePermission(permission = Permission.CAMERA) } returns Unit
 
         chatViewModel.onCameraClicked()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -316,7 +317,9 @@ class ChatViewModelTest {
 
     @Test
     fun `onCameraClicked should not open camera when camera permission is denied`() {
-        everySuspend {  permissionsController.providePermission(permission = Permission.CAMERA)} throws DeniedException(Permission.CAMERA)
+        everySuspend { permissionsController.providePermission(permission = Permission.CAMERA) } throws DeniedException(
+            Permission.CAMERA
+        )
 
         chatViewModel.onCameraClicked()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -325,7 +328,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun`onCameraClosed should close camera when called`() {
+    fun `onCameraClosed should close camera when called`() {
         chatViewModel.onCameraClosed()
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -339,8 +342,17 @@ class ChatViewModelTest {
 
 
     private fun createViewModel(): ChatViewModel {
-        return ChatViewModel(repository, userRepository, chatArgs, effector, permissionsController, testDispatcher)
+        return ChatViewModel(
+            chatRepository,
+            messageRepository,
+            userRepository,
+            chatArgs,
+            effector,
+            permissionsController,
+            testDispatcher
+        )
     }
+
     private companion object {
 
         val user: User = User(
