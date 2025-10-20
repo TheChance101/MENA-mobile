@@ -109,7 +109,6 @@
     <string name="location_saved_empty_desc">No saved locations icon</string>
 
 
-
     <string name="address_type_home">Home</string>
     <string name="address_type_office">Office</string>
     <string name="address_type_other">Other</string>
@@ -151,7 +150,20 @@
     <string name="month_november">November</string>
     <string name="month_december">December</string>
 
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="username">Username</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="save_changes">Save changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="gender">Gender</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="version">version</string>
+    <string name="ok">Ok</string>
 
+    <string name="pick_location_title">Pick Location</string>
+
+    <!-- //Error Messages -->
     <string name="error_invalid_country_code">Invalid country code</string>
     <string name="error_invalid_mobile_number">Invalid mobile number</string>
     <string name="error_invalid_password">Invalid password</string>
@@ -166,17 +178,15 @@
     <string name="error_too_many_requests">Too many requests. Please try again later.</string>
     <string name="error_otp_expired">OTP expired</string>
     <string name="error_no_network">No Internet Connection</string>
-
-    <string name="first_name">First name</string>
-    <string name="last_name">Last name</string>
-    <string name="username">Username</string>
-    <string name="date_of_birth">Date of birth</string>
-    <string name="save_changes">Save changes</string>
-    <string name="cancel">Cancel</string>
-    <string name="gender">Gender</string>
-    <string name="dismiss">Dismiss</string>
-    <string name="version">version</string>
-    <string name="ok">Ok</string>
-
-    <string name="pick_location_title">Pick Location</string>
+    <string name="error_no_internet_connection">No Internet Connection</string>
+    <string name="error_failed_to_open_settings">Failed to open settings</string>
+    <string name="error_permission_not_granted">Permission not granted</string>
+    <string name="error_address_not_found">Address not found</string>
+    <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
+    <string name="error_location_is_turned_off">"Location is turned off"</string>
+    <string name="error_username_required">Please enter the Username field</string>
+    <string name="error_firstname_required">Please enter the First name field</string>
+    <string name="error_lastname_required">Please enter the Last name field</string>
+    <string name="error_password_mismatch">New password and confirm password do not match.</string>
+    <string name="error_camera_permission_required">Camera permission required</string>
 </resources>

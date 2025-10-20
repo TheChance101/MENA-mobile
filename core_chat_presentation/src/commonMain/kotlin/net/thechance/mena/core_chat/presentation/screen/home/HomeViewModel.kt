@@ -15,6 +15,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
@@ -33,6 +34,7 @@ import kotlin.uuid.ExperimentalUuidApi
 class HomeViewModel(
     private val contactsRepository: ContactsRepository,
     private val chatRepository: ChatRepository,
+    private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
     effector: ChatEffector
 ) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector), HomeScreenInteractionListener {
@@ -58,7 +60,7 @@ class HomeViewModel(
 
     private fun listenToMarkAsReadEvent() {
         tryToCollect(
-            collect = { chatRepository.observeReadMessages() },
+            collect = { messageRepository.observeReadMessages() },
             onCollect = ::onCollectMarkAsReadEvent,
             onError = { },
         )
@@ -78,7 +80,7 @@ class HomeViewModel(
 
     private fun listenToIncomingMessages() {
         tryToCollect(
-            collect = { chatRepository.getMessages() },
+            collect = {messageRepository.getMessages() },
             onCollect = ::onCollectMessage,
             onError = { },
         )

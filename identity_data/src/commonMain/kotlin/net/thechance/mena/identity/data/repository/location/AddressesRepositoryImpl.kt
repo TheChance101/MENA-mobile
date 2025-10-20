@@ -1,0 +1,100 @@
+package net.thechance.mena.identity.data.repository.location
+
+import dev.jordond.compass.Priority
+import dev.jordond.compass.geolocation.Geolocator
+import dev.jordond.compass.geolocation.GeolocatorResult
+import dev.jordond.compass.geolocation.MobileGeolocator
+import io.ktor.client.HttpClient
+import net.thechance.mena.identity.data.dto.addresses.AddressResponseDto
+import net.thechance.mena.identity.data.mapper.toDto
+import net.thechance.mena.identity.data.mapper.toEntity
+import net.thechance.mena.identity.data.utils.deleteJson
+import net.thechance.mena.identity.data.utils.getJson
+import net.thechance.mena.identity.data.utils.postJson
+import net.thechance.mena.identity.data.utils.putJson
+import net.thechance.mena.identity.data.utils.safeWrapper
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.exception.AddressNotFoundException
+import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
+import net.thechance.mena.identity.domain.repository.AddressesRepository
+import net.thechance.mena.identity.domain.util.Coordinates
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@OptIn(ExperimentalUuidApi::class)
+
+class AddressesRepositoryImpl(
+    private val client: HttpClient,
+    private val geocoder: GeocoderWrapper,
+) : AddressesRepository {
+
+    override suspend fun createAddress(address: Address) {
+        return safeWrapper {
+            client.postJson(
+                requestDto = address.toDto(),
+                path = ADDRESS_ENDPOINT
+            )
+
+        }
+    }
+
+    override suspend fun editAddress(address: Address) {
+        return safeWrapper {
+            client.putJson(
+                requestDto = address.toDto(),
+                path = "$ADDRESS_ENDPOINT/${address.id.toString()}"
+            )
+        }
+
+    }
+
+    override suspend fun getUserAddresses(): List<Address> {
+        return safeWrapper<List<AddressResponseDto>> {
+            client.getJson(ADDRESS_ENDPOINT)
+        }.map { it.toEntity() }
+    }
+
+    override suspend fun deleteAddress(addressId: Uuid) = safeWrapper {
+        client.deleteJson(
+            path = "$DELETE_LOCATION_ENDPOINT/$addressId",
+            queryParams = mapOf(ADDRESS_ID to addressId.toString())
+        )
+    }
+
+    override suspend fun getActiveAddress(): Address? {
+        return getUserAddresses().firstOrNull { it.isActive }
+    }
+
+    override suspend fun getCurrentLocation(): Coordinates? {
+        val geolocator: Geolocator = MobileGeolocator()
+        return when (val result = geolocator.current(Priority.HighAccuracy)) {
+            is GeolocatorResult.Error -> {
+                throw UnableToFindLocationException()
+            }
+
+            is GeolocatorResult.Success -> {
+                val location = result.data
+                Coordinates(
+                    latitude = location.coordinates.latitude,
+                    longitude = location.coordinates.longitude
+                )
+            }
+        }
+    }
+
+    override suspend fun getLocationName(
+        coordinates: Coordinates,
+    ): String {
+        val geocoder = geocoder.placeOrNull(coordinates)
+        return geocoder?.let {
+            listOfNotNull(it.subAdministrativeArea, it.administrativeArea, it.country)
+                .joinToString(", ")
+        }?: throw AddressNotFoundException()
+    }
+
+    companion object {
+        const val ADDRESS_ENDPOINT = "identity/addresses"
+        const val DELETE_LOCATION_ENDPOINT = "identity/addresses"
+        const val ADDRESS_ID = "id"
+    }
+}

@@ -2,18 +2,14 @@ package net.thechance.mena.dukan.presentation.screen.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,9 +49,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
-val categorySectionItemKey = "0"
-val bestAroundSectionItemKey = "1"
-val editorPickSectionItemKey = "2"
+const val categorySectionItemKey = "0"
+const val bestAroundSectionItemKey = "1"
+const val editorPickSectionItemKey = "2"
+
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = koinViewModel()
@@ -118,20 +115,19 @@ private fun MainContent(
         },
     ) {
 
-        var isEditorPickSectionScrollingEnabled by remember { mutableStateOf(false) }
         val mainListState = rememberLazyListState()
-        LaunchedEffect(mainListState) {
+
+
+        val isBestAroundVisible by remember {
             snapshotFlow {
                 mainListState.layoutInfo.visibleItemsInfo.any { it.key == bestAroundSectionItemKey }
             }.distinctUntilChanged()
-                .collect { isBestAroundVisible ->
-                    isEditorPickSectionScrollingEnabled = !isBestAroundVisible
-                }
-        }
-        LazyColumn (
+        }.collectAsStateWithLifecycle(initialValue = false)
+
+        LazyColumn(
             state = mainListState
-        ){
-            item(categorySectionItemKey){
+        ) {
+            item(categorySectionItemKey) {
                 Text(
                     text = stringResource(Res.string.what_do_you_need),
                     style = Theme.typography.title.small,
@@ -149,7 +145,7 @@ private fun MainContent(
                 )
             }
 
-            item(bestAroundSectionItemKey){
+            item(bestAroundSectionItemKey) {
                 if (state.bestNearestDukans.items.isNotEmpty()) {
                     Text(
                         text = stringResource(Res.string.best_dukans_around_you),
@@ -170,7 +166,7 @@ private fun MainContent(
                 )
             }
 
-            item(editorPickSectionItemKey){
+            item(editorPickSectionItemKey) {
                 Text(
                     stringResource(Res.string.editor_pick_dukans),
                     style = Theme.typography.title.small,
@@ -186,7 +182,7 @@ private fun MainContent(
                     state = state,
                     onDukanClick = listener::onEditorPickDukanClick,
                     pager = editorPickDukanPager,
-                    isScrollingEnabled = isEditorPickSectionScrollingEnabled
+                    isScrollingEnabled = isBestAroundVisible.not()
                 )
             }
 

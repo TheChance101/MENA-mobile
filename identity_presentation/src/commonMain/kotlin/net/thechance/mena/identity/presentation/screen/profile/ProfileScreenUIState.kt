@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
+import org.jetbrains.compose.resources.StringResource
+
 data class ProfileScreenUIState(
     val fullName:String = "",
     val userName:String = "",
@@ -10,5 +12,5 @@ data class ProfileScreenUIState(
     val versionNumber:String? = null,
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val errorMessage:String? = null,
+    val errorMessage: StringResource? = null,
 )

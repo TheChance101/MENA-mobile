@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinx.serialization)
@@ -6,10 +8,8 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 }
-
 kotlin {
     androidTarget()
-    jvm()
 
     listOf(
         iosX64(),
@@ -25,8 +25,6 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.room.sqlite.wrapper)
-            implementation(libs.bundles.geoCoder)
-            implementation(libs.bundles.geoLocation)
         }
         commonMain.dependencies {
             implementation(projects.identityDomain)
@@ -39,11 +37,11 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.bundles.geoCoder)
+            implementation(libs.bundles.geoLocation)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-            implementation(libs.bundles.geoCoder)
-            implementation(libs.bundles.geoLocation)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -51,9 +49,6 @@ kotlin {
         androidUnitTest.dependencies {
             implementation(libs.bundles.geoCoder)
             implementation(libs.bundles.geoLocation)
-            implementation(libs.bundles.jvm.test)
-        }
-        jvmTest.dependencies {
             implementation(libs.bundles.jvm.test)
         }
     }

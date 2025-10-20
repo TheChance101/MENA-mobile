@@ -19,7 +19,6 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -36,6 +35,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
@@ -49,7 +49,8 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalCoroutinesApi::class)
 class ChatViewModelTest {
-    private val repository = mock<ChatRepository>()
+    private val chatRepository = mock<ChatRepository>()
+    private val messageRepository = mock<MessageRepository>()
     private val userRepository = mock<UserRepository>()
     private val chatArgs = mock<ChatArgs>()
     private val permissionsController = mock<PermissionsController>()
@@ -65,20 +66,24 @@ class ChatViewModelTest {
         every { chatArgs.chatId } returns chatId.toString()
         every { chatArgs.chatName } returns chatName
 
-        everySuspend { repository.getChatById(chatId) } returns mockChat
+        everySuspend { chatRepository.getChatById(chatId) } returns mockChat
         everySuspend {
-            repository.loadMessages(
+            messageRepository.loadMessages(
                 chatId,
                 any(),
                 any()
             )
-        } returns PagedData(emptyList(), 0, true)
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns flowOf()
-        every { repository.observeReadMessages() } returns flowOf()
+        } returns PagedData(emptyList(), 0, true) everySuspend {
+            messageRepository.getLocalMessages(
+                chatId
+            )
+        } returns flowOf(emptyList())
+        every { messageRepository.getMessages(chatId) } returns flowOf()
+        every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(
-            repository,
+            chatRepository,
+            messageRepository,
             userRepository,
             chatArgs,
             effector,
@@ -95,19 +100,18 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update chat list when its loaded messages successfully`() {
-        everySuspend { repository.getChatById(chatId) } returns mockChat
-        everySuspend { repository.loadMessages(chatId, 0, 40) } returns PagedData(
+        everySuspend { chatRepository.getChatById(chatId) } returns mockChat
+        everySuspend { messageRepository.loadMessages(chatId, 0, 40) } returns PagedData(
             messages,
             messages.size,
             false
-        )
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns emptyFlow()
-        every { repository.observeReadMessages() } returns emptyFlow()
-        everySuspend { repository.markMessagesAsRead(any()) } returns Unit
+        ) everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.getMessages(chatId) } returns flowOf()
+        every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(
-            repository,
+            chatRepository,
+            messageRepository,
             userRepository,
             chatArgs,
             effector,
@@ -122,17 +126,17 @@ class ChatViewModelTest {
         ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
     }
 
-
     @Test
     fun `init should send snack bar effect when its LOADING the messages failed`() {
-        everySuspend { repository.getChatById(chatId) } returns mockChat
-        everySuspend { repository.loadMessages(chatId, any(), any()) } throws Exception()
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns flowOf()
-        every { repository.observeReadMessages() } returns flowOf()
+        everySuspend { chatRepository.getChatById(chatId) } returns mockChat
+        everySuspend { messageRepository.loadMessages(chatId, any(), any()) } throws Exception()
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.getMessages(chatId) } returns flowOf()
+        every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(
-            repository,
+            chatRepository,
+            messageRepository,
             userRepository,
             chatArgs,
             effector,
@@ -153,20 +157,21 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update uiMessage and chatListItems when receive new message`() {
-        everySuspend { repository.getChatById(chatId) } returns mockChat
+        everySuspend { chatRepository.getChatById(chatId) } returns mockChat
         everySuspend {
-            repository.loadMessages(
+            messageRepository.loadMessages(
                 chatId,
                 any(),
                 any()
             )
         } returns PagedData(emptyList(), 80, false)
-        everySuspend { repository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { repository.getMessages(chatId) } returns flowOf(messages.first())
-        every { repository.observeReadMessages() } returns flowOf()
+        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.getMessages(chatId) } returns flowOf(messages.first())
+        every { messageRepository.observeReadMessages() } returns flowOf()
 
         chatViewModel = ChatViewModel(
-            repository,
+            chatRepository,
+            messageRepository,
             userRepository,
             chatArgs,
             effector,
@@ -183,12 +188,14 @@ class ChatViewModelTest {
         )
     }
 
+
     @Test
     fun `init should update user data when receive user data from repository`() {
 
         everySuspend { userRepository.getUserInfo() } returns user
         chatViewModel = ChatViewModel(
-            repository,
+            chatRepository,
+            messageRepository,
             userRepository,
             chatArgs,
             effector,
@@ -241,7 +248,7 @@ class ChatViewModelTest {
                 inputMessage = inputMessage
             )
         }
-        everySuspend { repository.sendMessage(any()) } returns Unit
+        everySuspend { messageRepository.sendMessage(any()) } returns Unit
 
         chatViewModel.onSendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -260,7 +267,7 @@ class ChatViewModelTest {
             )
         }
 
-        everySuspend { repository.sendMessage(any()) } throws Exception("Send failed")
+        everySuspend { messageRepository.sendMessage(any()) } throws Exception("Send failed")
 
         chatViewModel.onSendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -293,7 +300,7 @@ class ChatViewModelTest {
             )
         }
 
-        everySuspend { repository.deleteMessage(any()) } returns Unit
+        everySuspend { messageRepository.deleteMessage(any()) } returns Unit
 
         chatViewModel.onDeleteFailedMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -315,14 +322,14 @@ class ChatViewModelTest {
             )
         }
 
-        everySuspend { repository.sendMessage(any()) } returns Unit
+        everySuspend { messageRepository.sendMessage(any()) } returns Unit
 
         chatViewModel.onResendMessageClicked()
         testDispatcher.scheduler.advanceUntilIdle()
 
         val finalMessages = chatViewModel.state.value.chatListItems.currentUiMessages()
         assertThat(finalMessages.isEmpty()).isTrue()
-        verifySuspend { repository.sendMessage(any()) }
+        verifySuspend { messageRepository.sendMessage(any()) }
     }
 
     @Test
@@ -375,19 +382,19 @@ class ChatViewModelTest {
 
     @Test
     fun `onDownloadImageClicked should call repository and show success snackbar on success`() {
-        everySuspend { repository.downloadImage(imageUrl) } returns Unit
+        everySuspend { chatRepository.downloadImage(imageUrl) } returns Unit
 
         chatViewModel.onDownloadImageClicked(imageUrl)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        verifySuspend { repository.downloadImage(imageUrl) }
+        verifySuspend { chatRepository.downloadImage(imageUrl) }
         verifySuspend { effector.showSnackBar(any()) }
     }
 
     @Test
     fun `onDownloadImageClicked should show error snackbar on failure`() {
 
-        everySuspend { repository.downloadImage(imageUrl) } throws Exception()
+        everySuspend { chatRepository.downloadImage(imageUrl) } throws Exception()
 
         chatViewModel.onDownloadImageClicked(imageUrl)
         testDispatcher.scheduler.advanceUntilIdle()

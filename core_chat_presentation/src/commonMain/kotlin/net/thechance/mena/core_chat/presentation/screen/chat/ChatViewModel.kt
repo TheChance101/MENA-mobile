@@ -30,6 +30,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
@@ -44,6 +45,7 @@ import kotlin.uuid.Uuid
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
+    private val messageRepository: MessageRepository,
     private val userRepository: UserRepository,
     chatArgs: ChatArgs,
     effector: ChatEffector,
@@ -171,7 +173,7 @@ class ChatViewModel(
         )
 
         tryToExecute(
-            execute = { chatRepository.sendMessage(message.toEntity()) },
+            execute = { messageRepository.sendMessage(message.toEntity()) },
             onSuccess = { onSendMessageSuccess(message) }
         )
     }
@@ -200,7 +202,7 @@ class ChatViewModel(
         updateState { state -> state.copy(inputMessage = "") }
 
         tryToExecute(
-            execute = { chatRepository.sendMessage(message.toEntity()) },
+            execute = { messageRepository.sendMessage(message.toEntity()) },
             onSuccess = { onSendMessageSuccess(message) }
         )
     }
@@ -228,7 +230,7 @@ class ChatViewModel(
         val failedMessage = state.value.failedMessageToReSend ?: return
 
         tryToExecute(
-            execute = { chatRepository.deleteMessage(failedMessage.toEntity()) },
+            execute = { messageRepository.deleteMessage(failedMessage.toEntity()) },
             onSuccess = { onDeleteFailedMessageSuccess(failedMessage) }
         )
     }
@@ -263,7 +265,7 @@ class ChatViewModel(
 
     private fun subscribeToNewMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { chatRepository.getMessages(chatId) },
+            collect = { messageRepository.getMessages(chatId) },
             onCollect = ::onCollectNewMessage,
             onError = {
                 showSnackBar(
@@ -280,13 +282,13 @@ class ChatViewModel(
 
         newMessages = newMessages.toMutableList().apply { add(0, message) }
         rebuildUiMessages()
-        chatRepository.markMessagesAsRead(message.chatId)
+        messageRepository.markMessagesAsRead(message.chatId)
 
     }
 
     private fun subscribeToPendingMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { chatRepository.getLocalMessages(chatId) },
+            collect = { messageRepository.getLocalMessages(chatId) },
             onCollect = ::onCollectPendingMessages
         )
     }
@@ -308,7 +310,7 @@ class ChatViewModel(
 
     private suspend fun getChatHistory(page: Int): PagedData<Message> {
         val chatId = state.value.chatId ?: return PagedData(emptyList(), 0, false)
-        return chatRepository.loadMessages(
+        return messageRepository.loadMessages(
             chatId = chatId,
             page = page,
             pageSize = PAGE_SIZE
@@ -318,13 +320,13 @@ class ChatViewModel(
     private suspend fun onGetChatHistorySuccess(messages: PagedData<Message>) {
         messagesHistoryCache = messagesHistoryCache.toMutableList().apply { addAll(messages.data) }
         rebuildUiMessages()
-        chatRepository.markMessagesAsRead(state.value.chatId ?: return)
+        messageRepository.markMessagesAsRead(state.value.chatId ?: return)
 
     }
 
     private fun observeReadMessages() {
         tryToCollect(
-            collect = { chatRepository.observeReadMessages() },
+            collect = { messageRepository.observeReadMessages() },
             onCollect = ::onCollectReadMessagesEvent
         )
     }
