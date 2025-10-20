@@ -14,7 +14,7 @@ interface StatementDetailsArgs {
 
 @Factory(binds = [StatementDetailsArgs::class])
 class StatementDetailsArgsImpl(savedStateHandle: SavedStateHandle): StatementDetailsArgs{
-    val json = savedStateHandle.get<String>(ARG_KEY) ?: throw Exception()
+    val json = savedStateHandle.get<String>(ARG_KEY)
     override val statementLocation: StorageLocation
-        get() = Json.decodeFromString(StorageLocationSerializer, json)
+        get() = Json.decodeFromString(StorageLocationSerializer, json!!)
 }
