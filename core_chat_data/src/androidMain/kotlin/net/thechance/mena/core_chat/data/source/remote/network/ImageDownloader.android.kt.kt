@@ -6,18 +6,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
 import android.provider.MediaStore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.koin.mp.KoinPlatform.getKoin
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean= withContext(
-    Dispatchers.IO) {
+actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean {
     val context: Context = getKoin().get()
 
-    return@withContext try {
+    return try {
 
         val connection = URL(url).openConnection() as HttpURLConnection
         connection.doInput = true
@@ -34,7 +31,7 @@ actual suspend fun downloadImageToGalleryPlatformSpecific(url: String): Boolean=
 
         val uri =
             context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                ?: return@withContext false
+                ?: return false
 
         context.contentResolver.openOutputStream(uri)?.use { out ->
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
