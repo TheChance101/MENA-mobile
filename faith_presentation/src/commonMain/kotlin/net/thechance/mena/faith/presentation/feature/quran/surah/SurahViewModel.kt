@@ -65,7 +65,20 @@ class SurahViewModel(
         }
     }
 
-    override fun onFirstVisibleAyahChanged(ayahNumber: Int) = updateContinueTilawah(ayahNumber)
+    override fun updateContinueTilawah(ayahNumber: Int) {
+        tryToExecute(
+            execute = {
+                val lastAyah = LastAyahForTilawah(
+                    surahId = surahArgs.surahId,
+                    surahName = surahArgs.surahName,
+                    number = ayahNumber
+                )
+                quranRepository.saveLastAyahForTilawah(lastAyah)
+                lastAyah
+            },
+            dispatcher = dispatcher
+        )
+    }
 
     override fun onInitialAyahScrolled() {
         viewModelScope.launch {
@@ -192,20 +205,5 @@ class SurahViewModel(
         updateState {
             it.copy(isBasmalaVisible = shouldShowBasmala)
         }
-    }
-
-    private fun updateContinueTilawah(ayahNumber: Int) {
-        tryToExecute(
-            execute = {
-                val lastAyah = LastAyahForTilawah(
-                    surahId = surahArgs.surahId,
-                    surahName = surahArgs.surahName,
-                    number = ayahNumber
-                )
-                quranRepository.saveLastAyahForTilawah(lastAyah)
-                lastAyah
-            },
-            dispatcher = dispatcher
-        )
     }
 }
