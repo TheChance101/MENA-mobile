@@ -4,24 +4,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
-import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreen
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class PaymentResultScreenRoute(
     val transactionId: String,
     val submitTransactionResultStatus: String,
     val receiverName: String,
     val amount: Double
-) : WalletRoute() {
-    init {
-        Uuid.parse(transactionId)
-        SubmissionStatus.valueOf(submitTransactionResultStatus)
-    }
-}
+) : WalletRoute()
 
 fun NavGraphBuilder.paymentResultScreenRoute(navController: NavController) {
     composable<PaymentResultScreenRoute> { backStackEntry ->

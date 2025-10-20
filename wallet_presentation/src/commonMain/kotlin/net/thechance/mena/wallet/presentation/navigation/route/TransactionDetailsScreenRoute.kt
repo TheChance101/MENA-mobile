@@ -5,18 +5,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class TransactionDetailsScreenRoute(
     val id: String
-) : WalletRoute() {
-    init {
-        Uuid.parse(id)
-    }
-}
+) : WalletRoute()
 
 fun NavGraphBuilder.transactionDetailsScreenRoute(navController: NavController){
     composable<TransactionDetailsScreenRoute> {

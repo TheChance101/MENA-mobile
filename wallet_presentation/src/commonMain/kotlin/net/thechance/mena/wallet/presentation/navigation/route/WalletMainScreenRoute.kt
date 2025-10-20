@@ -11,16 +11,12 @@ import kotlin.uuid.ExperimentalUuidApi
 data object WalletMainScreenRoute : WalletRoute()
 
 @OptIn(ExperimentalUuidApi::class)
-fun NavGraphBuilder.walletMainScreenRoute(navController: NavController, navigateBack: () -> Unit){
+fun NavGraphBuilder.walletMainScreenRoute(navController: NavController, navigateBack: () -> Unit) {
     composable<WalletMainScreenRoute> {
         WalletMainScreen(
             onNavigateBackClicked = navigateBack,
-            navigateToTransactionHistory = {
-                navController.navigate(TransactionsHistoryScreenRoute)
-            },
-            navigateToStatementsHistory = {
-                navController.navigate(StatementsHistoryScreenRoute)
-            },
+            navigateToTransactionHistory = { navController.navigate(TransactionsHistoryScreenRoute) },
+            navigateToStatementsHistory = { navController.navigate(StatementsHistoryScreenRoute) },
             navigateToPaymentScreen = { amount, transactionId ->
                 navController.navigate(
                     ConfirmPaymentScreenRoute(
