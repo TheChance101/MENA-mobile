@@ -94,9 +94,9 @@ class ChatRepositoryImplTest {
             imageDownloader = imageDownloader
         )
 
-        val result = repository.loadMessages(chatId)
+        val result = repository.loadMessages(chatId, 1, 40)
 
-        assertThat(result).isNotEmpty()
+        assertThat(result.data).isNotEmpty()
     }
 
     @Test
@@ -125,7 +125,7 @@ class ChatRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.loadMessages(chatId)
+            repository.loadMessages(chatId, 1, 40)
         }
     }
 
