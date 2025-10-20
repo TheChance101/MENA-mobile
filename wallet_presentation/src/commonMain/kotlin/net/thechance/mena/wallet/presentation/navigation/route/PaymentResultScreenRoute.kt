@@ -3,7 +3,6 @@ package net.thechance.mena.wallet.presentation.navigation.route
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreen
@@ -24,13 +23,9 @@ data class PaymentResultScreenRoute(
     }
 }
 
-fun NavGraphBuilder.paymentResultScreenRoute(navController: NavController){
+fun NavGraphBuilder.paymentResultScreenRoute(navController: NavController) {
     composable<PaymentResultScreenRoute> { backStackEntry ->
         PaymentResultScreen(
-            transactionId = backStackEntry.toRoute<PaymentResultScreenRoute>().transactionId,
-            submitTransactionResultStatus = backStackEntry.toRoute<PaymentResultScreenRoute>().submitTransactionResultStatus,
-            receiverName = backStackEntry.toRoute<PaymentResultScreenRoute>().receiverName,
-            amount = backStackEntry.toRoute<PaymentResultScreenRoute>().amount,
             onNavigateBackClicked = { navController.popBackStack() },
             onNavigateToTransactionDetailsClicked = { receiverId ->
                 navController.navigate(TransactionDetailsScreenRoute(receiverId))

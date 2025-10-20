@@ -27,7 +27,13 @@ class PaymentResultViewModel(
         SubmissionStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
 
     init {
-        updateState { it.copy(paymentStatus = submissionStatus) }
+        updateState {
+            it.copy(
+                paymentStatus = submissionStatus,
+                receiverName = paymentResultArgs.receiverName,
+                amount = paymentResultArgs.amount
+            )
+        }
     }
 
     override fun onBackClicked() {

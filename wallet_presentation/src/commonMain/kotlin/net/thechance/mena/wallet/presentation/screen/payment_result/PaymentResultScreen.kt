@@ -19,23 +19,14 @@ import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun PaymentResultScreen(
-    transactionId: String,
-    submitTransactionResultStatus: String,
-    receiverName: String,
-    amount: Double,
     onNavigateBackClicked: () -> Unit,
     onCancelClicked: () -> Unit,
     onNavigateToTransactionDetailsClicked: (String) -> Unit,
-    viewModel: PaymentResultViewModel = koinViewModel(parameters = {
-        parametersOf(
-            PaymentResultArgs(transactionId, submitTransactionResultStatus)
-        )
-    })
+    viewModel: PaymentResultViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -53,8 +44,8 @@ fun PaymentResultScreen(
         }
     )
     PaymentResultScreenContent(
-        receiverName = receiverName,
-        amount = amount,
+        receiverName = state.receiverName,
+        amount = state.amount,
         state = state,
         interactionListener = viewModel
     )

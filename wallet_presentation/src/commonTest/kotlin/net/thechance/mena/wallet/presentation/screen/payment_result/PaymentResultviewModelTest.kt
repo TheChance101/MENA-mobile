@@ -28,11 +28,19 @@ class PaymentResultViewModelTest {
     private val paymentRepository = mock<PaymentRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
-    private val transactionId = Uuid.random()
-    private val paymentResultArgs = PaymentResultArgs(
-        transactionId = transactionId.toString(),
-        submitTransactionResultStatus = SubmissionStatus.SUCCESS.name
-    )
+    private val transactionId1 = Uuid.random()
+    private val receiverName1 = "user1"
+    private val amount1 = 20.0
+    private val paymentResultArgs = object : PaymentResultArgs{
+        override val transactionId: String
+            get() = transactionId1.toString()
+        override val submitTransactionResultStatus: String
+            get() = SubmissionStatus.SUCCESS.name
+        override val receiverName: String
+            get() = receiverName1
+        override val amount: Double
+            get() = amount1
+    }
 
     @BeforeTest
     fun setup() {
@@ -97,7 +105,7 @@ class PaymentResultViewModelTest {
         viewModel.uiEffect.test {
             viewModel.onShowTransactionDetailsClicked()
             assertEquals(
-                PaymentResultEffect.NavigateToTransactionDetails(transactionId),
+                PaymentResultEffect.NavigateToTransactionDetails(transactionId1),
                 awaitItem()
             )
         }
@@ -105,7 +113,7 @@ class PaymentResultViewModelTest {
 
     @Test
     fun `onTryAgainClicked should update state with CONNECTION_LOST on error`() = runTest {
-        everySuspend { paymentRepository.submitTransaction(transactionId) } throws NoInternetException()
+        everySuspend { paymentRepository.submitTransaction(transactionId1) } throws NoInternetException()
 
         val viewModel = PaymentResultViewModel(
             paymentRepository = paymentRepository,
