@@ -65,7 +65,6 @@ class ChatRepositoryImplTest {
         )
     }
 
-
     @Test
     fun `should return chat when getChatByContactUserId is successful`() = runTest {
         httpClient = createHttpClient(chatResponse = { defaultChatResponse() })

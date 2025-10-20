@@ -20,7 +20,7 @@ import net.thechance.mena.identity.domain.service.AuthorizationService
 expect val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
 
 
-fun buildClient(
+fun buildApiClient(
     authorizationService: AuthorizationService,
     baseUrl: String
 ): HttpClient {
