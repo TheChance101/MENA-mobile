@@ -208,9 +208,8 @@ private fun TrackContinueTilawahPosition(
 
                 if (isNewAyahVisible(visibleAyahNumber, lastReportedAyahNumber)) {
                     lastReportedAyahNumber = visibleAyahNumber
-                    if (visibleAyahNumber != null) {
+                    if (visibleAyahNumber != null)
                         listener.updateContinueTilawah(visibleAyahNumber)
-                    }
                 }
             }
         }
@@ -249,9 +248,8 @@ private fun HideAyahActionButtonsOnScroll(
     LaunchedEffect(lazyListState, state.isAyahActionButtonsVisible) {
         snapshotFlow { lazyListState.isScrollInProgress }
             .collect { isScrolling ->
-                if (isScrolling && state.isAyahActionButtonsVisible) {
+                if (isScrolling && state.isAyahActionButtonsVisible)
                     listener.onDismissActionButtons()
-                }
             }
     }
 }
@@ -262,9 +260,8 @@ private fun InitializeBasmalaTilawahPosition(
     listener: SurahInteractionListener
 ) {
     LaunchedEffect(state.isBasmalaVisible) {
-        if (state.isBasmalaVisible) {
+        if (state.isBasmalaVisible)
             listener.updateContinueTilawah(state.ayatOfSurah.firstOrNull()?.number ?: 1)
-        }
     }
 }
 
