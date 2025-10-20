@@ -45,19 +45,23 @@ class WalletViewModel(
     }
 
     private fun onGetBalanceStart() {
-        updateState { it.copy(isLoading = true) }
+        updateState { it.copy(balanceState = it.balanceState.copy(isLoading = true)) }
     }
 
-    private fun onGetBalanceFinish(){
-        updateState { it.copy(isLoading = false) }
+    private fun onGetBalanceFinish() {
+        updateState { it.copy(balanceState = it.balanceState.copy(isLoading = false)) }
     }
 
     private fun onGetBalanceSuccess(balance: Double) {
-        updateState { it.copy(balance = balance)}
+        updateState {
+            it.copy(
+                balanceState = it.balanceState.copy(balance = balance, errorState = null)
+            )
+        }
     }
 
     private suspend fun onGetBalanceError(error: ErrorState) {
-        updateState { it.copy(errorState = error) }
+        updateState { it.copy(balanceState = it.balanceState.copy(errorState = error)) }
         val errorMessage = when (error) {
             ErrorState.NoInternet -> Res.string.no_internet_title
             else -> Res.string.balance_fetch_error_description
@@ -131,11 +135,11 @@ class WalletViewModel(
         )
     }
 
-    private fun onAddPendingTransactionSuccess(transactionId : Uuid, amount: Double){
+    private fun onAddPendingTransactionSuccess(transactionId: Uuid, amount: Double) {
         sendEffect(WalletEffect.NavigateToConfirmPaymentScreen(amount, transactionId))
     }
 
-    private suspend fun onAddPendingTransactionError(error: ErrorState){
+    private suspend fun onAddPendingTransactionError(error: ErrorState) {
         val errorMessage = when (error) {
             ErrorState.NoInternet -> Res.string.no_internet_title
             else -> Res.string.payment_failed_description

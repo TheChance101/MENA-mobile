@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -16,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
+import mena.wallet_presentation.generated.resources.confirm_payment_header
 import mena.wallet_presentation.generated.resources.download
 import mena.wallet_presentation.generated.resources.downloaded_statements
-import mena.wallet_presentation.generated.resources.confirm_payment_header
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.ic_send
@@ -97,9 +96,9 @@ private fun WalletContent(
                 .padding(top = 16.dp)
         ) {
             BalanceCard(
-                balance = state.balance,
-                isLoading = state.isLoading,
-                errorState = state.errorState,
+                balance = state.balanceState.balance,
+                isLoading = state.balanceState.isLoading,
+                errorState = state.balanceState.errorState,
                 onRetry = interactionListener::onRetryLoadBalanceClicked,
                 modifier = Modifier
                     .padding(top = 16.dp)
@@ -159,7 +158,7 @@ private fun WalletScreenPreview() {
     MenaTheme {
         WalletContent(
             state = WalletScreenState(
-                balance = 530320.55
+                balanceState = WalletScreenState.BalanceUiState(balance = 530320.55)
             ),
             interactionListener = object : WalletInteractionListener {
                 override fun onBackClicked() {}
