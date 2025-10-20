@@ -81,11 +81,7 @@ class ConfirmPaymentViewModel(
             )
         }
         updateState {
-            it.copy(
-                paymentUiState = it.paymentUiState.copy(
-                    userMessage = resId
-                )
-            )
+            it.copy(userMessage = resId)
         }
     }
 
