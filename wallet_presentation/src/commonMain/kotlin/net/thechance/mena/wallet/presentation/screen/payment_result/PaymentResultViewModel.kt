@@ -47,7 +47,7 @@ class PaymentResultViewModel(
     }
 
     override fun onCloseClicked() {
-        sendEffect(PaymentResultEffect.NavigateToScreenBeforePaymentProcess)
+        sendEffect(PaymentResultEffect.NavigateToPrePaymentScreen)
     }
 
     override fun onShowTransactionDetailsClicked() {

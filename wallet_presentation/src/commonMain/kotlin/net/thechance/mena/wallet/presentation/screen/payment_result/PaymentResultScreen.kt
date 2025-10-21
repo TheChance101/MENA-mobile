@@ -105,6 +105,6 @@ private fun onPaymentResultEffect(
         is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
             effect.transactionId.toString()
         )
-        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked()
+        is PaymentResultEffect.NavigateToPrePaymentScreen -> onCancelClicked()
     }
 }
