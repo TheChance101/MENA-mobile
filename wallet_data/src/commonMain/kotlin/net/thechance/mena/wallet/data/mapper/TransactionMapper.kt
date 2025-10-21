@@ -2,9 +2,9 @@ package net.thechance.mena.wallet.data.mapper
 
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.entity.TransactionStatus
+import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
 import kotlin.uuid.ExperimentalUuidApi
 
 fun List<TransactionDto>?.toTransactionEntityList(): List<Transaction> {
