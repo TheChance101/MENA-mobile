@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.data.client
 
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -27,61 +28,77 @@ class NetworkClient : KoinComponent {
     private val baseUrl: String by lazy { get(named(BASE_URL)) }
 
     @Single
-    fun provideHttpClient(): HttpClient {
+    fun provideDefaultHttpClient(): HttpClient {
         return HttpClient(engine = getHttpEngine()) {
-            defaultRequest {
-                url(baseUrl)
-            }
+            baseConfig(this)
 
             install(Logging) {
-                level = LogLevel.HEADERS
-                filter { request ->
-                    request.body !is MultiPartFormDataContent
-                }
+                level = LogLevel.BODY
                 logger = object : Logger {
                     override fun log(message: String) {
-                        println("Http client: $message")
+                        println("Default Http Client: $message")
                     }
                 }
-            }
-
-            install(plugin = Auth) {
-                bearer {
-                    loadTokens {
-                        BearerTokens(
-                            accessToken = authorizationService.getAccessToken(),
-                            refreshToken = authorizationService.refreshToken()
-                        )
-                    }
-
-                    refreshTokens {
-                        val newAccessToken = authorizationService.refreshToken()
-                        BearerTokens(
-                            accessToken = newAccessToken,
-                            refreshToken = authorizationService.refreshToken()
-                        )
-                    }
-                }
-            }
-
-            install(HttpTimeout) {
-                connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-                requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-            }
-
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    }
-                )
             }
         }
     }
 
+    @Single
+    fun provideUploadHttpClient(): HttpClient {
+        return HttpClient(engine = getHttpEngine()) {
+            baseConfig(this)
+
+            install(Logging) {
+                level = LogLevel.HEADERS
+                filter { request -> request.body !is MultiPartFormDataContent }
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        println("Upload Http Client: $message")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun baseConfig(builder: HttpClientConfig<*>) {
+        builder.defaultRequest { url(baseUrl) }
+
+        builder.install(plugin = Auth) {
+            bearer {
+                loadTokens {
+                    BearerTokens(
+                        accessToken = authorizationService.getAccessToken(),
+                        refreshToken = authorizationService.refreshToken()
+                    )
+                }
+
+                refreshTokens {
+                    val newAccessToken = authorizationService.refreshToken()
+                    BearerTokens(
+                        accessToken = newAccessToken,
+                        refreshToken = authorizationService.refreshToken()
+                    )
+                }
+            }
+        }
+
+        builder.install(ContentNegotiation) {
+            json(
+                Json {
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }
+            )
+        }
+
+        builder.install(HttpTimeout) {
+            connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+            requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+        }
+    }
+
     private companion object {
-        const val TIME_OUT_INTERVAL_MILLI = 15_000L
+        const val TIME_OUT_INTERVAL_MILLI = 60_000L
         const val BASE_URL = "baseUrl"
     }
 }
