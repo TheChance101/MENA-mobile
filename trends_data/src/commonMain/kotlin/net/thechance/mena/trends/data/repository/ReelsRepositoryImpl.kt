@@ -19,6 +19,8 @@ import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.io.buffered
+import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIENT_NAME
+import net.thechance.mena.trends.data.di.TrendDataModule.Companion.UPLOAD_CLIENT_NAME
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
@@ -41,12 +43,14 @@ import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
-    @Provided private val networkClient: HttpClient,
+    @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient,
+    @Named(UPLOAD_CLIENT_NAME) private val uploadClient: HttpClient,
     @Provided private val videoFileHandler: VideoFileHandler
 ) : ReelsRepository {
 
@@ -115,7 +119,7 @@ internal class ReelsRepositoryImpl(
     ): UploadReelResponse {
         return safeApiCall<UploadReelResponse> {
             val fileSource = videoFileHandler.readFile(filePath)
-            networkClient.post(urlString = REELS_ENDPOINT) {
+            uploadClient.post(urlString = REELS_ENDPOINT) {
                 setUploadRequestTimeout()
                 setBody(
                     createRequestBody(
@@ -131,7 +135,7 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun uploadReelThumbnail(reelId: String, thumbnail: ByteArray) {
         safeApiCall<Unit> {
-            networkClient.put(urlString = "$THUMBNAIL_ENDPOINT/${reelId}") {
+            uploadClient.put(urlString = "$THUMBNAIL_ENDPOINT/${reelId}") {
                 setBody(
                     createRequestBody(
                         key = THUMBNAIL,
