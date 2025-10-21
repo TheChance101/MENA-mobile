@@ -19,14 +19,13 @@ import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
-import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DukanException
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
@@ -38,6 +37,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageDukanViewModelTest {
@@ -99,13 +100,15 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD select first shelf with correct id`() = runTest {
         // When
         manageDukanViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals("shelf_1", state.selectedShelf?.id)
+            val expectedFirstShelfId = dummyShelves.first().id
+            assertEquals(expectedFirstShelfId.toString(), state.selectedShelf?.id)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -157,19 +160,23 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onEditShelfClicked SHOULD emit NavigateToEditShelf effect`() = runTest {
+        // Given
+        val firstShelf = dummyShelves.first()
+        manageDukanViewModel.updateState { copy(selectedShelf = firstShelf.toUiState()) }
+
         // When
         manageDukanViewModel.onEditShelfClicked()
 
         // Then
         manageDukanViewModel.effect.test {
-            assertEquals(
-                ManageDukanEffect.NavigateToManageShelf(
-                    shelfId = "shelf_1",
-                    shelfTitle = "Electronics"
-                ), awaitItem()
+            val expectedEffect = ManageDukanEffect.NavigateToManageShelf(
+                shelfId = firstShelf.id.toString(),
+                shelfTitle = firstShelf.name
             )
+            assertEquals(expectedEffect, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -347,10 +354,12 @@ class ManageDukanViewModelTest {
     }
 
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onShelfAddedSuccessfully SHOULD include new shelf in refreshed list`() = runTest {
         // Given
-        val newShelves = dummyShelves + Shelf("shelf_4", "New Shelf")
+        val newShelf = Shelf(Uuid.random(), "New Shelf")
+        val newShelves = dummyShelves + newShelf
         everySuspend { shelfRepository.getMyDukanShelves() } returns newShelves
 
         // When
@@ -359,7 +368,7 @@ class ManageDukanViewModelTest {
 
         // Then
         val state = manageDukanViewModel.state.value
-        assertTrue(state.shelves.any { it.id == "shelf_4" })
+        assertTrue(state.shelves.any { it.id == newShelf.id.toString() })
     }
 
 
@@ -431,14 +440,16 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD select first shelf by default from mock data`() = runTest {
         // When
         manageDukanViewModel.state.test {
             val state = awaitItem()
             // Then
+            val expectedFirstShelfId = dummyShelves.first().id
             assertNotNull(state.selectedShelf)
-            assertEquals("shelf_1", state.selectedShelf.id)
+            assertEquals(expectedFirstShelfId.toString(), state.selectedShelf.id)
             assertEquals("Electronics", state.selectedShelf.name)
             cancelAndIgnoreRemainingEvents()
         }
@@ -471,13 +482,14 @@ class ManageDukanViewModelTest {
                     products = PagingData()
                 )
             }
-            val deleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(
-                title = Res.string.delete_shelf_title,
-                description = Res.string.delete_shelf_description,
-                type = ConfirmDialogType.DELETE,
-                shelfId = "1",
-                isDialogVisible = true
-            )
+            val deleteShelfConfirmationDialogUiState =
+                ManageDukanUiState.DeleteShelfConfirmationDialogUiState(
+                    title = Res.string.delete_shelf_title,
+                    description = Res.string.delete_shelf_description,
+                    type = ManageDukanUiState.ConfirmDialogType.DELETE,
+                    shelfId = "1",
+                    isDialogVisible = true
+                )
             manageDukanViewModel.onShowDeleteShelfDailog(
                 shelfId = "1"
             )
@@ -528,45 +540,45 @@ class ManageDukanViewModelTest {
         }
 }
 
-// ===== FAKE DATA FUNCTIONS =====
-
-private fun dummyShelvesUiState(): List<ShelfUiState> {
+private fun dummyShelvesUiState(): List<ManageDukanUiState.ShelfUiState> {
     return listOf(
-        ShelfUiState(
+        ManageDukanUiState.ShelfUiState(
             id = "shelf_1",
             name = "Electronics"
         ),
-        ShelfUiState(
+        ManageDukanUiState.ShelfUiState(
             id = "shelf_2",
             name = "Clothing"
         ),
-        ShelfUiState(
+        ManageDukanUiState.ShelfUiState(
             id = "shelf_3",
             name = "Books"
         )
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private val dummyShelves = listOf(
     Shelf(
-        id = "shelf_1",
+        id = Uuid.parse("8a0f5a2c-3c5b-4e2e-b7a1-9e54ac62f391"),
         name = "Electronics"
     ),
     Shelf(
-        id = "shelf_2",
+        id = Uuid.parse("1c93b72a-9a1e-4c85-8e17-2a785df9c44d"),
         name = "Clothing"
     ),
     Shelf(
-        id = "shelf_3",
+        id = Uuid.parse("6fe75d89-f8f8-4993-a277-52c0706fb666"),
         name = "Books"
     )
 )
 
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeProducts(): List<Product> {
     return listOf(
         Product(
-            id = "product_1",
+            id = Uuid.random(),
             name = "iPhone 15",
             description = "Latest iPhone model",
             price = 999.99,
@@ -574,7 +586,7 @@ private fun fakeProducts(): List<Product> {
             imageUrls = listOf("https://example.com/iphone.jpg")
         ),
         Product(
-            id = "product_2",
+            id = Uuid.random(),
             name = "MacBook Pro",
             description = "Professional laptop",
             price = 1999.99,
@@ -582,7 +594,7 @@ private fun fakeProducts(): List<Product> {
             createdAt = "2023-08-01T10:00:00Z",
         ),
         Product(
-            id = "product_3",
+            id = Uuid.random(),
             name = "T-Shirt",
             description = "Cotton t-shirt",
             price = 29.99,
@@ -590,5 +602,4 @@ private fun fakeProducts(): List<Product> {
             imageUrls = listOf("https://example.com/tshirt.jpg")
         )
     )
-
 }

@@ -266,7 +266,7 @@ class TransactionDetailsViewModelTest {
     private fun viewmodelSetup() = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = transactionDetailsArgs,
-            ioDispatcher = testDispatcher,
+            dispatcher = testDispatcher,
             stringProvider = stringProvider
         )
 

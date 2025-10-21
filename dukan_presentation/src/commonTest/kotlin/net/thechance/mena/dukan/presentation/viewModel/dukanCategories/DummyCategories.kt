@@ -1,11 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanCategories
 
 import net.thechance.mena.dukan.domain.entity.Category
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
+@OptIn(ExperimentalUuidApi::class)
 val dummyCategories = List(10) { index ->
     Category(
-        id = "cat_${index + 1}",
+        id = Uuid.random(),
         name = "Category ${index + 1}",
         imageUrl = fakeImageUrl,
     )

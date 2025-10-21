@@ -32,11 +32,11 @@ import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeProductPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewManageDukanInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ConfirmDialogType
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.DeleteShelfConfirmationDialogUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ConfirmDialogType
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.DeleteShelfConfirmationDialogUiState
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

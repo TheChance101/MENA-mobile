@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.data.repository.statement
 
 import io.ktor.client.statement.HttpResponse
@@ -15,6 +17,8 @@ import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import org.koin.core.annotation.Single
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Single
 class StatementRepositoryImpl(
@@ -43,14 +47,14 @@ class StatementRepositoryImpl(
             statementDao.insertStatement(statement.toLocal())
         }
 
-    override suspend fun deleteStatementById(id: Long) =
+    override suspend fun deleteStatementById(id: Uuid) =
         safeCall({ UnknownException("Failed to delete statement") }) {
-            statementDao.deleteStatementById(id)
+            statementDao.deleteStatementById(id.toString())
         }
 
-    override suspend fun getStatementById(id: Long): Statement =
+    override suspend fun getStatementById(id: Uuid): Statement =
         safeCall({ UnknownException("Failed to get statement") }) {
-            statementDao.getStatementById(id).toEntity()
+            statementDao.getStatementById(id.toString()).toEntity()
         }
 
     companion object {

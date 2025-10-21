@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.repository
 
 import dev.mokkery.MockMode
@@ -32,6 +34,8 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class StatementRepositoryImplTest {
 
@@ -126,7 +130,7 @@ class StatementRepositoryImplTest {
 
             // act & assert
             assertFailsWith<UnknownException> {
-                statementRepository.deleteStatementById(123L)
+                statementRepository.deleteStatementById(Uuid.random())
             }
         }
 
@@ -142,13 +146,13 @@ class StatementRepositoryImplTest {
 
             // act & assert
             assertFailsWith<UnknownException> {
-                statementRepository.getStatementById(123L)
+                statementRepository.getStatementById(Uuid.random())
             }
         }
 
     @OptIn(ExperimentalTime::class)
     private fun testStatement() = Statement(
-        id = 0L,
+        id = Uuid.random(),
         startDate = LocalDate.parse("2025-01-01"),
         endDate = LocalDate.parse("2025-01-31"),
         totalInflows = 100.0,

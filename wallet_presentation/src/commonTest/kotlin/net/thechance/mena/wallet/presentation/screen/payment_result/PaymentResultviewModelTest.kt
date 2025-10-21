@@ -58,7 +58,7 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         assertEquals(
@@ -72,7 +72,7 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.uiEffect.test {
@@ -86,7 +86,7 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.uiEffect.test {
@@ -100,7 +100,7 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.uiEffect.test {
@@ -119,7 +119,7 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.state.test {

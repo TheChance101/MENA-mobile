@@ -19,7 +19,7 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
@@ -30,11 +30,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DukanDetailsViewModelTest {
 
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
     private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
@@ -42,12 +45,13 @@ class DukanDetailsViewModelTest {
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var dukanDetailsViewModel: DukanDetailsViewModel
 
+    @OptIn(ExperimentalUuidApi::class)
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        savedStateHandle = SavedStateHandle(mapOf(DUKAN_ID to dummyDukanDetails().id))
+        savedStateHandle = SavedStateHandle(mapOf(DUKAN_ID to dummyDukanDetails().id.toString()))
 
-        everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
         everySuspend {
             shelfRepository.getShelvesByDukanId(any(), any(), any())
         } returns PagedResult(
@@ -97,7 +101,9 @@ class DukanDetailsViewModelTest {
     @Test
     fun `init SHOULD set isDukanInfoLoading to false when details loading fails`() = runTest {
         // Given
-        everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } throws Exception("Network Error")
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } throws Exception(
+            "Network Error"
+        )
 
         // When
         val errorViewModel = createViewModel()
@@ -173,10 +179,11 @@ class DukanDetailsViewModelTest {
         assertEquals(newShelfId, state.shelfIdSelected)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onShelfClicked SHOULD load correct number of products`() = runTest {
         // Given
-        val targetShelfId = "shelf_1"
+        val targetShelfId =   Uuid.parse("123e4567-e89b-12d3-a456-426614174003").toString()
         setupProductsForShelf(targetShelfId)
 
         // When
@@ -192,10 +199,11 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onShelfClicked SHOULD load product with correct ID`() = runTest {
         // Given
-        val targetShelfId = "shelf_1"
+        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003").toString()
         setupProductsForShelf(targetShelfId)
 
         // When
@@ -206,15 +214,16 @@ class DukanDetailsViewModelTest {
 
         // Then
         pager.flow.test {
-            assertEquals("product_1", awaitItem().items.first().id)
+            assertEquals("123e4567-e89b-12d3-a456-426614174003", awaitItem().items.first().id)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onShelfClicked SHOULD load product with correct name`() = runTest {
         // Given
-        val targetShelfId = "shelf_1"
+        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003").toString()
         setupProductsForShelf(targetShelfId)
 
         // When
@@ -267,11 +276,13 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onCartClick SHOULD set showProductQuantity to true for specific product in shelf`() =
         runTest {
             // Given
-            everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+            val productId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003").toString()
+            everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
                 style = Dukan.Style.SMALL_IMAGE
             )
             everySuspend {
@@ -286,7 +297,6 @@ class DukanDetailsViewModelTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
 
-            val productId = "product_1"
 
             // When
             viewModel.onAddToCartClick(productId)
@@ -300,10 +310,13 @@ class DukanDetailsViewModelTest {
             assertTrue(product?.inCartQuantity == 1)
         }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onCartClick SHOULD only update specific product not others`() = runTest {
         // Given
-        everySuspend { dukanRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+        val product1Id = Uuid.parse("123e4567-e89b-12d3-a456-426614174010")
+        val product2Id = Uuid.parse("123e4567-e89b-12d3-a456-426614174011")
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
             style = Dukan.Style.SMALL_IMAGE
         )
         everySuspend {
@@ -311,7 +324,7 @@ class DukanDetailsViewModelTest {
         } returns PagedResult(
             items = listOf(
                 Product(
-                    id = "product_1",
+                    id = product1Id,
                     name = "Product 1",
                     description = "Description",
                     price = 100.0,
@@ -319,7 +332,7 @@ class DukanDetailsViewModelTest {
                     createdAt = "2025-10-10T12:00:00Z"
                 ),
                 Product(
-                    id = "product_2",
+                    id = product2Id,
                     name = "Product 2",
                     description = "Description",
                     price = 200.0,
@@ -336,13 +349,13 @@ class DukanDetailsViewModelTest {
         advanceUntilIdle()
 
         // When
-        viewModel.onAddToCartClick("product_1")
+        viewModel.onAddToCartClick(product1Id.toString())
         val state = viewModel.state.value
 
         // Then
         val products = state.shelves.items.flatMap { it.products }
-        assertTrue(products.find { it.id == "product_1" }?.inCartQuantity == 1)
-        assertFalse(products.find { it.id == "product_2" }?.inCartQuantity == 1)
+        assertTrue(products.find { it.id == product1Id.toString() }?.inCartQuantity == 1)
+        assertFalse(products.find { it.id == product2Id.toString() }?.inCartQuantity == 1)
     }
 
     @Test
@@ -362,12 +375,13 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `pagerProduct SHOULD load products for selected shelf`() = runTest {
         // Given
-        val targetShelfId = "shelf_1"
-        setupProductsForShelf(targetShelfId)
-        dukanDetailsViewModel.onShelfClicked(targetShelfId)
+        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003")
+        setupProductsForShelf(targetShelfId.toString())
+        dukanDetailsViewModel.onShelfClicked(targetShelfId.toString())
 
         // When
         dukanDetailsViewModel.pagerProduct.load()
@@ -381,27 +395,29 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `products state SHOULD be LOADING when products are being fetched`() = runTest {
         // Given
-        val targetShelfId = "shelf_1"
-        setupProductsForShelf(targetShelfId)
+        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003")
+        setupProductsForShelf(targetShelfId.toString())
 
         // When
-        dukanDetailsViewModel.onShelfClicked(targetShelfId)
+        dukanDetailsViewModel.onShelfClicked(targetShelfId.toString())
         val stateBeforeLoad = dukanDetailsViewModel.state.value
 
         // Then
         assertEquals(DukanDetailsUiState.ProductsState.LOADING, stateBeforeLoad.productsState)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `products state SHOULD be EMPTY when no products returned`() = runTest {
         // Given
-        val targetShelfId = "shelf_1"
+        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003")
         everySuspend {
             productRepository.getProductsByShelfId(
-                shelfId = targetShelfId,
+                shelfId = targetShelfId.toString(),
                 page = any(),
                 size = any()
             )
@@ -413,7 +429,7 @@ class DukanDetailsViewModelTest {
         )
 
         // When
-        dukanDetailsViewModel.onShelfClicked(targetShelfId)
+        dukanDetailsViewModel.onShelfClicked(targetShelfId.toString())
         advanceUntilIdle()
         val state = dukanDetailsViewModel.state.value
 
@@ -422,7 +438,7 @@ class DukanDetailsViewModelTest {
     }
 
     private fun createViewModel() = DukanDetailsViewModel(
-        dukanRepository = dukanRepository,
+        dukanManagementRepository = dukanManagementRepository,
         shelfRepository = shelfRepository,
         productRepository = productRepository,
         defaultDispatcher = testDispatcher,
@@ -441,27 +457,30 @@ class DukanDetailsViewModelTest {
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private fun dummyDukanDetails() = Dukan(
-    id = "dukan_123",
+    id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
     name = "Test Dukan",
     address = "123 Test Street",
     imageUrl = "https://example.com/image.png",
     coordinates = Dukan.Coordinates(latitude = 30.0, longitude = 31.0),
-    color = Color(id = "color_1", hexCode = "#FF0000"),
+    color = Color(id = Uuid.random(), hexCode = "#FF0000"),
     style = Dukan.Style.WIDE_IMAGE,
     categories = emptySet(),
     status = Dukan.Status.APPROVED,
 )
 
+@OptIn(ExperimentalUuidApi::class)
 private fun dummyShelves() = listOf(
-    Shelf(id = "shelf_1", name = "Electronics"),
-    Shelf(id = "shelf_2", name = "Clothing"),
-    Shelf(id = "shelf_3", name = "Books")
+    Shelf(id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"), name = "Electronics"),
+    Shelf(id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"), name = "Clothing"),
+    Shelf(id = Uuid.parse("123e4567-e89b-12d3-a456-426614174001"), name = "Books")
 )
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeProducts(): List<Product> = listOf(
     Product(
-        id = "product_1",
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
         name = "Laptop",
         description = "A cool laptop",
         price = 1200.0,
