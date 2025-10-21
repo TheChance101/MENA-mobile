@@ -94,20 +94,24 @@ private fun PaymentResultScreenContent(
             targetState = state.paymentStatus,
             animationSpec = tween(durationMillis = 300),
             label = stringResource(Res.string.payment_status_crossfade)
-        ) { paymentStatus ->
+        ) { currentPaymentStatus ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                when (paymentStatus) {
-                    SubmissionStatus.CONNECTION_LOST -> { PaymentConnectionLostContent(state, interactionListener) }
-
-                    SubmissionStatus.UNKNOWN_ERROR -> {
-                        PaymentUnknownErrorContent(state,interactionListener)
+                when (currentPaymentStatus) {
+                    SubmissionStatus.CONNECTION_LOST -> {
+                        PaymentConnectionLostContent(state, interactionListener)
                     }
 
-                    SubmissionStatus.SUCCESS -> { PaymentSuccessContent(state,interactionListener) }
+                    SubmissionStatus.UNKNOWN_ERROR -> {
+                        PaymentUnknownErrorContent(state, interactionListener)
+                    }
+
+                    SubmissionStatus.SUCCESS -> {
+                        PaymentSuccessContent(state, interactionListener)
+                    }
                 }
             }
         }
