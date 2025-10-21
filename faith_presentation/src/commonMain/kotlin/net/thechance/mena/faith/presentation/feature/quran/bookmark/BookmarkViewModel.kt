@@ -25,24 +25,26 @@ import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    snackBarHandler: SnackbarHandler
+    snackBarHandler: SnackbarHandler,
 ) : BaseViewModel<BookMarkUiState, BookmarkEffect>(
-    BookMarkUiState(),
-    snackbarHandler = snackBarHandler
-), BookmarkInteractionListener {
-
-    private val cachedBookmarksFlow = createBookmarksPagingSource()
-        .map { pagingData -> pagingData.map { bookmark -> bookmark.toUiState() } }
-        .cachedIn(viewModelScope)
+        BookMarkUiState(),
+        snackBarHandler,
+    ),
+    BookmarkInteractionListener {
+    private val cachedBookmarksFlow =
+        createBookmarksPagingSource()
+            .map { pagingData -> pagingData.map { bookmark -> bookmark.toUiState() } }
+            .cachedIn(viewModelScope)
 
     private val deletedBookmarkIdsFlow = MutableStateFlow(setOf<Int>())
 
-    private val filteredBookmarksFlow = combine(
-        cachedBookmarksFlow,
-        deletedBookmarkIdsFlow
-    ) { pagingData, deletedIds ->
-        pagingData.filter { bookmark -> bookmark.bookmarkId !in deletedIds }
-    }
+    private val filteredBookmarksFlow =
+        combine(
+            cachedBookmarksFlow,
+            deletedBookmarkIdsFlow,
+        ) { pagingData, deletedIds ->
+            pagingData.filter { bookmark -> bookmark.bookmarkId !in deletedIds }
+        }
 
     init {
         initializeBookmarks()
@@ -58,35 +60,36 @@ class BookmarkViewModel(
             execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
             onSuccess = { onDeleteBookmarkSuccess() },
-            onError = { removeDeletedBookmarkId(bookmarkId) }
+            onError = { removeDeletedBookmarkId(bookmarkId) },
         )
     }
 
-    private fun insertDeletedBookmarkId(bookmarkId: Int) =
+    private fun insertDeletedBookmarkId(bookmarkId: Int) {
         deletedBookmarkIdsFlow.update { currentSet -> currentSet + bookmarkId }
+    }
 
-    private fun removeDeletedBookmarkId(bookmarkId: Int) =
+    private fun removeDeletedBookmarkId(bookmarkId: Int) {
         deletedBookmarkIdsFlow.update { currentSet -> currentSet - bookmarkId }
+    }
 
     private fun initializeBookmarks() {
         updateState {
             it.copy(
                 bookmarks = filteredBookmarksFlow,
-                isLoading = false
+                isLoading = false,
             )
         }
     }
 
-    private fun onDeleteBookmarkSuccess() = snackbarHandler.showSnackBar(
-        message = Res.string.bookmark_removed_successfully,
-        status = SnackBarState.Status.Success,
-        scope = viewModelScope
-    )
+    private fun onDeleteBookmarkSuccess() =
+        snackbarHandler.showSnackBar(
+            message = Res.string.bookmark_removed_successfully,
+            status = SnackBarState.Status.Success,
+            scope = viewModelScope,
+        )
 
-    private fun createBookmarksPagingSource(): Flow<PagingData<AyahBookmark>> {
-        return createPagingSourceFlow { pageNumber, pageSize ->
+    private fun createBookmarksPagingSource(): Flow<PagingData<AyahBookmark>> =
+        createPagingSourceFlow { pageNumber, pageSize ->
             bookmarkRepository.getAyahBookmarks(pageNumber = pageNumber, pageSize = pageSize)
         }
-    }
-
 }
