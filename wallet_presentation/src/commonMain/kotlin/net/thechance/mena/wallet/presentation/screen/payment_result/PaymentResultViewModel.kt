@@ -9,6 +9,7 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.screen.payment_result.args.PaymentResultArgs
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -25,7 +26,8 @@ class PaymentResultViewModel(
     private val transactionId = Uuid.parse(paymentResultArgs.transactionId)
     private val submissionStatus =
         SubmissionStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
-
+    private val receiverName = paymentResultArgs.receiverName
+    private val amount = paymentResultArgs.amount
     init {
         updateState { it.copy(paymentStatus = submissionStatus) }
     }
@@ -47,7 +49,7 @@ class PaymentResultViewModel(
     }
 
     override fun onCloseClicked() {
-        sendEffect(PaymentResultEffect.NavigateToScreenBeforePaymentProcess)
+        sendEffect(PaymentResultEffect.NavigateToPrePaymentScreen)
     }
 
     override fun onShowTransactionDetailsClicked() {
@@ -68,6 +70,8 @@ class PaymentResultViewModel(
             it.copy(
                 isLoading = false,
                 paymentStatus = SubmissionStatus.SUCCESS,
+                receiverName = receiverName,
+                amount = amount,
                 isTryAgainButtonEnabled = false,
                 isCloseButtonEnabled = true
             )

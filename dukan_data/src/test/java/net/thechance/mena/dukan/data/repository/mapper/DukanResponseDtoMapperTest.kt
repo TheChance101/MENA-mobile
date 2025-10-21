@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
 import net.thechance.mena.dukan.data.dto.dukan.DukanResponseDto
-import net.thechance.mena.dukan.data.mapper.toDomainPreview
+import net.thechance.mena.dukan.data.mapper.toEntity
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi
@@ -20,7 +20,7 @@ class DukanResponseDtoMapperTest {
         )
 
         // Act
-        val result = dto.toDomainPreview()
+        val result = dto.toEntity()
 
         // Assert
         assertEquals(id, result.id)
