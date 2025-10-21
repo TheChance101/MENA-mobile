@@ -7,14 +7,14 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import org.jetbrains.compose.resources.StringResource
 
 class DukanCategoriesViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<DukanCategoriesUiState, DukanCategoriesEffects>(
     initialState = DukanCategoriesUiState(),
@@ -34,7 +34,7 @@ class DukanCategoriesViewModel(
     }
 
     private suspend fun getCategoriesBlock(): List<DukanCategoriesUiState.CategoryUiState> {
-        return dukanRepository.getCategories().map { it.toUiState() }
+        return dukanManagementRepository.getCategories().map { it.toUiState() }
     }
 
     private fun onGetCategoriesSuccess(categories: List<DukanCategoriesUiState.CategoryUiState>) {
