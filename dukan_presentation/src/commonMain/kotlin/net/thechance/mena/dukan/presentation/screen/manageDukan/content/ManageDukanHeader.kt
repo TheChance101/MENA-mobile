@@ -31,10 +31,10 @@ fun ManageDukanHeader(
 ) {
     Column {
         AnimatedVisibility(
-            visible = state.shelvesState != ManageDukanUiState.ShelvesState.EMPTY
+            visible = state.shelvesState != ShelvesState.EMPTY
         ) {
             when (state.shelvesState) {
-                ManageDukanUiState.ShelvesState.EMPTY -> {}
+                ShelvesState.EMPTY -> {}
                 else -> Text(
                     text = stringResource(Res.string.shelves),
                     style = Theme.typography.title.small,
