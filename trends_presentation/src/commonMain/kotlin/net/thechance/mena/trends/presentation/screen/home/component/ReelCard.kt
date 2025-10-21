@@ -130,7 +130,6 @@ private fun ReelHeaderSection(
                     .size(48.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(color = Theme.colorScheme.primary.onPrimaryHint)
-                    .padding(14.dp)
                     .align(Alignment.Center),
                 contentAlignment = Alignment.Center
             ) {
