@@ -4,8 +4,8 @@ import net.thechance.mena.dukan.domain.entity.Category
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-fun Category.toUiState(): CategoryUiState {
-    return CategoryUiState(
+fun Category.toUiState(): DukanCategoriesUiState.CategoryUiState {
+    return DukanCategoriesUiState.CategoryUiState(
         id = id.toString(),
         name = name,
         imageUrl = imageUrl

@@ -26,23 +26,23 @@ fun CreateDukanUiState.Style.toEntityStyle(): Dukan.Style = when (this) {
 }
 
 @OptIn(ExperimentalUuidApi::class)
-fun Color.toUiColor(): ColorUiState {
-    return ColorUiState(
+fun Color.toUiColor(): CreateDukanUiState.ColorUiState {
+    return CreateDukanUiState.ColorUiState(
         id = id.toString(),
         color = hexCode.removePrefix("#").toLong(16) or 0xFF000000
     )
 }
 
 @OptIn(ExperimentalUuidApi::class)
-fun ColorUiState.toEntity() = Color(
+fun CreateDukanUiState.ColorUiState.toEntity() = Color(
     id = Uuid.parse(id),
     hexCode = "#${color.toULong().toString(16).padStart(8, '0').uppercase()}"
 )
 
 @OptIn(ExperimentalUuidApi::class)
-fun List<Category>.toUiState(): List<DukanCategoryUiState> {
+fun List<Category>.toUiState(): List<CreateDukanUiState.DukanCategoryUiState> {
     return map { category ->
-        DukanCategoryUiState(
+        CreateDukanUiState.DukanCategoryUiState(
             id = category.id.toString(),
             name = category.name,
             imageUrl = category.imageUrl
@@ -51,7 +51,7 @@ fun List<Category>.toUiState(): List<DukanCategoryUiState> {
 }
 
 @OptIn(ExperimentalUuidApi::class)
-fun DukanCategoryUiState.toEntity() = Category(
+fun CreateDukanUiState.DukanCategoryUiState.toEntity() = Category(
     id = Uuid.parse(id),
     name = name,
     imageUrl = imageUrl

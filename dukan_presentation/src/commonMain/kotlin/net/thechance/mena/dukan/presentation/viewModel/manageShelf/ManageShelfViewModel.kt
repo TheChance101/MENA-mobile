@@ -25,6 +25,6 @@ class ManageShelfViewModel(
     }
 
     override fun onDeleteClicked() {
-        emitEffect(ManageShelfEffect.DeleteShelf(shelfId))
+        emitEffect(ManageShelfEffect.NavigateBackWithShelfId(shelfId))
     }
 }

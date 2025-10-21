@@ -18,7 +18,7 @@ import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeProductPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 

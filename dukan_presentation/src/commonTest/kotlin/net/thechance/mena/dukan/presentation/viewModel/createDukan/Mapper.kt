@@ -38,7 +38,7 @@ class CreateDukanMapperTest {
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `toEntity SHOULD map ColorUiState back to domain Color`() {
-        val uiColor = ColorUiState(id = uuid.toString(), color = 0xFF00FF00) // green
+        val uiColor = CreateDukanUiState.ColorUiState(id = uuid.toString(), color = 0xFF00FF00) // green
         val color = uiColor.toEntity()
 
         assertEquals(uuid, color.id)
@@ -60,7 +60,7 @@ class CreateDukanMapperTest {
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `toEntity SHOULD map DukanCategoryUiState to Category`() {
-        val uiState = DukanCategoryUiState(uuid.toString(), "Vegetables", "veg.png")
+        val uiState = CreateDukanUiState.DukanCategoryUiState(uuid.toString(), "Vegetables", "veg.png")
         val category = uiState.toEntity()
 
         assertEquals(uuid, category.id)
@@ -130,10 +130,10 @@ class CreateDukanMapperTest {
     @OptIn(ExperimentalUuidApi::class)
     private fun createDukanUiState() = CreateDukanUiState(
         name = "My Dukan",
-        selectedCategories = setOf(DukanCategoryUiState( uuid.toString(), "Fruits", "f.png")),
+        selectedCategories = setOf(CreateDukanUiState.DukanCategoryUiState( uuid.toString(), "Fruits", "f.png")),
         currentLocation = CreateDukanUiState.CoordinatesUiState(10.0, 20.0),
         address = "Cairo",
-        selectedColor = ColorUiState(uuid.toString(), 0xFF112233),
+        selectedColor = CreateDukanUiState.ColorUiState(uuid.toString(), 0xFF112233),
         selectedStyle = CreateDukanUiState.Style.NO_IMAGE
     )
     private companion object{
