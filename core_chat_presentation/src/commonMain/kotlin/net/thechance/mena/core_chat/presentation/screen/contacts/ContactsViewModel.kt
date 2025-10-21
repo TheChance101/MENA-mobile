@@ -96,7 +96,7 @@ class ContactsViewModel(
         emitEffect(
             ContactsScreenEffect.NavigateToChat(
                 chatId = chat.id.toString(),
-                chat.name
+                chatName = chat.name
             )
         )
     }
