@@ -33,18 +33,19 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FilterContent(
-    showStatusFilter: Boolean = true,
-    selectedTypes: Set<FilterType>? = null,
-    selectedStatus: FilterStatus = FilterStatus.ALL,
+    selectedTypes: Set<FilterType>?,
     startDate: String,
     endDate: String,
-    onTypeSelected: (FilterType) -> Unit = {},
-    onStatusSelected: (FilterStatus) -> Unit = {},
-    onStartDateClicked: () -> Unit = {},
-    onEndDateClicked: () -> Unit = {},
-) {
+    onTypeSelected: (FilterType) -> Unit,
+    onStartDateClicked: () -> Unit,
+    onEndDateClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    showStatusFilter: Boolean = true,
+    selectedStatus: FilterStatus = FilterStatus.ALL,
+    onStatusSelected: (FilterStatus) -> Unit = {}
+    ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
