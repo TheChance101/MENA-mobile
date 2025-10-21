@@ -1,111 +1,83 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
-import net.thechance.mena.dukan.data.repository.dto.ShelfDto
+import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
+import net.thechance.mena.dukan.data.mapper.toCreateShelfRequest
+import net.thechance.mena.dukan.data.mapper.toShelf
 import net.thechance.mena.dukan.domain.entity.Shelf
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ShelfMappersTest {
 
     @Test
     fun `Shelf to CreateShelfRequest maps correctly`() {
-        // Given
         val shelf = fakeShelf()
-
-        // When
         val request = shelf.toCreateShelfRequest()
-
-        // Then
         assertEquals("Test Shelf", request.title)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `ShelfResponse to Shelf maps id correctly`() {
-        // Given
         val shelfResponse = fakeShelfResponse()
-
-        // When
         val shelf = shelfResponse.toShelf()
-
-        // Then
-        assertEquals("1", shelf.id)
+        assertEquals(shelfResponse.id, shelf.id)
     }
 
     @Test
     fun `ShelfResponse to Shelf maps name correctly`() {
-        // Given
         val shelfResponse = fakeShelfResponse()
-
-        // When
         val shelf = shelfResponse.toShelf()
-
-        // Then
-        assertEquals("Shelf 1", shelf.name)
+        assertEquals(shelfResponse.title, shelf.name)
     }
-
 
     @Test
     fun `List of ShelfResponse to ShelfList maps size correctly`() {
-        // Given
         val shelfResponses = fakeShelfResponses()
-
-        // When
         val shelves = shelfResponses.map { it.toShelf() }
-
-        // Then
         assertEquals(3, shelves.size)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `List of ShelfResponse to ShelfList maps first shelf id correctly`() {
-        // Given
         val shelfResponses = fakeShelfResponses()
-
-        // When
         val shelves = shelfResponses.map { it.toShelf() }
-
-        // Then
-        assertEquals("1", shelves[0].id)
+        assertEquals(shelfResponses.first().id, shelves.first().id)
     }
 
     @Test
     fun `List of ShelfResponse to ShelfList maps first shelf name correctly`() {
-        // Given
         val shelfResponses = fakeShelfResponses()
-
-        // When
         val shelves = shelfResponses.map { it.toShelf() }
-
-        // Then
-        assertEquals("Shelf 1", shelves[0].name)
+        assertEquals(shelfResponses.first().title, shelves.first().name)
     }
-
 
     @Test
     fun `List of ShelfResponse to ShelfList maps empty list correctly`() {
-        // Given
         val shelfResponses = emptyList<ShelfDto>()
-
-        // When
         val shelves = shelfResponses.map { it.toShelf() }
-
-        // Then
         assertEquals(0, shelves.size)
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeShelf() = Shelf(
-    id = "123",
+    id = Uuid.random(),
     name = "Test Shelf"
 )
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeShelfResponse() = ShelfDto(
-    id = "1",
+    id = Uuid.random(),
     title = "Shelf 1"
 )
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeShelfResponses() = listOf(
-    ShelfDto(id = "1", title = "Shelf 1"),
-    ShelfDto(id = "2", title = "Shelf 2"),
-    ShelfDto(id = "3", title = "Shelf 3")
+    ShelfDto(id = Uuid.random(), title = "Shelf 1"),
+    ShelfDto(id = Uuid.random(), title = "Shelf 2"),
+    ShelfDto(id = Uuid.random(), title = "Shelf 3")
 )

@@ -19,8 +19,9 @@ import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
 import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
@@ -30,7 +31,8 @@ import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
+    private val mediaRepository: MediaRepository,
     private val locationRepository: LocationRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(
@@ -85,7 +87,7 @@ class CreateDukanViewModel(
 
     private fun getDukanColors() {
         tryToExecute(
-            block = { dukanRepository.getDukanColors() },
+            block = { dukanManagementRepository.getDukanColors() },
             onSuccess = ::updateScreenStateWithColors,
             onError = ::onErrorGettingStyles,
         )
@@ -93,7 +95,7 @@ class CreateDukanViewModel(
 
     private fun getDukanStyle() {
         tryToExecute(
-            block = { dukanRepository.getDukanStyles() },
+            block = { dukanManagementRepository.getDukanStyles() },
             onSuccess = ::updateScreenStateWithStyles,
             onError = ::onErrorGettingStyles,
         )
@@ -207,11 +209,11 @@ class CreateDukanViewModel(
     }
 
     private suspend fun onCreateClickedBlock() {
-        dukanRepository.createDukan(state.value.toEntity())
+        dukanManagementRepository.createDukan(state.value.toEntity())
         state.value.croppedImage?.let {
             val fileName = state.value.name.replace(" ", "_")
                 .plus("dukan_image")
-            dukanRepository.uploadDukanImage(fileName, it.toPngByteArray())
+            mediaRepository.uploadDukanImage(fileName, it.toPngByteArray())
         }
     }
 
@@ -304,7 +306,7 @@ class CreateDukanViewModel(
 
     private fun checkNameUniqueness(name: String) {
         tryToExecute(
-            block = { dukanRepository.isDukanNameTaken(name) },
+            block = { dukanManagementRepository.isDukanNameTaken(name) },
             onSuccess = { isTaken -> handleNameValidationResult(isTaken) },
             onError = ::onNameValidationError
         )
@@ -388,7 +390,7 @@ class CreateDukanViewModel(
 
     private fun loadDukanCategories() {
         tryToExecute(
-            block = { dukanRepository.getCategories() },
+            block = { dukanManagementRepository.getCategories() },
             onSuccess = { categories ->
                 updateState { copy(dukanCategories = categories.toUiState()) }
             }

@@ -6,7 +6,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
@@ -16,7 +17,8 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 
 class MainViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
+    private val dukanDiscoveryRepository: DukanDiscoveryRepository,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<MainScreenUiState, MainEffect>(
     initialState = MainScreenUiState(),
@@ -120,7 +122,7 @@ class MainViewModel(
     }
 
     private suspend fun getCategoriesBlock(): List<DukanCategoryUiState> {
-        return dukanRepository.getCategories().toUiState()
+        return dukanManagementRepository.getCategories().toUiState()
     }
 
     private fun onGetCategoriesSuccess(categoryUiState: List<DukanCategoryUiState>) {
@@ -145,7 +147,7 @@ class MainViewModel(
     }
 
     private suspend fun getDukanStateBlock(): MainScreenUiState.DukanState? {
-        return dukanRepository.getMyDukanStatus()?.toUiState()
+        return dukanManagementRepository.getMyDukanStatus()?.toUiState()
     }
 
     private fun onGetDukanStateSuccess(dukanState: MainScreenUiState.DukanState?) {
@@ -198,7 +200,7 @@ class MainViewModel(
         bestNearestDukanPager = createPagingSource(
             mapper = { it.toBestNearestUiState() }
         ) { currentPage ->
-            dukanRepository.getBestAroundDukans(
+            dukanDiscoveryRepository.getBestAroundDukans(
                 page = currentPage,
                 size = 20
             )
@@ -207,7 +209,7 @@ class MainViewModel(
         editorPickDukanPager = createPagingSource(
             mapper = { it.toEditorPickUiState() }
         ) { currentPage ->
-            dukanRepository.getEditorPicksDukans(
+            dukanDiscoveryRepository.getEditorPicksDukans(
                 page = currentPage,
                 size = 20
             )

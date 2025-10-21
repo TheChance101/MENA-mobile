@@ -8,12 +8,13 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
-import net.thechance.mena.dukan.data.repository.dto.ShelfDto
-import net.thechance.mena.dukan.data.repository.mapper.toCreateShelfRequest
-import net.thechance.mena.dukan.data.repository.mapper.toDomain
-import net.thechance.mena.dukan.data.repository.mapper.toShelf
-import net.thechance.mena.dukan.data.repository.util.safeApiCall
+import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
+import net.thechance.mena.dukan.data.mapper.toCreateShelfRequest
+import net.thechance.mena.dukan.data.mapper.toDomain
+import net.thechance.mena.dukan.data.mapper.toShelf
+import net.thechance.mena.dukan.data.util.constants.EndPoints.SHELF_BASE_PATH
+import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
@@ -24,7 +25,7 @@ class ShelfRepositoryImpl(
 
     override suspend fun createShelf(shelf: Shelf) {
         safeApiCall<Unit> {
-            client.post("$BASE_URL/shelf/create") {
+            client.post("$SHELF_BASE_PATH/create") {
                 contentType(ContentType.Application.Json)
                 setBody(shelf.toCreateShelfRequest())
             }
@@ -33,7 +34,7 @@ class ShelfRepositoryImpl(
 
     override suspend fun getMyDukanShelves(): List<Shelf> {
         return safeApiCall<List<ShelfDto>> {
-            client.get("$BASE_URL/shelf")
+            client.get(SHELF_BASE_PATH)
         }.map {
             it.toShelf()
         }
@@ -41,7 +42,7 @@ class ShelfRepositoryImpl(
 
     override suspend fun deleteShelf(shelfId: String) {
         safeApiCall<Unit> {
-            client.delete(urlString = "$BASE_URL/shelf/$shelfId")
+            client.delete(urlString = "$SHELF_BASE_PATH/$shelfId")
         }
     }
 
@@ -51,15 +52,10 @@ class ShelfRepositoryImpl(
         pageSize: Int
     ): PagedResult<Shelf> {
         return safeApiCall<PageResponseDto<ShelfDto>> {
-            client.get("$BASE_URL/shelf/$dukanId") {
+            client.get("$SHELF_BASE_PATH/$dukanId") {
                 parameter("page", pageNumber)
                 parameter("size", pageSize)
             }
         }.toDomain(mapper = ShelfDto::toShelf)
-    }
-
-
-    companion object {
-        private const val BASE_URL = "/dukan"
     }
 }
