@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.entity.DukanPreview
 import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 import kotlin.uuid.ExperimentalUuidApi
@@ -22,7 +21,7 @@ fun Dukan.Status.toUiState(): DukanStatusUi {
 }
 
 @OptIn(ExperimentalUuidApi::class)
-fun DukanPreview.toBestNearestUiState(): MainScreenUiState.BestNearestDukanUiState {
+fun Dukan.toBestNearestUiState(): MainScreenUiState.BestNearestDukanUiState {
     return MainScreenUiState.BestNearestDukanUiState(
         id = id.toString(),
         name = name,
@@ -31,7 +30,7 @@ fun DukanPreview.toBestNearestUiState(): MainScreenUiState.BestNearestDukanUiSta
 }
 
 @OptIn(ExperimentalUuidApi::class)
-fun DukanPreview.toEditorPickUiState(): MainScreenUiState.EditorPickDukanUiState {
+fun Dukan.toEditorPickUiState(): MainScreenUiState.EditorPickDukanUiState {
     return MainScreenUiState.EditorPickDukanUiState(
         id = id.toString(),
         name = name,

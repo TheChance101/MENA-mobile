@@ -13,7 +13,6 @@ import kotlin.test.assertTrue
 
 class DukanProductRepositoryImplTest {
     private val repository = createProductRepository()
-    private val mediaRepository = createMediaRepository()
 
     @Test
     fun `createProduct calls correct endpoint and returns created product ID`() = runTest {
