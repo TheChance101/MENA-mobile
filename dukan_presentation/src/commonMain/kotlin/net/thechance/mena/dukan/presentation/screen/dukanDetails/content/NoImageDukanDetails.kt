@@ -5,9 +5,9 @@ import androidx.compose.runtime.Composable
 import kotlinx.coroutines.FlowPreview
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.noImageDukanDetails.NoImageDukanAppBar
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.noImageDukanDetails.NoImageDukanShelves
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.noImageDukanDetails.NoImageDukanShelvesSkeleton
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanAppBar
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanShelves
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanShelvesSkeleton
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener

@@ -11,10 +11,10 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails.DukanHeader
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails.wideImageProductsGrid
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails.WideImageDukanAppBar
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails.WideImageDukanShelves
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.DukanHeader
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductsGrid
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanAppBar
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanShelves
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager

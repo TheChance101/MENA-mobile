@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.smallImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.gestures.snapping.SnapPosition
@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ProductsHeader
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.ProductActionIconSmallImageDukan
+import net.thechance.mena.dukan.presentation.component.productCard.ProductActionIconSmallImageDukan
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener

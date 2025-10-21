@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.components
+package net.thechance.mena.dukan.presentation.screen.shelfDetails.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -11,6 +11,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.LazyVerticalGridItems
 import net.thechance.mena.dukan.presentation.component.LoadingVerticalList
 import net.thechance.mena.dukan.presentation.component.productCard.LoadingProductCard
+import net.thechance.mena.dukan.presentation.component.productCard.ProductActionIconSmallImageDukan
+import net.thechance.mena.dukan.presentation.component.productCard.ProductActionNoImageDukan
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener

@@ -61,22 +61,22 @@ val fakeShelves = listOf(
     ),
     ShelfUiState(
         id = "5",
-        name = "Shoes",
+        name = "Bags",
         products = fakeProducts
     ),
     ShelfUiState(
         id = "6",
-        name = "Shoes",
+        name = "Electronics",
         products = fakeProducts
     ),
     ShelfUiState(
         id = "7",
-        name = "Shoes",
+        name = "Clearance",
         products = fakeProducts
     ),
     ShelfUiState(
         id = "8",
-        name = "Shoes",
+        name = "Books",
         products = fakeProducts
     )
 )

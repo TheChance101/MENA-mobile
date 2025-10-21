@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
