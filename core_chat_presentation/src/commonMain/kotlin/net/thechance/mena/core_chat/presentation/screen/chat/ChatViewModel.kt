@@ -32,6 +32,7 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
+import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
@@ -47,6 +48,7 @@ class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val userRepository: UserRepository,
+    private val imageDownloaderService: ImageDownloaderService,
     chatArgs: ChatArgs,
     effector: ChatEffector,
     private val permissionsController: PermissionsController,
@@ -386,7 +388,7 @@ class ChatViewModel(
 
     override fun onDownloadImageClicked(url: String) {
         tryToExecute(
-            execute = { chatRepository.downloadImage(url) },
+            execute = { imageDownloaderService.downloadImageToGallery(url) },
             onSuccess = { onDownloadImageSuccess() },
             onError = {
                 showSnackBar(

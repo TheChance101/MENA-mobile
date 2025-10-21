@@ -173,7 +173,6 @@ fun createRepository(
 fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
-    imageDownloader: ImageDownloaderService,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -188,7 +187,6 @@ fun createChatRepository(
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
         webSocketManager = webSocketManager,
-        imageDownloader = imageDownloader
     )
 
 }
