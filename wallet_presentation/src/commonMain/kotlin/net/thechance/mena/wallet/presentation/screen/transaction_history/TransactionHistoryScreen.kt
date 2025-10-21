@@ -89,12 +89,15 @@ fun TransactionHistoryContent(
                 },
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
-                    Icon(
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
-                            .clickable { interactionListener.onExportClicked() },
-                        painter = painterResource(Res.drawable.ic_share),
-                        contentDescription = Res.string.share.toString()
-                    )
+                    if (state.history.isNotEmpty()) {
+                        Icon(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable { interactionListener.onExportClicked() },
+                            painter = painterResource(Res.drawable.ic_share),
+                            contentDescription = stringResource(Res.string.share)
+                        )
+                    }
                 }
             )
         }, overlays = {
