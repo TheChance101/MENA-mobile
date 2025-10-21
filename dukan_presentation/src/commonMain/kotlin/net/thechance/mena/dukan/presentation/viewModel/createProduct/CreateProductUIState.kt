@@ -11,6 +11,7 @@ data class ProductUiState(
     val isAddButtonLoading: Boolean = false,
     val isAddButtonEnabled: Boolean = false,
     val shelves: List<ShelfUiState> = emptyList(),
+    val isShelvesLoading: Boolean = false,
     val selectedShelf: ShelfUiState? = null,
     val productName: String = "",
     val price: String = "",
@@ -23,19 +24,20 @@ data class ProductUiState(
     val showSnackBar: Boolean = false,
     val isTextFieldEnabled: Boolean = true,
     val isCancelImageEnabled: Boolean = true,
-)
+){
+    data class ShelfUiState(
+        val id:String="",
+        val name: String = "",
+        val isSelected: Boolean = false,
+    )
 
-data class ShelfUiState(
-    val id:String="",
-    val name: String = "",
-    val isSelected: Boolean = false,
-)
+    @OptIn(ExperimentalTime::class)
+    data class ProductImageUi(
+        val id: Long = Clock.System.now().toEpochMilliseconds(),
+        val image: ImageBitmap,
+        val imageSizeInMegaByte: Double,
+        val imageState: ProductImageState,
+        val errorMessage: String? = null,
+    )
 
-@OptIn(ExperimentalTime::class)
-data class ProductImageUi(
-    val id: Long = Clock.System.now().toEpochMilliseconds(),
-    val image: ImageBitmap,
-    val imageSizeInMegaByte: Double,
-    val imageState: ProductImageState,
-    val errorMessage: String? = null,
-)
+}

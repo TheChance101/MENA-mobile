@@ -47,6 +47,7 @@ class CreateProductViewModel(
 
     private fun getShelves() {
         tryToExecute(
+            onStart = { updateState { copy(isShelvesLoading = true) } },
             block = shelfRepository::getMyDukanShelves,
             onSuccess = ::onGetShelvesSuccess,
             onError = ::onErrorGettingShelves
@@ -55,11 +56,11 @@ class CreateProductViewModel(
 
     private fun onGetShelvesSuccess(shelves: List<Shelf>) {
         updateState {
-            copy(shelves = shelves.map { it.toUiState() })
+            copy(shelves = shelves.map { it.toUiState() }, isShelvesLoading = false)
         }
     }
 
-    override fun onBackButton() {
+    override fun onBackClick() {
         emitEffect(effect = CreateProductEffect.NavigateBack)
     }
 
@@ -69,7 +70,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onShelfSelect(shelfUiState: ShelfUiState) {
+    override fun onShelfSelect(shelfUiState: ProductUiState.ShelfUiState) {
         updateState {
             copy(
                 shelves = shelves.map { shelfItem ->
@@ -102,7 +103,7 @@ class CreateProductViewModel(
     }
 
     private suspend fun onUploadImageBlock(image: ImageFile) {
-        if (isUploadImageValidToCrop(image).not())
+        if (isUploadImageValidToCrop(image).not())//////
             awaitCancellation()
 
         val imageSrc = image.toImageSrc()
@@ -135,13 +136,9 @@ class CreateProductViewModel(
     }
 
     private fun handleUploadImageError(resErrorMessage: StringResource): Boolean {
+        showSnackBar(message = resErrorMessage, type = SnackBarType.ERROR)
         updateState {
             copy(
-                snackBarUiState = SnackBarUiState(
-                    message = resErrorMessage,
-                    snackBarType = SnackBarType.ERROR
-                ),
-                showSnackBar = true,
                 showCropImage = false,
                 selectedImage = null
             )
@@ -155,7 +152,7 @@ class CreateProductViewModel(
     ): Boolean {
         updateState {
             copy(
-                images = images + ProductImageUi(
+                images = images + ProductUiState.ProductImageUi(
                     image = imageBitmap,
                     imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
                     imageState = ProductImageState.SUCCESS,
@@ -172,7 +169,7 @@ class CreateProductViewModel(
         )
     }
 
-    private fun onCroppedImageBlock(imageBitmap: ImageBitmap): ProductImageUi {
+    private fun onCroppedImageBlock(imageBitmap: ImageBitmap): ProductUiState.ProductImageUi {
         updateState {
             copy(
                 selectedImage = null,
@@ -183,14 +180,14 @@ class CreateProductViewModel(
         val imageByteArray = imageBitmap.toPngByteArray().size.toDouble()
         val imageSizeInMegabyte = imageByteArray / BYTES_PER_MEGABYTE
 
-        return ProductImageUi(
+        return ProductUiState.ProductImageUi(
             image = imageBitmap,
             imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
             imageState = ProductImageState.SUCCESS,
         )
     }
 
-    private fun onCroppedImageSuccess(productImage: ProductImageUi) {
+    private fun onCroppedImageSuccess(productImage: ProductUiState.ProductImageUi) {
         updateState {
             copy(images = images + productImage).updateButtonState()
         }
@@ -257,10 +254,10 @@ class CreateProductViewModel(
                 images = images.map { it.copy(imageState = ProductImageState.SUCCESS) },
             )
         }
-        emitEffect(effect = CreateProductEffect.NavigateToManagementProductMyDukan)
+        emitEffect(effect = CreateProductEffect.NavigateToManageDukanProducts)
     }
 
-    private fun onAddProductError(throwable: Throwable) {
+    private fun onAddProductError(throwable: Throwable) {/////
         showSnackBar(message = Res.string.error_general, type = SnackBarType.ERROR)
         updateState {
             copy(
@@ -288,6 +285,7 @@ class CreateProductViewModel(
             else -> Res.string.error_general
         }
         showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+        updateState { copy(isShelvesLoading = false) }
     }
 
     private fun onErrorUploadingImages(throwable: Throwable) {
@@ -350,7 +348,6 @@ class CreateProductViewModel(
         const val IMAGE_MAX_LIMIT = 10
         const val IMAGE_MAX_SIZE_IN_MB = 5
         const val BYTES_PER_MEGABYTE = 1024 * 1024
-
         const val MIN_DESCRIPTION_LENGTH = 100
         const val MAX_DESCRIPTION_LENGTH = 3000
         const val PRICE_EXCLUSIVE_LOWER_BOUND = 0.0
