@@ -45,7 +45,7 @@ class StatementDetailsViewModel(
     override fun onShareClicked() {
         if (currentState.statement.isNotEmpty() && currentState.errorState == null) {
             val statement = currentState.statement
-            sendEffect(StatementDetailsEffect.ShareStatement(statement, STATEMENT_NAME))
+            sendEffect(StatementDetailsEffect.ShareStatement(statement))
         }
     }
 
@@ -71,9 +71,5 @@ class StatementDetailsViewModel(
 
     private fun onGetStatementPdfError(error: ErrorState) {
         updateState { it.copy(errorState = error) }
-    }
-
-    private companion object {
-        const val STATEMENT_NAME = "statement.pdf"
     }
 }

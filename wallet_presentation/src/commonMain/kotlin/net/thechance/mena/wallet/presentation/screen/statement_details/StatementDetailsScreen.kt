@@ -123,7 +123,6 @@ private fun StatementViewer(
     }
 }
 
-private const val STATEMENT_FILE_NAME = "statement.pdf"
 private suspend fun handleEffects(
     effect: StatementDetailsEffect,
     onNavigateBackClicked: () -> Unit,
@@ -135,10 +134,12 @@ private suspend fun handleEffects(
         is StatementDetailsEffect.ShareStatement -> {
             shareStatement(
                 effect.statement,
-                effect.fileName,
+                STATEMENT_FILE_NAME,
                 MimeType.PDF,
                 getString(Res.string.share_pdf)
             )
         }
     }
 }
+
+private const val STATEMENT_FILE_NAME = "statement.pdf"
