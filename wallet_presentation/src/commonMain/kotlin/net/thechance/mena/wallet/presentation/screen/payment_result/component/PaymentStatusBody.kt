@@ -235,7 +235,7 @@ private fun SuccessPaymentDescription(
             style = Theme.typography.label.small
         )
         Text(
-            text = name,
+            text = " $name",
             color = Theme.colorScheme.shadeSecondary,
             style = Theme.typography.label.small.copy(
                 fontWeight = FontWeight.ExtraBold
