@@ -1,10 +1,8 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct.component
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,12 +20,14 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-fun LazyListScope.priceSection(
+@Composable
+fun PriceSection(
     price: String,
     isTextFieldEnabled: Boolean,
-    onPriceChange: (String) -> Unit
+    onPriceChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    item {
+    Column(modifier){
         Text(
             text = stringResource(Res.string.price),
             style = Theme.typography.title.small,
@@ -54,14 +54,10 @@ fun LazyListScope.priceSection(
 @Composable
 private fun PriceSectionPreview() {
     MenaTheme {
-        LazyColumn(
-            modifier = Modifier.background(Theme.colorScheme.background.surface)
-        ) {
-            priceSection(
-                price = "100",
-                isTextFieldEnabled = true,
-                onPriceChange = {}
-            )
-        }
+        PriceSection(
+            price = "100",
+            isTextFieldEnabled = true,
+            onPriceChange = {}
+        )
     }
 }
