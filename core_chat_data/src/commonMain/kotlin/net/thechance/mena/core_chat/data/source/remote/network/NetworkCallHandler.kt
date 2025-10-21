@@ -9,8 +9,8 @@ import io.ktor.util.reflect.TypeInfo
 import net.thechance.mena.core_chat.domain.exception.*
 
 suspend fun <T> tryNetworkCall(
-    defaultException: (Throwable) -> ChatException = { e ->
-        UnknownException("Unknown error occurred", e)
+    defaultException: (Throwable) -> ChatException = {
+        UnknownException("Unknown error occurred")
     },
     bodyType: TypeInfo,
     call: suspend () -> HttpResponse,
@@ -28,7 +28,7 @@ private suspend fun <T> runCatchingWithException(
     return try {
         block()
     } catch (e: ContactsPermissionDeniedException) {
-        throw ContactsPermissionDeniedException("Contacts Permission Denied!", e)
+        throw ContactsPermissionDeniedException("Contacts Permission Denied!")
     } catch (e: ChatException) {
         throw e
     } catch (e: Throwable) {
