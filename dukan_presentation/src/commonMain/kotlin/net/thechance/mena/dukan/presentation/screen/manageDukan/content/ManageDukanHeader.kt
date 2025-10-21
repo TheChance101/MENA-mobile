@@ -71,17 +71,8 @@ fun ManageDukanHeader(
             }
         ) {
             when (it) {
-                ManageDukanUiState.ShelvesState.LOADING -> LoadingHorizontalList {
-                    Chip(
-                        text = "             ",
-                        isSelected = false,
-                        isEnabled = false,
-                        onClick = { }
-                    )
-                }
-
+                ManageDukanUiState.ShelvesState.LOADING -> LoadingShelves()
                 ManageDukanUiState.ShelvesState.LOADED -> LoadedShelvesRow(state, listener)
-
                 ManageDukanUiState.ShelvesState.EMPTY -> {
                     Column {
                         Spacer(modifier = Modifier.weight(1f))
@@ -99,6 +90,17 @@ fun ManageDukanHeader(
     }
 }
 
+@Composable
+private fun LoadingShelves(){
+    LoadingHorizontalList {
+        Chip(
+            text = "             ",
+            isSelected = false,
+            isEnabled = false,
+            onClick = { }
+        )
+    }
+}
 @Composable
 private fun NoShelvesContent() {
     ImageWithTextContainer(

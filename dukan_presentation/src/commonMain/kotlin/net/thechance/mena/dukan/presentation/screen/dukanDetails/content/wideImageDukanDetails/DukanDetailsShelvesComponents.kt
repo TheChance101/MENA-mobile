@@ -62,14 +62,7 @@ fun DukanShelvesSection(
             label = "Shelves Animation",
         ) { targetState ->
             when (targetState) {
-                DukanDetailsUiState.ShelvesState.LOADING -> LoadingHorizontalList {
-                    Chip(
-                        text = "             ",
-                        isSelected = false,
-                        isEnabled = false,
-                        onClick = { }
-                    )
-                }
+                DukanDetailsUiState.ShelvesState.LOADING -> LoadingShelves()
                 DukanDetailsUiState.ShelvesState.LOADED -> LoadedShelves(
                     shelves = state.shelves.items,
                     selectedShelfId = state.shelfIdSelected,
@@ -81,6 +74,17 @@ fun DukanShelvesSection(
                 DukanDetailsUiState.ShelvesState.EMPTY -> {}
             }
         }
+    }
+}
+@Composable
+private fun LoadingShelves(){
+    LoadingHorizontalList {
+        Chip(
+            text = "             ",
+            isSelected = false,
+            isEnabled = false,
+            onClick = { }
+        )
     }
 }
 @Composable

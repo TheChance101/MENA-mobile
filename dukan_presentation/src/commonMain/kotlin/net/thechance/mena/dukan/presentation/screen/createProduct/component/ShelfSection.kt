@@ -1,6 +1,10 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct.component
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -63,24 +67,31 @@ fun LazyListScope.shelfSection(
         }
         AnimatedContent(
             targetState = isShelvesLoading,
+            transitionSpec = {
+                fadeIn(tween()) togetherWith fadeOut(tween())
+            },
             label = "shelves loading"
         ) {
             if (it) {
-                LoadingHorizontalList {
-                    Chip(
-                        text = "             ",
-                        isSelected = false,
-                        isEnabled = false,
-                        onClick = { }
-                    )
-                }
-            } else {
+                LoadingShelves()
+            } else{
                 LoadedShelves(shelves, onShelfSelect)
             }
         }
     }
 }
 
+@Composable
+private fun LoadingShelves(){
+    LoadingHorizontalList {
+        Chip(
+            text = "             ",
+            isSelected = false,
+            isEnabled = false,
+            onClick = { }
+        )
+    }
+}
 @Composable
 private fun LoadedShelves(
     shelves: List<CreateProductUiState.ShelfUiState>,
