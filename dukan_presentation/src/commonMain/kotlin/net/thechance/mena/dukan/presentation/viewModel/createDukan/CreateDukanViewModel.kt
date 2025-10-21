@@ -7,20 +7,32 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
+import mena.dukan_presentation.generated.resources.dukan_creation_failed
+import mena.dukan_presentation.generated.resources.dukan_name_is_already_exist
+import mena.dukan_presentation.generated.resources.error_upload_failed
+import mena.dukan_presentation.generated.resources.invalid_image_format
+import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
+import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
+import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
+import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
+    private val mediaRepository: MediaRepository,
     private val locationRepository: LocationRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(
@@ -58,12 +70,12 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onColorClicked(color: ColorUiState) {
+    override fun onColorClicked(color: CreateDukanUiState.ColorUiState) {
         updateState { copy(selectedColor = color) }
         updateNextButtonEnableState()
     }
 
-    override fun onStyleClicked(style: Dukan.Style) {
+    override fun onStyleClicked(style: CreateDukanUiState.Style) {
         updateState { copy(selectedStyle = style) }
         updateNextButtonEnableState()
     }
@@ -75,24 +87,24 @@ class CreateDukanViewModel(
 
     private fun getDukanColors() {
         tryToExecute(
-            block = { dukanRepository.getDukanColors() },
+            block = { dukanManagementRepository.getDukanColors() },
             onSuccess = ::updateScreenStateWithColors,
-            onError = ::handleError,
+            onError = ::onErrorGettingStyles,
         )
     }
 
     private fun getDukanStyle() {
         tryToExecute(
-            block = { dukanRepository.getDukanStyles() },
+            block = { dukanManagementRepository.getDukanStyles() },
             onSuccess = ::updateScreenStateWithStyles,
-            onError = ::handleError,
+            onError = ::onErrorGettingStyles,
         )
     }
 
     private fun updateScreenStateWithStyles(dukanStyles: List<Dukan.Style>) {
         val stylesUiState = dukanStyles.map { style ->
-            DukanStyleUiState(
-                style = style,
+            CreateDukanUiState.DukanStyleUiState(
+                style = style.toUiStyle(),
                 name = style.toUiStyleName()
             )
         }
@@ -101,9 +113,6 @@ class CreateDukanViewModel(
 
     private fun updateScreenStateWithColors(dukanColors: List<Color>) =
         updateState { copy(dukanColors = dukanColors.map { it.toUiColor() }) }
-
-    private fun handleError(throwable: Throwable) =
-        updateState { copy(errorMessage = throwable.message) }
 
     override fun onClickUploadImage(image: ImageSrc) {
         updateState {
@@ -155,11 +164,11 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun isCategorySelected(): (DukanCategoryUiState) -> Boolean {
+    override fun isCategorySelected(): (CreateDukanUiState.DukanCategoryUiState) -> Boolean {
         return { category -> state.value.selectedCategories.contains(category) }
     }
 
-    override fun onCategorySelected(category: DukanCategoryUiState): Boolean {
+    override fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         if (!canSelectMoreCategories(state.value)) return false
 
         addCategoryToSelection(category)
@@ -167,13 +176,13 @@ class CreateDukanViewModel(
         return true
     }
 
-    override fun onCategoryDeselected(category: DukanCategoryUiState): Boolean {
+    override fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         removeCategoryFromSelection(category)
         updateNextButtonEnableState()
         return true
     }
 
-    override fun onCategoryEnabled(category: DukanCategoryUiState): Boolean {
+    override fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         return canSelectMoreCategories(state.value) ||
                 state.value.selectedCategories.contains(category)
     }
@@ -182,11 +191,11 @@ class CreateDukanViewModel(
         return currentState.selectedCategories.size < MAX_CATEGORIES
     }
 
-    private fun addCategoryToSelection(category: DukanCategoryUiState) {
+    private fun addCategoryToSelection(category: CreateDukanUiState.DukanCategoryUiState) {
         updateState { copy(selectedCategories = selectedCategories + category) }
     }
 
-    private fun removeCategoryFromSelection(category: DukanCategoryUiState) {
+    private fun removeCategoryFromSelection(category: CreateDukanUiState.DukanCategoryUiState) {
         updateState { copy(selectedCategories = selectedCategories - category) }
     }
 
@@ -194,15 +203,17 @@ class CreateDukanViewModel(
         tryToExecute(
             block = ::onCreateClickedBlock,
             onSuccess = ::onCreateClickedSuccess,
+            onError = ::onErrorCreatingDukan
+
         )
     }
 
     private suspend fun onCreateClickedBlock() {
-        dukanRepository.createDukan(state.value.toEntity())
+        dukanManagementRepository.createDukan(state.value.toEntity())
         state.value.croppedImage?.let {
             val fileName = state.value.name.replace(" ", "_")
                 .plus("dukan_image")
-            dukanRepository.uploadDukanImage(fileName, it.toPngByteArray())
+            mediaRepository.uploadDukanImage(fileName, it.toPngByteArray())
         }
     }
 
@@ -212,15 +223,6 @@ class CreateDukanViewModel(
 
     private fun handleBasicInformationNext() {
         if (!isBasicInformationStepValid(state.value)) {
-            updateState {
-                copy(
-                    snackBarState = SnackBarUiState(
-                        snackBarType = SnackBarType.ERROR,
-                        message = Res.string.shelf_name_is_already_exist
-                    ),
-                    isNameUnique = false
-                )
-            }
             return
         }
         checkNameUniqueness(state.value.name)
@@ -304,9 +306,9 @@ class CreateDukanViewModel(
 
     private fun checkNameUniqueness(name: String) {
         tryToExecute(
-            block = { dukanRepository.isDukanNameTaken(name) },
+            block = { dukanManagementRepository.isDukanNameTaken(name) },
             onSuccess = { isTaken -> handleNameValidationResult(isTaken) },
-            onError = { handleNameValidationError() }
+            onError = ::onNameValidationError
         )
     }
 
@@ -324,27 +326,43 @@ class CreateDukanViewModel(
     }
 
     private fun updateNameValidationState(isTaken: Boolean, current: CreateDukanStep) {
+        if (isTaken) showSnackBar(
+            message = Res.string.dukan_name_is_already_exist,
+            type = SnackBarType.ERROR
+        )
         updateState {
             copy(
-                snackBarState = if (isTaken) SnackBarUiState(
-                    snackBarType = SnackBarType.ERROR,
-                    message = Res.string.shelf_name_is_already_exist
-                ) else null,
                 currentStep = if (isTaken) current else nextStep(current),
                 isNameUnique = !isTaken
             )
         }
     }
 
-    private fun handleNameValidationError() {
-        updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    snackBarType = SnackBarType.ERROR,
-                    message = Res.string.shelf_name_is_already_exist
-                )
-            )
+    private fun onErrorGettingStyles(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.something_went_wrong
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+    }
+
+    private fun onErrorCreatingDukan(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            is CreationFailedException -> Res.string.dukan_creation_failed
+            is UploadingFailedException -> Res.string.error_upload_failed
+            is InvalidImageFormatException -> Res.string.invalid_image_format
+            else -> Res.string.something_went_wrong
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+    }
+
+    private fun onNameValidationError(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.something_went_wrong
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
         updateNextButtonEnableState()
     }
 
@@ -372,11 +390,22 @@ class CreateDukanViewModel(
 
     private fun loadDukanCategories() {
         tryToExecute(
-            block = { dukanRepository.getCategories() },
+            block = { dukanManagementRepository.getCategories() },
             onSuccess = { categories ->
                 updateState { copy(dukanCategories = categories.toUiState()) }
             }
         )
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                )
+            )
+        }
     }
 
     private companion object {

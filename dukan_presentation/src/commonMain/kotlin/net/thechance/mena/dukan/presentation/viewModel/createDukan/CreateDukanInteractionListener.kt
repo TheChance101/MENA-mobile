@@ -3,20 +3,19 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
 import com.attafitamim.krop.core.images.ImageSrc
-import net.thechance.mena.dukan.domain.entity.Dukan
 import org.maplibre.compose.camera.CameraPosition
 
 interface CreateDukanInteractionListener {
     fun onButtonClicked()
     fun onBackClicked()
-    fun onColorClicked(color: ColorUiState)
-    fun onStyleClicked(style: Dukan.Style)
+    fun onColorClicked(color: CreateDukanUiState.ColorUiState)
+    fun onStyleClicked(style: CreateDukanUiState.Style)
     fun onClickUploadImage(image: ImageSrc)
     fun onNameChanged(name: String)
-    fun isCategorySelected(): (DukanCategoryUiState) -> Boolean
-    fun onCategorySelected(category: DukanCategoryUiState): Boolean
-    fun onCategoryDeselected(category: DukanCategoryUiState): Boolean
-    fun onCategoryEnabled(category: DukanCategoryUiState): Boolean
+    fun isCategorySelected(): (CreateDukanUiState.DukanCategoryUiState) -> Boolean
+    fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean
+    fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean
+    fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean
     fun onCLickNext()
     fun onImageCrop(image: ImageBitmap)
     fun onCancelCrop()
@@ -24,6 +23,7 @@ interface CreateDukanInteractionListener {
         coordinates: CreateDukanUiState.CoordinatesUiState,
         pointerLocation: DpOffset,
     )
+
     fun onAddressChanged(address: String)
     fun onCameraMoved(camera: CameraPosition)
     fun onEditMapLocationClicked()

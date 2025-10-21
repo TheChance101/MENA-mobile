@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.createDukan.content.compone
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -36,8 +37,11 @@ fun NoImageStyle(
             .height(198.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow)
-            .clickable(onClick = onClick)
-            .then(
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            ).then(
                 if (isSelected) Modifier.border(
                     1.dp,
                     Theme.colorScheme.primary.primary,

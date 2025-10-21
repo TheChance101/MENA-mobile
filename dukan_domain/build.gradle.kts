@@ -32,7 +32,8 @@ kover.reports {
                 "**.entity.**",
                 "**.exceptions.**",
                 "**.repository.**",
-                "**.util.**"
+                "**.util.**",
+                "**.model.**"
             )
         }
     }

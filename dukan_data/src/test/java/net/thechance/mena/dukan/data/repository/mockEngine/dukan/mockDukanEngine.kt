@@ -17,23 +17,25 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import net.thechance.mena.dukan.data.repository.DukanRepositoryImpl
+import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryResponse
+import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanColorsResponse
+import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanNameResponse
+import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
+import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
+import net.thechance.mena.dukan.data.repository.DukanDiscoveryRepositoryImpl
+import net.thechance.mena.dukan.data.repository.DukanManagementRepositoryImpl
+import net.thechance.mena.dukan.data.repository.MediaRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
-import net.thechance.mena.dukan.data.repository.dto.DukanCategoryDto
-import net.thechance.mena.dukan.data.repository.dto.DukanCategoryResponse
-import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
-import net.thechance.mena.dukan.data.repository.dto.DukanColorsResponse
-import net.thechance.mena.dukan.data.repository.dto.DukanDetailsDto
-import net.thechance.mena.dukan.data.repository.dto.DukanNameResponse
-import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
-import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
-import net.thechance.mena.dukan.data.repository.dto.ShelfDto
-import net.thechance.mena.dukan.data.repository.mockEngine.jsonHeaders
-import net.thechance.mena.dukan.data.repository.mockEngine.jsonSerialization
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
+import net.thechance.mena.identity.domain.util.Coordinates
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -56,14 +58,15 @@ fun MockRequestHandleScope.defaultStylesResponse() = respond(
     headers = jsonHeaders
 )
 
+@OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultCategoriesResponse() = respond(
     content = jsonSerialization.encodeToString(
         DukanCategoryResponse.serializer(),
         DukanCategoryResponse(
             listOf(
-                DukanCategoryDto("1", "Category 1", ""),
-                DukanCategoryDto("2", "Category 2", ""),
-                DukanCategoryDto("3", "Category 3", "")
+                DukanCategoryDto(Uuid.random(), "Category 1", ""),
+                DukanCategoryDto(Uuid.random(), "Category 2", ""),
+                DukanCategoryDto(Uuid.random(), "Category 3", "")
             )
         )
     ),
@@ -71,14 +74,15 @@ fun MockRequestHandleScope.defaultCategoriesResponse() = respond(
     headers = jsonHeaders
 )
 
+@OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultColorsResponse() = respond(
     content = jsonSerialization.encodeToString(
         DukanColorsResponse.serializer(),
         DukanColorsResponse(
             listOf(
-                DukanColorDto("Red", "#FF0000"),
-                DukanColorDto("Green", "#00FF00"),
-                DukanColorDto("Blue", "#0000FF")
+                DukanColorDto(Uuid.random(), "#FF0000"),
+                DukanColorDto(Uuid.random(), "#00FF00"),
+                DukanColorDto(Uuid.random(), "#0000FF")
             )
         )
     ),
@@ -116,26 +120,28 @@ fun MockRequestHandleScope.defaultDeleteShelfResponse() = respond(
     headers = jsonHeaders
 )
 
+@OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultShelvesResponse() = respond(
     content = jsonSerialization.encodeToString(
         ListSerializer(ShelfDto.serializer()),
         listOf(
-            ShelfDto("1", "Shelf 1"),
-            ShelfDto("2", "Shelf 2"),
-            ShelfDto("3", "Shelf 3")
+            ShelfDto(Uuid.random(), "Shelf 1"),
+            ShelfDto(Uuid.random(), "Shelf 2"),
+            ShelfDto(Uuid.random(), "Shelf 3")
         )
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
 
+@OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultPagedShelvesResponse() = respond(
     content = jsonSerialization.encodeToString(
         PageResponseDto.serializer(ShelfDto.serializer()),
         PageResponseDto(
             content = listOf(
-                ShelfDto("1", "Shelf 1"),
-                ShelfDto("2", "Shelf 2")
+                ShelfDto(Uuid.random(), "Shelf 1"),
+                ShelfDto(Uuid.random(), "Shelf 2")
             ),
             number = 0,
             size = 2,
@@ -149,16 +155,17 @@ fun MockRequestHandleScope.defaultPagedShelvesResponse() = respond(
     headers = jsonHeaders
 )
 
+@OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultDukanDetailsResponse() = respond(
     content = jsonSerialization.encodeToString(
         DukanDetailsDto.serializer(),
         DukanDetailsDto(
-            id = "dukan123",
-            ownerId = "owner456",
+            id = Uuid.random(),
+            ownerId = Uuid.random(),
             name = "Test Dukan",
             imageUrl = "http://example.com/image.png",
             address = "123 Test St, Cairo, Egypt",
-            color = DukanColorDto("Red", "#FF0000"),
+            color = DukanColorDto(Uuid.random(), "#FF0000"),
             style = "WIDE_IMAGE",
             latitude = 30.0444,
             longitude = 31.2357
@@ -198,6 +205,7 @@ fun createDukanHttpClient(
             "/dukan/shelf/$shelfId" -> deleteResponse?.invoke(this) ?: defaultDeleteShelfResponse()
             "/dukan/shelf/$dukanId" ->
                 pagedShelvesResponse?.invoke(this, request) ?: defaultPagedShelvesResponse()
+
             "/dukan/$dukanId" -> dukanDetailsResponse?.invoke(this) ?: defaultDukanDetailsResponse()
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
@@ -233,8 +241,8 @@ fun createDukanRepository(
     uploadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): DukanRepositoryImpl {
-    return DukanRepositoryImpl(
+): DukanManagementRepository {
+    return DukanManagementRepositoryImpl(
         client = createDukanHttpClient(
             createResponse,
             stylesResponse,
@@ -244,10 +252,54 @@ fun createDukanRepository(
             uploadResponse,
             nameResponse,
             dukanDetailsResponse = dukanDetailsResponse
-        ),
-        locationService = LocationService(FakeAddressesRepository())
+        )
     )
 }
+
+fun createDukanManagementRepository(
+    createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    stylesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    categoriesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    colorsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    statusResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+): DukanManagementRepositoryImpl {
+    return DukanManagementRepositoryImpl(
+        client = createDukanHttpClient(
+            createResponse = createResponse,
+            stylesResponse = stylesResponse,
+            categoriesResponse = categoriesResponse,
+            colorsResponse = colorsResponse,
+            statusResponse = statusResponse,
+            nameResponse = nameResponse,
+            dukanDetailsResponse = dukanDetailsResponse
+        )
+    )
+}
+
+fun createMediaRepository(
+    uploadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+): MediaRepositoryImpl {
+    return MediaRepositoryImpl(
+        client = createDukanHttpClient(
+            uploadResponse = uploadResponse
+        )
+    )
+}
+
+fun createDukanDiscoveryRepository(
+    pagedShelvesResponse: (suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData)? = null,
+    locationService: LocationService = LocationService(FakeAddressesRepository())
+): DukanDiscoveryRepositoryImpl {
+    return DukanDiscoveryRepositoryImpl(
+        client = createDukanHttpClient(
+            pagedShelvesResponse = pagedShelvesResponse
+        ),
+        locationService = locationService
+    )
+}
+
 
 @OptIn(ExperimentalUuidApi::class)
 private class FakeAddressesRepository : AddressesRepository {
@@ -275,5 +327,13 @@ private class FakeAddressesRepository : AddressesRepository {
     override suspend fun deleteAddress(addressId: Uuid) {}
     override suspend fun getActiveAddress(): Address? {
         return null
+    }
+
+    override suspend fun getCurrentLocation(): Coordinates? {
+        return null
+    }
+
+    override suspend fun getLocationName(coordinates: Coordinates): String {
+        return ""
     }
 }

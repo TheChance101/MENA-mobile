@@ -4,6 +4,7 @@ import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiColor
+import kotlin.uuid.ExperimentalUuidApi
 
 fun Dukan.toUiState() = DukanDetailsUiState.DukanInfo(
     name = name,
@@ -17,14 +18,16 @@ fun Dukan.toUiState() = DukanDetailsUiState.DukanInfo(
 )
 
 
+@OptIn(ExperimentalUuidApi::class)
 fun Shelf.toUiState() = DukanDetailsUiState.ShelfUiState(
-    id = id,
+    id = id.toString(),
     name = name
 )
 
 
+@OptIn(ExperimentalUuidApi::class)
 fun Product.toUiState() = DukanDetailsUiState.ProductUiState(
-    id = id,
+    id = id.toString(),
     name = name,
     description = description,
     price = price,

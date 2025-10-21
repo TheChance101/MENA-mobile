@@ -34,10 +34,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
-import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreenState
+import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
 
 @Composable
 internal fun SurahAppBar(
@@ -94,18 +93,18 @@ internal fun BasmalaHeader(
 
 @Composable
 internal fun AnimatedAyahActionButtons(
-    state: SurahScreenState,
+    state: SurahUiState,
     listener: SurahInteractionListener,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
         visible = state.isAyahActionButtonsVisible,
-        enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-        exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+        enter = fadeIn(animationSpec = tween()),
+        exit = fadeOut(animationSpec = tween()),
         modifier = modifier
     ) {
         if (isValidAyahSelection(state)) {
-            val selectedAyah = state.selectedAyahIndex?.let { state.ayatOfSurah[it] }
+            val selectedAyah = state.selectedAyahNumber?.let { state.ayatOfSurah[it.dec()] }
             AyahActionButtons(
                 onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
                 onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
@@ -115,10 +114,10 @@ internal fun AnimatedAyahActionButtons(
     }
 }
 
-private fun isValidAyahSelection(state: SurahScreenState): Boolean {
-    return state.selectedAyahIndex != null &&
-            state.selectedAyahIndex >= 0 &&
-            state.selectedAyahIndex < state.ayatOfSurah.size
+private fun isValidAyahSelection(state: SurahUiState): Boolean {
+    return state.selectedAyahNumber != null &&
+            state.selectedAyahNumber >= 0 &&
+            state.selectedAyahNumber < state.ayatOfSurah.size
 }
 
 @Composable
@@ -128,11 +127,11 @@ fun getAyahTextStyle() = Theme.typography.quran.large.copy(
 )
 
 @Composable
-internal fun UnifiedChunkText(
+internal fun UnifiedChunkAyat(
     chunkAyat: List<Ayah>,
     selectedAyahIndex: Int?,
     textLayoutResult:TextLayoutResult?,
-    onTextLayoutResultChange: (TextLayoutResult?) -> Unit,
+    onTextLayoutResultChange: (TextLayoutResult) -> Unit,
     onLongPress: (Ayah) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -177,9 +176,7 @@ private fun getAyahTextColor(selectedAyahIndex: Int?, currentIndex: Int): Color 
     }
 }
 
-private fun findClickedAyahIndexFromPosition(
-    ayat: List<Ayah>, position: Int
-): Int {
+private fun findClickedAyahIndexFromPosition(ayat: List<Ayah>, position: Int): Int {
     var currentPosition = 0
     ayat.forEachIndexed { index, ayah ->
         val end = currentPosition + ayah.content.length

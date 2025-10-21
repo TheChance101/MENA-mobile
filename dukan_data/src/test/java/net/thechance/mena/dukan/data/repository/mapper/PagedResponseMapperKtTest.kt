@@ -2,7 +2,8 @@ package net.thechance.mena.dukan.data.repository.mapper
 
 
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.Test
 import kotlin.test.assertEquals

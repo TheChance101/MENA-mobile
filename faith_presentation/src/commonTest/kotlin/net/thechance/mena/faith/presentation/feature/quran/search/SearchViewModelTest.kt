@@ -13,13 +13,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
-import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.quran
-import mena.faith_presentation.generated.resources.search_in_surah_hint
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.QuranRepository
-import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
-import net.thechance.mena.faith.presentation.util.provider.StringResourceProvider
+import net.thechance.mena.faith.presentation.feature.quran.search.args.SearchArgs
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -31,27 +27,19 @@ class SearchViewModelTest {
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var testViewModel: SearchViewModel
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
-    private val searchArgs: ISearchArgs = mock(mode = MockMode.autofill)
-    private lateinit var stringResourceProvider: StringResourceProvider
+    private val searchArgs: SearchArgs = mock(mode = MockMode.autofill)
+
 
     @BeforeTest
     fun setup() {
         testDispatcher = StandardTestDispatcher()
-        stringResourceProvider = mock(mode = MockMode.autofill)
-
-        everySuspend { stringResourceProvider.getString(Res.string.quran) } returns QURAN_TEXT
-        everySuspend {
-            stringResourceProvider.getString(Res.string.search_in_surah_hint, any())
-        } returns SEARCH_HINT
-
         everySuspend { searchArgs.surahId } returns null
         everySuspend { searchArgs.surahName } returns null
 
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
+            dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
     }
@@ -177,7 +165,6 @@ class SearchViewModelTest {
         assertEquals(resultsCount, testViewModel.uiState.value.searchResult.size)
     }
 
-    // ============ Navigation Tests ============
 
     @Test
     fun `onBackClick should navigate back when called`() = runTest {
@@ -194,15 +181,12 @@ class SearchViewModelTest {
         runTest {
             everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
             everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
-            everySuspend {
-                stringResourceProvider.getString(Res.string.search_in_surah_hint, TEST_SURAH_NAME)
-            } returns "Search in $TEST_SURAH_NAME"
 
             testViewModel = SearchViewModel(
                 searchArgs = searchArgs,
                 repository = quranRepository,
                 dispatcher = testDispatcher,
-                stringResourceProvider = stringResourceProvider
+
             )
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -234,8 +218,6 @@ class SearchViewModelTest {
         }
     }
 
-    // ============ State Initialization Tests ============
-
     @Test
     fun `state should initialize with correct surahId and surahName from args`() = runTest {
         everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
@@ -244,8 +226,7 @@ class SearchViewModelTest {
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
+            dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -264,26 +245,6 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `init should set hint with surah name when surahName is not null`() = runTest {
-        val expectedHint = TEST_SEARCH_BY_SURAH_NAME
-        everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
-        everySuspend {
-            stringResourceProvider.getString(Res.string.search_in_surah_hint, TEST_SURAH_NAME)
-        } returns expectedHint
-
-        testViewModel = SearchViewModel(
-            searchArgs = searchArgs,
-            repository = quranRepository,
-            dispatcher = testDispatcher,
-            stringResourceProvider = stringResourceProvider
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertEquals(expectedHint, testViewModel.uiState.value.hint)
-    }
-
-    @Test
     fun `test searchForAyahInSurah is called when surahId is present`() = runTest {
         // Given
         every { searchArgs.surahId } returns TEST_SURAH_ID
@@ -296,7 +257,7 @@ class SearchViewModelTest {
         } returns dummyAyat
 
         testViewModel =
-            SearchViewModel(searchArgs, quranRepository, testDispatcher, stringResourceProvider)
+            SearchViewModel(searchArgs, quranRepository, testDispatcher)
 
         // When
         testViewModel.onQueryChange(TEST_QUERY)
@@ -323,10 +284,8 @@ class SearchViewModelTest {
         const val TEST_SURAH_ID = 1
         const val TEST_SURAH_NAME = "Al-Fatiha"
         const val TEST_FIRST_SURAH = "AlFatihah"
-        const val TEST_SEARCH_BY_SURAH_NAME = "Search in Al-Fatiha"
+
         const val EMPTY_STRING = ""
-        const val QURAN_TEXT = "Quran"
-        const val SEARCH_HINT = "Search in..."
         const val SINGLE_CHAR_QUERY = "ا"
         const val SEARCH_DELAY = 1000L
         const val HALF_SEARCH_DELAY = 500L

@@ -43,24 +43,14 @@ internal fun MainContainerScreen(
 
 @Composable
 private fun MainContainerScreenContent(state: MainContainerState) {
-    when (state.isCategoriesAlreadySelectedByUser) {
-        null -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Theme.colorScheme.background.surface.copy(alpha = 0.7f)),
-                contentAlignment = Alignment.Center
-            ) {
-                DotsProgressIndicator()
-            }
-        }
-
-        else -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Theme.colorScheme.background.surface)
-            )
+    if (state.isCategoriesAlreadySelectedByUser == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Theme.colorScheme.background.surface.copy(alpha = 0.7f)),
+            contentAlignment = Alignment.Center
+        ) {
+            DotsProgressIndicator()
         }
     }
 }

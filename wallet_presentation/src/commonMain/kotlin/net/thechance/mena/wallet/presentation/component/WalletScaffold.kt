@@ -26,10 +26,10 @@ fun WalletScaffold(
     topBar: (@Composable () -> Unit)? = null,
     snackBar: (@Composable () -> Unit)? = null,
     overlays: (ScaffoldScope.() -> Unit)? = null,
-    toast: (@Composable () -> Unit)? = null,
     bottomContent: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     errorState: ErrorState? = null,
+    isLoading: Boolean = false,
     onRetry: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
@@ -43,14 +43,19 @@ fun WalletScaffold(
             topBar = { topBar?.invoke() },
             overlays = overlays ?: {},
             content = {
-                when (errorState) {
-                    is ErrorState.NoInternet -> {
+                when {
+                    errorState is ErrorState.NoInternet -> {
                         ErrorView(
                             image = painterResource(Res.drawable.img_no_internet),
                             title = stringResource(Res.string.no_internet_title),
                             description = stringResource(Res.string.no_internet_content),
                             onRetry = onRetry ?: {}
                         )
+                    }
+                    isLoading -> {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
                     }
                     else -> {
                         content()
@@ -65,12 +70,6 @@ fun WalletScaffold(
                     .align(Alignment.TopCenter)
                     .padding(start = 16.dp, end = 16.dp, top = 68.dp)
             ) { snackBarContent() }
-        }
-
-        toast?.let { toast ->
-            Box(
-                modifier = Modifier.align(Alignment.Center)
-            ) { toast() }
         }
 
         bottomContent?.let {
