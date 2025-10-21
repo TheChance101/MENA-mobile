@@ -94,6 +94,22 @@ class ManageTrendsViewModelTest {
         }
     }
 
+    @Test
+    fun `onRetryClick should get reels when called`() = runTest {
+        everySuspend { repository.getAllCurrentUserReels(1) } returns reels
+
+        viewModel.onRetryClick()
+
+        viewModel.state.test {
+            skipItems(1)
+            val successState = awaitItem()
+            assertThat(successState.reels.asSnapshot()).isEqualTo(expectedReelUiStateList)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+
+
     private companion object {
         const val REEL_ID = "1"
         val reel = Reel(
