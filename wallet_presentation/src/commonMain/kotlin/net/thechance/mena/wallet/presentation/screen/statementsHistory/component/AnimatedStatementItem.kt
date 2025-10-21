@@ -13,10 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
@@ -24,7 +20,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
@@ -40,14 +35,12 @@ fun AnimatedStatementItem(
     cardOffsetX: Int,
     historyIconOffsetX: Int,
     deleteButtonOffsetX: Int,
-    onDeleteClicked: (onDeleteComplete: (isSuccess: Boolean) -> Unit) -> Unit,
-    onStatementCardClicked: (onViewStatementAvailable: (isPdfFound: Boolean) -> Unit) -> Unit
+    onDeleteClick: () -> Unit,
+    onStatementCardClicked: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    var isDeleting by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
-        targetValue = if (isDeleting) 0f else 1f,
+        targetValue = if (statement.isDeleted) 0f else 1f,
         animationSpec = tween(
             durationMillis = 300,
             easing = LinearEasing
@@ -55,23 +48,12 @@ fun AnimatedStatementItem(
     )
 
     val heightProgress by animateFloatAsState(
-        targetValue = if (isDeleting) 0f else 1f,
+        targetValue = if (statement.isDeleted) 0f else 1f,
         animationSpec = tween(
             durationMillis = 300,
             delayMillis = 220,
             easing = LinearEasing
-        ),
-        finishedListener = {
-            if (isDeleting && it == 0f) {
-                onDeleteClicked { isSuccess ->
-                    scope.launch {
-                        if (!isSuccess) {
-                            isDeleting = false
-                        }
-                    }
-                }
-            }
-        }
+        )
     )
 
     Column(
@@ -92,10 +74,8 @@ fun AnimatedStatementItem(
             contentAlignment = Alignment.Center
         ) {
             StatementDeleteButton(
-                isDeleting = isDeleting,
-                onDeleteClick = {
-                    isDeleting = true
-                },
+                isDeleting = statement.isDeleted,
+                onDeleteClick = onDeleteClick,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .offset { IntOffset(deleteButtonOffsetX, 0) }
@@ -106,17 +86,7 @@ fun AnimatedStatementItem(
                 endDate = statement.endDate,
                 totalInflow = statement.totalInflow.toString(),
                 totalOutflow = statement.totalOutflow.toString(),
-                onStatementCardClicked = {
-                    if (!isEditMode) {
-                        onStatementCardClicked { isPdfFound ->
-                            scope.launch {
-                                if (!isPdfFound) {
-                                    isDeleting = true
-                                }
-                            }
-                        }
-                    }
-                },
+                onStatementCardClicked = { if (!isEditMode) onStatementCardClicked() },
                 isEditMode = isEditMode,
                 historyIconOffsetX = historyIconOffsetX,
                 modifier = Modifier
@@ -128,7 +98,7 @@ fun AnimatedStatementItem(
                     }
             )
         }
-        if (isDividerVisible && !isDeleting) {
+        if (isDividerVisible && !statement.isDeleted) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -150,14 +120,15 @@ private fun AnimatedStatementItemPreview() {
                 endDate = "Aug 27 2025",
                 totalInflow = 2000.0,
                 totalOutflow = 4200.0,
-                fileName = ""
+                fileName = "",
+                isDeleted = false
             ),
             isDividerVisible = true,
             cardOffsetX = 10,
             historyIconOffsetX = 10,
             deleteButtonOffsetX = 10,
             isEditMode = false,
-            onDeleteClicked = {},
+            onDeleteClick = {},
             onStatementCardClicked = {}
         )
     }

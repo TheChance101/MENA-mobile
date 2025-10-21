@@ -57,25 +57,19 @@ class StatementsHistoryViewModel(
         loadNextStatements()
     }
 
-    override fun onStatementCardClicked(
-        statement: StatementsHistoryScreenState.StatementItem,
-        onViewStatementAvailable: (isPdfFound: Boolean) -> Unit
-    ) {
+    override fun onStatementCardClicked(statement: StatementsHistoryScreenState.StatementItem) {
         val fileLocation = StorageLocation.Downloads(statement.fileName)
 
         tryToExecute(
             callee = { pdfHandler.checkIfPdfExists(fileLocation) },
             onSuccess = { fileExists ->
                 if (fileExists) {
-                    onViewStatementAvailable(true)
                     sendEffect(StatementsHistoryEffect.NavigateToStatementDetails(fileLocation))
                 } else {
-                    onViewStatementAvailable(false)
                     deleteNotFoundStatement(statement)
                 }
             },
             onError = {
-                onViewStatementAvailable(false)
                 showSnackBar(
                     title = stringProvider.getString(Res.string.unknown_error_title),
                     message = stringProvider.getString(Res.string.unknown_error_description),
@@ -86,6 +80,19 @@ class StatementsHistoryViewModel(
         )
     }
 
+
+    private fun markStatementAsDeleted(id: Uuid) {
+        updateState { current ->
+            val updatedStatements = current.statements.map { statement ->
+                if (statement.id == id) {
+                    statement.copy(isDeleted = true)
+                } else {
+                    statement
+                }
+            }
+            current.copy(statements = updatedStatements)
+        }
+    }
 
     private fun deleteNotFoundStatement(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
@@ -99,7 +106,7 @@ class StatementsHistoryViewModel(
     private suspend fun onDeleteNotFoundStatementSuccess(id: Uuid) {
         delay(DELETE_DELAY_MS)
 
-        removeStatementFromState(id = id)
+        markStatementAsDeleted(id = id)
 
         showSnackBar(
             title = stringProvider.getString(Res.string.file_missing),
@@ -116,12 +123,6 @@ class StatementsHistoryViewModel(
         )
     }
 
-    private fun removeStatementFromState(id: Uuid) {
-        updateState { current ->
-            current.copy(statements = current.statements.filter { it.id != id })
-        }
-    }
-
     override fun onEditClicked() {
         updateState { it.copy(isEditMode = true) }
     }
@@ -130,25 +131,16 @@ class StatementsHistoryViewModel(
         updateState { it.copy(isEditMode = false) }
     }
 
-    override fun onDeleteClicked(
-        statement: StatementsHistoryScreenState.StatementItem,
-        onDeleteComplete: (isSuccess: Boolean) -> Unit
-    ) {
+    override fun onDeleteClicked(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
             callee = { deleteStatementPdf(statement = statement) },
-            onSuccess = {
-                onDeleteStatementSuccess(
-                    id = statement.id,
-                    onDeleteComplete = onDeleteComplete
-                )
-            },
+            onSuccess = { onDeleteStatementSuccess(id = statement.id) },
             onError = {
                 showSnackBar(
                     title = stringProvider.getString(Res.string.unknown_error_title),
                     message = stringProvider.getString(Res.string.unknown_error_description),
                     isSuccess = false
                 )
-                onDeleteComplete(false)
             },
             dispatcher = dispatcher
         )
@@ -166,14 +158,10 @@ class StatementsHistoryViewModel(
 
     private suspend fun onDeleteStatementSuccess(
         id: Uuid,
-        onDeleteComplete: (Boolean) -> Unit
     ) {
-        delay(DELETE_DELAY_MS)
+        markStatementAsDeleted(id = id)
 
-        removeStatementFromState(id = id)
         updateState { it.copy(isEditMode = it.statements.isNotEmpty()) }
-
-        onDeleteComplete(true)
     }
 
     private fun onPaginationLoading(isLoading: Boolean) {
