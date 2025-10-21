@@ -23,11 +23,12 @@ import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.domain.entity.TransactionStatus
+import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

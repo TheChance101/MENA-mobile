@@ -79,20 +79,20 @@ class ManageDukanViewModel(
         emitEffect(ManageDukanEffect.NavigateToAddShelf)
     }
 
-    override fun onProductClick(product: ProductUiState) {
+    override fun onProductClick(product: ManageDukanUiState.ProductUiState) {
         emitEffect(ManageDukanEffect.NavigateToProductDetails)
     }
 
-    override fun isShelfSelected(shelf: ShelfUiState): Boolean {
+    override fun isShelfSelected(shelf: ManageDukanUiState.ShelfUiState): Boolean {
         return state.value.selectedShelf == shelf
     }
 
-    override fun onShelfSelected(shelf: ShelfUiState) {
+    override fun onShelfSelected(shelf: ManageDukanUiState.ShelfUiState) {
         if (state.value.selectedShelf != shelf) {
             updateState {
                 copy(
                     selectedShelf = shelf,
-                    productState = ProductsState.LOADING,
+                    productState = ManageDukanUiState.ProductsState.LOADING,
                     products = PagingData()
                 )
             }
@@ -106,34 +106,41 @@ class ManageDukanViewModel(
     }
 
     private fun loadShelves() {
+
+
         tryToExecute(
-            onStart = {
-                updateState {
-                    copy(
-                        shelvesState = ShelvesState.LOADING,
-                        productState = ProductsState.LOADING,
-                        products = PagingData()
-                    )
-                }
-            },
+            onStart = ::onLoadShelvesStart,
             block = shelfRepository::getMyDukanShelves,
             onSuccess = ::handleShelvesLoaded,
             onError = { handleLoadShelvesError() }
         )
     }
 
+    private fun onLoadShelvesStart() {
+        updateState {
+            copy(
+                shelvesState = ManageDukanUiState.ShelvesState.LOADING,
+                productState = ManageDukanUiState.ProductsState.LOADING,
+                products = PagingData()
+            )
+        }
+    }
+
     private fun handleLoadShelvesError() {
         updateState {
             copy(
-                shelvesState = ShelvesState.EMPTY,
-                productState = ProductsState.EMPTY,
+                shelvesState = ManageDukanUiState.ShelvesState.EMPTY,
+                productState = ManageDukanUiState.ProductsState.EMPTY,
                 products = PagingData()
             )
         }
     }
 
     private fun handleShelvesLoaded(shelves: List<Shelf>) {
-        val shelvesState = if (shelves.isEmpty()) ShelvesState.EMPTY else ShelvesState.LOADED
+        val shelvesState = if (shelves.isEmpty())
+            ManageDukanUiState.ShelvesState.EMPTY
+        else
+            ManageDukanUiState.ShelvesState.LOADED
         updateState {
             copy(
                 shelves = shelves.map(Shelf::toUiState),
@@ -159,19 +166,21 @@ class ManageDukanViewModel(
 
     private fun loadProductsFromRepository() {
         tryToCollect(
-            onStart = {
-                updateState {
-                    copy(
-                        productState = ProductsState.LOADING,
-                        products = PagingData()
-                    )
-                }
-            },
+            onStart = ::onLoadProductsFromRepositoryStart,
             block = { pager.flow },
             onCollect = ::onProductsLoaded,
         )
         viewModelScope.launch {
             pager.load()
+        }
+    }
+
+    private fun onLoadProductsFromRepositoryStart() {
+        updateState {
+            copy(
+                productState = ManageDukanUiState.ProductsState.LOADING,
+                products = PagingData()
+            )
         }
     }
 
@@ -191,7 +200,7 @@ class ManageDukanViewModel(
         val hasProducts = state.value.products.items.isNotEmpty()
         updateState {
             copy(
-                deleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(
+                deleteShelfConfirmationDialogUiState = ManageDukanUiState.DeleteShelfConfirmationDialogUiState(
                     title = updateDialogTitle(hasProducts),
                     description = updateDialogDescription(hasProducts),
                     type = updateDialogType(hasProducts),
@@ -211,8 +220,11 @@ class ManageDukanViewModel(
         return if (!hasProducts) Res.string.delete_shelf_description else Res.string.dismiss_description
     }
 
-    private fun updateDialogType(hasProducts: Boolean): ConfirmDialogType {
-        return if (!hasProducts) ConfirmDialogType.DELETE else ConfirmDialogType.DISMISS
+    private fun updateDialogType(hasProducts: Boolean): ManageDukanUiState.ConfirmDialogType {
+        return if (hasProducts.not())
+            ManageDukanUiState.ConfirmDialogType.DELETE
+        else
+            ManageDukanUiState.ConfirmDialogType.DISMISS
     }
 
     override fun onDeleteConfirmed(shelfId: String) {
@@ -231,7 +243,7 @@ class ManageDukanViewModel(
 
     private fun onDeleteShelfError(throwable: Throwable) {
         onDismissDeleteShelfConfirmationDialog()
-        val messageRes = when(throwable){
+        val messageRes = when (throwable) {
             is NoInternetException -> Res.string.no_internet_message
             is DeletionNotAllowedException -> Res.string.error_for_delete_shelf
             else -> Res.string.error_general
@@ -239,11 +251,11 @@ class ManageDukanViewModel(
         showSnackBar(type = SnackBarType.ERROR, message = messageRes)
     }
 
-    private fun onProductsLoaded(products: PagingData<ProductUiState>) {
+    private fun onProductsLoaded(products: PagingData<ManageDukanUiState.ProductUiState>) {
         val productState = when {
-            products.isLoading && products.items.isEmpty() -> ProductsState.LOADING
-            products.items.isEmpty() -> ProductsState.EMPTY
-            else -> ProductsState.LOADED
+            products.isLoading && products.items.isEmpty() -> ManageDukanUiState.ProductsState.LOADING
+            products.items.isEmpty() -> ManageDukanUiState.ProductsState.EMPTY
+            else -> ManageDukanUiState.ProductsState.LOADED
         }
         updateState {
             copy(
@@ -269,7 +281,7 @@ class ManageDukanViewModel(
         }
     }
 
-    private fun showSnackBar(message: StringResource, type: SnackBarType){
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
         updateState {
             copy(
                 snackBarState = SnackBarUiState(

@@ -19,14 +19,13 @@ import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
-import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DukanException
-import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
@@ -471,13 +470,14 @@ class ManageDukanViewModelTest {
                     products = PagingData()
                 )
             }
-            val deleteShelfConfirmationDialogUiState = DeleteShelfConfirmationDialogUiState(
-                title = Res.string.delete_shelf_title,
-                description = Res.string.delete_shelf_description,
-                type = ConfirmDialogType.DELETE,
-                shelfId = "1",
-                isDialogVisible = true
-            )
+            val deleteShelfConfirmationDialogUiState =
+                ManageDukanUiState.DeleteShelfConfirmationDialogUiState(
+                    title = Res.string.delete_shelf_title,
+                    description = Res.string.delete_shelf_description,
+                    type = ManageDukanUiState.ConfirmDialogType.DELETE,
+                    shelfId = "1",
+                    isDialogVisible = true
+                )
             manageDukanViewModel.onShowDeleteShelfDailog(
                 shelfId = "1"
             )
@@ -528,19 +528,17 @@ class ManageDukanViewModelTest {
         }
 }
 
-// ===== FAKE DATA FUNCTIONS =====
-
-private fun dummyShelvesUiState(): List<ShelfUiState> {
+private fun dummyShelvesUiState(): List<ManageDukanUiState.ShelfUiState> {
     return listOf(
-        ShelfUiState(
+        ManageDukanUiState.ShelfUiState(
             id = "shelf_1",
             name = "Electronics"
         ),
-        ShelfUiState(
+        ManageDukanUiState.ShelfUiState(
             id = "shelf_2",
             name = "Clothing"
         ),
-        ShelfUiState(
+        ManageDukanUiState.ShelfUiState(
             id = "shelf_3",
             name = "Books"
         )
@@ -590,5 +588,4 @@ private fun fakeProducts(): List<Product> {
             imageUrls = listOf("https://example.com/tshirt.jpg")
         )
     )
-
 }

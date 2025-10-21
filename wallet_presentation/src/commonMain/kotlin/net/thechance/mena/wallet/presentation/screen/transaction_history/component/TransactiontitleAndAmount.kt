@@ -12,7 +12,9 @@ import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionTitleAndAmount(
@@ -57,6 +59,17 @@ fun TransactionTitleAndAmount(
                 .align(Alignment.CenterVertically)
                 .padding(start = 8.dp),
             amount = amount
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TransactionTitleAndAmountPreview() {
+    MenaTheme {
+        TransactionTitleAndAmount(
+            transactionTitle = "Send Money",
+            amount = "500.00"
         )
     }
 }

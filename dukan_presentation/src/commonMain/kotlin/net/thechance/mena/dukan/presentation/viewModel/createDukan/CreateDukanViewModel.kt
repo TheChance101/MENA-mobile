@@ -68,12 +68,12 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onColorClicked(color: ColorUiState) {
+    override fun onColorClicked(color: CreateDukanUiState.ColorUiState) {
         updateState { copy(selectedColor = color) }
         updateNextButtonEnableState()
     }
 
-    override fun onStyleClicked(style: Dukan.Style) {
+    override fun onStyleClicked(style: CreateDukanUiState.Style) {
         updateState { copy(selectedStyle = style) }
         updateNextButtonEnableState()
     }
@@ -101,8 +101,8 @@ class CreateDukanViewModel(
 
     private fun updateScreenStateWithStyles(dukanStyles: List<Dukan.Style>) {
         val stylesUiState = dukanStyles.map { style ->
-            DukanStyleUiState(
-                style = style,
+            CreateDukanUiState.DukanStyleUiState(
+                style = style.toUiStyle(),
                 name = style.toUiStyleName()
             )
         }
@@ -162,11 +162,11 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun isCategorySelected(): (DukanCategoryUiState) -> Boolean {
+    override fun isCategorySelected(): (CreateDukanUiState.DukanCategoryUiState) -> Boolean {
         return { category -> state.value.selectedCategories.contains(category) }
     }
 
-    override fun onCategorySelected(category: DukanCategoryUiState): Boolean {
+    override fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         if (!canSelectMoreCategories(state.value)) return false
 
         addCategoryToSelection(category)
@@ -174,13 +174,13 @@ class CreateDukanViewModel(
         return true
     }
 
-    override fun onCategoryDeselected(category: DukanCategoryUiState): Boolean {
+    override fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         removeCategoryFromSelection(category)
         updateNextButtonEnableState()
         return true
     }
 
-    override fun onCategoryEnabled(category: DukanCategoryUiState): Boolean {
+    override fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         return canSelectMoreCategories(state.value) ||
                 state.value.selectedCategories.contains(category)
     }
@@ -189,11 +189,11 @@ class CreateDukanViewModel(
         return currentState.selectedCategories.size < MAX_CATEGORIES
     }
 
-    private fun addCategoryToSelection(category: DukanCategoryUiState) {
+    private fun addCategoryToSelection(category: CreateDukanUiState.DukanCategoryUiState) {
         updateState { copy(selectedCategories = selectedCategories + category) }
     }
 
-    private fun removeCategoryFromSelection(category: DukanCategoryUiState) {
+    private fun removeCategoryFromSelection(category: CreateDukanUiState.DukanCategoryUiState) {
         updateState { copy(selectedCategories = selectedCategories - category) }
     }
 

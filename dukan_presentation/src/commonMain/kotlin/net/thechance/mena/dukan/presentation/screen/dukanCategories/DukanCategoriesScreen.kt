@@ -34,10 +34,10 @@ import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanCategoriesInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.previewCategories
-import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.CategoryUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesUiState.CategoryUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

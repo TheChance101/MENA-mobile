@@ -1,9 +1,18 @@
 package net.thechance.mena.wallet.repository
 
 import dev.mokkery.MockMode
-import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.engine.mock.respond
+import io.ktor.client.request.HttpRequestData
+import io.ktor.client.request.HttpResponseData
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -12,35 +21,37 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.data.database.StatementDao
-import net.thechance.mena.wallet.data.database.StatementWithMetaDataDto
+import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
-import net.thechance.mena.wallet.data.repository.statement.datasource.remote.StatementRemoteDataSource
+import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.time.ExperimentalTime
 
 class StatementRepositoryImplTest {
 
     private lateinit var statementRepository: StatementRepositoryImpl
-    private lateinit var statementRemoteDataSource: StatementRemoteDataSource
+    private lateinit var networkClient: NetworkClient
     private lateinit var statementDao: StatementDao
     private val testDispatcher = StandardTestDispatcher()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setup() {
-        statementRemoteDataSource = mock<StatementRemoteDataSource>(mode = MockMode.autofill)
         statementDao = mock<StatementDao>(mode = MockMode.autofill)
-        statementRepository =
-            StatementRepositoryImpl(statementRemoteDataSource, statementDao)
         Dispatchers.setMain(testDispatcher)
     }
 
     @Test
     fun `getStatementWithMetadata should return statement with metadata when API call is successful`() =
         runTest(testDispatcher) {
-            everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statementDto
+            networkClient = createNetworkClient(getRespond = successPdfResponse)
+            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             val result = statementRepository.getStatementWithMetadata()
 
@@ -53,26 +64,114 @@ class StatementRepositoryImplTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `getStatementWithMetadata should fetch new data after expiration time`() = runTest(testDispatcher) {
-        everySuspend { statementRemoteDataSource.getStatementWithMetaData(null) } returns statementDto
+    fun `getStatementWithMetadata should fetch new data after expiration time`() =
+        runTest(testDispatcher) {
+            networkClient = createNetworkClient(getRespond = successPdfResponse)
+            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
-        val firstResult = statementRepository.getStatementWithMetadata()
-        advanceUntilIdle()
+            val firstResult = statementRepository.getStatementWithMetadata()
+            advanceUntilIdle()
 
-        val secondResult = statementRepository.getStatementWithMetadata()
+            val secondResult = statementRepository.getStatementWithMetadata()
 
-        assertContentEquals(pdfBytes, firstResult.byteArray)
-        assertContentEquals(pdfBytes, secondResult.byteArray)
+            assertContentEquals(pdfBytes, firstResult.byteArray)
+            assertContentEquals(pdfBytes, secondResult.byteArray)
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `getStatements should throw UnknownException when dao throws`() = runTest(testDispatcher) {
+        // arrange
+        networkClient = createNetworkClient()
+        statementDao = mock(mode = MockMode.autofill)
+        everySuspend {
+            statementDao.getAllStatement(
+                limit = any(),
+                offset = any()
+            )
+        } throws Exception("db error")
+        statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+
+        // act & assert
+        assertFailsWith<UnknownException> {
+            statementRepository.getStatements(page = 1, pageSize = 10)
+        }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `insertStatement should throw UnknownException when dao throws`() =
+        runTest(testDispatcher) {
+            // arrange
+            networkClient = createNetworkClient()
+            statementDao = mock(mode = MockMode.autofill)
+            everySuspend { statementDao.insertStatement(any()) } throws Exception("insert failed")
+            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+
+            // act & assert
+            assertFailsWith<UnknownException> {
+                statementRepository.insertStatement(testStatement())
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `deleteStatementById should throw UnknownException when dao throws`() =
+        runTest(testDispatcher) {
+            // arrange
+            networkClient = createNetworkClient()
+            statementDao = mock(mode = MockMode.autofill)
+            everySuspend { statementDao.deleteStatementById(any()) } throws Exception("delete failed")
+            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+
+            // act & assert
+            assertFailsWith<UnknownException> {
+                statementRepository.deleteStatementById(123L)
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `getStatementById should throw UnknownException when dao throws`() =
+        runTest(testDispatcher) {
+            // arrange
+            networkClient = createNetworkClient()
+            statementDao = mock(mode = MockMode.autofill)
+            everySuspend { statementDao.getStatementById(any()) } throws Exception("get by id failed")
+            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+
+            // act & assert
+            assertFailsWith<UnknownException> {
+                statementRepository.getStatementById(123L)
+            }
+        }
+
+    @OptIn(ExperimentalTime::class)
+    private fun testStatement() = Statement(
+        id = 0L,
+        startDate = LocalDate.parse("2025-01-01"),
+        endDate = LocalDate.parse("2025-01-31"),
+        totalInflows = 100.0,
+        totalOutflows = 50.0,
+        fileName = "test-statement.pdf"
+    )
 
     private companion object {
         val pdfBytes = ByteArray(5) { it.toByte() }
-        val statementDto = StatementWithMetaDataDto(
-            byteArray = pdfBytes,
-            startDate = "2025-09-25",
-            endDate = "2025-10-06",
-            totalInflows = 99.80,
-            totalOutflows = 520.75
-        )
+
+        val successPdfResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
+            {
+                respond(
+                    content = pdfBytes,
+                    status = HttpStatusCode.OK,
+                    headers = headersOf(
+                        HttpHeaders.ContentType to listOf(ContentType.Application.Pdf.toString()),
+                        "X-Statement-Total-Inflows" to listOf("99.80"),
+                        "X-Statement-Total-Outflows" to listOf("520.75"),
+                        "X-Statement-Start-Date" to listOf("2025-09-25"),
+                        "X-Statement-End-Date" to listOf("2025-10-06")
+                    )
+                )
+            }
     }
 }
