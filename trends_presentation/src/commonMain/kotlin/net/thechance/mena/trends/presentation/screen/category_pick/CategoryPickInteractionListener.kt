@@ -4,4 +4,5 @@ internal interface CategoryPickInteractionListener {
     fun onCategoryClick(categoryId: String)
     fun onNextClick()
     fun onBackClick()
+    fun onRetryClick()
 }

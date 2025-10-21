@@ -4,4 +4,5 @@ internal interface UpdateCategoriesInteractionListener {
     fun onCategoryClick(categoryId: String)
     fun onSaveClick()
     fun onBackClick()
+    fun onRetryClick()
 }

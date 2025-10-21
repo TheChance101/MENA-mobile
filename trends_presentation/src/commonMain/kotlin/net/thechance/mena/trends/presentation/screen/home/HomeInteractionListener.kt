@@ -6,4 +6,5 @@ interface HomeInteractionListener {
     fun onEditTagsClick()
     fun onManageMyTrendsClick()
     fun onReelClick(reelId: String)
+    fun onRetryClick()
 }

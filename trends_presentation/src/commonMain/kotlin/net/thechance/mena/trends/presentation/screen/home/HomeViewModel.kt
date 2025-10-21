@@ -96,6 +96,10 @@ internal class HomeViewModel(
         sendEffect(HomeUiEffect.NavigateToReelDetails(reelId))
     }
 
+    override fun onRetryClick() {
+        getFeedReels()
+    }
+
     override fun onLikeClick(reelId: String) {
         toggleReelLike(reelId)
     }

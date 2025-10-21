@@ -3,6 +3,7 @@ package net.thechance.mena.trends.presentation.screen.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
@@ -36,6 +38,8 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
+import net.thechance.mena.trends.presentation.screen.manage_my_trends.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -78,6 +82,8 @@ private fun ReelScreenContent(
     state: HomeScreenState,
     listener: HomeInteractionListener,
 ) {
+    val reels = state.reels.collectAsLazyPagingItems()
+
     Scaffold(
         topBar = {
             TrendsAppBar(
@@ -86,42 +92,59 @@ private fun ReelScreenContent(
             )
         }
     ) {
-        val reels = state.reels.collectAsLazyPagingItems()
+
         Box(modifier = Modifier.fillMaxSize()) {
-            if (reels.itemCount > 0) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = Theme.spacing._16),
-                    contentPadding = PaddingValues(vertical = Theme.spacing._8),
-                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-                ) {
-                    items(reels.itemSnapshotList.items) { reel ->
-                        FeedReelCard(
-                            reel = reel,
-                            onLikeClick = { listener.onLikeClick(reel.id) },
-                            onReelClick = { listener.onReelClick(reel.id) }
-                        )
-                    }
+
+            when {
+                state.error == ErrorState.NoInternet -> {
+                    NoConnection(onRetry = listener::onRetryClick)
                 }
 
-                Icon(
-                    painter = painterResource(Res.drawable.ic_add_real),
-                    contentDescription = stringResource(Res.string.add_reel),
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(Theme.radius.lg))
-                        .background(Theme.colorScheme.primary.primary)
-                        .noRippleClickable { listener.onAddReelClick() }
-                        .padding(Theme.spacing._16),
-                )
-            } else {
-                EmptyTrends()
+                reels.itemCount > 0 -> {
+                    ReelsListSection(reels, listener)
+                }
+
+                else -> {
+                    EmptyTrends()
+                }
             }
         }
     }
+}
+
+@Composable
+private fun BoxScope.ReelsListSection(
+    reels: LazyPagingItems<ReelUiState>,
+    listener: HomeInteractionListener
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = Theme.spacing._16),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+    ) {
+        items(reels.itemSnapshotList.items) { reel ->
+            FeedReelCard(
+                reel = reel,
+                onLikeClick = { listener.onLikeClick(reel.id) },
+                onReelClick = { listener.onReelClick(reel.id) }
+            )
+        }
+    }
+
+    Icon(
+        painter = painterResource(Res.drawable.ic_add_real),
+        contentDescription = stringResource(Res.string.add_reel),
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
+            .size(56.dp)
+            .clip(RoundedCornerShape(Theme.radius.lg))
+            .background(Theme.colorScheme.primary.primary)
+            .noRippleClickable { listener.onAddReelClick() }
+            .padding(Theme.spacing._16)
+    )
 }
 
 @Composable

@@ -25,6 +25,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.screen.manage_my_trends.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -48,10 +50,7 @@ internal fun CategoryPickScreen(
         }
     }
 
-    CategoryPickScreenContent(
-        state = state,
-        listener = viewModel
-    )
+    CategoryPickScreenContent(state = state, listener = viewModel)
 }
 
 @Composable
@@ -59,39 +58,55 @@ private fun CategoryPickScreenContent(
     state: CategoryPickScreenState,
     listener: CategoryPickInteractionListener
 ) {
-    if (state.isLoading.not()) {
-        Scaffold(
-            bottomBar = {
-                NextButton(
-                    onNextClick = listener::onNextClick,
-                    isButtonEnabled = state.isNextButtonEnabled(),
-                    isButtonLoading = state.isNextButtonLoading,
-                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
-                )
-            }
+    when {
+        state.error == ErrorState.NoInternet -> { NoConnection(onRetry = listener::onRetryClick) }
+
+        state.isLoading -> { LoadingProgressBar() }
+
+        else -> { CategoryPickContent(state, listener) }
+    }
+}
+
+@Composable
+private fun CategoryPickContent(
+    state: CategoryPickScreenState,
+    listener: CategoryPickInteractionListener
+) {
+    Scaffold(
+        bottomBar = {
+            NextButton(
+                onNextClick = listener::onNextClick,
+                isButtonEnabled = state.isNextButtonEnabled(),
+                isButtonLoading = state.isNextButtonLoading,
+                modifier = Modifier.padding(horizontal = Theme.spacing._16)
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Theme.spacing._16)
         ) {
-            Column(
+            ChooseInterestsMessage()
+
+            FlowRow(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = rememberScrollState())
-                    .padding(horizontal = Theme.spacing._16)
+                    .fillMaxWidth()
+                    .padding(bottom = Theme.spacing._24)
             ) {
-                ChooseInterestsMessage()
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
-                            modifier = Modifier.padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
+                state.categories.forEach { category ->
+                    CategoryItem(
+                        category = category,
+                        onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                        modifier = Modifier.padding(
+                            bottom = Theme.spacing._12,
+                            end = Theme.spacing._8
                         )
-                    }
+                    )
                 }
             }
         }
-    } else {
-        LoadingProgressBar()
     }
 }
 
@@ -101,7 +116,7 @@ private fun ChooseInterestsMessage() {
         text = stringResource(resource = Res.string.choose_interests),
         style = Theme.typography.title.medium,
         color = Theme.colorScheme.shadePrimary,
-        modifier = Modifier.padding(bottom = Theme.spacing._4, top = 72.dp)
+        modifier = Modifier.padding(top = 72.dp, bottom = Theme.spacing._4)
     )
 
     Text(
@@ -132,6 +147,7 @@ private fun CategoryPickScreenPreview() {
             state = CategoryPickScreenState(),
             listener = object : CategoryPickInteractionListener {
                 override fun onBackClick() {}
+                override fun onRetryClick() {}
                 override fun onCategoryClick(categoryId: String) {}
                 override fun onNextClick() {}
             }
