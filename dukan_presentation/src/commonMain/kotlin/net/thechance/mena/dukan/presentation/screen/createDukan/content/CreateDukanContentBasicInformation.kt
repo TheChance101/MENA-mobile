@@ -58,9 +58,7 @@ fun CreateDukanContentBasicInformation(
                 hint = stringResource(Res.string.enter_dukan_name),
                 modifier = Modifier
                     .padding(horizontal = Theme.spacing._16)
-                    .padding(
-                        bottom = Theme.spacing._12
-                ),
+                    .padding(bottom = Theme.spacing._12),
                 leadingIcon = painterResource(Res.drawable.ic_shop),
                 title = stringResource(Res.string.dukan_name),
                 leadingIconTint = Theme.colorScheme.shadePrimary
@@ -70,10 +68,13 @@ fun CreateDukanContentBasicInformation(
         item {
             CategoryHeaderSection()
             SelectionRow(
-                categories = state.dukanCategories,
-                isItemSelected = interactionListener::isCategorySelected,
-                onItemClick = interactionListener::onCategoryToggled,
-                isItemEnabled = interactionListener::isCategoryEnabled
+                availableItems = state.dukanCategories,
+                isItemSelected = interactionListener.isCategorySelected(),
+                onItemSelected = interactionListener::onCategorySelected,
+                onItemDeselected = interactionListener::onCategoryDeselected,
+                onItemEnabled = interactionListener::onCategoryEnabled,
+                getItemName = { it.name },
+                getItemImageUrl = { it.imageUrl }
             )
         }
     }

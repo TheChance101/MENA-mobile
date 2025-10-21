@@ -47,8 +47,11 @@ class CreateDukanViewModel(
     }
 
     override fun onButtonClicked() {
-        if (state.value.currentStep != CreateDukanStep.SELECT_STYLE) onClickNext()
-        else onCreateClicked()
+        if (state.value.currentStep != CreateDukanStep.SELECT_STYLE) {
+            onCLickNext()
+        } else {
+            onCreateClicked()
+        }
     }
 
     override fun onBackClicked() {
@@ -121,7 +124,7 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onClickNext() {
+    override fun onCLickNext() {
         val current = state.value.currentStep
         if (current == CreateDukanStep.BASIC_INFORMATION) {
             handleBasicInformationNext()
@@ -161,18 +164,25 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun isCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
-        return state.value.selectedCategories.contains(category)
+    override fun isCategorySelected(): (CreateDukanUiState.DukanCategoryUiState) -> Boolean {
+        return { category -> state.value.selectedCategories.contains(category) }
     }
 
-    override fun onCategoryToggled(category: CreateDukanUiState.DukanCategoryUiState) {
-        if (isCategorySelected(category)) removeCategoryFromSelection(category)
-        else if (canSelectMoreCategories(state.value)) addCategoryToSelection(category)
+    override fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+        if (!canSelectMoreCategories(state.value)) return false
 
+        addCategoryToSelection(category)
         updateNextButtonEnableState()
+        return true
     }
 
-    override fun isCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+    override fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+        removeCategoryFromSelection(category)
+        updateNextButtonEnableState()
+        return true
+    }
+
+    override fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         return canSelectMoreCategories(state.value) ||
                 state.value.selectedCategories.contains(category)
     }
@@ -194,6 +204,7 @@ class CreateDukanViewModel(
             block = ::onCreateClickedBlock,
             onSuccess = ::onCreateClickedSuccess,
             onError = ::onErrorCreatingDukan
+
         )
     }
 
@@ -211,7 +222,9 @@ class CreateDukanViewModel(
     }
 
     private fun handleBasicInformationNext() {
-        if (!isBasicInformationStepValid(state.value)) return
+        if (!isBasicInformationStepValid(state.value)) {
+            return
+        }
         checkNameUniqueness(state.value.name)
     }
 

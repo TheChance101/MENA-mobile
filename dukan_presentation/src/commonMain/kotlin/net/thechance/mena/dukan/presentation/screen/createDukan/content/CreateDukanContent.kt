@@ -69,6 +69,14 @@ fun CreateDukanContent(
                 }
             )
         },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
+        },
         bottomBar = {
             if (state.isImageBeingCropped.not())
                 PrimaryButton(
@@ -115,13 +123,6 @@ fun CreateDukanContent(
                 )
             }
         }
-    }
-
-    state.snackBarState?.let { snackBarState ->
-        SnackBar(
-            snackBarUiState = snackBarState,
-            onDismiss = listener::onDismissSnackBar
-        )
     }
 }
 
