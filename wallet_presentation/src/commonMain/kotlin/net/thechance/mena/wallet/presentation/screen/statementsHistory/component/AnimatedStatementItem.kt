@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 
 import androidx.compose.animation.core.LinearEasing
@@ -23,9 +25,12 @@ import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun AnimatedStatementItem(
@@ -137,21 +142,23 @@ fun AnimatedStatementItem(
 @Preview
 @Composable
 private fun AnimatedStatementItemPreview() {
-    AnimatedStatementItem(
-        statement = StatementsHistoryScreenState.StatementItem(
-            id = 123,
-            startDate = "Jul 23 2025",
-            endDate = "Aug 27 2025",
-            totalInflow = 2000.0,
-            totalOutflow = 4200.0,
-            fileName = ""
-        ),
-        isDividerVisible = true,
-        cardOffsetX = 10,
-        historyIconOffsetX = 10,
-        deleteButtonOffsetX = 10,
-        isEditMode = false,
-        onDeleteClicked = {},
-        onStatementCardClicked = {}
-    )
+    MenaTheme {
+        AnimatedStatementItem(
+            statement = StatementsHistoryScreenState.StatementItem(
+                id = Uuid.random(),
+                startDate = "Jul 23 2025",
+                endDate = "Aug 27 2025",
+                totalInflow = 2000.0,
+                totalOutflow = 4200.0,
+                fileName = ""
+            ),
+            isDividerVisible = true,
+            cardOffsetX = 10,
+            historyIconOffsetX = 10,
+            deleteButtonOffsetX = 10,
+            isEditMode = false,
+            onDeleteClicked = {},
+            onStatementCardClicked = {}
+        )
+    }
 }
