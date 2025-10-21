@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import mena.dukan_presentation.generated.resources.Res
@@ -75,7 +76,7 @@ fun PendingDukanScreen(
 private fun buildPendingDukanTitle(
     brandName: String,
     titleTemplate: String,
-) = androidx.compose.ui.text.buildAnnotatedString {
+) = buildAnnotatedString {
     val parts = titleTemplate.split("%s")
     withStyle(Theme.typography.title.small.toSpanStyle()) {
         append(parts.getOrElse(0) { "" })
