@@ -13,7 +13,7 @@ import mena.dukan_presentation.generated.resources.shelf_empty_title
 import net.thechance.mena.dukan.presentation.component.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.LoadingVerticalList
 import net.thechance.mena.dukan.presentation.component.productCard.LoadingProductCard
-import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ProductsList
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanProductsList
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
@@ -38,7 +38,7 @@ fun ManageDukanProducts(
                 LoadingVerticalList { LoadingProductCard() }
             }
 
-            ProductsState.LOADED -> ProductsList(
+            ProductsState.LOADED -> ManageDukanProductsList(
                 products = state.products.items,
                 onProductClick = onProductClick,
                 pager = pager

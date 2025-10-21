@@ -21,7 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
-fun NoShelvesContent() {
+fun ManageDukanNoShelvesContent() {
     ImageWithTextContainer(
         foregroundImageRes = Res.drawable.approved_dukan,
         header = {
@@ -37,7 +37,7 @@ fun NoShelvesContent() {
 }
 
 @Composable
-fun LoadedShelvesRow(
+fun ManageDukanLoadedShelvesRow(
     state: ManageDukanUiState,
     listener: ManageDukanInteractionListener
 ) {
@@ -59,7 +59,7 @@ fun LoadedShelvesRow(
 }
 
 @Composable
-fun LoadingShelvesRow() {
+fun ManageDukanLoadingShelvesRow() {
     LoadingHorizontalList(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
     ) {

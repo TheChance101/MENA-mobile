@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ProductCountRow(
+fun ManageDukanProductCountRow(
     productCount: Long,
     listener: ManageDukanInteractionListener
 ) {

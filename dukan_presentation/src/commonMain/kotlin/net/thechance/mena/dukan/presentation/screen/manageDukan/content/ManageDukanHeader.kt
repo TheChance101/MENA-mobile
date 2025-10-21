@@ -15,10 +15,10 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.shelves
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.manageDukan.component.LoadedShelvesRow
-import net.thechance.mena.dukan.presentation.screen.manageDukan.component.LoadingShelvesRow
-import net.thechance.mena.dukan.presentation.screen.manageDukan.component.NoShelvesContent
-import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ProductCountRow
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanLoadedShelvesRow
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanLoadingShelvesRow
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanNoShelvesContent
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanProductCountRow
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ShelvesState
@@ -54,21 +54,21 @@ fun ManageDukanHeader(
             }
         ) {
             when (it) {
-                ShelvesState.LOADING -> LoadingShelvesRow()
+                ShelvesState.LOADING -> ManageDukanLoadingShelvesRow()
 
-                ShelvesState.LOADED -> LoadedShelvesRow(state, listener)
+                ShelvesState.LOADED -> ManageDukanLoadedShelvesRow(state, listener)
 
                 ShelvesState.EMPTY -> {
                     Column {
                         Spacer(modifier = Modifier.weight(1f))
-                        NoShelvesContent()
+                        ManageDukanNoShelvesContent()
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
         }
 
-        ProductCountRow(
+        ManageDukanProductCountRow(
             productCount = state.totalProducts,
             listener = listener
         )
