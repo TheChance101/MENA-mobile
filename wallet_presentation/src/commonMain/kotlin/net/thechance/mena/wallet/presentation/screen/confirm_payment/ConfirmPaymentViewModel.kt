@@ -12,6 +12,7 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import net.thechance.mena.wallet.presentation.utils.formatAmount
 import org.koin.android.annotation.KoinViewModel
@@ -26,7 +27,7 @@ class ConfirmPaymentViewModel(
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val stringProvider: StringProvider,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
@@ -58,7 +59,7 @@ class ConfirmPaymentViewModel(
             onSuccess = ::onGetUserBalanceSuccess,
             onError = ::onGetUserBalanceError,
             onStart = { updateState { it.copy(isGetBalanceLoading = true) } },
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -68,7 +69,7 @@ class ConfirmPaymentViewModel(
             onSuccess = ::onGetReceiverInfoSuccess,
             onError = ::onGetReceiverInfoError,
             onStart = { updateState { it.copy(isGetUserLoading = true) } },
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -150,7 +151,7 @@ class ConfirmPaymentViewModel(
             onStart = { updateState { it.copy(isPayButtonLoading = true) } },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 }

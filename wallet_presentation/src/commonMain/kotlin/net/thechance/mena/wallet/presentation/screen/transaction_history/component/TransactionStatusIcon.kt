@@ -13,12 +13,16 @@ import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.failed
 import mena.wallet_presentation.generated.resources.ic_failed
+import mena.wallet_presentation.generated.resources.ic_receive
+import mena.wallet_presentation.generated.resources.ic_send
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionStatusIcon(
@@ -51,4 +55,15 @@ fun TransactionStatusIcon(
         }
     }
 
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TransactionStatusIconSuccessPreview() {
+    MenaTheme {
+        TransactionStatusIcon(
+            transactionTypeIcon = Res.drawable.ic_send,
+            transactionStatus = TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
+        )
+    }
 }

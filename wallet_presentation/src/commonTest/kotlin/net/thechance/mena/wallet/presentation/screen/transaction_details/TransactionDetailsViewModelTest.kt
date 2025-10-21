@@ -61,7 +61,7 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
+                dispatcher = testDispatcher,
                 stringProvider = stringProvider
             )
 
@@ -81,7 +81,7 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
+                dispatcher = testDispatcher,
                 stringProvider = stringProvider
             )
 
@@ -117,7 +117,7 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
+                dispatcher = testDispatcher,
                 stringProvider = stringProvider
             )
 
@@ -136,7 +136,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
+            dispatcher = testDispatcher,
             stringProvider = stringProvider
         )
 
@@ -154,7 +154,7 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
+                dispatcher = testDispatcher,
                 stringProvider = stringProvider
             )
             viewModel.state.test {
@@ -173,7 +173,7 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
+                dispatcher = testDispatcher,
                 stringProvider = stringProvider
             )
             viewModel.uiEffect.test {
@@ -191,7 +191,7 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
+                dispatcher = testDispatcher,
                 stringProvider = stringProvider
             )
 
@@ -214,7 +214,7 @@ class TransactionDetailsViewModelTest {
             val viewModel = TransactionDetailsViewModel(
                 transactionRepository = transactionRepository,
                 transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
+                dispatcher = testDispatcher,
                 stringProvider = stringProvider
             )
             viewModel.uiEffect.test {
@@ -238,7 +238,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
+            dispatcher = testDispatcher,
             stringProvider = stringProvider
         )
 
@@ -261,7 +261,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
+            dispatcher = testDispatcher,
             stringProvider = stringProvider
         )
 
@@ -281,7 +281,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
+            dispatcher = testDispatcher,
             stringProvider = stringProvider
         )
 
@@ -303,7 +303,7 @@ class TransactionDetailsViewModelTest {
         val viewModel = TransactionDetailsViewModel(
             transactionRepository = transactionRepository,
             transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
+            dispatcher = testDispatcher,
             stringProvider = stringProvider
         )
 

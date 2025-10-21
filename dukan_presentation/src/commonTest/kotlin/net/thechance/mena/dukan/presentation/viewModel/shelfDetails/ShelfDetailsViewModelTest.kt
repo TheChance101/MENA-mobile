@@ -17,15 +17,17 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_COLOR
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_STYLE
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_ID
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_NAME
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_COLOR
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_STYLE
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_ID
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_NAME
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShelfDetailsViewModelTest {
@@ -42,9 +44,10 @@ class ShelfDetailsViewModelTest {
             savedStateHandle = handle
         )
 
+    @OptIn(ExperimentalUuidApi::class)
     private val dummyProducts = listOf(
         Product(
-            id = "product_1",
+            id = Uuid.parse("013e0bb1-6177-4430-ae08-f3a1a24f6f7d"),
             name = "Laptop",
             description = "High-end laptop",
             price = 1200.0,
@@ -52,7 +55,7 @@ class ShelfDetailsViewModelTest {
             createdAt = ""
         ),
         Product(
-            id = "product_2",
+            id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
             name = "Mouse",
             description = "Wireless mouse",
             price = 25.0,
@@ -60,7 +63,7 @@ class ShelfDetailsViewModelTest {
             createdAt = ""
         ),
         Product(
-            id = "product_3",
+            id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
             name = "Keyboard",
             description = "Mechanical keyboard",
             price = 75.0,
@@ -164,9 +167,9 @@ class ShelfDetailsViewModelTest {
 
         // Then
         val productIds = state.productsShelf.items.map { it.id }
-        assertTrue(productIds.contains("product_1"))
-        assertTrue(productIds.contains("product_2"))
-        assertTrue(productIds.contains("product_3"))
+        assertTrue(productIds.contains("013e0bb1-6177-4430-ae08-f3a1a24f6f7d"))
+        assertTrue(productIds.contains("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"))
+        assertTrue(productIds.contains("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"))
     }
 
     @Test
@@ -229,18 +232,20 @@ class ShelfDetailsViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onAddToCartClick SHOULD set inCartQuantity to 1 for specific product`() = runTest {
         // Given
         advanceUntilIdle()
-        val productId = "product_1"
+        val productId =Uuid.parse("013e0bb1-6177-4430-ae08-f3a1a24f6f7d")
+
 
         // When
-        shelfDetailsViewModel.onAddToCartClick(productId)
+        shelfDetailsViewModel.onAddToCartClick(productId.toString())
         val state = shelfDetailsViewModel.state.value
 
         // Then
-        val product = state.productsShelf.items.find { it.id == productId }
+        val product = state.productsShelf.items.find { it.id == productId.toString() }
         assertEquals(1, product?.inCartQuantity)
     }
 }

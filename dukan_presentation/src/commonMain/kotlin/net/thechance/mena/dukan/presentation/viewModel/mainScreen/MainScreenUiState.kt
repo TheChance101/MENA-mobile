@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 
 data class MainScreenUiState(
     val errorMessage: String? = null,

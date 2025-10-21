@@ -26,6 +26,7 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -107,12 +110,16 @@ private fun DatePickerBottomSheetContent(
     selectedDate: LocalDate?,
     onDismiss: () -> Unit,
 ) {
+    if (selectedDate == null)
+        return
+
     val monthPagerState = rememberPagerState(
-        initialPage = (selectedDate?.month?.number ?: 1) - 1,
+        initialPage = (selectedDate.month.number) - 1,
         pageCount = { 12 }
     )
+
     val yearPagerState = rememberPagerState(
-        initialPage = (selectedDate?.year ?: minYear) - minYear,
+        initialPage = (selectedDate.year) - minYear,
         pageCount = { maxYear - minYear + 1 }
     )
 
@@ -123,9 +130,27 @@ private fun DatePickerBottomSheetContent(
     }
 
     val dayPagerState = rememberPagerState(
-        initialPage = (selectedDate?.day ?: 1) - 1,
+        initialPage = (selectedDate.day) - 1,
         pageCount = { daysInMonth }
     )
+
+    LaunchedEffect(selectedDate) {
+        val targetYearPage = selectedDate.year - minYear
+        val targetMonthPage = selectedDate.month.number - 1
+        val targetDayPage = selectedDate.day - 1
+
+        coroutineScope {
+            if (yearPagerState.currentPage != targetYearPage) {
+                launch { yearPagerState.scrollToPage(targetYearPage) }
+            }
+            if (monthPagerState.currentPage != targetMonthPage) {
+                launch { monthPagerState.scrollToPage(targetMonthPage) }
+            }
+            if (dayPagerState.currentPage != targetDayPage) {
+                launch { dayPagerState.scrollToPage(targetDayPage) }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier

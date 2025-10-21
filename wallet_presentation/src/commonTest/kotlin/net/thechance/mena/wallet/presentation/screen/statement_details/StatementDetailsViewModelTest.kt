@@ -68,6 +68,20 @@ class StatementDetailsViewModelTest {
     }
 
     @Test
+    fun `onRetryClicked should call getPdfBytes and update state when successful`() = runTest(testDispatcher) {
+        val expectedBytes = byteArrayOf(1, 2, 3)
+        everySuspend { pdfHandler.getPdfBytes(statementLocation) } returns expectedBytes
+
+        initViewModel()
+
+        viewModel.onRetryClicked()
+        advanceUntilIdle()
+
+        val finalState = viewModel.state.value
+        assertContentEquals(expectedBytes, finalState.statement)
+    }
+
+    @Test
     fun `onShareClicked should send ShareStatement effect when called`() = runTest(testDispatcher) {
         everySuspend { repository.getStatementWithMetadata(null) } returns createMockStatementWithMetadata()
 

@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.main.components.categorySec
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 
 fun calculateGridLayout(
     screenWidth: Dp,

@@ -8,14 +8,14 @@ import org.maplibre.compose.camera.CameraPosition
 interface CreateDukanInteractionListener {
     fun onButtonClicked()
     fun onBackClicked()
-    fun onColorClicked(color: ColorUiState)
+    fun onColorClicked(color: CreateDukanUiState.ColorUiState)
     fun onStyleClicked(style: CreateDukanUiState.Style)
     fun onClickUploadImage(image: ImageSrc)
     fun onNameChanged(name: String)
-    fun isCategorySelected(): (DukanCategoryUiState) -> Boolean
-    fun onCategorySelected(category: DukanCategoryUiState): Boolean
-    fun onCategoryDeselected(category: DukanCategoryUiState): Boolean
-    fun onCategoryEnabled(category: DukanCategoryUiState): Boolean
+    fun isCategorySelected(): (CreateDukanUiState.DukanCategoryUiState) -> Boolean
+    fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean
+    fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean
+    fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean
     fun onCLickNext()
     fun onImageCrop(image: ImageBitmap)
     fun onCancelCrop()
@@ -23,6 +23,7 @@ interface CreateDukanInteractionListener {
         coordinates: CreateDukanUiState.CoordinatesUiState,
         pointerLocation: DpOffset,
     )
+
     fun onAddressChanged(address: String)
     fun onCameraMoved(camera: CameraPosition)
     fun onEditMapLocationClicked()

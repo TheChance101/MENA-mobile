@@ -39,6 +39,28 @@ data class CreateDukanUiState(
         val longitude: Double = 0.0,
     )
 
+    enum class Style {
+        WIDE_IMAGE,
+        SMALL_IMAGE,
+        NO_IMAGE
+    }
+
+    data class DukanStyleUiState(
+        val style: Style,
+        val name: String,
+    )
+
+    data class ColorUiState(
+        val id: String,
+        val color: Long
+    )
+
+    data class DukanCategoryUiState(
+        val id: String,
+        val name: String,
+        val imageUrl: String
+    )
+
     enum class CreateDukanStep {
         BASIC_INFORMATION,
         SELECT_IMAGE,
@@ -49,26 +71,4 @@ data class CreateDukanUiState(
             val steps = entries
         }
     }
-
-    enum class Style {
-        WIDE_IMAGE,
-        SMALL_IMAGE,
-        NO_IMAGE
-    }
 }
-
-data class DukanStyleUiState(
-    val style: CreateDukanUiState.Style,
-    val name: String,
-)
-
-data class ColorUiState(
-    val id: String,
-    val color: Long
-)
-
-data class DukanCategoryUiState(
-    val id: String,
-    val name: String,
-    val imageUrl: String
-)

@@ -21,7 +21,7 @@ data class ShelfDetailsUiState(
     enum class ProductsState {
         LOADING,
         LOADED,
-        EMPTY
+        ERROR
     }
 
     enum class Style {
