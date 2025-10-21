@@ -2,18 +2,14 @@ package net.thechance.mena.dukan.presentation.screen.createProduct
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -22,18 +18,19 @@ import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.descriptionSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.imageSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.priceSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.productNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.shelfSection
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.topAppBar
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateProductInterfaceListener
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductEffect
@@ -45,14 +42,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CreateProductScreen(viewModel: CreateProductViewModel = koinViewModel()) {
+fun CreateProductScreen(
+    viewModel: CreateProductViewModel = koinViewModel()
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             CreateProductEffect.NavigateBack -> navController.navigateUp()
-            CreateProductEffect.NavigateToManagementProductMyDukan -> {
+            CreateProductEffect.NavigateToManageDukanProducts -> {
                 val navOptions = navOptions {
                     popUpTo(DukanRoute.ManageDukanScreenRoute) { inclusive = true }
                 }
@@ -72,25 +71,10 @@ fun CreateProductScreen(viewModel: CreateProductViewModel = koinViewModel()) {
     ProductImageCropScreen(
         isVisible = state.showCropImage,
         onCropImageBack = viewModel::onCroppedImage,
-        onBack = viewModel::onCropImageBackClick,
+        onBack = viewModel::onCropImageBackClicked,
         selectedImage = state.selectedImage,
         aspectRatio = CreateProductViewModel.IMAGE_ASPECT_RATIO
     )
-
-    state.snackBarUiState?.let { snackBarState ->
-        SnackBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Theme.spacing._16)
-                .padding(top = 52.dp)
-                .clip(RoundedCornerShape(Theme.radius.md))
-                .clickable(onClick = viewModel::onDismissSnackBar),
-//            isVisible = state.showSnackBar,todo delete if not needed
-            onDismiss = viewModel::onDismissSnackBar,
-            snackBarUiState = snackBarState
-        )
-    }
-
 }
 
 @Composable
@@ -98,16 +82,32 @@ private fun CreateProductContent(
     state: CreateProductUiState,
     interactionListener: CreateProductInteractionListener
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Theme.colorScheme.background.surface)
-            .statusBarsPadding()
-            .imePadding()
+    Scaffold(
+        topBar = { TopAppBar(onBackClick = interactionListener::onBackClicked) },
+        bottomBar = {
+            PrimaryButton(
+                text = stringResource(Res.string.add),
+                onClick = interactionListener::onAddProductClicked,
+                isEnabled = state.isAddButtonEnabled,
+                isLoading = state.isAddButtonLoading,
+                modifier = Modifier
+                    .background(color = Theme.colorScheme.background.surface)
+                    .padding(bottom = Theme.spacing._16)
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = Theme.spacing._16)
+            )
+        },
+        snakeBar = {
+            CreateProductSnackBar(
+                state = state,
+                interactionListener = interactionListener
+            )
+        }
     ) {
-        LazyColumn {
-            topAppBar(onBackClick = interactionListener::onBackButton)
-
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+        ) {
             productNameSection(
                 productName = state.productName,
                 isTextFieldEnabled = state.isTextFieldEnabled,
@@ -116,7 +116,7 @@ private fun CreateProductContent(
 
             shelfSection(
                 shelves = state.shelves,
-                isTextFieldEnabled = state.isTextFieldEnabled,
+                isShelvesLoading = state.isShelvesLoading,
                 onShelfSelect = interactionListener::onShelfSelect
             )
 
@@ -136,24 +136,26 @@ private fun CreateProductContent(
                 images = state.images,
                 isUploadingImageEnabled = state.isUploadingImageEnabled,
                 isCancelImageEnabled = state.isCancelImageEnabled,
-                onUploadImageClick = interactionListener::onUploadImageClick,
-                onCancelImageClick = interactionListener::onCancelImageClick,
+                onUploadImageClick = interactionListener::onUploadImageClicked,
+                onCancelImageClick = interactionListener::onCancelImageClicked,
             )
-
         }
+    }
+}
 
-        PrimaryButton(
-            text = stringResource(Res.string.add),
-            onClick = interactionListener::onAddProductClick,
-            isEnabled = state.isAddButtonEnabled,
-            isLoading = state.isAddButtonLoading,
+@Composable
+private fun CreateProductSnackBar(
+    state: CreateProductUiState,
+    interactionListener: CreateProductInteractionListener
+) {
+    state.snackBarUiState?.let { snackBarState ->
+        SnackBar(
             modifier = Modifier
-                .background(color = Theme.colorScheme.background.surface)
-                .padding(bottom = Theme.spacing._16)
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(48.dp)
-                .padding(horizontal = Theme.spacing._16)
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .clickable(onClick = interactionListener::onDismissSnackBar),
+            onDismiss = interactionListener::onDismissSnackBar,
+            snackBarUiState = snackBarState
         )
     }
 }
