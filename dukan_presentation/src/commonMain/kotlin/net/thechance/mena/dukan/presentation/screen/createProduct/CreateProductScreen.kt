@@ -75,18 +75,6 @@ fun CreateProductScreen(
         selectedImage = state.selectedImage,
         aspectRatio = CreateProductViewModel.IMAGE_ASPECT_RATIO
     )
-
-    state.snackBarUiState?.let { snackBarState ->
-        SnackBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(Theme.radius.md))
-                .clickable(onClick = viewModel::onDismissSnackBar),
-            onDismiss = viewModel::onDismissSnackBar,
-            snackBarUiState = snackBarState
-        )
-    }
-
 }
 
 @Composable
@@ -95,9 +83,7 @@ private fun CreateProductContent(
     interactionListener: CreateProductInteractionListener
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(onBackClick = interactionListener::onBackClicked)
-        },
+        topBar = { TopAppBar(onBackClick = interactionListener::onBackClicked) },
         bottomBar = {
             PrimaryButton(
                 text = stringResource(Res.string.add),
@@ -110,6 +96,12 @@ private fun CreateProductContent(
                     .fillMaxWidth()
                     .height(48.dp)
                     .padding(horizontal = Theme.spacing._16)
+            )
+        },
+        snakeBar = {
+            CreateProductSnackBar(
+                state = state,
+                interactionListener = interactionListener
             )
         }
     ) {
@@ -148,6 +140,23 @@ private fun CreateProductContent(
                 onCancelImageClick = interactionListener::onCancelImageClicked,
             )
         }
+    }
+}
+
+@Composable
+private fun CreateProductSnackBar(
+    state: ProductUiState,
+    interactionListener: CreateProductInteractionListener
+) {
+    state.snackBarUiState?.let { snackBarState ->
+        SnackBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .clickable(onClick = interactionListener::onDismissSnackBar),
+            onDismiss = interactionListener::onDismissSnackBar,
+            snackBarUiState = snackBarState
+        )
     }
 }
 
