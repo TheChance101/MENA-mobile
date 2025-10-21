@@ -5,7 +5,6 @@ import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.domain.entity.Category
 
 internal fun CategoryDto.toEntity(): Category? {
-    if (id == null) return null
     return Category(
         id = id,
         name = name.orEmpty(),
