@@ -432,14 +432,14 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `isCategorySelected SHOULD return true when category is in selected categories`() =
+    fun `onCategoryEnabled SHOULD return true when category is in selected categories`() =
         runTest {
             // Given
             createDukanViewModel.updateState { copy(selectedCategories = setOf(fakeCategories()[0].toUiState())) }
 
             // When
             val isSelected =
-                createDukanViewModel.isCategorySelected(fakeCategories()[0].toUiState())
+                createDukanViewModel.onCategoryEnabled(fakeCategories()[0].toUiState())
 
             // Then
             assertTrue(isSelected)
@@ -449,23 +449,26 @@ class CreateDukanViewModelTest {
     fun `isCategorySelected SHOULD return false when category is not in selected categories`() =
         runTest {
             // Given
-            createDukanViewModel.updateState { copy(selectedCategories = setOf(fakeCategories()[1].toUiState())) }
+            createDukanViewModel.updateState {
+                copy(selectedCategories = setOf(fakeCategories()[1].toUiState()))
+            }
 
             // When
             val isSelected =
-                createDukanViewModel.isCategorySelected(fakeCategories()[0].toUiState())
+                createDukanViewModel.isCategorySelected()(fakeCategories()[0].toUiState())
 
             // Then
             assertFalse(isSelected)
         }
 
+
     @Test
-    fun `onCategoryToggled SHOULD add category when not selected and can select more`() = runTest {
+    fun `onCategoryClicked SHOULD add category when not selected and can select more`() = runTest {
         // Given
         val category = fakeCategories()[0].toUiState()
 
         // When
-        createDukanViewModel.onCategoryToggled(category)
+        createDukanViewModel.onCategoryClicked(category)
 
         // Then
         val selectedCategories = createDukanViewModel.state.value.selectedCategories
@@ -473,13 +476,13 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onCategoryToggled SHOULD remove category when already selected`() = runTest {
+    fun `onCategoryClicked SHOULD remove category when already selected`() = runTest {
         // Given
         val category = fakeCategories()[0].toUiState()
         createDukanViewModel.updateState { copy(selectedCategories = setOf(category)) }
 
         // When
-        createDukanViewModel.onCategoryToggled(category)
+        createDukanViewModel.onCategoryClicked(category)
 
         // Then
         val selectedCategories = createDukanViewModel.state.value.selectedCategories
@@ -487,7 +490,7 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onCategoryToggled SHOULD not add category when max categories reached`() = runTest {
+    fun `onCategoryClicked SHOULD not add category when max categories reached`() = runTest {
         // Given
         createDukanViewModel.updateState {
             copy(
@@ -500,7 +503,7 @@ class CreateDukanViewModelTest {
         }
 
         // When
-        createDukanViewModel.onCategoryToggled(fakeCategories()[3].toUiState())
+        createDukanViewModel.onCategoryClicked(fakeCategories()[3].toUiState())
 
         // Then
         val selectedCategories = createDukanViewModel.state.value.selectedCategories
@@ -514,7 +517,7 @@ class CreateDukanViewModelTest {
         val category = fakeCategories()[0].toUiState()
 
         // When
-        val result = createDukanViewModel.isCategoryEnabled(category)
+        val result = createDukanViewModel.onCategoryEnabled(category)
 
         // Then
         assertTrue(result)
@@ -534,7 +537,7 @@ class CreateDukanViewModelTest {
         }
 
         // When
-        val result = createDukanViewModel.isCategoryEnabled(fakeCategories()[0].toUiState())
+        val result = createDukanViewModel.onCategoryEnabled(fakeCategories()[0].toUiState())
 
         // Then
         assertTrue(result)
@@ -555,14 +558,14 @@ class CreateDukanViewModelTest {
             }
 
             // When
-            val result = createDukanViewModel.isCategoryEnabled(fakeCategories()[3].toUiState())
+            val result = createDukanViewModel.onCategoryEnabled(fakeCategories()[3].toUiState())
 
             // Then
             assertFalse(result)
         }
 
     @Test
-    fun `onCategoryToggled SHOULD update button state`() = runTest {
+    fun `onCategoryClicked SHOULD update button state`() = runTest {
         // Given
         createDukanViewModel.updateState {
             copy(
@@ -573,7 +576,7 @@ class CreateDukanViewModelTest {
         }
 
         // When
-        createDukanViewModel.onCategoryToggled(fakeCategories()[0].toUiState())
+        createDukanViewModel.onCategoryClicked(fakeCategories()[0].toUiState())
 
         // Then
         val state = createDukanViewModel.state.value
@@ -581,13 +584,13 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onCategoryToggled SHOULD handle empty selection correctly when removing non-existent category`() =
+    fun `onCategoryClicked SHOULD handle empty selection correctly when removing non-existent category`() =
         runTest {
         // Given
             createDukanViewModel.updateState { copy(selectedCategories = emptySet()) }
 
         // When
-            createDukanViewModel.onCategoryToggled(fakeCategories()[0].toUiState())
+            createDukanViewModel.onCategoryClicked(fakeCategories()[0].toUiState())
 
         // Then
             val selectedCategories = createDukanViewModel.state.value.selectedCategories
@@ -697,7 +700,7 @@ class CreateDukanViewModelTest {
     fun `checkNameUniqueness SHOULD show snackbar WHEN name taken`() = runTest {
         everySuspend { dukanManagementRepository.isDukanNameTaken(any()) } returns true
         createDukanViewModel.onNameChanged("Test")
-        createDukanViewModel.isCategoryEnabled(fakeCategories()[0].toUiState())
+        createDukanViewModel.onCategoryEnabled(fakeCategories()[0].toUiState())
 
         createDukanViewModel.onButtonClicked()
 
