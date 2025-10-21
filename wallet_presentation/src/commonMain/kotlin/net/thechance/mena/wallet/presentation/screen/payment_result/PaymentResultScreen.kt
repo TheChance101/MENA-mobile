@@ -37,8 +37,6 @@ fun PaymentResultScreen(viewModel: PaymentResultViewModel = koinViewModel()) {
         }
     )
     PaymentResultScreenContent(
-        receiverName = state.receiverName,
-        amount = state.amount,
         state = state,
         interactionListener = viewModel
     )
@@ -46,8 +44,6 @@ fun PaymentResultScreen(viewModel: PaymentResultViewModel = koinViewModel()) {
 
 @Composable
 private fun PaymentResultScreenContent(
-    receiverName: String,
-    amount: Double,
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {
@@ -69,8 +65,8 @@ private fun PaymentResultScreenContent(
         }
     ) {
         PaymentStatusBody(
-            receiverName = receiverName,
-            amount = amount,
+            receiverName = state.receiverName,
+            amount = state.amount,
             status = state,
             paymentStatus = state.paymentStatus,
             interactionListener = interactionListener
