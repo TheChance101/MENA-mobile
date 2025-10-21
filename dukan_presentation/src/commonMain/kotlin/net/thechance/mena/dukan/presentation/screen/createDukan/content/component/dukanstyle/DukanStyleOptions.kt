@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 
@@ -26,19 +25,19 @@ fun DukanStyleOptions(
                 modifier = Modifier.weight(1f)
             ) {
                 when (item.style) {
-                    Dukan.Style.WIDE_IMAGE -> WideImageStyle(
+                    CreateDukanUiState.Style.WIDE_IMAGE -> WideImageStyle(
                         state = state,
                         isSelected = state.selectedStyle == item.style,
                         onClick = { listener.onStyleClicked(item.style) }
                     )
 
-                    Dukan.Style.SMALL_IMAGE -> SmallImageStyle(
+                   CreateDukanUiState.Style.SMALL_IMAGE -> SmallImageStyle(
                         state = state,
                         isSelected = state.selectedStyle == item.style,
                         onClick = { listener.onStyleClicked(item.style) }
                     )
 
-                    Dukan.Style.NO_IMAGE -> NoImageStyle(
+                    CreateDukanUiState.Style.NO_IMAGE -> NoImageStyle(
                         state = state,
                         isSelected = state.selectedStyle == item.style,
                         onClick = { listener.onStyleClicked(item.style) }

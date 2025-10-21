@@ -35,7 +35,7 @@ expect val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEn
 class NetworkClientImpl(
     @Provided private val authorizationService: AuthorizationService,
     @Provided @Named("baseUrl") private val baseUrl: String
-): NetworkClient {
+) : NetworkClient {
 
     private val client: HttpClient = buildClient()
 

@@ -18,16 +18,12 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share_
-import mena.wallet_presentation.generated.resources.img_no_internet
-import mena.wallet_presentation.generated.resources.no_internet_content
-import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.share_button_title
 import mena.wallet_presentation.generated.resources.statement
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.PdfViewer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
@@ -112,7 +108,7 @@ private fun StatementDetailsContent(
 }
 
 @Composable
-fun StatementViewer(
+private fun StatementViewer(
     state: StatementDetailsScreenState,
     onRetry: () -> Unit
 ) {
@@ -132,15 +128,17 @@ fun StatementViewer(
     }
 }
 
+private const val STATEMENT_FILE_NAME = "statement.pdf"
 private suspend fun handleEffects(
     effect: StatementDetailsEffect,
     onNavigateBackClicked: () -> Unit,
     shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
 ) {
+
     when (effect) {
         StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
         is StatementDetailsEffect.ShareStatement -> {
-            shareStatement(effect.statement, "statement.pdf")
+            shareStatement(effect.statement, STATEMENT_FILE_NAME)
         }
     }
 }

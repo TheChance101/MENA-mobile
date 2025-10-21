@@ -25,6 +25,7 @@ import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsContent
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.TransactionDetailsScreenShot
+import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
 import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -132,7 +133,7 @@ private fun TransactionDetailsSuccessContent(
         DetailsContent(
             transactionDetailsUiState = state.transactionDetailsUiState,
             onShareReceiptButtonClicked = interactionListener::onShareReceiptButtonClicked,
-            isShareReceiptBtnLoading = state.isShareReceiptBtnLoading,
+            isShareReceiptButtonLoading = state.isShareReceiptBtnLoading,
         )
         TransactionDetailsScreenShot(
             captureController = captureController,
