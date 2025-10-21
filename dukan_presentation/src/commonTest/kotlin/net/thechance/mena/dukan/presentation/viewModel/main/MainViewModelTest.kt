@@ -13,15 +13,11 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.error_general
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
+import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
@@ -106,8 +102,12 @@ class MainViewModelTest {
 
             mainViewModel.state.test {
                 val result = awaitItem()
-                assertEquals(MainScreenUiState.DukanState(status =
-                    MainScreenUiState.DukanStatusUi.None), result.dukanState)
+                assertEquals(
+                    MainScreenUiState.DukanState(
+                        status =
+                            MainScreenUiState.DukanStatusUi.None
+                    ), result.dukanState
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
