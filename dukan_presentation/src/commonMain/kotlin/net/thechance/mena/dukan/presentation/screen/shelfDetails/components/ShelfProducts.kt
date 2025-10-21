@@ -5,14 +5,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
-import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
 import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
 import net.thechance.mena.dukan.presentation.component.product.ProductActionNoImageDukan
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
@@ -31,46 +28,29 @@ fun ShelfProducts(
 
     val isAddToCartVisible = false // TODO: Remove when implement the Cart
 
-    AnimatedContent(
-        targetState = state.productsState,
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
-        label = "ProductContentAnimation"
-    ) { target ->
 
-        val product = state.productsShelf.collectAsLazyPagingItems().itemSnapshotList.items
+    val products = state.productsShelf.collectAsLazyPagingItems()
 
-        when (target) {
-            ShelfDetailsUiState.ProductsState.LOADING -> {
-                LoadingVerticalList {
-                    LoadingProductCard()
-                }
-            }
-
-
-            ShelfDetailsUiState.ProductsState.LOADED ->
-
-                LazyColumn {
-                    items(product) { product ->
-                        ProductCard(
-                            modifier = Modifier,
-                            productName = product.name,
-                            productImageUrl = product.imageUrl,
-                            productDescription = product.description,
-                            productCardBackground = productCardBackground,
-                            productPrice = product.price,
-                            productAction = {
-                                CartProductAction(
-                                    isVisible = isAddToCartVisible,
-                                    style = state.dukanStyle,
-                                    state = state,
-                                    listener = listener,
-                                    product = product
-                                )
-                            },
-                        )
-                    }
-                }
-            ShelfDetailsUiState.ProductsState.ERROR -> {}
+    LazyColumn {
+        items(products.itemCount) { index ->
+            val product = products[index] ?: return@items
+            ProductCard(
+                modifier = Modifier,
+                productName = product.name,
+                productImageUrl = product.imageUrl,
+                productDescription = product.description,
+                productCardBackground = productCardBackground,
+                productPrice = product.price,
+                productAction = {
+                    CartProductAction(
+                        isVisible = isAddToCartVisible,
+                        style = state.dukanStyle,
+                        state = state,
+                        listener = listener,
+                        product = product
+                    )
+                },
+            )
         }
     }
 }

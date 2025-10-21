@@ -84,7 +84,7 @@ abstract class BaseViewModel<S, E>(
             onError(throwable)
         }
 
-    private fun <T : Any> createPagingSourceFlow(
+    protected fun <T : Any> createPagingSourceFlow(
         onError: (Throwable) -> Unit = {},
         block: suspend (pageNumber: Int, pageSize: Int) -> List<T>
     ): Flow<PagingData<T>> {

@@ -1,11 +1,7 @@
 package net.thechance.mena.dukan.presentation.util.pagination
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import kotlinx.coroutines.flow.Flow
 
 internal class BasePagationSourceNew<T : Any>(
     private val onError: (Throwable) -> Unit = {},
@@ -35,20 +31,4 @@ internal class BasePagationSourceNew<T : Any>(
     companion object {
         const val PAGING_PAGE_SIZE = 10
     }
-}
-
-fun <T : Any> createPagingSourceFlow(
-    onError: (Throwable) -> Unit = {},
-    block: suspend (pageNumber: Int, pageSize: Int) -> List<T>
-): Flow<PagingData<T>> {
-    return Pager(
-        config = PagingConfig(
-            pageSize = BasePagationSourceNew.PAGING_PAGE_SIZE,
-            initialLoadSize = BasePagationSourceNew.PAGING_PAGE_SIZE,
-            enablePlaceholders = false
-        ),
-        pagingSourceFactory = {
-            BasePagationSourceNew(onError = onError, onFetchPage = block)
-        }
-    ).flow
 }

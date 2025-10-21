@@ -62,8 +62,10 @@ kotlin {
             implementation(libs.krop.extensions.filekit)
             implementation(libs.krop.core)
             implementation(libs.navigation.compose)
-            implementation(libs.paging.runtime)
-            implementation(libs.paging.compose)
+            val paging_version = "3.4.0-alpha04"
+
+            implementation("androidx.paging:paging-common:$paging_version")
+            implementation("androidx.paging:paging-compose:3.4.0-alpha04")
             // maps
             implementation(libs.maplibre.compose)
         }

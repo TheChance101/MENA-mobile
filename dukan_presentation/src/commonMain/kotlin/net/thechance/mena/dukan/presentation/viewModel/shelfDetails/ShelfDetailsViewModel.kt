@@ -11,7 +11,6 @@ import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArg
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_STYLE
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_ID
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_NAME
-import net.thechance.mena.dukan.presentation.util.pagination.createPagingSourceFlow
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class ShelfDetailsViewModel(
