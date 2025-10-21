@@ -9,8 +9,8 @@ interface ReelsRepository {
     suspend fun getAllCurrentUserReels(pageNumber: Int): List<Reel>
     suspend fun updateReelById(id: String, description: String, categoryIds: List<String>)
     suspend fun getFeedReels(page: Int, reelId: String? = null): List<Reel>
-    fun uploadReel(filePath: String, fileName: String, size: Long): Flow <UploadReelStatus>
-    suspend fun uploadReelThumbnail(reelId: String, fileName: String, thumbnail: ByteArray)
+    fun uploadReel(filePath: String, size: Long): Flow<UploadReelStatus>
+    suspend fun uploadReelThumbnail(reelId: String, thumbnail: ByteArray)
     suspend fun getReelDuration(filePath: String): Long?
     suspend fun extractReelThumbnail(filePath: String, timeInMillis: Long = 0L): ByteArray?
     suspend fun toggleReelLike(reelId: String): Reel

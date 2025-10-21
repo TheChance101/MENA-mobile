@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
@@ -30,6 +31,9 @@ import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.ExportTransactionsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
@@ -42,22 +46,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun TransactionHistoryScreen(
-    viewModel: TransactionHistoryViewModel = koinViewModel(),
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionDetails: (id: Uuid) -> Unit,
-    navigateToExportTransaction: () -> Unit
-) {
+fun TransactionHistoryScreen(viewModel: TransactionHistoryViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
+
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onTransactionHistoryEffect(
-                effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToTransactionDetails = navigateToTransactionDetails,
-                navigateToExportTransaction = navigateToExportTransaction
-            )
+            onTransactionHistoryEffect(effect = effect, navController = navController)
         }
     )
 
@@ -163,17 +159,14 @@ fun TransactionHistoryContent(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-private fun onTransactionHistoryEffect(
-    effect: TransactionHistoryEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionDetails: (id: Uuid) -> Unit,
-    navigateToExportTransaction: () -> Unit
-) {
+private fun onTransactionHistoryEffect(effect: TransactionHistoryEffect, navController: NavController) {
     when (effect) {
-        TransactionHistoryEffect.NavigateBack -> onNavigateBackClicked()
-        TransactionHistoryEffect.NavigateToExportTransaction -> navigateToExportTransaction()
+        TransactionHistoryEffect.NavigateBack -> navController.popBackStack()
+        TransactionHistoryEffect.NavigateToExportTransaction -> {
+            navController.navigate(ExportTransactionsScreenRoute)
+        }
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
-            navigateToTransactionDetails(effect.id)
+            navController.navigate(TransactionDetailsScreenRoute(effect.id.toString()))
         }
     }
 }

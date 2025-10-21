@@ -17,10 +17,10 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_COLOR
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_STYLE
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_ID
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_NAME
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_COLOR
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_STYLE
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_ID
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_NAME
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

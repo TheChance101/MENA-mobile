@@ -109,7 +109,7 @@ class CreateProductViewModelTest {
     @Test
     fun `onBackButton emits NavigateBack`() = scope.runTest {
         viewModel.effect.test {
-            viewModel.onBackButton()
+            viewModel.onBackClicked()
             assertEquals(CreateProductEffect.NavigateBack, awaitItem())
         }
     }
@@ -147,7 +147,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -169,7 +169,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -188,7 +188,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -207,7 +207,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -226,7 +226,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns null
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -256,7 +256,7 @@ class CreateProductViewModelTest {
             )
         }
 
-        viewModel.onCancelImageClick(fakeBitmap1)
+        viewModel.onCancelImageClicked(fakeBitmap1)
 
         val state = viewModel.state.value
         assertEquals(1, state.images.size)
@@ -273,7 +273,7 @@ class CreateProductViewModelTest {
             )
         }
 
-        viewModel.onCropImageBackClick()
+        viewModel.onCropImageBackClicked()
 
         val state = viewModel.state.value
         assertNull(state.selectedImage)
@@ -299,7 +299,7 @@ class CreateProductViewModelTest {
             )
         }
 
-        viewModel.onAddProductClick()
+        viewModel.onAddProductClicked()
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -324,7 +324,7 @@ class CreateProductViewModelTest {
             )
         }
 
-        viewModel.onAddProductClick()
+        viewModel.onAddProductClicked()
         advanceUntilIdle()
 
         val state = viewModel.state.value

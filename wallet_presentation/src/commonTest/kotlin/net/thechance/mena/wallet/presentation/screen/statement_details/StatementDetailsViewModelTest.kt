@@ -45,7 +45,7 @@ class StatementDetailsViewModelTest {
     @Test
     fun `onNavigateBackClicked should send NavigateBack effect when called`() =
         runTest(testDispatcher) {
-            viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
+            initViewModel()
 
             viewModel.uiEffect.test {
                 viewModel.onNavigateBackClicked()

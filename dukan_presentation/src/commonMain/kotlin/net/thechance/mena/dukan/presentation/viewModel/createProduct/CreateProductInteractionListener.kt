@@ -4,14 +4,14 @@ import androidx.compose.ui.graphics.ImageBitmap
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 
 interface CreateProductInteractionListener {
-    fun onBackButton()
+    fun onBackClicked()
     fun onProductNameChange(name: String)
     fun onShelfSelect(shelfUiState: CreateProductUiState.ShelfUiState)
     fun onPriceChange(price: String)
     fun onDescriptionChange(description: String)
-    fun onUploadImageClick(image: ImageFile)
-    fun onCancelImageClick(image: ImageBitmap)
-    fun onAddProductClick()
+    fun onUploadImageClicked(image: ImageFile)
+    fun onCancelImageClicked(image: ImageBitmap)
+    fun onAddProductClicked()
     fun onDismissSnackBar()
-    fun onCropImageBackClick()
+    fun onCropImageBackClicked()
 }

@@ -11,6 +11,7 @@ data class CreateProductUiState(
     val isAddButtonLoading: Boolean = false,
     val isAddButtonEnabled: Boolean = false,
     val shelves: List<ShelfUiState> = emptyList(),
+    val isShelvesLoading: Boolean = false,
     val selectedShelf: ShelfUiState? = null,
     val productName: String = "",
     val price: String = "",

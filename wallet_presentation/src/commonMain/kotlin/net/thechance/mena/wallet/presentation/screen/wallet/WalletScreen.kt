@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.confirm_payment_header
@@ -28,6 +29,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.ConfirmPaymentScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.StatementsHistoryScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.TransactionsHistoryScreenRoute
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
 import net.thechance.mena.wallet.presentation.screen.wallet.component.LabeledButtonWithCircularIcon
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -40,23 +45,19 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun WalletMainScreen(
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionHistory: () -> Unit,
-    navigateToStatementsHistory: () -> Unit,
-    navigateToPaymentScreen: (Double, Uuid) -> Unit,
-    viewModel: WalletViewModel = koinViewModel(),
+    navigateBack: () -> Unit,
+    viewModel: WalletViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onWalletEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToTransactionHistory = navigateToTransactionHistory,
-                navigateToStatementsHistory = navigateToStatementsHistory,
-                navigateToPaymentScreen = navigateToPaymentScreen
+                onNavigateBackClicked = navigateBack,
+                navController = navController
             )
         }
     )
@@ -145,18 +146,26 @@ private fun WalletContent(
 private fun onWalletEffect(
     effect: WalletEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToTransactionHistory: () -> Unit,
-    navigateToStatementsHistory: () -> Unit,
-    navigateToPaymentScreen: (Double, Uuid) -> Unit
+    navController: NavController
 ) {
     when (effect) {
         WalletEffect.NavigateBack -> onNavigateBackClicked()
-        WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
-        WalletEffect.NavigateToStatementHistory -> navigateToStatementsHistory()
-        is WalletEffect.NavigateToConfirmPaymentScreen -> navigateToPaymentScreen(
-            effect.amount,
-            effect.transactionId
-        )
+        WalletEffect.NavigateToTransactionHistory -> {
+            navController.navigate(TransactionsHistoryScreenRoute)
+        }
+
+        WalletEffect.NavigateToStatementHistory -> {
+            navController.navigate(StatementsHistoryScreenRoute)
+        }
+
+        is WalletEffect.NavigateToConfirmPaymentScreen -> {
+            navController.navigate(
+                ConfirmPaymentScreenRoute(
+                    amount = effect.amount,
+                    transactionId = effect.transactionId.toString()
+                )
+            )
+        }
     }
 }
 
