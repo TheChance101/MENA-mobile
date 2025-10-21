@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
@@ -32,18 +33,7 @@ fun PaymentResultScreen(viewModel: PaymentResultViewModel = koinViewModel()) {
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onPaymentResultEffect(
-                effect,
-                onNavigateBackClicked = navController::popBackStack,
-                onCancelClicked = {
-                    navController.navigate(WalletMainScreenRoute) {
-                        popUpTo(WalletMainScreenRoute) { inclusive = true }
-                    }
-                },
-                onNavigateToTransactionDetailsClicked = { receiverId ->
-                    navController.navigate(TransactionDetailsScreenRoute(receiverId))
-                }
-            )
+            onPaymentResultEffect(effect, navController = navController)
         }
     )
     PaymentResultScreenContent(
@@ -88,17 +78,17 @@ private fun PaymentResultScreenContent(
     }
 }
 
-private fun onPaymentResultEffect(
-    effect: PaymentResultEffect,
-    onNavigateBackClicked: () -> Unit,
-    onCancelClicked: () -> Unit,
-    onNavigateToTransactionDetailsClicked: (String) -> Unit
-) {
+private fun onPaymentResultEffect(effect: PaymentResultEffect, navController: NavController) {
     when (effect) {
-        is PaymentResultEffect.NavigateBack -> onNavigateBackClicked()
-        is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
-            effect.transactionId.toString()
-        )
-        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked()
+        is PaymentResultEffect.NavigateBack -> navController.popBackStack()
+        is PaymentResultEffect.NavigateToTransactionDetails -> {
+            navController.navigate(TransactionDetailsScreenRoute(effect.transactionId.toString()))
+        }
+
+        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> {
+            navController.navigate(WalletMainScreenRoute) {
+                popUpTo(WalletMainScreenRoute) { inclusive = true }
+            }
+        }
     }
 }

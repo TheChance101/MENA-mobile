@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.confirm_payment_header
@@ -45,8 +46,9 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun WalletMainScreen(
-    navigateBack : () -> Unit,
-    viewModel: WalletViewModel = koinViewModel()) {
+    navigateBack: () -> Unit,
+    viewModel: WalletViewModel = koinViewModel()
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
@@ -56,16 +58,7 @@ fun WalletMainScreen(
             onWalletEffect(
                 effect = effect,
                 onNavigateBackClicked = navigateBack,
-                navigateToTransactionHistory = { navController.navigate(TransactionsHistoryScreenRoute) },
-                navigateToStatementsHistory = { navController.navigate(StatementsHistoryScreenRoute) },
-                navigateToPaymentScreen = { amount, transactionId ->
-                    navController.navigate(
-                        ConfirmPaymentScreenRoute(
-                            amount = amount,
-                            transactionId = transactionId.toString()
-                        )
-                    )
-                }
+                navController = navController
             )
         }
     )
@@ -81,7 +74,7 @@ private fun WalletContent(
 ) {
     WalletScaffold(
         modifier = Modifier
-            .background(Theme.colorScheme.background.surface) ,
+            .background(Theme.colorScheme.background.surface),
         topBar = {
             AppBar(
                 title = stringResource(Res.string.my_wallet),
@@ -134,7 +127,12 @@ private fun WalletContent(
                 icon = painterResource(Res.drawable.ic_send),
                 contentDescription = stringResource(Res.string.confirm_payment_header),
                 label = stringResource(Res.string.confirm_payment_header),
-                onClick = { interactionListener.onPaymentClicked(amount = 222.22, receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")) },
+                onClick = {
+                    interactionListener.onPaymentClicked(
+                        amount = 222.22,
+                        receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Theme.spacing._16)
@@ -146,15 +144,26 @@ private fun WalletContent(
 private fun onWalletEffect(
     effect: WalletEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToTransactionHistory: () -> Unit,
-    navigateToStatementsHistory: () -> Unit,
-    navigateToPaymentScreen: (Double, Uuid) -> Unit
+    navController: NavController
 ) {
     when (effect) {
         WalletEffect.NavigateBack -> onNavigateBackClicked()
-        WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
-        WalletEffect.NavigateToStatementHistory -> navigateToStatementsHistory()
-        is WalletEffect.NavigateToConfirmPaymentScreen -> navigateToPaymentScreen(effect.amount, effect.transactionId)
+        WalletEffect.NavigateToTransactionHistory -> {
+            navController.navigate(TransactionsHistoryScreenRoute)
+        }
+
+        WalletEffect.NavigateToStatementHistory -> {
+            navController.navigate(StatementsHistoryScreenRoute)
+        }
+
+        is WalletEffect.NavigateToConfirmPaymentScreen -> {
+            navController.navigate(
+                ConfirmPaymentScreenRoute(
+                    amount = effect.amount,
+                    transactionId = effect.transactionId.toString()
+                )
+            )
+        }
     }
 }
 

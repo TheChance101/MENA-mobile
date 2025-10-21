@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.remove_statements
 import mena.wallet_presentation.generated.resources.statements
@@ -22,7 +23,6 @@ import net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedTrailingIcon
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementHistoryBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -34,13 +34,7 @@ fun StatementHistoryScreen(viewModel: StatementsHistoryViewModel = koinViewModel
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onStatementHistoryEffect(
-                effect = effect,
-                onNavigateBackClicked = navController::popBackStack,
-                navigateToStatementDetails = {
-                    navController.navigate(StatementDetailsScreenRoute(statementLocation = it))
-                }
-            )
+            onStatementHistoryEffect(effect = effect, navController = navController)
         }
     )
 
@@ -134,13 +128,11 @@ private fun NormalModeAppBar(
     )
 }
 
-private fun onStatementHistoryEffect(
-    effect: StatementsHistoryEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToStatementDetails: (statementLocation: StorageLocation) -> Unit
-) {
+private fun onStatementHistoryEffect(effect: StatementsHistoryEffect, navController: NavController) {
     when (effect) {
-        StatementsHistoryEffect.NavigateBack -> onNavigateBackClicked()
-        is StatementsHistoryEffect.NavigateToStatementDetails -> navigateToStatementDetails(effect.statementLocation)
+        StatementsHistoryEffect.NavigateBack -> navController.popBackStack()
+        is StatementsHistoryEffect.NavigateToStatementDetails -> {
+            navController.navigate(StatementDetailsScreenRoute(effect.statementLocation))
+        }
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
@@ -49,9 +50,9 @@ fun StatementDetailsScreen(
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            handleEffects(
+            onStatementDetailsEffect(
                 effect = effect,
-                onNavigateBackClicked = navController::popBackStack,
+                navController = navController,
                 shareStatement = pdfHandler::sharePdf
             )
         }
@@ -122,14 +123,14 @@ private fun StatementViewer(
 }
 
 private const val STATEMENT_FILE_NAME = "statement.pdf"
-private suspend fun handleEffects(
+private suspend fun onStatementDetailsEffect(
     effect: StatementDetailsEffect,
-    onNavigateBackClicked: () -> Unit,
+    navController: NavController,
     shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
 ) {
 
     when (effect) {
-        StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
+        StatementDetailsEffect.NavigateBack -> navController.popBackStack()
         is StatementDetailsEffect.ShareStatement -> {
             shareStatement(effect.statement, STATEMENT_FILE_NAME)
         }

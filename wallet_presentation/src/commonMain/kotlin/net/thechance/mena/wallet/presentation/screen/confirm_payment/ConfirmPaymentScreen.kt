@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.confirm_payment_header
@@ -21,7 +22,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.PaymentResultScreenRoute
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
@@ -32,7 +32,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Composable
 fun ConfirmPaymentScreen(viewModel: ConfirmPaymentViewModel = koinViewModel()) {
@@ -42,18 +41,7 @@ fun ConfirmPaymentScreen(viewModel: ConfirmPaymentViewModel = koinViewModel()) {
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onConfirmPaymentEffect(
-                effect = effect,
-                onNavigateBackClicked = navController::popBackStack,
-                navigateToPaymentResultScreen = { receiverName, amount, transactionId, submissionStatus ->
-                    navController.navigate(PaymentResultScreenRoute(
-                        transactionId = transactionId.toString(),
-                        submitTransactionResultStatus = submissionStatus.name,
-                        amount = amount,
-                        receiverName = receiverName
-                    ))
-                }
-            )
+            onConfirmPaymentEffect(effect = effect, navController = navController)
         }
     )
 
@@ -118,24 +106,20 @@ private fun ConfirmPaymentScreenContent(
 
 }
 
-private fun onConfirmPaymentEffect(
-    effect: ConfirmPaymentEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToPaymentResultScreen: (
-        receiverName: String,
-        amount: Double,
-        transactionId: Uuid,
-        submissionStatus: SubmissionStatus
-    ) -> Unit
-) {
+private fun onConfirmPaymentEffect(effect: ConfirmPaymentEffect, navController: NavController) {
     when (effect) {
-        ConfirmPaymentEffect.NavigateBack -> onNavigateBackClicked()
+        ConfirmPaymentEffect.NavigateBack -> {
+            navController.popBackStack()
+        }
+
         is ConfirmPaymentEffect.NavigateToPaymentResultScreen -> {
-            navigateToPaymentResultScreen(
-                effect.receiverName,
-                effect.amount,
-                effect.transactionId,
-                effect.submissionStatus
+            navController.navigate(
+                PaymentResultScreenRoute(
+                    transactionId = effect.transactionId.toString(),
+                    submitTransactionResultStatus = effect.submissionStatus.name,
+                    amount = effect.amount,
+                    receiverName = effect.receiverName
+                )
             )
         }
     }

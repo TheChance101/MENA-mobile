@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
@@ -29,7 +30,6 @@ import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.StatementDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.export.component.ExportTransactionContentBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -43,13 +43,7 @@ fun ExportTransactionScreen(viewModel: ExportTransactionsViewModel = koinViewMod
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onExportTransactionsEffect(
-                effect = effect,
-                onNavigateBackClicked = navController::popBackStack,
-                navigateToVewTransactionStatement = { statementLocation ->
-                    navController.navigate(StatementDetailsScreenRoute(statementLocation))
-                }
-            )
+            onExportTransactionsEffect(effect = effect, navController = navController)
         }
     )
 
@@ -116,16 +110,13 @@ private fun ExportTransactionScreenContent(
     }
 }
 
-private fun onExportTransactionsEffect(
-    effect: ExportTransactionsEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToVewTransactionStatement: (statementLocation: StorageLocation) -> Unit,
-) {
+private fun onExportTransactionsEffect(effect: ExportTransactionsEffect, navController: NavController) {
     when (effect) {
-        is ExportTransactionsEffect.NavigateBack -> onNavigateBackClicked()
+        is ExportTransactionsEffect.NavigateBack -> { navController.popBackStack() }
 
-        is ExportTransactionsEffect.NavigateToViewFileScreen
-            -> navigateToVewTransactionStatement(effect.statementLocation)
+        is ExportTransactionsEffect.NavigateToViewFileScreen -> {
+            navController.navigate(StatementDetailsScreenRoute(effect.statementLocation))
+        }
     }
 }
 

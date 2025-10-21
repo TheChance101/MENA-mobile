@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
@@ -30,7 +31,6 @@ import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
-import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsListener
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.ExportTransactionsScreenRoute
 import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
@@ -53,16 +53,7 @@ fun TransactionHistoryScreen(viewModel: TransactionHistoryViewModel = koinViewMo
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onTransactionHistoryEffect(
-                effect = effect,
-                onNavigateBackClicked = navController::popBackStack,
-                navigateToTransactionDetails = {
-                    navController.navigate(TransactionDetailsScreenRoute(it.toString()))
-                },
-                navigateToExportTransaction = {
-                    navController.navigate(ExportTransactionsScreenRoute)
-                }
-            )
+            onTransactionHistoryEffect(effect = effect, navController = navController)
         }
     )
 
@@ -158,17 +149,14 @@ fun TransactionHistoryContent(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-private fun onTransactionHistoryEffect(
-    effect: TransactionHistoryEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionDetails: (id: Uuid) -> Unit,
-    navigateToExportTransaction: () -> Unit
-) {
+private fun onTransactionHistoryEffect(effect: TransactionHistoryEffect, navController: NavController) {
     when (effect) {
-        TransactionHistoryEffect.NavigateBack -> onNavigateBackClicked()
-        TransactionHistoryEffect.NavigateToExportTransaction -> navigateToExportTransaction()
+        TransactionHistoryEffect.NavigateBack -> navController.popBackStack()
+        TransactionHistoryEffect.NavigateToExportTransaction -> {
+            navController.navigate(ExportTransactionsScreenRoute)
+        }
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
-            navigateToTransactionDetails(effect.id)
+            navController.navigate(TransactionDetailsScreenRoute(effect.id.toString()))
         }
     }
 }

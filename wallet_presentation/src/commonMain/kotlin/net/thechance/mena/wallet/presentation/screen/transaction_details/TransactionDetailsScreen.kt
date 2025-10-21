@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import io.github.suwasto.capturablecompose.CaptureController
 import io.github.suwasto.capturablecompose.rememberCaptureController
 import mena.wallet_presentation.generated.resources.Res
@@ -49,7 +50,7 @@ fun TransactionDetailsScreen(
         onEffect = { effect ->
             onTransactionDetailsEffect(
                 effect = effect,
-                onNavigateBackClicked = navController::popBackStack,
+                navController = navController,
                 shareImage = imageSharer::shareImage,
                 captureImage = captureController::capture,
                 onCaptureError = viewModel::onCaptureError
@@ -139,13 +140,13 @@ private fun TransactionDetailsSuccessContent(
 
 private suspend fun onTransactionDetailsEffect(
     effect: TransactionDetailsEffect,
-    onNavigateBackClicked: () -> Unit,
+    navController: NavController,
     shareImage: suspend (ByteArray, String, String) -> Unit,
     captureImage: suspend () -> Unit,
     onCaptureError: suspend () -> Unit
 ) {
     when (effect) {
-        TransactionDetailsEffect.NavigateBack -> onNavigateBackClicked()
+        TransactionDetailsEffect.NavigateBack -> navController.popBackStack()
 
         is TransactionDetailsEffect.ShareImage -> {
             shareImage(effect.imageBytes, effect.fileName, effect.mimeType)
