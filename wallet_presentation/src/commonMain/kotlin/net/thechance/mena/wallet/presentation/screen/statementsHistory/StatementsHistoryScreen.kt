@@ -108,6 +108,7 @@ private fun NormalModeContent(
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
+        isLoading = state.isLoading,
         onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
     ) { StatementHistoryBody(state = state, listener = listener) }
 }
