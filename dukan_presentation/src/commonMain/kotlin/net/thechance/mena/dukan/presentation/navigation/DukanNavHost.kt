@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import net.thechance.mena.dukan.presentation.screen.categoryDukans.DukansScreen
+import net.thechance.mena.dukan.presentation.screen.categoryDukans.CategoryDukansScreen
 import net.thechance.mena.dukan.presentation.screen.createDukan.CreateDukanScreen
 import net.thechance.mena.dukan.presentation.screen.createProduct.CreateProductScreen
 import net.thechance.mena.dukan.presentation.screen.createShelf.CreateShelfScreen
@@ -71,7 +71,7 @@ fun DukanNavHost() {
                 DukanCategoriesScreen()
             }
             composable<DukanRoute.DukansScreenRoute> {
-                DukansScreen()
+                CategoryDukansScreen()
             }
         }
     }

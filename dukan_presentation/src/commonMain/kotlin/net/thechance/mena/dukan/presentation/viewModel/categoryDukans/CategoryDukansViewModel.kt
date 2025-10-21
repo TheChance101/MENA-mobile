@@ -44,33 +44,7 @@ class CategoryDukansViewModel(
         )
     }
 
-    private fun initializePager(): Pager<Int, DukanUiState> {
-        val categoryId = savedStateHandle.get<String>("categoryId") ?: ""
-        val categoryTitle = savedStateHandle.get<String>("categoryTitle") ?: ""
-
-        updateState {
-            copy(
-                categoryId = categoryId,
-                categoryTitle = categoryTitle
-            )
-        }
-
-        val pager = createPagingSource(
-            mapper = { it.toUiState() }
-        ) { pageNumber ->
-            dukanDiscoveryRepository.getDukansByCategory(
-                categoryId = categoryId,
-                page = pageNumber,
-                size = 20
-            )
-        }
-
-        this.pager = pager
-        loadDukans(pager)
-        return pager
-    }
-
-    private suspend fun toggleFavoriteStatus(dukan: DukanUiState) {
+    private fun toggleFavoriteStatus(dukan: DukanUiState) {
         if (dukan.isFavorite) {
             // TODO remove dukan from favorites
         } else {
@@ -147,6 +121,44 @@ class CategoryDukansViewModel(
             dukans.isLoading && dukans.items.isEmpty() -> DukansState.LOADING
             dukans.items.isEmpty() -> DukansState.EMPTY
             else -> DukansState.LOADED
+        }
+    }
+
+    private fun initializePager(): Pager<Int, DukanUiState> {
+        val (categoryId, categoryTitle) = getCategoryArguments()
+        updateCategoryState(categoryId, categoryTitle)
+
+        val pager = createDukanPager(categoryId)
+        this.pager = pager
+        loadDukans(pager)
+
+        return pager
+    }
+
+    private fun getCategoryArguments(): Pair<String, String> {
+        val categoryId = savedStateHandle.get<String>("categoryId") ?: ""
+        val categoryTitle = savedStateHandle.get<String>("categoryTitle") ?: ""
+        return categoryId to categoryTitle
+    }
+
+    private fun updateCategoryState(categoryId: String, categoryTitle: String) {
+        updateState {
+            copy(
+                categoryId = categoryId,
+                categoryTitle = categoryTitle
+            )
+        }
+    }
+
+    private fun createDukanPager(categoryId: String): Pager<Int, DukanUiState> {
+        return createPagingSource(
+            mapper = { it.toUiState() }
+        ) { pageNumber ->
+            dukanDiscoveryRepository.getDukansByCategory(
+                categoryId = categoryId,
+                page = pageNumber,
+                size = 20
+            )
         }
     }
 }

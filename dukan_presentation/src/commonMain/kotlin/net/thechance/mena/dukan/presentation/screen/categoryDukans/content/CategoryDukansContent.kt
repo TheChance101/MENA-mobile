@@ -31,7 +31,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DukansContent(
+fun CategoryDukans(
     state: CategoryDukansUiState,
     listener: CategoryDukansInteractionListener,
     pager: Pager<Int, DukanUiState>
@@ -41,18 +41,7 @@ fun DukansContent(
     lazyListState.LoadMoreOnScroll(pager)
 
     Scaffold(
-        topBar = {
-            AppBar(
-                title = state.categoryTitle,
-                onLeadingClick = listener::onBackClick,
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow)
-                    )
-                }
-            )
-        }
+        topBar = { CategoryDukansAppBar(state, listener) }
     ) {
         AnimatedContent(
             targetState = state.dukansState,
@@ -97,11 +86,28 @@ fun DukansContent(
     }
 }
 
+@Composable
+private fun CategoryDukansAppBar(
+    state: CategoryDukansUiState,
+    listener: CategoryDukansInteractionListener
+) {
+    AppBar(
+        title = state.categoryTitle,
+        onLeadingClick = listener::onBackClick,
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_arrow)
+            )
+        }
+    )
+}
+
 @Preview
 @Composable
 private fun DukansContentPreview() {
     MenaTheme {
-        DukansContent(
+        CategoryDukans(
             state = CategoryDukansUiState(categoryTitle = "Dukan"),
             listener = PreviewCategoryDukansInteractionListener,
             pager = Pager(
