@@ -1,8 +1,8 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
+package net.thechance.mena.dukan.presentation.screen.createDukan.component.dukanstyle
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,34 +17,25 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun GridItemStyle(
+fun ListItemStyle(
     cartBackgroundColor: Color,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Row(
         modifier = modifier
+            .height(36.dp)
+            .clip(RoundedCornerShape(Theme.radius.xs))
+            .background(Theme.colorScheme.background.surface)
+            .padding(Theme.spacing._2)
     ) {
-        Box(
-            modifier = Modifier
-                .height(64.dp)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(Theme.radius.xs))
-                .background(Theme.colorScheme.background.surface)
-        ) {
-            DukanImageItemPlaceholder(
-                modifier = Modifier
-                    .height(42.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(Theme.radius.xxs))
-                    .background(Theme.colorScheme.background.surfaceLow)
-                    .align(Alignment.TopCenter)
-                    .padding(Theme.spacing._8)
-            )
-        }
+        DukanImageItemPlaceholder(
+            modifier = Modifier.clip(RoundedCornerShape(Theme.radius.xxs))
+                .background(Theme.colorScheme.background.surfaceLow)
+                .padding(Theme.spacing._4)
+        )
+        Spacer(Modifier.weight(1f))
         ShoppingCartPlaceholder(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(top = 24.dp)
+            modifier = Modifier.align(Alignment.Bottom)
                 .clip(RoundedCornerShape(Theme.radius.full))
                 .background(cartBackgroundColor)
         )
@@ -53,9 +44,9 @@ fun GridItemStyle(
 
 @Preview
 @Composable
-private fun VerticalItemStylePreview() {
+private fun HorizontalItemStylePreview() {
     MenaTheme {
-        GridItemStyle(
+        ListItemStyle(
             cartBackgroundColor = Theme.colorScheme.background.surfaceHigh,
         )
     }
