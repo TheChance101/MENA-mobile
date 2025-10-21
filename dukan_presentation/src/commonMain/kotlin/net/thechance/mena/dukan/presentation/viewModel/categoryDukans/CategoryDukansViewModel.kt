@@ -136,8 +136,8 @@ class CategoryDukansViewModel(
     }
 
     private fun getCategoryArguments(): Pair<String, String> {
-        val categoryId = savedStateHandle.get<String>("categoryId") ?: ""
-        val categoryTitle = savedStateHandle.get<String>("categoryTitle") ?: ""
+        val categoryId = savedStateHandle.get<String>("categoryId").orEmpty()
+        val categoryTitle = savedStateHandle.get<String>("categoryTitle").orEmpty()
         return categoryId to categoryTitle
     }
 
