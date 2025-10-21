@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.presentation.util.pagination.BasePagationSourceNew
@@ -84,10 +86,11 @@ abstract class BaseViewModel<S, E>(
             onError(throwable)
         }
 
-    protected fun <T : Any> createPagingSourceFlow(
+    protected fun <T : Any, R : Any> createPagingSourceFlow(
         onError: (Throwable) -> Unit = {},
+        mapper: (T) -> R,
         block: suspend (pageNumber: Int, pageSize: Int) -> List<T>
-    ): Flow<PagingData<T>> {
+    ): Flow<PagingData<R>> {
         return Pager(
             config = PagingConfig(
                 pageSize = PAGING_PAGE_SIZE,
@@ -97,6 +100,8 @@ abstract class BaseViewModel<S, E>(
             pagingSourceFactory = {
                 BasePagationSourceNew(onError = onError, onFetchPage = block)
             }
-        ).flow
+        ).flow.map { pagingData ->
+            pagingData.map(mapper)
+        }
     }
 }

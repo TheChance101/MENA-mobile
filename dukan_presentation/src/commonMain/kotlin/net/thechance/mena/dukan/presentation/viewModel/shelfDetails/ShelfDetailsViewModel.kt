@@ -41,21 +41,19 @@ class ShelfDetailsViewModel(
     private fun loadProductsFromRepository() {
         tryToCollect(
             block = {
-                createPagingSourceFlow { pageNumber, pageSize ->
+                createPagingSourceFlow(
+                    mapper = { it.toUiState() }
+                ) { pageNumber, pageSize ->
                     productRepository.getProductsByShelfId(
                         shelfId = shelfId,
                         page = pageNumber,
                         size = pageSize
-                    ).items.map {
-                        it.toUiState()
-                    }
+                    ).items
                 }
             },
             onCollect = ::onProductsLoaded
         )
     }
-
-
 
     private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) =
         updateState {
