@@ -108,7 +108,7 @@ private fun onPaymentResultEffect(effect: PaymentResultEffect, navController: Na
             navController.navigate(TransactionDetailsScreenRoute(effect.transactionId.toString()))
         }
 
-        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> {
+        is PaymentResultEffect.NavigateToPrePaymentScreen -> {
             navController.navigate(WalletMainScreenRoute) {
                 popUpTo(WalletMainScreenRoute) { inclusive = true }
             }
