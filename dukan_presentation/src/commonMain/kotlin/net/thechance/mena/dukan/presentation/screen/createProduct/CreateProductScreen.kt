@@ -145,7 +145,7 @@ private fun CreateProductContent(
 
 @Composable
 private fun CreateProductSnackBar(
-    state: ProductUiState,
+    state: CreateProductUiState,
     interactionListener: CreateProductInteractionListener
 ) {
     state.snackBarUiState?.let { snackBarState ->

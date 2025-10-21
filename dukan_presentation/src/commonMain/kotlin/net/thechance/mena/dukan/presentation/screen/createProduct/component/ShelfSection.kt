@@ -26,15 +26,15 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.LoadingShelves
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun LazyListScope.shelfSection(
-    shelves: List<ProductUiState.ShelfUiState>,
+    shelves: List<CreateProductUiState.ShelfUiState>,
     isShelvesLoading : Boolean,
-    onShelfSelect: (ProductUiState.ShelfUiState) -> Unit
+    onShelfSelect: (CreateProductUiState.ShelfUiState) -> Unit
 ) {
     item {
         Text(
@@ -77,8 +77,8 @@ fun LazyListScope.shelfSection(
 
 @Composable
 private fun LoadedShelves(
-    shelves: List<ProductUiState.ShelfUiState>,
-    onShelfSelect: (ProductUiState.ShelfUiState) -> Unit
+    shelves: List<CreateProductUiState.ShelfUiState>,
+    onShelfSelect: (CreateProductUiState.ShelfUiState) -> Unit
 ){
     LazyRow(
         modifier = Modifier
@@ -111,9 +111,9 @@ private fun ShelvesSectionPreview() {
         ) {
             shelfSection(
                 shelves = listOf(
-                    ProductUiState.ShelfUiState(id = "1", name = "shelf 1", isSelected = true),
-                    ProductUiState.ShelfUiState(id = "2", name = "shelf 2", isSelected = false),
-                    ProductUiState.ShelfUiState(id = "3", name = "shelf 3", isSelected = false),
+                    CreateProductUiState.ShelfUiState(id = "1", name = "shelf 1", isSelected = true),
+                    CreateProductUiState.ShelfUiState(id = "2", name = "shelf 2", isSelected = false),
+                    CreateProductUiState.ShelfUiState(id = "3", name = "shelf 3", isSelected = false),
                 ),
                 onShelfSelect = {},
                 isShelvesLoading = false

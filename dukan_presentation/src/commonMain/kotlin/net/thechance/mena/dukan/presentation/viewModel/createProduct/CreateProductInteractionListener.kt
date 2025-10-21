@@ -6,7 +6,7 @@ import net.thechance.mena.dukan.presentation.util.file.ImageFile
 interface CreateProductInteractionListener {
     fun onBackClicked()
     fun onProductNameChange(name: String)
-    fun onShelfSelect(shelfUiState: ProductUiState.ShelfUiState)
+    fun onShelfSelect(shelfUiState: CreateProductUiState.ShelfUiState)
     fun onPriceChange(price: String)
     fun onDescriptionChange(description: String)
     fun onUploadImageClicked(image: ImageFile)

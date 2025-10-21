@@ -34,12 +34,12 @@ import net.thechance.mena.dukan.presentation.component.productImage.DisplayProdu
 import net.thechance.mena.dukan.presentation.component.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.productImage.UploadProductImage
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun LazyListScope.imageSection(
-    images: List<ProductUiState.ProductImageUi>,
+    images: List<CreateProductUiState.ProductImageUi>,
     isUploadingImageEnabled: Boolean,
     isCancelImageEnabled: Boolean,
     onUploadImageClick: (image: ImageFile) -> Unit,
@@ -116,19 +116,19 @@ private fun ImageSectionPreview() {
         ) {
             imageSection(
                 images = listOf(
-                    ProductUiState.ProductImageUi(
+                    CreateProductUiState.ProductImageUi(
                         id = 1L,
                         image = ImageBitmap(100, 100),
                         imageSizeInMegaByte = 0.8,
                         imageState = ProductImageState.LOADING
                     ),
-                    ProductUiState.ProductImageUi(
+                    CreateProductUiState.ProductImageUi(
                         id = 2L,
                         image = ImageBitmap(100, 100),
                         imageSizeInMegaByte = 0.5,
                         imageState = ProductImageState.SUCCESS
                     ),
-                    ProductUiState.ProductImageUi(
+                    CreateProductUiState.ProductImageUi(
                         id = 3L,
                         image = ImageBitmap(100, 100),
                         imageSizeInMegaByte = 0.5,
