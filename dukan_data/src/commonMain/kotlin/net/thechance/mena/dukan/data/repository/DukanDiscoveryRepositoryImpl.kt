@@ -36,15 +36,14 @@ class DukanDiscoveryRepositoryImpl(
         size: Int
     ): PagedResult<DukanPreview> {
         val location = locationService.getUserAddresses().first { it.isActive }
-        val lat = location.latitude
-        val lng = location.longitude
+        //TODO handle in backend
         val range = 30000
         val dukansResponse = safeApiCall<PageResponseDto<DukanResponseDto>> {
             client.get("$DUKAN_BASE_PATH/nearby/best") {
                 parameter("page", page)
                 parameter("size", size)
-                parameter("lat", lat)
-                parameter("lng", lng)
+                parameter("lat", location.latitude)
+                parameter("lng", location.longitude)
                 parameter("range", range)
             }
         }
@@ -56,13 +55,11 @@ class DukanDiscoveryRepositoryImpl(
         page: Int,
         size: Int
     ): PagedResult<DukanPreview> {
-        val response: PageResponseDto<DukanResponseDto> = safeApiCall {
+        return safeApiCall<PageResponseDto<DukanResponseDto>> {
             client.get("$DUKAN_BASE_PATH/categories/$categoryId") {
                 parameter("page", page)
                 parameter("size", size)
             }
-        }
-        return response.toDomain(mapper = DukanResponseDto::toDomainPreview)
+        }.toDomain(mapper = DukanResponseDto::toDomainPreview)
     }
-
 }
