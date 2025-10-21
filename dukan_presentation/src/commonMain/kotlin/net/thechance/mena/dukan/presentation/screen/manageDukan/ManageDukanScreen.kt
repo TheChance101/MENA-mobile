@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shelf_successfully
-import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.createShelf.CreateShelfArgs
@@ -13,7 +13,7 @@ import net.thechance.mena.dukan.presentation.screen.manageDukan.content.ManageDu
 import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfArgs
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.ObserveSavedStateEvent
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanEffect
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiEffect
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -34,19 +34,19 @@ fun ManageDukanScreen(
             }
         }
         ObserveSavedStateEvent<String>(ManageShelfArgs.deletedShelfId) { id ->
-            viewModel.onShowDeleteShelfDailog(shelfId = id)
+            viewModel.onShowDeleteShelfDialog(shelfId = id)
         }
     }
 
-    ObserveAsEffect(viewModel.effect) { effect ->
+    ObserveAsEffect(viewModel.effect) { effect: ManageDukanUiEffect ->
         when (effect) {
-            ManageDukanEffect.NavigateBack -> navController.popBackStack()
+            ManageDukanUiEffect.NavigateBack -> navController.popBackStack()
 
-            ManageDukanEffect.NavigateToAddShelf -> navController.navigate(
+            ManageDukanUiEffect.NavigateToAddShelf -> navController.navigate(
                 DukanRoute.CreateShelfScreenRoute
             )
 
-            is ManageDukanEffect.NavigateToManageShelf -> {
+            is ManageDukanUiEffect.NavigateToManageShelf -> {
                 navController.navigate(
                     DukanRoute.ManageShelfScreenRoute(
                         shelfId = effect.shelfId,
@@ -55,12 +55,11 @@ fun ManageDukanScreen(
                 )
             }
 
-            ManageDukanEffect.NavigateToAddProduct -> {
+            ManageDukanUiEffect.NavigateToAddProduct -> {
                 navController.navigate(DukanRoute.CreateProductScreenRoute)
             }
 
-            ManageDukanEffect.NavigateToProductDetails -> {
-            }
+            ManageDukanUiEffect.NavigateToProductDetails -> {}
         }
     }
     ManageDukanContent(

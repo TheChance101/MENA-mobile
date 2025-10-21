@@ -35,8 +35,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.SkeletonOverlayShape
-import net.thechance.mena.dukan.presentation.component.productCard.PriceWithIcon
+import net.thechance.mena.dukan.presentation.component.loading.SkeletonOverlayShape
+import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
