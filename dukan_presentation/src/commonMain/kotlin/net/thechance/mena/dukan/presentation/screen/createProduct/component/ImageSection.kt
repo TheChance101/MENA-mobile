@@ -30,9 +30,9 @@ import mena.dukan_presentation.generated.resources.image_1_1
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.productImage.DisplayProductImage
-import net.thechance.mena.dukan.presentation.component.productImage.ProductImageState
-import net.thechance.mena.dukan.presentation.component.productImage.UploadProductImage
+import net.thechance.mena.dukan.presentation.component.product.productImage.DisplayProductImage
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
+import net.thechance.mena.dukan.presentation.component.product.productImage.UploadProductImage
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.stringResource

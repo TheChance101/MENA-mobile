@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.LazyVerticalGridItems
-import net.thechance.mena.dukan.presentation.component.LoadingVerticalList
+import net.thechance.mena.dukan.presentation.component.shared.LazyVerticalGridItems
+import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
 import net.thechance.mena.dukan.presentation.util.getScreenHeight
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig

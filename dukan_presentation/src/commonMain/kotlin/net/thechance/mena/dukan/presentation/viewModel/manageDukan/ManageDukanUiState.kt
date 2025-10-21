@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.delete
 import mena.dukan_presentation.generated.resources.dismiss
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import org.jetbrains.compose.resources.StringResource
 
