@@ -27,6 +27,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun NoInternetContent(
     onRetry: () -> Unit,
+    isLoading: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -54,6 +55,7 @@ fun NoInternetContent(
                 .fillMaxWidth(),
             text = stringResource(Res.string.retry_button),
             onClick = onRetry,
+            isLoading = isLoading,
             contentPadding = PaddingValues(
                 vertical = Theme.spacing._8,
                 horizontal = Theme.spacing._16

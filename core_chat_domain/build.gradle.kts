@@ -33,6 +33,7 @@ kover.reports {
             "*.model",
             "*.di",
             "*.repository",
+            "*.event",
         )
     }
 }
