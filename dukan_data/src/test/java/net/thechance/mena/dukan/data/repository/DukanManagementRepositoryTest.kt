@@ -31,8 +31,6 @@ import kotlin.uuid.Uuid
 class DukanManagementRepositoryTest {
     private val dukanManagementRepository: DukanManagementRepositoryImpl =
         createDukanManagementRepository()
-
-    // private val mediaRepository: MediaRepositoryImpl = createMediaRepository()
     private lateinit var capturedRequest: HttpRequestData
 
     private fun createMockClient(): HttpClient {
