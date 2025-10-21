@@ -125,21 +125,17 @@ private fun ReelHeaderSection(
                     .noRippleClickable { onReelClick() },
                 alignment = Alignment.Center
             )
-            Box(
+            Icon(
+                painter = painterResource(Res.drawable.ic_paly_now),
+                contentDescription = stringResource(Res.string.play_now),
+                tint = Theme.colorScheme.primary.onPrimary,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(color = Theme.colorScheme.primary.onPrimaryHint)
-                    .align(Alignment.Center),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_paly_now),
-                    contentDescription = stringResource(Res.string.play_now),
-                    modifier = Modifier.size(20.dp),
-                    tint = Theme.colorScheme.primary.onPrimary
-                )
-            }
+                    .padding(14.dp)
+                    .align(Alignment.Center)
+            )
         }
     }
 }

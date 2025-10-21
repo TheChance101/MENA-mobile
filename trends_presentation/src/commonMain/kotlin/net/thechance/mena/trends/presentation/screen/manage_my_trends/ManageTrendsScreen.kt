@@ -212,20 +212,17 @@ private fun TrendItem(
                 contentScale = ContentScale.Crop
             )
         } else {
-            Box(
+            Icon(
+                painter = painterResource(Res.drawable.ic_paly_now),
+                contentDescription = stringResource(Res.string.play_now),
+                tint = Theme.colorScheme.primary.onPrimary,
                 modifier = Modifier
                     .size(24.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(color = Theme.colorScheme.shadeTertiary)
-                    .align(Alignment.Center),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_paly_now),
-                    contentDescription = stringResource(Res.string.play_now),
-                    tint = Theme.colorScheme.primary.onPrimary
-                )
-            }
+                    .padding(7.dp)
+                    .align(Alignment.Center)
+            )
         }
     }
 }
