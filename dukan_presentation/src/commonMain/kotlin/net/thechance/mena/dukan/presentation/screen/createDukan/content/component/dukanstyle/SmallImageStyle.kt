@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -106,20 +105,15 @@ fun SmallImageStyle(
 
 @Composable
 fun SmallImage(modifier: Modifier = Modifier) {
-    Box(
+    Icon(
+        painter = painterResource(Res.drawable.ic_image),
+        tint = Theme.colorScheme.primary.onPrimary,
+        contentDescription = stringResource(Res.string.style_has_small_image_icon),
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.background.surface)
-            .padding(6.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_image),
-            tint = Theme.colorScheme.primary.onPrimary,
-            contentDescription = stringResource(Res.string.style_has_small_image_icon),
-            modifier = Modifier.size(20.dp)
-        )
-    }
+            .size(20.dp)
+    )
 }
 
 @Preview

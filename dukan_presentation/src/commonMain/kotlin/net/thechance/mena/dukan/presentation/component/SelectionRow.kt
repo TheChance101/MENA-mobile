@@ -28,7 +28,6 @@ fun <T> SelectionRow(
     ) {
         items(
             items = availableItems,
-            key = { item -> getItemName(item) }
         ) { item ->
             SelectionChip(
                 item = item,

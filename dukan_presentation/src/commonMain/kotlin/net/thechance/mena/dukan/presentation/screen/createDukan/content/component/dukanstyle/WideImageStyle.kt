@@ -57,18 +57,15 @@ fun WideImageStyle(
                 else Modifier
             ),
     ) {
-        Column {
+        Column(
+            modifier = Modifier.padding(horizontal = Theme.spacing._4)
+        ) {
             WideImageBox(modifier = Modifier.padding(Theme.spacing._4))
             ShimmerRow(selectedColor)
             repeat(3) {
                 ListItemStyle(
                     cartBackgroundColor = selectedColor,
-                    modifier = Modifier
-                        .padding(
-                            start = Theme.spacing._4,
-                            end = Theme.spacing._4,
-                            bottom = Theme.spacing._4
-                        )
+                    modifier = Modifier.padding(bottom = Theme.spacing._4)
                 )
             }
         }

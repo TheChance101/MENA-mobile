@@ -33,13 +33,7 @@ fun GridItemStyle(
         ) {
             DukanImageItemPlaceholder(
                 modifier = Modifier
-                    .padding(
-                        bottom = 20.dp,
-                        top = Theme.spacing._2,
-                        start = Theme.spacing._2,
-                        end = Theme.spacing._2
-                    )
-                    .height(42.dp)
+                    .height(40.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(Theme.radius.xxs))
                     .background(Theme.colorScheme.background.surfaceLow)

@@ -26,7 +26,7 @@ fun DukanNavHost() {
     ) {
         NavHost(
             navController = navController,
-            startDestination = DukanRoute.MainScreenRoute,
+            startDestination = DukanRoute.CreateDukanScreenRoute,
         ) {
             composable<DukanRoute.MainScreenRoute> {
                 MainScreen()
