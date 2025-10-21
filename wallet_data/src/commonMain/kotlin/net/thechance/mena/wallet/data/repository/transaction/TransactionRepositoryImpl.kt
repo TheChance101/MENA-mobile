@@ -68,6 +68,7 @@ class TransactionRepositoryImpl(
 
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
+        const val PAYMENT_PATH = "wallet/payment"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/p2p/initiate"
         const val RECEIVER_DETAILS = "/receiver-details"
@@ -77,6 +78,6 @@ class TransactionRepositoryImpl(
         fun getTransactionReceiverPath(transactionId: Uuid) =
             "$TRANSACTION_PATH/$transactionId$RECEIVER_DETAILS"
         fun getSubmitTransactionPath(transactionId: Uuid) =
-            "$TRANSACTION_PATH/$transactionId/submit"
+            "$PAYMENT_PATH/$transactionId/submit"
     }
 }
