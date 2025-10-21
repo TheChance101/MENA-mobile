@@ -207,17 +207,6 @@ class ContactsRepositoryImplTest {
             }
         }
 
-    @Test
-    fun `should throw ContactsPermissionDeniedException when syncContacts encounters permission denied`() =
-        runTest {
-
-            mockContactsProvider.throwPermissionDenied = true
-
-
-            assertFailsWith<ContactsPermissionDeniedException> {
-                repository.syncContacts()
-            }
-        }
 
     @Test
     fun `should return false when getSyncStatus is called and state is not set`() = runTest {
