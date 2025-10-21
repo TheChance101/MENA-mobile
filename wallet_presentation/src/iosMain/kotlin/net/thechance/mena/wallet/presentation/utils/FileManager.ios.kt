@@ -153,8 +153,6 @@ actual class FileManagerImpl : FileManager {
     private suspend fun <T> io(block: () -> T): T = withContext(Dispatchers.IO) { block() }
 
     private companion object {
-        // Chosen as a good balance between rendering time and image sharpness
-        const val IMAGE_SCALE = 1.67f
         const val APP_DOWNLOADS_FOLDER = "MENA"
     }
 }

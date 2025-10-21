@@ -53,7 +53,7 @@ fun StatementDetailsScreen(
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onStatementDetailsEffect(
+            handleEffects(
                 effect = effect,
                 navController = navController,
                 shareStatement = fileSharer::shareFile

@@ -35,6 +35,7 @@ import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.FileManager
+import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.jetbrains.compose.resources.StringResource
@@ -273,7 +274,7 @@ class ExportTransactionsViewModel(
         return fileManager.saveFile(
             data = statement.byteArray,
             location = StorageLocation.Cache(getUniqueStatementFileName()),
-            mimeType = MIMETYPE_PDF
+            mimeType = MimeType.PDF
         )
     }
 
@@ -361,7 +362,7 @@ class ExportTransactionsViewModel(
         return fileManager.saveFile(
             data = statement.byteArray,
             location = StorageLocation.Downloads(getUniqueStatementFileName()),
-            mimeType = MIMETYPE_PDF
+            mimeType = MimeType.PDF
         )
     }
 
@@ -528,8 +529,5 @@ class ExportTransactionsViewModel(
         return this
             ?.takeIf { it.isNotEmpty() }
             ?.let { LocalDate.parse(it, formatter) }
-    }
-    private companion object {
-        const val MIMETYPE_PDF = "application/pdf"
     }
 }

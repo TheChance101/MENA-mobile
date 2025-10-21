@@ -220,8 +220,8 @@ actual class FileManagerImpl : FileManager {
 
     private suspend fun <T> io(block: () -> T): T = withContext(Dispatchers.IO) { block() }
 
-    companion object {
-        private const val DOWNLOAD_DIR_BASE = "Download"
-        private const val APP_DOWNLOADS_FOLDER = "MENA"
+    private companion object {
+        const val DOWNLOAD_DIR_BASE = "Download"
+        const val APP_DOWNLOADS_FOLDER = "MENA"
     }
 }
