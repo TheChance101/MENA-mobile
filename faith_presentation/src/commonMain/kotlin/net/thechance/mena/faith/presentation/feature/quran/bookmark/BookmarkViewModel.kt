@@ -55,13 +55,13 @@ class BookmarkViewModel(
 
     override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateBack)
 
-    override fun onDeleteBookmarkClick(id: Int) {
+    override fun onDeleteBookmarkClick(bookmarkId: Int) {
         tryToExecute(
             dispatcher = dispatcher,
-            execute = { bookmarkRepository.deleteAyahBookmark(id) },
-            onStart = { insertDeletedBookmarkId(id) },
+            execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
+            onStart = { insertDeletedBookmarkId(bookmarkId) },
             onSuccess = { onDeleteBookmarkSuccess() },
-            onError = { removeDeletedBookmarkId(id) },
+            onError = { removeDeletedBookmarkId(bookmarkId) },
         )
     }
 
