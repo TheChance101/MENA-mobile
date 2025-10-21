@@ -174,7 +174,7 @@ private fun UserReelScreenContent(
 
         VerticalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand),
             key = { page -> reels[page]?.id ?: page },
         ) { page ->
 
