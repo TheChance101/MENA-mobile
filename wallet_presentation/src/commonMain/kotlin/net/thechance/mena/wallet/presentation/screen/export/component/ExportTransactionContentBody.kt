@@ -82,21 +82,24 @@ private fun ExportTransactionFilterSection(
     LazyColumn(
         modifier = modifier
     ) {
+
         item {
-            SelectCard(
+            ExportTypeCard(
                 cardText = stringResource(Res.string.all_transactions),
                 onCardSelected = interactionListener::onAllTransactionsClicked,
                 isSelected = (!state.isCustomFilterCardSelected),
                 modifier = Modifier.padding(bottom = 12.dp)
             )
         }
+
         item {
-            SelectCard(
+            ExportTypeCard(
                 cardText = stringResource(Res.string.custom_filtering),
                 isSelected = state.isCustomFilterCardSelected,
                 onCardSelected = interactionListener::onCustomFilteringClicked,
             )
         }
+
         item {
             Crossfade(
                 targetState = state.isCustomFilterCardSelected,
@@ -104,7 +107,7 @@ private fun ExportTransactionFilterSection(
             ) { visible ->
                 if (visible) {
                     FilterSection(
-                        state = state,
+                        state = state.filterState,
                         interactionListener = interactionListener
                     )
                 }
@@ -118,9 +121,11 @@ private fun ExportTransactionFilterSection(
 fun ExportTransactionContentBodyPreview() {
     val mockState = ExportTransactionsState(
         isCustomFilterCardSelected = true,
-        selectedTransactionsTypes = setOf(FilterType.SENT),
-        startDate = LocalDate(2023, 4, 4),
-        endDate = LocalDate(2023, 4, 4),
+        filterState = ExportTransactionsState.FilterState(
+            selectedTransactionsTypes = setOf(FilterType.SENT),
+            startDate = LocalDate(2023, 4, 4),
+            endDate = LocalDate(2023, 4, 4),
+        ),
         isViewAndShareLoading = false,
         isViewAndShareButtonEnabled = true,
         isDownloadLoading = false,
