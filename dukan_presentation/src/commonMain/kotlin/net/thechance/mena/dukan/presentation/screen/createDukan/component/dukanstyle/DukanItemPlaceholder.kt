@@ -1,6 +1,5 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
+package net.thechance.mena.dukan.presentation.screen.createDukan.component.dukanstyle
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,43 +22,32 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DukanImageItemPlaceholder(
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_image),
-            tint = Theme.colorScheme.stroke,
-            contentDescription = stringResource(Res.string.style_has_image),
-            modifier = Modifier.size(24.dp)
-        )
-    }
+    Icon(
+        painter = painterResource(Res.drawable.ic_image),
+        tint = Theme.colorScheme.stroke,
+        contentDescription = stringResource(Res.string.style_has_image),
+        modifier = modifier.size(24.dp)
+    )
 }
 
 @Composable
 fun ShoppingCartPlaceholder(
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Icon(
+        painter = painterResource(Res.drawable.ic_add_shopping_basket),
+        tint = Theme.colorScheme.primary.onPrimary,
+        contentDescription = stringResource(Res.string.add_shopping_basket),
         modifier = modifier
-            .padding(3.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_add_shopping_basket),
-            tint = Theme.colorScheme.primary.onPrimary,
-            contentDescription = stringResource(Res.string.add_shopping_basket),
-            modifier = Modifier.size(10.dp)
-        )
-    }
+            .padding(3.dp)
+            .size(10.dp)
+    )
 }
 
 @Preview
 @Composable
-private fun DukanImageItemPlaceholder() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+private fun DukanImageItemPlaceholderPreview() {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         DukanImageItemPlaceholder()
         ShoppingCartPlaceholder()
     }

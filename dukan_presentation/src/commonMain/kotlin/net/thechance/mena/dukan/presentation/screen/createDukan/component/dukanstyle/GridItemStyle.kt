@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
+package net.thechance.mena.dukan.presentation.screen.createDukan.component.dukanstyle
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,18 +33,12 @@ fun GridItemStyle(
         ) {
             DukanImageItemPlaceholder(
                 modifier = Modifier
-                    .padding(
-                        bottom = 20.dp,
-                        top = Theme.spacing._2,
-                        start = Theme.spacing._2,
-                        end = Theme.spacing._2
-                    )
                     .height(42.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(Theme.radius.xxs))
                     .background(Theme.colorScheme.background.surfaceLow)
                     .align(Alignment.TopCenter)
-                    .padding(Theme.spacing._4)
+                    .padding(Theme.spacing._8)
             )
         }
         ShoppingCartPlaceholder(

@@ -29,7 +29,13 @@ class PaymentResultViewModel(
     private val receiverName = paymentResultArgs.receiverName
     private val amount = paymentResultArgs.amount
     init {
-        updateState { it.copy(paymentStatus = submissionStatus) }
+        updateState {
+            it.copy(
+                paymentStatus = submissionStatus,
+                receiverName = paymentResultArgs.receiverName,
+                amount = paymentResultArgs.amount
+            )
+        }
     }
 
     override fun onBackClicked() {

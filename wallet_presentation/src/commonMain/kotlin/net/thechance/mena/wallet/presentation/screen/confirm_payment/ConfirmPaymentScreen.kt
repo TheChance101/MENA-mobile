@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.confirm_payment_header
@@ -21,8 +22,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.model.SubmissionStatus
-import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.PaymentResultScreenRoute
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PaymentDetailsSection
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -30,35 +31,17 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Composable
-fun ConfirmPaymentScreen(
-    onNavigateBackClicked: () -> Unit,
-    transactionId: String,
-    amount: Double,
-    navigateToPaymentResultScreen: (
-        receiverId: String,
-        amount: Double,
-        transactionId: Uuid,
-        submissionStatus: SubmissionStatus
-    ) -> Unit,
-    viewModel: ConfirmPaymentViewModel = koinViewModel(
-        parameters = { parametersOf(ConfirmPaymentArgs(transactionId, amount)) }
-    )
-) {
+fun ConfirmPaymentScreen(viewModel: ConfirmPaymentViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onConfirmPaymentEffect(
-                effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToPaymentResultScreen = navigateToPaymentResultScreen
-            )
+            onConfirmPaymentEffect(effect = effect, navController = navController)
         }
     )
 
@@ -123,24 +106,20 @@ private fun ConfirmPaymentScreenContent(
 
 }
 
-private fun onConfirmPaymentEffect(
-    effect: ConfirmPaymentEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToPaymentResultScreen: (
-        receiverName: String,
-        amount: Double,
-        transactionId: Uuid,
-        submissionStatus: SubmissionStatus
-    ) -> Unit
-) {
+private fun onConfirmPaymentEffect(effect: ConfirmPaymentEffect, navController: NavController) {
     when (effect) {
-        ConfirmPaymentEffect.NavigateBack -> onNavigateBackClicked()
+        ConfirmPaymentEffect.NavigateBack -> {
+            navController.popBackStack()
+        }
+
         is ConfirmPaymentEffect.NavigateToPaymentResultScreen -> {
-            navigateToPaymentResultScreen(
-                effect.receiverName,
-                effect.amount,
-                effect.transactionId,
-                effect.submissionStatus
+            navController.navigate(
+                PaymentResultScreenRoute(
+                    transactionId = effect.transactionId.toString(),
+                    submitTransactionResultStatus = effect.submissionStatus.name,
+                    amount = effect.amount,
+                    receiverName = effect.receiverName
+                )
             )
         }
     }

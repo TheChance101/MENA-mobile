@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
@@ -21,7 +22,9 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
-import net.thechance.mena.wallet.presentation.screen.payment_result.args.PaymentResultArgs
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.WalletMainScreenRoute
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentConnectionLostContent
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentSuccessContent
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentUnknownErrorContent
@@ -29,37 +32,17 @@ import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun PaymentResultScreen(
-    transactionId: String,
-    submitTransactionResultStatus: String,
-    receiverName: String,
-    amount: Double,
-    onNavigateBackClicked: () -> Unit,
-    onCancelClicked: () -> Unit,
-    onNavigateToTransactionDetailsClicked: (String) -> Unit,
-    viewModel: PaymentResultViewModel = koinViewModel(parameters = {
-        parametersOf(
-            PaymentResultArgs(transactionId, submitTransactionResultStatus, receiverName, amount)
-        )
-    })
-) {
+fun PaymentResultScreen(viewModel: PaymentResultViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onPaymentResultEffect(
-                effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                onCancelClicked = onCancelClicked,
-                onNavigateToTransactionDetailsClicked = { transactionId ->
-                    onNavigateToTransactionDetailsClicked(transactionId)
-                }
-            )
+            onPaymentResultEffect(effect, navController = navController)
         }
     )
     PaymentResultScreenContent(
@@ -118,18 +101,17 @@ private fun PaymentResultScreenContent(
     }
 }
 
-private fun onPaymentResultEffect(
-    effect: PaymentResultEffect,
-    onNavigateBackClicked: () -> Unit,
-    onCancelClicked: () -> Unit,
-    onNavigateToTransactionDetailsClicked: (String) -> Unit
-) {
+private fun onPaymentResultEffect(effect: PaymentResultEffect, navController: NavController) {
     when (effect) {
-        is PaymentResultEffect.NavigateBack -> onNavigateBackClicked()
-        is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
-            effect.transactionId.toString()
-        )
+        is PaymentResultEffect.NavigateBack -> navController.popBackStack()
+        is PaymentResultEffect.NavigateToTransactionDetails -> {
+            navController.navigate(TransactionDetailsScreenRoute(effect.transactionId.toString()))
+        }
 
-        is PaymentResultEffect.NavigateToPrePaymentScreen -> onCancelClicked()
+        is PaymentResultEffect.NavigateToPrePaymentScreen -> {
+            navController.navigate(WalletMainScreenRoute) {
+                popUpTo(WalletMainScreenRoute) { inclusive = true }
+            }
+        }
     }
 }

@@ -47,11 +47,10 @@ fun CreateShelfScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            CreateShelfEffect.NavigateBack -> navController.popBackStack()
+            CreateShelfEffect.NavigateBack -> navController.navigateUp()
             CreateShelfEffect.NavigateToManageDukan -> {
-                navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.set(CreateShelfArgs.createShelfSnackBar, "")
+                val backStack = navController.previousBackStackEntry
+                backStack?.savedStateHandle[CreateShelfArgs.IS_SHELF_CREATED] = true
                 navController.popBackStack()
             }
         }
@@ -97,6 +96,14 @@ private fun CreateShelfContent(
                 isLoading = state.isLoading,
                 contentPadding = PaddingValues(vertical = Theme.spacing._12)
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = interactionListener::onDismissSnackBar
+                )
+            }
         }
     ) {
         LazyColumn(
@@ -128,12 +135,6 @@ private fun CreateShelfContent(
                 )
             }
         }
-    }
-    state.snackBarState?.let { snackBarState ->
-        SnackBar(
-            snackBarUiState = snackBarState,
-            onDismiss = interactionListener::onDismissSnackBar
-        )
     }
 }
 

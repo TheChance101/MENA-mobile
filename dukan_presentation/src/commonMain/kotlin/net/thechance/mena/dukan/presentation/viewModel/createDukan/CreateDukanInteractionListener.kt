@@ -12,10 +12,11 @@ interface CreateDukanInteractionListener {
     fun onStyleClicked(style: CreateDukanUiState.Style)
     fun onClickUploadImage(image: ImageSrc)
     fun onNameChanged(name: String)
+
     fun isCategorySelected(): (CreateDukanUiState.DukanCategoryUiState) -> Boolean
-    fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean
-    fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean
+    fun onCategoryClicked(category: CreateDukanUiState.DukanCategoryUiState): Boolean
     fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean
+
     fun onCLickNext()
     fun onImageCrop(image: ImageBitmap)
     fun onCancelCrop()
