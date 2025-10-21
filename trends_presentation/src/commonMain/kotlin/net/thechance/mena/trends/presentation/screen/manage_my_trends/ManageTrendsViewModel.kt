@@ -72,4 +72,9 @@ internal class ManageTrendsViewModel(
     override fun onBackClick() {
         sendEffect(ManageTrendsUiEffect.NavigateBack)
     }
+
+    override fun onRetryClick() {
+        getReels()
+        getCurrentUserInfo()
+    }
 }

@@ -47,6 +47,8 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.screen.manage_my_trends.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -86,31 +88,36 @@ private fun ManageTrendsScreenContent(
     Scaffold(
         topBar = { ManageMyTrendsAppBar(onBackClick = listener::onBackClick) }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            UserAvatar(
-                profileImageUrl = state.profile.profileImageUrl,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
 
-            Text(
-                text = state.profile.userName,
-                style = Theme.typography.label.medium,
+        if (state.error == ErrorState.NoInternet) {
+            NoConnection(onRetry = listener::onRetryClick)
+        } else {
+            Column(
                 modifier = Modifier
-                    .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
-                    .align(Alignment.CenterHorizontally)
-            )
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                UserAvatar(
+                    profileImageUrl = state.profile.profileImageUrl,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
 
-            SegmentSection(
-                reels = state.reels.collectAsLazyPagingItems(),
-                onTrendClick = listener::onReelClick,
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                trendsTitle = stringResource(Res.string.my_trends),
-                favoriteTitle = stringResource(Res.string.favorite)
-            )
+                Text(
+                    text = state.profile.userName,
+                    style = Theme.typography.label.medium,
+                    modifier = Modifier
+                        .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
+                        .align(Alignment.CenterHorizontally)
+                )
+
+                SegmentSection(
+                    reels = state.reels.collectAsLazyPagingItems(),
+                    onTrendClick = listener::onReelClick,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    trendsTitle = stringResource(Res.string.my_trends),
+                    favoriteTitle = stringResource(Res.string.favorite)
+                )
+            }
         }
     }
 }
@@ -162,7 +169,10 @@ private fun SegmentSection(
                     state = rememberLazyGridState(),
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
-                    horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._4, Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = Theme.spacing._4,
+                        Alignment.CenterHorizontally
+                    ),
                     contentPadding = PaddingValues(bottom = Theme.spacing._16)
                 ) {
                     items(key = reels.itemKey(), count = reels.itemCount) { index ->
