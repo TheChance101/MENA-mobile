@@ -13,8 +13,8 @@ import mena.dukan_presentation.generated.resources.dukan_approved_header
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
-import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
+import net.thechance.mena.dukan.presentation.component.loading.LoadingHorizontalList
+import net.thechance.mena.dukan.presentation.component.state.ImageWithTextContainer
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import org.jetbrains.compose.resources.stringResource
