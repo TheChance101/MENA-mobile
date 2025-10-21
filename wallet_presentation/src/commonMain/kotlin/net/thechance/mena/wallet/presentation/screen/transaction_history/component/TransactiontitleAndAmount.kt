@@ -57,7 +57,7 @@ fun TransactionTitleAndAmount(
         TransactionAmountRow(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .padding(start = 8.dp),
+                .padding(start = Theme.spacing._8),
             amount = amount
         )
     }

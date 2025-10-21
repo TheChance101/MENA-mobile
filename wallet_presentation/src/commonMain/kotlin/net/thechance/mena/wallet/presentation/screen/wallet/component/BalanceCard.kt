@@ -68,7 +68,7 @@ fun BalanceCard(
                 shape = RoundedCornerShape(Theme.radius.xl)
             )
             .border(
-                width = 2.dp,
+                width = Theme.spacing._2,
                 color = Theme.colorScheme.stroke,
                 shape = RoundedCornerShape(Theme.radius.xl)
             )
@@ -80,7 +80,7 @@ fun BalanceCard(
         AnimatedCoinImage(
             isBalanceLoaded = !state.isLoading && state.errorState == null,
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = Theme.spacing._12)
                 .align(Alignment.TopCenter)
         )
 
@@ -124,7 +124,7 @@ private fun AnimatedCoinImage(
             painter = painterResource(Res.drawable.img_silver),
             contentDescription = stringResource(Res.string.silver_coin),
             modifier = modifier
-                .padding(top = 8.dp)
+                .padding(top = Theme.spacing._8)
                 .size(200.dp)
                 .offset { IntOffset(0, offsetY) }
         )
@@ -152,7 +152,7 @@ private fun BalanceInfoSection(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .shadow(elevation = 32.dp, shape = curvedShape)
+            .shadow(elevation = Theme.spacing._32, shape = curvedShape)
             .clip(curvedShape)
             .background(color = Theme.colorScheme.background.surface, shape = curvedShape)
     ) {
@@ -168,7 +168,7 @@ private fun BalanceInfoSection(
             text = stringResource(Res.string.current_balance),
             style = Theme.typography.label.extraSmall,
             color = Theme.colorScheme.shadeSecondary,
-            modifier = Modifier.padding(top = 4.dp, bottom = 19.dp)
+            modifier = Modifier.padding(top = Theme.spacing._4, bottom = 19.dp)
         )
     }
 }
@@ -243,7 +243,7 @@ private fun BalanceErrorContent(
             painter = painterResource(Res.drawable.ic_reload),
             contentDescription = stringResource(Res.string.reload),
             tint = Theme.colorScheme.error,
-            modifier = Modifier.padding(start = 8.dp).size(20.dp)
+            modifier = Modifier.padding(start = Theme.spacing._8).size(20.dp)
         )
     }
 }
@@ -253,7 +253,7 @@ private fun BalanceErrorContent(
 private fun BalanceCardPreview() {
     MenaTheme {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
         ) {
             BalanceCard(
                 WalletScreenState.BalanceUiState(

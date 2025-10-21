@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import org.koin.compose.koinInject
@@ -47,10 +48,10 @@ fun PdfViewer(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = Theme.spacing._8),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)
+            contentPadding = PaddingValues(top = Theme.spacing._16, bottom = 88.dp)
         ) {
             itemsIndexed(pages) { index, page ->
                 AsyncImage(
@@ -59,7 +60,7 @@ fun PdfViewer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(0.7071f)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(Theme.spacing._8))
                         .background(Color.White),
                 )
             }

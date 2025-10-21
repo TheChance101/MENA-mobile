@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.failed
 import mena.wallet_presentation.generated.resources.ic_failed
-import mena.wallet_presentation.generated.resources.ic_receive
 import mena.wallet_presentation.generated.resources.ic_send
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -35,13 +34,13 @@ fun TransactionStatusIcon(
         Box(
             modifier = Modifier
                 .background(Theme.colorScheme.primary.onPrimary, CircleShape)
-                .padding(12.dp)
+                .padding(Theme.spacing._12)
                 .align(Alignment.Center)
         ) {
             Icon(
                 painter = painterResource(transactionTypeIcon),
                 contentDescription = stringResource(transactionStatus.iconContentDescriptionRes),
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(Theme.spacing._24)
             )
         }
 

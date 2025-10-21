@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.ic_calendar
@@ -46,7 +45,7 @@ fun FilterContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = Theme.spacing._16)
     ) {
 
         Text(
@@ -88,8 +87,8 @@ private fun TransactionTypesRow(
 ) {
     LazyRow(
         horizontalArrangement = Arrangement
-            .spacedBy(8.dp),
-        modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
+            .spacedBy(Theme.spacing._8),
+        modifier = Modifier.padding(top = Theme.spacing._12, bottom = Theme.spacing._16)
     ) {
         items(FilterType.entries) { type ->
             WalletChip(
@@ -107,8 +106,8 @@ private fun TransactionStatusRow(
     onStatusSelected: (FilterStatus) -> Unit = {}
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        modifier = Modifier.padding(top = Theme.spacing._12, bottom = Theme.spacing._16)
     ) {
         items(FilterStatus.entries) { status ->
             WalletChip(
@@ -130,7 +129,7 @@ private fun DateRangePicker(
     onEndDateClicked: () -> Unit,
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
         modifier = Modifier.fillMaxWidth()
     ) {
         DatePickerField(
@@ -172,7 +171,7 @@ private fun DatePickerField(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
+                .padding(top = Theme.spacing._8)
                 .clip(shape = RoundedCornerShape(Theme.radius.md))
                 .pointerClick(key = value) { onClick() },
             trailingIcon = painterResource(Res.drawable.ic_calendar)

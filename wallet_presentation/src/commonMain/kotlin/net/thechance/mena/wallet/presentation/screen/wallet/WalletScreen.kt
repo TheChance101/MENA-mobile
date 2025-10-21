@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
@@ -73,11 +72,14 @@ private fun WalletContent(
 ) {
     WalletScaffold(
         modifier = Modifier
-            .background(Theme.colorScheme.background.surface) ,
+            .background(Theme.colorScheme.background.surface),
         topBar = {
             AppBar(
                 title = stringResource(Res.string.my_wallet),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._8
+                ),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -92,14 +94,14 @@ private fun WalletContent(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
+                .padding(horizontal = Theme.spacing._16)
+                .padding(top = Theme.spacing._16)
         ) {
             BalanceCard(
                 state = state.balanceState,
                 onRetry = interactionListener::onRetryLoadBalanceClicked,
                 modifier = Modifier
-                    .padding(top = 16.dp)
+                    .padding(top = Theme.spacing._16)
             )
 
             LabeledButtonWithCircularIcon(
@@ -126,7 +128,12 @@ private fun WalletContent(
                 icon = painterResource(Res.drawable.ic_send),
                 contentDescription = stringResource(Res.string.confirm_payment_header),
                 label = stringResource(Res.string.confirm_payment_header),
-                onClick = { interactionListener.onPaymentClicked(amount = 222.22, receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")) },
+                onClick = {
+                    interactionListener.onPaymentClicked(
+                        amount = 222.22,
+                        receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Theme.spacing._16)
@@ -146,7 +153,10 @@ private fun onWalletEffect(
         WalletEffect.NavigateBack -> onNavigateBackClicked()
         WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
         WalletEffect.NavigateToStatementHistory -> navigateToStatementsHistory()
-        is WalletEffect.NavigateToConfirmPaymentScreen -> navigateToPaymentScreen(effect.amount, effect.transactionId)
+        is WalletEffect.NavigateToConfirmPaymentScreen -> navigateToPaymentScreen(
+            effect.amount,
+            effect.transactionId
+        )
     }
 }
 

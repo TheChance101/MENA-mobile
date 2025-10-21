@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
@@ -24,13 +23,13 @@ import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
-import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsListener
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
@@ -77,7 +76,10 @@ fun TransactionHistoryContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.transactions_history),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._8
+                ),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -89,7 +91,7 @@ fun TransactionHistoryContent(
                     if (state.history.isNotEmpty()) {
                         Icon(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(RoundedCornerShape(Theme.spacing._16))
                                 .clickable { interactionListener.onExportClicked() },
                             painter = painterResource(Res.drawable.ic_share),
                             contentDescription = stringResource(Res.string.share)
@@ -115,12 +117,18 @@ fun TransactionHistoryContent(
                 DatePickerBottomSheet(
                     isVisible = isVisible,
                     defaultSelectedDate = when (state.filterState.datePickerMode) {
-                        TransactionFilterState.DatePickerMode.START_DATE -> state.filterState.defaultStartDate
-                        TransactionFilterState.DatePickerMode.END_DATE -> state.filterState.defaultEndDate
+                        TransactionFilterState.DatePickerMode.START_DATE ->
+                            state.filterState.defaultStartDate
+
+                        TransactionFilterState.DatePickerMode.END_DATE ->
+                            state.filterState.defaultEndDate
                     },
                     title = when (state.filterState.datePickerMode) {
-                        TransactionFilterState.DatePickerMode.START_DATE -> stringResource(Res.string.pick_start_date)
-                        TransactionFilterState.DatePickerMode.END_DATE -> stringResource(Res.string.pick_end_date)
+                        TransactionFilterState.DatePickerMode.START_DATE ->
+                            stringResource(Res.string.pick_start_date)
+
+                        TransactionFilterState.DatePickerMode.END_DATE ->
+                            stringResource(Res.string.pick_end_date)
                     },
                     onPickClick = { day, month, year ->
                         val pickedDate = LocalDate(year, month, day)
@@ -135,7 +143,8 @@ fun TransactionHistoryContent(
         isLoading = state.isLoading,
         onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
     {
-        when {state.errorState != null ->
+        when {
+            state.errorState != null ->
                 ErrorView(onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
 
             state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {

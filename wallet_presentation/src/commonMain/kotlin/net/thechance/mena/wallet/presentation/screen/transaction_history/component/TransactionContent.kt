@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.failed
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -28,8 +27,8 @@ fun TransactionContent(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = if (transactionStatus.contentRes == Res.string.failed) Arrangement.spacedBy(
-            4.dp
-        ) else Arrangement.spacedBy(8.dp)
+            Theme.spacing._4
+        ) else Arrangement.spacedBy(Theme.spacing._8)
     ) {
         TransactionTitleAndAmount(
             transactionTitle = transactionTitle,

@@ -22,7 +22,7 @@ fun FilterCount(
     if (hasActiveFilters && activeFilterCount != 0) {
         Box(
             modifier = Modifier
-                .padding(start = 4.dp)
+                .padding(start = Theme.spacing._4)
                 .size(20.dp)
                 .clip(CircleShape)
                 .background(Theme.colorScheme.brand.brand),
@@ -39,7 +39,7 @@ fun FilterCount(
 
 @Composable
 @Preview
-private fun FilterCountPreview(){
+private fun FilterCountPreview() {
     FilterCount(
         activeFilterCount = 1,
         hasActiveFilters = true

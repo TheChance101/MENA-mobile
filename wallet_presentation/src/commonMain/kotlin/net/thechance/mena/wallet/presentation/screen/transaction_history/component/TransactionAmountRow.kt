@@ -30,7 +30,7 @@ fun TransactionAmountRow(
         horizontalArrangement = Arrangement.End
     ) {
         Text(
-            modifier = Modifier.padding(end = 4.dp),
+            modifier = Modifier.padding(end = Theme.spacing._4),
             text = amount,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary

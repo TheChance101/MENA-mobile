@@ -17,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -30,7 +29,7 @@ fun WalletChip(
     onClick: () -> Unit,
     painter: Painter? = null,
     modifier: Modifier = Modifier,
-    iconSize: Dp = 16.dp,
+    iconSize: Dp = Theme.spacing._16,
     isEnabled: Boolean = true,
     shape: Shape = RoundedCornerShape(Theme.radius.full)
 ) {
@@ -49,7 +48,10 @@ fun WalletChip(
     )
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+        horizontalArrangement = Arrangement.spacedBy(
+            Theme.spacing._4,
+            Alignment.CenterHorizontally
+        ),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clip(shape)

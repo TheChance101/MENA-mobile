@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.downloading_started
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -62,8 +61,7 @@ fun CustomToast(
                     color = toastBackgroundColor,
                     shape = RoundedCornerShape(Theme.radius.md)
                 )
-                .padding(vertical = 12.dp, horizontal = 16.dp)
-            ,
+                .padding(vertical = Theme.spacing._12, horizontal = Theme.spacing._16),
         )
     }
 }

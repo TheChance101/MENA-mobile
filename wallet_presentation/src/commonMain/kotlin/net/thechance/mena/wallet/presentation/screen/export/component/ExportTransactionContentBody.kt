@@ -38,7 +38,7 @@ fun ExportTransactionContentBody(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(16.dp)
+            .padding(Theme.spacing._16)
     ) {
         ExportTransactionFilterSection(
             modifier = Modifier.weight(1f),
@@ -51,7 +51,7 @@ fun ExportTransactionContentBody(
             onClick = interactionListener::onViewAndShareClicked,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 6.dp, bottom = 12.dp),
+                .padding(top = 6.dp, bottom = Theme.spacing._12),
             trailingIcon = painterResource(Res.drawable.share),
             isLoading = state.isViewAndShareLoading,
             isEnabled = state.isViewAndShareButtonEnabled,
@@ -63,7 +63,7 @@ fun ExportTransactionContentBody(
             onClick = interactionListener::onDownloadClicked,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp),
+                .padding(bottom = Theme.spacing._8),
             trailingIcon = painterResource(Res.drawable.download),
             isLoading = state.isDownloadLoading,
             isEnabled = state.isDownloadButtonEnabled,
@@ -88,7 +88,7 @@ private fun ExportTransactionFilterSection(
                 cardText = stringResource(Res.string.all_transactions),
                 onCardSelected = interactionListener::onAllTransactionsClicked,
                 isSelected = (!state.isCustomFilterCardSelected),
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier.padding(bottom = Theme.spacing._12)
             )
         }
 
@@ -118,7 +118,7 @@ private fun ExportTransactionFilterSection(
 
 @Preview
 @Composable
-fun ExportTransactionContentBodyPreview() {
+private fun ExportTransactionContentBodyPreview() {
     val mockState = ExportTransactionsState(
         isCustomFilterCardSelected = true,
         filterState = ExportTransactionsState.FilterState(

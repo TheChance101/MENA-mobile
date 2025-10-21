@@ -91,8 +91,8 @@ private fun StickyFooterContent(
         modifier = Modifier
             .fillMaxWidth()
             .background(Theme.colorScheme.background.surface)
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 24.dp)
+            .padding(horizontal = Theme.spacing._16)
+            .padding(bottom = Theme.spacing._24)
             .padding(
                 bottom = WindowInsets.navigationBars.asPaddingValues()
                     .calculateBottomPadding()
@@ -117,7 +117,7 @@ private fun HeaderFilterContent(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._16),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(

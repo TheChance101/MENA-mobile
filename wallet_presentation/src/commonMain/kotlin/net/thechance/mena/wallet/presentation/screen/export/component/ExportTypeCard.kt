@@ -55,9 +55,9 @@ fun ExportTypeCard(
                 color = Theme.colorScheme.stroke,
                 shape = RoundedCornerShape(Theme.radius.md)
             )
-            .padding(vertical = 19.dp, horizontal = 12.dp),
+            .padding(vertical = 19.dp, horizontal = Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         RadioButton(
             isSelected = isSelected,

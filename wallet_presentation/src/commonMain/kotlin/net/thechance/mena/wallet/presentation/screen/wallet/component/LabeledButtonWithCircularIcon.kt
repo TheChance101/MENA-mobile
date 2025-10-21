@@ -29,12 +29,12 @@ fun LabeledButtonWithCircularIcon(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(Theme.spacing._16))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(onClick = onClick)
-            .padding(12.dp),
+            .padding(Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
         Icon(
             modifier = Modifier

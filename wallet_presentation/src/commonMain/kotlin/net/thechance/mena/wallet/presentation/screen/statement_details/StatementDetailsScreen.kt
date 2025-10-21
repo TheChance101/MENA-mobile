@@ -74,7 +74,10 @@ private fun StatementDetailsContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.statement),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._8
+                ),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -89,8 +92,8 @@ private fun StatementDetailsContent(
             PrimaryButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 24.dp)
+                    .padding(horizontal = Theme.spacing._16)
+                    .padding(bottom = Theme.spacing._24)
                     .height(48.dp),
                 text = stringResource(Res.string.share_button_title),
                 onClick = listener::onShareClicked,

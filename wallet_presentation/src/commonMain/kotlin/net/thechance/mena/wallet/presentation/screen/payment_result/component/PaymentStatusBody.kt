@@ -59,7 +59,7 @@ fun PaymentStatusBody(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(Theme.spacing._16)
         ) {
             when (state) {
                 SubmissionStatus.CONNECTION_LOST -> {
@@ -142,7 +142,7 @@ private fun PaymentResultCard(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.lg)
             )
-            .padding(vertical = 24.dp),
+            .padding(vertical = Theme.spacing._24),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
@@ -159,7 +159,7 @@ private fun PaymentResultCard(
                 name = name,
                 amount = amount,
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = Theme.spacing._8)
             )
         } else {
             Text(
@@ -167,7 +167,7 @@ private fun PaymentResultCard(
                 color = Theme.colorScheme.shadeSecondary,
                 style = Theme.typography.label.extraSmall,
                 modifier = Modifier
-                    .padding(top = 8.dp)
+                    .padding(top = Theme.spacing._8)
             )
         }
 
@@ -193,7 +193,7 @@ private fun PaymentStatusButtons(
             onClick = onPrimaryButtonClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp),
+                .padding(bottom = Theme.spacing._12),
             contentPadding = PaddingValues(vertical = 13.dp),
             isLoading = isLoading,
             isEnabled = isTryAgainEnabled
@@ -204,7 +204,7 @@ private fun PaymentStatusButtons(
             onClick = onCancelClicked,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(bottom = Theme.spacing._24),
             contentPadding = PaddingValues(vertical = 13.dp),
             isEnabled = isCloseEnabled
         )
@@ -254,7 +254,7 @@ private fun PaymentResultSuccessPreview() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(Theme.spacing._16)
         ) {
             PaymentResultCard(
                 image = painterResource(Res.drawable.transaction_success),
@@ -281,7 +281,7 @@ private fun PaymentResultUnknownErrorPreview() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(Theme.spacing._16)
         ) {
             PaymentResultCard(
                 image = painterResource(Res.drawable.transaction_failed),

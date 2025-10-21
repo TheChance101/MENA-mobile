@@ -42,23 +42,24 @@ fun TransactionsListContent(
         loadNextItems = interactionListener::onNextPageRequested
     )
 
-    Column (
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ){
+    Column(
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+    ) {
         if (state.history.isNotEmpty() || state.filterState.activeFilterCount != 0) {
             FilterButton(
                 activeFilterCount = state.filterState.activeFilterCount,
                 hasActiveFilters = state.filterState.hasActiveFilters,
                 onClick = interactionListener::onFilterClicked,
-                modifier = Modifier.padding(top= 12.dp).padding(horizontal = 16.dp)
+                modifier = Modifier.padding(top = Theme.spacing._12)
+                    .padding(horizontal = Theme.spacing._16)
             )
         }
 
         LazyColumn(
             modifier = modifier
                 .background(Theme.colorScheme.background.surface)
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(bottom = 16.dp),
+                .padding(horizontal = Theme.spacing._16),
+            contentPadding = PaddingValues(bottom = Theme.spacing._16),
             state = listState
         ) {
 
@@ -92,7 +93,7 @@ fun TransactionsListContent(
                         TransactionLoadingState(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 16.dp)
+                                .padding(vertical = Theme.spacing._16)
                         )
                     }
                 }

@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState
 import org.jetbrains.compose.resources.stringResource
 
@@ -24,11 +24,11 @@ fun TransactionHistoryCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .padding(vertical = Theme.spacing._16)
+            .clip(RoundedCornerShape(Theme.spacing._12))
             .clickable { onTransactionCardClicked() },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
         TransactionStatusIcon(
             transactionTypeIcon = transaction.type.iconRes,

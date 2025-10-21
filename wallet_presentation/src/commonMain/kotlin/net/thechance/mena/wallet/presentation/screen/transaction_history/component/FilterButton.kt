@@ -26,7 +26,7 @@ fun FilterButton(
     modifier: Modifier = Modifier
 ) {
     Button(
-        contentPadding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8, horizontal = Theme.spacing._12),
         onClick = onClick,
         containerColor = Theme.colorScheme.brand.brandVariant,
         shape = CircleShape,
@@ -38,7 +38,7 @@ fun FilterButton(
             contentDescription = stringResource(Res.string.filter)
         )
         Text(
-            modifier = Modifier.padding(start = 4.dp),
+            modifier = Modifier.padding(start = Theme.spacing._4),
             text = stringResource(Res.string.filter),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.primary
@@ -52,7 +52,7 @@ fun FilterButton(
 
 @Composable
 @Preview
-private fun FilterButtonPreview(){
+private fun FilterButtonPreview() {
     FilterButton(
         activeFilterCount = 1,
         hasActiveFilters = true,

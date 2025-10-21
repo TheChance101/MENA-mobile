@@ -52,11 +52,13 @@ fun WalletScaffold(
                             onRetry = onRetry ?: {}
                         )
                     }
+
                     isLoading -> {
                         Box(modifier = Modifier.fillMaxSize()) {
                             ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
                         }
                     }
+
                     else -> {
                         content()
                     }
@@ -68,7 +70,7 @@ fun WalletScaffold(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(start = 16.dp, end = 16.dp, top = 68.dp)
+                    .padding(start = Theme.spacing._16, end = Theme.spacing._16, top = 68.dp)
             ) { snackBarContent() }
         }
 
