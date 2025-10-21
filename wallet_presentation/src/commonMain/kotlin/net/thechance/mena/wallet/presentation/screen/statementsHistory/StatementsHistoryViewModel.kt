@@ -57,25 +57,19 @@ class StatementsHistoryViewModel(
         loadNextStatements()
     }
 
-    override fun onStatementCardClicked(
-        statement: StatementsHistoryScreenState.StatementItem,
-        onViewStatementAvailable: (isPdfFound: Boolean) -> Unit
-    ) {
+    override fun onStatementCardClicked(statement: StatementsHistoryScreenState.StatementItem) {
         val fileLocation = StorageLocation.Downloads(statement.fileName)
 
         tryToExecute(
             callee = { fileManager.checkIfFileExists(fileLocation) },
             onSuccess = { fileExists ->
                 if (fileExists) {
-                    onViewStatementAvailable(true)
                     sendEffect(StatementsHistoryEffect.NavigateToStatementDetails(fileLocation))
                 } else {
-                    onViewStatementAvailable(false)
                     deleteNotFoundStatement(statement)
                 }
             },
             onError = {
-                onViewStatementAvailable(false)
                 showSnackBar(
                     title = stringProvider.getString(Res.string.unknown_error_title),
                     message = stringProvider.getString(Res.string.unknown_error_description),
@@ -87,19 +81,33 @@ class StatementsHistoryViewModel(
     }
 
 
+    private suspend fun markStatementAsDeleted(id: Uuid) {
+        updateState { current ->
+            val updatedStatements = current.statements.map { statement ->
+                if (statement.id == id) statement.copy(isDeleting = true) else statement
+            }
+            current.copy(statements = updatedStatements)
+        }
+
+        delay(ANIMATION_DELAY)
+
+        updateState {
+            val updatedStatements = it.statements.filter { statement -> statement.id != id }
+            it.copy(statements = updatedStatements)
+        }
+    }
+
     private fun deleteNotFoundStatement(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
             callee = { statementRepository.deleteStatementById(statement.id) },
             onSuccess = { onDeleteNotFoundStatementSuccess(statement.id) },
-            onError = { onDeleteNotFoundStatementError() },
+            onError = ::onDeleteNotFoundStatementError,
             dispatcher = dispatcher
         )
     }
 
     private suspend fun onDeleteNotFoundStatementSuccess(id: Uuid) {
-        delay(DELETE_DELAY_MS)
-
-        removeStatementFromState(id = id)
+        markStatementAsDeleted(id = id)
 
         showSnackBar(
             title = stringProvider.getString(Res.string.file_missing),
@@ -108,18 +116,12 @@ class StatementsHistoryViewModel(
         )
     }
 
-    private suspend fun onDeleteNotFoundStatementError() {
+    private suspend fun onDeleteNotFoundStatementError(error: ErrorState) {
         showSnackBar(
             title = stringProvider.getString(Res.string.unknown_error_title),
             message = stringProvider.getString(Res.string.unknown_error_description),
             isSuccess = false
         )
-    }
-
-    private fun removeStatementFromState(id: Uuid) {
-        updateState { current ->
-            current.copy(statements = current.statements.filter { it.id != id })
-        }
     }
 
     override fun onEditClicked() {
@@ -130,26 +132,11 @@ class StatementsHistoryViewModel(
         updateState { it.copy(isEditMode = false) }
     }
 
-    override fun onDeleteClicked(
-        statement: StatementsHistoryScreenState.StatementItem,
-        onDeleteComplete: (isSuccess: Boolean) -> Unit
-    ) {
+    override fun onDeleteClicked(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
             callee = { deleteStatementPdf(statement = statement) },
-            onSuccess = {
-                onDeleteStatementSuccess(
-                    id = statement.id,
-                    onDeleteComplete = onDeleteComplete
-                )
-            },
-            onError = {
-                showSnackBar(
-                    title = stringProvider.getString(Res.string.unknown_error_title),
-                    message = stringProvider.getString(Res.string.unknown_error_description),
-                    isSuccess = false
-                )
-                onDeleteComplete(false)
-            },
+            onSuccess = { onDeleteStatementSuccess(id = statement.id) },
+            onError = ::onDeleteStatementError,
             dispatcher = dispatcher
         )
     }
@@ -164,16 +151,18 @@ class StatementsHistoryViewModel(
         statementRepository.deleteStatementById(statement.id)
     }
 
-    private suspend fun onDeleteStatementSuccess(
-        id: Uuid,
-        onDeleteComplete: (Boolean) -> Unit
-    ) {
-        delay(DELETE_DELAY_MS)
+    private suspend fun onDeleteStatementSuccess(id: Uuid) {
+        markStatementAsDeleted(id = id)
 
-        removeStatementFromState(id = id)
         updateState { it.copy(isEditMode = it.statements.isNotEmpty()) }
+    }
 
-        onDeleteComplete(true)
+    private suspend fun onDeleteStatementError(error: ErrorState) {
+        showSnackBar(
+            title = stringProvider.getString(Res.string.unknown_error_title),
+            message = stringProvider.getString(Res.string.unknown_error_description),
+            isSuccess = false
+        )
     }
 
     private fun onPaginationLoading(isLoading: Boolean) {
@@ -250,6 +239,6 @@ class StatementsHistoryViewModel(
     private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
-        const val DELETE_DELAY_MS = 300L
+        const val ANIMATION_DELAY = 500L
     }
 }

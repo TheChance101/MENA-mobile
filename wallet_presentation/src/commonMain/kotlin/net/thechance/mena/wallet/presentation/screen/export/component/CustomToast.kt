@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.component
+package net.thechance.mena.wallet.presentation.screen.export.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween

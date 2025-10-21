@@ -54,7 +54,7 @@ private fun Transaction.getTransactionStatus(): TransactionHistoryScreenState.Tr
     }
 
 private fun Transaction.getUserName(): String? = when (type) {
-    TransactionType.SENT -> senderName
-    TransactionType.RECEIVED -> receiverName
+    TransactionType.SENT -> receiverName
+    TransactionType.RECEIVED -> senderName
     else -> null
 }

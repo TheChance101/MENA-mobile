@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.data.repository
 
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createMediaRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createProductRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createdProductResponseId
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultCreateProductResponse

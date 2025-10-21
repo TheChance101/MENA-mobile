@@ -12,4 +12,10 @@ interface ProductRepository {
         page: Int,
         size: Int
     ): PagedResult<Product>
+
+    suspend fun uploadProductImages(
+        fileName: List<String>,
+        fileBytes: List<ByteArray>,
+        productId: String
+    ): List<String>
 }

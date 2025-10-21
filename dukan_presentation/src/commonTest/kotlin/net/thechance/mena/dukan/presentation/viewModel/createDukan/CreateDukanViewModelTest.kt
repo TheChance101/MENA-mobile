@@ -23,9 +23,8 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.domain.repository.MediaRepository
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -43,7 +42,6 @@ class CreateDukanViewModelTest {
     private val locationRepository = mock<LocationRepository>(mode = MockMode.autofill)
     private val dukanManagementRepository =
         mock<DukanManagementRepository>(mode = MockMode.autofill)
-    private val mediaRepository = mock<MediaRepository>(mode = MockMode.autofill)
     private lateinit var createDukanViewModel: CreateDukanViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -58,7 +56,6 @@ class CreateDukanViewModelTest {
 
         createDukanViewModel = CreateDukanViewModel(
             dukanManagementRepository = dukanManagementRepository,
-            mediaRepository = mediaRepository,
             locationRepository = locationRepository,
             testDispatcher
         )
@@ -564,6 +561,7 @@ class CreateDukanViewModelTest {
             assertFalse(result)
         }
 
+
     @Test
     fun `onCategoryClicked SHOULD update button state`() = runTest {
         // Given
@@ -762,7 +760,11 @@ private fun fakeCategories(): List<Category> {
             name = "Groceries",
             imageUrl = "https://example.com/groceries.png"
         ),
-        Category(id =  Uuid.parse("123e4567-e89b-12d3-a456-426614174003"), name = "Books", imageUrl = "https://example.com/books.png")
+        Category(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
+            name = "Books",
+            imageUrl = "https://example.com/books.png"
+        )
     )
 }
 
@@ -777,6 +779,6 @@ private fun fakeColorUiState() = CreateDukanUiState.ColorUiState(id = "1", color
 private fun fakeSingleDukanStyle() = CreateDukanUiState.Style.WIDE_IMAGE
 
 @OptIn(ExperimentalUuidApi::class)
-private fun Category.toUiState() =  CreateDukanUiState.DukanCategoryUiState(
+private fun Category.toUiState() = CreateDukanUiState.DukanCategoryUiState(
     id = id.toString(), name = name, imageUrl = imageUrl
 )
