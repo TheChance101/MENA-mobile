@@ -20,9 +20,6 @@ import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.components.ShelfProducts
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfigOld
-import net.thechance.mena.dukan.presentation.util.pagination.PagingSourceOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener
@@ -122,16 +119,6 @@ private fun ShelfDetailsPreview() {
         ShelfDetailsContent(
             state = ShelfDetailsUiState(),
             listener = PreviewShelfDetailsInteractionListener,
-            pagerOld = PagerOld(
-                config = PagingConfigOld(),
-                pagingSourceOldFactory = {
-                    object : PagingSourceOld<Int, ShelfDetailsUiState.ProductUiState>() {
-                        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ShelfDetailsUiState.ProductUiState> {
-                            return LoadResult.Page(emptyList(), null, null)
-                        }
-                    }
-                }
-            )
         )
     }
 }
