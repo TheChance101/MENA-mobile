@@ -148,7 +148,8 @@ private fun StatementsListContentPreview() {
             endDate = "15 Oct 2025",
             totalInflow = 1500.0,
             totalOutflow = 750.0,
-            fileName = "Statement_Oct_1_15.pdf"
+            fileName = "Statement_Oct_1_15.pdf",
+            isDeleting = false
         ),
         StatementsHistoryScreenState.StatementItem(
             id = Uuid.parse("223e4567-e89b-12d3-a456-426614174111"),
@@ -156,7 +157,8 @@ private fun StatementsListContentPreview() {
             endDate = "20 Oct 2025",
             totalInflow = 1200.0,
             totalOutflow = 500.0,
-            fileName = "Statement_Oct_16_20.pdf"
+            fileName = "Statement_Oct_16_20.pdf",
+            isDeleting = false
         )
     )
 
@@ -173,20 +175,8 @@ private fun StatementsListContentPreview() {
         override fun onNextPageRequested() {}
         override fun onEditClicked() {}
         override fun onCancelEditModeClicked() {}
-
-        override fun onStatementCardClicked(
-            statement: StatementsHistoryScreenState.StatementItem,
-            onViewStatementAvailable: (Boolean) -> Unit
-        ) {
-            onViewStatementAvailable(true)
-        }
-
-        override fun onDeleteClicked(
-            statement: StatementsHistoryScreenState.StatementItem,
-            onDeleteComplete: (Boolean) -> Unit
-        ) {
-            onDeleteComplete(true)
-        }
+        override fun onStatementCardClicked(statement: StatementsHistoryScreenState.StatementItem) {}
+        override fun onDeleteClicked(statement: StatementsHistoryScreenState.StatementItem) {}
     }
 
     MenaTheme {
