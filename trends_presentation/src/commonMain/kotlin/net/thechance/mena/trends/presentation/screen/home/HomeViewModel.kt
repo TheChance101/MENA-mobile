@@ -80,23 +80,23 @@ internal class HomeViewModel(
         ).map { pagingData -> pagingData.map { it.toUiState() } }
     }
 
-    override fun onAddReelClick() {
+    override fun onClickAddReel() {
         sendEffect(HomeUiEffect.NavigateToAddReel)
     }
 
-    override fun onEditTagsClick() {
+    override fun onClickEditTags() {
         sendEffect(HomeUiEffect.NavigateToChangeTags)
     }
 
-    override fun onManageMyTrendsClick() {
+    override fun onClickManageMyTrends() {
         sendEffect(HomeUiEffect.NavigateToManageMyTrends)
     }
 
-    override fun onReelClick(reelId: String) {
+    override fun onClickReel(reelId: String) {
         sendEffect(HomeUiEffect.NavigateToReelDetails(reelId))
     }
 
-    override fun onLikeClick(reelId: String) {
+    override fun onClickLike(reelId: String) {
         toggleReelLike(reelId)
     }
 }

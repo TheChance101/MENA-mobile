@@ -73,12 +73,12 @@ private fun CategoryPublishContent(
 ) {
     if (state.isLoading.not()) {
         Scaffold(
-            topBar = { CategoryPublishAppBar(listener::onBackClick) },
+            topBar = { CategoryPublishAppBar(listener::onClickBack) },
             bottomBar = {
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
                     text = stringResource(resource = Res.string.upload_video),
-                    onClick = listener::onPublishClick,
+                    onClick = listener::onClickPublish,
                     isEnabled = state.isPublishButtonEnabled,
                     isLoading = state.isPublishButtonLoadingVisible,
                     contentPadding = PaddingValues(vertical = 13.dp)
@@ -134,7 +134,7 @@ private fun CategoryPublishContent(
                     state.categories.forEach { category ->
                         CategoryItem(
                             category = category,
-                            onClick = { id -> listener.onCategoryClick(id) },
+                            onClick = { id -> listener.onClickCategory(id) },
                             modifier = Modifier
                                 .padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
                         )
@@ -183,9 +183,9 @@ private fun CategoryPublishScreenPreview() {
         CategoryPublishContent(
             state = CategoryPublishState(),
             listener = object : CategoryPublishInteractionListener {
-                override fun onBackClick() {}
-                override fun onCategoryClick(categoryId: String) {}
-                override fun onPublishClick() {}
+                override fun onClickBack() {}
+                override fun onClickCategory(categoryId: String) {}
+                override fun onClickPublish() {}
             }
         )
     }
