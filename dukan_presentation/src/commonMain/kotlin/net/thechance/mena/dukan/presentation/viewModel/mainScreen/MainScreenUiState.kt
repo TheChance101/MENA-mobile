@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 
 data class MainScreenUiState(
@@ -9,9 +9,9 @@ data class MainScreenUiState(
     val dukanState: DukanState = DukanState(),
     val isConnected: Boolean = true,
     val categories: List<DukanCategoryUiState> = emptyList(),
-    val bestNearestDukans: PagingData<BestNearestDukanUiState> = PagingData(),
+    val bestNearestDukans: PagingDataOld<BestNearestDukanUiState> = PagingDataOld(),
     val bestNearestDukanState: BestNearestDukanStatus = BestNearestDukanStatus.LOADING,
-    val editorPickDukans: PagingData<EditorPickDukanUiState> = PagingData(),
+    val editorPickDukans: PagingDataOld<EditorPickDukanUiState> = PagingDataOld(),
     val editorPickDukanState: EditorPickDukanStatus = EditorPickDukanStatus.LOADING,
 ) {
     data class DukanState(

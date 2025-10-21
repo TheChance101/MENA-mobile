@@ -1,10 +1,10 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagingSource
+import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagingSourceOld
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
 
-class FakeDukanPagingSource : BasePagingSource<DukanUiState>() {
+class FakeDukanPagingSourceOld : BasePagingSourceOld<DukanUiState>() {
     override suspend fun onFetchPage(pageNumber: Int): PagedResult<DukanUiState> {
         return PagedResult(
             items = fakeDukansList(),

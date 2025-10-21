@@ -1,14 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 
 data class DukanDetailsUiState(
     val dukanInfo: DukanInfo = DukanInfo(),
     val isDukanInfoLoading: Boolean = true,
-    val bestSellingProducts: PagingData<ProductUiState> = PagingData(),
-    val shelves: PagingData<ShelfUiState> = PagingData(),
+    val bestSellingProducts: PagingDataOld<ProductUiState> = PagingDataOld(),
+    val shelves: PagingDataOld<ShelfUiState> = PagingDataOld(),
     val shelvesState: ShelvesState = ShelvesState.LOADING,
-    val productsShelf: PagingData<ProductUiState> = PagingData(),
+    val productsShelf: PagingDataOld<ProductUiState> = PagingDataOld(),
     val productsState: ProductsState = ProductsState.LOADING,
     val shelfIdSelected: String? = null
 ) {

@@ -7,8 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
@@ -23,9 +23,9 @@ class CategoryDukansViewModel(
     defaultDispatcher = defaultDispatcher
 ), CategoryDukansInteractionListener {
 
-    private var pager: Pager<Int, DukanUiState>? = null
+    private var pagerOld: PagerOld<Int, DukanUiState>? = null
 
-    val initializedPager: Pager<Int, DukanUiState> by lazy {
+    val initializedPagerOld: PagerOld<Int, DukanUiState> by lazy {
         initializePager()
     }
 
@@ -72,29 +72,29 @@ class CategoryDukansViewModel(
         }
     }
 
-    private fun loadDukans(pager: Pager<Int, DukanUiState>) {
-        refreshPager(pager)
-        collectDukans(pager)
-        loadNextPage(pager)
+    private fun loadDukans(pagerOld: PagerOld<Int, DukanUiState>) {
+        refreshPager(pagerOld)
+        collectDukans(pagerOld)
+        loadNextPage(pagerOld)
     }
 
-    private fun refreshPager(pager: Pager<Int, DukanUiState>) {
+    private fun refreshPager(pagerOld: PagerOld<Int, DukanUiState>) {
         viewModelScope.launch {
-            pager.refresh()
+            pagerOld.refresh()
         }
     }
 
-    private fun collectDukans(pager: Pager<Int, DukanUiState>) {
+    private fun collectDukans(pagerOld: PagerOld<Int, DukanUiState>) {
         tryToCollect(
             onStart = ::onLoadingStart,
-            block = { pager.flow },
+            block = { pagerOld.flow },
             onCollect = ::onDukansLoaded
         )
     }
 
-    private fun loadNextPage(pager: Pager<Int, DukanUiState>) {
+    private fun loadNextPage(pagerOld: PagerOld<Int, DukanUiState>) {
         viewModelScope.launch {
-            pager.load()
+            pagerOld.load()
         }
     }
 
@@ -102,12 +102,12 @@ class CategoryDukansViewModel(
         updateState {
             copy(
                 dukansState = DukansState.LOADING,
-                dukans = PagingData()
+                dukans = PagingDataOld()
             )
         }
     }
 
-    private fun onDukansLoaded(dukans: PagingData<DukanUiState>) {
+    private fun onDukansLoaded(dukans: PagingDataOld<DukanUiState>) {
         updateState {
             copy(
                 dukans = dukans,
@@ -116,7 +116,7 @@ class CategoryDukansViewModel(
         }
     }
 
-    private fun getDukansState(dukans: PagingData<DukanUiState>): DukansState {
+    private fun getDukansState(dukans: PagingDataOld<DukanUiState>): DukansState {
         return when {
             dukans.isLoading && dukans.items.isEmpty() -> DukansState.LOADING
             dukans.items.isEmpty() -> DukansState.EMPTY
@@ -124,12 +124,12 @@ class CategoryDukansViewModel(
         }
     }
 
-    private fun initializePager(): Pager<Int, DukanUiState> {
+    private fun initializePager(): PagerOld<Int, DukanUiState> {
         val (categoryId, categoryTitle) = getCategoryArguments()
         updateCategoryState(categoryId, categoryTitle)
 
         val pager = createDukanPager(categoryId)
-        this.pager = pager
+        this.pagerOld = pager
         loadDukans(pager)
 
         return pager
@@ -150,7 +150,7 @@ class CategoryDukansViewModel(
         }
     }
 
-    private fun createDukanPager(categoryId: String): Pager<Int, DukanUiState> {
+    private fun createDukanPager(categoryId: String): PagerOld<Int, DukanUiState> {
         return createPagingSource(
             mapper = { it.toUiState() }
         ) { pageNumber ->

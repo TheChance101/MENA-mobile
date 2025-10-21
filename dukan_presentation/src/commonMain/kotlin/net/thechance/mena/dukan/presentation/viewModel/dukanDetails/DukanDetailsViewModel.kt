@@ -14,7 +14,7 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
@@ -81,7 +81,7 @@ class DukanDetailsViewModel(
         viewModelScope.launch { pagerShelf.load() }
     }
 
-    private fun onShelvesLoaded(shelves: PagingData<DukanDetailsUiState.ShelfUiState>) {
+    private fun onShelvesLoaded(shelves: PagingDataOld<DukanDetailsUiState.ShelfUiState>) {
         val shelfState = determineShelvesState(shelves)
         if (isWideImageStyle()) {
             handleWideImageShelves(shelves, shelfState)
@@ -92,7 +92,7 @@ class DukanDetailsViewModel(
     }
 
     private fun handleNonWideImageShelves(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>,
+        shelves: PagingDataOld<DukanDetailsUiState.ShelfUiState>,
         shelfState: DukanDetailsUiState.ShelvesState
     ) {
         viewModelScope.launch {
@@ -108,7 +108,7 @@ class DukanDetailsViewModel(
     }
 
     private fun handleWideImageShelves(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>,
+        shelves: PagingDataOld<DukanDetailsUiState.ShelfUiState>,
         shelfState: DukanDetailsUiState.ShelvesState
     ) {
         updateState {
@@ -124,7 +124,7 @@ class DukanDetailsViewModel(
         state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE
 
     private fun determineShelvesState(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>
+        shelves: PagingDataOld<DukanDetailsUiState.ShelfUiState>
     ): DukanDetailsUiState.ShelvesState {
         return when {
             shelves.isLoading && shelves.items.isEmpty() -> DukanDetailsUiState.ShelvesState.LOADING
@@ -134,7 +134,7 @@ class DukanDetailsViewModel(
     }
 
     private suspend fun updateProductsShelves(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>
+        shelves: PagingDataOld<DukanDetailsUiState.ShelfUiState>
     ): Pair<List<DukanDetailsUiState.ShelfUiState>, String?> = coroutineScope {
         val updatedShelvesWithProducts = shelves.items
             .map { shelf ->
@@ -170,12 +170,12 @@ class DukanDetailsViewModel(
         updateState {
             copy(
                 productsState = DukanDetailsUiState.ProductsState.LOADING,
-                productsShelf = PagingData()
+                productsShelf = PagingDataOld()
             )
         }
     }
 
-    private fun onProductsLoaded(products: PagingData<DukanDetailsUiState.ProductUiState>) {
+    private fun onProductsLoaded(products: PagingDataOld<DukanDetailsUiState.ProductUiState>) {
         val productsState = when {
             products.isLoading && products.items.isEmpty() -> DukanDetailsUiState.ProductsState.LOADING
             products.items.isEmpty() -> DukanDetailsUiState.ProductsState.EMPTY
@@ -197,7 +197,7 @@ class DukanDetailsViewModel(
         updateState {
             copy(
                 shelfIdSelected = id,
-                productsShelf = PagingData()
+                productsShelf = PagingDataOld()
             )
         }
         if (state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE) {
@@ -217,7 +217,7 @@ class DukanDetailsViewModel(
         updateState {
             copy(
                 shelfIdSelected = id,
-                productsShelf = PagingData()
+                productsShelf = PagingDataOld()
             )
         }
         loadProductsFromRepository()

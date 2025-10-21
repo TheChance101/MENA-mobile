@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.util.pagination
 
-abstract class PagingSource<Key : Any, Value : Any> {
+abstract class PagingSourceOld<Key : Any, Value : Any> {
 
     data class LoadParams<Key : Any>(
         val key: Key?,

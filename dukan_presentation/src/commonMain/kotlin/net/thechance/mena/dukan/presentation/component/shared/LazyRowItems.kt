@@ -10,13 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 
 @Composable
 inline fun <T : Any> LazyRowItems(
     items: List<T>,
     modifier: Modifier = Modifier,
-    pager: Pager<Int, T>? = null,
+    pagerOld: PagerOld<Int, T>? = null,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(Theme.spacing._8),
     contentPadding: PaddingValues = PaddingValues(
         horizontal = Theme.spacing._16,
@@ -28,8 +28,8 @@ inline fun <T : Any> LazyRowItems(
     crossinline itemContent: @Composable LazyItemScope.(item: T) -> Unit,
 ) {
     val lazyRowState = rememberLazyListState()
-    pager?.let {
-        lazyRowState.LoadMoreOnScroll(pager)
+    pagerOld?.let {
+        lazyRowState.LoadMoreOnScroll(pagerOld)
     }
 
     LazyRow(

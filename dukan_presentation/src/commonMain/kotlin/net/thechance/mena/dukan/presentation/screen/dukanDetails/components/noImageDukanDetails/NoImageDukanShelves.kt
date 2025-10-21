@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
@@ -29,13 +29,13 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 fun NoImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelves: Pager<Int, ShelfUiState>
+    pagerOldShelves: PagerOld<Int, ShelfUiState>
 ) {
     val lazyRowListState = rememberLazyListState()
-    lazyRowListState.LoadMoreOnScroll(pagerShelves)
+    lazyRowListState.LoadMoreOnScroll(pagerOldShelves)
 
     val lazyColumnListState = rememberLazyListState()
-    lazyColumnListState.LoadMoreOnScroll(pagerShelves)
+    lazyColumnListState.LoadMoreOnScroll(pagerOldShelves)
 
     val coroutineScope = rememberCoroutineScope()
     var chipsAlpha by rememberSaveable { mutableStateOf(0f) }

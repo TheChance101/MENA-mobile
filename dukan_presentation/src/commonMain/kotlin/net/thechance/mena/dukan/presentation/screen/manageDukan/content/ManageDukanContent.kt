@@ -18,9 +18,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.manageDukanDialog
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeProductPagingSource
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingConfigOld
+import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeProductPagingSourceOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
@@ -32,7 +32,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ManageDukanContent(
     state: ManageDukanUiState,
     listener: ManageDukanInteractionListener,
-    pager: Pager<Int, ProductUiState>
+    pagerOld: PagerOld<Int, ProductUiState>
 ) {
     OnSystemBackPressed(listener::onBackButtonClicked)
 
@@ -56,7 +56,7 @@ fun ManageDukanContent(
                 ManageDukanProducts(
                     state = state,
                     onProductClick = listener::onProductClick,
-                    pager = pager
+                    pagerOld = pagerOld
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
@@ -78,9 +78,9 @@ private fun ManageDukanContentPreview() {
         ManageDukanContent(
             state = ManageDukanUiState(),
             listener = PreviewManageDukanInteractionListener,
-            pager = Pager(
-                config = PagingConfig(),
-                pagingSourceFactory = { FakeProductPagingSource }
+            pagerOld = PagerOld(
+                config = PagingConfigOld(),
+                pagingSourceOldFactory = { FakeProductPagingSourceOld }
             )
         )
     }

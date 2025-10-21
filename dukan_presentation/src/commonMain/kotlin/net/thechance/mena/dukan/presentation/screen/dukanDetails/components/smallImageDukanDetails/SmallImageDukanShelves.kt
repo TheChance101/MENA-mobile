@@ -18,11 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
-import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
+import net.thechance.mena.dukan.presentation.component.product.ProductCard
+import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
@@ -33,11 +33,11 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 fun SmallImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    shelvesPager: Pager<Int, ShelfUiState>,
+    shelvesPagerOld: PagerOld<Int, ShelfUiState>,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
-    lazyListState.LoadMoreOnScroll(shelvesPager)
+    lazyListState.LoadMoreOnScroll(shelvesPagerOld)
 
     AnimatedContent(
         targetState = state.shelvesState

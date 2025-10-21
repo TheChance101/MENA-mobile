@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.util.pagination
 
-data class PagingData<T>(
+data class PagingDataOld<T>(
     val items: List<T> = emptyList(),
     val isLoading: Boolean = false,
     val error: Exception? = null,

@@ -19,8 +19,6 @@ import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
-import mena.dukan_presentation.generated.resources.dismiss_description
-import mena.dukan_presentation.generated.resources.dismiss_title
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
@@ -31,7 +29,7 @@ import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -516,7 +514,7 @@ class ManageDukanViewModelTest {
         runTest {
             manageDukanViewModel.updateState {
                 copy(
-                    products = PagingData()
+                    products = PagingDataOld()
                 )
             }
 
@@ -537,7 +535,7 @@ class ManageDukanViewModelTest {
     fun `onShowDeleteShelfDialog displays dialog with DISMISS type when products exist`() = runTest {
         manageDukanViewModel.updateState {
             copy(
-                products = PagingData(items = listOf(fakeProducts().first().toUiState()))
+                products = PagingDataOld(items = listOf(fakeProducts().first().toUiState()))
             )
         }
 

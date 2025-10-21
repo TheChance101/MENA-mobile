@@ -1,9 +1,9 @@
 package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 
 data class CategoryDukansUiState(
-    val dukans: PagingData<DukanUiState> = PagingData(),
+    val dukans: PagingDataOld<DukanUiState> = PagingDataOld(),
     val dukansState: DukansState = DukansState.LOADING,
     val categoryId: String = "",
     val categoryTitle: String = ""

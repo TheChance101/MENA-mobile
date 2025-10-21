@@ -75,7 +75,7 @@ class DukansViewModelTest {
     @Test
     fun `init SHOULD load category info from SavedStateHandle`() = runTest {
         // When
-        val pager = dukansViewModel.initializedPager
+        val pager = dukansViewModel.initializedPagerOld
         advanceUntilIdle()
 
         dukansViewModel.state.test {
@@ -90,7 +90,7 @@ class DukansViewModelTest {
     @Test
     fun `init SHOULD initialize pager with correct category`() = runTest {
         // When
-        val pager = dukansViewModel.initializedPager
+        val pager = dukansViewModel.initializedPagerOld
 
         // Then
         assertNotNull(pager)
@@ -99,7 +99,7 @@ class DukansViewModelTest {
     @Test
     fun `init SHOULD load dukans with correct count`() = runTest {
         // When
-        val pager = dukansViewModel.initializedPager
+        val pager = dukansViewModel.initializedPagerOld
         advanceUntilIdle()
 
         dukansViewModel.state.test {
@@ -113,7 +113,7 @@ class DukansViewModelTest {
     @Test
     fun `init SHOULD set dukans state to LOADED when dukans are available`() = runTest {
         // When
-        val pager = dukansViewModel.initializedPager
+        val pager = dukansViewModel.initializedPagerOld
         advanceUntilIdle()
 
         dukansViewModel.state.test {
@@ -154,7 +154,7 @@ class DukansViewModelTest {
     @Test
     fun `onFavoriteClick SHOULD toggle favorite status successfully`() = runTest {
         // Given
-        val pager = dukansViewModel.initializedPager
+        val pager = dukansViewModel.initializedPagerOld
         advanceUntilIdle()
         assertFalse(dummyDukansUiState().first().isFavorite)
 
@@ -172,7 +172,7 @@ class DukansViewModelTest {
     @Test
     fun `onFavoriteClick SHOULD toggle favorite from false to true`() = runTest {
         // Given
-        val pager = dukansViewModel.initializedPager
+        val pager = dukansViewModel.initializedPagerOld
         advanceUntilIdle()
         val dukan = dummyDukansUiState().first()
         assertFalse(dukan.isFavorite)
@@ -191,7 +191,7 @@ class DukansViewModelTest {
     @Test
     fun `onFavoriteClick SHOULD toggle favorite from true to false`() = runTest {
         // Given
-        val pager = dukansViewModel.initializedPager
+        val pager = dukansViewModel.initializedPagerOld
         advanceUntilIdle()
 
         dukansViewModel.onFavoriteClick(dummyDukansUiState().first())
@@ -229,7 +229,7 @@ class DukansViewModelTest {
         )
 
         // When
-        val pager = emptyViewModel.initializedPager
+        val pager = emptyViewModel.initializedPagerOld
         advanceUntilIdle()
 
         emptyViewModel.state.test {
@@ -253,7 +253,7 @@ class DukansViewModelTest {
         )
 
         // When 
-        val pager = nullViewModel.initializedPager
+        val pager = nullViewModel.initializedPagerOld
         advanceUntilIdle()
 
         nullViewModel.state.test {

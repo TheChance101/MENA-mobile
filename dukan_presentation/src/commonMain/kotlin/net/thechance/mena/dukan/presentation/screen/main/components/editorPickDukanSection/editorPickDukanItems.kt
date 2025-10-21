@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -63,7 +63,7 @@ private fun EditorPickDukanItemsListPreview() {
             editorPickDukanItems(
                 state = MainScreenUiState(
                     editorPickDukanState = MainScreenUiState.EditorPickDukanStatus.LOADED,
-                    editorPickDukans = PagingData(items = fakeDukans())
+                    editorPickDukans = PagingDataOld(items = fakeDukans())
                 ),
                 onDukanClick = {}
             )

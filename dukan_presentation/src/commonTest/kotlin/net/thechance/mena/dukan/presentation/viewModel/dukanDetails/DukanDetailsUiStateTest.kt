@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -25,7 +25,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(PagingData(), state.bestSellingProducts)
+        assertEquals(PagingDataOld(), state.bestSellingProducts)
     }
 
     @Test
@@ -33,7 +33,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(PagingData(), state.shelves)
+        assertEquals(PagingDataOld(), state.shelves)
     }
 
     @Test

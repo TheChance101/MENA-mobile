@@ -1,13 +1,13 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
 
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.pagination.PagingSource
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingConfigOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingSourceOld
 
-class FakePagingSource<Key : Any, Value : Any>(
+class FakePagingSourceOld<Key : Any, Value : Any>(
     private val items: List<Value>
-) : PagingSource<Key, Value>() {
+) : PagingSourceOld<Key, Value>() {
 
     override suspend fun load(params: LoadParams<Key>): LoadResult<Key, Value> {
         return LoadResult.Page(
@@ -20,9 +20,9 @@ class FakePagingSource<Key : Any, Value : Any>(
 
 fun <Key : Any, Value : Any> createFakePager(
     items: List<Value>
-): Pager<Key, Value> {
-    return Pager(
-        config = PagingConfig(pageSize = items.size),
-        pagingSourceFactory = { FakePagingSource(items) }
+): PagerOld<Key, Value> {
+    return PagerOld(
+        config = PagingConfigOld(pageSize = items.size),
+        pagingSourceOldFactory = { FakePagingSourceOld(items) }
     )
 }

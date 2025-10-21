@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun <T : Any> LazyListState.LoadMoreOnScroll(
-    pager: Pager<Int, T>,
+    pagerOld: PagerOld<Int, T>,
 ) {
-    LaunchedEffect(pager) {
+    LaunchedEffect(pagerOld) {
         snapshotFlow {
             val layoutInfo = layoutInfo
             val totalItems = layoutInfo.totalItemsCount
@@ -20,8 +20,8 @@ fun <T : Any> LazyListState.LoadMoreOnScroll(
             lastVisibleItemIndex to totalItems
         }.distinctUntilChanged()
             .collect { (lastVisible, total) ->
-                if (pager.isShouldLoadMore(lastVisible, total)) {
-                    pager.load()
+                if (pagerOld.isShouldLoadMore(lastVisible, total)) {
+                    pagerOld.load()
                 }
             }
     }
@@ -29,9 +29,9 @@ fun <T : Any> LazyListState.LoadMoreOnScroll(
 
 @Composable
 fun <T : Any> LazyGridState.LoadMoreOnScroll(
-    pager: Pager<Int, T>,
+    pagerOld: PagerOld<Int, T>,
 ) {
-    LaunchedEffect(pager) {
+    LaunchedEffect(pagerOld) {
         snapshotFlow {
             val layoutInfo = layoutInfo
 
@@ -43,8 +43,8 @@ fun <T : Any> LazyGridState.LoadMoreOnScroll(
 
         }.distinctUntilChanged()
             .collect { (lastVisible, total) ->
-                if (pager.isShouldLoadMore(lastVisible, total)) {
-                    pager.load()
+                if (pagerOld.isShouldLoadMore(lastVisible, total)) {
+                    pagerOld.load()
                 }
             }
     }

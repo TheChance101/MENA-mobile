@@ -1,12 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 data class ShelfDetailsUiState(
     val shelfName: String = "",
     val dukanStyle: Style = Style.NO_IMAGE,
     val dukancolor: Long = 0L,
-    val productsShelf: PagingData<ProductUiState> = PagingData(),
+    val productsShelf: Flow<PagingData<ProductUiState>> = flowOf(),
     val productsState: ProductsState = ProductsState.LOADING,
 ) {
     data class ProductUiState(

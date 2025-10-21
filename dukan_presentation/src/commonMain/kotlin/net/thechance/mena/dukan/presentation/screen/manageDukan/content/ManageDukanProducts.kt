@@ -14,7 +14,7 @@ import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCar
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanProductsList
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductsState
@@ -22,7 +22,7 @@ import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUi
 @Composable
 fun ManageDukanProducts(
     state: ManageDukanUiState,
-    pager: Pager<Int, ProductUiState>,
+    pagerOld: PagerOld<Int, ProductUiState>,
     onProductClick: (ProductUiState) -> Unit
 ) {
     AnimatedContent(
@@ -41,7 +41,7 @@ fun ManageDukanProducts(
             ProductsState.LOADED -> ManageDukanProductsList(
                 products = state.products.items,
                 onProductClick = onProductClick,
-                pager = pager
+                pagerOld = pagerOld
             )
 
             ProductsState.EMPTY -> EmptyStateContent(

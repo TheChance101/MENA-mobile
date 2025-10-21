@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class Pager<Key : Any, Value : Any>(
-    private val config: PagingConfig,
-    private val pagingSourceFactory: () -> PagingSource<Key, Value>
+class PagerOld<Key : Any, Value : Any>(
+    private val config: PagingConfigOld,
+    private val pagingSourceOldFactory: () -> PagingSourceOld<Key, Value>
 ) {
-    private val _flow = MutableStateFlow(PagingData<Value>())
-    val flow: Flow<PagingData<Value>> = _flow.asStateFlow()
+    private val _flow = MutableStateFlow(PagingDataOld<Value>())
+    val flow: Flow<PagingDataOld<Value>> = _flow.asStateFlow()
 
-    private var currentPagingSource: PagingSource<Key, Value>? = null
+    private var currentPagingSourceOld: PagingSourceOld<Key, Value>? = null
     private var currentKey: Key? = null
     private var loadedItemsCount = 0
     private val loadMutex = Mutex()
@@ -73,17 +73,17 @@ class Pager<Key : Any, Value : Any>(
 
 
     private fun handleLoadResult(
-        result: PagingSource.LoadResult<Key, Value>,
+        result: PagingSourceOld.LoadResult<Key, Value>,
         key: Key?
     ) {
         when (result) {
-            is PagingSource.LoadResult.Page -> setPageResult(result, key)
-            is PagingSource.LoadResult.Error -> setErrorState(result.throwable)
+            is PagingSourceOld.LoadResult.Page -> setPageResult(result, key)
+            is PagingSourceOld.LoadResult.Error -> setErrorState(result.throwable)
         }
     }
 
     private fun setPageResult(
-        result: PagingSource.LoadResult.Page<Key, Value>,
+        result: PagingSourceOld.LoadResult.Page<Key, Value>,
         key: Key?
     ) {
         val isRefresh = key == null && currentKey == null
@@ -107,14 +107,14 @@ class Pager<Key : Any, Value : Any>(
         _flow.value = _flow.value.copy(isLoading = true, error = null)
     }
 
-    private fun setPagingSource(): PagingSource<Key, Value> {
-        return currentPagingSource ?: pagingSourceFactory().also {
-            currentPagingSource = it
+    private fun setPagingSource(): PagingSourceOld<Key, Value> {
+        return currentPagingSourceOld ?: pagingSourceOldFactory().also {
+            currentPagingSourceOld = it
         }
     }
 
-    private fun setParams(key: Key?): PagingSource.LoadParams<Key> {
-        return PagingSource.LoadParams(
+    private fun setParams(key: Key?): PagingSourceOld.LoadParams<Key> {
+        return PagingSourceOld.LoadParams(
             key = key ?: currentKey,
             loadSize = config.pageSize
         )

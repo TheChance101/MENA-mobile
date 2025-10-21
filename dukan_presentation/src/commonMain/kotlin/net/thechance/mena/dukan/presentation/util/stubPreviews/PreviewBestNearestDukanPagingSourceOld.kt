@@ -1,11 +1,11 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagingSource
+import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagingSourceOld
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 
-object PreviewBestNearestDukanPagingSource :
-    BasePagingSource<MainScreenUiState.BestNearestDukanUiState>() {
+object PreviewBestNearestDukanPagingSourceOld :
+    BasePagingSourceOld<MainScreenUiState.BestNearestDukanUiState>() {
     override suspend fun onFetchPage(pageNumber: Int): PagedResult<MainScreenUiState.BestNearestDukanUiState> {
         return PagedResult(
             items = fakeBestNearestDuknas(),

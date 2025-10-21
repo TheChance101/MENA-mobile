@@ -1,11 +1,11 @@
 package net.thechance.mena.dukan.presentation.util.pagination.base
 
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.pagination.PagingSource
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingConfigOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingSourceOld
 
-abstract class BasePagingSource<T : Any> : PagingSource<Int, T>() {
+abstract class BasePagingSourceOld<T : Any> : PagingSourceOld<Int, T>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
         return try {
@@ -31,13 +31,13 @@ abstract class BasePagingSource<T : Any> : PagingSource<Int, T>() {
 
 fun <T : Any, R : Any> createPagingSource(
     mapper: (T) -> R,
-    config: PagingConfig = PagingConfig(),
+    config: PagingConfigOld = PagingConfigOld(),
     block: suspend (pageNumber: Int) -> PagedResult<T>
-): Pager<Int, R> {
-    return Pager(
+): PagerOld<Int, R> {
+    return PagerOld(
         config = config,
-        pagingSourceFactory = {
-            object : BasePagingSource<R>() {
+        pagingSourceOldFactory = {
+            object : BasePagingSourceOld<R>() {
                 override suspend fun onFetchPage(pageNumber: Int): PagedResult<R> {
                     val result = block(pageNumber)
                     return PagedResult(

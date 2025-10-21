@@ -2,6 +2,9 @@ package net.thechance.mena.dukan.presentation.viewModel.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +20,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.dukan.presentation.util.pagination.BasePagationSourceNew
+import net.thechance.mena.dukan.presentation.util.pagination.BasePagationSourceNew.Companion.PAGING_PAGE_SIZE
 
 abstract class BaseViewModel<S, E>(
     initialState: S,
@@ -78,4 +83,20 @@ abstract class BaseViewModel<S, E>(
         CoroutineExceptionHandler { _, throwable ->
             onError(throwable)
         }
+
+    private fun <T : Any> createPagingSourceFlow(
+        onError: (Throwable) -> Unit = {},
+        block: suspend (pageNumber: Int, pageSize: Int) -> List<T>
+    ): Flow<PagingData<T>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = PAGING_PAGE_SIZE,
+                initialLoadSize = PAGING_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                BasePagationSourceNew(onError = onError, onFetchPage = block)
+            }
+        ).flow
+    }
 }

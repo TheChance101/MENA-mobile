@@ -32,7 +32,7 @@ fun CategoryDukansScreen(
     CategoryDukans(
         state = state,
         listener = viewModel,
-        pager = viewModel.initializedPager
+        pagerOld = viewModel.initializedPagerOld
     )
 }
 

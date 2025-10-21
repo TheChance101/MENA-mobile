@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -10,7 +10,7 @@ class ShelfDetailsUiStateTest {
     @Test
     fun `default state SHOULD have empty PagingData for products shelf`() = runTest {
         val state = ShelfDetailsUiState()
-        assertEquals(PagingData(), state.productsShelf)
+        assertEquals(PagingDataOld(), state.productsShelf)
     }
 
     @Test

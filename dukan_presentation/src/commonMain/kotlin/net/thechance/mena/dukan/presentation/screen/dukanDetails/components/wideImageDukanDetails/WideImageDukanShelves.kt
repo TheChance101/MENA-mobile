@@ -25,7 +25,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.chip.ShelfChip
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakePagerShelvesDukanDetails
@@ -40,7 +40,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun WideImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    shelvesPager: Pager<Int, ShelfUiState>
+    shelvesPagerOld: PagerOld<Int, ShelfUiState>
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -68,7 +68,7 @@ fun WideImageDukanShelves(
                     selectedShelfId = state.shelfIdSelected,
                     onShelfClick = listener::onShelfClicked,
                     chipColor = Color(state.dukanInfo.color),
-                    pagerShelves = shelvesPager
+                    pagerOldShelves = shelvesPagerOld
                 )
 
                 ShelvesState.EMPTY -> {}
@@ -101,11 +101,11 @@ private fun LoadedShelves(
     shelves: List<ShelfUiState>,
     selectedShelfId: String?,
     chipColor: Color,
-    pagerShelves: Pager<Int, ShelfUiState>,
+    pagerOldShelves: PagerOld<Int, ShelfUiState>,
     onShelfClick: (shelfId: String) -> Unit
 ) {
     val listState = rememberLazyListState()
-    listState.LoadMoreOnScroll(pagerShelves)
+    listState.LoadMoreOnScroll(pagerOldShelves)
     LazyRow(
         state = listState,
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
@@ -130,7 +130,7 @@ private fun DukanShelvesSectionLoadingPreview() {
         WideImageDukanShelves(
             state = DukanDetailsUiState(shelvesState = ShelvesState.LOADING),
             listener = PreviewDukanDetailsInteractionListener,
-            shelvesPager = fakePagerShelvesDukanDetails
+            shelvesPagerOld = fakePagerShelvesDukanDetails
         )
     }
 }
@@ -142,7 +142,7 @@ private fun DukanShelvesSectionLoadedPreview() {
         WideImageDukanShelves(
             state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            shelvesPager = fakePagerShelvesDukanDetails
+            shelvesPagerOld = fakePagerShelvesDukanDetails
         )
     }
 }

@@ -14,13 +14,13 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.shared.DukanCard
-import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.shared.LazyVerticalGridItems
+import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeDukanPagingSource
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingConfigOld
+import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeDukanPagingSourceOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCategoryDukansInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState
@@ -34,11 +34,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun CategoryDukans(
     state: CategoryDukansUiState,
     listener: CategoryDukansInteractionListener,
-    pager: Pager<Int, DukanUiState>
+    pagerOld: PagerOld<Int, DukanUiState>
 ) {
     val lazyListState = rememberLazyListState()
 
-    lazyListState.LoadMoreOnScroll(pager)
+    lazyListState.LoadMoreOnScroll(pagerOld)
 
     Scaffold(
         topBar = { CategoryDukansAppBar(state, listener) }
@@ -51,7 +51,7 @@ fun CategoryDukans(
             when (target) {
                 DukansState.LOADING -> LazyVerticalGridItems(
                     items = state.dukans.items,
-                    pager = pager,
+                    pagerOld = pagerOld,
                     itemContent = { dukan ->
                         DukanCard(
                             dukan = dukan,
@@ -65,7 +65,7 @@ fun CategoryDukans(
 
                 DukansState.LOADED -> LazyVerticalGridItems(
                     items = state.dukans.items,
-                    pager = pager,
+                    pagerOld = pagerOld,
                     itemContent = { dukan ->
                         DukanCard(
                             dukan = dukan,
@@ -110,9 +110,9 @@ private fun DukansContentPreview() {
         CategoryDukans(
             state = CategoryDukansUiState(categoryTitle = "Dukan"),
             listener = PreviewCategoryDukansInteractionListener,
-            pager = Pager(
-                config = PagingConfig(),
-                pagingSourceFactory = { FakeDukanPagingSource() }
+            pagerOld = PagerOld(
+                config = PagingConfigOld(),
+                pagingSourceOldFactory = { FakeDukanPagingSourceOld() }
             )
         )
     }

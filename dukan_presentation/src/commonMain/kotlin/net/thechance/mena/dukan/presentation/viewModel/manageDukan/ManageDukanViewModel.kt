@@ -21,7 +21,7 @@ import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.DeleteDialogState
@@ -95,7 +95,7 @@ class ManageDukanViewModel(
                 copy(
                     selectedShelf = shelf,
                     productState = ManageDukanUiState.ProductsState.LOADING,
-                    products = PagingData()
+                    products = PagingDataOld()
                 )
             }
             loadProductsForSelectedShelf()
@@ -146,7 +146,7 @@ class ManageDukanViewModel(
             copy(
                 shelvesState = ManageDukanUiState.ShelvesState.LOADING,
                 productState = ManageDukanUiState.ProductsState.LOADING,
-                products = PagingData()
+                products = PagingDataOld()
             )
         }
     }
@@ -181,7 +181,7 @@ class ManageDukanViewModel(
             copy(
                 shelvesState = ManageDukanUiState.ShelvesState.EMPTY,
                 productState = ManageDukanUiState.ProductsState.EMPTY,
-                products = PagingData()
+                products = PagingDataOld()
             )
         }
     }
@@ -207,12 +207,12 @@ class ManageDukanViewModel(
         updateState {
             copy(
                 productState = ManageDukanUiState.ProductsState.LOADING,
-                products = PagingData()
+                products = PagingDataOld()
             )
         }
     }
 
-    private fun onProductsLoaded(products: PagingData<ManageDukanUiState.ProductUiState>) {
+    private fun onProductsLoaded(products: PagingDataOld<ManageDukanUiState.ProductUiState>) {
         val productState = when {
             products.isLoading && products.items.isEmpty() -> ManageDukanUiState.ProductsState.LOADING
             products.items.isEmpty() -> ManageDukanUiState.ProductsState.EMPTY

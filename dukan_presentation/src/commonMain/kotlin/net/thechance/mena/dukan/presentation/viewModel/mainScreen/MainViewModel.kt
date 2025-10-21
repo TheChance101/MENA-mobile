@@ -12,8 +12,8 @@ import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
@@ -29,8 +29,8 @@ class MainViewModel(
     initialState = MainScreenUiState(),
     defaultDispatcher = dispatcher
 ), MainInteractionListener {
-    lateinit var bestNearestDukanPager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>
-    lateinit var editorPickDukanPager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>
+    lateinit var bestNearestDukanPagerOld: PagerOld<Int, MainScreenUiState.BestNearestDukanUiState>
+    lateinit var editorPickDukanPagerOld: PagerOld<Int, MainScreenUiState.EditorPickDukanUiState>
 
     init {
         fetchData()
@@ -47,7 +47,7 @@ class MainViewModel(
     private fun loadEditorPicksDukans() {
         tryToExecute(
             onStart = ::onEditorPickDukanLoading,
-            block = {editorPickDukanPager.load()},
+            block = { editorPickDukanPagerOld.load() },
             onSuccess = { collectEditorPickData() },
             onError = ::handleNetworkError
         )
@@ -55,7 +55,7 @@ class MainViewModel(
 
     private fun collectEditorPickData() {
         tryToCollect(
-            block = { editorPickDukanPager.flow },
+            block = { editorPickDukanPagerOld.flow },
             onCollect = ::onLoadedEditorPicksDukan,
         )
     }
@@ -66,12 +66,12 @@ class MainViewModel(
         updateState {
             copy(
                 editorPickDukanState = MainScreenUiState.EditorPickDukanStatus.LOADING,
-                editorPickDukans = PagingData()
+                editorPickDukans = PagingDataOld()
             )
         }
     }
 
-    private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+    private fun onLoadedEditorPicksDukan(dukans: PagingDataOld<MainScreenUiState.EditorPickDukanUiState>) {
         val loadedBestNearestDukans = when {
             dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.EditorPickDukanStatus.LOADING
             else -> MainScreenUiState.EditorPickDukanStatus.LOADED
@@ -88,7 +88,7 @@ class MainViewModel(
     private fun loadBestNearestDukans() {
         tryToExecute(
             onStart = ::onBestNearestDukanLoading,
-            block = { bestNearestDukanPager.load() },
+            block = { bestNearestDukanPagerOld.load() },
             onSuccess = {collectBestNearestData()},
             onError = ::handleNetworkError
         )
@@ -96,7 +96,7 @@ class MainViewModel(
 
     private fun collectBestNearestData() {
         tryToCollect(
-            block = { bestNearestDukanPager.flow },
+            block = { bestNearestDukanPagerOld.flow },
             onCollect = ::onLoadedBestNearestDukans
         )
     }
@@ -108,13 +108,13 @@ class MainViewModel(
     private fun onBestNearestDukanLoading() {
         updateState {
             copy(
-                bestNearestDukans = PagingData(),
+                bestNearestDukans = PagingDataOld(),
                 bestNearestDukanState = MainScreenUiState.BestNearestDukanStatus.LOADING
             )
         }
     }
 
-    private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
+    private fun onLoadedBestNearestDukans(dukans: PagingDataOld<MainScreenUiState.BestNearestDukanUiState>) {
         val loadedBestNearestDukans = when {
             dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.BestNearestDukanStatus.LOADING
             else -> MainScreenUiState.BestNearestDukanStatus.LOADED
@@ -255,7 +255,7 @@ class MainViewModel(
     }
 
     fun initPagers() {
-        bestNearestDukanPager = createPagingSource(
+        bestNearestDukanPagerOld = createPagingSource(
             mapper = { it.toBestNearestUiState() }
         ) { currentPage ->
             dukanDiscoveryRepository.getBestAroundDukans(
@@ -264,7 +264,7 @@ class MainViewModel(
             )
         }
 
-        editorPickDukanPager = createPagingSource(
+        editorPickDukanPagerOld = createPagingSource(
             mapper = { it.toEditorPickUiState() }
         ) { currentPage ->
             dukanDiscoveryRepository.getEditorPicksDukans(

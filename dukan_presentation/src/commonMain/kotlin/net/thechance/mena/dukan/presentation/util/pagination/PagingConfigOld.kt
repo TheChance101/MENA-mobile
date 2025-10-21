@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.util.pagination
 
-data class PagingConfig(
+data class PagingConfigOld(
     val pageSize: Int = 10,
     val prefetchDistance: Int = pageSize / 2,
     val enablePlaceholders: Boolean = false,

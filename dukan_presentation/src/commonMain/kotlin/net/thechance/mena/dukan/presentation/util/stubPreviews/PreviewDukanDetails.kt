@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.DukanInfo
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
@@ -85,9 +85,9 @@ val fakeDukanDetails = DukanDetailsUiState(
     dukanInfo = fakeDukanInfo,
     shelvesState = ShelvesState.LOADED,
     shelfIdSelected = "1",
-    shelves = PagingData(fakeShelves),
+    shelves = PagingDataOld(fakeShelves),
     productsState = DukanDetailsUiState.ProductsState.LOADED,
-    productsShelf = PagingData(items = fakeProducts)
+    productsShelf = PagingDataOld(items = fakeProducts)
 )
 
 val fakePagerShelvesDukanDetails = createFakePager<Int, ShelfUiState>(fakeShelves)

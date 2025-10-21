@@ -12,12 +12,12 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.DukanHeader
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductsGrid
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanShelves
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductsGrid
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakePagerProductsDukanDetails
@@ -30,13 +30,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun WideImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelf: Pager<Int, DukanDetailsUiState.ShelfUiState>,
-    pagerProduct: Pager<Int, DukanDetailsUiState.ProductUiState>
+    pagerOldShelf: PagerOld<Int, DukanDetailsUiState.ShelfUiState>,
+    pagerOldProduct: PagerOld<Int, DukanDetailsUiState.ProductUiState>
 ) {
     OnSystemBackPressed(listener::onBackClicked)
 
     val gridState = rememberLazyGridState()
-    gridState.LoadMoreOnScroll(pagerProduct)
+    gridState.LoadMoreOnScroll(pagerOldProduct)
     Scaffold(
         topBar = {
             WideImageDukanAppBar(
@@ -61,7 +61,11 @@ fun WideImageDukanDetails(
                 DukanHeader(state = state.dukanInfo)
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
-                WideImageDukanShelves(state = state, listener = listener, shelvesPager = pagerShelf)
+                WideImageDukanShelves(
+                    state = state,
+                    listener = listener,
+                    shelvesPagerOld = pagerOldShelf
+                )
             }
             wideImageProductsGrid(state = state)
         }
@@ -75,8 +79,8 @@ private fun WideImageDukanDetailsPreview() {
         WideImageDukanDetails(
             state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            pagerShelf = fakePagerShelvesDukanDetails,
-            pagerProduct = fakePagerProductsDukanDetails,
+            pagerOldShelf = fakePagerShelvesDukanDetails,
+            pagerOldProduct = fakePagerProductsDukanDetails,
         )
     }
 }

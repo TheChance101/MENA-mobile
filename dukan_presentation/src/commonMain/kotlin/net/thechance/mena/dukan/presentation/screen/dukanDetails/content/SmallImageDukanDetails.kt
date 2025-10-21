@@ -25,7 +25,7 @@ import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smal
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelves
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanStoreImage
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakePagerShelvesDukanDetails
@@ -41,7 +41,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun SmallImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelf: Pager<Int, ShelfUiState>
+    pagerOldShelf: PagerOld<Int, ShelfUiState>
 ) {
     OnSystemBackPressed(listener::onBackClicked)
 
@@ -83,7 +83,7 @@ fun SmallImageDukanDetails(
             SmallImageDukanShelves(
                 state = state,
                 listener = listener,
-                shelvesPager = pagerShelf,
+                shelvesPagerOld = pagerOldShelf,
                 modifier = Modifier.padding(top = Theme.spacing._16)
             )
         }
@@ -121,7 +121,7 @@ private fun SmallImageDukanDetailsPreview() {
         SmallImageDukanDetails(
             state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            pagerShelf = fakePagerShelvesDukanDetails
+            pagerOldShelf = fakePagerShelvesDukanDetails
         )
     }
 }
@@ -133,7 +133,7 @@ private fun SmallImageDukanDetailsLoadingPreview() {
         SmallImageDukanDetails(
             state = fakeDukanDetails.copy(shelvesState = ShelvesState.LOADING),
             listener = PreviewDukanDetailsInteractionListener,
-            pagerShelf = fakePagerShelvesDukanDetails
+            pagerOldShelf = fakePagerShelvesDukanDetails
         )
     }
 }
