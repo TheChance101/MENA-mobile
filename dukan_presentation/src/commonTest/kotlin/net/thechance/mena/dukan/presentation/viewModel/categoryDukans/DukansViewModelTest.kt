@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.DukanPreview
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -24,11 +24,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DukansViewModelTest {
 
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val dukanDiscoveryRepository = mock<DukanDiscoveryRepository>(mode = MockMode.autofill)
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var dukansViewModel: CategoryDukansViewModel
     private val testDispatcher = StandardTestDispatcher()
@@ -45,7 +47,7 @@ class DukansViewModelTest {
         )
 
         everySuspend {
-            dukanRepository.getDukansByCategory(
+            dukanDiscoveryRepository.getDukansByCategory(
                 categoryId = any(),
                 page = any(),
                 size = any()
@@ -58,7 +60,7 @@ class DukansViewModelTest {
         )
 
         dukansViewModel = CategoryDukansViewModel(
-            dukanRepository = dukanRepository,
+            dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = savedStateHandle,
             defaultDispatcher = testDispatcher
         )
@@ -220,7 +222,7 @@ class DukansViewModelTest {
         )
 
         val emptyViewModel = CategoryDukansViewModel(
-            dukanRepository = dukanRepository,
+            dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = emptySavedStateHandle,
             defaultDispatcher = testDispatcher
         )
@@ -244,7 +246,7 @@ class DukansViewModelTest {
         val nullSavedStateHandle = SavedStateHandle(emptyMap())
 
         val nullViewModel = CategoryDukansViewModel(
-            dukanRepository = dukanRepository,
+            dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = nullSavedStateHandle,
             defaultDispatcher = testDispatcher
         )
@@ -268,19 +270,19 @@ class DukansViewModelTest {
 private fun dummyDukansUiState(): List<CategoryDukansUiState.DukanUiState> {
     return listOf(
         CategoryDukansUiState.DukanUiState(
-            id = "dukan1",
+            id = "123e4567-e89b-12d3-a456-426614174001",
             name = "Electronics Store",
             imageUrl = "https://example.com/electronics.jpg",
             isFavorite = false
         ),
         CategoryDukansUiState.DukanUiState(
-            id = "dukan2",
+            id = "123e4567-e89b-12d3-a456-426614174002",
             name = "Tech Hub",
             imageUrl = "https://example.com/tech.jpg",
             isFavorite = true
         ),
         CategoryDukansUiState.DukanUiState(
-            id = "dukan3",
+            id ="123e4567-e89b-12d3-a456-426614174003",
             name = "Gadget World",
             imageUrl = "https://example.com/gadget.jpg",
             isFavorite = false
@@ -288,19 +290,20 @@ private fun dummyDukansUiState(): List<CategoryDukansUiState.DukanUiState> {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private val dummyDukanPreviews = listOf(
     DukanPreview(
-        id = "dukan1",
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174001"),
         name = "Electronics Store",
         imageUrl = "https://example.com/electronics.jpg"
     ),
     DukanPreview(
-        id = "dukan2",
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"),
         name = "Tech Hub",
         imageUrl = "https://example.com/tech.jpg"
     ),
     DukanPreview(
-        id = "dukan3",
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
         name = "Gadget World",
         imageUrl = "https://example.com/gadget.jpg"
     )

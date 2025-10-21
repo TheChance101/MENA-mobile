@@ -73,7 +73,7 @@ class ShelfDetailsViewModel(
         updateState {
             val state = when {
                 products.isLoading && products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.LOADING
-                products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.EMPTY
+                products.error != null -> ShelfDetailsUiState.ProductsState.ERROR
                 else -> ShelfDetailsUiState.ProductsState.LOADED
             }
             copy(productsShelf = products, productsState = state)
