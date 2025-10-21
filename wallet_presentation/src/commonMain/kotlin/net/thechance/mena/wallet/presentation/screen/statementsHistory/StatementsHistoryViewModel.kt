@@ -81,16 +81,19 @@ class StatementsHistoryViewModel(
     }
 
 
-    private fun markStatementAsDeleted(id: Uuid) {
+    private suspend fun markStatementAsDeleted(id: Uuid) {
         updateState { current ->
             val updatedStatements = current.statements.map { statement ->
-                if (statement.id == id) {
-                    statement.copy(isDeleted = true)
-                } else {
-                    statement
-                }
+                if (statement.id == id) statement.copy(isDeleting = true) else statement
             }
             current.copy(statements = updatedStatements)
+        }
+
+        delay(ANIMATION_DELAY)
+
+        updateState {
+            val updatedStatements = it.statements.filter { statement -> statement.id != id }
+            it.copy(statements = updatedStatements)
         }
     }
 
@@ -98,14 +101,12 @@ class StatementsHistoryViewModel(
         tryToExecute(
             callee = { statementRepository.deleteStatementById(statement.id) },
             onSuccess = { onDeleteNotFoundStatementSuccess(statement.id) },
-            onError = { onDeleteNotFoundStatementError() },
+            onError = ::onDeleteNotFoundStatementError,
             dispatcher = dispatcher
         )
     }
 
     private suspend fun onDeleteNotFoundStatementSuccess(id: Uuid) {
-        delay(DELETE_DELAY_MS)
-
         markStatementAsDeleted(id = id)
 
         showSnackBar(
@@ -115,7 +116,7 @@ class StatementsHistoryViewModel(
         )
     }
 
-    private suspend fun onDeleteNotFoundStatementError() {
+    private suspend fun onDeleteNotFoundStatementError(error: ErrorState) {
         showSnackBar(
             title = stringProvider.getString(Res.string.unknown_error_title),
             message = stringProvider.getString(Res.string.unknown_error_description),
@@ -135,13 +136,7 @@ class StatementsHistoryViewModel(
         tryToExecute(
             callee = { deleteStatementPdf(statement = statement) },
             onSuccess = { onDeleteStatementSuccess(id = statement.id) },
-            onError = {
-                showSnackBar(
-                    title = stringProvider.getString(Res.string.unknown_error_title),
-                    message = stringProvider.getString(Res.string.unknown_error_description),
-                    isSuccess = false
-                )
-            },
+            onError = ::onDeleteStatementError,
             dispatcher = dispatcher
         )
     }
@@ -156,12 +151,18 @@ class StatementsHistoryViewModel(
         statementRepository.deleteStatementById(statement.id)
     }
 
-    private suspend fun onDeleteStatementSuccess(
-        id: Uuid,
-    ) {
+    private suspend fun onDeleteStatementSuccess(id: Uuid) {
         markStatementAsDeleted(id = id)
 
         updateState { it.copy(isEditMode = it.statements.isNotEmpty()) }
+    }
+
+    private suspend fun onDeleteStatementError(error: ErrorState) {
+        showSnackBar(
+            title = stringProvider.getString(Res.string.unknown_error_title),
+            message = stringProvider.getString(Res.string.unknown_error_description),
+            isSuccess = false
+        )
     }
 
     private fun onPaginationLoading(isLoading: Boolean) {
@@ -238,6 +239,6 @@ class StatementsHistoryViewModel(
     private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
-        const val DELETE_DELAY_MS = 300L
+        const val ANIMATION_DELAY = 500L
     }
 }

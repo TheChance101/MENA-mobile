@@ -14,6 +14,6 @@ fun Statement.toUiState(): StatementsHistoryScreenState.StatementItem {
         totalInflow = totalInflows,
         totalOutflow = totalOutflows,
         fileName = fileName,
-        isDeleted = false
+        isDeleting = false
     )
 }

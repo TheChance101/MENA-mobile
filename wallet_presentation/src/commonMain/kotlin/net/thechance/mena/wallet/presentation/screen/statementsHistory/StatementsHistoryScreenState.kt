@@ -23,6 +23,6 @@ data class StatementsHistoryScreenState(
         val totalInflow: Double,
         val totalOutflow: Double,
         val fileName: String,
-        val isDeleted: Boolean
+        val isDeleting: Boolean
     )
 }

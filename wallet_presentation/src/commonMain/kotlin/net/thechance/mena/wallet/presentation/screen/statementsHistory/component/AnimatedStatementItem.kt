@@ -40,7 +40,7 @@ fun AnimatedStatementItem(
 ) {
 
     val scale by animateFloatAsState(
-        targetValue = if (statement.isDeleted) 0f else 1f,
+        targetValue = if (statement.isDeleting) 0f else 1f,
         animationSpec = tween(
             durationMillis = 300,
             easing = LinearEasing
@@ -48,7 +48,7 @@ fun AnimatedStatementItem(
     )
 
     val heightProgress by animateFloatAsState(
-        targetValue = if (statement.isDeleted) 0f else 1f,
+        targetValue = if (statement.isDeleting) 0f else 1f,
         animationSpec = tween(
             durationMillis = 300,
             delayMillis = 220,
@@ -59,22 +59,14 @@ fun AnimatedStatementItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .layout { measurable, constraints ->
-                val placeable = measurable.measure(constraints)
-                layout(
-                    width = placeable.width,
-                    height = (placeable.height * heightProgress).toInt()
-                ) {
-                    placeable.placeRelative(0, 0)
-                }
-            }
+            .animatedHeight(heightProgress)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
             StatementDeleteButton(
-                isDeleting = statement.isDeleted,
+                isDeleting = statement.isDeleting,
                 onDeleteClick = onDeleteClick,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
@@ -91,23 +83,42 @@ fun AnimatedStatementItem(
                 historyIconOffsetX = historyIconOffsetX,
                 modifier = Modifier
                     .offset { IntOffset(cardOffsetX, 0) }
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        transformOrigin = TransformOrigin(0f, 0.3f)
-                    }
+                    .animatedScale(scale, 0f, 0.3f)
             )
         }
-        if (isDividerVisible && !statement.isDeleted) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Theme.colorScheme.stroke)
-            )
+
+        if (isDividerVisible && !statement.isDeleting) {
+            StatementDivider()
         }
     }
 }
+
+@Composable
+private fun StatementDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(Theme.colorScheme.stroke)
+    )
+}
+
+private fun Modifier.animatedHeight(progress: Float) = this.layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    layout(
+        width = placeable.width,
+        height = (placeable.height * progress).toInt()
+    ) {
+        placeable.placeRelative(0, 0)
+    }
+}
+
+private fun Modifier.animatedScale(scale: Float, pivotX: Float, pivotY: Float) =
+    this.graphicsLayer {
+        this.scaleX = scale
+        this.scaleY = scale
+        this.transformOrigin = TransformOrigin(pivotX, pivotY)
+    }
 
 @Preview
 @Composable
@@ -121,7 +132,7 @@ private fun AnimatedStatementItemPreview() {
                 totalInflow = 2000.0,
                 totalOutflow = 4200.0,
                 fileName = "",
-                isDeleted = false
+                isDeleting = false
             ),
             isDividerVisible = true,
             cardOffsetX = 10,
