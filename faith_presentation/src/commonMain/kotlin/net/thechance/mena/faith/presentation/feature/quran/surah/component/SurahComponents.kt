@@ -38,7 +38,6 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 internal fun SurahAppBar(
     surahName: String,
@@ -100,8 +99,8 @@ internal fun AnimatedAyahActionButtons(
 ) {
     AnimatedVisibility(
         visible = state.isAyahActionButtonsVisible,
-        enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-        exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+        enter = fadeIn(animationSpec = tween()),
+        exit = fadeOut(animationSpec = tween()),
         modifier = modifier
     ) {
         if (isValidAyahSelection(state)) {
@@ -128,11 +127,11 @@ fun getAyahTextStyle() = Theme.typography.quran.large.copy(
 )
 
 @Composable
-internal fun UnifiedChunkText(
+internal fun UnifiedChunkAyat(
     chunkAyat: List<Ayah>,
     selectedAyahIndex: Int?,
     textLayoutResult:TextLayoutResult?,
-    onTextLayoutResultChange: (TextLayoutResult?) -> Unit,
+    onTextLayoutResultChange: (TextLayoutResult) -> Unit,
     onLongPress: (Ayah) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -177,9 +176,7 @@ private fun getAyahTextColor(selectedAyahIndex: Int?, currentIndex: Int): Color 
     }
 }
 
-private fun findClickedAyahIndexFromPosition(
-    ayat: List<Ayah>, position: Int
-): Int {
+private fun findClickedAyahIndexFromPosition(ayat: List<Ayah>, position: Int): Int {
     var currentPosition = 0
     ayat.forEachIndexed { index, ayah ->
         val end = currentPosition + ayah.content.length

@@ -105,7 +105,7 @@ private fun StatementDetailsContent(
 }
 
 @Composable
-fun StatementViewer(
+private fun StatementViewer(
     state: StatementDetailsScreenState,
     onRetry: () -> Unit
 ) {
@@ -120,15 +120,17 @@ fun StatementViewer(
     }
 }
 
+private const val STATEMENT_FILE_NAME = "statement.pdf"
 private suspend fun handleEffects(
     effect: StatementDetailsEffect,
     onNavigateBackClicked: () -> Unit,
     shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
 ) {
+
     when (effect) {
         StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
         is StatementDetailsEffect.ShareStatement -> {
-            shareStatement(effect.statement, "statement.pdf")
+            shareStatement(effect.statement, STATEMENT_FILE_NAME)
         }
     }
 }

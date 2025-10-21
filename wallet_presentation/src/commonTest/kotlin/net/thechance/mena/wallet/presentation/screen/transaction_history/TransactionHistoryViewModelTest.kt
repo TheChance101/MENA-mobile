@@ -18,8 +18,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.domain.entity.TransactionStatus
+import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType

@@ -125,7 +125,7 @@ private fun TransactionDetailsSuccessContent(
         DetailsContent(
             transactionDetailsUiState = state.transactionDetailsUiState,
             onShareReceiptButtonClicked = interactionListener::onShareReceiptButtonClicked,
-            isShareReceiptBtnLoading = state.isShareReceiptBtnLoading,
+            isShareReceiptButtonLoading = state.isShareReceiptBtnLoading,
         )
         TransactionDetailsScreenShot(
             captureController = captureController,

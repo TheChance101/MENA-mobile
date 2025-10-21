@@ -10,5 +10,5 @@ interface SurahInteractionListener {
     fun onCopyClick(ayahContent: String)
     fun onInitialAyahScrolled()
     fun highlightAyah(ayahNumber: Int)
-    fun onFirstVisibleAyahChanged(ayahNumber: Int)
+    fun updateContinueTilawah(ayahNumber: Int)
 }

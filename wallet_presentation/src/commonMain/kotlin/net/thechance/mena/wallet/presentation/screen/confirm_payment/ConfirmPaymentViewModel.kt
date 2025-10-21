@@ -8,7 +8,6 @@ import mena.wallet_presentation.generated.resources.confirm_payment_content_fail
 import mena.wallet_presentation.generated.resources.confirm_payment_content_success
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
@@ -26,7 +25,6 @@ class ConfirmPaymentViewModel(
     @Provided private val args: ConfirmPaymentArgs,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
-    @Provided private val paymentRepository: PaymentRepository,
     @Provided private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
@@ -64,23 +62,6 @@ class ConfirmPaymentViewModel(
         )
     }
 
-    private suspend fun updateUserMessage() {
-        val userMessage = if (state.value.paymentUiState.status) {
-            stringProvider.getString(
-                Res.string.confirm_payment_content_success,
-                state.value.paymentUiState.balance
-            )
-        } else {
-            stringProvider.getString(
-                Res.string.confirm_payment_content_failed,
-                state.value.paymentUiState.balance
-            )
-        }
-        updateState {
-            it.copy(userMessage = userMessage)
-        }
-    }
-
     private fun getReceiverInfo() {
         tryToExecute(
             callee = { transactionRepository.getTransactionReceiver(transactionId) },
@@ -103,6 +84,23 @@ class ConfirmPaymentViewModel(
             )
         }
         updateUserMessage()
+    }
+
+    private suspend fun updateUserMessage() {
+        val userMessage = if (state.value.paymentUiState.status) {
+            stringProvider.getString(
+                Res.string.confirm_payment_content_success,
+                state.value.paymentUiState.balance
+            )
+        } else {
+            stringProvider.getString(
+                Res.string.confirm_payment_content_failed,
+                state.value.paymentUiState.balance
+            )
+        }
+        updateState {
+            it.copy(userMessage = userMessage)
+        }
     }
 
     private fun onGetUserBalanceError(errorState: ErrorState) {
@@ -148,9 +146,7 @@ class ConfirmPaymentViewModel(
 
     private fun submitTransaction(transactionId: Uuid) {
         tryToExecute(
-            callee = {
-                paymentRepository.submitTransaction(transactionId)
-            },
+            callee = { transactionRepository.submitTransaction(transactionId) },
             onStart = { updateState { it.copy(isPayButtonLoading = true) } },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
