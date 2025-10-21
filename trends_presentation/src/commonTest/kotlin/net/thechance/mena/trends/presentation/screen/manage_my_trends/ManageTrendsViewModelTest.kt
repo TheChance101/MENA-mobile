@@ -108,8 +108,6 @@ class ManageTrendsViewModelTest {
         }
     }
 
-
-
     private companion object {
         const val REEL_ID = "1"
         val reel = Reel(
