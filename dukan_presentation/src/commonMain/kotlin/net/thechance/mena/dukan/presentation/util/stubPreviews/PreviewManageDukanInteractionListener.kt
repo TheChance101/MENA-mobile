@@ -31,9 +31,7 @@ object PreviewManageDukanInteractionListener : ManageDukanInteractionListener {
 
     override fun onAddShelfClicked() {}
 
-    override fun isShelfSelected(shelf: ShelfUiState): Boolean {
-        TODO()
-    }
+    override fun isShelfSelected(shelf: ShelfUiState) = false
 
     override fun onShelfSelected(shelf: ShelfUiState) {}
 
