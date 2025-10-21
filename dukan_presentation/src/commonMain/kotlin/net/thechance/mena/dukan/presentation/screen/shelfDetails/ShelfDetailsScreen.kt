@@ -45,7 +45,7 @@ fun ShelfDetailsScreen(
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
         }
     }
-    ShelfDetailsScreenContent(
+    ShelfDetailsContent(
         state = state,
         listener = viewModel,
         pager = viewModel.pagerProduct
@@ -55,7 +55,7 @@ fun ShelfDetailsScreen(
 
 
 @Composable
-private fun ShelfDetailsScreenContent(
+private fun ShelfDetailsContent(
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
     pager: Pager<Int, ShelfDetailsUiState.ProductUiState>
@@ -122,7 +122,7 @@ private fun ShelfDetailsAppBar(
 @Composable
 private fun ShelfDetailsPreview() {
     MenaTheme {
-        ShelfDetailsScreenContent(
+        ShelfDetailsContent(
             state = ShelfDetailsUiState(),
             listener = PreviewShelfDetailsInteractionListener,
             pager = Pager(
