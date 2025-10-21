@@ -1,36 +1,25 @@
 package net.thechance.mena.wallet.data.mapper
 
-import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.wallet.data.dto.TransactionDto
+import net.thechance.mena.wallet.data.dto.remote.TransactionDto
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.domain.entity.TransactionStatus
+import net.thechance.mena.wallet.domain.entity.TransactionType
+import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
+
+fun List<TransactionDto>?.toTransactionEntityList(): List<Transaction> {
+    return this?.map { it.toEntity() }.orEmpty()
+}
 
 @OptIn(ExperimentalUuidApi::class)
 fun TransactionDto.toEntity(): Transaction {
     return Transaction(
-        id = Uuid.parse(id),
-        createdAt = createdAt?.let { LocalDateTime.parse(it) } ?: LocalDateTime(2024, 1, 1, 0, 0),
-        status = status?.let { TransactionStatus.valueOf(it) } ?: TransactionStatus.SUCCESS,
+        id = id.toUuidOrNull()?: throw UnknownException("Invalid transaction id"),
+        createdAt = parseLocalDateTimeOrDefault(createdAt),
+        status = TransactionStatus.valueOfOrDefault(status),
         senderName = senderName ?: "",
         receiverName = receiverName ?: "",
         amount = amount ?: 0.0,
-        type = type?.let { TransactionType.valueOf(type) } ?: TransactionType.SENT,
-    )
-
-}
-
-@OptIn(ExperimentalUuidApi::class)
-fun Transaction.toDto(): TransactionDto {
-    return TransactionDto(
-        id = id.toString(),
-        createdAt = createdAt.toString(),
-        status = status.toString(),
-        senderName = senderName,
-        receiverName = receiverName,
-        amount = amount,
-        type = type.toString()
+        type = TransactionType.valueOfOrDefault(type),
     )
 }

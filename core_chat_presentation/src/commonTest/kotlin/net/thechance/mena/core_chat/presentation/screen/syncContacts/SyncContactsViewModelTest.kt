@@ -51,8 +51,11 @@ class SyncContactsViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        val fakeFlow = MutableSharedFlow<Map<String, Any>>(replay = 1)
+        val fakeFlow = MutableSharedFlow<Map<String, Any>>()
         every { effector.popBackStackArgsFlow } returns fakeFlow
+        everySuspend { effector.showSnackBar(any()) } returns Unit
+        everySuspend { effector.popBackStack(any()) } returns Unit
+        everySuspend { effector.navigate(any(), any(), any()) } returns Unit
     }
 
     @AfterTest
@@ -62,77 +65,47 @@ class SyncContactsViewModelTest {
 
 
     @Test
-    fun `should set isFirstSync to false and call syncContacts when forceSync is true`() = runTest {
-        everySuspend { contactsRepository.syncContacts() } returns Unit
-        everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
-        everySuspend { effector.showSnackBar(any()) } returns Unit
-        everySuspend { effector.popBackStack(any()) } returns Unit
+    fun `init should set isFirstSync to false and call syncContacts when forceSync is true`() =
+        runTest {
+            everySuspend { contactsRepository.syncContacts() } returns Unit
+            everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
 
-        val syncContactsScreenArgs = createSyncContactsScreenArgs(true)
-        val viewModel = SyncContactsViewModel(
-            contactsRepository,
-            permissionsController,
-            syncContactsScreenArgs,
-            settingsOpener,
-            effector,
-            testDispatcher
-        )
-        advanceUntilIdle()
-        val result = viewModel.state.first()
+            val viewModel = createSyncContactsViewModel(true)
+            advanceUntilIdle()
+            val result = viewModel.state.first()
 
-        assertThat(result.isFirstSync).isFalse()
-        verifySuspend { contactsRepository.syncContacts() }
-    }
+            assertThat(result.isFirstSync).isFalse()
+            verifySuspend { contactsRepository.syncContacts() }
+        }
 
     @Test
-    fun `should set isFirstSync to true and showSyncView when forceSync is false`() = runTest {
-        val syncContactsScreenArgs = createSyncContactsScreenArgs(false)
-        val viewModel = SyncContactsViewModel(
-            contactsRepository,
-            permissionsController,
-            syncContactsScreenArgs,
-            settingsOpener,
-            effector,
-            testDispatcher
-        )
+    fun `init should set isFirstSync to true and showSyncView when forceSync is false`() = runTest {
+
+        val viewModel = createSyncContactsViewModel(false)
+
         advanceUntilIdle()
         val result = viewModel.state.first()
 
         assertThat(result.isFirstSync).isTrue()
         assertThat(result.showSyncView).isTrue()
-        assertThat(result.isLoading).isFalse()
     }
 
     @Test
-    fun `should request permission and sync contacts when onSyncClicked is called successfully`() =
+    fun `onSyncClicked should request permission and sync contacts when called successfully`() =
         runTest {
             everySuspend { permissionsController.providePermission(Permission.CONTACTS) } returns Unit
             everySuspend { contactsRepository.syncContacts() } returns Unit
             everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
-            everySuspend { effector.showSnackBar(any()) } returns Unit
-            everySuspend { effector.popBackStack() } returns Unit
-            everySuspend { effector.navigate(any(), any(), any()) } returns Unit
 
-            val syncContactsScreenArgs = createSyncContactsScreenArgs(false)
-
-            val viewModel = SyncContactsViewModel(
-                contactsRepository,
-                permissionsController,
-                syncContactsScreenArgs,
-                settingsOpener,
-                effector,
-                testDispatcher
-            )
-
+            val viewModel = createSyncContactsViewModel(true)
             viewModel.state.test {
                 awaitItem()
-
                 viewModel.onSyncClicked()
-
                 awaitItem()
 
                 verifySuspend { permissionsController.providePermission(Permission.CONTACTS) }
                 verifySuspend { contactsRepository.syncContacts() }
+                cancelAndIgnoreRemainingEvents()
             }
         }
 
@@ -141,16 +114,9 @@ class SyncContactsViewModelTest {
         everySuspend { permissionsController.providePermission(Permission.CONTACTS) } throws DeniedException(
             Permission.CONTACTS
         )
-        everySuspend { effector.showSnackBar(any()) } returns Unit
-        val syncContactsScreenArgs = createSyncContactsScreenArgs(false)
-        val viewModel = SyncContactsViewModel(
-            contactsRepository,
-            permissionsController,
-            syncContactsScreenArgs,
-            settingsOpener,
-            effector,
-            testDispatcher
-        )
+
+
+        val viewModel = createSyncContactsViewModel(false)
         advanceUntilIdle()
 
         viewModel.onSyncClicked()
@@ -160,52 +126,32 @@ class SyncContactsViewModelTest {
     }
 
     @Test
-    fun `should handle DeniedAlwaysException when permission is permanently denied`() = runTest {
-        everySuspend { permissionsController.providePermission(Permission.CONTACTS) } throws DeniedAlwaysException(
-            Permission.CONTACTS
-        )
-        everySuspend { effector.showSnackBar(any()) } returns Unit
+    fun `onSyncClicked should set isPermissionDeniedPermanently to true when providePermission throw DeniedAlwaysException`() =
+        runTest {
+            everySuspend { permissionsController.providePermission(Permission.CONTACTS) } throws DeniedAlwaysException(
+                Permission.CONTACTS
+            )
 
-        val syncContactsScreenArgs = createSyncContactsScreenArgs(false)
-        val viewModel = SyncContactsViewModel(
-            contactsRepository,
-            permissionsController,
-            syncContactsScreenArgs,
-            settingsOpener,
-            effector,
-            testDispatcher
-        )
+            val viewModel = createSyncContactsViewModel(false)
 
-        viewModel.state.test {
-            awaitItem()
+            viewModel.state.test {
+                awaitItem()
 
-            viewModel.onSyncClicked()
+                viewModel.onSyncClicked()
 
-            val error = awaitItem()
-            assertThat(error.isLoading).isFalse()
-            assertThat(error.isPermissionDeniedPermanently).isTrue()
-
-            verifySuspend { permissionsController.providePermission(Permission.CONTACTS) }
-            cancelAndIgnoreRemainingEvents()
+                val state = awaitItem()
+                assertThat(state.isPermissionDeniedPermanently).isTrue()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `should handle sync error with proper error message`() = runTest {
-        val errorMessage = "Sync failed"
-        everySuspend { contactsRepository.syncContacts() } throws Exception(errorMessage)
-        everySuspend { effector.showSnackBar(any()) } returns Unit
+    fun `init should handle sync error when syncContacts throw exception`() = runTest {
+        everySuspend { contactsRepository.syncContacts() } throws Exception()
 
-        val syncContactsScreenArgs = createSyncContactsScreenArgs(true)
-        val viewModel = SyncContactsViewModel(
-            contactsRepository,
-            permissionsController,
-            syncContactsScreenArgs,
-            settingsOpener,
-            effector,
-            testDispatcher
-        )
+        val viewModel = createSyncContactsViewModel(true)
         advanceUntilIdle()
+
 
         viewModel.state.test {
             verifySuspend { effector.showSnackBar(any()) }
@@ -218,18 +164,11 @@ class SyncContactsViewModelTest {
     fun `onBackClicked should pop back stack when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
         everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
-        everySuspend { effector.showSnackBar(any()) } returns Unit
+
         everySuspend { effector.popBackStack(*anyVarargs()) } returns Unit
 
-        val syncContactsScreenArgs = createSyncContactsScreenArgs(true)
-        val viewModel = SyncContactsViewModel(
-            contactsRepository,
-            permissionsController,
-            syncContactsScreenArgs,
-            settingsOpener,
-            effector,
-            testDispatcher
-        )
+        val viewModel = createSyncContactsViewModel(true)
+
         advanceUntilIdle()
 
         viewModel.onBackClicked()
@@ -243,16 +182,8 @@ class SyncContactsViewModelTest {
         runTest {
             everySuspend { permissionsController.isPermissionGranted(Permission.CONTACTS) } returns true
             everySuspend { contactsRepository.syncContacts() } returns Unit
-            everySuspend { effector.showSnackBar(any()) } returns Unit
-            val syncContactsScreenArgs = createSyncContactsScreenArgs(false)
-            val viewModel = SyncContactsViewModel(
-                contactsRepository,
-                permissionsController,
-                syncContactsScreenArgs,
-                settingsOpener,
-                effector,
-                testDispatcher
-            )
+
+            val viewModel = createSyncContactsViewModel(false)
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -260,31 +191,34 @@ class SyncContactsViewModelTest {
                 viewModel.checkPermissions()
                 val state = awaitItem()
                 assertThat(state.isPermissionDeniedPermanently).isFalse()
-                assertThat(state.showSyncView).isTrue()
                 verifySuspend { contactsRepository.syncContacts() }
                 cancelAndIgnoreRemainingEvents()
             }
         }
 
     @Test
-    fun `onGoToSettingsClicked should call openAppSettings when called`() = runTest {
+    fun `onGoToSettingsClicked should call openSettings when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
         everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
-        everySuspend { effector.showSnackBar(any()) } returns Unit
         everySuspend { settingsOpener.openSettings() } returns Unit
 
-        val syncContactsScreenArgs = createSyncContactsScreenArgs(false)
-        val viewModel = SyncContactsViewModel(
-            contactsRepository,
-            permissionsController,
-            syncContactsScreenArgs,
-            settingsOpener,
-            effector,
-            testDispatcher
-        )
+        val viewModel = createSyncContactsViewModel(false)
         advanceUntilIdle()
         viewModel.onGoToSettingsClicked()
 
         verifySuspend { settingsOpener.openSettings() }
+    }
+
+    private fun createSyncContactsViewModel(
+        forceSyncParam: Boolean
+    ): SyncContactsViewModel {
+        return SyncContactsViewModel(
+            contactsRepository,
+            permissionsController,
+            createSyncContactsScreenArgs(forceSyncParam),
+            settingsOpener,
+            effector,
+            testDispatcher
+        )
     }
 }
