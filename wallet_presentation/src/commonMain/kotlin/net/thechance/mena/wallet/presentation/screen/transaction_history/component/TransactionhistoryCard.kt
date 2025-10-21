@@ -11,9 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState.TransactionStatusUiState
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreenState.TransactionTypeUiState
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun TransactionHistoryCard(
@@ -44,6 +50,29 @@ fun TransactionHistoryCard(
             amount = transaction.amount,
             transactionStatus = transaction.status,
             contactName = transaction.contactName
+        )
+    }
+}
+
+
+@OptIn(ExperimentalUuidApi::class)
+@Preview(showBackground = true)
+@Composable
+private fun TransactionHistoryCardPreview() {
+    val mockTransaction = TransactionHistoryScreenState.TransactionHistoryUiState(
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174000"),
+        timeAndDate = "21 Oct 2025 - 10:00 AM",
+        amount = "$150.00",
+        type = TransactionTypeUiState.ONLINE_SHOPPING,
+        status = TransactionStatusUiState.FAILED,
+        contactName = "Ahmed Ali"
+    )
+
+    MenaTheme {
+        TransactionHistoryCard(
+            transaction = mockTransaction,
+            onTransactionCardClicked = {},
+            modifier = Modifier.padding(Theme.spacing._16)
         )
     }
 }

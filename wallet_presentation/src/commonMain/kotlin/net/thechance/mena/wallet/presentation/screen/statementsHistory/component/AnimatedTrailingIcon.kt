@@ -8,6 +8,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,9 +20,11 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.edit
 import mena.wallet_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AnimatedTrailingIcon(
@@ -49,5 +52,19 @@ fun AnimatedTrailingIcon(
                 .clickable { onEditClicked() }
                 .padding(10.dp)
         )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewAnimatedTrailingIconNoStatementsNotEditMode() {
+    MenaTheme {
+    Box(modifier = Modifier.padding(Theme.spacing._16)) {
+            AnimatedTrailingIcon(
+                isEditMode = false,
+                hasStatements = false,
+                onEditClicked = {}
+            )
+        }
     }
 }

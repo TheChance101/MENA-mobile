@@ -24,14 +24,17 @@ import kotlinx.coroutines.launch
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryInteractionListener
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionLoadingState
 import net.thechance.mena.wallet.presentation.utils.PaginationTrigger
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun StatementsListContent(
@@ -141,5 +144,66 @@ fun StatementsListContent(
                 )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalUuidApi::class)
+@Preview
+@Composable
+private fun StatementsListContentPreview() {
+    val mockStatements = listOf(
+        StatementsHistoryScreenState.StatementItem(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174000"),
+            startDate = "01 Oct 2025",
+            endDate = "15 Oct 2025",
+            totalInflow = 1500.0,
+            totalOutflow = 750.0,
+            fileName = "Statement_Oct_1_15.pdf"
+        ),
+        StatementsHistoryScreenState.StatementItem(
+            id = Uuid.parse("223e4567-e89b-12d3-a456-426614174111"),
+            startDate = "16 Oct 2025",
+            endDate = "20 Oct 2025",
+            totalInflow = 1200.0,
+            totalOutflow = 500.0,
+            fileName = "Statement_Oct_16_20.pdf"
+        )
+    )
+
+    val mockState = StatementsHistoryScreenState(
+        statements = mockStatements,
+        isEditMode = true,
+        isPaginationLoading = false,
+        errorState = null
+    )
+
+    val mockListener = object : StatementsHistoryInteractionListener {
+        override fun onBackClicked() {}
+        override fun onRetryLoadStatementsHistoryClicked() {}
+        override fun onNextPageRequested() {}
+        override fun onEditClicked() {}
+        override fun onCancelEditModeClicked() {}
+
+        override fun onStatementCardClicked(
+            statement: StatementsHistoryScreenState.StatementItem,
+            onViewStatementAvailable: (Boolean) -> Unit
+        ) {
+            onViewStatementAvailable(true)
+        }
+
+        override fun onDeleteClicked(
+            statement: StatementsHistoryScreenState.StatementItem,
+            onDeleteComplete: (Boolean) -> Unit
+        ) {
+            onDeleteComplete(true)
+        }
+    }
+
+    MenaTheme {
+        StatementsListContent(
+            listener = mockListener,
+            state = mockState,
+            modifier = Modifier.padding(Theme.spacing._16)
+        )
     }
 }
