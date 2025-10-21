@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 class PaymentResultViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val paymentResultArgs: PaymentResultArgs,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<PaymentResultScreenState, PaymentResultEffect>(
     PaymentResultScreenState()
 ), PaymentResultInteractionListener {
@@ -59,7 +59,7 @@ class PaymentResultViewModel(
             callee = { transactionRepository.submitTransaction(transactionId) },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 

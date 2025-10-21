@@ -53,7 +53,7 @@ class ConfirmPaymentViewModelTest {
         balanceRepository = balanceRepository,
         transactionRepository = transactionRepository,
         stringProvider = stringProvider,
-        ioDispatcher = testDispatcher
+        dispatcher = testDispatcher
     )
 
     @Test

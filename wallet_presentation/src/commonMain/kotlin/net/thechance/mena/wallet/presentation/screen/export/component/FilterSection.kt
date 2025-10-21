@@ -22,7 +22,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FilterSection(
-    state: ExportTransactionsState,
+    state: ExportTransactionsState.FilterState,
     interactionListener: ExportTransactionsListener
 ) {
     Column {
@@ -50,7 +50,6 @@ private fun HorizontalDivider() {
                 color = Theme.colorScheme.stroke,
                 shape = CircleShape
             )
-
     )
 }
 
@@ -58,7 +57,7 @@ private fun HorizontalDivider() {
 @Preview
 @Composable
 fun FilterSectionPreview() {
-    val mockState = ExportTransactionsState(
+    val mockState = ExportTransactionsState.FilterState(
         selectedTransactionsTypes = setOf(FilterType.SENT, FilterType.ONLINE_PURCHASE),
         startDate = LocalDate(2023, 4, 2),
         endDate = LocalDate(2024, 4, 2)
