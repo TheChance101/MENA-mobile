@@ -18,10 +18,22 @@ data class Transaction (
 enum class TransactionType {
     SENT,
     RECEIVED,
-    ONLINE_PURCHASE
+    ONLINE_PURCHASE;
+
+    companion object {
+        fun valueOfOrDefault(value: String?): TransactionType {
+            return runCatching { value?.let { TransactionType.valueOf(it) } ?: SENT }.getOrDefault (SENT)
+        }
+    }
 }
 
 enum class TransactionStatus {
     SUCCESS,
-    FAILED
+    FAILED;
+
+    companion object {
+        fun valueOfOrDefault(value: String?): TransactionStatus {
+            return runCatching { value?.let { valueOf(it) } ?: SUCCESS }.getOrDefault(SUCCESS)
+        }
+    }
 }
