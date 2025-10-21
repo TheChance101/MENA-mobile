@@ -38,7 +38,6 @@ class ManageDukanViewModel(
 
     init {
         loadShelves()
-        collectProducts()
     }
 
     override fun onBackButtonClicked() {
@@ -170,6 +169,7 @@ class ManageDukanViewModel(
                 shelvesState = shelvesState
             )
         }
+        collectProducts()
         return newSelectedShelf
     }
 
