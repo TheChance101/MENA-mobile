@@ -1,50 +1,29 @@
 package net.thechance.mena.core_chat.presentation.camera
 
-import android.content.ContentResolver
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
+import io.github.vinceglb.filekit.dialogs.compose.PhotoResultLauncher
+import io.github.vinceglb.filekit.dialogs.compose.rememberCameraPickerLauncher
+import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
+import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
+import kotlinx.coroutines.launch
 
 @Composable
 actual fun rememberCameraManager(onResult: (ByteArray?) -> Unit): CameraManager {
-    val context = LocalContext.current
-    val contentResolver: ContentResolver = context.contentResolver
-    var tempPhotoUri: Uri by remember { mutableStateOf(Uri.EMPTY) }
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = { success ->
-            if (success) {
-                onResult.invoke(
-                        tempPhotoUri.getBitmapFromUri(contentResolver).toByteArray()
-                )
-            } else {
-                onResult.invoke(null)
+    val scope = rememberCoroutineScope()
+    val launcher = rememberCameraPickerLauncher { file ->
+        file?.let { image ->
+            scope.launch {
+                onResult(image.toImageBitmap().encodeToByteArray())
             }
         }
-    )
-    return remember {
-        CameraManager(
-            onLaunch = {
-                ComposeFileProvider.getImageUri(context)?.let {
-                    tempPhotoUri = it
-                    cameraLauncher.launch(tempPhotoUri)
-                } ?: run { onResult.invoke(null) }
-            }
-        )
     }
+    return CameraManager(launcher)
 }
 
-actual class CameraManager actual constructor(
-    private val onLaunch: () -> Unit
-) {
+actual class CameraManager(val launcher: PhotoResultLauncher) {
     actual fun launch() {
-        onLaunch()
+        launcher.launch()
     }
 }
 

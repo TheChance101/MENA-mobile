@@ -61,9 +61,9 @@ fun ChatScreenContent(
     val chatListState = rememberLazyListState()
 
     val cameraManager = rememberCameraManager(
-        onResult = { sharedImageByteArray  ->
-            sharedImageByteArray?.let {
-                interactions.onSendImageClicked(listOf(sharedImageByteArray))
+        onResult = { byteArray  ->
+            byteArray?.let {
+                interactions.onSendImageClicked(listOf(byteArray))
             }
             interactions.onCameraClosed()
         }

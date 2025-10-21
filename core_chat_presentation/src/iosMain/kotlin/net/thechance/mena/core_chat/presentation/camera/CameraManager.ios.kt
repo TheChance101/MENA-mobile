@@ -1,54 +1,28 @@
 package net.thechance.mena.core_chat.presentation.camera
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import platform.UIKit.UIApplication
-import platform.UIKit.UIImage
-import platform.UIKit.UIImagePickerController
-import platform.UIKit.UIImagePickerControllerCameraCaptureMode
-import platform.UIKit.UIImagePickerControllerDelegateProtocol
-import platform.UIKit.UIImagePickerControllerEditedImage
-import platform.UIKit.UIImagePickerControllerOriginalImage
-import platform.UIKit.UIImagePickerControllerSourceType
-import platform.UIKit.UINavigationControllerDelegateProtocol
-import platform.darwin.NSObject
+import androidx.compose.runtime.rememberCoroutineScope
+import io.github.vinceglb.filekit.dialogs.compose.PhotoResultLauncher
+import io.github.vinceglb.filekit.dialogs.compose.rememberCameraPickerLauncher
+import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
+import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
+import kotlinx.coroutines.launch
 
 @Composable
 actual fun rememberCameraManager(onResult: (ByteArray?) -> Unit): CameraManager {
-    val imagePicker = UIImagePickerController()
-    val cameraDelegate = remember {
-        object : NSObject(), UIImagePickerControllerDelegateProtocol,
-            UINavigationControllerDelegateProtocol {
-            override fun imagePickerController(
-                picker: UIImagePickerController, didFinishPickingMediaWithInfo: Map<Any?, *>
-            ) {
-                val image =
-                    didFinishPickingMediaWithInfo.getValue(UIImagePickerControllerEditedImage) as? UIImage
-                        ?: didFinishPickingMediaWithInfo.getValue(
-                            UIImagePickerControllerOriginalImage
-                        ) as? UIImage
-                onResult.invoke(image.toByteArray())
-                picker.dismissViewControllerAnimated(true, null)
+    val scope = rememberCoroutineScope()
+    val launcher = rememberCameraPickerLauncher { file ->
+        file?.let { image ->
+            scope.launch {
+                onResult(image.toImageBitmap().encodeToByteArray())
             }
         }
     }
-    return remember {
-        CameraManager {
-            imagePicker.setSourceType(UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera)
-            imagePicker.setAllowsEditing(true)
-            imagePicker.setCameraCaptureMode(UIImagePickerControllerCameraCaptureMode.UIImagePickerControllerCameraCaptureModePhoto)
-            imagePicker.setDelegate(cameraDelegate)
-            UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
-                imagePicker, true, null
-            )
-        }
-    }
+    return CameraManager(launcher)
 }
 
-actual class CameraManager actual constructor(
-    private val onLaunch: () -> Unit
-) {
+actual class CameraManager(val launcher: PhotoResultLauncher) {
     actual fun launch() {
-        onLaunch()
+        launcher.launch()
     }
 }

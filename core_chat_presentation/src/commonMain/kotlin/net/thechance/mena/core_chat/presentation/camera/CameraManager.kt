@@ -6,8 +6,6 @@ import androidx.compose.runtime.Composable
 expect fun rememberCameraManager(onResult: (ByteArray?) -> Unit): CameraManager
 
 
-expect class CameraManager(
-    onLaunch: () -> Unit
-) {
+expect class CameraManager{
     fun launch()
 }
