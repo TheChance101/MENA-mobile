@@ -5,6 +5,7 @@ import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.delete_shelf_description
@@ -184,26 +185,27 @@ class ManageDukanViewModel(
 
     private fun collectProducts() {
         tryToCollect(
-            block = {
-                createPagingSourceFlow(
-                    mapper = { it.toUiState() },
-                ) { pageNumber, pageSize ->
-                    val products = productRepository.getProductsByShelfId(
-                        shelfId = state.value.selectedShelf?.id.orEmpty(),
-                        page = pageNumber,
-                        size = pageSize
-                    ).also { result ->
-                        updateState {
-                            copy(
-                                totalProducts = result.totalItems
-                            )
-                        }
-                    }
-                    products.items
-                }
-            },
+            block = ::createPagingSourceData,
             onCollect = ::onProductsLoaded,
         )
+    }
+
+    private fun createPagingSourceData(): Flow<PagingData<ManageDukanUiState.ProductUiState>> {
+        return createPagingSourceFlow(
+            mapper = { it.toUiState() },
+        ) { pageNumber, pageSize ->
+            productRepository.getProductsByShelfId(
+                shelfId = state.value.selectedShelf?.id.orEmpty(),
+                page = pageNumber,
+                size = pageSize
+            ).also { result -> setTotalProducts(result.totalItems) }.items
+        }
+    }
+
+    private fun setTotalProducts(totalItems: Long) {
+        updateState {
+            copy(totalProducts = totalItems)
+        }
     }
 
     private fun onProductsLoaded(products: PagingData<ManageDukanUiState.ProductUiState>) {
