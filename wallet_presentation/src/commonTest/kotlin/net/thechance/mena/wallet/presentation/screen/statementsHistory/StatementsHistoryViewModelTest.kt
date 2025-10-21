@@ -235,12 +235,8 @@ class StatementsHistoryViewModelTest {
 
         advanceUntilIdle()
         val statement = statements[0]
-        var deleteCallbackResult = false
         viewModel.onDeleteClicked(
             statement = statement.toUiState(),
-            onDeleteComplete = { isSuccess ->
-                deleteCallbackResult = isSuccess
-            }
         )
         advanceUntilIdle()
 
@@ -270,16 +266,12 @@ class StatementsHistoryViewModelTest {
 
         advanceUntilIdle()
 
-        var deleteCallbackResult = true
         viewModel.onDeleteClicked(
             statement = statement,
-            onDeleteComplete = { isSuccess ->
-                deleteCallbackResult = isSuccess
-            }
         )
 
         advanceUntilIdle()
-        assertFalse(deleteCallbackResult)
+        assertFalse(viewModel.state.value.statements.any{ it.id == statement.id })
     }
 
     @Test
@@ -296,12 +288,9 @@ class StatementsHistoryViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
         val statement = statements[0]
-        var deleteCallbackResult = false
+
         viewModel.onDeleteClicked(
             statement = statement.toUiState(),
-            onDeleteComplete = { isSuccess ->
-                deleteCallbackResult = isSuccess
-            }
         )
         advanceUntilIdle()
 
@@ -329,18 +318,12 @@ class StatementsHistoryViewModelTest {
 
         advanceUntilIdle()
 
-        var pdfFound: Boolean? = null
-
         viewModel.uiEffect.test {
             viewModel.onStatementCardClicked(
                 statement = statement,
-                onViewStatementAvailable = { isPdfFound ->
-                    pdfFound = isPdfFound
-                }
             )
             advanceUntilIdle()
 
-            assertTrue(pdfFound == true)
             val effect = awaitItem()
             assertEquals(
                 StatementsHistoryEffect.NavigateToStatementDetails(
@@ -370,16 +353,8 @@ class StatementsHistoryViewModelTest {
             } returns Unit
             advanceUntilIdle()
 
-            var pdfFound: Boolean? = null
-            viewModel.onStatementCardClicked(
-                statement = statement,
-                onViewStatementAvailable = { isPdfFound ->
-                    pdfFound = isPdfFound
-                }
-            )
+            viewModel.onStatementCardClicked(statement = statement)
             advanceUntilIdle()
-
-            assertEquals(false, pdfFound)
 
             verifySuspend {
                 statementRepository.deleteStatementById(statement.id)
@@ -416,8 +391,6 @@ class StatementsHistoryViewModelTest {
                 "/storage/statements/may_2025.pdf"
             )
         )
-        const val PAGE_SIZE = 20
-        const val PAGE = 1
     }
 
 }
