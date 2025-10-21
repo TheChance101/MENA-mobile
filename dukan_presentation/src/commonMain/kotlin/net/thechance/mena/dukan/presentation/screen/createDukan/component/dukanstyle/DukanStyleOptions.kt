@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle
+package net.thechance.mena.dukan.presentation.screen.createDukan.component.dukanstyle
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
