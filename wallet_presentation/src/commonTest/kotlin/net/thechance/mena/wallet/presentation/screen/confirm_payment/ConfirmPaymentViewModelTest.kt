@@ -20,6 +20,7 @@ import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

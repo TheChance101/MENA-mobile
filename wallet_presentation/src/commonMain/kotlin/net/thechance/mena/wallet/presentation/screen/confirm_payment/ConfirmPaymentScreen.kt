@@ -22,6 +22,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PaymentDetailsSection
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
