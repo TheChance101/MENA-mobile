@@ -16,7 +16,7 @@ import org.koin.core.annotation.Provided
 class StatementDetailsViewModel(
     @Provided private val fileManager: FileManager,
     @Provided private val statementLocation: StorageLocation,
-    private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementDetailsScreenState, StatementDetailsEffect>
     (StatementDetailsScreenState()), StatementDetailsInteractionListener {
 
@@ -31,7 +31,7 @@ class StatementDetailsViewModel(
             callee = { fileManager.readFile(statementLocation) },
             onSuccess = ::onGetStatementPdfSuccess,
             onError = ::onGetStatementPdfError,
-            dispatcher = dispatcherIO
+            dispatcher = dispatcher
         )
     }
 

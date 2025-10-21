@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
@@ -23,37 +24,36 @@ import mena.wallet_presentation.generated.resources.share
 import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.model.FilterStatus
+import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.ExportTransactionsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun TransactionHistoryScreen(
-    viewModel: TransactionHistoryViewModel = koinViewModel(),
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionDetails: (id: Uuid) -> Unit,
-    navigateToExportTransaction: () -> Unit
-) {
+fun TransactionHistoryScreen(viewModel: TransactionHistoryViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
+
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onTransactionHistoryEffect(
-                effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToTransactionDetails = navigateToTransactionDetails,
-                navigateToExportTransaction = navigateToExportTransaction
-            )
+            onTransactionHistoryEffect(effect = effect, navController = navController)
         }
     )
 
@@ -81,12 +81,15 @@ fun TransactionHistoryContent(
                 },
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
-                    Icon(
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
-                            .clickable { interactionListener.onExportClicked() },
-                        painter = painterResource(Res.drawable.ic_share),
-                        contentDescription = Res.string.share.toString()
-                    )
+                    if (state.history.isNotEmpty()) {
+                        Icon(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable { interactionListener.onExportClicked() },
+                            painter = painterResource(Res.drawable.ic_share),
+                            contentDescription = stringResource(Res.string.share)
+                        )
+                    }
                 }
             )
         }, overlays = {
@@ -97,8 +100,8 @@ fun TransactionHistoryContent(
                     onDismiss = interactionListener::onDismissFilter,
                     onClickAddFilter = interactionListener::onApplyFilterClicked,
                     onResetClicked = interactionListener::onResetFilterClicked,
-                    onTypeToggled = interactionListener::selectFilterType,
-                    onStatusSelected = interactionListener::selectFilterStatus,
+                    onTypeToggled = interactionListener::onFilterTypeSelected,
+                    onStatusSelected = interactionListener::onFilterStatusSelected,
                     onStartDateClicked = interactionListener::onStartDateClicked,
                     onEndDateClicked = interactionListener::onEndDateClicked
                 )
@@ -146,17 +149,41 @@ fun TransactionHistoryContent(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-private fun onTransactionHistoryEffect(
-    effect: TransactionHistoryEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionDetails: (id: Uuid) -> Unit,
-    navigateToExportTransaction: () -> Unit
-) {
+private fun onTransactionHistoryEffect(effect: TransactionHistoryEffect, navController: NavController) {
     when (effect) {
-        TransactionHistoryEffect.NavigateBack -> onNavigateBackClicked()
-        TransactionHistoryEffect.NavigateToExportTransaction -> navigateToExportTransaction()
-        is TransactionHistoryEffect.NavigateToTransactionDetails -> {
-            navigateToTransactionDetails(effect.id)
+        TransactionHistoryEffect.NavigateBack -> navController.popBackStack()
+        TransactionHistoryEffect.NavigateToExportTransaction -> {
+            navController.navigate(ExportTransactionsScreenRoute)
         }
+        is TransactionHistoryEffect.NavigateToTransactionDetails -> {
+            navController.navigate(TransactionDetailsScreenRoute(effect.id.toString()))
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TransactionHistoryContentPreview() {
+    MenaTheme {
+        TransactionHistoryContent(
+            state = TransactionHistoryScreenState(),
+            interactionListener = object : TransactionHistoryInteractionListener {
+                override fun onBackClicked() {}
+                override fun onTransactionCardClicked(id: Uuid) {}
+                override fun onExportClicked() {}
+                override fun onFilterClicked() {}
+                override fun onNextPageRequested() {}
+                override fun onDismissFilter() {}
+                override fun onFilterTypeSelected(type: FilterType) {}
+                override fun onFilterStatusSelected(status: FilterStatus) {}
+                override fun onResetFilterClicked() {}
+                override fun onApplyFilterClicked() {}
+                override fun onStartDateClicked() {}
+                override fun onEndDateClicked() {}
+                override fun onDismissDatePicker() {}
+                override fun onPickDateClicked(date: LocalDate) {}
+                override fun onRetryLoadTransactionHistoryClicked() {}
+            }
+        )
     }
 }

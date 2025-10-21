@@ -132,8 +132,8 @@ class TransactionHistoryViewModelTest {
     fun `page should be reset when onResetFilters is called`() = runTest(testDispatcher) {
         initViewModel()
 
-        viewModel.selectFilterType(FilterType.SENT)
-        viewModel.selectFilterStatus(FilterStatus.SUCCESS)
+        viewModel.onFilterTypeSelected(FilterType.SENT)
+        viewModel.onFilterStatusSelected(FilterStatus.SUCCESS)
         advanceUntilIdle()
 
         viewModel.onResetFilterClicked()
@@ -224,7 +224,7 @@ class TransactionHistoryViewModelTest {
             initViewModel()
 
             val filterType = FilterType.SENT
-            viewModel.selectFilterType(filterType)
+            viewModel.onFilterTypeSelected(filterType)
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -240,7 +240,7 @@ class TransactionHistoryViewModelTest {
             initViewModel()
 
             val filterStatus = FilterStatus.SUCCESS
-            viewModel.selectFilterStatus(filterStatus)
+            viewModel.onFilterStatusSelected(filterStatus)
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -270,8 +270,8 @@ class TransactionHistoryViewModelTest {
         runTest(testDispatcher) {
             initViewModel()
 
-            viewModel.selectFilterType(FilterType.SENT)
-            viewModel.selectFilterStatus(FilterStatus.SUCCESS)
+            viewModel.onFilterTypeSelected(FilterType.SENT)
+            viewModel.onFilterStatusSelected(FilterStatus.SUCCESS)
             advanceUntilIdle()
 
             viewModel.onRetryLoadTransactionHistoryClicked()
@@ -288,7 +288,7 @@ class TransactionHistoryViewModelTest {
         viewModel = TransactionHistoryViewModel(
             transactionRepository = transactionRepository,
             stringProvider = stringProvider,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
         advanceUntilIdle()
     }

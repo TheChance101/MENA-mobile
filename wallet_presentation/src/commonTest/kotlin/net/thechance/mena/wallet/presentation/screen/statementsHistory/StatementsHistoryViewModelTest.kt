@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
 
 import app.cash.turbine.test
@@ -31,6 +33,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatementsHistoryViewModelTest {
@@ -225,7 +229,7 @@ class StatementsHistoryViewModelTest {
 
     @Test
     fun `onDeleteClicked should delete statement successfully`() = runTest(testDispatcher) {
-        val statementId = 1L
+        val statementId = statements[0].id
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
         everySuspend { statementRepository.deleteStatementById(statementId) }
 
@@ -280,7 +284,7 @@ class StatementsHistoryViewModelTest {
 
     @Test
     fun `edit mode flow - activate, delete, then cancel`() = runTest(testDispatcher) {
-        val statementId = 123L
+        val statementId = Uuid.random()
         everySuspend { statementRepository.getStatements(any(), any()) } returns emptyList()
         everySuspend { statementRepository.deleteStatementById(statementId) }
 
@@ -388,7 +392,7 @@ class StatementsHistoryViewModelTest {
     companion object {
         val statements = listOf(
             Statement(
-                1,
+                Uuid.random(),
                 LocalDate(2025, 3, 1),
                 LocalDate(2025, 3, 31),
                 1410.0,
@@ -396,7 +400,7 @@ class StatementsHistoryViewModelTest {
                 "/storage/statements/mar_2025.pdf"
             ),
             Statement(
-                2,
+                Uuid.random(),
                 LocalDate(2025, 4, 1),
                 LocalDate(2025, 4, 30),
                 1600.3,
@@ -404,7 +408,7 @@ class StatementsHistoryViewModelTest {
                 "/storage/statements/apr_2025.pdf"
             ),
             Statement(
-                3,
+                Uuid.random(),
                 LocalDate(2025, 5, 1),
                 LocalDate(2025, 5, 31),
                 1555.0,

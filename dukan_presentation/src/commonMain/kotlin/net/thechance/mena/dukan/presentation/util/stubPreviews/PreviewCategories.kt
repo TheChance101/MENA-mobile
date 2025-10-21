@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
-import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.CategoryUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesUiState.CategoryUiState
 
 val previewCategories = listOf(
     CategoryUiState("1", "Electronics", "electronics.jpg"),

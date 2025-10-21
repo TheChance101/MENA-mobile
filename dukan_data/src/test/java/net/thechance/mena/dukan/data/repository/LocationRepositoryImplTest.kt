@@ -8,8 +8,7 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.data.repository.location.GeocoderWrapper
-import net.thechance.mena.dukan.data.repository.location.LocationRepositoryImpl
+import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
 import net.thechance.mena.dukan.domain.entity.Dukan
 import kotlin.test.BeforeTest
 import kotlin.test.Test

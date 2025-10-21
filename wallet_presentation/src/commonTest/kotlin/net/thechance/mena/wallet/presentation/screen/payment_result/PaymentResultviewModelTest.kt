@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.screen.payment_result.args.PaymentResultArgs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -28,11 +29,19 @@ class PaymentResultViewModelTest {
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
-    private val transactionId = Uuid.random()
-    private val paymentResultArgs = PaymentResultArgs(
-        transactionId = transactionId.toString(),
-        submitTransactionResultStatus = SubmissionStatus.SUCCESS.name
-    )
+    private val transactionId1 = Uuid.random()
+    private val receiverName1 = "user1"
+    private val amount1 = 20.0
+    private val paymentResultArgs = object : PaymentResultArgs {
+        override val transactionId: String
+            get() = transactionId1.toString()
+        override val submitTransactionResultStatus: String
+            get() = SubmissionStatus.SUCCESS.name
+        override val receiverName: String
+            get() = receiverName1
+        override val amount: Double
+            get() = amount1
+    }
 
     @BeforeTest
     fun setup() {
@@ -49,7 +58,7 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         assertEquals(
@@ -63,7 +72,7 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.uiEffect.test {
@@ -77,12 +86,12 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.uiEffect.test {
             viewModel.onCloseClicked()
-            assertEquals(PaymentResultEffect.NavigateToScreenBeforePaymentProcess, awaitItem())
+            assertEquals(PaymentResultEffect.NavigateToPrePaymentScreen, awaitItem())
         }
     }
 
@@ -91,13 +100,13 @@ class PaymentResultViewModelTest {
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.uiEffect.test {
             viewModel.onShowTransactionDetailsClicked()
             assertEquals(
-                PaymentResultEffect.NavigateToTransactionDetails(transactionId),
+                PaymentResultEffect.NavigateToTransactionDetails(transactionId1),
                 awaitItem()
             )
         }
@@ -105,12 +114,12 @@ class PaymentResultViewModelTest {
 
     @Test
     fun `onTryAgainClicked should update state with CONNECTION_LOST on error`() = runTest {
-        everySuspend { transactionRepository.submitTransaction(transactionId) } throws NoInternetException()
+        everySuspend { transactionRepository.submitTransaction(transactionId1) } throws NoInternetException()
 
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,
             paymentResultArgs = paymentResultArgs,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
 
         viewModel.state.test {

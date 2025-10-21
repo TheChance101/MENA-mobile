@@ -20,6 +20,8 @@ import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -35,6 +37,13 @@ class ConfirmPaymentViewModelTest {
     private val balanceRepository = mock<BalanceRepository>(mode = MockMode.autofill)
     private val stringProvider = FakeStringProvider()
     private val testDispatcher = StandardTestDispatcher()
+    private val confirmPaymentArgs: ConfirmPaymentArgs = object : ConfirmPaymentArgs {
+        override val transactionId: String
+            get() = receiver1Id.toString()
+        override val amount: Double
+            get() = amount1
+
+    }
 
     private lateinit var viewModel: ConfirmPaymentViewModel
 
@@ -49,11 +58,11 @@ class ConfirmPaymentViewModelTest {
     }
 
     private fun createViewModel() = ConfirmPaymentViewModel(
-        args = ConfirmPaymentArgs(receiver1Id.toString(), amount1),
+        args = confirmPaymentArgs,
         balanceRepository = balanceRepository,
         transactionRepository = transactionRepository,
         stringProvider = stringProvider,
-        ioDispatcher = testDispatcher
+        dispatcher = testDispatcher
     )
 
     @Test
@@ -72,34 +81,36 @@ class ConfirmPaymentViewModelTest {
     }
 
     @Test
-    fun `ConfirmPaymentViewModel should update payment ui state when balance repository returns value`() = runTest {
-        everySuspend { balanceRepository.getBalance() } returns balance1
-        everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
+    fun `ConfirmPaymentViewModel should update payment ui state when balance repository returns value`() =
+        runTest {
+            everySuspend { balanceRepository.getBalance() } returns balance1
+            everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
 
         viewModel = createViewModel()
 
-        viewModel.state.test {
-            skipItems(2)
-            val state = awaitItem()
-            assertEquals(paymentUiState, state.paymentUiState)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                skipItems(2)
+                val successState = awaitItem()
+                assertEquals(paymentUiState, successState.paymentUiState)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `ConfirmPaymentViewModel should update payment ui state when user repository returns value`() = runTest {
-        everySuspend { balanceRepository.getBalance() } returns balance1
-        everySuspend { transactionRepository.getTransactionReceiver(any()) } returns transactionReceiver1
+    fun `ConfirmPaymentViewModel should update payment ui state when user repository returns value`() =
+        runTest {
+            everySuspend { balanceRepository.getBalance() } returns balance1
+            everySuspend { transactionRepository.getTransactionReceiver(any()) } returns transactionReceiver1
 
         viewModel = createViewModel()
 
-        viewModel.state.test {
-            advanceUntilIdle()
-            val state = expectMostRecentItem()
-            assertEquals(receiverUiState1, state.receiverUiState)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                advanceUntilIdle()
+                val successState = expectMostRecentItem()
+                assertEquals(receiverUiState1, successState.receiverUiState)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `ConfirmPaymentViewModel should update error state when balance repository fails`() = runTest {
@@ -111,8 +122,8 @@ class ConfirmPaymentViewModelTest {
 
         viewModel.state.test {
             skipItems(4)
-            val state = awaitItem()
-            assertEquals(ErrorState.Unknown, state.errorState)
+            val errorState = awaitItem()
+            assertEquals(ErrorState.Unknown, errorState.errorState)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -127,8 +138,8 @@ class ConfirmPaymentViewModelTest {
 
         viewModel.state.test {
             skipItems(5)
-            val state = awaitItem()
-            assertEquals(ErrorState.Unknown, state.errorState)
+            val errorState = awaitItem()
+            assertEquals(ErrorState.Unknown, errorState.errorState)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -156,8 +167,25 @@ class ConfirmPaymentViewModelTest {
         viewModel.state.test {
             skipItems(6)
             viewModel.onRefresh()
-            val state = awaitItem()
-            assertTrue(state.isLoading)
+            val initialState = awaitItem()
+            assertTrue(initialState.isLoading)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onPayButtonClicked emits NavigateToPaymentResultScreen with success status`() = runTest {
+        everySuspend { balanceRepository.getBalance() } returns balance1
+        everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
+        everySuspend { transactionRepository.submitTransaction(any()) } returns Unit
+
+        viewModel = createViewModel()
+
+        viewModel.uiEffect.test {
+            viewModel.onPayButtonClicked()
+            val effect = awaitItem()
+            assertTrue(effect is ConfirmPaymentEffect.NavigateToPaymentResultScreen)
+            assertEquals(SubmissionStatus.SUCCESS, effect.submissionStatus)
             cancelAndIgnoreRemainingEvents()
         }
     }

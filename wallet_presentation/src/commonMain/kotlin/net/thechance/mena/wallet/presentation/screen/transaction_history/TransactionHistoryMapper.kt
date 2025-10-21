@@ -15,39 +15,46 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
         id = id,
         timeAndDate = formatLocalDateTime(date = createdAt, outputFormat = "dd MMM, h:mm a"),
         amount = amount.toString(),
-        type = when (type) {
-            TransactionType.SENT -> TransactionHistoryScreenState.TransactionTypeUiState.SENT
-            TransactionType.RECEIVED -> TransactionHistoryScreenState.TransactionTypeUiState.RECEIVED
-            TransactionType.ONLINE_PURCHASE -> TransactionHistoryScreenState.TransactionTypeUiState.ONLINE_SHOPPING
-        },
-        status = when (status) {
-            TransactionStatus.SUCCESS -> TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
-            TransactionStatus.FAILED -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
-        },
-        contactName = when (type) {
-            TransactionType.SENT -> receiverName
-            TransactionType.RECEIVED -> senderName
-            else -> null
-        }
+        type = getTransactionType(),
+        status = getTransactionStatus(),
+        contactName = getUserName()
     )
 
 fun TransactionFilterState.toParams(): TransactionFilterParams {
     return TransactionFilterParams(
-        types = selectedTypes.map { it.toDomainType() }.takeIf { it.isNotEmpty() },
-        status = selectedStatus.toDomainStatus(),
+        types = selectedTypes.map { it.toDomain() }.takeIf { it.isNotEmpty() },
+        status = selectedStatus.toDomain(),
         startDate = startDate,
         endDate = endDate
     )
 }
 
-fun FilterType.toDomainType(): TransactionType = when (this) {
+fun FilterType.toDomain(): TransactionType = when (this) {
     FilterType.SENT -> TransactionType.SENT
     FilterType.RECEIVED -> TransactionType.RECEIVED
     FilterType.ONLINE_PURCHASE -> TransactionType.ONLINE_PURCHASE
 }
-
-fun FilterStatus.toDomainStatus(): TransactionStatus? = when (this) {
+fun FilterStatus.toDomain(): TransactionStatus? = when (this) {
     FilterStatus.SUCCESS -> TransactionStatus.SUCCESS
     FilterStatus.FAILED -> TransactionStatus.FAILED
     FilterStatus.ALL -> null
+}
+
+private fun Transaction.getTransactionType(): TransactionHistoryScreenState.TransactionTypeUiState =
+    when (type) {
+        TransactionType.SENT -> TransactionHistoryScreenState.TransactionTypeUiState.SENT
+        TransactionType.RECEIVED -> TransactionHistoryScreenState.TransactionTypeUiState.RECEIVED
+        TransactionType.ONLINE_PURCHASE -> TransactionHistoryScreenState.TransactionTypeUiState.ONLINE_SHOPPING
+    }
+
+private fun Transaction.getTransactionStatus(): TransactionHistoryScreenState.TransactionStatusUiState =
+    when (status) {
+        TransactionStatus.SUCCESS -> TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
+        TransactionStatus.FAILED -> TransactionHistoryScreenState.TransactionStatusUiState.FAILED
+    }
+
+private fun Transaction.getUserName(): String? = when (type) {
+    TransactionType.SENT -> senderName
+    TransactionType.RECEIVED -> receiverName
+    else -> null
 }
