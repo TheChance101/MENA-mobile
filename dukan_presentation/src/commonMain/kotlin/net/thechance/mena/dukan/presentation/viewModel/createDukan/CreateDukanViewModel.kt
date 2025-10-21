@@ -168,7 +168,14 @@ class CreateDukanViewModel(
         return { category -> state.value.selectedCategories.contains(category) }
     }
 
-    override fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+    override fun onCategoryClicked(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+        val isSelected = state.value.selectedCategories.contains(category)
+        return if (isSelected) onCategoryDeselected(category)
+        else onCategorySelected(category)
+
+    }
+
+    private fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         if (!canSelectMoreCategories(state.value)) return false
 
         addCategoryToSelection(category)
@@ -176,7 +183,7 @@ class CreateDukanViewModel(
         return true
     }
 
-    override fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+    private fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         removeCategoryFromSelection(category)
         updateNextButtonEnableState()
         return true

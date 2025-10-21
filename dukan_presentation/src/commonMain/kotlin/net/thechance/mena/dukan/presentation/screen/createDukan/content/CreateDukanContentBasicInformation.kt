@@ -70,11 +70,8 @@ fun CreateDukanContentBasicInformation(
             SelectionRow(
                 availableItems = state.dukanCategories,
                 isItemSelected = interactionListener.isCategorySelected(),
-                onItemSelected = interactionListener::onCategorySelected,
-                onItemDeselected = interactionListener::onCategoryDeselected,
-                onItemEnabled = interactionListener::onCategoryEnabled,
-                getItemName = { it.name },
-                getItemImageUrl = { it.imageUrl }
+                onItemClicked = interactionListener::onCategoryClicked,
+                onItemEnabled = interactionListener::onCategoryEnabled
             )
         }
     }
