@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.confirm_payment
+package net.thechance.mena.wallet.presentation.screen.confirm_payment.args
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
