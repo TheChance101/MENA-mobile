@@ -25,7 +25,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.LoadingShelves
+import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -33,7 +33,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun LazyListScope.shelfSection(
     shelves: List<CreateProductUiState.ShelfUiState>,
-    isShelvesLoading : Boolean,
+    isShelvesLoading: Boolean,
     onShelfSelect: (CreateProductUiState.ShelfUiState) -> Unit
 ) {
     item {
@@ -45,7 +45,7 @@ fun LazyListScope.shelfSection(
         )
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(top = Theme.spacing._4, bottom = Theme.spacing._8)
+                .padding(top = Theme.spacing._4)
                 .padding(horizontal = Theme.spacing._16),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2)
@@ -64,12 +64,18 @@ fun LazyListScope.shelfSection(
         AnimatedContent(
             targetState = isShelvesLoading,
             label = "shelves loading"
-        ){
+        ) {
             if (it) {
-                LoadingShelves()
-            }
-            else{
-               LoadedShelves(shelves, onShelfSelect)
+                LoadingHorizontalList {
+                    Chip(
+                        text = "             ",
+                        isSelected = false,
+                        isEnabled = false,
+                        onClick = { }
+                    )
+                }
+            } else {
+                LoadedShelves(shelves, onShelfSelect)
             }
         }
     }
@@ -79,7 +85,7 @@ fun LazyListScope.shelfSection(
 private fun LoadedShelves(
     shelves: List<CreateProductUiState.ShelfUiState>,
     onShelfSelect: (CreateProductUiState.ShelfUiState) -> Unit
-){
+) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -111,9 +117,21 @@ private fun ShelvesSectionPreview() {
         ) {
             shelfSection(
                 shelves = listOf(
-                    CreateProductUiState.ShelfUiState(id = "1", name = "shelf 1", isSelected = true),
-                    CreateProductUiState.ShelfUiState(id = "2", name = "shelf 2", isSelected = false),
-                    CreateProductUiState.ShelfUiState(id = "3", name = "shelf 3", isSelected = false),
+                    CreateProductUiState.ShelfUiState(
+                        id = "1",
+                        name = "shelf 1",
+                        isSelected = true
+                    ),
+                    CreateProductUiState.ShelfUiState(
+                        id = "2",
+                        name = "shelf 2",
+                        isSelected = false
+                    ),
+                    CreateProductUiState.ShelfUiState(
+                        id = "3",
+                        name = "shelf 3",
+                        isSelected = false
+                    ),
                 ),
                 onShelfSelect = {},
                 isShelvesLoading = false

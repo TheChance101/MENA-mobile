@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.presentation.util.stubPreviews
 import androidx.compose.ui.graphics.ImageBitmap
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 
 object PreviewCreateProductInterfaceListener: CreateProductInteractionListener {
     override fun onBackClicked() {
@@ -13,7 +13,7 @@ object PreviewCreateProductInterfaceListener: CreateProductInteractionListener {
     override fun onProductNameChange(name: String) {
     }
 
-    override fun onShelfSelect(shelfUiState: ProductUiState.ShelfUiState) {
+    override fun onShelfSelect(shelfUiState: CreateProductUiState.ShelfUiState) {
     }
 
     override fun onPriceChange(price: String) {

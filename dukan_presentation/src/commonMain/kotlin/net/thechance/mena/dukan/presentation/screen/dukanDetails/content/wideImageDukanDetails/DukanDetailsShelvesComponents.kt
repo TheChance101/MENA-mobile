@@ -18,10 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.products
+import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.LoadingShelves
+import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.component.ShelfChip
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
@@ -61,7 +62,14 @@ fun DukanShelvesSection(
             label = "Shelves Animation",
         ) { targetState ->
             when (targetState) {
-                DukanDetailsUiState.ShelvesState.LOADING -> LoadingShelves()
+                DukanDetailsUiState.ShelvesState.LOADING -> LoadingHorizontalList {
+                    Chip(
+                        text = "             ",
+                        isSelected = false,
+                        isEnabled = false,
+                        onClick = { }
+                    )
+                }
                 DukanDetailsUiState.ShelvesState.LOADED -> LoadedShelves(
                     shelves = state.shelves.items,
                     selectedShelfId = state.shelfIdSelected,

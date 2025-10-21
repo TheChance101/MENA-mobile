@@ -35,10 +35,9 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
-import net.thechance.mena.dukan.presentation.component.LoadingShelves
+import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ShelvesState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -49,10 +48,10 @@ fun ManageDukanHeader(
 ) {
     Column {
         AnimatedVisibility(
-            visible = state.shelvesState != ShelvesState.EMPTY
+            visible = state.shelvesState != ManageDukanUiState.ShelvesState.EMPTY
         ) {
             when (state.shelvesState) {
-                ShelvesState.EMPTY -> {}
+                ManageDukanUiState.ShelvesState.EMPTY -> {}
                 else -> Text(
                     text = stringResource(Res.string.shelves),
                     style = Theme.typography.title.small,
@@ -72,11 +71,18 @@ fun ManageDukanHeader(
             }
         ) {
             when (it) {
-                ShelvesState.LOADING -> LoadingShelves()
+                ManageDukanUiState.ShelvesState.LOADING -> LoadingHorizontalList {
+                    Chip(
+                        text = "             ",
+                        isSelected = false,
+                        isEnabled = false,
+                        onClick = { }
+                    )
+                }
 
-                ShelvesState.LOADED -> LoadedShelvesRow(state, listener)
+                ManageDukanUiState.ShelvesState.LOADED -> LoadedShelvesRow(state, listener)
 
-                ShelvesState.EMPTY -> {
+                ManageDukanUiState.ShelvesState.EMPTY -> {
                     Column {
                         Spacer(modifier = Modifier.weight(1f))
                         NoShelvesContent()
@@ -130,6 +136,7 @@ private fun LoadedShelvesRow(
         }
     }
 }
+
 @Composable
 private fun ProductCountRow(
     productCount: Long,
