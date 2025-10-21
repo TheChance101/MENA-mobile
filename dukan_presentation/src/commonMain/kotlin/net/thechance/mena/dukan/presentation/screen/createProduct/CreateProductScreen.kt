@@ -17,14 +17,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add
-import mena.dukan_presentation.generated.resources.shelves
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
@@ -74,7 +71,7 @@ fun CreateProductScreen(
     ProductImageCropScreen(
         isVisible = state.showCropImage,
         onCropImageBack = viewModel::onCroppedImage,
-        onBack = viewModel::onCropImageBackClick,
+        onBack = viewModel::onCropImageBackClicked,
         selectedImage = state.selectedImage,
         aspectRatio = CreateProductViewModel.IMAGE_ASPECT_RATIO
     )
@@ -86,10 +83,7 @@ fun CreateProductScreen(
                 .clip(RoundedCornerShape(Theme.radius.md))
                 .clickable(onClick = viewModel::onDismissSnackBar),
             onDismiss = viewModel::onDismissSnackBar,
-            snackBarUiState = SnackBarUiState(
-                message = Res.string.shelves,
-                snackBarType = SnackBarType.SUCCESS
-            )
+            snackBarUiState = snackBarState
         )
     }
 
@@ -102,12 +96,12 @@ private fun CreateProductContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(onBackClick = interactionListener::onBackClick)
+            TopAppBar(onBackClick = interactionListener::onBackClicked)
         },
         bottomBar = {
             PrimaryButton(
                 text = stringResource(Res.string.add),
-                onClick = interactionListener::onAddProductClick,
+                onClick = interactionListener::onAddProductClicked,
                 isEnabled = state.isAddButtonEnabled,
                 isLoading = state.isAddButtonLoading,
                 modifier = Modifier
@@ -150,8 +144,8 @@ private fun CreateProductContent(
                 images = state.images,
                 isUploadingImageEnabled = state.isUploadingImageEnabled,
                 isCancelImageEnabled = state.isCancelImageEnabled,
-                onUploadImageClick = interactionListener::onUploadImageClick,
-                onCancelImageClick = interactionListener::onCancelImageClick,
+                onUploadImageClick = interactionListener::onUploadImageClicked,
+                onCancelImageClick = interactionListener::onCancelImageClicked,
             )
         }
     }

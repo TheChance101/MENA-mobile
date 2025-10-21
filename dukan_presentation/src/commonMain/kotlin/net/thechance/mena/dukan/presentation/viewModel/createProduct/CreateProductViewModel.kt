@@ -60,7 +60,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onBackClick() {
+    override fun onBackClicked() {
         emitEffect(effect = CreateProductEffect.NavigateBack)
     }
 
@@ -95,7 +95,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onUploadImageClick(image: ImageFile) {
+    override fun onUploadImageClicked(image: ImageFile) {
         tryToExecute(
             block = { onUploadImageBlock(image) },
             onError = ::onErrorUploadingImages
@@ -103,7 +103,7 @@ class CreateProductViewModel(
     }
 
     private suspend fun onUploadImageBlock(image: ImageFile) {
-        if (isUploadImageValidToCrop(image).not())//////
+        if (isUploadImageValidToCrop(image).not())
             awaitCancellation()
 
         val imageSrc = image.toImageSrc()
@@ -129,10 +129,8 @@ class CreateProductViewModel(
                 imageBitmap = imageBitmap,
                 imageSizeInMegabyte = imageSizeInMegabyte
             )
-
             else -> true
         }
-
     }
 
     private fun handleUploadImageError(resErrorMessage: StringResource): Boolean {
@@ -146,10 +144,7 @@ class CreateProductViewModel(
         return false
     }
 
-    private fun addImageToList(
-        imageBitmap: ImageBitmap,
-        imageSizeInMegabyte: Double
-    ): Boolean {
+    private fun addImageToList(imageBitmap: ImageBitmap, imageSizeInMegabyte: Double): Boolean {
         updateState {
             copy(
                 images = images + ProductUiState.ProductImageUi(
@@ -176,7 +171,6 @@ class CreateProductViewModel(
                 showCropImage = false
             )
         }
-
         val imageByteArray = imageBitmap.toPngByteArray().size.toDouble()
         val imageSizeInMegabyte = imageByteArray / BYTES_PER_MEGABYTE
 
@@ -193,7 +187,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onCropImageBackClick() {
+    override fun onCropImageBackClicked() {
         updateState {
             copy(
                 selectedImage = null,
@@ -202,7 +196,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onCancelImageClick(image: ImageBitmap) {
+    override fun onCancelImageClicked(image: ImageBitmap) {
         updateState {
             copy(
                 images = images.filter { it.image != image }
@@ -210,7 +204,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onAddProductClick() {
+    override fun onAddProductClicked() {
         tryToExecute(
             block = ::onAddProductBlock,
             onSuccess = ::onAddProductSuccess,
@@ -231,7 +225,10 @@ class CreateProductViewModel(
                 isCancelImageEnabled = false
             )
         }
+        uploadProductImages()
+    }
 
+    private suspend fun uploadProductImages(){
         val productId = productRepository.createProduct(
             params = state.value.toCreateProductParam(state.value.selectedShelf!!.id)
         )
@@ -257,8 +254,12 @@ class CreateProductViewModel(
         emitEffect(effect = CreateProductEffect.NavigateToManageDukanProducts)
     }
 
-    private fun onAddProductError(throwable: Throwable) {/////
-        showSnackBar(message = Res.string.error_general, type = SnackBarType.ERROR)
+    private fun onAddProductError(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_general
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
         updateState {
             copy(
                 images = images.map { it.copy(imageState = ProductImageState.SUCCESS) },
@@ -337,7 +338,7 @@ class CreateProductViewModel(
     private fun getProductValidationError(productUiState: ProductUiState): StringResource? {
         return when {
             productUiState.price.toDoubleOrNull() == null -> Res.string.error_price_invalid
-            productUiState.price.toDouble() < PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive
+            productUiState.price.toDouble() <= PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive
             productUiState.description.length !in MIN_DESCRIPTION_LENGTH..MAX_DESCRIPTION_LENGTH -> Res.string.error_description_length
             else -> null
         }

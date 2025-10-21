@@ -22,6 +22,7 @@ import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.LoadingShelves
 import net.thechance.mena.dukan.presentation.component.ShelfChip
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
@@ -75,25 +76,6 @@ fun DukanShelvesSection(
         }
     }
 }
-
-@Composable
-private fun LoadingShelves() {
-    val shelvesCount = 8
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        modifier = Modifier.fillWidthOfParent(Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-    ) {
-        items(count = shelvesCount) {
-            Chip(
-                text = "             ",
-                isSelected = false,
-                isEnabled = false,
-                onClick = {})
-        }
-    }
-}
-
 @Composable
 private fun LoadedShelves(
     shelves: List<DukanDetailsUiState.ShelfUiState>,

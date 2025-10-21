@@ -25,6 +25,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.LoadingShelves
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.ProductUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -44,7 +45,7 @@ fun LazyListScope.shelfSection(
         )
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(top = Theme.spacing._4)
+                .padding(top = Theme.spacing._4, bottom = Theme.spacing._8)
                 .padding(horizontal = Theme.spacing._16),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2)
@@ -81,7 +82,6 @@ private fun LoadedShelves(
 ){
     LazyRow(
         modifier = Modifier
-            .padding(top = Theme.spacing._8)
             .fillMaxWidth()
             .height(32.dp),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
@@ -97,22 +97,6 @@ private fun LoadedShelves(
                 modifier = Modifier.height(32.dp),
                 isSelected = shelf.isSelected,
                 onClick = { onShelfSelect(shelf) },
-            )
-        }
-    }
-}
-@Composable
-private fun LoadingShelves() {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-    ) {
-        items(count = 8) {
-            Chip(
-                text = "             ",
-                isSelected = false,
-                isEnabled = false,
-                onClick = { }
             )
         }
     }

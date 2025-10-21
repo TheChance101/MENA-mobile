@@ -6,7 +6,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProdu
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.ProductUiState
 
 object PreviewCreateProductInterfaceListener: CreateProductInteractionListener {
-    override fun onBackClick() {
+    override fun onBackClicked() {
 
     }
 
@@ -22,18 +22,18 @@ object PreviewCreateProductInterfaceListener: CreateProductInteractionListener {
     override fun onDescriptionChange(description: String) {
     }
 
-    override fun onUploadImageClick(image: ImageFile) {
+    override fun onUploadImageClicked(image: ImageFile) {
     }
 
-    override fun onCancelImageClick(image: ImageBitmap) {
+    override fun onCancelImageClicked(image: ImageBitmap) {
     }
 
-    override fun onAddProductClick() {
+    override fun onAddProductClicked() {
     }
 
     override fun onDismissSnackBar() {
     }
 
-    override fun onCropImageBackClick() {
+    override fun onCropImageBackClicked() {
     }
 }
