@@ -28,11 +28,11 @@ class CreateShelfViewModel(
 ), CreateShelfInteractionListener {
 
     override fun onTitleChanged(shelfTitle: String) {
-        val trimmed = shelfTitle.trim()
-        val valid = trimmed.isNotBlank() && validTitleRegex.matches(trimmed)
+        val trimmedTitle = shelfTitle.trim()
+        val valid = isTitleValid(trimmedTitle)
         updateState {
             copy(
-                shelfTitle = trimmed,
+                shelfTitle = trimmedTitle,
                 isCreateButtonEnabled = valid
             )
         }
@@ -46,7 +46,7 @@ class CreateShelfViewModel(
     override fun onCreateButtonClicked() {
         val title = state.value.shelfTitle
         if (!isTitleValid(title)) {
-            showSnackBar(message = Res.string.shelf_name_is_invalid, type = SnackBarType.ERROR)
+            showErrorSnackBar(message = Res.string.shelf_name_is_invalid)
             return
         }
 
@@ -65,7 +65,7 @@ class CreateShelfViewModel(
     }
 
     private fun isTitleValid(title: String): Boolean {
-        return title.isNotBlank() && validTitleRegex.matches(title)
+        return title.isNotBlank() && validShelfTitleRegex.matches(title)
     }
 
     private fun onCreateClickedStart() {
@@ -74,8 +74,7 @@ class CreateShelfViewModel(
 
     private fun onCreateShelfSuccess() {
         updateState { copy(isLoading = false) }
-        emitEffect(CreateShelfEffect.NavigateToManageDukan)
-
+        emitEffect(effect = CreateShelfEffect.NavigateToManageDukan)
     }
 
     private fun onCreateShelfError(throwable: Throwable) {
@@ -85,15 +84,15 @@ class CreateShelfViewModel(
             is NoInternetException -> Res.string.no_internet_message
             else -> Res.string.something_went_wrong
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+        showErrorSnackBar(message = messageRes)
         updateState { copy(isLoading = false) }
     }
 
-    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+    private fun showErrorSnackBar(message: StringResource) {
         updateState {
             copy(
                 snackBarState = SnackBarUiState(
-                    snackBarType = type,
+                    snackBarType = SnackBarType.ERROR,
                     message = message
                 )
             )
@@ -102,6 +101,6 @@ class CreateShelfViewModel(
 
 
     companion object {
-        private val validTitleRegex = Regex("^[\\p{L}\\s-]+$")
+        private val validShelfTitleRegex = Regex("^[\\p{L}\\s-]+$")
     }
 }
