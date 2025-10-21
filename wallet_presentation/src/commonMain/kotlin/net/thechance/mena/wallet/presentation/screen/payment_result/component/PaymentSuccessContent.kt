@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PaymentSuccessContent(
+internal fun PaymentSuccessContent(
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {

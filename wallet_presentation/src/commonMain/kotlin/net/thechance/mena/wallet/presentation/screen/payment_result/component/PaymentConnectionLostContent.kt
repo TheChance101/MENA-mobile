@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PaymentConnectionLostContent(
+internal fun PaymentConnectionLostContent(
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {

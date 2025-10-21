@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PaymentResultCard(
+internal fun PaymentResultCard(
     image: Painter,
     title: String,
     paymentStatus: SubmissionStatus,
