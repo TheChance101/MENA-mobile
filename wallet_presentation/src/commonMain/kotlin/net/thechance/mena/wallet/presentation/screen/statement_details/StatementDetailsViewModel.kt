@@ -7,7 +7,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.screen.statement_details.args.StatementDetailsArgs
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.koin.android.annotation.KoinViewModel
@@ -16,11 +15,10 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 class StatementDetailsViewModel(
     @Provided private val pdfHandler: PdfHandler,
-    @Provided private val statementDetailsArgs: StatementDetailsArgs,
+    @Provided private val statementLocation: StorageLocation,
     private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementDetailsScreenState, StatementDetailsEffect>
     (StatementDetailsScreenState()), StatementDetailsInteractionListener {
-    val statementLocation = statementDetailsArgs.statementLocation
 
     init {
         getStatementPdf(statementLocation)

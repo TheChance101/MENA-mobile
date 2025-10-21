@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.repository.StatementRepository
-import net.thechance.mena.wallet.presentation.screen.statement_details.args.StatementDetailsArgs
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
@@ -30,11 +29,7 @@ class StatementDetailsViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
-    private val statementLocation1 = StorageLocation.Cache("test_statement.pdf")
-    private val statementDetailsArgs = object : StatementDetailsArgs {
-        override val statementLocation: StorageLocation
-            get() = statementLocation1
-    }
+    private val statementLocation = StorageLocation.Cache("test_statement.pdf")
     private lateinit var viewModel: StatementDetailsViewModel
 
     @BeforeTest
@@ -120,7 +115,7 @@ class StatementDetailsViewModelTest {
         }
 
     private fun TestScope.initViewModel() {
-        viewModel = StatementDetailsViewModel(pdfHandler,statementDetailsArgs, testDispatcher)
+        viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
         advanceUntilIdle()
     }
 

@@ -27,14 +27,19 @@ import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun StatementDetailsScreen(
-    viewModel: StatementDetailsViewModel = koinViewModel(),
+    statementLocation: StorageLocation,
+    viewModel: StatementDetailsViewModel = koinViewModel(
+        parameters = { parametersOf(statementLocation) }
+    ),
     pdfHandler: PdfHandler = koinInject()
 ) {
 

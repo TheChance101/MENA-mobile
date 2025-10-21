@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.presentation.navigation.navType.StorageLocationNavType
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
@@ -36,7 +37,7 @@ fun NavigationHost(
 
     CompositionLocalProvider(
         LocalNavController provides navController
-    ){
+    ) {
         NavHost(
             navController = navController,
             startDestination = startDestination,
@@ -70,7 +71,9 @@ fun NavigationHost(
             composable<StatementDetailsScreenRoute>(
                 typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
             ) { backStackEntry ->
-                StatementDetailsScreen()
+                StatementDetailsScreen(
+                    statementLocation = backStackEntry.toRoute<StatementDetailsScreenRoute>().statementLocation
+                )
             }
         }
     }
