@@ -33,7 +33,7 @@ class DukanCategoriesViewModel(
         )
     }
 
-    private suspend fun getCategoriesBlock(): List<dukanManagementRepository> {
+    private suspend fun getCategoriesBlock(): List<DukanCategoriesUiState.CategoryUiState> {
         return dukanManagementRepository.getCategories().map { it.toUiState() }
     }
 

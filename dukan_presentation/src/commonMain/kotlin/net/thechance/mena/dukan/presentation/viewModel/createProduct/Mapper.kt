@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.viewModel.createProduct
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.model.CreateProductParams
 import kotlin.uuid.ExperimentalUuidApi
-import net.thechance.mena.dukan.domain.util.CreateProductParams
 
 @OptIn(ExperimentalUuidApi::class)
 fun Shelf.toUiState(): CreateProductUiState.ShelfUiState {
