@@ -31,12 +31,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateProductViewModelTest {
 
     private val productRepository = mock<ProductRepository>()
     private val shelfRepository = mock<ShelfRepository>()
+    private val mediaRepository = mock<MediaRepository>()
     private lateinit var viewModel: CreateProductViewModel
     private val dispatcher = StandardTestDispatcher()
     private val scope = TestScope(dispatcher)
@@ -44,15 +47,16 @@ class CreateProductViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        viewModel = CreateProductViewModel(productRepository, shelfRepository, dispatcher)
+        viewModel = CreateProductViewModel(productRepository, shelfRepository,mediaRepository, dispatcher)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `getShelves Should update emit success state`() = scope.runTest {
-        val shelves = listOf(Shelf("1", "Shelf1"), Shelf("2", "Shelf2"))
+        val shelves = listOf(Shelf(Uuid.random(), "Shelf1"), Shelf(Uuid.random(), "Shelf2"))
         everySuspend { shelfRepository.getMyDukanShelves() } returns shelves
 
-        viewModel = CreateProductViewModel(productRepository, shelfRepository, dispatcher)
+        viewModel = CreateProductViewModel(productRepository, shelfRepository,mediaRepository, dispatcher)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -90,7 +94,7 @@ class CreateProductViewModelTest {
 
     @Test
     fun `onShelfSelect should update shelf selected`() = scope.runTest {
-        val shelf = ProductUiState.ShelfUiState("Shelf1")
+        val shelf = CreateProductUiState.ShelfUiState("Shelf1")
         viewModel.updateState { copy(shelves = listOf(shelf)) }
 
         viewModel.state.test {
@@ -129,7 +133,7 @@ class CreateProductViewModelTest {
 
         viewModel.updateState {
             copy(images = List(CreateProductViewModel.IMAGE_MAX_LIMIT) {
-                ProductUiState.ProductImageUi(
+                CreateProductUiState.ProductImageUi(
                     image = fakeBitmap,
                     imageSizeInMegaByte = 1.0,
                     imageState = ProductImageState.SUCCESS
@@ -237,12 +241,12 @@ class CreateProductViewModelTest {
         viewModel.updateState {
             copy(
                 images = listOf(
-                    ProductUiState.ProductImageUi(
+                    CreateProductUiState.ProductImageUi(
                         image = fakeBitmap1,
                         imageSizeInMegaByte = 1.0,
                         imageState = ProductImageState.SUCCESS
                     ),
-                    ProductUiState.ProductImageUi(
+                    CreateProductUiState.ProductImageUi(
                         image = fakeBitmap2,
                         imageSizeInMegaByte = 1.5,
                         imageState = ProductImageState.SUCCESS
@@ -280,11 +284,11 @@ class CreateProductViewModelTest {
         viewModel.updateState {
             copy(
                 productName = "Test",
-                selectedShelf = ProductUiState.ShelfUiState("id1"),
+                selectedShelf = CreateProductUiState.ShelfUiState("id1"),
                 price = "abc",
                 description = "Valid description".padEnd(120, 'x'),
                 images = listOf(
-                    ProductUiState.ProductImageUi(
+                    CreateProductUiState.ProductImageUi(
                         1234,
                         mock<ImageBitmap>(),
                         1.0,
@@ -305,7 +309,7 @@ class CreateProductViewModelTest {
     @Test
     fun `onAddProductClick - repository error shows error snackbar`() = scope.runTest {
         val fakeBitmap = mock<ImageBitmap>()
-        val shelf = ProductUiState.ShelfUiState("s1", name = "Shelf1")
+        val shelf = CreateProductUiState.ShelfUiState("s1", name = "Shelf1")
 
         everySuspend { productRepository.createProduct(any()) } throws RuntimeException("fail")
 
@@ -315,14 +319,7 @@ class CreateProductViewModelTest {
                 selectedShelf = shelf,
                 price = "50.0",
                 description = "Nice description".padEnd(120, 'z'),
-                images = listOf(
-                    ProductUiState.ProductImageUi(
-                        0,
-                        fakeBitmap,
-                        1.0,
-                        ProductImageState.SUCCESS
-                    )
-                )
+                images = listOf(CreateProductUiState.ProductImageUi(0, fakeBitmap, 1.0, ProductImageState.SUCCESS))
             )
         }
 

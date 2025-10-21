@@ -1,9 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.export
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,7 +63,6 @@ private fun ExportTransactionScreenContent(
     state: ExportTransactionsState,
     interactionListener: ExportTransactionsListener
 ) {
-
     WalletScaffold(
         modifier = Modifier.statusBarsPadding(),
         topBar = {
@@ -73,26 +75,21 @@ private fun ExportTransactionScreenContent(
                         contentDescription = stringResource(Res.string.back_button)
                     )
                 },
-                onLeadingClick =  interactionListener::onBackClicked ,
+                onLeadingClick = interactionListener::onBackClicked,
             )
         },
         snackBar = {
             SnackBarContainer(snackBarState = state.snackBar)
         },
-        toast = {
-            CustomToast(
-                toastState = state.toast,
-            )
-        },
         overlays = {
-            bottomSheet(isVisible = state.isDateBottomSheetVisible) { isVisible ->
+            bottomSheet(isVisible = state.dateState.isDateBottomSheetVisible) { isVisible ->
                 DatePickerBottomSheet(
                     isVisible = isVisible,
-                    defaultSelectedDate = when (state.datePickerMode) {
-                        ExportTransactionsState.DatePickerMode.START_DATE -> state.defaultStartDate
-                        ExportTransactionsState.DatePickerMode.END_DATE -> state.defaultEndDate
+                    defaultSelectedDate = when (state.dateState.datePickerMode) {
+                        ExportTransactionsState.DatePickerMode.START_DATE -> state.dateState.defaultStartDate
+                        ExportTransactionsState.DatePickerMode.END_DATE -> state.dateState.defaultEndDate
                     },
-                    title = when (state.datePickerMode) {
+                    title = when (state.dateState.datePickerMode) {
                         ExportTransactionsState.DatePickerMode.START_DATE -> stringResource(Res.string.pick_start_date)
                         ExportTransactionsState.DatePickerMode.END_DATE -> stringResource(Res.string.pick_end_date)
                     },
@@ -105,10 +102,16 @@ private fun ExportTransactionScreenContent(
             }
         }
     ) {
-        ExportTransactionContentBody(
-            state = state,
-            interactionListener = interactionListener
-        )
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            ExportTransactionContentBody(
+                state = state,
+                interactionListener = interactionListener
+            )
+
+            CustomToast(
+                toastState = state.toast
+            )
+        }
     }
 }
 

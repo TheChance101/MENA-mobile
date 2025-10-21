@@ -35,8 +35,8 @@ import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateProductInterfaceListener
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductEffect
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductViewModel
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.ProductUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -79,7 +79,7 @@ fun CreateProductScreen(
 
 @Composable
 private fun CreateProductContent(
-    state: ProductUiState,
+    state: CreateProductUiState,
     interactionListener: CreateProductInteractionListener
 ) {
     Scaffold(
@@ -165,7 +165,7 @@ private fun CreateProductSnackBar(
 private fun CreateProductPreview() {
     MenaTheme {
         CreateProductContent(
-            state = ProductUiState(),
+            state = CreateProductUiState(),
             interactionListener = PreviewCreateProductInterfaceListener
         )
     }

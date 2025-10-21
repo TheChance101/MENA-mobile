@@ -20,6 +20,7 @@ import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
+import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
@@ -35,9 +36,10 @@ import org.jetbrains.compose.resources.StringResource
 class CreateProductViewModel(
     private val productRepository: ProductRepository,
     private val shelfRepository: ShelfRepository,
+    private val mediaRepository: MediaRepository,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : BaseViewModel<ProductUiState, CreateProductEffect>(
-    initialState = ProductUiState(),
+) : BaseViewModel<CreateProductUiState, CreateProductEffect>(
+    initialState = CreateProductUiState(),
     defaultDispatcher = dispatcher
 ), CreateProductInteractionListener {
 
@@ -70,7 +72,7 @@ class CreateProductViewModel(
         }
     }
 
-    override fun onShelfSelect(shelfUiState: ProductUiState.ShelfUiState) {
+    override fun onShelfSelect(shelfUiState: CreateProductUiState.ShelfUiState) {
         updateState {
             copy(
                 shelves = shelves.map { shelfItem ->
@@ -147,7 +149,7 @@ class CreateProductViewModel(
     private fun addImageToList(imageBitmap: ImageBitmap, imageSizeInMegabyte: Double): Boolean {
         updateState {
             copy(
-                images = images + ProductUiState.ProductImageUi(
+                images = images + CreateProductUiState.ProductImageUi(
                     image = imageBitmap,
                     imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
                     imageState = ProductImageState.SUCCESS,
@@ -164,7 +166,7 @@ class CreateProductViewModel(
         )
     }
 
-    private fun onCroppedImageBlock(imageBitmap: ImageBitmap): ProductUiState.ProductImageUi {
+    private fun onCroppedImageBlock(imageBitmap: ImageBitmap): CreateProductUiState.ProductImageUi {
         updateState {
             copy(
                 selectedImage = null,
@@ -174,14 +176,14 @@ class CreateProductViewModel(
         val imageByteArray = imageBitmap.toPngByteArray().size.toDouble()
         val imageSizeInMegabyte = imageByteArray / BYTES_PER_MEGABYTE
 
-        return ProductUiState.ProductImageUi(
+        return CreateProductUiState.ProductImageUi(
             image = imageBitmap,
             imageSizeInMegaByte = imageSizeInMegabyte.rounded(),
             imageState = ProductImageState.SUCCESS,
         )
     }
 
-    private fun onCroppedImageSuccess(productImage: ProductUiState.ProductImageUi) {
+    private fun onCroppedImageSuccess(productImage: CreateProductUiState.ProductImageUi) {
         updateState {
             copy(images = images + productImage).updateButtonState()
         }
@@ -233,7 +235,7 @@ class CreateProductViewModel(
             params = state.value.toCreateProductParam(state.value.selectedShelf!!.id)
         )
 
-        productRepository.uploadProductImages(
+        mediaRepository.uploadProductImages(
             fileName = state.value.images.map {
                 state.value.productName.trim().replace(" ", "_") +
                         it.image.toPngByteArray().toFileName()
@@ -299,7 +301,7 @@ class CreateProductViewModel(
         showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
-    private fun ProductUiState.updateButtonState(): ProductUiState {
+    private fun CreateProductUiState.updateButtonState(): CreateProductUiState {
         return copy(isAddButtonEnabled = isProductValid(this))
     }
 
@@ -312,7 +314,7 @@ class CreateProductViewModel(
         }
     }
 
-    private fun isProductValid(productUiState: ProductUiState): Boolean {
+    private fun isProductValid(productUiState: CreateProductUiState): Boolean {
         return when {
             productUiState.productName.trim().isEmpty() -> false
             productUiState.selectedShelf == null -> false
@@ -335,7 +337,7 @@ class CreateProductViewModel(
         }
     }
 
-    private fun getProductValidationError(productUiState: ProductUiState): StringResource? {
+    private fun getProductValidationError(productUiState: CreateProductUiState): StringResource? {
         return when {
             productUiState.price.toDoubleOrNull() == null -> Res.string.error_price_invalid
             productUiState.price.toDouble() <= PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive

@@ -1,16 +1,18 @@
 package net.thechance.mena.dukan.presentation.viewModel.createProduct
 
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.util.CreateProductParams
+import net.thechance.mena.dukan.domain.model.CreateProductParams
+import kotlin.uuid.ExperimentalUuidApi
 
-fun Shelf.toUiState(): ProductUiState.ShelfUiState {
-    return ProductUiState.ShelfUiState(
-        id = id,
+@OptIn(ExperimentalUuidApi::class)
+fun Shelf.toUiState(): CreateProductUiState.ShelfUiState {
+    return CreateProductUiState.ShelfUiState(
+        id = id.toString(),
         name = name,
     )
 }
 
-fun ProductUiState.toCreateProductParam(shelfId: String): CreateProductParams {
+fun CreateProductUiState.toCreateProductParam(shelfId: String): CreateProductParams {
     return CreateProductParams(
         name = productName,
         description = description,

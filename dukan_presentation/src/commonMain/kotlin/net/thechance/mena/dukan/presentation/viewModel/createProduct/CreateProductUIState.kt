@@ -7,7 +7,7 @@ import net.thechance.mena.dukan.presentation.component.productImage.ProductImage
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-data class ProductUiState(
+data class CreateProductUiState(
     val isAddButtonLoading: Boolean = false,
     val isAddButtonEnabled: Boolean = false,
     val shelves: List<ShelfUiState> = emptyList(),
@@ -19,14 +19,14 @@ data class ProductUiState(
     val images: List<ProductImageUi> = emptyList(),
     val selectedImage: ImageSrc? = null,
     val isUploadingImageEnabled: Boolean = true,
-    val showCropImage:Boolean=false,
+    val showCropImage: Boolean = false,
     val snackBarUiState: SnackBarUiState? = null,
     val showSnackBar: Boolean = false,
     val isTextFieldEnabled: Boolean = true,
     val isCancelImageEnabled: Boolean = true,
-){
+) {
     data class ShelfUiState(
-        val id:String="",
+        val id: String = "",
         val name: String = "",
         val isSelected: Boolean = false,
     )
@@ -39,5 +39,4 @@ data class ProductUiState(
         val imageState: ProductImageState,
         val errorMessage: String? = null,
     )
-
 }

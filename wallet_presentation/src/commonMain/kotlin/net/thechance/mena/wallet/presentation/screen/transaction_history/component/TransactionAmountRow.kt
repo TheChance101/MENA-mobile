@@ -13,9 +13,11 @@ import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.money_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionAmountRow(
@@ -38,5 +40,13 @@ fun TransactionAmountRow(
             painter = painterResource(Res.drawable.img_silver),
             contentDescription = stringResource(Res.string.money_icon)
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TransactionAmountRowPreview() {
+    MenaTheme {
+        TransactionAmountRow(amount = "150.00")
     }
 }

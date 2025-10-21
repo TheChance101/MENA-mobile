@@ -5,7 +5,7 @@ package net.thechance.mena.wallet.presentation.screen.payment_result
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
@@ -16,9 +16,9 @@ import kotlin.uuid.Uuid
 
 @KoinViewModel
 class PaymentResultViewModel(
-    @Provided private val paymentRepository: PaymentRepository,
+    @Provided private val transactionRepository: TransactionRepository,
     @Provided private val paymentResultArgs: PaymentResultArgs,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<PaymentResultScreenState, PaymentResultEffect>(
     PaymentResultScreenState()
 ), PaymentResultInteractionListener {
@@ -56,10 +56,10 @@ class PaymentResultViewModel(
 
     private fun submitTransaction(transactionId: Uuid) {
         tryToExecute(
-            callee = { paymentRepository.submitTransaction(transactionId) },
+            callee = { transactionRepository.submitTransaction(transactionId) },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 

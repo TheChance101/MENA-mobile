@@ -17,43 +17,42 @@ data class ManageDukanUiState(
     val snackBarState: SnackBarUiState? = null,
     val deleteShelfConfirmationDialogUiState: DeleteShelfConfirmationDialogUiState? = null,
     val showDeleteConfirmationDialog: Boolean = false,
-)
+) {
+    data class DeleteShelfConfirmationDialogUiState(
+        val title: StringResource,
+        val description: StringResource,
+        val type: ConfirmDialogType,
+        val shelfId: String,
+        val isDialogVisible: Boolean = false
+    )
 
-data class DeleteShelfConfirmationDialogUiState(
-    val title: StringResource,
-    val description: StringResource,
-    val type: ConfirmDialogType,
-    val shelfId: String,
-    val isDialogVisible: Boolean = false
-)
+    enum class ConfirmDialogType(val text: StringResource) {
+        DELETE(text = Res.string.delete),
+        DISMISS(text = Res.string.dismiss)
+    }
 
-enum class ConfirmDialogType(val text: StringResource) {
-    DELETE(text = Res.string.delete),
-    DISMISS(text = Res.string.dismiss)
+    enum class ShelvesState {
+        LOADING,
+        LOADED,
+        EMPTY
+    }
+
+    enum class ProductsState {
+        LOADING,
+        LOADED,
+        EMPTY
+    }
+
+    data class ShelfUiState(
+        val id: String,
+        val name: String
+    )
+
+    class ProductUiState(
+        val id: String = "",
+        val name: String = "",
+        val description: String? = null,
+        val price: Double = 0.0,
+        val imageUrl: String = ""
+    )
 }
-
-enum class ShelvesState {
-    LOADING,
-    LOADED,
-    EMPTY
-}
-
-enum class ProductsState {
-    LOADING,
-    LOADED,
-    EMPTY
-}
-
-data class ShelfUiState(
-    val id: String,
-    val name: String
-)
-
-
-class ProductUiState(
-    val id: String = "",
-    val name: String = "",
-    val description: String? = null,
-    val price: Double = 0.0,
-    val imageUrl: String = ""
-)

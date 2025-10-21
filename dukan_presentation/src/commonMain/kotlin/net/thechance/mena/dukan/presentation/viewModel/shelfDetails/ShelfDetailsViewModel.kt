@@ -72,7 +72,7 @@ class ShelfDetailsViewModel(
     private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) {
         val productsState = when {
             products.isLoading && products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.LOADING
-            products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.EMPTY
+            products.error != null -> ShelfDetailsUiState.ProductsState.ERROR
             else -> ShelfDetailsUiState.ProductsState.LOADED
         }
         updateState {
