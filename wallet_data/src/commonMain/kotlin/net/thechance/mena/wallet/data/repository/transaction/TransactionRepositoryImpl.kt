@@ -61,10 +61,8 @@ class TransactionRepositoryImpl(
         }.toEntity()
     }
 
-    override suspend fun submitTransaction(transactionId: Uuid) {
-        safeApiCall<Unit> {
-            networkClient.post("$PAYMENT_PATH/$transactionId$SUBMIT_PAYMENT_PATH")
-        }
+    override suspend fun submitTransaction(transactionId: Uuid) = safeApiCall<Unit> {
+        networkClient.post(getSubmitTransactionPath(transactionId))
     }
 
 
@@ -74,10 +72,11 @@ class TransactionRepositoryImpl(
         const val ADD_TRANSACTION = "/p2p/initiate"
         const val RECEIVER_DETAILS = "/receiver-details"
         const val ADD_TRANSACTION_PATH = "$TRANSACTION_PATH$ADD_TRANSACTION"
+
         fun getTransactionByIdPath(transactionId: Uuid) = "$TRANSACTION_PATH/$transactionId"
         fun getTransactionReceiverPath(transactionId: Uuid) =
             "$TRANSACTION_PATH/$transactionId$RECEIVER_DETAILS"
-        const val PAYMENT_PATH = "/wallet/payment"
-        const val SUBMIT_PAYMENT_PATH = "/submit"
+        fun getSubmitTransactionPath(transactionId: Uuid) =
+            "$TRANSACTION_PATH/$transactionId/submit"
     }
 }
