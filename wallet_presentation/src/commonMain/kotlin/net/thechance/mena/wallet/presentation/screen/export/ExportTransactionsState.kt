@@ -11,22 +11,28 @@ data class ExportTransactionsState(
     val toast: CustomToastState = CustomToastState(),
     val isCustomFilterCardSelected: Boolean = false,
     val isDownloadLoading: Boolean = false,
+    val isDownloadButtonEnabled: Boolean = true,
     val isViewAndShareLoading: Boolean = false,
     val isViewAndShareButtonEnabled: Boolean = true,
-    val isDownloadButtonEnabled: Boolean = true,
-    val hasShownEmptyFileToast: Boolean = false,
-    val noInternetConnection: Boolean = false,
-    val selectedTransactionsTypes: Set<FilterType> = emptySet(),
-    val isDateBottomSheetVisible: Boolean = false,
-    val datePickerMode: DatePickerMode = DatePickerMode.START_DATE,
-    val defaultStartDate: LocalDate? = null,
-    val defaultEndDate: LocalDate? = null,
-    val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null,
+    val filterState: FilterState = FilterState(),
+    val dateState: DateState = DateState(),
     val hasNoTransactionsError: Boolean = false
 ) {
     val hasActiveFilters: Boolean
-        get() = ((startDate != null || endDate != null) && selectedTransactionsTypes.isNotEmpty())
+        get() = filterState.startDate != null && filterState.endDate != null && filterState.selectedTransactionsTypes.isNotEmpty()
+
+    data class FilterState(
+        val selectedTransactionsTypes: Set<FilterType> = emptySet(),
+        val startDate: LocalDate? = null,
+        val endDate: LocalDate? = null,
+    )
+
+    data class DateState(
+        val isDateBottomSheetVisible: Boolean = false,
+        val datePickerMode: DatePickerMode = DatePickerMode.START_DATE,
+        val defaultStartDate: LocalDate? = null,
+        val defaultEndDate: LocalDate? = null,
+    )
 
     enum class DatePickerMode {
         START_DATE,

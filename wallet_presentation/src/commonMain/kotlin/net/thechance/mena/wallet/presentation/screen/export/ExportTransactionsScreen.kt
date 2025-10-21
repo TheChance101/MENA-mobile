@@ -75,21 +75,21 @@ private fun ExportTransactionScreenContent(
                         contentDescription = stringResource(Res.string.back_button)
                     )
                 },
-                onLeadingClick =  interactionListener::onBackClicked ,
+                onLeadingClick = interactionListener::onBackClicked,
             )
         },
         snackBar = {
             SnackBarContainer(snackBarState = state.snackBar)
         },
         overlays = {
-            bottomSheet(isVisible = state.isDateBottomSheetVisible) { isVisible ->
+            bottomSheet(isVisible = state.dateState.isDateBottomSheetVisible) { isVisible ->
                 DatePickerBottomSheet(
                     isVisible = isVisible,
-                    defaultSelectedDate = when (state.datePickerMode) {
-                        ExportTransactionsState.DatePickerMode.START_DATE -> state.defaultStartDate
-                        ExportTransactionsState.DatePickerMode.END_DATE -> state.defaultEndDate
+                    defaultSelectedDate = when (state.dateState.datePickerMode) {
+                        ExportTransactionsState.DatePickerMode.START_DATE -> state.dateState.defaultStartDate
+                        ExportTransactionsState.DatePickerMode.END_DATE -> state.dateState.defaultEndDate
                     },
-                    title = when (state.datePickerMode) {
+                    title = when (state.dateState.datePickerMode) {
                         ExportTransactionsState.DatePickerMode.START_DATE -> stringResource(Res.string.pick_start_date)
                         ExportTransactionsState.DatePickerMode.END_DATE -> stringResource(Res.string.pick_end_date)
                     },

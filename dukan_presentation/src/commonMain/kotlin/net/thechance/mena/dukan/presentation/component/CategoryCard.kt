@@ -77,9 +77,8 @@ fun CategoryCard(
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadePrimary,
             maxLines = 2,
-            minLines = 1,
+            minLines = 2,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = Theme.spacing._8)
         )
     }
 }

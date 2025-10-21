@@ -10,6 +10,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.createBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import org.koin.core.context.GlobalContext
 import java.io.ByteArrayOutputStream
 import java.io.File
