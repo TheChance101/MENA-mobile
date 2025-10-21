@@ -16,7 +16,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.DukanCard
 import net.thechance.mena.dukan.presentation.component.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.LazyVerticalGridItems
-import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.DukansList
 import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
