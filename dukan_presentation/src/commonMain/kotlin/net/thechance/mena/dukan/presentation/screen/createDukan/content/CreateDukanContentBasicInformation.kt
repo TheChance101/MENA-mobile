@@ -37,7 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CreateDukanContentBasicInformation(
+fun CreateDukanPagerContent(
     state: CreateDukanUiState,
     interactionListener: CreateDukanInteractionListener
 ) {
@@ -150,7 +150,7 @@ private fun CreateDukanContentBasicInformationPreview() {
     )
 
     MenaTheme {
-        CreateDukanContentBasicInformation(
+        CreateDukanPagerContent(
             state = mockState,
             interactionListener = PreviewCreateDukanInteractionListener
         )
