@@ -35,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
+import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ShelvesState
@@ -132,18 +133,15 @@ private fun LoadedShelvesRow(
 
 @Composable
 private fun LoadingShelvesRow() {
-    LazyRow(
+    LoadingHorizontalList(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        items(count = 8) {
-            Chip(
-                text = "             ",
-                isSelected = false,
-                isEnabled = false,
-                onClick = { }
-            )
-        }
+        Chip(
+            text = "             ",
+            isSelected = false,
+            isEnabled = false,
+            onClick = { }
+        )
     }
 }
 
