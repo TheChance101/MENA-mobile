@@ -18,10 +18,10 @@ import net.thechance.mena.dukan.presentation.component.ShelfChip
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 
 @Composable
-fun ShelvesChipsNoImageDukan(
+fun NoImageDukanShelvesChips(
     state: DukanDetailsUiState,
     lazyRowState: LazyListState,
-    onClickListener: (String, Int) -> Unit,
+    onClick: (String, Int) -> Unit,
     alpha: Float = 1f
 ) {
     if (alpha == 0f) {
@@ -47,7 +47,7 @@ fun ShelvesChipsNoImageDukan(
                 ShelfChip(
                     text = shelf.name,
                     isSelected = (shelf.id == state.shelfIdSelected),
-                    onClick = { onClickListener(shelf.id, it) },
+                    onClick = { onClick(shelf.id, it) },
                     selectedBackgroundColor = Color(state.dukanInfo.color)
                 )
             }
