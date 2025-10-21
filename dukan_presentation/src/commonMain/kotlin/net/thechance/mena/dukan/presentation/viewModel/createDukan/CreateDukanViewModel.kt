@@ -168,7 +168,14 @@ class CreateDukanViewModel(
         return { category -> state.value.selectedCategories.contains(category) }
     }
 
-    override fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+    override fun onCategoryClicked(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+        val isSelected = state.value.selectedCategories.contains(category)
+        return if (isSelected) onCategoryDeselected(category)
+        else onCategorySelected(category)
+
+    }
+
+    private fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         if (!canSelectMoreCategories(state.value)) return false
 
         addCategoryToSelection(category)
@@ -176,7 +183,7 @@ class CreateDukanViewModel(
         return true
     }
 
-    override fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+    private fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         removeCategoryFromSelection(category)
         updateNextButtonEnableState()
         return true
@@ -231,14 +238,11 @@ class CreateDukanViewModel(
     private fun nextStep(step: CreateDukanStep): CreateDukanStep {
         return when (step) {
             CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
-
             CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.SELECT_LOCATION
-
             CreateDukanStep.SELECT_LOCATION -> {
                 updateState { copy(isMapLocked = true) }
                 CreateDukanStep.SELECT_STYLE
             }
-
             CreateDukanStep.SELECT_STYLE -> step
         }
     }
@@ -266,18 +270,14 @@ class CreateDukanViewModel(
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
     }
 
-    private fun onMapClickedSuccess(address: String) {
-        onAddressChanged(address)
-    }
+    private fun onMapClickedSuccess(address: String) = onAddressChanged(address)
 
     override fun onAddressChanged(address: String) {
         updateState { copy(address = address) }
         updateNextButtonEnableState()
     }
 
-    override fun onCameraMoved(
-        camera: CameraPosition
-    ) {
+    override fun onCameraMoved(camera: CameraPosition) {
         updateState { copy(cameraPosition = camera) }
     }
 
@@ -300,7 +300,6 @@ class CreateDukanViewModel(
                 updateState { copy(isMapLocked = state.value.pointerLocation != null) }
                 CreateDukanStep.SELECT_IMAGE
             }
-
             CreateDukanStep.SELECT_STYLE -> CreateDukanStep.SELECT_LOCATION
         }
 

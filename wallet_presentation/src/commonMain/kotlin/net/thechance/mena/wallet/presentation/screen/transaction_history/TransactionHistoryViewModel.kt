@@ -33,7 +33,7 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class TransactionHistoryViewModel(
     @Provided private val transactionRepository: TransactionRepository,
-    private val stringProvider: StringProvider,
+    @Provided private val stringProvider: StringProvider,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<TransactionHistoryScreenState, TransactionHistoryEffect>(
     TransactionHistoryScreenState()

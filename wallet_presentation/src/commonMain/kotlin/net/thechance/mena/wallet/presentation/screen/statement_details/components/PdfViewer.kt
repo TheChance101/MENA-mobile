@@ -24,18 +24,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.wallet.presentation.component.ThreeDotsLoadingIndicator
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
-import org.koin.compose.koinInject
+import net.thechance.mena.wallet.presentation.utils.splitPdfToPngs
 
 @Composable
 fun PdfViewer(
     pdf: ByteArray,
-    pdfHandler: PdfHandler = koinInject()
 ) {
     var pages by remember { mutableStateOf(emptyList<ByteArray>()) }
     var finishedSplittingThePdfToPages by remember { mutableStateOf(false) }
     LaunchedEffect(pdf) {
-        pages = pdfHandler.splitToPagesOfPngs(pdfData = pdf)
+        pages = splitPdfToPngs(pdfData = pdf)
         finishedSplittingThePdfToPages = true
     }
 

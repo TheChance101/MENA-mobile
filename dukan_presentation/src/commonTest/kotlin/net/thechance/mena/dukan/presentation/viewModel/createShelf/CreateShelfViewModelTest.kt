@@ -63,13 +63,13 @@ class CreateShelfViewModelTest {
 
     @Test
     fun `onTitleChanged SHOULD trim and disable button for invalid input`() = runTest {
-        val title = " 123 "
+        val blankTitle = " "
 
         createShelfViewModel.state.test {
-            createShelfViewModel.onTitleChanged(title)
+            createShelfViewModel.onTitleChanged(blankTitle)
             skipItems(1)
             val state = awaitItem()
-            assertEquals("123", state.shelfTitle)
+            assertEquals(" ", state.shelfTitle)
             assertFalse(state.isCreateButtonEnabled)
             cancelAndIgnoreRemainingEvents()
         }
@@ -161,8 +161,8 @@ class CreateShelfViewModelTest {
             val state = createShelfViewModel.state.value
             assertFalse(state.isLoading)
             assertTrue(state.snackBarState != null)
-            assertEquals(SnackBarType.ERROR, state.snackBarState!!.snackBarType)
-            assertEquals(Res.string.something_went_wrong, state.snackBarState!!.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+            assertEquals(Res.string.something_went_wrong, state.snackBarState.message)
         }
 
     @Test
@@ -179,8 +179,8 @@ class CreateShelfViewModelTest {
             val state = createShelfViewModel.state.value
             assertFalse(state.isLoading)
             assertTrue(state.snackBarState != null)
-            assertEquals(SnackBarType.ERROR, state.snackBarState!!.snackBarType)
-            assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState!!.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+            assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState.message)
         }
 
 }

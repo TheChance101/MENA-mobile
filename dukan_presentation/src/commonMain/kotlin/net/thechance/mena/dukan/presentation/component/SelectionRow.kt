@@ -7,63 +7,40 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 
 @Composable
-fun <T> SelectionRow(
-    availableItems: List<T>,
-    isItemSelected: (T) -> Boolean,
-    onItemSelected: (T) -> Boolean,
-    onItemDeselected: (T) -> Boolean,
-    onItemEnabled: (T) -> Boolean,
-    getItemName: (T) -> String,
-    getItemImageUrl: (T) -> String = { "" }
+fun SelectionRow(
+    availableItems: List<CreateDukanUiState.DukanCategoryUiState>,
+    isItemSelected: (CreateDukanUiState.DukanCategoryUiState) -> Boolean,
+    onItemClicked: (CreateDukanUiState.DukanCategoryUiState) -> Boolean,
+    onItemEnabled: (CreateDukanUiState.DukanCategoryUiState) -> Boolean,
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        items(
-            items = availableItems,
-            key = { item -> getItemName(item) }
-        ) { item ->
-            SelectionChip(
-                item = item,
+        items(availableItems) { item ->
+            Chip(
+                text = item.name,
+                painter = rememberImagePainterOrNull(item.imageUrl),
                 isSelected = isItemSelected(item),
                 isEnabled = onItemEnabled(item),
-                onItemSelected = onItemSelected,
-                onItemDeselected = onItemDeselected,
-                getItemName = getItemName,
-                getItemImageUrl = getItemImageUrl
+                modifier = Modifier,
+                iconSize = 16.dp,
+                shape = RoundedCornerShape(Theme.radius.full),
+                onClick = { onItemClicked(item) }
             )
         }
     }
 }
 
 @Composable
-private fun <T> SelectionChip(
-    item: T,
-    isSelected: Boolean,
-    isEnabled: Boolean,
-    onItemSelected: (T) -> Boolean,
-    onItemDeselected: (T) -> Boolean,
-    getItemName: (T) -> String,
-    getItemImageUrl: (T) -> String
-) {
-    Chip(
-        text = getItemName(item),
-        painter = if (getItemImageUrl(item).isNotEmpty())
-            rememberAsyncImagePainter(getItemImageUrl(item)) else null,
-        isSelected = isSelected,
-        isEnabled = isEnabled,
-        modifier = Modifier,
-        iconSize = 16.dp,
-        shape = RoundedCornerShape(Theme.radius.full),
-        onClick = {
-            if (isSelected) onItemDeselected(item) else onItemSelected(item)
-        }
-    )
+fun rememberImagePainterOrNull(url: String?): Painter? {
+    return url?.takeIf { it.isNotEmpty() }?.let { rememberAsyncImagePainter(it) }
 }

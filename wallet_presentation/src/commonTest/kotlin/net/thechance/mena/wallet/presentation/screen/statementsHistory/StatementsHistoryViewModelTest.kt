@@ -24,7 +24,7 @@ import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -41,7 +41,7 @@ class StatementsHistoryViewModelTest {
     private val statementRepository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private val stringProvider = FakeStringProvider()
-    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
+    private val fileManager = mock<FileManager>(mode = MockMode.autofill)
     private lateinit var viewModel: StatementsHistoryViewModel
 
     @BeforeTest
@@ -51,7 +51,7 @@ class StatementsHistoryViewModelTest {
         viewModel = StatementsHistoryViewModel(
             statementRepository,
             stringProvider,
-            pdfHandler,
+            fileManager,
             testDispatcher
         )
     }
@@ -118,7 +118,7 @@ class StatementsHistoryViewModelTest {
         val viewModel = StatementsHistoryViewModel(
             statementRepository,
             stringProvider,
-            pdfHandler,
+            fileManager,
             testDispatcher
         )
 
@@ -142,7 +142,7 @@ class StatementsHistoryViewModelTest {
             val viewModel = StatementsHistoryViewModel(
                 statementRepository,
                 stringProvider,
-                pdfHandler,
+                fileManager,
                 testDispatcher
             )
 
@@ -161,7 +161,7 @@ class StatementsHistoryViewModelTest {
         runTest(testDispatcher) {
             everySuspend { statementRepository.getStatements(0, 20) } throws NoInternetException()
 
-            val viewModel = StatementsHistoryViewModel(statementRepository, stringProvider,pdfHandler,testDispatcher)
+            val viewModel = StatementsHistoryViewModel(statementRepository, stringProvider,fileManager,testDispatcher)
 
             advanceUntilIdle()
             viewModel.state.test {
@@ -180,7 +180,7 @@ class StatementsHistoryViewModelTest {
         val viewModel = StatementsHistoryViewModel(
             statementRepository,
             stringProvider,
-            pdfHandler,
+            fileManager,
             testDispatcher
         )
 
@@ -261,11 +261,11 @@ class StatementsHistoryViewModelTest {
         val statement = statements[0].toUiState()
 
         everySuspend {
-            pdfHandler.checkIfPdfExists(any())
+            fileManager.checkIfFileExists(any())
         } returns true
 
         everySuspend {
-            pdfHandler.deletePdf(any())
+            fileManager.deleteFile(any())
         } throws Exception("Delete failed")
 
         advanceUntilIdle()
@@ -324,7 +324,7 @@ class StatementsHistoryViewModelTest {
         val statement = statements[0].toUiState()
 
         everySuspend {
-            pdfHandler.checkIfPdfExists(StorageLocation.Downloads(statement.fileName))
+            fileManager.checkIfFileExists(StorageLocation.Downloads(statement.fileName))
         } returns true
 
         advanceUntilIdle()
@@ -362,7 +362,7 @@ class StatementsHistoryViewModelTest {
             val statement = statements[0].toUiState()
 
             everySuspend {
-                pdfHandler.checkIfPdfExists(StorageLocation.Downloads(statement.fileName))
+                fileManager.checkIfFileExists(StorageLocation.Downloads(statement.fileName))
             } returns false
 
             everySuspend {
