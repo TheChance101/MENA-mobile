@@ -3,6 +3,8 @@ package net.thechance.mena.dukan.presentation.screen.shelfDetails
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -43,7 +45,7 @@ fun ShelfDetailsScreen(
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
         }
     }
-    ShelfDetailsContent(
+    ShelfDetailsScreenContent(
         state = state,
         listener = viewModel,
         pager = viewModel.pagerProduct
@@ -53,7 +55,7 @@ fun ShelfDetailsScreen(
 
 
 @Composable
-private fun ShelfDetailsContent(
+private fun ShelfDetailsScreenContent(
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
     pager: Pager<Int, ShelfDetailsUiState.ProductUiState>
@@ -64,31 +66,10 @@ private fun ShelfDetailsContent(
 
     Scaffold(
         topBar = {
-            AppBar(
-                title = state.shelfName,
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow)
-                    )
-                },
-                onLeadingClick = listener::onBackClicked,
-                trailingContent = {
-                    AppBarOptionContainer(
-                        // when the cart contains products
-                        isBadgeVisible = false,
-                        onClick = {
-                            //navigate to addToCartScreen
-                        },
-                        badgeColor = Theme.colorScheme.primary.primary
-                    ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_shopping_basket),
-                            contentDescription = stringResource(Res.string.shopping_basket_icon),
-                            tint = dukanColor
-                        )
-                    }
-                }
+            ShelfDetailsAppBar(
+                state = state,
+                listener = listener,
+                dukanColor = dukanColor
             )
         }
     ) {
@@ -101,11 +82,47 @@ private fun ShelfDetailsContent(
 
 }
 
+@Composable
+private fun ShelfDetailsAppBar(
+    state: ShelfDetailsUiState,
+    listener: ShelfDetailsInteractionListener,
+    dukanColor: Color,
+    modifier: Modifier = Modifier
+) {
+    AppBar(
+        modifier = modifier,
+        title = state.shelfName,
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_arrow)
+            )
+        },
+        onLeadingClick = listener::onBackClicked,
+        trailingContent = {
+            AppBarOptionContainer(
+                // when the cart contains products
+                isBadgeVisible = false,
+                onClick = {
+                    //navigate to addToCartScreen
+                },
+                badgeColor = Theme.colorScheme.primary.primary
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_shopping_basket),
+                    contentDescription = stringResource(Res.string.shopping_basket_icon),
+                    tint = dukanColor
+                )
+            }
+        }
+    )
+}
+
 @Preview
 @Composable
 private fun ShelfDetailsPreview() {
     MenaTheme {
-        ShelfDetailsContent(
+        ShelfDetailsScreenContent(
             state = ShelfDetailsUiState(),
             listener = PreviewShelfDetailsInteractionListener,
             pager = Pager(
