@@ -13,8 +13,9 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.dukan.presentation.component.DukanCard
 import net.thechance.mena.dukan.presentation.component.EmptyStateContent
-import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.DukansList
+import net.thechance.mena.dukan.presentation.component.LazyVerticalGridItems
 import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
@@ -59,19 +60,31 @@ fun DukansContent(
             label = "Dukans Animation"
         ) { target ->
             when (target) {
-                DukansState.LOADING -> DukansList(
-                    dukans = state.dukans.items,
+                DukansState.LOADING -> LazyVerticalGridItems(
+                    items = state.dukans.items,
                     pager = pager,
-                    onDukanClick = listener::onDukanClick,
-                    onFavoriteClick = listener::onFavoriteClick,
-                    isLoading = true
+                    itemContent = { dukan ->
+                        DukanCard(
+                            dukan = dukan,
+                            isFavorite = dukan.isFavorite,
+                            onClick = { listener.onDukanClick(dukan) },
+                            onFavoriteClick = { listener.onFavoriteClick(dukan) },
+                            isLoading = true
+                        )
+                    }
                 )
 
-                DukansState.LOADED -> DukansList(
-                    dukans = state.dukans.items,
+                DukansState.LOADED -> LazyVerticalGridItems(
+                    items = state.dukans.items,
                     pager = pager,
-                    onDukanClick = listener::onDukanClick,
-                    onFavoriteClick = listener::onFavoriteClick
+                    itemContent = { dukan ->
+                        DukanCard(
+                            dukan = dukan,
+                            isFavorite = dukan.isFavorite,
+                            onClick = { listener.onDukanClick(dukan) },
+                            onFavoriteClick = { listener.onFavoriteClick(dukan) }
+                        )
+                    }
                 )
 
                 DukansState.EMPTY -> EmptyStateContent(
