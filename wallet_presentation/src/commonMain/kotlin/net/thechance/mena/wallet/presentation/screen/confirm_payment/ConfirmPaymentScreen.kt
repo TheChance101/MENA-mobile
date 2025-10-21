@@ -23,7 +23,7 @@ import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
-import net.thechance.mena.wallet.presentation.navigation.route.PaymentResultScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.PaymentResultScreenRoute
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PaymentDetailsSection
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect

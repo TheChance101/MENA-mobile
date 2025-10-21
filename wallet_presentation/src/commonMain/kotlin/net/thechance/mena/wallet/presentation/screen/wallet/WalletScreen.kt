@@ -30,9 +30,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
-import net.thechance.mena.wallet.presentation.navigation.route.ConfirmPaymentScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.StatementsHistoryScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.TransactionsHistoryScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.ConfirmPaymentScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.StatementsHistoryScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.TransactionsHistoryScreenRoute
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
 import net.thechance.mena.wallet.presentation.screen.wallet.component.LabeledButtonWithCircularIcon
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -44,7 +44,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun WalletMainScreen(viewModel: WalletViewModel = koinViewModel()) {
+fun WalletMainScreen(
+    navigateBack : () -> Unit,
+    viewModel: WalletViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
@@ -53,7 +55,7 @@ fun WalletMainScreen(viewModel: WalletViewModel = koinViewModel()) {
         onEffect = { effect ->
             onWalletEffect(
                 effect = effect,
-                onNavigateBackClicked = navController::popBackStack,
+                onNavigateBackClicked = navigateBack,
                 navigateToTransactionHistory = { navController.navigate(TransactionsHistoryScreenRoute) },
                 navigateToStatementsHistory = { navController.navigate(StatementsHistoryScreenRoute) },
                 navigateToPaymentScreen = { amount, transactionId ->

@@ -8,19 +8,18 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.presentation.navigation.navType.StorageLocationNavType
-import net.thechance.mena.wallet.presentation.navigation.route.WalletMainScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.WalletRoute
-import net.thechance.mena.wallet.presentation.navigation.route.confirmPaymentScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.exportTransactionsScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.paymentResultScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.statementDetailsScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.statementsHistoryScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.transactionDetailsScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.transactionsHistoryScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.route.walletMainScreenRoute
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
+import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
+import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreen
+import net.thechance.mena.wallet.presentation.screen.statement_details.StatementDetailsScreen
+import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementHistoryScreen
+import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreen
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
+import net.thechance.mena.wallet.presentation.screen.wallet.WalletMainScreen
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.reflect.typeOf
 import kotlin.uuid.ExperimentalUuidApi
@@ -61,14 +60,18 @@ fun NavigationHost(
             },
             typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
         ) {
-            walletMainScreenRoute(navController, navigateBack)
-            transactionsHistoryScreenRoute(navController)
-            transactionDetailsScreenRoute(navController)
-            exportTransactionsScreenRoute(navController)
-            statementDetailsScreenRoute(navController)
-            statementsHistoryScreenRoute(navController)
-            confirmPaymentScreenRoute(navController)
-            paymentResultScreenRoute(navController)
+            composable<WalletMainScreenRoute> { WalletMainScreen(navigateBack = navigateBack) }
+            composable<TransactionsHistoryScreenRoute> { TransactionHistoryScreen() }
+            composable<TransactionDetailsScreenRoute> { TransactionDetailsScreen() }
+            composable<ExportTransactionsScreenRoute> { ExportTransactionScreen() }
+            composable<StatementsHistoryScreenRoute> { StatementHistoryScreen() }
+            composable<ConfirmPaymentScreenRoute> { ConfirmPaymentScreen() }
+            composable<PaymentResultScreenRoute> { PaymentResultScreen() }
+            composable<StatementDetailsScreenRoute>(
+                typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
+            ) { backStackEntry ->
+                StatementDetailsScreen()
+            }
         }
     }
 }

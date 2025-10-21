@@ -2,7 +2,7 @@ package net.thechance.mena.wallet.presentation.screen.transaction_details.args
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import net.thechance.mena.wallet.presentation.navigation.route.TransactionDetailsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
 import org.koin.core.annotation.Factory
 
 interface TransactionDetailsArgs{

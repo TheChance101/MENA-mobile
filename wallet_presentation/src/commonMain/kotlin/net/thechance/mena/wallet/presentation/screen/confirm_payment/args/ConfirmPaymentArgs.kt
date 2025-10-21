@@ -2,7 +2,7 @@ package net.thechance.mena.wallet.presentation.screen.confirm_payment.args
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import net.thechance.mena.wallet.presentation.navigation.route.ConfirmPaymentScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.ConfirmPaymentScreenRoute
 import org.koin.core.annotation.Factory
 
 interface ConfirmPaymentArgs {

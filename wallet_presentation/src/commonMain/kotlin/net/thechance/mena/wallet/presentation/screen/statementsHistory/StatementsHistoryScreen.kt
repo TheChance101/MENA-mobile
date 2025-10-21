@@ -17,7 +17,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
-import net.thechance.mena.wallet.presentation.navigation.route.StatementDetailsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.StatementDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedLeadingIcon
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedTrailingIcon
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementHistoryBody
