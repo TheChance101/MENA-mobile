@@ -67,6 +67,7 @@ class TransactionRepositoryImpl(
             networkClient.get("${TRANSACTION_PATH}/$transactionId$RECEIVER_DETAILS")
         }.toEntity()
     }
+
     override suspend fun submitTransaction(transactionId: Uuid) {
         safeApiCall<Unit> {
             networkClient.post("$PAYMENT_PATH/$transactionId$SUBMIT_PAYMENT_PATH")
