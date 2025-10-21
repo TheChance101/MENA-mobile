@@ -2,20 +2,29 @@
 
 package net.thechance.mena.wallet.presentation.screen.payment_result
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
+import mena.wallet_presentation.generated.resources.payment_status_crossfade
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.payment_result.args.PaymentResultArgs
-import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentStatusBody
+import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentConnectionLostContent
+import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentSuccessContent
+import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentUnknownErrorContent
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -81,10 +90,27 @@ private fun PaymentResultScreenContent(
             }
         }
     ) {
-        PaymentStatusBody(
-            state = state,
-            interactionListener = interactionListener
-        )
+        Crossfade(
+            targetState = state.paymentStatus,
+            animationSpec = tween(durationMillis = 300),
+            label = stringResource(Res.string.payment_status_crossfade)
+        ) { paymentStatus ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                when (paymentStatus) {
+                    SubmissionStatus.CONNECTION_LOST -> { PaymentConnectionLostContent(state, interactionListener) }
+
+                    SubmissionStatus.UNKNOWN_ERROR -> {
+                        PaymentUnknownErrorContent(state,interactionListener)
+                    }
+
+                    SubmissionStatus.SUCCESS -> { PaymentSuccessContent(state,interactionListener) }
+                }
+            }
+        }
     }
 }
 
@@ -99,6 +125,7 @@ private fun onPaymentResultEffect(
         is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
             effect.transactionId.toString()
         )
+
         is PaymentResultEffect.NavigateToPrePaymentScreen -> onCancelClicked()
     }
 }
