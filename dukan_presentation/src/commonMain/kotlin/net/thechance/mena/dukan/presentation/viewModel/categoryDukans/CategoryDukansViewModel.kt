@@ -116,7 +116,7 @@ class CategoryDukansViewModel(
         }
     }
 
-    private fun getDukansState(dukans: PagingData<DukanUiState>): CategoryDukansUiState.DukansState {
+    private fun getDukansState(dukans: PagingData<DukanUiState>): DukansState {
         return when {
             dukans.isLoading && dukans.items.isEmpty() -> DukansState.LOADING
             dukans.items.isEmpty() -> DukansState.EMPTY
