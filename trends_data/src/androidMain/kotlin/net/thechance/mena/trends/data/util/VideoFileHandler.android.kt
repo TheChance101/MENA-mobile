@@ -3,7 +3,6 @@ package net.thechance.mena.trends.data.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import androidx.core.net.toUri
 import kotlinx.io.RawSource
 import kotlinx.io.asSource
