@@ -16,6 +16,6 @@ fun NavGraphBuilder.statementDetailsScreenRoute(navController: NavController){
     composable<StatementDetailsScreenRoute>(
         typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
     ) { backStackEntry ->
-        StatementDetailsScreen(onNavigateBackClicked = { navController.popBackStack() },)
+        StatementDetailsScreen()
     }
 }

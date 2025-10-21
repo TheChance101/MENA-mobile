@@ -27,6 +27,9 @@ import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.route.ExportTransactionsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.route.TransactionDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
@@ -38,21 +41,22 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun TransactionHistoryScreen(
-    viewModel: TransactionHistoryViewModel = koinViewModel(),
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionDetails: (id: Uuid) -> Unit,
-    navigateToExportTransaction: () -> Unit
-) {
+fun TransactionHistoryScreen(viewModel: TransactionHistoryViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
+
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onTransactionHistoryEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToTransactionDetails = navigateToTransactionDetails,
-                navigateToExportTransaction = navigateToExportTransaction
+                onNavigateBackClicked = navController::popBackStack,
+                navigateToTransactionDetails = {
+                    navController.navigate(TransactionDetailsScreenRoute(it.toString()))
+                },
+                navigateToExportTransaction = {
+                    navController.navigate(ExportTransactionsScreenRoute)
+                }
             )
         }
     )

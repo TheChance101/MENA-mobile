@@ -11,11 +11,6 @@ data object ExportTransactionsScreenRoute : WalletRoute()
 
 fun NavGraphBuilder.exportTransactionsScreenRoute(navController: NavController){
     composable<ExportTransactionsScreenRoute> {
-        ExportTransactionScreen(
-            onNavigateBackClicked = { navController.popBackStack() },
-            navigateToStatementDetails = { statementLocation ->
-                navController.navigate(StatementDetailsScreenRoute(statementLocation))
-            }
-        )
+        ExportTransactionScreen()
     }
 }

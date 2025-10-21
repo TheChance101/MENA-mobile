@@ -16,16 +16,6 @@ data class PaymentResultScreenRoute(
 
 fun NavGraphBuilder.paymentResultScreenRoute(navController: NavController) {
     composable<PaymentResultScreenRoute> { backStackEntry ->
-        PaymentResultScreen(
-            onNavigateBackClicked = { navController.popBackStack() },
-            onNavigateToTransactionDetailsClicked = { receiverId ->
-                navController.navigate(TransactionDetailsScreenRoute(receiverId))
-            },
-            onCancelClicked = {
-                navController.navigate(WalletMainScreenRoute) {
-                    popUpTo(WalletMainScreenRoute) { inclusive = true }
-                }
-            }
-        )
+        PaymentResultScreen()
     }
 }

@@ -13,6 +13,6 @@ data class TransactionDetailsScreenRoute(
 
 fun NavGraphBuilder.transactionDetailsScreenRoute(navController: NavController){
     composable<TransactionDetailsScreenRoute> {
-        TransactionDetailsScreen(onNavigateBackClicked = { navController.popBackStack() })
+        TransactionDetailsScreen()
     }
 }

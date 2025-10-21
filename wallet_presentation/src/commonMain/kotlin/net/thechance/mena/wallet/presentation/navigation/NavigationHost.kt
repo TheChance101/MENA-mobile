@@ -4,8 +4,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.presentation.navigation.navType.StorageLocationNavType
 import net.thechance.mena.wallet.presentation.navigation.route.WalletMainScreenRoute
 import net.thechance.mena.wallet.presentation.navigation.route.WalletRoute
@@ -31,36 +35,44 @@ fun NavigationHost(
 ) {
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = startDestination,
-        enterTransition = { fadeIn(animationSpec = tween(durationMillis = TransitionDuration)) },
-        exitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    durationMillis = TransitionDuration,
-                    delayMillis = TransitionDuration
+    CompositionLocalProvider(
+        LocalNavController provides navController
+    ){
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            enterTransition = { fadeIn(animationSpec = tween(durationMillis = TransitionDuration)) },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        durationMillis = TransitionDuration,
+                        delayMillis = TransitionDuration
+                    )
                 )
-            )
-        },
-        popEnterTransition = { fadeIn(animationSpec = tween(durationMillis = TransitionDuration)) },
-        popExitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    durationMillis = TransitionDuration,
-                    delayMillis = TransitionDuration
+            },
+            popEnterTransition = { fadeIn(animationSpec = tween(durationMillis = TransitionDuration)) },
+            popExitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        durationMillis = TransitionDuration,
+                        delayMillis = TransitionDuration
+                    )
                 )
-            )
-        },
-        typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
-    ) {
-        walletMainScreenRoute(navController, navigateBack)
-        transactionsHistoryScreenRoute(navController)
-        transactionDetailsScreenRoute(navController)
-        exportTransactionsScreenRoute(navController)
-        statementDetailsScreenRoute(navController)
-        statementsHistoryScreenRoute(navController)
-        confirmPaymentScreenRoute(navController)
-        paymentResultScreenRoute(navController)
+            },
+            typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
+        ) {
+            walletMainScreenRoute(navController, navigateBack)
+            transactionsHistoryScreenRoute(navController)
+            transactionDetailsScreenRoute(navController)
+            exportTransactionsScreenRoute(navController)
+            statementDetailsScreenRoute(navController)
+            statementsHistoryScreenRoute(navController)
+            confirmPaymentScreenRoute(navController)
+            paymentResultScreenRoute(navController)
+        }
     }
+}
+
+val LocalNavController = compositionLocalOf<NavController> {
+    throw UnknownException("nav controller not provided")
 }

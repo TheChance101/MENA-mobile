@@ -21,8 +21,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
-import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsContent
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.TransactionDetailsScreenShot
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
@@ -37,19 +37,19 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun TransactionDetailsScreen(
-    onNavigateBackClicked: () -> Unit,
     viewModel: TransactionDetailsViewModel = koinViewModel(),
     imageSharer: ImageSharer = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val captureController = rememberCaptureController()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onTransactionDetailsEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
+                onNavigateBackClicked = navController::popBackStack,
                 shareImage = imageSharer::shareImage,
                 captureImage = captureController::capture,
                 onCaptureError = viewModel::onCaptureError

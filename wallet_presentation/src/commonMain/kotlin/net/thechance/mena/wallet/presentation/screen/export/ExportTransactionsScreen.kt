@@ -25,6 +25,8 @@ import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.FilterType
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.route.StatementDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.export.component.ExportTransactionContentBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
@@ -34,20 +36,19 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ExportTransactionScreen(
-    onNavigateBackClicked: () -> Unit,
-    navigateToStatementDetails: (statementLocation: StorageLocation) -> Unit,
-    viewModel: ExportTransactionsViewModel = koinViewModel()
-) {
+fun ExportTransactionScreen(viewModel: ExportTransactionsViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onExportTransactionsEffect(
-                effect,
-                onNavigateBackClicked,
-                navigateToStatementDetails
+                effect = effect,
+                onNavigateBackClicked = navController::popBackStack,
+                navigateToVewTransactionStatement = { statementLocation ->
+                    navController.navigate(StatementDetailsScreenRoute(statementLocation))
+                }
             )
         }
     )

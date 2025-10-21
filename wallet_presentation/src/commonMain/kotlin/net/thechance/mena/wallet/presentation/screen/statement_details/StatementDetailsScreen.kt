@@ -23,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
@@ -33,19 +34,19 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun StatementDetailsScreen(
-    onNavigateBackClicked: () -> Unit,
     viewModel: StatementDetailsViewModel = koinViewModel(),
     pdfHandler: PdfHandler = koinInject()
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             handleEffects(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
+                onNavigateBackClicked = navController::popBackStack,
                 shareStatement = pdfHandler::sharePdf
             )
         }

@@ -16,6 +16,8 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.route.StatementDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedLeadingIcon
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.AnimatedTrailingIcon
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.component.StatementHistoryBody
@@ -25,20 +27,19 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun StatementHistoryScreen(
-    viewModel: StatementsHistoryViewModel = koinViewModel(),
-    onNavigateBackClicked: () -> Unit,
-    navigateToStatementDetails: (statementLocation: StorageLocation) -> Unit
-) {
+fun StatementHistoryScreen(viewModel: StatementsHistoryViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onStatementHistoryEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToStatementDetails = navigateToStatementDetails
+                onNavigateBackClicked = navController::popBackStack,
+                navigateToStatementDetails = {
+                    navController.navigate(StatementDetailsScreenRoute(statementLocation = it))
+                }
             )
         }
     )

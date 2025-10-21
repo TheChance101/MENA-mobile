@@ -11,11 +11,6 @@ data object StatementsHistoryScreenRoute : WalletRoute()
 
 fun NavGraphBuilder.statementsHistoryScreenRoute(navController: NavController) {
     composable<StatementsHistoryScreenRoute> {
-        StatementHistoryScreen(
-            onNavigateBackClicked = { navController.popBackStack() },
-            navigateToStatementDetails = {
-                navController.navigate(StatementDetailsScreenRoute(statementLocation = it))
-            },
-        )
+        StatementHistoryScreen()
     }
 }

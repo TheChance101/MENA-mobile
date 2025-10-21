@@ -22,6 +22,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.route.PaymentResultScreenRoute
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PaymentDetailsSection
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -33,25 +35,24 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun ConfirmPaymentScreen(
-    onNavigateBackClicked: () -> Unit,
-    navigateToPaymentResultScreen: (
-        receiverId: String,
-        amount: Double,
-        transactionId: Uuid,
-        submissionStatus: SubmissionStatus
-    ) -> Unit,
-    viewModel: ConfirmPaymentViewModel = koinViewModel()
-) {
+fun ConfirmPaymentScreen(viewModel: ConfirmPaymentViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onConfirmPaymentEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToPaymentResultScreen = navigateToPaymentResultScreen
+                onNavigateBackClicked = navController::popBackStack,
+                navigateToPaymentResultScreen = { receiverName, amount, transactionId, submissionStatus ->
+                    navController.navigate(PaymentResultScreenRoute(
+                        transactionId = transactionId.toString(),
+                        submitTransactionResultStatus = submissionStatus.name,
+                        amount = amount,
+                        receiverName = receiverName
+                    ))
+                }
             )
         }
     )

@@ -13,14 +13,6 @@ data object TransactionsHistoryScreenRoute : WalletRoute()
 @OptIn(ExperimentalUuidApi::class)
 fun NavGraphBuilder.transactionsHistoryScreenRoute(navController: NavController){
     composable<TransactionsHistoryScreenRoute> {
-        TransactionHistoryScreen(
-            onNavigateBackClicked = { navController.popBackStack() },
-            navigateToTransactionDetails = {
-                navController.navigate(TransactionDetailsScreenRoute(it.toString()))
-            },
-            navigateToExportTransaction = {
-                navController.navigate(ExportTransactionsScreenRoute)
-            }
-        )
+        TransactionHistoryScreen()
     }
 }

@@ -14,6 +14,9 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.route.TransactionDetailsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.route.WalletMainScreenRoute
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentStatusBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -22,23 +25,23 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun PaymentResultScreen(
-    onNavigateBackClicked: () -> Unit,
-    onCancelClicked: () -> Unit,
-    onNavigateToTransactionDetailsClicked: (String) -> Unit,
-    viewModel: PaymentResultViewModel = koinViewModel()
-) {
+fun PaymentResultScreen(viewModel: PaymentResultViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onPaymentResultEffect(
                 effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                onCancelClicked = onCancelClicked,
-                onNavigateToTransactionDetailsClicked = { transactionId ->
-                    onNavigateToTransactionDetailsClicked(transactionId)
+                onNavigateBackClicked = navController::popBackStack,
+                onCancelClicked = {
+                    navController.navigate(WalletMainScreenRoute) {
+                        popUpTo(WalletMainScreenRoute) { inclusive = true }
+                    }
+                },
+                onNavigateToTransactionDetailsClicked = { receiverId ->
+                    navController.navigate(TransactionDetailsScreenRoute(receiverId))
                 }
             )
         }

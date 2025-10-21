@@ -16,19 +16,7 @@ data class ConfirmPaymentScreenRoute(
 ) : WalletRoute()
 
 fun NavGraphBuilder.confirmPaymentScreenRoute(navController: NavController){
-    composable<ConfirmPaymentScreenRoute> { backStackEntry ->
-        ConfirmPaymentScreen(
-            onNavigateBackClicked = navController::popBackStack,
-            navigateToPaymentResultScreen = { receiverName, amount, transactionId, submitTransactionResultStatus ->
-                navController.navigate(
-                    PaymentResultScreenRoute(
-                        transactionId = transactionId.toString(),
-                        submitTransactionResultStatus = submitTransactionResultStatus.name,
-                        amount = amount,
-                        receiverName = receiverName
-                    )
-                )
-            }
-        )
+    composable<ConfirmPaymentScreenRoute> {
+        ConfirmPaymentScreen()
     }
 }
