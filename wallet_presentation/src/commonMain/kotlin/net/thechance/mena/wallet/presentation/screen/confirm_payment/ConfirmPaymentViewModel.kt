@@ -3,13 +3,16 @@ package net.thechance.mena.wallet.presentation.screen.confirm_payment
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.confirm_payment_content_failed
+import mena.wallet_presentation.generated.resources.confirm_payment_content_success
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
-import net.thechance.mena.wallet.domain.repository.PaymentRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import net.thechance.mena.wallet.presentation.utils.formatAmount
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -22,7 +25,7 @@ class ConfirmPaymentViewModel(
     @Provided private val args: ConfirmPaymentArgs,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
-    @Provided private val paymentRepository: PaymentRepository,
+    @Provided private val stringProvider: StringProvider,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
@@ -40,7 +43,6 @@ class ConfirmPaymentViewModel(
     }
 
     override fun onPayButtonClicked() {
-        updateState { it.copy(isPayButtonLoading = true) }
         submitTransaction(transactionId)
     }
 
@@ -70,7 +72,7 @@ class ConfirmPaymentViewModel(
         )
     }
 
-    private fun onGetUserBalanceSuccess(balance: Double) {
+    private suspend fun onGetUserBalanceSuccess(balance: Double) {
         updateState {
             it.copy(
                 isGetBalanceLoading = false,
@@ -80,6 +82,24 @@ class ConfirmPaymentViewModel(
                     balance = formatAmount(balance)
                 )
             )
+        }
+        updateUserMessage()
+    }
+
+    private suspend fun updateUserMessage() {
+        val userMessage = if (state.value.paymentUiState.status) {
+            stringProvider.getString(
+                Res.string.confirm_payment_content_success,
+                state.value.paymentUiState.balance
+            )
+        } else {
+            stringProvider.getString(
+                Res.string.confirm_payment_content_failed,
+                state.value.paymentUiState.balance
+            )
+        }
+        updateState {
+            it.copy(userMessage = userMessage)
         }
     }
 
@@ -126,9 +146,8 @@ class ConfirmPaymentViewModel(
 
     private fun submitTransaction(transactionId: Uuid) {
         tryToExecute(
-            callee = {
-                paymentRepository.submitTransaction(transactionId)
-            },
+            callee = { transactionRepository.submitTransaction(transactionId) },
+            onStart = { updateState { it.copy(isPayButtonLoading = true) } },
             onSuccess = { onSubmitTransactionSuccess() },
             onError = ::onSubmitTransactionFailed,
             dispatcher = ioDispatcher

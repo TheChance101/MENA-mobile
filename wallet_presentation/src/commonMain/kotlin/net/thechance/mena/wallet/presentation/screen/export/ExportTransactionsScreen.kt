@@ -1,9 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.export
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,7 +63,6 @@ private fun ExportTransactionScreenContent(
     state: ExportTransactionsState,
     interactionListener: ExportTransactionsListener
 ) {
-
     WalletScaffold(
         modifier = Modifier.statusBarsPadding(),
         topBar = {
@@ -78,11 +80,6 @@ private fun ExportTransactionScreenContent(
         },
         snackBar = {
             SnackBarContainer(snackBarState = state.snackBar)
-        },
-        toast = {
-            CustomToast(
-                toastState = state.toast,
-            )
         },
         overlays = {
             bottomSheet(isVisible = state.isDateBottomSheetVisible) { isVisible ->
@@ -105,10 +102,16 @@ private fun ExportTransactionScreenContent(
             }
         }
     ) {
-        ExportTransactionContentBody(
-            state = state,
-            interactionListener = interactionListener
-        )
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            ExportTransactionContentBody(
+                state = state,
+                interactionListener = interactionListener
+            )
+
+            CustomToast(
+                toastState = state.toast
+            )
+        }
     }
 }
 

@@ -62,7 +62,7 @@ open class BaseViewModel<S>(
         }
     }
 
-    fun updateState(updater: (S) -> S) = _state.update(updater)
+    protected fun updateState(updater: (S) -> S) = _state.update(updater)
 
     protected fun <T> tryToExecute(
         onStart: () -> Unit = {},

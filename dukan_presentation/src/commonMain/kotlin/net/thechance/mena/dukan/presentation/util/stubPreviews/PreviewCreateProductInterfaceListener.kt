@@ -1,10 +1,9 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
 import androidx.compose.ui.graphics.ImageBitmap
-import io.github.vinceglb.filekit.PlatformFile
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.ShelfUiState
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState.ShelfUiState
 
 object PreviewCreateProductInterfaceListener: CreateProductInteractionListener {
     override fun onBackButton() {
