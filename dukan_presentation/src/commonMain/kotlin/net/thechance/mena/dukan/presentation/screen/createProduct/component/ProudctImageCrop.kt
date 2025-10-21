@@ -13,12 +13,14 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import com.attafitamim.krop.core.images.ImageSrc
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.cropImage.ImageCropScreen
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProductImageCropScreen(
@@ -50,7 +52,7 @@ fun ProductImageCropScreen(
                 leadingContent = {
                     Icon(
                         painter = painterResource(resource = Res.drawable.ic_arrow_left),
-                        contentDescription = "back icon arrow"
+                        contentDescription = stringResource(Res.string.back_arrow)
                     )
                 },
                 onLeadingClick = onBack,
