@@ -30,12 +30,10 @@ class CreateShelfViewModel(
 ), CreateShelfInteractionListener {
 
     override fun onTitleChanged(shelfTitle: String) {
-        val trimmedTitle = shelfTitle.trim()
-        val valid = isTitleValid(trimmedTitle)
         updateState {
             copy(
-                shelfTitle = trimmedTitle,
-                isCreateButtonEnabled = valid
+                shelfTitle = shelfTitle,
+                isCreateButtonEnabled = shelfTitle.isNotBlank()
             )
         }
     }
@@ -47,15 +45,15 @@ class CreateShelfViewModel(
 
     @OptIn(ExperimentalUuidApi::class)
     override fun onCreateButtonClicked() {
-        val title = state.value.shelfTitle
-        if (!isTitleValid(title)) {
+        val trimmedShelfTitle = state.value.shelfTitle.trim()
+        if (!isTitleValid(trimmedShelfTitle)) {
             showErrorSnackBar(message = Res.string.shelf_name_is_invalid)
             return
         }
 
         tryToExecute(
             onStart = ::onCreateClickedStart,
-            block = { shelfRepository.createShelf(Shelf(id = Uuid.random(), name = title)) },
+            block = { shelfRepository.createShelf(Shelf(id = Uuid.random(), name = trimmedShelfTitle)) },
             onSuccess = { onCreateShelfSuccess() },
             onError = ::onCreateShelfError
         )
