@@ -19,16 +19,19 @@ import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CreateDukanContent(
@@ -47,27 +50,31 @@ fun CreateDukanContent(
     )
 
     OnSystemBackPressed(listener::onBackClicked)
+    CreateDukanScaffold(
+        state = state,
+        listener = listener,
+        pagerState = pagerState
+    )
 
+}
+
+@Composable
+private fun CreateDukanScaffold(
+    state: CreateDukanUiState,
+    listener: CreateDukanInteractionListener,
+    pagerState: PagerState
+) {
     Scaffold(
         topBar = {
-            AppBar(
-                title = if (state.isImageBeingCropped)
-                    stringResource(Res.string.dukan_image)
-                else stringResource(
-                    Res.string.create_new_dukan
-                ),
-                onLeadingClick = listener::onBackClicked,
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._12,
-                    vertical = Theme.spacing._8
-                ),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_arrow),
-                    )
-                }
-            )
+            CreateDukanAppBar(state, listener)
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         },
         bottomBar = {
             if (state.isImageBeingCropped.not())
@@ -86,43 +93,73 @@ fun CreateDukanContent(
                 )
         }
     ) {
-        HorizontalPager(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = Theme.spacing._12),
-            state = pagerState,
-            userScrollEnabled = false
-        ) { pageIndex ->
-            when (CreateDukanStep.steps[pageIndex]) {
-                CreateDukanStep.BASIC_INFORMATION -> CreateDukanContentBasicInformation(
-                    state = state,
-                    interactionListener = listener
-                )
-
-                CreateDukanStep.SELECT_IMAGE -> UploadDukanImageContent(
-                    state = state,
-                    interactionListener = listener
-                )
-
-                CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation(
-                    state = state,
-                    listener = listener
-                )
-
-                CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle(
-                    state = state,
-                    listener = listener
-                )
-
-            }
-        }
-    }
-
-    state.snackBarState?.let { snackBarState ->
-        SnackBar(
-            snackBarUiState = snackBarState,
-            onDismiss = listener::onDismissSnackBar
+        CreateDukanPagerContent(
+            pagerState = pagerState,
+            state = state,
+            listener = listener
         )
+    }
+}
+
+@Composable
+private fun CreateDukanAppBar(
+    state: CreateDukanUiState,
+    listener: CreateDukanInteractionListener
+) {
+    AppBar(
+        title = if (state.isImageBeingCropped)
+            stringResource(Res.string.dukan_image)
+        else stringResource(
+            Res.string.create_new_dukan
+        ),
+        onLeadingClick = listener::onBackClicked,
+        contentPadding = PaddingValues(
+            horizontal = Theme.spacing._12,
+            vertical = Theme.spacing._8
+        ),
+        leadingContent = {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_left),
+                contentDescription = stringResource(Res.string.back_arrow),
+            )
+        }
+    )
+}
+
+@Composable
+private fun CreateDukanPagerContent(
+    pagerState: PagerState,
+    state: CreateDukanUiState,
+    listener: CreateDukanInteractionListener
+) {
+    HorizontalPager(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = Theme.spacing._12),
+        state = pagerState,
+        userScrollEnabled = false
+    ) { pageIndex ->
+        when (CreateDukanStep.steps[pageIndex]) {
+            CreateDukanStep.BASIC_INFORMATION -> CreateDukanPagerContent(
+                state = state,
+                interactionListener = listener
+            )
+
+            CreateDukanStep.SELECT_IMAGE -> UploadDukanImageContent(
+                state = state,
+                interactionListener = listener
+            )
+
+            CreateDukanStep.SELECT_LOCATION -> CreateDukanContentSelectLocation(
+                state = state,
+                listener = listener
+            )
+
+            CreateDukanStep.SELECT_STYLE -> CreateDukanContentSelectStyle(
+                state = state,
+                listener = listener
+            )
+        }
     }
 }
 
@@ -134,9 +171,25 @@ private fun SyncPageWithScreenState(
     val currentStepIndex = state.currentStep.ordinal
     LaunchedEffect(currentStepIndex) {
         if (currentStepIndex == pagerState.currentPage) return@LaunchedEffect
-        try {
-            pagerState.animateScrollToPage(currentStepIndex)
-        } catch (_: Exception) {
-        }
+        pagerState.animateScrollToPage(currentStepIndex)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewCreateDukanContent() {
+    val mockState = CreateDukanUiState(
+        name = "My Dukan",
+        currentStep = CreateDukanStep.BASIC_INFORMATION,
+        isButtonEnabled = true,
+        isButtonLoading = false,
+        isImageBeingCropped = false,
+        snackBarState = null
+    )
+    MenaTheme {
+        CreateDukanContent(
+            state = mockState,
+            listener = PreviewCreateDukanInteractionListener
+        )
     }
 }

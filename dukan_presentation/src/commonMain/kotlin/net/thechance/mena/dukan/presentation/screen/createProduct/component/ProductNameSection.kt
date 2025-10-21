@@ -1,8 +1,11 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
@@ -10,10 +13,11 @@ import mena.dukan_presentation.generated.resources.ic_product
 import mena.dukan_presentation.generated.resources.product_name
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun LazyListScope.productNameSection(
     productName: String,
@@ -23,11 +27,9 @@ fun LazyListScope.productNameSection(
     item {
         Text(
             text = stringResource(Res.string.product_name),
-            style = Theme.typography.title.medium,
-            modifier = Modifier.padding(top = Theme.spacing._12)
-                .padding(horizontal = Theme.spacing._16)
-
-
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(horizontal = Theme.spacing._16)
         )
         TextField(
             modifier = Modifier
@@ -41,5 +43,21 @@ fun LazyListScope.productNameSection(
             enabled = isTextFieldEnabled,
             hint = ""
         )
+    }
+}
+
+@Preview
+@Composable
+private fun ProductNameSectionPreview() {
+    MenaTheme {
+        LazyColumn(
+            modifier = Modifier.background(Theme.colorScheme.background.surface)
+        ) {
+            productNameSection(
+                productName = "T-Shirt",
+                isTextFieldEnabled = true,
+                onProductNameChange = {}
+            )
+        }
     }
 }

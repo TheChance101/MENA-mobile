@@ -11,6 +11,10 @@ class VideoFileHandlerMock: VideoFileHandler {
         return ByteReadChannel(byteArrayOf(1, 2, 3)).asSource()
     }
 
+    override suspend fun getMimeType(filePath: String): String {
+        return "video/mp4"
+    }
+
     override suspend fun getDuration(filePath: String): Long? {
         return 1000L
     }

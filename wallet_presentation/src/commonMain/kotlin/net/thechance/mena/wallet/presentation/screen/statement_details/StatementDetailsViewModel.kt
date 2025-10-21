@@ -7,14 +7,14 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
 @KoinViewModel
 class StatementDetailsViewModel(
-    @Provided private val pdfHandler: PdfHandler,
+    @Provided private val fileManager: FileManager,
     @Provided private val statementLocation: StorageLocation,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementDetailsScreenState, StatementDetailsEffect>
@@ -28,7 +28,7 @@ class StatementDetailsViewModel(
         tryToExecute(
             onStart = ::onGetStatementPdfStart,
             onFinish = ::onGetStatementPdfFinish,
-            callee = { pdfHandler.getPdfBytes(statementLocation) },
+            callee = { fileManager.readFile(statementLocation) },
             onSuccess = ::onGetStatementPdfSuccess,
             onError = ::onGetStatementPdfError,
             dispatcher = dispatcher
@@ -36,8 +36,8 @@ class StatementDetailsViewModel(
     }
 
     override fun onNavigateBackClicked() {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (statementLocation is StorageLocation.Cache) pdfHandler.deletePdf(statementLocation)
+       viewModelScope.launch (Dispatchers.IO) {
+           if (statementLocation is StorageLocation.Cache) fileManager.deleteFile(statementLocation)
             sendEffect(StatementDetailsEffect.NavigateBack)
         }
     }

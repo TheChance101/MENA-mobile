@@ -23,7 +23,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class WalletViewModel(
-    private val stringProvider: StringProvider,
+    @Provided private val stringProvider: StringProvider,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
