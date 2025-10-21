@@ -21,7 +21,6 @@ import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
@@ -32,7 +31,6 @@ import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
-    private val mediaRepository: MediaRepository,
     private val locationRepository: LocationRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(
@@ -213,7 +211,7 @@ class CreateDukanViewModel(
         state.value.croppedImage?.let {
             val fileName = state.value.name.replace(" ", "_")
                 .plus("dukan_image")
-            mediaRepository.uploadDukanImage(fileName, it.toPngByteArray())
+            dukanManagementRepository.uploadDukanImage(fileName, it.toPngByteArray())
         }
     }
 
