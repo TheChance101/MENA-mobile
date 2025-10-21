@@ -17,12 +17,13 @@ import mena.dukan_presentation.generated.resources.style
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.ColorOptionsPlaceholder
-import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.DukanStyleOptions
+import net.thechance.mena.dukan.presentation.screen.createDukan.component.dukanstyle.ColorOptionsPlaceholder
+import net.thechance.mena.dukan.presentation.screen.createDukan.component.dukanstyle.DukanStyleOptions
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.ColorUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanStyleUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -32,50 +33,54 @@ fun CreateDukanContentSelectStyle(
     state: CreateDukanUiState
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(Theme.colorScheme.background.surface)
-            .padding(start = Theme.spacing._16, end = Theme.spacing._16)
+            .padding(horizontal = Theme.spacing._16)
     ) {
-        item {
-            CustomizeDukanHeader()
-        }
-        item {
-            Text(
-                text = stringResource(Res.string.color),
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
-            )
-        }
-        item {
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-            ) {
-                state.dukanColors.forEach {
-                    ColorOptionsPlaceholder(
-                        backgroundColor = Color(it.color),
-                        onClick = { listener.onColorClicked(it) },
-                        isSelected = it.id == state.selectedColor?.id
-                    )
-                }
-            }
-        }
-        item {
-            Text(
-                text = stringResource(Res.string.style),
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
-            )
-        }
-        item {
-            DukanStyleOptions(
-                listener = listener,
-                state = state
+        item { CustomizeDukanHeader() }
+        item { DukanColorSection(listener, state) }
+        item { DukanStyleSection(listener, state) }
+    }
+}
+
+@Composable
+private fun DukanColorSection(
+    listener: CreateDukanInteractionListener,
+    state: CreateDukanUiState
+) {
+    Text(
+        text = stringResource(Res.string.color),
+        style = Theme.typography.title.small,
+        color = Theme.colorScheme.shadePrimary,
+        modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
+    )
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+    ) {
+        state.dukanColors.forEach {
+            ColorOptionsPlaceholder(
+                backgroundColor = Color(it.color),
+                onClick = { listener.onColorClicked(it) },
+                isSelected = it.id == state.selectedColor?.id
             )
         }
     }
+}
+
+@Composable
+private fun DukanStyleSection(
+    listener: CreateDukanInteractionListener,
+    state: CreateDukanUiState
+) {
+    Text(
+        text = stringResource(Res.string.style),
+        style = Theme.typography.title.small,
+        color = Theme.colorScheme.shadePrimary,
+        modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
+    )
+    DukanStyleOptions(listener = listener, state = state)
 }
 
 @Composable
@@ -99,8 +104,22 @@ private fun CreateDukanContentSelectStylePreview() {
     MenaTheme {
         CreateDukanContentSelectStyle(
             state = CreateDukanUiState(
-                selectedColor = null,
-                selectedStyle = Dukan.Style.NO_IMAGE,
+                selectedColor = ColorUiState("1", 0xFFFF0000),
+                selectedStyle = CreateDukanUiState.Style.WIDE_IMAGE,
+                dukanStyles = listOf(
+                    DukanStyleUiState(CreateDukanUiState.Style.WIDE_IMAGE, "Wide Image"),
+                    DukanStyleUiState(CreateDukanUiState.Style.SMALL_IMAGE, "Small Image"),
+                    DukanStyleUiState(CreateDukanUiState.Style.NO_IMAGE, "No Image"),
+                ),
+                dukanColors = listOf(
+                    ColorUiState("1", 0xFFFF0000),
+                    ColorUiState("2", 0xFF00FF00),
+                    ColorUiState("3", 0xFF0000FF),
+                    ColorUiState("3", 0xFF0BC0FF),
+                    ColorUiState("3", 0xFF05FCFF),
+                    ColorUiState("3", 0xFF00B8FF),
+                    ColorUiState("3", 0xFF0E70FF)
+                )
             ),
             listener = PreviewCreateDukanInteractionListener
         )

@@ -25,11 +25,13 @@ fun ManageDukanScreen(
     val navController = LocalNavController.current
 
     navController.currentBackStackEntry?.apply {
-        ObserveSavedStateEvent<String>(CreateShelfArgs.createShelfSnackBar) { message ->
-            viewModel.onShelfAdded(
-                message = Res.string.add_shelf_successfully,
-                type = SnackBarType.SUCCESS
-            )
+        ObserveSavedStateEvent<Boolean>(CreateShelfArgs.IS_SHELF_CREATED) { isShelfCreated ->
+            if (isShelfCreated) {
+                viewModel.onShelfAdded(
+                    message = Res.string.add_shelf_successfully,
+                    type = SnackBarType.SUCCESS
+                )
+            }
         }
         ObserveSavedStateEvent<String>(ManageShelfArgs.deletedShelfId) { id ->
             viewModel.onShowDeleteShelfDailog(shelfId = id)

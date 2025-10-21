@@ -7,7 +7,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionLoadingState(modifier: Modifier = Modifier) {
@@ -24,5 +26,13 @@ fun TransactionLoadingState(modifier: Modifier = Modifier) {
                 Theme.colorScheme.primary.primary
             )
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TransactionLoadingStatePreview() {
+    MenaTheme {
+        TransactionLoadingState()
     }
 }

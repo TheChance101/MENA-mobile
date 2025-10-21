@@ -93,7 +93,7 @@ fun SurScreen(
 
 @Composable
 private fun Content(
-    uiState: SurScreenState,
+    uiState: SurUiState,
     listener: SurInteractionListener,
 ) {
     Scaffold(
@@ -201,7 +201,7 @@ private fun AppBarIcon(
 
 @Composable
 private fun SurahItem(
-    surah: SurScreenState.SurahUiState,
+    surah: SurUiState.SurahUiState,
     onClick: (id: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -326,9 +326,9 @@ private fun Int.twoDigitsMinimum(): String = this.toString().padStart(2, '0')
 private fun SurScreenPreview() {
     MenaTheme {
         Content(
-            uiState = SurScreenState(
+            uiState = SurUiState(
                 sur = listOf(
-                    SurScreenState.SurahUiState(
+                    SurUiState.SurahUiState(
                         id = 1,
                         surahOrder = 1,
                         surahName = "Al Fatihah",
@@ -336,7 +336,7 @@ private fun SurScreenPreview() {
                         ayatCount = 7,
                         isMakki = true
                     ),
-                    SurScreenState.SurahUiState(
+                    SurUiState.SurahUiState(
                         id = 1,
                         surahOrder = 1,
                         surahName = "Al Fatihah",
@@ -344,7 +344,7 @@ private fun SurScreenPreview() {
                         ayatCount = 7,
                         isMakki = true
                     ),
-                    SurScreenState.SurahUiState(
+                    SurUiState.SurahUiState(
                         id = 1,
                         surahOrder = 1,
                         surahName = "Al Fatihah",

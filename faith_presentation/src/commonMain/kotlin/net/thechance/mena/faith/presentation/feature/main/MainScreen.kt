@@ -31,13 +31,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.asr
+import mena.faith_presentation.generated.resources.dhuhr
 import mena.faith_presentation.generated.resources.faith_title
+import mena.faith_presentation.generated.resources.fajr
 import mena.faith_presentation.generated.resources.ic_column_mosque
 import mena.faith_presentation.generated.resources.ic_kaaba
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_mosque
 import mena.faith_presentation.generated.resources.ic_quran
 import mena.faith_presentation.generated.resources.ic_sunrise
+import mena.faith_presentation.generated.resources.isha
 import mena.faith_presentation.generated.resources.location
 import mena.faith_presentation.generated.resources.mosque_image_description
 import mena.faith_presentation.generated.resources.nearby_mosques
@@ -49,14 +53,17 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
-import net.thechance.mena.faith.presentation.feature.main.componant.PrayerTimesCard
-import net.thechance.mena.faith.presentation.feature.main.componant.SunriseTimeRow
-import net.thechance.mena.faith.presentation.feature.main.componant.TilawahSection
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.main.components.PrayerTimesCard
+import net.thechance.mena.faith.presentation.feature.main.components.SunriseTimeRow
+import net.thechance.mena.faith.presentation.feature.main.components.TilawahSection
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -89,6 +96,7 @@ fun MainScreen(
 
             MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
+            //TODO: Add navigation
             MainScreenEffect.NavigateToMosques -> {}
         }
     }
@@ -101,7 +109,7 @@ fun MainScreen(
 
 @Composable
 private fun Content(
-    uiState: MainScreenState,
+    uiState: MainUiState,
     listener: MainInteractionListener
 ) {
     Scaffold(
@@ -186,8 +194,7 @@ private fun MainTopBar() {
         title = stringResource(Res.string.faith_title),
         trailingContent = {
             Row(
-                modifier = Modifier
-                    .background(
+                modifier = Modifier.background(
                         color = Theme.colorScheme.background.surfaceLow,
                         shape = RoundedCornerShape(Theme.radius.full)
                     )
@@ -268,8 +275,67 @@ private fun FaithFeatureCard(
     }
 }
 
-data class FeatureItem(
-    val title: String,
-    val icon: Painter,
-    val onClick: () -> Unit
-)
+@Composable
+@Preview
+private fun MainScreenPreview() {
+    QuranTheme {
+        Content(
+            uiState = MainUiState(
+                prayerTimesUiState = PrayerTimesUiState(
+                    prayers = listOf(
+                        PrayerUiModel(
+                            name = PrayerName.FAJR,
+                            displayName = Res.string.fajr,
+                            time = "06:00",
+                            isAM = true
+                        ),
+                        PrayerUiModel(
+                            name = PrayerName.DHUHR,
+                            displayName = Res.string.dhuhr,
+                            time = "12:00",
+                            isAM = false
+                        ),
+                        PrayerUiModel(
+                            name = PrayerName.ASR,
+                            displayName = Res.string.asr,
+                            time = "04:00",
+                            isAM = false
+                        ),
+                        PrayerUiModel(
+                            name = PrayerName.MAGHRIB,
+                            displayName = Res.string.fajr,
+                            time = "06:00",
+                            isAM = false
+                        ),
+                        PrayerUiModel(
+                            name = PrayerName.ISHA,
+                            displayName = Res.string.isha,
+                            time = "08:00",
+                            isAM = false
+                        )
+                    ),
+                    nextPrayerIndex = 0
+                ),
+                hijriDate = "15 Ramadan 1446",
+                sunriseTime = "06:00 AM",
+                tilawahUiState = TilawahUiState(
+                    surahId = 1,
+                    surahName = "Al-Fatihah",
+                    ayahNumber = 3,
+                )
+            ),
+            listener = object : MainInteractionListener {
+                override fun onQuranClick() {}
+                override fun onQiblahClick() {}
+                override fun onMosquesClick() {}
+                override fun onContinueTilawahClick(
+                    surahId: Int,
+                    surahName: String,
+                    ayahNumber: Int
+                ) {
+                }
+            }
+        )
+    }
+}
+

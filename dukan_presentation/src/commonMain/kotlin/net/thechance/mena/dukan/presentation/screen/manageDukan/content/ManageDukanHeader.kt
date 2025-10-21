@@ -35,9 +35,9 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
+import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ShelvesState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -48,10 +48,10 @@ fun ManageDukanHeader(
 ) {
     Column {
         AnimatedVisibility(
-            visible = state.shelvesState != ShelvesState.EMPTY
+            visible = state.shelvesState != ManageDukanUiState.ShelvesState.EMPTY
         ) {
             when (state.shelvesState) {
-                ShelvesState.EMPTY -> {}
+                ManageDukanUiState.ShelvesState.EMPTY -> {}
                 else -> Text(
                     text = stringResource(Res.string.shelves),
                     style = Theme.typography.title.small,
@@ -71,11 +71,9 @@ fun ManageDukanHeader(
             }
         ) {
             when (it) {
-                ShelvesState.LOADING -> LoadingShelvesRow()
-
-                ShelvesState.LOADED -> LoadedShelvesRow(state, listener)
-
-                ShelvesState.EMPTY -> {
+                ManageDukanUiState.ShelvesState.LOADING -> LoadingShelves()
+                ManageDukanUiState.ShelvesState.LOADED -> LoadedShelvesRow(state, listener)
+                ManageDukanUiState.ShelvesState.EMPTY -> {
                     Column {
                         Spacer(modifier = Modifier.weight(1f))
                         NoShelvesContent()
@@ -92,6 +90,17 @@ fun ManageDukanHeader(
     }
 }
 
+@Composable
+private fun LoadingShelves(){
+    LoadingHorizontalList {
+        Chip(
+            text = "             ",
+            isSelected = false,
+            isEnabled = false,
+            onClick = { }
+        )
+    }
+}
 @Composable
 private fun NoShelvesContent() {
     ImageWithTextContainer(
@@ -125,23 +134,6 @@ private fun LoadedShelvesRow(
                 text = item.name,
                 isSelected = listener.isShelfSelected(item),
                 onClick = { listener.onShelfSelected(item) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun LoadingShelvesRow() {
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-    ) {
-        items(count = 8) {
-            Chip(
-                text = "             ",
-                isSelected = false,
-                isEnabled = false,
-                onClick = { }
             )
         }
     }

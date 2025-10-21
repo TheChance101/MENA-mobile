@@ -19,7 +19,7 @@ import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
 import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     private val locationRepository: LocationRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(
@@ -68,12 +68,12 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onColorClicked(color: ColorUiState) {
+    override fun onColorClicked(color: CreateDukanUiState.ColorUiState) {
         updateState { copy(selectedColor = color) }
         updateNextButtonEnableState()
     }
 
-    override fun onStyleClicked(style: Dukan.Style) {
+    override fun onStyleClicked(style: CreateDukanUiState.Style) {
         updateState { copy(selectedStyle = style) }
         updateNextButtonEnableState()
     }
@@ -85,7 +85,7 @@ class CreateDukanViewModel(
 
     private fun getDukanColors() {
         tryToExecute(
-            block = { dukanRepository.getDukanColors() },
+            block = { dukanManagementRepository.getDukanColors() },
             onSuccess = ::updateScreenStateWithColors,
             onError = ::onErrorGettingStyles,
         )
@@ -93,7 +93,7 @@ class CreateDukanViewModel(
 
     private fun getDukanStyle() {
         tryToExecute(
-            block = { dukanRepository.getDukanStyles() },
+            block = { dukanManagementRepository.getDukanStyles() },
             onSuccess = ::updateScreenStateWithStyles,
             onError = ::onErrorGettingStyles,
         )
@@ -101,8 +101,8 @@ class CreateDukanViewModel(
 
     private fun updateScreenStateWithStyles(dukanStyles: List<Dukan.Style>) {
         val stylesUiState = dukanStyles.map { style ->
-            DukanStyleUiState(
-                style = style,
+            CreateDukanUiState.DukanStyleUiState(
+                style = style.toUiStyle(),
                 name = style.toUiStyleName()
             )
         }
@@ -162,11 +162,18 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun isCategorySelected(): (DukanCategoryUiState) -> Boolean {
+    override fun isCategorySelected(): (CreateDukanUiState.DukanCategoryUiState) -> Boolean {
         return { category -> state.value.selectedCategories.contains(category) }
     }
 
-    override fun onCategorySelected(category: DukanCategoryUiState): Boolean {
+    override fun onCategoryClicked(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+        val isSelected = state.value.selectedCategories.contains(category)
+        return if (isSelected) onCategoryDeselected(category)
+        else onCategorySelected(category)
+
+    }
+
+    private fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         if (!canSelectMoreCategories(state.value)) return false
 
         addCategoryToSelection(category)
@@ -174,13 +181,13 @@ class CreateDukanViewModel(
         return true
     }
 
-    override fun onCategoryDeselected(category: DukanCategoryUiState): Boolean {
+    private fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         removeCategoryFromSelection(category)
         updateNextButtonEnableState()
         return true
     }
 
-    override fun onCategoryEnabled(category: DukanCategoryUiState): Boolean {
+    override fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         return canSelectMoreCategories(state.value) ||
                 state.value.selectedCategories.contains(category)
     }
@@ -189,11 +196,11 @@ class CreateDukanViewModel(
         return currentState.selectedCategories.size < MAX_CATEGORIES
     }
 
-    private fun addCategoryToSelection(category: DukanCategoryUiState) {
+    private fun addCategoryToSelection(category: CreateDukanUiState.DukanCategoryUiState) {
         updateState { copy(selectedCategories = selectedCategories + category) }
     }
 
-    private fun removeCategoryFromSelection(category: DukanCategoryUiState) {
+    private fun removeCategoryFromSelection(category: CreateDukanUiState.DukanCategoryUiState) {
         updateState { copy(selectedCategories = selectedCategories - category) }
     }
 
@@ -207,11 +214,11 @@ class CreateDukanViewModel(
     }
 
     private suspend fun onCreateClickedBlock() {
-        dukanRepository.createDukan(state.value.toEntity())
+        dukanManagementRepository.createDukan(state.value.toEntity())
         state.value.croppedImage?.let {
             val fileName = state.value.name.replace(" ", "_")
                 .plus("dukan_image")
-            dukanRepository.uploadDukanImage(fileName, it.toPngByteArray())
+            dukanManagementRepository.uploadDukanImage(fileName, it.toPngByteArray())
         }
     }
 
@@ -229,14 +236,11 @@ class CreateDukanViewModel(
     private fun nextStep(step: CreateDukanStep): CreateDukanStep {
         return when (step) {
             CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
-
             CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.SELECT_LOCATION
-
             CreateDukanStep.SELECT_LOCATION -> {
                 updateState { copy(isMapLocked = true) }
                 CreateDukanStep.SELECT_STYLE
             }
-
             CreateDukanStep.SELECT_STYLE -> step
         }
     }
@@ -264,18 +268,14 @@ class CreateDukanViewModel(
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
     }
 
-    private fun onMapClickedSuccess(address: String) {
-        onAddressChanged(address)
-    }
+    private fun onMapClickedSuccess(address: String) = onAddressChanged(address)
 
     override fun onAddressChanged(address: String) {
         updateState { copy(address = address) }
         updateNextButtonEnableState()
     }
 
-    override fun onCameraMoved(
-        camera: CameraPosition
-    ) {
+    override fun onCameraMoved(camera: CameraPosition) {
         updateState { copy(cameraPosition = camera) }
     }
 
@@ -298,13 +298,12 @@ class CreateDukanViewModel(
                 updateState { copy(isMapLocked = state.value.pointerLocation != null) }
                 CreateDukanStep.SELECT_IMAGE
             }
-
             CreateDukanStep.SELECT_STYLE -> CreateDukanStep.SELECT_LOCATION
         }
 
     private fun checkNameUniqueness(name: String) {
         tryToExecute(
-            block = { dukanRepository.isDukanNameTaken(name) },
+            block = { dukanManagementRepository.isDukanNameTaken(name) },
             onSuccess = { isTaken -> handleNameValidationResult(isTaken) },
             onError = ::onNameValidationError
         )
@@ -388,7 +387,7 @@ class CreateDukanViewModel(
 
     private fun loadDukanCategories() {
         tryToExecute(
-            block = { dukanRepository.getCategories() },
+            block = { dukanManagementRepository.getCategories() },
             onSuccess = { categories ->
                 updateState { copy(dukanCategories = categories.toUiState()) }
             }

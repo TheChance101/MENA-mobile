@@ -110,7 +110,7 @@ fun TransactionsListContent(
                                 horizontal = Theme.spacing._16
                             )
                         )
-                    } //TODO: Replace with correct error view
+                    }
                 }
             }
         }

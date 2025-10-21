@@ -12,7 +12,7 @@ import org.koin.core.annotation.Single
 
 @Module
 @ComponentScan("net.thechance.mena.wallet.data")
-class WalletDataModule{
+class WalletDataModule {
     @Single
     fun provideWalletDatabase(builder: WalletDatabaseBuilder): WalletDatabase {
         return builder.getBuilder()

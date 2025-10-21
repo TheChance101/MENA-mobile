@@ -10,10 +10,12 @@ import org.koin.core.context.GlobalContext
 actual class WalletDatabaseBuilder actual constructor() {
     actual fun getBuilder(): RoomDatabase.Builder<WalletDatabase> {
         val appContext = GlobalContext.get().get<Context>()
-        val dbFile = appContext.getDatabasePath(DataBaseConfig.DATABASE_NAME)
+        val dbFile = appContext.getDatabasePath(DATABASE_NAME)
         return Room.databaseBuilder<WalletDatabase>(
             context = appContext,
             name = dbFile.absolutePath
         )
     }
 }
+
+private const val DATABASE_NAME = "wallet.db"
