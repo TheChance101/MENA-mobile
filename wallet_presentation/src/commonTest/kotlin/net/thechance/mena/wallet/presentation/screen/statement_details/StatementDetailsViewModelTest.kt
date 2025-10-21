@@ -45,7 +45,7 @@ class StatementDetailsViewModelTest {
     @Test
     fun `onNavigateBackClicked should send NavigateBack effect when called`() =
         runTest(testDispatcher) {
-            viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
+            initViewModel()
 
             viewModel.uiEffect.test {
                 viewModel.onNavigateBackClicked()
@@ -65,6 +65,20 @@ class StatementDetailsViewModelTest {
         val finalState = viewModel.state.value
         assertTrue(finalState.statement.isNotEmpty())
         assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement)
+    }
+
+    @Test
+    fun `onRetryClicked should call getPdfBytes and update state when successful`() = runTest(testDispatcher) {
+        val expectedBytes = byteArrayOf(1, 2, 3)
+        everySuspend { pdfHandler.getPdfBytes(statementLocation) } returns expectedBytes
+
+        initViewModel()
+
+        viewModel.onRetryClicked()
+        advanceUntilIdle()
+
+        val finalState = viewModel.state.value
+        assertContentEquals(expectedBytes, finalState.statement)
     }
 
     @Test

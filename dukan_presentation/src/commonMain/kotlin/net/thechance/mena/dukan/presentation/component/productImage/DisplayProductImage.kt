@@ -48,7 +48,7 @@ fun DisplayProductImage(
     onCancelClick: (image: ImageBitmap) -> Unit,
     modifier: Modifier = Modifier,
     productImageState: ProductImageState = ProductImageState.LOADING,
-    isCancelButtonEnabled:Boolean=true,
+    isCancelButtonEnabled: Boolean = true,
     errorMessage: String? = null,
 ) {
     Box(
@@ -72,7 +72,7 @@ fun DisplayProductImage(
             }
         }
 
-        CancelImageButton(
+        CancelImageIconButton(
             productImageState = productImageState,
             onCancelClick = { onCancelClick(image) },
             isCancelButtonEnabled = isCancelButtonEnabled
@@ -96,10 +96,10 @@ fun DisplayProductImage(
 }
 
 @Composable
-private fun BoxScope.CancelImageButton(
+private fun BoxScope.CancelImageIconButton(
     productImageState: ProductImageState,
     onCancelClick: () -> Unit,
-    isCancelButtonEnabled:Boolean=true,
+    isCancelButtonEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val color = if (productImageState == ProductImageState.SUCCESS) {
@@ -144,7 +144,6 @@ private fun BoxScope.CancelImageButton(
     }
 }
 
-
 @Composable
 private fun LoadingContentImage(imageSize: Double) {
     Column(
@@ -187,13 +186,11 @@ private fun SuccessContentImage(image: ImageBitmap) {
             contentDescription = stringResource(resource = Res.string.upload_dukan_image),
             contentScale = ContentScale.Crop
         )
-
     }
 }
 
 @Composable
 private fun ErrorContentImage(image: ImageBitmap) {
-
     val borderColor = Theme.colorScheme.error
     val cornerRadiusValue = Theme.radius.md
 
@@ -218,7 +215,6 @@ private fun ErrorContentImage(image: ImageBitmap) {
             contentScale = ContentScale.Crop
         )
     }
-
 }
 
 enum class ProductImageState {

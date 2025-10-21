@@ -30,14 +30,14 @@ inline fun <T : Any> LazyVerticalGridItems(
     noinline contentType: (T) -> Any? = { null },
     crossinline itemContent: @Composable LazyGridItemScope.(item: T) -> Unit,
 ) {
-    val lazyColumnState = rememberLazyGridState()
+    val lazyGridState = rememberLazyGridState()
     pager?.let {
-        lazyColumnState.LoadMoreOnScroll(pager)
+        lazyGridState.LoadMoreOnScroll(pager)
     }
 
     LazyVerticalGrid(
         columns = grid,
-        state = lazyColumnState,
+        state = lazyGridState,
         modifier = modifier,
         verticalArrangement = verticalArrangement,
         horizontalArrangement = horizontalArrangement,

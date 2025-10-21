@@ -77,30 +77,33 @@ private fun DukanCategoriesContent(
     interactionListener: DukanCategoriesInteractionListener
 ) {
     Scaffold(
-        topBar = {
-            CategoriesTopAppBar(onBackClick = interactionListener::onBackClicked)
-        },
-        snakeBar = {
-            state.snackBarUiState?.let { snackBarState ->
-                SnackBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(Theme.radius.md))
-                        .clickable(
-                            onClick = interactionListener::onDismissSnackBar,
-                            indication = null,
-                            interactionSource = null
-                        ),
-                    onDismiss = interactionListener::onDismissSnackBar,
-                    snackBarUiState = snackBarState
-                )
-            }
-        }
-    )
-    {
+        topBar = { CategoriesTopAppBar(onBackClick = interactionListener::onBackClicked) },
+        snakeBar = { DukanCategoriesSnackBar(state, interactionListener::onDismissSnackBar) }
+    ) {
         CategoriesList(
             categories = state.categories,
             onCategoryClick = interactionListener::onCategoryClicked
+        )
+    }
+}
+
+@Composable
+private fun DukanCategoriesSnackBar(
+    state: DukanCategoriesUiState,
+    onDismissSnackBar: () -> Unit
+) {
+    state.snackBarUiState?.let { snackBarState ->
+        SnackBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .clickable(
+                    onClick = onDismissSnackBar,
+                    indication = null,
+                    interactionSource = null
+                ),
+            onDismiss = onDismissSnackBar,
+            snackBarUiState = snackBarState
         )
     }
 }
@@ -133,8 +136,8 @@ private fun CategoriesList(
     onCategoryClick: (categoryName: String, categoryId: String) -> Unit
 ) {
     LazyVerticalGridItems(
-        grid = GridCells.Adaptive(minSize = categoryItemSize),
         modifier = Modifier.fillMaxSize(),
+        grid = GridCells.Adaptive(minSize = 76.dp),
         contentPadding = PaddingValues(
             start = Theme.spacing._16,
             end = Theme.spacing._16,
@@ -153,8 +156,6 @@ private fun CategoriesList(
         )
     }
 }
-
-private val categoryItemSize = 76.dp
 
 @Preview
 @Composable

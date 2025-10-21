@@ -62,7 +62,6 @@ internal class UploadReelViewModel(
             block = {
                 reelsRepository.uploadReel(
                     filePath = state.value.selectedFile.filePath,
-                    fileName = state.value.selectedFile.name,
                     size = state.value.selectedFile.size
                 )
             },
@@ -166,7 +165,6 @@ internal class UploadReelViewModel(
                 state.value.reelId?.let { reelId ->
                     reelsRepository.uploadReelThumbnail(
                         reelId = reelId,
-                        fileName = state.value.selectedFile.name,
                         thumbnail = state.value.thumbnail ?: ByteArray(0),
                     )
                 }

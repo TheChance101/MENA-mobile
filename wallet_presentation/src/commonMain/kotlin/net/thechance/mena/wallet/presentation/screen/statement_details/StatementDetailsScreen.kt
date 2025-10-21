@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
@@ -23,6 +24,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import net.thechance.mena.wallet.presentation.utils.PdfHandler
@@ -35,7 +37,6 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun StatementDetailsScreen(
-    onNavigateBackClicked: () -> Unit,
     statementLocation: StorageLocation,
     viewModel: StatementDetailsViewModel = koinViewModel(
         parameters = { parametersOf(statementLocation) }
@@ -44,13 +45,14 @@ fun StatementDetailsScreen(
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            handleEffects(
+            onStatementDetailsEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
+                navController = navController,
                 shareStatement = pdfHandler::sharePdf
             )
         }
@@ -121,14 +123,14 @@ private fun StatementViewer(
 }
 
 private const val STATEMENT_FILE_NAME = "statement.pdf"
-private suspend fun handleEffects(
+private suspend fun onStatementDetailsEffect(
     effect: StatementDetailsEffect,
-    onNavigateBackClicked: () -> Unit,
+    navController: NavController,
     shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
 ) {
 
     when (effect) {
-        StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
+        StatementDetailsEffect.NavigateBack -> navController.popBackStack()
         is StatementDetailsEffect.ShareStatement -> {
             shareStatement(effect.statement, STATEMENT_FILE_NAME)
         }
