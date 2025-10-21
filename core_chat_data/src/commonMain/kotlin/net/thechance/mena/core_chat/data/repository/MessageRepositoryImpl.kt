@@ -29,7 +29,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus

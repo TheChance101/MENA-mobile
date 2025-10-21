@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.repository.StatementRepository
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
 class StatementDetailsViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
+    private val fileManager = mock<FileManager>(mode = MockMode.autofill)
     private val statementLocation = StorageLocation.Cache("test_statement.pdf")
     private lateinit var viewModel: StatementDetailsViewModel
 
@@ -70,7 +70,7 @@ class StatementDetailsViewModelTest {
     @Test
     fun `onRetryClicked should call getPdfBytes and update state when successful`() = runTest(testDispatcher) {
         val expectedBytes = byteArrayOf(1, 2, 3)
-        everySuspend { pdfHandler.getPdfBytes(statementLocation) } returns expectedBytes
+        everySuspend { fileManager.readFile(statementLocation) } returns expectedBytes
 
         initViewModel()
 
@@ -129,7 +129,7 @@ class StatementDetailsViewModelTest {
         }
 
     private fun TestScope.initViewModel() {
-        viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
+        viewModel = StatementDetailsViewModel(fileManager, statementLocation, testDispatcher)
         advanceUntilIdle()
     }
 

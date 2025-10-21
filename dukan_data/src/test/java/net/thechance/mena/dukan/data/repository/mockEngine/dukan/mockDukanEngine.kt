@@ -28,7 +28,6 @@ import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
 import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.data.repository.DukanDiscoveryRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanManagementRepositoryImpl
-import net.thechance.mena.dukan.data.repository.MediaRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.identity.domain.entity.Address
@@ -274,16 +273,6 @@ fun createDukanManagementRepository(
             statusResponse = statusResponse,
             nameResponse = nameResponse,
             dukanDetailsResponse = dukanDetailsResponse
-        )
-    )
-}
-
-fun createMediaRepository(
-    uploadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): MediaRepositoryImpl {
-    return MediaRepositoryImpl(
-        client = createDukanHttpClient(
-            uploadResponse = uploadResponse
         )
     )
 }
