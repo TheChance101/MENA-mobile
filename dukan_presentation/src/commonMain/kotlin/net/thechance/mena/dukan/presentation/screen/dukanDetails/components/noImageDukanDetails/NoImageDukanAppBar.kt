@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.noImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -25,6 +25,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.DukanInfo
 import org.jetbrains.compose.resources.painterResource
@@ -32,7 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun AppBarNoImageDukan(
+fun NoImageDukanAppBar(
     state: DukanInfo,
     listener: DukanDetailsInteractionListener
 ) {
@@ -100,10 +101,8 @@ private fun AppBarIcon(
 @Composable
 private fun AppBarNoImageDukanPreview() {
     MenaTheme {
-        AppBarNoImageDukan(
-            state = DukanInfo(
-                name = "Dukan Name"
-            ),
+        NoImageDukanAppBar(
+            state = fakeDukanInfo,
             listener = PreviewDukanDetailsInteractionListener
         )
     }

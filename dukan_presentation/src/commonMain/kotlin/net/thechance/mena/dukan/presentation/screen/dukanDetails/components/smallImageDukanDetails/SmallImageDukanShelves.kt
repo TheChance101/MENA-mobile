@@ -1,7 +1,6 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.components
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -21,16 +20,20 @@ import androidx.compose.ui.graphics.Color
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ProductsHeader
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
+import net.thechance.mena.dukan.presentation.component.productCard.ProductActionIconSmallImageDukan
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 
 @Composable
-fun SmallImageProductContent(
+fun SmallImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>,
+    shelvesPager: Pager<Int, ShelfUiState>,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -38,61 +41,68 @@ fun SmallImageProductContent(
 
     AnimatedContent(
         targetState = state.shelvesState
-    ) {
-        when (it) {
-            DukanDetailsUiState.ShelvesState.LOADING -> {
-                SmallImageProductLoadingContent()
+    ) { shelvesState ->
+        when (shelvesState) {
+            ShelvesState.LOADING -> {
+                SmallImageProductSkeleton()
             }
-            DukanDetailsUiState.ShelvesState.LOADED -> {
-                SmallImageProductLoadedContent(modifier, lazyListState, listener, state)
+
+            ShelvesState.LOADED -> {
+                ShelvesContent(
+                    state = state,
+                    listener = listener,
+                    lazyListState = lazyListState,
+                    modifier = modifier
+                )
             }
-            DukanDetailsUiState.ShelvesState.EMPTY -> {}
+
+            ShelvesState.EMPTY -> {}
         }
     }
 }
 
 @Composable
-fun SmallImageProductLoadedContent(
-    modifier: Modifier,
-    lazyListState: LazyListState,
+private fun ShelvesContent(
+    state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    state: DukanDetailsUiState
+    lazyListState: LazyListState,
+    modifier: Modifier,
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(vertical = Theme.spacing._16),
         state = lazyListState,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        contentPadding = PaddingValues(vertical = Theme.spacing._16),
     ) {
-        state.shelves.items.forEach { shelf ->
-            item(key = shelf.id) {
-                ProductsHeader(
-                    viewAllColor = Color(state.dukanInfo.color),
-                    shelfName = shelf.name,
-                    onClick = {
-                        listener.onViewAllShelfProductsClicked(
-                            shelf.id,
-                            shelf.name
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = Theme.spacing._16)
+        items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) { index ->
+            val shelf = state.shelves.items[index]
+            ProductsHeader(
+                viewAllColor = Color(state.dukanInfo.color),
+                shelfName = shelf.name,
+                onClick = {
+                    listener.onViewAllShelfProductsClicked(
+                        shelf.id,
+                        shelf.name
+                    )
+                },
+                modifier = Modifier.padding(
+                    start = Theme.spacing._16,
+                    end = Theme.spacing._16,
+                    bottom = Theme.spacing._8
                 )
-            }
-            item {
-                ProductsShelf(
-                    shelf = shelf,
-                    cartColor = Color(state.dukanInfo.color),
-                    listener = listener
-                )
-            }
+            )
+            ShelfProducts(
+                shelf = shelf,
+                listener = listener,
+                cartColor = Color(state.dukanInfo.color)
+            )
         }
     }
 }
 
 @Composable
-private fun ProductsShelf(
-    shelf: DukanDetailsUiState.ShelfUiState,
+private fun ShelfProducts(
+    shelf: ShelfUiState,
     listener: DukanDetailsInteractionListener,
     cartColor: Color? = null
 ) {
@@ -103,23 +113,6 @@ private fun ProductsShelf(
         snapPosition = SnapPosition.Center
     )
 
-    ProductsLazyRow(
-        productPairs = productPairs,
-        lazyListState = lazyListState,
-        flingBehavior = flingBehavior,
-        listener = listener,
-        cartColor = cartColor
-    )
-}
-
-@Composable
-private fun ProductsLazyRow(
-    productPairs: List<List<DukanDetailsUiState.ProductUiState>>,
-    lazyListState: LazyListState,
-    flingBehavior: FlingBehavior,
-    listener: DukanDetailsInteractionListener,
-    cartColor: Color?
-) {
     LazyRow(
         modifier = Modifier.padding(bottom = Theme.spacing._8),
         state = lazyListState,
@@ -142,13 +135,14 @@ private fun ProductsLazyRow(
     }
 }
 
+
 @Composable
 private fun ProductItem(
-    product: DukanDetailsUiState.ProductUiState,
+    product: ProductUiState,
     listener: DukanDetailsInteractionListener,
     cartColor: Color?
 ) {
-    val isCartButtonVisible = false // TODO: Remove when implement Cart
+    val isCartButtonVisible = false  // TODO: Remove when implement Cart
     ProductCard(
         productName = product.name,
         productImageUrl = product.imageUrl,

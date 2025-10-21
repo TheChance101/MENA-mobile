@@ -18,7 +18,7 @@ import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class CreateShelfRepositoryImplTest {
+class ShelfRepositoryImplTest {
 
     @Test
     fun `createShelf calls the correct endpoint`() = runTest {

@@ -28,7 +28,7 @@ class ConfirmPaymentViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val stringProvider: StringProvider,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    ) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
+) : BaseViewModel<ConfirmPaymentScreenState, ConfirmPaymentEffect>(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
     private val transactionId = Uuid.parse(args.transactionId)

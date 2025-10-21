@@ -21,6 +21,7 @@ import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
+import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -168,6 +169,23 @@ class ConfirmPaymentViewModelTest {
             viewModel.onRefresh()
             val initialState = awaitItem()
             assertTrue(initialState.isLoading)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onPayButtonClicked emits NavigateToPaymentResultScreen with success status`() = runTest {
+        everySuspend { balanceRepository.getBalance() } returns balance1
+        everySuspend { transactionRepository.getTransactionReceiver(receiver1Id) } returns transactionReceiver1
+        everySuspend { transactionRepository.submitTransaction(any()) } returns Unit
+
+        viewModel = createViewModel()
+
+        viewModel.uiEffect.test {
+            viewModel.onPayButtonClicked()
+            val effect = awaitItem()
+            assertTrue(effect is ConfirmPaymentEffect.NavigateToPaymentResultScreen)
+            assertEquals(SubmissionStatus.SUCCESS, effect.submissionStatus)
             cancelAndIgnoreRemainingEvents()
         }
     }

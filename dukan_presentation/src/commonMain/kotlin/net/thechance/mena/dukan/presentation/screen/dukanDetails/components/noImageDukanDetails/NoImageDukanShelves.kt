@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.noImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,12 +23,13 @@ import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 
 @Composable
-fun NoImageDukanShelvesProducts(
+fun NoImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelves: Pager<Int, DukanDetailsUiState.ShelfUiState>
+    pagerShelves: Pager<Int, ShelfUiState>
 ) {
     val lazyRowListState = rememberLazyListState()
     lazyRowListState.LoadMoreOnScroll(pagerShelves)
@@ -65,10 +66,10 @@ fun NoImageDukanShelvesProducts(
             )
         }
         stickyHeader(key = "ShelvesChips") {
-            ShelvesChipsNoImageDukan(
+            NoImageDukanShelvesChips(
                 state = state,
                 lazyRowState = lazyRowListState,
-                onClickListener = { shelfId, index ->
+                onClick = { shelfId, index ->
                     listener.onShelfClicked(shelfId)
                     coroutineScope.launch {
                         lazyColumnListState.animateScrollToItem(index + SHELVES_OFFSET)
@@ -79,7 +80,7 @@ fun NoImageDukanShelvesProducts(
         }
         items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) {
             val shelf = state.shelves.items[it]
-            ShelfWithProductsNoImageDukan(
+            NoImageDukanShelfWithProducts(
                 shelf = shelf,
                 listener = listener,
                 dukanColor = state.dukanInfo.color

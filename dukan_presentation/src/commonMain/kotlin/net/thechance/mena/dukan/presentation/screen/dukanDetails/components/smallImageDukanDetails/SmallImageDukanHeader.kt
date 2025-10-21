@@ -1,10 +1,9 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.components
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,14 +25,15 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.DukanInfo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SmallImageDukanImageAndTitle(
-    state: DukanDetailsUiState.DukanInfo,
+fun SmallImageDukanStoreImage(
+    dukanInfoState: DukanInfo,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -42,14 +42,14 @@ fun SmallImageDukanImageAndTitle(
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = state.imageUrl,
+            model = dukanInfoState.imageUrl,
             contentDescription = stringResource(Res.string.dukan_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(56.dp)
                 .clip(RoundedCornerShape(Theme.radius.full))
         )
         Text(
-            text = state.name,
+            text = dukanInfoState.name,
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
             maxLines = 2,
@@ -80,35 +80,25 @@ fun SmallImageDukanIconButton(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewDukanImageAndTitle() {
-    val mockState = DukanDetailsUiState.DukanInfo(
-        name = "Mena Dukan Store",
-        imageUrl = "https://dukan.photos/200",
-        color = 0xFFE91E63,
-    )
+private fun DukanImageAndTitlePreview() {
     MenaTheme {
-        Box(
-            modifier = Modifier.background(Theme.colorScheme.background.surface)
-        ) {
-            SmallImageDukanImageAndTitle(state = mockState, modifier = Modifier.padding(16.dp))
-        }
+        SmallImageDukanStoreImage(
+            dukanInfoState = fakeDukanInfo,
+            modifier = Modifier.padding(Theme.spacing._16)
+        )
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewDukanIconButton() {
+private fun SmallImageDukanIconButtonPreview() {
     MenaTheme {
-        Box(
-            modifier = Modifier.background(Theme.colorScheme.background.surface)
-        ) {
-            SmallImageDukanIconButton(
-                icon = painterResource(Res.drawable.ic_favorite),
-                iconColor = Color(0xFFE91E63),
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+        SmallImageDukanIconButton(
+            icon = painterResource(Res.drawable.ic_favorite),
+            iconColor = Color(fakeDukanInfo.color),
+            modifier = Modifier.padding(Theme.spacing._16)
+        )
     }
 }

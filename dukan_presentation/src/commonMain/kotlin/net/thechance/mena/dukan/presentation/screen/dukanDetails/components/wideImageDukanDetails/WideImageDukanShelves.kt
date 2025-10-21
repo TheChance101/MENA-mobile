@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -26,20 +26,21 @@ import net.thechance.mena.dukan.presentation.component.ShelfChip
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeShelvesDukanDetailsPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakePagerShelvesDukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DukanShelvesSection(
+fun WideImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>
+    shelvesPager: Pager<Int, ShelfUiState>
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -61,16 +62,16 @@ fun DukanShelvesSection(
             label = "Shelves Animation",
         ) { targetState ->
             when (targetState) {
-                DukanDetailsUiState.ShelvesState.LOADING -> LoadingShelves()
-                DukanDetailsUiState.ShelvesState.LOADED -> LoadedShelves(
+                ShelvesState.LOADING -> LoadingShelves()
+                ShelvesState.LOADED -> LoadedShelves(
                     shelves = state.shelves.items,
                     selectedShelfId = state.shelfIdSelected,
                     onShelfClick = listener::onShelfClicked,
                     chipColor = Color(state.dukanInfo.color),
-                    shelvesPager = shelvesPager
+                    pagerShelves = shelvesPager
                 )
 
-                DukanDetailsUiState.ShelvesState.EMPTY -> {}
+                ShelvesState.EMPTY -> {}
             }
         }
     }
@@ -89,21 +90,22 @@ private fun LoadingShelves() {
                 text = "             ",
                 isSelected = false,
                 isEnabled = false,
-                onClick = {})
+                onClick = {}
+            )
         }
     }
 }
 
 @Composable
 private fun LoadedShelves(
-    shelves: List<DukanDetailsUiState.ShelfUiState>,
+    shelves: List<ShelfUiState>,
     selectedShelfId: String?,
-    onShelfClick: (shelfId: String) -> Unit,
     chipColor: Color,
-    shelvesPager: Pager<Int, DukanDetailsUiState.ShelfUiState>
+    pagerShelves: Pager<Int, ShelfUiState>,
+    onShelfClick: (shelfId: String) -> Unit
 ) {
     val listState = rememberLazyListState()
-    listState.LoadMoreOnScroll(shelvesPager)
+    listState.LoadMoreOnScroll(pagerShelves)
     LazyRow(
         state = listState,
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
@@ -125,14 +127,10 @@ private fun LoadedShelves(
 @Composable
 private fun DukanShelvesSectionLoadingPreview() {
     MenaTheme {
-        val dummyPager = Pager<Int, DukanDetailsUiState.ShelfUiState>(
-            config = PagingConfig(),
-            pagingSourceFactory = { FakeShelvesDukanDetailsPagingSource() }
-        )
-        DukanShelvesSection(
-            state = DukanDetailsUiState(shelvesState = DukanDetailsUiState.ShelvesState.LOADING),
+        WideImageDukanShelves(
+            state = DukanDetailsUiState(shelvesState = ShelvesState.LOADING),
             listener = PreviewDukanDetailsInteractionListener,
-            shelvesPager = dummyPager
+            shelvesPager = fakePagerShelvesDukanDetails
         )
     }
 }
@@ -141,25 +139,10 @@ private fun DukanShelvesSectionLoadingPreview() {
 @Composable
 private fun DukanShelvesSectionLoadedPreview() {
     MenaTheme {
-        val dummyPager = Pager<Int, DukanDetailsUiState.ShelfUiState>(
-            config = PagingConfig(),
-            pagingSourceFactory = { FakeShelvesDukanDetailsPagingSource() }
-        )
-        DukanShelvesSection(
-            state = DukanDetailsUiState(
-                shelvesState = DukanDetailsUiState.ShelvesState.LOADED,
-                shelves = PagingData(
-                    items = listOf(
-                        DukanDetailsUiState.ShelfUiState(id = "1", name = "Dairy & Eggs"),
-                        DukanDetailsUiState.ShelfUiState(id = "2", name = "Fresh Produce"),
-                        DukanDetailsUiState.ShelfUiState(id = "3", name = "Bakery"),
-                    )
-                ),
-                shelfIdSelected = "2",
-                dukanInfo = DukanDetailsUiState.DukanInfo(color = 0xFF4CAF50)
-            ),
+        WideImageDukanShelves(
+            state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            shelvesPager = dummyPager
+            shelvesPager = fakePagerShelvesDukanDetails
         )
     }
 }

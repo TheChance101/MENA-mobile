@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.noImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,15 +11,16 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.ProductsHeader
 import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.ProductActionNoImageDukan
+import net.thechance.mena.dukan.presentation.component.productCard.ProductActionNoImageDukan
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ShelfWithProductsNoImageDukan(
+fun NoImageDukanShelfWithProducts(
     shelf: ShelfUiState,
     listener: DukanDetailsInteractionListener,
     dukanColor: Long,
@@ -68,13 +69,13 @@ fun ShelfWithProductsNoImageDukan(
 @Composable
 private fun ShelfWithProductsNoImageDukanPreview() {
     MenaTheme {
-        ShelfWithProductsNoImageDukan(
+        NoImageDukanShelfWithProducts(
             shelf = ShelfUiState(
                 name = "Clothes",
                 products = fakeProducts
             ),
             listener = PreviewDukanDetailsInteractionListener,
-            dukanColor = 0xFFFB5B5D
+            dukanColor = fakeDukanInfo.color
         )
     }
 }

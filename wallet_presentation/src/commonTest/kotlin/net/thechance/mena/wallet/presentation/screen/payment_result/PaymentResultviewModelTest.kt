@@ -91,7 +91,7 @@ class PaymentResultViewModelTest {
 
         viewModel.uiEffect.test {
             viewModel.onCloseClicked()
-            assertEquals(PaymentResultEffect.NavigateToScreenBeforePaymentProcess, awaitItem())
+            assertEquals(PaymentResultEffect.NavigateToPrePaymentScreen, awaitItem())
         }
     }
 

@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,13 +35,14 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun WideImageDukanDetailsAppBar(
+fun WideImageDukanAppBar(
     onBackClicked: () -> Unit,
     onCartClicked: () -> Unit
 ) {
@@ -55,10 +56,12 @@ fun WideImageDukanDetailsAppBar(
         },
         onLeadingClick = onBackClicked,
         trailingContent = {
-            WideImageDukanHeaderIcon(
-                icon = painterResource(Res.drawable.ic_shopping_basket),
-                onIconClick = onCartClicked
-            )
+            AppBarOptionContainer(onClick = { onCartClicked }) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_shopping_basket),
+                    contentDescription = null
+                )
+            }
         }
     )
 }
@@ -78,7 +81,7 @@ fun DukanHeader(state: DukanDetailsUiState.DukanInfo) {
 }
 
 @Composable
-fun DukanActionButtons(
+private fun DukanActionButtons(
     state: DukanDetailsUiState.DukanInfo,
     modifier: Modifier = Modifier
 ) {
@@ -94,16 +97,6 @@ fun DukanActionButtons(
     }
 }
 
-@Composable
-private fun WideImageDukanHeaderIcon(
-    icon: Painter,
-    isBadgeVisible: Boolean = false,
-    onIconClick: () -> Unit
-) {
-    AppBarOptionContainer(onClick = { onIconClick() }, isBadgeVisible = isBadgeVisible) {
-        Icon(painter = icon, contentDescription = null)
-    }
-}
 
 @Composable
 private fun DukanImageAndTitle(
@@ -155,30 +148,24 @@ private fun DukanIconButton(
     onIconClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
+    Icon(
+        painter = icon,
+        contentDescription = stringResource(Res.string.favorite_icon),
+        tint = iconColor,
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.full))
             .clickable(
                 onClick = onIconClick,
             )
-            .background(
-                color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.full)
-            )
+            .background(color = Theme.colorScheme.background.surfaceLow)
             .border(
                 width = 3.dp,
                 color = Theme.colorScheme.background.surface,
                 shape = RoundedCornerShape(Theme.radius.full)
             )
-    ) {
-        Icon(
-            painter = icon,
-            contentDescription = stringResource(Res.string.favorite_icon),
-            tint = iconColor
-        )
-    }
+            .padding(Theme.spacing._8 + Theme.spacing._2)
+    )
 }
 
 @Preview(showBackground = true, name = "Action Buttons")
@@ -188,10 +175,10 @@ private fun DukanActionButtonsPreview() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(Theme.spacing._16)
         ) {
             DukanActionButtons(
-                state = DukanDetailsUiState.DukanInfo(color = 0xFF4CAF50),
+                state = fakeDukanInfo,
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }

@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.content.wideImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ProductCard(
+private fun ProductCard(
     imageUrl: String,
     title: String,
     price: String,
@@ -103,13 +103,13 @@ fun ProductCard(
     }
 }
 
-fun LazyGridScope.ProductsGridSection(
+fun LazyGridScope.wideImageProductsGrid(
     state: DukanDetailsUiState,
 ) {
     val productCount = 6
     when (state.productsState) {
         DukanDetailsUiState.ProductsState.LOADING -> {
-            productCardSkeletonGrid(productCount)
+            wideImageProductCardSkeletonGrid(productCount)
         }
 
         DukanDetailsUiState.ProductsState.LOADED -> {
@@ -129,7 +129,7 @@ fun LazyGridScope.ProductsGridSection(
     }
 }
 
-private fun LazyGridScope.productCardSkeletonGrid(productCount: Int) {
+private fun LazyGridScope.wideImageProductCardSkeletonGrid(productCount: Int) {
     items(count = productCount) {
         ProductCardSkeleton()
     }
@@ -217,7 +217,7 @@ private fun ProductCardSkeletonGridPreview() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            productCardSkeletonGrid(productCount = 6)
+            wideImageProductCardSkeletonGrid(productCount = 6)
         }
     }
 }
