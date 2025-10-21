@@ -54,7 +54,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         onSuccess: (suspend (T) -> Unit)? = null,
         onError: suspend (ErrorState) -> Unit = {},
         onStart: suspend () -> Unit = {},
-        onFinally: suspend () -> Unit = {},
+        onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         inScope: CoroutineScope = viewModelScope,
         delayMillis: Long = 0L

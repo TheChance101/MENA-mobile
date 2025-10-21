@@ -34,17 +34,17 @@ class QiblahBearingCalculatorUseCase {
     }
     fun calculateContinuousAzimuth(rawAzimuth: Float): Float {
         val oldAngleOnCircle = currentContinuousAzimuth % 360
-        val diff = getShortestAngleDifference(from = oldAngleOnCircle, to = rawAzimuth)
-        currentContinuousAzimuth += diff
+        val angleDifference = getShortestAngleDifference(from = oldAngleOnCircle, to = rawAzimuth)
+        currentContinuousAzimuth += angleDifference
         return currentContinuousAzimuth
     }
 
     fun getShortestAngleDifference(from: Float, to: Float): Float {
-        val diff = (to - from) % 360
+        val targetAngle = (to - from) % 360
         return when {
-            diff > 180f -> diff - 360f
-            diff < -180f -> diff + 360f
-            else -> diff
+            targetAngle > 180f -> targetAngle - 360f
+            targetAngle < -180f -> targetAngle + 360f
+            else -> targetAngle
         }
     }
 
