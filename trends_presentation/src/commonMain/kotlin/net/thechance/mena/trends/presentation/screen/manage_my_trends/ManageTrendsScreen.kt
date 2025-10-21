@@ -202,28 +202,30 @@ private fun TrendItem(
             .size(width = 106.dp, height = 164.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onTrendClick(item.id) }
-            .background(color = Theme.colorScheme.background.surfaceHigh)
+            .background(color = Theme.colorScheme.background.surfaceLow)
     ) {
-        AsyncImage(
-            model = item.thumbnailUrl,
-            contentDescription = stringResource(resource = Res.string.trend_image_desc),
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(color = Theme.colorScheme.primary.onPrimaryHint)
-                .align(Alignment.Center),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_paly_now),
-                contentDescription = stringResource(Res.string.play_now),
-                modifier = Modifier.size(20.dp),
-                tint = Theme.colorScheme.primary.onPrimary
+        if (item.thumbnailUrl.isNotEmpty()) {
+            AsyncImage(
+                model = item.thumbnailUrl,
+                contentDescription = stringResource(resource = Res.string.trend_image_desc),
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(color = Theme.colorScheme.shadeTertiary)
+                    .align(Alignment.Center),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_paly_now),
+                    contentDescription = stringResource(Res.string.play_now),
+                    tint = Theme.colorScheme.primary.onPrimary
+                )
+            }
         }
     }
 }
