@@ -26,6 +26,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -114,6 +116,7 @@ class CreateShelfViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onCreateButtonClicked SHOULD create shelf and navigate to manage dukan on success`() =
         runTest {
@@ -123,7 +126,7 @@ class CreateShelfViewModelTest {
             everySuspend {
                 shelfRepository.createShelf(
                     Shelf(
-                        id = "1",
+                        id = Uuid.random(),
                         name = "fake"
                     )
                 )

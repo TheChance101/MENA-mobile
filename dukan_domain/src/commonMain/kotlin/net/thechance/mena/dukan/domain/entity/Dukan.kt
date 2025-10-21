@@ -1,11 +1,15 @@
 package net.thechance.mena.dukan.domain.entity
 
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@OptIn(ExperimentalUuidApi::class)
 data class Dukan(
-    val id: String,
+    val id: Uuid,
     val name: String,
     val imageUrl: String,
     val categories: Set<Category>,
-    val coordinates:Coordinates,
+    val coordinates: Coordinates,
     val address: String,
     val status: Status,
     val color: Color,
@@ -21,7 +25,8 @@ data class Dukan(
         SMALL_IMAGE,
         NO_IMAGE
     }
-    enum class Status{
+
+    enum class Status {
         PENDING,
         APPROVED,
         REJECTED

@@ -38,7 +38,7 @@ import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
 import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ShelvesState
+import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ShelvesState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

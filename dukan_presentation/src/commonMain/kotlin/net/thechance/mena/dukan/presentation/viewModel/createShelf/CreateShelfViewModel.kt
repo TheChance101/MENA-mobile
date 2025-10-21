@@ -18,6 +18,8 @@ import net.thechance.mena.dukan.presentation.component.SnackBarType
 import net.thechance.mena.dukan.presentation.component.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import org.jetbrains.compose.resources.StringResource
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class CreateShelfViewModel(
     private val shelfRepository: ShelfRepository,
@@ -43,6 +45,7 @@ class CreateShelfViewModel(
     }
 
 
+    @OptIn(ExperimentalUuidApi::class)
     override fun onCreateButtonClicked() {
         val title = state.value.shelfTitle
         if (!isTitleValid(title)) {
@@ -52,7 +55,7 @@ class CreateShelfViewModel(
 
         tryToExecute(
             onStart = ::onCreateClickedStart,
-            block = { shelfRepository.createShelf(Shelf(id = "", name = title)) },
+            block = { shelfRepository.createShelf(Shelf(id = Uuid.random(), name = title)) },
             onSuccess = { onCreateShelfSuccess() },
             onError = ::onCreateShelfError
         )

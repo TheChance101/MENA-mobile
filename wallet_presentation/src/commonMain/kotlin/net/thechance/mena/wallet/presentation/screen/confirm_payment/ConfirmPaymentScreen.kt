@@ -2,7 +2,6 @@
 
 package net.thechance.mena.wallet.presentation.screen.confirm_payment
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.wallet_presentation.generated.resources.Res
@@ -26,7 +24,6 @@ import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PaymentDetailsSection
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -91,16 +88,11 @@ private fun ConfirmPaymentScreenContent(
                 onLeadingClick = interactionListener::onBackButtonClicked,
             )
         },
+        isLoading = state.isLoading,
         errorState = state.errorState,
         onRetry = { interactionListener.onRefresh() }
     ) {
         when {
-            state.isLoading -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
-
             state.errorState != null -> ErrorView(onRetry = { interactionListener.onRefresh() })
 
             else -> {
@@ -112,6 +104,7 @@ private fun ConfirmPaymentScreenContent(
                 ) {
                     PaymentDetailsSection(
                         modifier = Modifier.fillMaxWidth().weight(1f),
+                        userMessage = state.userMessage,
                         payment = state.paymentUiState,
                         receiver = state.receiverUiState
                     )

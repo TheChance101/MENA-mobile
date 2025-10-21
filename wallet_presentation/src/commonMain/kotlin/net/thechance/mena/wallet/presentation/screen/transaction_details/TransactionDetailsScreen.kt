@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.suwasto.capturablecompose.CaptureController
@@ -23,9 +22,9 @@ import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
+import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsContent
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.TransactionDetailsScreenShot
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ImageSharer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -95,6 +94,7 @@ private fun TransactionDetailsScreenContent(
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
+        isLoading = state.isLoading,
         onRetry = { interactionListener.onRefresh() }
     ) {
         Crossfade(
@@ -102,12 +102,6 @@ private fun TransactionDetailsScreenContent(
             modifier = Modifier.fillMaxSize()
         ) {
             when {
-                state.isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
-                }
-
                 state.errorState != null -> ErrorView(onRetry = { interactionListener.onRefresh() })
 
                 else -> {
@@ -132,7 +126,7 @@ private fun TransactionDetailsSuccessContent(
         DetailsContent(
             transactionDetailsUiState = state.transactionDetailsUiState,
             onShareReceiptButtonClicked = interactionListener::onShareReceiptButtonClicked,
-            isShareReceiptBtnLoading = state.isShareReceiptBtnLoading,
+            isShareReceiptButtonLoading = state.isShareReceiptBtnLoading,
         )
         TransactionDetailsScreenShot(
             captureController = captureController,
