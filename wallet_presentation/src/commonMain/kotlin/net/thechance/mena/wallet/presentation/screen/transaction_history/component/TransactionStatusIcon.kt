@@ -56,6 +56,7 @@ fun TransactionStatusIcon(
     }
 
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun TransactionStatusIconSuccessPreview() {
@@ -63,17 +64,6 @@ private fun TransactionStatusIconSuccessPreview() {
         TransactionStatusIcon(
             transactionTypeIcon = Res.drawable.ic_send,
             transactionStatus = TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TransactionStatusIconFailedPreview() {
-    MenaTheme {
-        TransactionStatusIcon(
-            transactionTypeIcon = Res.drawable.ic_receive,
-            transactionStatus = TransactionHistoryScreenState.TransactionStatusUiState.FAILED
         )
     }
 }

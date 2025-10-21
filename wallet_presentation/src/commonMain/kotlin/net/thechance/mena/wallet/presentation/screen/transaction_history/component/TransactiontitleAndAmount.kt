@@ -62,6 +62,7 @@ fun TransactionTitleAndAmount(
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun TransactionTitleAndAmountPreview() {

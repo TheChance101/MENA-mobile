@@ -55,31 +55,6 @@ fun TransactionContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun TransactionContentSuccessPreview() {
-    MenaTheme {
-        TransactionContent(
-            transactionTitle = "Online Shopping",
-            transactionTimeAndDate = "Today, 10:30 AM",
-            amount = "250.00",
-            transactionStatus = TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TransactionContentFailedPreview() {
-    MenaTheme {
-        TransactionContent(
-            transactionTitle = "Online Shopping",
-            transactionTimeAndDate = "Yesterday, 03:45 PM",
-            amount = "500.00",
-            transactionStatus = TransactionHistoryScreenState.TransactionStatusUiState.FAILED
-        )
-    }
-}
-@Preview(showBackground = true)
-@Composable
 private fun TransactionContentWithContactPreview() {
     MenaTheme {
         TransactionContent(

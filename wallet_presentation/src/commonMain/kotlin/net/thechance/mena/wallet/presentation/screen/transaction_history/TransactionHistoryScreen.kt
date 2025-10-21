@@ -180,8 +180,7 @@ private fun onTransactionHistoryEffect(
 private fun TransactionHistoryContentPreview() {
     MenaTheme {
         TransactionHistoryContent(
-            state = TransactionHistoryScreenState(
-            ),
+            state = TransactionHistoryScreenState(),
             interactionListener = object : TransactionHistoryInteractionListener {
                 override fun onBackClicked() {}
                 override fun onTransactionCardClicked(id: Uuid) {}

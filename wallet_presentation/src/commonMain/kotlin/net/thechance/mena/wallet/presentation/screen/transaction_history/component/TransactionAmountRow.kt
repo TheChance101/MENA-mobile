@@ -1,4 +1,4 @@
- package net.thechance.mena.wallet.presentation.screen.transaction_history.component
+package net.thechance.mena.wallet.presentation.screen.transaction_history.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -19,7 +19,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
- @Composable
+@Composable
 fun TransactionAmountRow(
     amount: String,
     modifier: Modifier = Modifier
@@ -42,11 +42,11 @@ fun TransactionAmountRow(
         )
     }
 }
- @Preview(showBackground = true)
- @Composable
- private fun TransactionAmountRowPreview() {
-     MenaTheme {
-         TransactionAmountRow(amount = "150.00")
-     }
 
- }
+@Preview(showBackground = true)
+@Composable
+private fun TransactionAmountRowPreview() {
+    MenaTheme {
+        TransactionAmountRow(amount = "150.00")
+    }
+}
