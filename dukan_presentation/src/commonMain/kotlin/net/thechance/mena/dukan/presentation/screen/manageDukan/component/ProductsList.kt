@@ -17,7 +17,7 @@ import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUi
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ProductsList(
+fun ManageDukanProductsList(
     products: List<ProductUiState>,
     pager: Pager<Int, ProductUiState>,
     modifier: Modifier = Modifier,
@@ -42,9 +42,9 @@ fun ProductsList(
 
 @Preview
 @Composable
-private fun ProductsLayoutPreview() {
+private fun ManageDukanProductsLayoutPreview() {
     MenaTheme {
-        ProductsList(
+        ManageDukanProductsList(
             fakeProducts(),
             pager = Pager(
                 config = PagingConfig(),
