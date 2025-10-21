@@ -33,7 +33,7 @@ fun PaymentResultScreen(
     onNavigateToTransactionDetailsClicked: (String) -> Unit,
     viewModel: PaymentResultViewModel = koinViewModel(parameters = {
         parametersOf(
-            PaymentResultArgs(transactionId, submitTransactionResultStatus)
+            PaymentResultArgs(transactionId, submitTransactionResultStatus, receiverName, amount)
         )
     })
 ) {
@@ -53,8 +53,6 @@ fun PaymentResultScreen(
         }
     )
     PaymentResultScreenContent(
-        receiverName = receiverName,
-        amount = amount,
         state = state,
         interactionListener = viewModel
     )
@@ -62,8 +60,6 @@ fun PaymentResultScreen(
 
 @Composable
 private fun PaymentResultScreenContent(
-    receiverName: String,
-    amount: Double,
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {
@@ -85,10 +81,7 @@ private fun PaymentResultScreenContent(
         }
     ) {
         PaymentStatusBody(
-            receiverName = receiverName,
-            amount = amount,
-            status = state,
-            paymentStatus = state.paymentStatus,
+            state = state,
             interactionListener = interactionListener
         )
     }

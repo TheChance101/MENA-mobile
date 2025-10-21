@@ -46,28 +46,25 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun PaymentStatusBody(
     interactionListener: PaymentResultInteractionListener,
-    status: PaymentResultScreenState,
-    paymentStatus: SubmissionStatus = SubmissionStatus.CONNECTION_LOST,
-    receiverName: String = "",
-    amount: Double = 0.0
+    state: PaymentResultScreenState,
 ) {
     Crossfade(
-        targetState = paymentStatus,
+        targetState = state.paymentStatus,
         animationSpec = tween(durationMillis = 300),
         label = stringResource(Res.string.payment_status_crossfade)
-    ) { state ->
+    ) { paymentStatus ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            when (state) {
+            when (paymentStatus) {
                 SubmissionStatus.CONNECTION_LOST -> {
                     PaymentResultCard(
                         image = painterResource(Res.drawable.transaction_failed),
                         title = stringResource(Res.string.transaction_failed),
                         description = stringResource(Res.string.connection_lost_try_again),
-                        paymentStatus = state,
+                        paymentStatus = paymentStatus,
                         modifier = Modifier.align(Alignment.Center)
                     )
                     PaymentStatusButtons(
@@ -75,9 +72,9 @@ fun PaymentStatusBody(
                         onPrimaryButtonClick = interactionListener::onTryAgainClicked,
                         onCancelClicked = interactionListener::onCloseClicked,
                         modifier = Modifier.align(Alignment.BottomCenter),
-                        isLoading = status.isLoading,
-                        isCloseEnabled = status.isCloseButtonEnabled,
-                        isTryAgainEnabled = status.isTryAgainButtonEnabled
+                        isLoading = state.isLoading,
+                        isCloseEnabled = state.isCloseButtonEnabled,
+                        isTryAgainEnabled = state.isTryAgainButtonEnabled
                     )
                 }
 
@@ -86,7 +83,7 @@ fun PaymentStatusBody(
                         image = painterResource(Res.drawable.transaction_failed),
                         title = stringResource(Res.string.transaction_failed),
                         description = stringResource(Res.string.payment_failed_description),
-                        paymentStatus = state,
+                        paymentStatus = paymentStatus,
                         modifier = Modifier.align(Alignment.Center)
                     )
                     PaymentStatusButtons(
@@ -94,9 +91,9 @@ fun PaymentStatusBody(
                         onPrimaryButtonClick = interactionListener::onTryAgainClicked,
                         onCancelClicked = interactionListener::onCloseClicked,
                         modifier = Modifier.align(Alignment.BottomCenter),
-                        isLoading = status.isLoading,
-                        isCloseEnabled = status.isCloseButtonEnabled,
-                        isTryAgainEnabled = status.isTryAgainButtonEnabled
+                        isLoading = state.isLoading,
+                        isCloseEnabled = state.isCloseButtonEnabled,
+                        isTryAgainEnabled = state.isTryAgainButtonEnabled
                     )
                 }
 
@@ -104,9 +101,9 @@ fun PaymentStatusBody(
                     PaymentResultCard(
                         image = painterResource(Res.drawable.transaction_success),
                         title = stringResource(Res.string.transaction_successful),
-                        name = receiverName,
-                        amount = amount,
-                        paymentStatus = state,
+                        name = state.receiverName,
+                        amount = state.amount,
+                        paymentStatus = paymentStatus,
                         modifier = Modifier.align(Alignment.Center)
                     )
                     PaymentStatusButtons(
@@ -114,8 +111,8 @@ fun PaymentStatusBody(
                         onPrimaryButtonClick = interactionListener::onShowTransactionDetailsClicked,
                         onCancelClicked = interactionListener::onCloseClicked,
                         modifier = Modifier.align(Alignment.BottomCenter),
-                        isLoading = status.isLoading,
-                        isCloseEnabled = status.isCloseButtonEnabled
+                        isLoading = state.isLoading,
+                        isCloseEnabled = state.isCloseButtonEnabled
                     )
                 }
             }

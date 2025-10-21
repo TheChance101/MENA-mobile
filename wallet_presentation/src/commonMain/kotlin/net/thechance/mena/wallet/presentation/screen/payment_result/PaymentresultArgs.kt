@@ -5,5 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PaymentResultArgs(
     val transactionId: String,
-    val submitTransactionResultStatus: String
+    val submitTransactionResultStatus: String,
+    val receiverName: String,
+    val amount: Double
 )

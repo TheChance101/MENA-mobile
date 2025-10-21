@@ -25,7 +25,8 @@ class PaymentResultViewModel(
     private val transactionId = Uuid.parse(paymentResultArgs.transactionId)
     private val submissionStatus =
         SubmissionStatus.valueOf(paymentResultArgs.submitTransactionResultStatus)
-
+    private val receiverName = paymentResultArgs.receiverName
+    private val amount = paymentResultArgs.amount
     init {
         updateState { it.copy(paymentStatus = submissionStatus) }
     }
@@ -68,6 +69,8 @@ class PaymentResultViewModel(
             it.copy(
                 isLoading = false,
                 paymentStatus = SubmissionStatus.SUCCESS,
+                receiverName = receiverName,
+                amount = amount,
                 isTryAgainButtonEnabled = false,
                 isCloseButtonEnabled = true
             )
