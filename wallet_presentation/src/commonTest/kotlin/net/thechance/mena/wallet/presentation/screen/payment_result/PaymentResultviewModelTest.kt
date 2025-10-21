@@ -114,7 +114,7 @@ class PaymentResultViewModelTest {
 
     @Test
     fun `onTryAgainClicked should update state with CONNECTION_LOST on error`() = runTest {
-        everySuspend { transactionRepository.submitTransaction(transactionId) } throws NoInternetException()
+        everySuspend { transactionRepository.submitTransaction(transactionId1) } throws NoInternetException()
 
         val viewModel = PaymentResultViewModel(
             transactionRepository = transactionRepository,

@@ -90,10 +90,7 @@ class ConfirmPaymentViewModelTest {
             viewModel.state.test {
                 skipItems(2)
                 val successState = awaitItem()
-                assertEquals(
-                    paymentUiState,
-                    successState.paymentUiState
-                )
+                assertEquals(paymentUiState, successState.paymentUiState)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -107,12 +104,9 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
             viewModel.state.test {
-                skipItems(4)
-                val successState = awaitItem()
-                assertEquals(
-                    receiverUiState1,
-                    successState.receiverUiState
-                )
+                advanceUntilIdle()
+                val successState = expectMostRecentItem()
+                assertEquals(receiverUiState1, successState.receiverUiState)
                 cancelAndIgnoreRemainingEvents()
             }
         }
