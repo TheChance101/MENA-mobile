@@ -35,7 +35,7 @@ fun AnimatedStatementItem(
     cardOffsetX: Int,
     historyIconOffsetX: Int,
     deleteButtonOffsetX: Int,
-    onDeleteClick: () -> Unit,
+    onDeleteClicked: () -> Unit,
     onStatementCardClicked: () -> Unit
 ) {
 
@@ -67,7 +67,7 @@ fun AnimatedStatementItem(
         ) {
             StatementDeleteButton(
                 isDeleting = statement.isDeleting,
-                onDeleteClick = onDeleteClick,
+                onDeleteClick = onDeleteClicked,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .offset { IntOffset(deleteButtonOffsetX, 0) }
@@ -139,7 +139,7 @@ private fun AnimatedStatementItemPreview() {
             historyIconOffsetX = 10,
             deleteButtonOffsetX = 10,
             isEditMode = false,
-            onDeleteClick = {},
+            onDeleteClicked = {},
             onStatementCardClicked = {}
         )
     }
