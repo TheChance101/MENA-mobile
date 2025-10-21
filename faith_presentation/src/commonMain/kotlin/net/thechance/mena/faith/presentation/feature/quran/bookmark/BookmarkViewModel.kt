@@ -33,8 +33,9 @@ class BookmarkViewModel(
     BookmarkInteractionListener {
     private val cachedBookmarksFlow =
         createBookmarksPagingSource()
-            .map { pagingData -> pagingData.map { bookmark -> bookmark.toUiState() } }
-            .cachedIn(viewModelScope)
+            .map { pagingData ->
+                pagingData.map { bookmark -> bookmark.toUiState() }
+            }.cachedIn(viewModelScope)
 
     private val deletedBookmarkIdsFlow = MutableStateFlow(setOf<Int>())
 
@@ -54,23 +55,21 @@ class BookmarkViewModel(
 
     override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateBack)
 
-    override fun onDeleteBookmarkClick(bookmarkId: Int) {
+    override fun onDeleteBookmarkClick(id: Int) {
         tryToExecute(
             dispatcher = dispatcher,
-            execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
-            onStart = { insertDeletedBookmarkId(bookmarkId) },
+            execute = { bookmarkRepository.deleteAyahBookmark(id) },
+            onStart = { insertDeletedBookmarkId(id) },
             onSuccess = { onDeleteBookmarkSuccess() },
-            onError = { removeDeletedBookmarkId(bookmarkId) },
+            onError = { removeDeletedBookmarkId(id) },
         )
     }
 
-    private fun insertDeletedBookmarkId(bookmarkId: Int) {
-        deletedBookmarkIdsFlow.update { currentSet -> currentSet + bookmarkId }
-    }
+    private fun insertDeletedBookmarkId(id: Int) =
+        deletedBookmarkIdsFlow.update { currentSet -> currentSet + id }
 
-    private fun removeDeletedBookmarkId(bookmarkId: Int) {
-        deletedBookmarkIdsFlow.update { currentSet -> currentSet - bookmarkId }
-    }
+    private fun removeDeletedBookmarkId(id: Int) =
+        deletedBookmarkIdsFlow.update { currentSet -> currentSet - id }
 
     private fun initializeBookmarks() {
         updateState {

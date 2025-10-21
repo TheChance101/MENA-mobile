@@ -159,7 +159,7 @@ private fun BookmarkScreenPreview() {
             ),
             listener = object : BookmarkInteractionListener {
                 override fun onBackClick() {}
-                override fun onDeleteBookmarkClick(bookmarkId: Int) {}
+                override fun onDeleteBookmarkClick(id: Int) {}
                 override fun onStartTilawahClick() {}
             },
             snackBarState = SnackBarState()

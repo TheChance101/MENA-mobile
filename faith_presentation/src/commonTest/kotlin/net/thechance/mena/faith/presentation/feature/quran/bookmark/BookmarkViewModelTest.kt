@@ -173,7 +173,7 @@ class BookmarkViewModelTest {
             )
         advanceUntilIdle()
 
-        viewModel.onDeleteBookmarkClick(bookmarkId = BOOKMARK_ID1)
+        viewModel.onDeleteBookmarkClick(id = BOOKMARK_ID1)
         advanceUntilIdle()
 
         viewModel.uiState.test {
