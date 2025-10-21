@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.data.dto
+package net.thechance.mena.wallet.data.dto.remote
 
 
 import kotlinx.serialization.SerialName

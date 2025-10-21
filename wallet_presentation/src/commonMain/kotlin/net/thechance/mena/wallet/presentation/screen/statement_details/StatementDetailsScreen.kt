@@ -1,16 +1,13 @@
 package net.thechance.mena.wallet.presentation.screen.statement_details
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,9 +23,8 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
-import net.thechance.mena.wallet.presentation.component.PdfViewer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
+import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
 import net.thechance.mena.wallet.presentation.utils.FileSharer
 import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -91,6 +87,7 @@ private fun StatementDetailsContent(
                 onLeadingClick = listener::onNavigateBackClicked,
             )
         },
+        isLoading = state.isLoading,
         bottomContent = {
             PrimaryButton(
                 modifier = Modifier
@@ -111,16 +108,11 @@ private fun StatementDetailsContent(
 }
 
 @Composable
-fun StatementViewer(
+private fun StatementViewer(
     state: StatementDetailsScreenState,
     onRetry: () -> Unit
 ) {
     when {
-        state.isLoading ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
         state.errorState != null -> {
             ErrorView(onRetry = onRetry)
         }
@@ -131,11 +123,13 @@ fun StatementViewer(
     }
 }
 
+private const val STATEMENT_FILE_NAME = "statement.pdf"
 private suspend fun handleEffects(
     effect: StatementDetailsEffect,
     onNavigateBackClicked: () -> Unit,
     shareStatement: suspend (statement: ByteArray, fileName: String, mimeType: String, shareTitle: String) -> Unit
 ) {
+
     when (effect) {
         StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
         is StatementDetailsEffect.ShareStatement -> {

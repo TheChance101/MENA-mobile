@@ -7,10 +7,11 @@ import org.koin.core.annotation.Single
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
+
 @Single
-actual class WalletDatabaseBuilder actual constructor(){
+actual class WalletDatabaseBuilder actual constructor() {
     actual fun getBuilder(): RoomDatabase.Builder<WalletDatabase> {
-        val dbFilePath = documentDirectory() + "/${DataBaseConfig.DATABASE_NAME}"
+        val dbFilePath = documentDirectory() + "/${DATABASE_NAME}"
         return Room.databaseBuilder<WalletDatabase>(
             name = dbFilePath
         )
@@ -28,3 +29,5 @@ private fun documentDirectory(): String {
     )
     return requireNotNull(url?.path)
 }
+
+private const val DATABASE_NAME = "wallet.db"

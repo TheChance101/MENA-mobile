@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.presentation.screen.wallet.component
+package net.thechance.mena.wallet.presentation.component
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode

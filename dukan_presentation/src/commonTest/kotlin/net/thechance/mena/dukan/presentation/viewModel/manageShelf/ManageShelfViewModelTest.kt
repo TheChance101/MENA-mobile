@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageShelf
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -85,7 +84,7 @@ class ManageShelfViewModelTest {
 
         val actualEffect = manageShelfViewModel.effect.first()
 
-        val expectedEffect = ManageShelfEffect.DeleteShelf(shelfId = expectedShelfId)
+        val expectedEffect = ManageShelfEffect.NavigateBackWithShelfId(shelfId = expectedShelfId)
         assertEquals(expectedEffect, actualEffect)
     }
 
