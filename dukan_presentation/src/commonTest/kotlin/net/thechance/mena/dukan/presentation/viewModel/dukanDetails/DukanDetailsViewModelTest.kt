@@ -23,7 +23,7 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_ID
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -183,7 +183,7 @@ class DukanDetailsViewModelTest {
     @Test
     fun `onShelfClicked SHOULD load correct number of products`() = runTest {
         // Given
-        val targetShelfId =   Uuid.parse("123e4567-e89b-12d3-a456-426614174003").toString()
+        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003").toString()
         setupProductsForShelf(targetShelfId)
 
         // When
