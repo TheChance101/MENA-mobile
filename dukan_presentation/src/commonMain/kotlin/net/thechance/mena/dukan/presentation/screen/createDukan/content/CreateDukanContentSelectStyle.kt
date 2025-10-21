@@ -20,9 +20,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.ColorOptionsPlaceholder
 import net.thechance.mena.dukan.presentation.screen.createDukan.content.component.dukanstyle.DukanStyleOptions
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.ColorUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.ColorUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanStyleUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -35,7 +35,7 @@ fun CreateDukanContentSelectStyle(
     LazyColumn(
         modifier = Modifier.fillMaxSize()
             .background(Theme.colorScheme.background.surface)
-            .padding(start = Theme.spacing._16, end = Theme.spacing._16)
+            .padding(horizontal = Theme.spacing._16)
     ) {
         item {
             CustomizeDukanHeader()

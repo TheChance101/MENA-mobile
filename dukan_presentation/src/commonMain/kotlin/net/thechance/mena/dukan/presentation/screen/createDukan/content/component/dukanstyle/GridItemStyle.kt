@@ -33,12 +33,12 @@ fun GridItemStyle(
         ) {
             DukanImageItemPlaceholder(
                 modifier = Modifier
-                    .height(40.dp)
+                    .height(42.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(Theme.radius.xxs))
                     .background(Theme.colorScheme.background.surfaceLow)
                     .align(Alignment.TopCenter)
-                    .padding(Theme.spacing._4)
+                    .padding(Theme.spacing._8)
             )
         }
         ShoppingCartPlaceholder(

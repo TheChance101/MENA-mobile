@@ -51,7 +51,9 @@ fun NoImageStyle(
             ),
     ) {
         Column(
-            Modifier.wrapContentHeight(unbounded = true, align = Alignment.Top)
+            Modifier
+                .padding(horizontal = Theme.spacing._4)
+                .wrapContentHeight(unbounded = true, align = Alignment.Top)
         ) {
             ShimmerTextPlaceholders(selectedColor)
             ShimmerRow(selectedColor)
@@ -60,8 +62,6 @@ fun NoImageStyle(
                     cartBackgroundColor = selectedColor,
                     modifier = Modifier
                         .padding(
-                            start = Theme.spacing._4,
-                            end = Theme.spacing._4,
                             bottom = Theme.spacing._4
                         )
                 )

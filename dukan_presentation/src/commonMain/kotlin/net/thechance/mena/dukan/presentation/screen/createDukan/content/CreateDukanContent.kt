@@ -19,8 +19,8 @@ import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.SnackBar
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
@@ -113,7 +113,6 @@ fun CreateDukanContent(
                     state = state,
                     listener = listener
                 )
-
             }
         }
     }
@@ -134,9 +133,6 @@ private fun SyncPageWithScreenState(
     val currentStepIndex = state.currentStep.ordinal
     LaunchedEffect(currentStepIndex) {
         if (currentStepIndex == pagerState.currentPage) return@LaunchedEffect
-        try {
-            pagerState.animateScrollToPage(currentStepIndex)
-        } catch (_: Exception) {
-        }
+        pagerState.animateScrollToPage(currentStepIndex)
     }
 }
