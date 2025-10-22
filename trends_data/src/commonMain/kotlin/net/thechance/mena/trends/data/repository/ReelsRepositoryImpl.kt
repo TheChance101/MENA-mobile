@@ -16,8 +16,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.asSource
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.io.buffered
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
@@ -50,8 +50,7 @@ internal class ReelsRepositoryImpl(
     @Provided private val videoFileHandler: VideoFileHandler
 ) : ReelsRepository {
 
-    private val observableUploadingFlow: MutableStateFlow<UploadReelProgress> =
-        MutableStateFlow(UploadReelProgress(0, 0))
+    private val observableUploadingFlow: MutableSharedFlow<UploadReelProgress> = MutableSharedFlow()
 
     override suspend fun deleteReelById(id: String) {
         safeApiCall<Unit> {
@@ -110,7 +109,7 @@ internal class ReelsRepositoryImpl(
         }.reelId.orEmpty()
     }
 
-    override fun observeUploadReelProgress(): StateFlow<UploadReelProgress> {
+    override fun observeUploadReelProgress(): SharedFlow<UploadReelProgress> {
         return observableUploadingFlow
     }
 

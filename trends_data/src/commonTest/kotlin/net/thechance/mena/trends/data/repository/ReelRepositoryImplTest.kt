@@ -8,7 +8,6 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.data.repository.util.VideoFileHandlerMock
 import net.thechance.mena.trends.data.repository.util.addViewReelResponse
@@ -65,7 +64,7 @@ internal class ReelRepositoryImplTest {
     @Test
     fun `should update reel successfully`() = runTest {
 
-        networkClient =createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
+        networkClient = createReelsHttpClient { updateReelResponse("1", "Updated description", listOf("cat1")) }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         val result = runCatching {
@@ -130,13 +129,14 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
-        val emissions = mutableListOf<UploadReelProgress>()
+        val emissions = mutableListOf(
+            UploadReelProgress(0, 0)
+        )
         val job = launch {
             repository.observeUploadReelProgress().collect { emissions.add(it) }
         }
 
         repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE)
-        advanceUntilIdle()
         job.cancel()
 
         assertThat(emissions.size).isGreaterThan(0)
@@ -158,7 +158,7 @@ internal class ReelRepositoryImplTest {
     fun `getReelDuration should call getDuration`() = runTest {
         repository.getReelDuration(FAKE_FILE_PATH)
 
-        verifySuspend { videoHandler.getDuration(FAKE_FILE_PATH)  }
+        verifySuspend { videoHandler.getDuration(FAKE_FILE_PATH) }
     }
 
     @Test
@@ -172,15 +172,16 @@ internal class ReelRepositoryImplTest {
     fun `getReelThumbnail should call extractVideoFrame`() = runTest {
         repository.extractReelThumbnail(FAKE_FILE_PATH)
 
-        verifySuspend { videoHandler.extractVideoFrame(FAKE_FILE_PATH)  }
+        verifySuspend { videoHandler.extractVideoFrame(FAKE_FILE_PATH) }
     }
 
     @Test
-    fun `getReelDuration should return thumbnail bytearray when extractVideoFrame called`() = runTest {
-        val thumbnailByteArray = repository.extractReelThumbnail(FAKE_FILE_PATH)
+    fun `getReelDuration should return thumbnail bytearray when extractVideoFrame called`() =
+        runTest {
+            val thumbnailByteArray = repository.extractReelThumbnail(FAKE_FILE_PATH)
 
-        assertThat(thumbnailByteArray?.size).isEqualTo(2)
-    }
+            assertThat(thumbnailByteArray?.size).isEqualTo(2)
+        }
 
     @Test
     fun `should throw exception when API fails in getAllReels`() = runTest {
