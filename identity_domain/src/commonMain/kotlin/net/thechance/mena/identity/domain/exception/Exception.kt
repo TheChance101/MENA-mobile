@@ -34,7 +34,3 @@ class UnableToFindLocationException() : LocationException("Unable to find locati
 class CannotOpenSettingsException() : LocationException("Cannot open settings")
 class FailedToRequestPermissionException() : LocationException("Failed to request permission")
 class AddressNotFoundException() : LocationException("Address not found")
-
-class IsActiveAddress : LocationException("Address is not active")
-
-

@@ -5,7 +5,6 @@ import net.thechance.mena.dukan.data.repository.DukanDiscoveryRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanManagementRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
 import net.thechance.mena.dukan.data.repository.LocationRepositoryImpl
-import net.thechance.mena.dukan.data.repository.MediaRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
 import net.thechance.mena.dukan.data.util.network.buildApiClient
 import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
@@ -13,7 +12,6 @@ import net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import org.koin.core.module.dsl.bind
@@ -37,7 +35,6 @@ internal val dukanRepositoryModule = module {
     single<ProductRepository> { DukanProductRepositoryImpl(get(named("dukanClient"))) }
     single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
     single<DukanManagementRepository> { DukanManagementRepositoryImpl(client = get(named("dukanClient"))) }
-    single<MediaRepository> { MediaRepositoryImpl(client = get(named("dukanClient"))) }
     singleOf(::MobileGeocoderWrapper) { bind<GeocoderWrapper>() }
     singleOf(::LocationRepositoryImpl) { bind<LocationRepository>() }
 }

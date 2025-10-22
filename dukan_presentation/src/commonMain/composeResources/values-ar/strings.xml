@@ -47,7 +47,7 @@
     <string name="dismiss_title">غير قادر على حذف الرف</string>
     <string name="dismiss_description">هذا الرف يحتوي على منتجات بداخله، لا يمكنك حذفه حتى تقوم بإزالة المنتجات.</string>
     <string name="error_for_delete_shelf">خطأ في اضافة الرف</string>
-    <string name="shelf_name_is_invalid">اسم الرف غير صالح</string>
+    <string name="shelf_name_is_invalid">اسم الرف غير صالح,يُسمح فقط بالأحرف والمسافات والشرطات</string>
     <string name="shelf_name_already_exists">اسم الرف موجود بالفعل</string>
     <string name="shelves">الأرفف</string>
     <string name="products_count">%1$d منتج</string>

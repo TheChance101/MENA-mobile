@@ -13,4 +13,5 @@ interface DukanManagementRepository {
     suspend fun getDukanStyles(): List<Dukan.Style>
     suspend fun getDukanColors(): List<Color>
     suspend fun getCategories(): List<Category>
+    suspend fun uploadDukanImage(fileName: String, fileBytes: ByteArray): String
 }

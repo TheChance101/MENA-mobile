@@ -12,7 +12,7 @@ import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus

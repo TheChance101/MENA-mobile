@@ -18,6 +18,7 @@ import net.thechance.mena.dukan.data.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.mapper.toDukan
 import net.thechance.mena.dukan.data.mapper.toMyDukanStatus
 import net.thechance.mena.dukan.data.util.constants.EndPoints.DUKAN_BASE_PATH
+import net.thechance.mena.dukan.data.util.network.buildSinglePartFormData
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
@@ -81,5 +82,17 @@ class DukanManagementRepositoryImpl(
         return safeApiCall<DukanCategoryResponse> {
             client.get("$DUKAN_BASE_PATH/categories")
         }.categories.toCategoryList()
+    }
+
+    override suspend fun uploadDukanImage(
+        fileName: String, fileBytes: ByteArray
+    ): String {
+        return safeApiCall {
+            client.post("$DUKAN_BASE_PATH/image") {
+                setBody(
+                    buildSinglePartFormData(fileName, fileBytes, "file")
+                )
+            }
+        }
     }
 }

@@ -35,6 +35,6 @@ kover.reports {
     }
 
     filters.excludes {
-        packages("*.di", "*.entity", "*.exception")
+        packages("*.di", "*.entity", "*.exception", "*.model")
     }
 }

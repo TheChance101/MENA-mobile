@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.data.repository
 
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createMediaRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createProductRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createdProductResponseId
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultCreateProductResponse
@@ -13,7 +12,6 @@ import kotlin.test.assertTrue
 
 class DukanProductRepositoryImplTest {
     private val repository = createProductRepository()
-    private val mediaRepository = createMediaRepository()
 
     @Test
     fun `createProduct calls correct endpoint and returns created product ID`() = runTest {

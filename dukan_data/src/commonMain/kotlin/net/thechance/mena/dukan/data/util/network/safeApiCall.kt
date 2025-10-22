@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.data.util.network
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
+import io.ktor.util.logging.KtorSimpleLogger
 import kotlinx.io.IOException
 import net.thechance.mena.dukan.data.dto.ErrorResponse
 import net.thechance.mena.dukan.data.util.constants.DukanErrorCodes
@@ -15,11 +16,13 @@ import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.exceptions.UnAuthorizedException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 
-suspend inline fun <reified T> safeApiCall(
+
+internal suspend inline fun <reified T> safeApiCall(
     crossinline block: suspend () -> HttpResponse
 ): T {
     val response = runCatching { block() }
         .getOrElse { e ->
+            logger.error("Network error: ${e.message}")
             when (e) {
                 is IOException -> throw NoInternetException(e.message.orEmpty())
                 else -> throw DukanException(e.message.orEmpty())
@@ -28,49 +31,42 @@ suspend inline fun <reified T> safeApiCall(
     return handleResponse(response)
 }
 
-suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
+
+internal suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
     return when (response.status.value) {
         in 200..299 -> {
             try {
                 response.body<T>()
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                logger.error("Error parsing response ${e.message}")
                 throw DukanException("Error parsing response")
             }
         }
 
-        400 -> {
-            val errorResponse = try {
-                response.body<ErrorResponse>()
-            } catch (_: Exception) {
-                ErrorResponse("Bad request")
-            }
-            throw mapErrorResponseToException(errorResponse)
+        400, 404, 409 -> {
+            logger.error("Error response: ${response.status.description}")
+            throw mapErrorResponseToException(parseErrorResponse(response))
         }
 
         401 -> throw UnAuthorizedException("Unauthorized")
-        404 -> {
-            val errorResponse = try {
-                response.body<ErrorResponse>()
-            } catch (_: Exception) {
-                ErrorResponse("Not found")
-            }
-            throw mapErrorResponseToException(errorResponse)
-        }
 
-        409 -> {
-            val errorResponse = try {
-                response.body<ErrorResponse>()
-            } catch (_: Exception) {
-                ErrorResponse("Conflict")
-            }
-            throw mapErrorResponseToException(errorResponse)
+        else -> {
+            logger.error("Unexpected error: ${response.status.description}")
+            throw DukanException("Unexpected error")
         }
-
-        else -> throw DukanException("Unexpected error")
     }
 }
 
-fun mapErrorResponseToException(errorResponse: ErrorResponse): Exception {
+internal suspend fun parseErrorResponse(response: HttpResponse): ErrorResponse {
+    return try {
+        response.body<ErrorResponse>()
+    } catch (e: Exception) {
+        logger.error("Error parsing error response ${e.message}")
+        ErrorResponse(e.message.orEmpty())
+    }
+}
+
+internal fun mapErrorResponseToException(errorResponse: ErrorResponse): Exception {
     val errorCode = errorResponse.errorCode
     return when (errorCode) {
         DukanErrorCodes.DUKAN_CREATION_FAILED -> CreationFailedException("Dukan creation failed: ${errorResponse.message}")
@@ -86,3 +82,5 @@ fun mapErrorResponseToException(errorResponse: ErrorResponse): Exception {
         else -> DukanException(errorResponse.message)
     }
 }
+
+private val logger = KtorSimpleLogger("HttpResponseHandler")

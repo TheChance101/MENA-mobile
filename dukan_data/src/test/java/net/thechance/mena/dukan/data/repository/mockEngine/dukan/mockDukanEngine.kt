@@ -28,14 +28,14 @@ import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
 import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.data.repository.DukanDiscoveryRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanManagementRepositoryImpl
-import net.thechance.mena.dukan.data.repository.MediaRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.model.AddressInput
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
-import net.thechance.mena.identity.domain.util.Coordinates
+import net.thechance.mena.identity.domain.model.Coordinates
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -278,16 +278,6 @@ fun createDukanManagementRepository(
     )
 }
 
-fun createMediaRepository(
-    uploadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): MediaRepositoryImpl {
-    return MediaRepositoryImpl(
-        client = createDukanHttpClient(
-            uploadResponse = uploadResponse
-        )
-    )
-}
-
 fun createDukanDiscoveryRepository(
     pagedShelvesResponse: (suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData)? = null,
     locationService: LocationService = LocationService(FakeAddressesRepository())
@@ -303,23 +293,21 @@ fun createDukanDiscoveryRepository(
 
 @OptIn(ExperimentalUuidApi::class)
 private class FakeAddressesRepository : AddressesRepository {
-    override suspend fun createAddress(address: Address) {}
-    override suspend fun editAddress(address: Address) {}
+    override suspend fun createAddress(addressInput: AddressInput) {}
+    override suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput) {}
     override suspend fun getUserAddresses(): List<Address> {
         return listOf(
             Address(
                 latitude = 30.0444,
                 longitude = 31.2357,
                 addressLine = "Main Street, Cairo, Egypt",
-                addressType = AddressType.Home,
-                isActive = true
+                addressType = AddressType.Home
             ),
             Address(
                 latitude = 30.0419,
                 longitude = 31.2357,
                 addressLine = "Tahrir Square, Cairo, Egypt",
-                addressType = AddressType.Office,
-                isActive = false
+                addressType = AddressType.Office
             )
         )
     }
@@ -328,6 +316,8 @@ private class FakeAddressesRepository : AddressesRepository {
     override suspend fun getActiveAddress(): Address? {
         return null
     }
+
+    override suspend fun setActiveAddress(addressId: Uuid) {}
 
     override suspend fun getCurrentLocation(): Coordinates? {
         return null

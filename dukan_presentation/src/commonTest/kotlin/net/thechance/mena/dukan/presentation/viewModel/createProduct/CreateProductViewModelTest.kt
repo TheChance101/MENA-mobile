@@ -21,10 +21,9 @@ import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_price_invalid
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.productImage.ProductImageState
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -40,7 +39,6 @@ class CreateProductViewModelTest {
 
     private val productRepository = mock<ProductRepository>()
     private val shelfRepository = mock<ShelfRepository>()
-    private val mediaRepository = mock<MediaRepository>()
     private lateinit var viewModel: CreateProductViewModel
     private val dispatcher = StandardTestDispatcher()
     private val scope = TestScope(dispatcher)
@@ -48,7 +46,7 @@ class CreateProductViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        viewModel = CreateProductViewModel(productRepository, shelfRepository,mediaRepository, dispatcher)
+        viewModel = CreateProductViewModel(productRepository, shelfRepository, dispatcher)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -57,7 +55,7 @@ class CreateProductViewModelTest {
         val shelves = listOf(Shelf(Uuid.random(), "Shelf1"), Shelf(Uuid.random(), "Shelf2"))
         everySuspend { shelfRepository.getMyDukanShelves() } returns shelves
 
-        viewModel = CreateProductViewModel(productRepository, shelfRepository,mediaRepository, dispatcher)
+        viewModel = CreateProductViewModel(productRepository, shelfRepository, dispatcher)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -109,7 +107,7 @@ class CreateProductViewModelTest {
     @Test
     fun `onBackButton emits NavigateBack`() = scope.runTest {
         viewModel.effect.test {
-            viewModel.onBackButton()
+            viewModel.onBackClicked()
             assertEquals(CreateProductEffect.NavigateBack, awaitItem())
         }
     }
@@ -147,7 +145,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -169,7 +167,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -188,7 +186,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -207,7 +205,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns mock<ImageSrc>()
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -226,7 +224,7 @@ class CreateProductViewModelTest {
         everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
         everySuspend { fakeFile.toImageSrc() } returns null
 
-        viewModel.onUploadImageClick(fakeFile)
+        viewModel.onUploadImageClicked(fakeFile)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -256,7 +254,7 @@ class CreateProductViewModelTest {
             )
         }
 
-        viewModel.onCancelImageClick(fakeBitmap1)
+        viewModel.onCancelImageClicked(fakeBitmap1)
 
         val state = viewModel.state.value
         assertEquals(1, state.images.size)
@@ -273,7 +271,7 @@ class CreateProductViewModelTest {
             )
         }
 
-        viewModel.onCropImageBackClick()
+        viewModel.onCropImageBackClicked()
 
         val state = viewModel.state.value
         assertNull(state.selectedImage)
@@ -299,7 +297,7 @@ class CreateProductViewModelTest {
             )
         }
 
-        viewModel.onAddProductClick()
+        viewModel.onAddProductClicked()
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -320,11 +318,18 @@ class CreateProductViewModelTest {
                 selectedShelf = shelf,
                 price = "50.0",
                 description = "Nice description".padEnd(120, 'z'),
-                images = listOf(CreateProductUiState.ProductImageUi(0, fakeBitmap, 1.0, ProductImageState.SUCCESS))
+                images = listOf(
+                    CreateProductUiState.ProductImageUi(
+                        0,
+                        fakeBitmap,
+                        1.0,
+                        ProductImageState.SUCCESS
+                    )
+                )
             )
         }
 
-        viewModel.onAddProductClick()
+        viewModel.onAddProductClicked()
         advanceUntilIdle()
 
         val state = viewModel.state.value
