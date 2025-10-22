@@ -11,6 +11,7 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -128,15 +129,18 @@ class ReelViewModelTest {
     }
 
     @Test
-    fun `onRetryClick should called loadCategories when called`() = runTest{
+    fun `onRetryClick should reset error and call getFeedReels`() = runTest {
         viewModel.onRetryClick()
         testDispatcher.scheduler.advanceUntilIdle()
+
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.error).isNull()
+            verifySuspend { viewModel.getFeedReels() }
             cancelAndIgnoreRemainingEvents()
         }
     }
+
     companion object {
         private val testReel = Reel(
             id = "1",

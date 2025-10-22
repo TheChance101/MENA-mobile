@@ -10,6 +10,7 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.utils.TestExtensions
@@ -139,13 +140,14 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onRetryClick should call getCategories when called`() = runTest {
+    fun `onRetryClick should reset error and call getFeedReels`() = runTest {
         viewModel.onRetryClick()
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.errorState).isNull()
+            verifySuspend { viewModel.getCategories() }
             cancelAndIgnoreRemainingEvents()
         }
     }

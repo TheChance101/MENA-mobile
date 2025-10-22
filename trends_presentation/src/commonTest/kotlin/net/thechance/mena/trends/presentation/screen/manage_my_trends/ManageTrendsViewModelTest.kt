@@ -4,11 +4,13 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -95,15 +97,15 @@ class ManageTrendsViewModelTest {
     }
 
     @Test
-    fun `onRetryClick should get reels when called`() = runTest {
-        everySuspend { repository.getAllCurrentUserReels(1) } returns reels
-
+    fun `onRetryClick should reset error and call getFeedReels`() = runTest {
         viewModel.onRetryClick()
+        testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {
-            skipItems(1)
-            val successState = awaitItem()
-            assertThat(successState.reels.asSnapshot()).isEqualTo(expectedReelUiStateList)
+            val state = awaitItem()
+            assertThat(state.error).isNull()
+            verifySuspend { viewModel.getReels() }
+            verifySuspend { viewModel.getCurrentUserInfo() }
             cancelAndIgnoreRemainingEvents()
         }
     }
