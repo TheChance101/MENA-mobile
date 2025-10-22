@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -17,48 +16,30 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
-import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 
 @Composable
 fun SmallImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    shelvesPagerOld: PagerOld<Int, ShelfUiState>,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
-    lazyListState.LoadMoreOnScroll(shelvesPagerOld)
 
-    AnimatedContent(
-        targetState = state.shelvesState
-    ) { shelvesState ->
-        when (shelvesState) {
-            ShelvesState.LOADING -> {
-                SmallImageProductSkeleton()
-            }
-
-            ShelvesState.LOADED -> {
-                ShelvesContent(
-                    state = state,
-                    listener = listener,
-                    lazyListState = lazyListState,
-                    modifier = modifier
-                )
-            }
-
-            ShelvesState.EMPTY -> {}
-        }
-    }
+    ShelvesContent(
+        state = state,
+        listener = listener,
+        lazyListState = lazyListState,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -68,14 +49,16 @@ private fun ShelvesContent(
     lazyListState: LazyListState,
     modifier: Modifier,
 ) {
+    val shelfs = state.shelves.collectAsLazyPagingItems()
+
     LazyColumn(
         modifier = modifier,
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(vertical = Theme.spacing._16),
     ) {
-        items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) { index ->
-            val shelf = state.shelves.items[index]
+        items(count = shelfs.itemCount, key = { shelfs[it]?.id.orEmpty() }) { index ->
+            val shelf = shelfs[index] ?: return@items
             ProductsHeader(
                 viewAllColor = Color(state.dukanInfo.color),
                 shelfName = shelf.name,

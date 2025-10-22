@@ -9,7 +9,6 @@ data class ShelfDetailsUiState(
     val dukanStyle: Style = Style.NO_IMAGE,
     val dukancolor: Long = 0L,
     val productsShelf: Flow<PagingData<ProductUiState>> = flowOf(),
-    val productsState: ProductsState = ProductsState.LOADING,
 ) {
     data class ProductUiState(
         val id: String = "",
@@ -19,13 +18,6 @@ data class ShelfDetailsUiState(
         val description: String = "",
         val inCartQuantity: Int = 0
     )
-
-    enum class ProductsState {
-        LOADING,
-        LOADED,
-        ERROR
-    }
-
     enum class Style {
         WIDE_IMAGE,
         SMALL_IMAGE,

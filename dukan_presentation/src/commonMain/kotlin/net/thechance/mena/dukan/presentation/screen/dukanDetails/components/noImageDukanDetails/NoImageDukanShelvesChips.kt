@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.chip.ShelfChip
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
@@ -20,10 +20,11 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 @Composable
 fun NoImageDukanShelvesChips(
     state: DukanDetailsUiState,
-    lazyRowState: LazyListState,
     onClick: (String, Int) -> Unit,
     alpha: Float = 1f
 ) {
+
+    val shelfs = state.shelves.collectAsLazyPagingItems()
     if (alpha == 0f) {
         return
     }
@@ -40,10 +41,9 @@ fun NoImageDukanShelvesChips(
                 .padding(vertical = Theme.spacing._8),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
             contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-            state = lazyRowState
         ) {
-            items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) {
-                val shelf = state.shelves.items[it]
+            items(count = shelfs.itemCount, key = { shelfs[it]?.id.orEmpty() }) {
+                val shelf = shelfs[it] ?: return@items
                 ShelfChip(
                     text = shelf.name,
                     isSelected = (shelf.id == state.shelfIdSelected),

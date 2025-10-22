@@ -78,6 +78,7 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.mokkery.core)
+            implementation("androidx.paging:paging-testing:3.4.0-alpha04")
         }
     }
 }

@@ -38,20 +38,16 @@ fun DukanDetailsScreen(
         DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetails(
             state = state,
             listener = viewModel,
-            pagerOldShelf = viewModel.pagerShelf,
-            pagerOldProduct = viewModel.pagerProduct
         )
 
         DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(
             state = state,
             listener = viewModel,
-            pagerOldShelf = viewModel.pagerShelf
         )
 
         DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(
             state = state,
             listener = viewModel,
-            pagerOldShelf = viewModel.pagerShelf
         )
     }
 }

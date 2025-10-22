@@ -1,15 +1,15 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 data class DukanDetailsUiState(
     val dukanInfo: DukanInfo = DukanInfo(),
     val isDukanInfoLoading: Boolean = true,
-    val bestSellingProducts: PagingDataOld<ProductUiState> = PagingDataOld(),
-    val shelves: PagingDataOld<ShelfUiState> = PagingDataOld(),
-    val shelvesState: ShelvesState = ShelvesState.LOADING,
-    val productsShelf: PagingDataOld<ProductUiState> = PagingDataOld(),
-    val productsState: ProductsState = ProductsState.LOADING,
+    val bestSellingProducts: Flow<PagingData<ProductUiState>> = flowOf(),
+    val shelves: Flow<PagingData<ShelfUiState>> = flowOf(),
+    val productsShelf: Flow<PagingData<ProductUiState>> = flowOf(),
     val shelfIdSelected: String? = null
 ) {
     data class DukanInfo(
@@ -39,11 +39,6 @@ data class DukanDetailsUiState(
         val isProductsLoaded: Boolean = false
     )
 
-    enum class ShelvesState {
-        LOADING,
-        LOADED,
-        EMPTY
-    }
 
     data class ProductUiState(
         val id: String = "",
@@ -53,10 +48,4 @@ data class DukanDetailsUiState(
         val description: String = "",
         val inCartQuantity: Int = 0
     )
-
-    enum class ProductsState {
-        LOADING,
-        LOADED,
-        EMPTY
-    }
 }
