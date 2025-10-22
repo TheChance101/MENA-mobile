@@ -22,8 +22,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.thechance.mena.dukan.presentation.util.pagination.BasePagationSourceNew
-import net.thechance.mena.dukan.presentation.util.pagination.BasePagationSourceNew.Companion.PAGING_PAGE_SIZE
+import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagationSource
+import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagationSource.Companion.PAGING_PAGE_SIZE
 
 abstract class BaseViewModel<S, E>(
     initialState: S,
@@ -98,7 +98,7 @@ abstract class BaseViewModel<S, E>(
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
-                BasePagationSourceNew(onError = onError, onFetchPage = block)
+                BasePagationSource(onError = onError, onFetchPage = block)
             }
         ).flow.map { pagingData ->
             pagingData.map(mapper)

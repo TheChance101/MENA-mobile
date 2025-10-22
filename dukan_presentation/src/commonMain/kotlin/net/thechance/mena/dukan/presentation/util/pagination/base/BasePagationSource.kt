@@ -1,9 +1,9 @@
-package net.thechance.mena.dukan.presentation.util.pagination
+package net.thechance.mena.dukan.presentation.util.pagination.base
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
-internal class BasePagationSourceNew<T : Any>(
+internal class BasePagationSource<T : Any>(
     private val onError: (Throwable) -> Unit = {},
     private val onFetchPage: suspend (pageNumber: Int, pageSize: Int) -> List<T>
 ) : PagingSource<Int, T>() {
