@@ -56,9 +56,9 @@ fun SunriseTimeRow(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun SunriseTimeRowPreview() {
+private fun Preview() {
     QuranTheme {
         SunriseTimeRow(
             icon = painterResource(Res.drawable.ic_sunrise),

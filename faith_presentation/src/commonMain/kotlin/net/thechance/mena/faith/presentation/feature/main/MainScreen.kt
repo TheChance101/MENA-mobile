@@ -165,8 +165,8 @@ private fun onContinueTilawahClick(
 }
 
 @Composable
-@Preview(heightDp = 800, widthDp = 360)
-private fun MainScreenPreview() {
+@Preview
+private fun Preview() {
     QuranTheme {
         Content(
             uiState = MainUiState(

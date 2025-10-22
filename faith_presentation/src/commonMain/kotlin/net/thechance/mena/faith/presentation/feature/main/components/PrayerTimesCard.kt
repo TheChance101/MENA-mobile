@@ -150,7 +150,7 @@ private fun PrayerItem(
 }
 
 
-@Preview(heightDp = 142)
+@Preview
 @Composable
 private fun PrayerTimesCardPreview() {
     val samplePrayerTimesUiState = PrayerTimesUiState(

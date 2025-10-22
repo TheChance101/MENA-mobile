@@ -37,7 +37,7 @@ fun CardIcon(
 
 @Preview
 @Composable
-fun CardIconPreview() {
+private fun Preview() {
     QuranTheme {
         CardIcon(
             icon = painterResource(Res.drawable.ic_quran),

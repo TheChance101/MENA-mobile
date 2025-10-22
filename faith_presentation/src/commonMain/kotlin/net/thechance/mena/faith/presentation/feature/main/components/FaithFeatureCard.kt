@@ -71,9 +71,9 @@ fun FaithFeatureCard(
     }
 }
 
-@Preview(widthDp = 160, heightDp = 112)
+@Preview
 @Composable
-private fun FaithFeatureCardPreview() {
+private fun Preview() {
     QuranTheme {
         FaithFeatureCard(
             icon = painterResource(Res.drawable.ic_quran),

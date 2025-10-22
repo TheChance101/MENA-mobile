@@ -101,7 +101,7 @@ fun TilawahSection(
 
 @Preview
 @Composable
-private fun TilawahSectionPreview() {
+private fun Preview() {
     QuranTheme {
         TilawahSection(
             tilawahUiState = TilawahUiState(

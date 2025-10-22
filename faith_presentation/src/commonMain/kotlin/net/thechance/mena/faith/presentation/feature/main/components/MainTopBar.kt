@@ -58,9 +58,9 @@ fun MainTopBar(
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun MainTopBarPreview() {
+private fun Preview() {
     QuranTheme {
         MainTopBar(
             locationName = "Palestine, Gaza"
