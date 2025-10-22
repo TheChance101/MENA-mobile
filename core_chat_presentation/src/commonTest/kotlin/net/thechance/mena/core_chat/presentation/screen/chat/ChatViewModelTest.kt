@@ -328,8 +328,8 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onCameraClosed should close camera when called`() {
-        chatViewModel.onCameraClosed()
+    fun `onCameraResult should close camera when called`() {
+        chatViewModel.onCameraResult(null)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(chatViewModel.state.value.isCameraOpen).isFalse()

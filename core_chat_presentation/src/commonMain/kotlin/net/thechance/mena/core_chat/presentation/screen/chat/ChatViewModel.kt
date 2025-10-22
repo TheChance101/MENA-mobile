@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat
 
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.viewModelScope
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
@@ -23,11 +24,11 @@ import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -37,6 +38,7 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -442,12 +444,19 @@ class ChatViewModel(
         )
     }
 
-    private fun onCameraPermissionGranted() {
-        updateState { it.copy(isCameraOpen = true, isAttachmentsOverlayVisible = false) }
+    override fun onCameraResult(image: ImageBitmap?) {
+        updateState { it.copy(isCameraOpen = false) }
+
+        if (image == null) return
+
+        tryToExecute(
+            execute = { image.encodeToByteArrayWithCompressionToMaxSize() },
+            onSuccess = { byteArray -> onSendImageClicked(listOf(byteArray)) }
+        )
     }
 
-    override fun onCameraClosed() {
-        updateState { it.copy(isCameraOpen = false) }
+    private fun onCameraPermissionGranted() {
+        updateState { it.copy(isCameraOpen = true, isAttachmentsOverlayVisible = false) }
     }
 
     override fun onCloseAttachmentClicked() {
