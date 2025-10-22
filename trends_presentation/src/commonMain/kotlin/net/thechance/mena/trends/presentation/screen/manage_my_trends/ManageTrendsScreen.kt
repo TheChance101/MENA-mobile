@@ -90,7 +90,7 @@ private fun ManageTrendsScreenContent(
     ) {
 
         when {
-            state.error != ErrorState.NoInternet -> { NoConnection(onRetry = listener::onRetryClick) }
+            state.error == ErrorState.NoInternet -> { NoConnection(onRetry = listener::onRetryClick) }
 
             else -> {
                 Column(
