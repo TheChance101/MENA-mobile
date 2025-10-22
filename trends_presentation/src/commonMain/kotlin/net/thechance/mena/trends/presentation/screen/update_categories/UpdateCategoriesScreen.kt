@@ -36,11 +36,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
-import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
-import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -101,48 +98,36 @@ private fun UpdateCategoriesScreenContent(
     listener: UpdateCategoriesInteractionListener
 ) {
     if (state.isLoading.not()) {
-        Scaffold(
-            topBar = { ChangeTagsAppBar(onBackClick = listener::onBackClick) },
-            snakeBar = {
-                state.errorState?.let { errorState ->
-                    TrendsSnackBar(
-                        message = stringResource(errorState.toStringResource()),
-                        status = SnackBarStatus.Error
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
+                .padding(horizontal = Theme.spacing._16)
+        ) {
+            ChooseInterestsMessage()
+            FlowRow(
+                modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+            ) {
+                state.categories.forEach { category ->
+                    CategoryItem(
+                        category = category,
+                        onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                        modifier = Modifier.padding(
+                            bottom = Theme.spacing._12,
+                            end = Theme.spacing._8
+                        )
                     )
                 }
             }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = rememberScrollState())
-                    .padding(horizontal = Theme.spacing._16)
-            ) {
-                ChooseInterestsMessage()
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
-                            modifier = Modifier.padding(
-                                bottom = Theme.spacing._12,
-                                end = Theme.spacing._8
-                            )
-                        )
-                    }
-                }
 
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-                SaveChangeButton(
-                    onSaveClick = listener::onSaveClick,
-                    isButtonEnabled = state.saveButtonEnabled(),
-                    isButtonLoading = state.isSaveButtonLoading,
-                    modifier = Modifier.padding(bottom = Theme.spacing._24)
-                )
-            }
+            SaveChangeButton(
+                onSaveClick = listener::onSaveClick,
+                isButtonEnabled = state.saveButtonEnabled(),
+                isButtonLoading = state.isSaveButtonLoading,
+                modifier = Modifier.padding(bottom = Theme.spacing._24)
+            )
         }
     } else {
         LoadingProgressBar()

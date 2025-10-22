@@ -19,7 +19,6 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.choose_interests
 import mena.trends_presentation.generated.resources.help_text
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
-import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -27,7 +26,6 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
-import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.stringResource
@@ -71,39 +69,28 @@ private fun CategoryPickScreenContent(
     listener: CategoryPickInteractionListener
 ) {
     if (state.isLoading.not()) {
-        Scaffold(
-            bottomBar = {
-                NextButton(
-                    onNextClick = listener::onNextClick,
-                    isButtonEnabled = state.isNextButtonEnabled(),
-                    isButtonLoading = state.isNextButtonLoading,
-                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
-                )
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Theme.spacing._16)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = Theme.spacing._16)
-            ) {
-                ChooseInterestsMessage()
+            ChooseInterestsMessage()
 
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = Theme.spacing._24)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
-                            modifier = Modifier.padding(
-                                bottom = Theme.spacing._12,
-                                end = Theme.spacing._8
-                            )
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = Theme.spacing._24)
+            ) {
+                state.categories.forEach { category ->
+                    CategoryItem(
+                        category = category,
+                        onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                        modifier = Modifier.padding(
+                            bottom = Theme.spacing._12,
+                            end = Theme.spacing._8
                         )
-                    }
+                    )
                 }
             }
         }

@@ -116,45 +116,36 @@ private fun ReelScreenContent(
     state: HomeScreenState,
     listener: HomeInteractionListener,
 ) {
-    Scaffold(
-        topBar = {
-            TrendsAppBar(
-                onManageMyTrendsClick = listener::onManageMyTrendsClick,
-                onEditTagsClick = listener::onEditTagsClick
-            )
-        }
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            val reels = state.reels.collectAsLazyPagingItems()
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16),
-                contentPadding = PaddingValues(vertical = Theme.spacing._8),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-            ) {
-                items(reels.itemSnapshotList.items) { reel ->
-                    FeedReelCard(
-                        reel = reel,
-                        onLikeClick = { listener.onLikeClick(reel.id) },
-                        onReelClick = { listener.onReelClick(reel.id) }
-                    )
-                }
+    Box(modifier = Modifier.fillMaxSize()) {
+        val reels = state.reels.collectAsLazyPagingItems()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = Theme.spacing._16),
+            contentPadding = PaddingValues(vertical = Theme.spacing._8),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+        ) {
+            items(reels.itemSnapshotList.items) { reel ->
+                FeedReelCard(
+                    reel = reel,
+                    onLikeClick = { listener.onLikeClick(reel.id) },
+                    onReelClick = { listener.onReelClick(reel.id) }
+                )
             }
-
-            Icon(
-                painter = painterResource(Res.drawable.ic_add_real),
-                contentDescription = stringResource(Res.string.add_reel),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(Theme.radius.lg))
-                    .background(Theme.colorScheme.primary.primary)
-                    .noRippleClickable { listener.onAddReelClick() }
-                    .padding(Theme.spacing._16)
-            )
         }
+
+        Icon(
+            painter = painterResource(Res.drawable.ic_add_real),
+            contentDescription = stringResource(Res.string.add_reel),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
+                .size(56.dp)
+                .clip(RoundedCornerShape(Theme.radius.lg))
+                .background(Theme.colorScheme.primary.primary)
+                .noRippleClickable { listener.onAddReelClick() }
+                .padding(Theme.spacing._16)
+        )
     }
 }
 

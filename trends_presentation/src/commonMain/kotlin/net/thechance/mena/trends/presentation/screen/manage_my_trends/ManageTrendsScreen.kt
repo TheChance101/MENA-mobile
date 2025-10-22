@@ -108,35 +108,31 @@ private fun ManageTrendsScreenContent(
     state: ManageTrendsScreenState,
     listener: ManageTrendsInteractionListener
 ) {
-    Scaffold(
-        topBar = { ManageMyTrendsAppBar(onBackClick = listener::onBackClick) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
-        Column(
+        UserAvatar(
+            profileImageUrl = state.profile.profileImageUrl,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Text(
+            text = state.profile.userName,
+            style = Theme.typography.label.medium,
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            UserAvatar(
-                profileImageUrl = state.profile.profileImageUrl,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+                .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
+                .align(Alignment.CenterHorizontally)
+        )
 
-            Text(
-                text = state.profile.userName,
-                style = Theme.typography.label.medium,
-                modifier = Modifier
-                    .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
-                    .align(Alignment.CenterHorizontally)
-            )
-
-            SegmentSection(
-                reels = state.reels.collectAsLazyPagingItems(),
-                onTrendClick = listener::onReelClick,
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                trendsTitle = stringResource(Res.string.my_trends),
-                favoriteTitle = stringResource(Res.string.favorite)
-            )
-        }
+        SegmentSection(
+            reels = state.reels.collectAsLazyPagingItems(),
+            onTrendClick = listener::onReelClick,
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            trendsTitle = stringResource(Res.string.my_trends),
+            favoriteTitle = stringResource(Res.string.favorite)
+        )
     }
 }
 
