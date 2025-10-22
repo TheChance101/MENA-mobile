@@ -71,7 +71,6 @@ private fun CategoryPickScreenContent(
     listener: CategoryPickInteractionListener
 ) {
     if (state.isLoading.not()) {
-
         Scaffold(
             bottomBar = {
                 NextButton(
