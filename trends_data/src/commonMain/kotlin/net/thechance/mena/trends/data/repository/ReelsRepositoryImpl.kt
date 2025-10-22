@@ -39,7 +39,6 @@ import net.thechance.mena.trends.data.util.NetworkConstants.VIEW_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
-import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -120,7 +119,6 @@ internal class ReelsRepositoryImpl(
         return safeApiCall<UploadReelResponse> {
             val fileSource = videoFileHandler.readFile(filePath)
             uploadClient.post(urlString = REELS_ENDPOINT) {
-                setUploadRequestTimeout()
                 setBody(
                     createRequestBody(
                         key = VIDEO,
