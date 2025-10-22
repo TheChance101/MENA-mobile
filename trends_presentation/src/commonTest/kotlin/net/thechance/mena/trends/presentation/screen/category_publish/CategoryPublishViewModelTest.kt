@@ -59,18 +59,18 @@ class CategoryPublishViewModelTest {
     }
 
     @Test
-    fun `onBackClick should emit NavigateBack effect`() = runTest {
+    fun `onClickBack should emit NavigateBack effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onBackClick()
+            viewModel.onClickBack()
             val effect = awaitItem()
             assertTrue(effect is CategoryPublishEffect.NavigateBack)
         }
     }
 
     @Test
-    fun `onPublishClick should emit NavigateToTrends effect`() = runTest {
+    fun `onClickPublish should emit NavigateToTrends effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onPublishClick()
+            viewModel.onClickPublish()
             val effect = awaitItem()
             assertTrue(effect is CategoryPublishEffect.NavigateToHome)
         }
@@ -87,16 +87,16 @@ class CategoryPublishViewModelTest {
     }
 
     @Test
-    fun `onPublishClick should update error state when updateReelById throws exception`() =
+    fun `onClickPublish should update error state when updateReelById throws exception`() =
         runTest {
             everySuspend {
                 reelsRepository.updateReelById(any(), any(), any())
             } throws Exception()
 
-            viewModel.onCategoryClick(category.id)
+            viewModel.onClickCategory(category.id)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.onPublishClick()
+            viewModel.onClickPublish()
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.state.test {
@@ -126,12 +126,12 @@ class CategoryPublishViewModelTest {
     }
 
     @Test
-    fun `onPublishClick should call updateReelById with correct params when category is selected`() =
+    fun `onClickPublish should call updateReelById with correct params when category is selected`() =
         runTest {
-            viewModel.onCategoryClick(category.id)
+            viewModel.onClickCategory(category.id)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.onPublishClick()
+            viewModel.onClickPublish()
             testDispatcher.scheduler.advanceUntilIdle()
 
             verifySuspend {

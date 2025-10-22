@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.login
 
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import org.jetbrains.compose.resources.StringResource
 
 data class LoginScreenUIState(

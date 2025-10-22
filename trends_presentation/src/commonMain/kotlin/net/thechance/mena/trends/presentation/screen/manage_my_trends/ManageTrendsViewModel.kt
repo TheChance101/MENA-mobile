@@ -65,11 +65,11 @@ internal class ManageTrendsViewModel(
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
-    override fun onReelClick(reelId: String) {
+    override fun onClickReel(reelId: String) {
         sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId))
     }
 
-    override fun onBackClick() {
+    override fun onClickBack() {
         sendEffect(ManageTrendsUiEffect.NavigateBack)
     }
 }

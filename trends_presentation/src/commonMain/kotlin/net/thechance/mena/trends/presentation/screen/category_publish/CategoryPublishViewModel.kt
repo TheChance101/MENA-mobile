@@ -42,13 +42,13 @@ internal class CategoryPublishViewModel(
         updateState { copy(categories = categories.toReelCategoryUiState()) }
     }
 
-    override fun onBackClick() = sendEffect(CategoryPublishEffect.NavigateBack)
+    override fun onClickBack() = sendEffect(CategoryPublishEffect.NavigateBack)
 
-    override fun onCategoryClick(categoryId: String) = updateState {
+    override fun onClickCategory(categoryId: String) = updateState {
         copy(categories = categories.toggleCategory(categoryId))
     }
 
-    override fun onPublishClick() {
+    override fun onClickPublish() {
         tryToExecute(
             block = { updateReel() },
             onSuccess = { sendEffect(CategoryPublishEffect.NavigateToHome) },
