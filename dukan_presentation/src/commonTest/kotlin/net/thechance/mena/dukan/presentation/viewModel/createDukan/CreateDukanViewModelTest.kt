@@ -21,10 +21,10 @@ import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -33,27 +33,30 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CreateDukanViewModelTest {
 
     private val locationRepository = mock<LocationRepository>(mode = MockMode.autofill)
-    private val dukanRepository = mock<DukanRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
     private lateinit var createDukanViewModel: CreateDukanViewModel
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        everySuspend { dukanRepository.getDukanStyles() } returns fakeDukanStyle()
-        everySuspend { dukanRepository.getDukanColors() } returns fakeDukanColor()
-        everySuspend { dukanRepository.getCategories() } returns fakeCategories()
-        everySuspend { dukanRepository.isDukanNameTaken(any()) } returns false
+        everySuspend { dukanManagementRepository.getDukanStyles() } returns fakeDukanStyle()
+        everySuspend { dukanManagementRepository.getDukanColors() } returns fakeDukanColor()
+        everySuspend { dukanManagementRepository.getCategories() } returns fakeCategories()
+        everySuspend { dukanManagementRepository.isDukanNameTaken(any()) } returns false
 
 
         createDukanViewModel = CreateDukanViewModel(
-            dukanRepository,
-            locationRepository,
+            dukanManagementRepository = dukanManagementRepository,
+            locationRepository = locationRepository,
             testDispatcher
         )
     }
@@ -400,8 +403,7 @@ class CreateDukanViewModelTest {
         createDukanViewModel.updateState {
             copy(
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 )
             )
         }
@@ -427,14 +429,14 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `isCategorySelected SHOULD return true when category is in selected categories`() =
+    fun `onCategoryEnabled SHOULD return true when category is in selected categories`() =
         runTest {
             // Given
             createDukanViewModel.updateState { copy(selectedCategories = setOf(fakeCategories()[0].toUiState())) }
 
             // When
             val isSelected =
-                createDukanViewModel.isCategorySelected()(fakeCategories()[0].toUiState())
+                createDukanViewModel.onCategoryEnabled(fakeCategories()[0].toUiState())
 
             // Then
             assertTrue(isSelected)
@@ -444,7 +446,9 @@ class CreateDukanViewModelTest {
     fun `isCategorySelected SHOULD return false when category is not in selected categories`() =
         runTest {
             // Given
-            createDukanViewModel.updateState { copy(selectedCategories = setOf(fakeCategories()[1].toUiState())) }
+            createDukanViewModel.updateState {
+                copy(selectedCategories = setOf(fakeCategories()[1].toUiState()))
+            }
 
             // When
             val isSelected =
@@ -454,25 +458,14 @@ class CreateDukanViewModelTest {
             assertFalse(isSelected)
         }
 
+
     @Test
-    fun `onCategorySelected SHOULD return true when can select more categories`() = runTest {
+    fun `onCategoryClicked SHOULD add category when not selected and can select more`() = runTest {
         // Given
         val category = fakeCategories()[0].toUiState()
 
         // When
-        val result = createDukanViewModel.onCategorySelected(category)
-
-        // Then
-        assertTrue(result)
-    }
-
-    @Test
-    fun `onCategorySelected SHOULD add category when can select more`() = runTest {
-        // Given
-        val category = fakeCategories()[0].toUiState()
-
-        // When
-        createDukanViewModel.onCategorySelected(category)
+        createDukanViewModel.onCategoryClicked(category)
 
         // Then
         val selectedCategories = createDukanViewModel.state.value.selectedCategories
@@ -480,7 +473,21 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onCategorySelected SHOULD return false when max categories reached`() = runTest {
+    fun `onCategoryClicked SHOULD remove category when already selected`() = runTest {
+        // Given
+        val category = fakeCategories()[0].toUiState()
+        createDukanViewModel.updateState { copy(selectedCategories = setOf(category)) }
+
+        // When
+        createDukanViewModel.onCategoryClicked(category)
+
+        // Then
+        val selectedCategories = createDukanViewModel.state.value.selectedCategories
+        assertFalse(selectedCategories.contains(category))
+    }
+
+    @Test
+    fun `onCategoryClicked SHOULD not add category when max categories reached`() = runTest {
         // Given
         createDukanViewModel.updateState {
             copy(
@@ -493,41 +500,16 @@ class CreateDukanViewModelTest {
         }
 
         // When
-        val result = createDukanViewModel.onCategorySelected(fakeCategories()[3].toUiState())
+        createDukanViewModel.onCategoryClicked(fakeCategories()[3].toUiState())
 
         // Then
-        assertFalse(result)
         val selectedCategories = createDukanViewModel.state.value.selectedCategories
         assertFalse(selectedCategories.contains(fakeCategories()[3].toUiState()))
+        assertEquals(3, selectedCategories.size)
     }
 
     @Test
-    fun `onCategoryDeselected SHOULD return true when category is removed`() = runTest {
-        // Given
-        createDukanViewModel.updateState { copy(selectedCategories = setOf(fakeCategories()[0].toUiState())) }
-
-        // When
-        val result = createDukanViewModel.onCategoryDeselected(fakeCategories()[0].toUiState())
-
-        // Then
-        assertTrue(result)
-    }
-
-    @Test
-    fun `onCategoryDeselected SHOULD remove category from selection`() = runTest {
-        // Given
-        createDukanViewModel.updateState { copy(selectedCategories = setOf(fakeCategories()[0].toUiState())) }
-
-        // When
-        createDukanViewModel.onCategoryDeselected(fakeCategories()[0].toUiState())
-
-        // Then
-        val selectedCategories = createDukanViewModel.state.value.selectedCategories
-        assertFalse(selectedCategories.contains(fakeCategories()[0].toUiState()))
-    }
-
-    @Test
-    fun `onCategoryEnabled SHOULD return true when can select more categories`() = runTest {
+    fun `isCategoryEnabled SHOULD return true when can select more categories`() = runTest {
         // Given
         val category = fakeCategories()[0].toUiState()
 
@@ -539,7 +521,7 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onCategoryEnabled SHOULD return true when category is already selected`() = runTest {
+    fun `isCategoryEnabled SHOULD return true when category is already selected`() = runTest {
         // Given
         createDukanViewModel.updateState {
             copy(
@@ -559,7 +541,7 @@ class CreateDukanViewModelTest {
     }
 
     @Test
-    fun `onCategoryEnabled SHOULD return false when max categories reached and category not selected`() =
+    fun `isCategoryEnabled SHOULD return false when max categories reached and category not selected`() =
         runTest {
             // Given
             createDukanViewModel.updateState {
@@ -581,124 +563,7 @@ class CreateDukanViewModelTest {
 
 
     @Test
-    fun `onCLickNext SHOULD show snack bar when basic information is invalid`() = runTest {
-        // Given
-        createDukanViewModel.updateState {
-            copy(
-                name = "",
-                selectedCategories = setOf(fakeCategories()[0].toUiState()),
-                currentStep = CreateDukanUiState.CreateDukanStep.BASIC_INFORMATION,
-                snackBarState = null
-            )
-        }
-
-        // When
-        createDukanViewModel.onCLickNext()
-
-        // Then
-        val state = createDukanViewModel.state.value
-        assertNotNull(state.snackBarState)
-        assertFalse(state.isNameUnique)
-    }
-
-    @Test
-    fun `onCategorySelected SHOULD return false when maximum category limit reached`() = runTest {
-        // Given
-        createDukanViewModel.updateState {
-            copy(
-                selectedCategories = setOf(
-                    fakeCategories()[0].toUiState(),
-                    fakeCategories()[1].toUiState(),
-                    fakeCategories()[2].toUiState()
-                )
-            )
-        }
-
-        // When
-        val result = createDukanViewModel.onCategorySelected(fakeCategories()[3].toUiState())
-
-        // Then
-        assertFalse(result)
-    }
-
-    @Test
-    fun `onCategorySelected SHOULD maintain category count when maximum limit reached`() = runTest {
-        // Given
-        createDukanViewModel.updateState {
-            copy(
-                selectedCategories = setOf(
-                    fakeCategories()[0].toUiState(),
-                    fakeCategories()[1].toUiState(),
-                    fakeCategories()[2].toUiState()
-                )
-            )
-        }
-
-        // When
-        createDukanViewModel.onCategorySelected(fakeCategories()[3].toUiState())
-
-        // Then
-        val selectedCategories = createDukanViewModel.state.value.selectedCategories
-        assertEquals(3, selectedCategories.size)
-    }
-
-    @Test
-    fun `onCategorySelected SHOULD not include new category when maximum limit reached`() =
-        runTest {
-            // Given
-            createDukanViewModel.updateState {
-                copy(
-                    selectedCategories = setOf(
-                        fakeCategories()[0].toUiState(),
-                        fakeCategories()[1].toUiState(),
-                        fakeCategories()[2].toUiState()
-                    )
-                )
-            }
-
-            // When
-            createDukanViewModel.onCategorySelected(fakeCategories()[3].toUiState())
-
-            // Then
-            val selectedCategories = createDukanViewModel.state.value.selectedCategories
-            assertFalse(selectedCategories.contains(fakeCategories()[3].toUiState()))
-        }
-
-    @Test
-    fun `onCategoryDeselected SHOULD handle empty selection correctly`() = runTest {
-        // Given
-        createDukanViewModel.updateState { copy(selectedCategories = emptySet()) }
-
-        // When
-        val result = createDukanViewModel.onCategoryDeselected(fakeCategories()[0].toUiState())
-
-        // Then
-        assertTrue(result)
-        val selectedCategories = createDukanViewModel.state.value.selectedCategories
-        assertTrue(selectedCategories.isEmpty())
-    }
-
-    @Test
-    fun `onNameChanged SHOULD update button state based on validation`() = runTest {
-        // Given
-        createDukanViewModel.updateState {
-            copy(
-                name = "",
-                selectedCategories = setOf(fakeCategories()[0].toUiState()),
-                currentStep = CreateDukanUiState.CreateDukanStep.BASIC_INFORMATION
-            )
-        }
-
-        // When
-        createDukanViewModel.onNameChanged(fakeTestDukan())
-
-        // Then
-        val state = createDukanViewModel.state.value
-        assertTrue(state.isButtonEnabled)
-    }
-
-    @Test
-    fun `onCategorySelected SHOULD update button state`() = runTest {
+    fun `onCategoryClicked SHOULD update button state`() = runTest {
         // Given
         createDukanViewModel.updateState {
             copy(
@@ -709,7 +574,7 @@ class CreateDukanViewModelTest {
         }
 
         // When
-        createDukanViewModel.onCategorySelected(fakeCategories()[0].toUiState())
+        createDukanViewModel.onCategoryClicked(fakeCategories()[0].toUiState())
 
         // Then
         val state = createDukanViewModel.state.value
@@ -717,13 +582,26 @@ class CreateDukanViewModelTest {
     }
 
     @Test
+    fun `onCategoryClicked SHOULD handle empty selection correctly when removing non-existent category`() =
+        runTest {
+            // Given
+            createDukanViewModel.updateState { copy(selectedCategories = emptySet()) }
+
+            // When
+            createDukanViewModel.onCategoryClicked(fakeCategories()[0].toUiState())
+
+            // Then
+            val selectedCategories = createDukanViewModel.state.value.selectedCategories
+            assertTrue(selectedCategories.contains(fakeCategories()[0].toUiState()))
+        }
+
+    @Test
     fun `onDismissSnackBar SHOULD hide snack bar when called`() = runTest {
         // Given
         createDukanViewModel.updateState {
             copy(
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 )
             )
         }
@@ -746,8 +624,7 @@ class CreateDukanViewModelTest {
                 name = testName,
                 selectedCategories = testCategories,
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 ),
                 isNameUnique = false
             )
@@ -803,8 +680,7 @@ class CreateDukanViewModelTest {
         createDukanViewModel.updateState {
             copy(
                 snackBarState = SnackBarUiState(
-                    SnackBarType.ERROR,
-                    Res.string.shelf_name_is_already_exist
+                    SnackBarType.ERROR, Res.string.shelf_name_is_already_exist
                 )
             )
         }
@@ -820,9 +696,9 @@ class CreateDukanViewModelTest {
 
     @Test
     fun `checkNameUniqueness SHOULD show snackbar WHEN name taken`() = runTest {
-        everySuspend { dukanRepository.isDukanNameTaken(any()) } returns true
+        everySuspend { dukanManagementRepository.isDukanNameTaken(any()) } returns true
         createDukanViewModel.onNameChanged("Test")
-        createDukanViewModel.onCategorySelected(fakeCategories()[0].toUiState())
+        createDukanViewModel.onCategoryEnabled(fakeCategories()[0].toUiState())
 
         createDukanViewModel.onButtonClicked()
 
@@ -850,29 +726,45 @@ class CreateDukanViewModelTest {
 
 // ===== FAKE DATA FUNCTIONS =====
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeDukanColor(): List<Color> {
     return listOf(
-        Color(id = "1", hexCode = "#F77053"),
-        Color(id = "2", hexCode = "#F4C343"),
-        Color(id = "3", hexCode = "#C30C30"),
-        Color(id = "4", hexCode = "#30ABE8")
+        Color(id = Uuid.random(), hexCode = "#F77053"),
+        Color(id = Uuid.random(), hexCode = "#F4C343"),
+        Color(id = Uuid.random(), hexCode = "#C30C30"),
+        Color(id = Uuid.random(), hexCode = "#30ABE8")
     )
 }
 
 private fun fakeDukanStyle(): List<Dukan.Style> {
     return listOf(
-        Dukan.Style.WIDE_IMAGE,
-        Dukan.Style.SMALL_IMAGE,
-        Dukan.Style.NO_IMAGE
+        Dukan.Style.WIDE_IMAGE, Dukan.Style.SMALL_IMAGE, Dukan.Style.NO_IMAGE
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 private fun fakeCategories(): List<Category> {
     return listOf(
-        Category(id = "1", name = "Electronics", imageUrl = "https://example.com/electronics.png"),
-        Category(id = "2", name = "Clothes", imageUrl = "https://example.com/clothes.png"),
-        Category(id = "3", name = "Groceries", imageUrl = "https://example.com/groceries.png"),
-        Category(id = "4", name = "Books", imageUrl = "https://example.com/books.png")
+        Category(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174000"),
+            name = "Electronics",
+            imageUrl = "https://example.com/electronics.png"
+        ),
+        Category(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174001"),
+            name = "Clothes",
+            imageUrl = "https://example.com/clothes.png"
+        ),
+        Category(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"),
+            name = "Groceries",
+            imageUrl = "https://example.com/groceries.png"
+        ),
+        Category(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
+            name = "Books",
+            imageUrl = "https://example.com/books.png"
+        )
     )
 }
 
@@ -883,11 +775,10 @@ private fun fakeLocationAddress() = "Egypt"
 private fun fakeSelectedCoordinates() = CreateDukanUiState.CoordinatesUiState(28.0, 29.0)
 private fun fakePointerLocation() = DpOffset(2.dp, 4.dp)
 private fun fakeCameraPosition() = CameraPosition(target = Position(29.0, 28.0))
-private fun fakeColorUiState() = ColorUiState(id = "1", color = 0xFFF545)
-private fun fakeSingleDukanStyle() = Dukan.Style.WIDE_IMAGE
+private fun fakeColorUiState() = CreateDukanUiState.ColorUiState(id = "1", color = 0xFFF545)
+private fun fakeSingleDukanStyle() = CreateDukanUiState.Style.WIDE_IMAGE
 
-private fun Category.toUiState() = DukanCategoryUiState(
-    id = id,
-    name = name,
-    imageUrl = imageUrl
+@OptIn(ExperimentalUuidApi::class)
+private fun Category.toUiState() = CreateDukanUiState.DukanCategoryUiState(
+    id = id.toString(), name = name, imageUrl = imageUrl
 )

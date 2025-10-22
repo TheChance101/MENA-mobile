@@ -16,8 +16,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.repository.StatementRepository
-import net.thechance.mena.wallet.presentation.base.UiState.Success
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -29,7 +28,7 @@ import kotlin.test.assertTrue
 class StatementDetailsViewModelTest {
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
+    private val fileManager = mock<FileManager>(mode = MockMode.autofill)
     private val statementLocation = StorageLocation.Cache("test_statement.pdf")
     private lateinit var viewModel: StatementDetailsViewModel
 
@@ -46,7 +45,7 @@ class StatementDetailsViewModelTest {
     @Test
     fun `onNavigateBackClicked should send NavigateBack effect when called`() =
         runTest(testDispatcher) {
-            viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
+            initViewModel()
 
             viewModel.uiEffect.test {
                 viewModel.onNavigateBackClicked()
@@ -64,8 +63,22 @@ class StatementDetailsViewModelTest {
         initViewModel()
 
         val finalState = viewModel.state.value
-        assertTrue(finalState.statement is Success)
-        assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement.data)
+        assertTrue(finalState.statement.isNotEmpty())
+        assertContentEquals(createMockStatementWithMetadata().byteArray, finalState.statement)
+    }
+
+    @Test
+    fun `onRetryClicked should call getPdfBytes and update state when successful`() = runTest(testDispatcher) {
+        val expectedBytes = byteArrayOf(1, 2, 3)
+        everySuspend { fileManager.readFile(statementLocation) } returns expectedBytes
+
+        initViewModel()
+
+        viewModel.onRetryClicked()
+        advanceUntilIdle()
+
+        val finalState = viewModel.state.value
+        assertContentEquals(expectedBytes, finalState.statement)
     }
 
     @Test
@@ -112,11 +125,11 @@ class StatementDetailsViewModelTest {
             initViewModel()
 
             val finalState = viewModel.state.value
-            assertTrue(finalState.statement is Success)
+            assertTrue(finalState.statement.isNotEmpty())
         }
 
     private fun TestScope.initViewModel() {
-        viewModel = StatementDetailsViewModel(pdfHandler,statementLocation, testDispatcher)
+        viewModel = StatementDetailsViewModel(fileManager, statementLocation, testDispatcher)
         advanceUntilIdle()
     }
 
@@ -135,6 +148,4 @@ class StatementDetailsViewModelTest {
             totalOutflows = totalOutflows,
         )
     }
-
-
 }

@@ -35,7 +35,7 @@ class ContactsRepositoryImpl(
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun getUserContacts(pageNumber: Int): PagedData<Contact> {
         return tryNetworkCall<PagedDataDto<ContactDto>>(
-            defaultException = { ContactsFetchFailedException("Couldn't get user contacts", it) },
+            defaultException = { ContactsFetchFailedException("Couldn't get user contacts") },
             bodyType = typeInfo<PagedDataDto<ContactDto>>()
         ) {
             client.get(CONTACTS_ENDPOINT) {
@@ -47,7 +47,7 @@ class ContactsRepositoryImpl(
 
     override suspend fun syncContacts() {
         tryNetworkCall<Unit>(
-            defaultException = { ContactSyncFailedException("Couldn't sync user contacts", it) },
+            defaultException = { ContactSyncFailedException("Couldn't sync user contacts") },
             bodyType = typeInfo<Unit>()
         ) {
             val contacts = getDeviceContacts()
@@ -70,7 +70,7 @@ class ContactsRepositoryImpl(
 
     override suspend fun getSyncStatus(): Boolean {
         return tryCall(
-            defaultException = { DataStoreException("error with data store", it) }) {
+            defaultException = { DataStoreException("error with data store") }) {
             dataStore.data.map {
                 it[USER_SYNCED_STATE_KEY]
             }.firstOrNull() == true
@@ -79,7 +79,7 @@ class ContactsRepositoryImpl(
 
     override suspend fun setSyncStatus(state: Boolean) {
         return tryCall(
-            defaultException = { DataStoreException("error with data store", it) }) {
+            defaultException = { DataStoreException("error with data store") }) {
             dataStore.edit { preferences ->
                 preferences[USER_SYNCED_STATE_KEY] = state
             }

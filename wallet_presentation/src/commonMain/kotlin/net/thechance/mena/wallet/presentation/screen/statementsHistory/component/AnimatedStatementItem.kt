@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 
 import androidx.compose.animation.core.LinearEasing
@@ -11,10 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
@@ -22,10 +20,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.statementsHistory.StatementsHistoryScreenState
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun AnimatedStatementItem(
@@ -35,14 +35,12 @@ fun AnimatedStatementItem(
     cardOffsetX: Int,
     historyIconOffsetX: Int,
     deleteButtonOffsetX: Int,
-    onDeleteClicked: (onDeleteComplete: (isSuccess: Boolean) -> Unit) -> Unit,
-    onStatementCardClicked: (onViewStatementAvailable: (isPdfFound: Boolean) -> Unit) -> Unit
+    onDeleteClicked: () -> Unit,
+    onStatementCardClicked: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    var isDeleting by remember { mutableStateOf(false) }
 
     val scale by animateFloatAsState(
-        targetValue = if (isDeleting) 0f else 1f,
+        targetValue = if (statement.isDeleting) 0f else 1f,
         animationSpec = tween(
             durationMillis = 300,
             easing = LinearEasing
@@ -50,47 +48,26 @@ fun AnimatedStatementItem(
     )
 
     val heightProgress by animateFloatAsState(
-        targetValue = if (isDeleting) 0f else 1f,
+        targetValue = if (statement.isDeleting) 0f else 1f,
         animationSpec = tween(
             durationMillis = 300,
             delayMillis = 220,
             easing = LinearEasing
-        ),
-        finishedListener = {
-            if (isDeleting && it == 0f) {
-                onDeleteClicked { isSuccess ->
-                    scope.launch {
-                        if (!isSuccess) {
-                            isDeleting = false
-                        }
-                    }
-                }
-            }
-        }
+        )
     )
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .layout { measurable, constraints ->
-                val placeable = measurable.measure(constraints)
-                layout(
-                    width = placeable.width,
-                    height = (placeable.height * heightProgress).toInt()
-                ) {
-                    placeable.placeRelative(0, 0)
-                }
-            }
+            .animatedHeight(heightProgress)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
             StatementDeleteButton(
-                isDeleting = isDeleting,
-                onDeleteClick = {
-                    isDeleting = true
-                },
+                isDeleting = statement.isDeleting,
+                onDeleteClick = onDeleteClicked,
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .offset { IntOffset(deleteButtonOffsetX, 0) }
@@ -101,57 +78,69 @@ fun AnimatedStatementItem(
                 endDate = statement.endDate,
                 totalInflow = statement.totalInflow.toString(),
                 totalOutflow = statement.totalOutflow.toString(),
-                onStatementCardClicked = {
-                    if (!isEditMode) {
-                        onStatementCardClicked { isPdfFound ->
-                            scope.launch {
-                                if (!isPdfFound) {
-                                    isDeleting = true
-                                }
-                            }
-                        }
-                    }
-                },
+                onStatementCardClicked = { if (!isEditMode) onStatementCardClicked() },
                 isEditMode = isEditMode,
                 historyIconOffsetX = historyIconOffsetX,
                 modifier = Modifier
                     .offset { IntOffset(cardOffsetX, 0) }
-                    .graphicsLayer {
-                        scaleX = scale
-                        scaleY = scale
-                        transformOrigin = TransformOrigin(0f, 0.3f)
-                    }
+                    .animatedScale(scale, 0f, 0.3f)
             )
         }
-        if (isDividerVisible && !isDeleting) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Theme.colorScheme.stroke)
-            )
+
+        if (isDividerVisible && !statement.isDeleting) {
+            StatementDivider()
         }
     }
 }
 
+@Composable
+private fun StatementDivider() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(Theme.colorScheme.stroke)
+    )
+}
+
+private fun Modifier.animatedHeight(progress: Float) = this.layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    layout(
+        width = placeable.width,
+        height = (placeable.height * progress).toInt()
+    ) {
+        placeable.placeRelative(0, 0)
+    }
+}
+
+private fun Modifier.animatedScale(scale: Float, pivotX: Float, pivotY: Float) =
+    this.graphicsLayer {
+        this.scaleX = scale
+        this.scaleY = scale
+        this.transformOrigin = TransformOrigin(pivotX, pivotY)
+    }
+
 @Preview
 @Composable
 private fun AnimatedStatementItemPreview() {
-    AnimatedStatementItem(
-        statement = StatementsHistoryScreenState.StatementItem(
-            id = 123,
-            startDate = "Jul 23 2025",
-            endDate = "Aug 27 2025",
-            totalInflow = 2000.0,
-            totalOutflow = 4200.0,
-            fileName = ""
-        ),
-        isDividerVisible = true,
-        cardOffsetX = 10,
-        historyIconOffsetX = 10,
-        deleteButtonOffsetX = 10,
-        isEditMode = false,
-        onDeleteClicked = {},
-        onStatementCardClicked = {}
-    )
+    MenaTheme {
+        AnimatedStatementItem(
+            statement = StatementsHistoryScreenState.StatementItem(
+                id = Uuid.random(),
+                startDate = "Jul 23 2025",
+                endDate = "Aug 27 2025",
+                totalInflow = 2000.0,
+                totalOutflow = 4200.0,
+                fileName = "",
+                isDeleting = false
+            ),
+            isDividerVisible = true,
+            cardOffsetX = 10,
+            historyIconOffsetX = 10,
+            deleteButtonOffsetX = 10,
+            isEditMode = false,
+            onDeleteClicked = {},
+            onStatementCardClicked = {}
+        )
+    }
 }

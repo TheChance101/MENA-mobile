@@ -8,17 +8,17 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
+import mena.wallet_presentation.generated.resources.confirm_payment_header
 import mena.wallet_presentation.generated.resources.download
 import mena.wallet_presentation.generated.resources.downloaded_statements
-import mena.wallet_presentation.generated.resources.confirm_payment_header
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_clock
 import mena.wallet_presentation.generated.resources.ic_send
@@ -28,9 +28,12 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.ConfirmPaymentScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.StatementsHistoryScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.TransactionsHistoryScreenRoute
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
 import net.thechance.mena.wallet.presentation.screen.wallet.component.LabeledButtonWithCircularIcon
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
@@ -43,23 +46,19 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun WalletMainScreen(
-    onNavigateBackClicked: () -> Unit,
-    navigateToTransactionHistory: () -> Unit,
-    navigateToStatementsHistory: () -> Unit,
-    navigateToPaymentScreen: (Double, Uuid) -> Unit,
-    viewModel: WalletViewModel = koinViewModel(),
+    navigateBack: () -> Unit,
+    viewModel: WalletViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onWalletEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToTransactionHistory = navigateToTransactionHistory,
-                navigateToStatementsHistory = navigateToStatementsHistory,
-                navigateToPaymentScreen = navigateToPaymentScreen
+                onNavigateBackClicked = navigateBack,
+                navController = navController
             )
         }
     )
@@ -75,8 +74,7 @@ private fun WalletContent(
 ) {
     WalletScaffold(
         modifier = Modifier
-            .background(Theme.colorScheme.background.surface)
-            .statusBarsPadding(),
+            .background(Theme.colorScheme.background.surface),
         topBar = {
             AppBar(
                 title = stringResource(Res.string.my_wallet),
@@ -99,11 +97,12 @@ private fun WalletContent(
                 .padding(top = 16.dp)
         ) {
             BalanceCard(
-                balance = state.balance,
+                state = state.balanceState,
                 onRetry = interactionListener::onRetryLoadBalanceClicked,
                 modifier = Modifier
                     .padding(top = 16.dp)
             )
+
             LabeledButtonWithCircularIcon(
                 icon = painterResource(Res.drawable.ic_clock),
                 contentDescription = stringResource(Res.string.transactions_history),
@@ -123,11 +122,17 @@ private fun WalletContent(
                     .fillMaxWidth()
                     .padding(top = Theme.spacing._16)
             )
+
             LabeledButtonWithCircularIcon(
                 icon = painterResource(Res.drawable.ic_send),
                 contentDescription = stringResource(Res.string.confirm_payment_header),
                 label = stringResource(Res.string.confirm_payment_header),
-                onClick = { interactionListener.onPaymentClicked(amount = 222.22, receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")) },
+                onClick = {
+                    interactionListener.onPaymentClicked(
+                        amount = 222.22,
+                        receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = Theme.spacing._16)
@@ -139,15 +144,26 @@ private fun WalletContent(
 private fun onWalletEffect(
     effect: WalletEffect,
     onNavigateBackClicked: () -> Unit,
-    navigateToTransactionHistory: () -> Unit,
-    navigateToStatementsHistory: () -> Unit,
-    navigateToPaymentScreen: (Double, Uuid) -> Unit
+    navController: NavController
 ) {
     when (effect) {
         WalletEffect.NavigateBack -> onNavigateBackClicked()
-        WalletEffect.NavigateToTransactionHistory -> navigateToTransactionHistory()
-        WalletEffect.NavigateToStatementHistory -> navigateToStatementsHistory()
-        is WalletEffect.NavigateToConfirmPaymentScreen -> navigateToPaymentScreen(effect.amount, effect.transactionId)
+        WalletEffect.NavigateToTransactionHistory -> {
+            navController.navigate(TransactionsHistoryScreenRoute)
+        }
+
+        WalletEffect.NavigateToStatementHistory -> {
+            navController.navigate(StatementsHistoryScreenRoute)
+        }
+
+        is WalletEffect.NavigateToConfirmPaymentScreen -> {
+            navController.navigate(
+                ConfirmPaymentScreenRoute(
+                    amount = effect.amount,
+                    transactionId = effect.transactionId.toString()
+                )
+            )
+        }
     }
 }
 
@@ -157,7 +173,7 @@ private fun WalletScreenPreview() {
     MenaTheme {
         WalletContent(
             state = WalletScreenState(
-                balance = UiState.Success(530320.55)
+                balanceState = WalletScreenState.BalanceUiState(balance = 530320.55)
             ),
             interactionListener = object : WalletInteractionListener {
                 override fun onBackClicked() {}

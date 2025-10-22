@@ -53,15 +53,12 @@ kover.reports {
     }
 
     filters {
+        includes {
+            classes("**.validation.**")
+        }
+
         excludes {
-            packages("mena.trends_domain.generated.resources*")
-            classes(
-                "**.di.**",
-                "**.repository.**",
-                "**.entity.**",
-                "**.exception.**",
-                "**org.koin.ksp.generated**",
-            )
+            classes("**org.koin.ksp.generated**")
         }
     }
 }

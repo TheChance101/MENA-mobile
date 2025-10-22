@@ -15,9 +15,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
-import net.thechance.mena.faith.data.remote.dto.PageResponse
-import net.thechance.mena.faith.data.remote.dto.bookmark.AddBookmarkRequest
-import net.thechance.mena.faith.data.remote.dto.bookmark.AyahBookmarkDto
+import net.thechance.mena.faith.data.remote.model.PageResponse
+import net.thechance.mena.faith.data.remote.model.bookmark.AddBookmarkRequest
+import net.thechance.mena.faith.data.remote.model.bookmark.AyahBookmarkDto
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.AyahBookmark

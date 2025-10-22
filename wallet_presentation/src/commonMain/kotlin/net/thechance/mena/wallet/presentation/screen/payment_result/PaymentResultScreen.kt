@@ -2,59 +2,50 @@
 
 package net.thechance.mena.wallet.presentation.screen.payment_result
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
+import mena.wallet_presentation.generated.resources.payment_status_crossfade
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
-import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentStatusBody
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.WalletMainScreenRoute
+import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentConnectionLostContent
+import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentSuccessContent
+import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentUnknownErrorContent
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun PaymentResultScreen(
-    transactionId: String,
-    submitTransactionResultStatus: String,
-    receiverName: String,
-    amount: Double,
-    onNavigateBackClicked: () -> Unit,
-    onCancelClicked: () -> Unit,
-    onNavigateToTransactionDetailsClicked: (String) -> Unit,
-    viewModel: PaymentResultViewModel = koinViewModel(parameters = {
-        parametersOf(
-            PaymentResultArgs(transactionId, submitTransactionResultStatus)
-        )
-    })
-) {
+fun PaymentResultScreen(viewModel: PaymentResultViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onPaymentResultEffect(
-                effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                onCancelClicked = onCancelClicked,
-                onNavigateToTransactionDetailsClicked = { transactionId ->
-                    onNavigateToTransactionDetailsClicked(transactionId)
-                }
-            )
+            onPaymentResultEffect(effect, navController = navController)
         }
     )
     PaymentResultScreenContent(
-        receiverName = receiverName,
-        amount = amount,
         state = state,
         interactionListener = viewModel
     )
@@ -62,8 +53,6 @@ fun PaymentResultScreen(
 
 @Composable
 private fun PaymentResultScreenContent(
-    receiverName: String,
-    amount: Double,
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {
@@ -84,27 +73,45 @@ private fun PaymentResultScreenContent(
             }
         }
     ) {
-        PaymentStatusBody(
-            receiverName = receiverName,
-            amount = amount,
-            status = state,
-            paymentStatus = state.paymentStatus,
-            interactionListener = interactionListener
-        )
+        Crossfade(
+            targetState = state.paymentStatus,
+            animationSpec = tween(durationMillis = 300),
+            label = stringResource(Res.string.payment_status_crossfade)
+        ) { currentPaymentStatus ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                when (currentPaymentStatus) {
+                    SubmissionStatus.CONNECTION_LOST -> {
+                        PaymentConnectionLostContent(state, interactionListener)
+                    }
+
+                    SubmissionStatus.UNKNOWN_ERROR -> {
+                        PaymentUnknownErrorContent(state, interactionListener)
+                    }
+
+                    SubmissionStatus.SUCCESS -> {
+                        PaymentSuccessContent(state, interactionListener)
+                    }
+                }
+            }
+        }
     }
 }
 
-private fun onPaymentResultEffect(
-    effect: PaymentResultEffect,
-    onNavigateBackClicked: () -> Unit,
-    onCancelClicked: () -> Unit,
-    onNavigateToTransactionDetailsClicked: (String) -> Unit
-) {
+private fun onPaymentResultEffect(effect: PaymentResultEffect, navController: NavController) {
     when (effect) {
-        is PaymentResultEffect.NavigateBack -> onNavigateBackClicked()
-        is PaymentResultEffect.NavigateToTransactionDetails -> onNavigateToTransactionDetailsClicked(
-            effect.transactionId.toString()
-        )
-        is PaymentResultEffect.NavigateToScreenBeforePaymentProcess -> onCancelClicked()
+        is PaymentResultEffect.NavigateBack -> navController.popBackStack()
+        is PaymentResultEffect.NavigateToTransactionDetails -> {
+            navController.navigate(TransactionDetailsScreenRoute(effect.transactionId.toString()))
+        }
+
+        is PaymentResultEffect.NavigateToPrePaymentScreen -> {
+            navController.navigate(WalletMainScreenRoute) {
+                popUpTo(WalletMainScreenRoute) { inclusive = true }
+            }
+        }
     }
 }

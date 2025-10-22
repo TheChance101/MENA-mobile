@@ -13,7 +13,6 @@ import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.koin.android.annotation.KoinViewModel
@@ -24,10 +23,10 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class WalletViewModel(
-    private val stringProvider: StringProvider,
+    @Provided private val stringProvider: StringProvider,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<WalletScreenState, WalletEffect>(WalletScreenState()), WalletInteractionListener {
 
     init {
@@ -37,23 +36,32 @@ class WalletViewModel(
     private fun getBalance() {
         tryToExecute(
             onStart = ::onGetBalanceStart,
+            onFinish = ::onGetBalanceFinish,
             callee = { balanceRepository.getBalance() },
             onSuccess = ::onGetBalanceSuccess,
             onError = ::onGetBalanceError,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
     private fun onGetBalanceStart() {
-        updateState { it.copy(balance = UiState.Loading) }
+        updateState { it.copy(balanceState = it.balanceState.copy(isLoading = true)) }
+    }
+
+    private fun onGetBalanceFinish() {
+        updateState { it.copy(balanceState = it.balanceState.copy(isLoading = false)) }
     }
 
     private fun onGetBalanceSuccess(balance: Double) {
-        updateState { it.copy(balance = UiState.Success(balance)) }
+        updateState {
+            it.copy(
+                balanceState = it.balanceState.copy(balance = balance, errorState = null)
+            )
+        }
     }
 
     private suspend fun onGetBalanceError(error: ErrorState) {
-        updateState { it.copy(balance = UiState.Error(error)) }
+        updateState { it.copy(balanceState = it.balanceState.copy(errorState = error)) }
         val errorMessage = when (error) {
             ErrorState.NoInternet -> Res.string.no_internet_title
             else -> Res.string.balance_fetch_error_description
@@ -123,15 +131,15 @@ class WalletViewModel(
             },
             onSuccess = { onAddPendingTransactionSuccess(it, amount) },
             onError = ::onAddPendingTransactionError,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
-    private fun onAddPendingTransactionSuccess(transactionId : Uuid, amount: Double){
+    private fun onAddPendingTransactionSuccess(transactionId: Uuid, amount: Double) {
         sendEffect(WalletEffect.NavigateToConfirmPaymentScreen(amount, transactionId))
     }
 
-    private suspend fun onAddPendingTransactionError(error: ErrorState){
+    private suspend fun onAddPendingTransactionError(error: ErrorState) {
         val errorMessage = when (error) {
             ErrorState.NoInternet -> Res.string.no_internet_title
             else -> Res.string.payment_failed_description

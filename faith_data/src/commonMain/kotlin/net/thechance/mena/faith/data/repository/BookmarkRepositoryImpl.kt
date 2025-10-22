@@ -7,9 +7,9 @@ import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.mapper.ayahBookmark.toAyahBookmark
 import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toSurah
-import net.thechance.mena.faith.data.remote.dto.PageResponse
-import net.thechance.mena.faith.data.remote.dto.bookmark.AddBookmarkRequest
-import net.thechance.mena.faith.data.remote.dto.bookmark.AyahBookmarkDto
+import net.thechance.mena.faith.data.remote.model.PageResponse
+import net.thechance.mena.faith.data.remote.model.bookmark.AddBookmarkRequest
+import net.thechance.mena.faith.data.remote.model.bookmark.AyahBookmarkDto
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.executeLocalSafely
@@ -26,7 +26,12 @@ class BookmarkRepositoryImpl(
 
     override suspend fun addAyahBookmark(surahId: Int, ayahNumber: Int): AyahBookmark {
         val bookmarkDto = executeApiSafely<AyahBookmarkDto> {
-            bookmarkApiService.addBookmark(AddBookmarkRequest(surahId, ayahNumber))
+            bookmarkApiService.addBookmark(
+                AddBookmarkRequest(
+                    surahId = surahId,
+                    ayahNumber = ayahNumber
+                )
+            )
         }
         val surah = executeLocalSafely { ayahDao.getSurah(surahId) }
         val ayah = executeLocalSafely { ayahDao.getAyah(surahId, ayahNumber) }
@@ -41,9 +46,9 @@ class BookmarkRepositoryImpl(
 
     override suspend fun getAyahBookmarks(pageNumber: Int, pageSize: Int): List<AyahBookmark> {
         val response = executeApiSafely<PageResponse<AyahBookmarkDto>> {
-            bookmarkApiService.getBookmarks(pageNumber, pageSize)
+            bookmarkApiService.getBookmarks(pageNumber = pageNumber, pageSize = pageSize)
         }
-        return response.items.mapAsync {
+        return response.items?.mapAsync {
             it.toAyahBookmark(
                 fetchSurah = { surahId ->
                     executeLocalSafely {
@@ -52,11 +57,11 @@ class BookmarkRepositoryImpl(
                 },
                 fetchAyah = { ayahId, surahId ->
                     executeLocalSafely {
-                        ayahDao.getAyah(ayahId, surahId)
+                        ayahDao.getAyah(ayahId = ayahId, surahId = surahId)
                     }
                 }
             )
-        }
+        } ?: emptyList()
     }
 
     override suspend fun deleteAyahBookmark(ayahBookmarkId: Int) {

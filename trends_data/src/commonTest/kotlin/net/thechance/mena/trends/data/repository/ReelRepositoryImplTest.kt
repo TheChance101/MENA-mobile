@@ -80,7 +80,7 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
-        repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).collect()
+        repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE).collect()
 
         verifySuspend { videoHandler.readFile(FAKE_FILE_PATH) }
     }
@@ -93,7 +93,7 @@ internal class ReelRepositoryImplTest {
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
-            repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).collect()
+            repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE).collect()
         }
     }
 
@@ -105,7 +105,7 @@ internal class ReelRepositoryImplTest {
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
-            repository.uploadReel(FAKE_FILE_PATH, FAKE_FILE_NAME, FAKE_SIZE).collect()
+            repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE).collect()
         }
     }
 
@@ -115,7 +115,7 @@ internal class ReelRepositoryImplTest {
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         val result = runCatching {
-            repository.uploadReelThumbnail("1", FAKE_FILE_NAME, FAKE_BYTES)
+            repository.uploadReelThumbnail("1", FAKE_BYTES)
         }
 
         assertThat(result).isSuccess()
@@ -129,7 +129,7 @@ internal class ReelRepositoryImplTest {
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
-            repository.uploadReelThumbnail("1", FAKE_FILE_NAME, FAKE_BYTES)
+            repository.uploadReelThumbnail("1", FAKE_BYTES)
         }
     }
 
@@ -149,14 +149,14 @@ internal class ReelRepositoryImplTest {
 
     @Test
     fun `getReelThumbnail should call extractVideoFrame`() = runTest {
-        repository.getReelThumbnail(FAKE_FILE_PATH)
+        repository.extractReelThumbnail(FAKE_FILE_PATH)
 
         verifySuspend { videoHandler.extractVideoFrame(FAKE_FILE_PATH)  }
     }
 
     @Test
     fun `getReelDuration should return thumbnail bytearray when extractVideoFrame called`() = runTest {
-        val thumbnailByteArray = repository.getReelThumbnail(FAKE_FILE_PATH)
+        val thumbnailByteArray = repository.extractReelThumbnail(FAKE_FILE_PATH)
 
         assertThat(thumbnailByteArray?.size).isEqualTo(2)
     }

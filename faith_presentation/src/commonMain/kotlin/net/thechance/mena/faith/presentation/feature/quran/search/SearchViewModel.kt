@@ -11,17 +11,15 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.feature.quran.search.args.ISearchArgs
-import net.thechance.mena.faith.presentation.util.provider.StringResourceProvider
-import net.thechance.mena.faith.presentation.util.toSearchResult
+import net.thechance.mena.faith.presentation.feature.quran.search.args.SearchArgs
+import org.jetbrains.compose.resources.getString
 
 class SearchViewModel(
-    searchArgs: ISearchArgs,
+    searchArgs: SearchArgs,
     private val repository: QuranRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val stringResourceProvider: StringResourceProvider
-) : BaseViewModel<SearchScreenState, SearchEffect>(
-    SearchScreenState(
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<SearchUiState, SearchEffect>(
+    SearchUiState(
         searchArgs.surahId,
         searchArgs.surahName
     )
@@ -74,10 +72,10 @@ class SearchViewModel(
 
     private fun handleHint() {
         tryToExecute({
-            val hintPostfix = uiState.value.surahName ?: stringResourceProvider.getString(Res.string.quran)
-            val hint = stringResourceProvider.getString(Res.string.search_in_surah_hint, hintPostfix)
+            val hintPostfix = uiState.value.surahName ?: getString(Res.string.quran)
+            val hint = getString(Res.string.search_in_surah_hint, hintPostfix)
             updateState { it.copy(hint = hint) }
-        }, dispatcher = dispatcher)
+        })
     }
 
     private fun onGetSearchResultSuccess(ayat: List<Ayah>) {
