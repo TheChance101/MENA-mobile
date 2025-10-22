@@ -97,8 +97,8 @@ class ManageTrendsViewModelTest {
     }
 
     @Test
-    fun `onRetryClick should reset error and call getFeedReels`() = runTest {
-        viewModel.onRetryClick()
+    fun `onRetryClick should reset error and call getReels and getCurrentUserInfo`() = runTest {
+        viewModel.onClickRetry()
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {

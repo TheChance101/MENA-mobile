@@ -140,8 +140,8 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onRetryClick should reset error and call getFeedReels`() = runTest {
-        viewModel.onRetryClick()
+    fun `onRetryClick should reset error and call getCategories`() = runTest {
+        viewModel.onClickRetry()
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {

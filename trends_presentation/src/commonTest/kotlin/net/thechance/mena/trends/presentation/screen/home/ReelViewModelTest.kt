@@ -130,7 +130,7 @@ class ReelViewModelTest {
 
     @Test
     fun `onRetryClick should reset error and call getFeedReels`() = runTest {
-        viewModel.onRetryClick()
+        viewModel.onClickRetry()
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {

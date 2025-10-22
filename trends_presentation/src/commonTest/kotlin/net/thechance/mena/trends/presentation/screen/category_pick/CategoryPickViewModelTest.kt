@@ -141,8 +141,8 @@ class CategoryPickViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onRetryClick should reset error and call getFeedReels`() = runTest {
-        viewModel.onRetryClick()
+    fun `onRetryClick should reset error and call getAllCategories`() = runTest {
+        viewModel.onClickRetry()
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {
