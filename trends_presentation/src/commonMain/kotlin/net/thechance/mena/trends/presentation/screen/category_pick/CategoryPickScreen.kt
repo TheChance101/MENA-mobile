@@ -50,7 +50,7 @@ internal fun CategoryPickScreen(
 
     when {
         state.error == ErrorState.NoInternet -> {
-            NoConnection(onRetry = viewModel::onRetryClick)
+            NoConnection(onRetry = viewModel::onClickRetry)
         }
 
         state.isLoading -> {

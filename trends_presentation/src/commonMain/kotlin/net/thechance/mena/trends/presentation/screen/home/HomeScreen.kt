@@ -78,7 +78,7 @@ internal fun HomeScreen(
     ) {
         when {
             reels.loadState.refresh.toErrorState() == ErrorState.NoInternet -> {
-                NoConnection(onRetry = viewModel::onRetryClick)
+                NoConnection(onRetry = viewModel::onClickRetry)
             }
 
             reels.itemCount > 0 -> {

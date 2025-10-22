@@ -67,7 +67,7 @@ internal fun UpdateCategoriesScreen(
     ) {
         when {
             state.errorState == ErrorState.NoInternet -> {
-                NoConnection { viewModel.onRetryClick() }
+                NoConnection { viewModel.onClickRetry() }
             }
 
             else -> {
@@ -78,7 +78,6 @@ internal fun UpdateCategoriesScreen(
             }
         }
     }
-
 }
 
 @Composable
