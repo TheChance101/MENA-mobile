@@ -30,7 +30,7 @@ fun TrendsNavHost() {
         NavHost(
             modifier = Modifier.fillMaxSize(),
             navController = navController,
-            startDestination = Route.ReelHome,
+            startDestination = Route.MainContainer,
         ) {
 
             composable<Route.MainContainer> {
