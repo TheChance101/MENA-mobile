@@ -389,14 +389,11 @@ class ChatViewModel(
     override fun onDownloadImageClicked(url: String) {
         tryToExecute(
             execute = { imageDownloaderService.downloadImageToGallery(url) },
-            onSuccess = { success ->
-                onDownloadImageSuccess(success)
-            },
-            onError = {
-                onDownloadImageError()
-            }
+            onSuccess = ::onDownloadImageSuccess,
+            onError = { onDownloadImageError() }
         )
     }
+
 
     private fun onDownloadImageSuccess(isSuccess: Boolean) {
         if (isSuccess) {
@@ -407,11 +404,7 @@ class ChatViewModel(
     }
 
     private fun onDownloadImageError() {
-        showSnackBar(
-            Res.string.error,
-            Res.string.error_failed_to_download_image,
-            true
-        )
+        showSnackBar(Res.string.error, Res.string.error_failed_to_download_image, true)
     }
 
     override fun onCloseImageViewClicked() {
