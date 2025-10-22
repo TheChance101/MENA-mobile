@@ -5,7 +5,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import net.thechance.mena.trends.domain.entity.UploadReelProgress
 import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
 import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import net.thechance.mena.trends.domain.exception.NoInternetException
@@ -67,7 +66,6 @@ internal class UploadReelViewModel(
             block = {
                 reelsRepository.uploadReel(
                     filePath = state.value.selectedFile.filePath,
-                    fileName = state.value.selectedFile.name,
                     size = state.value.selectedFile.size
                 )
             },
@@ -115,7 +113,7 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onUploadError(errorState: ErrorState) {
+    private fun onUploadError(errorState:UploadReelErrorState ) {
         updateState {
             copy(
                 uploadingState = UploadReelScreenState.UploadingReelState.FAILED,
