@@ -87,8 +87,8 @@
     <string name="avatar_image">صورة الشخص</string>
 
     <string name="empty_trends_icon">أيقونة التريند الفارغ</string>
-    <string name="no_trends_title">لا توجد تريندات حتى الآن</string>
-    <string name="no_trends_description">
+    <string name="empty_trends_title">لا توجد تريندات حتى الآن</string>
+    <string name="empty_trends_description">
     يمكنك البدء بإضافة المنتجات التي تحتوي على العلامة إلى الرف بالضغط على زر الإضافة في الأعلى.</string>
 
     <string name="no_connection_icon">أيقونة عدم الاتصال</string>

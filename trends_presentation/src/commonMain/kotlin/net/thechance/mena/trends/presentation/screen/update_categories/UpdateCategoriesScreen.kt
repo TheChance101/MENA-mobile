@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,8 +35,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -76,19 +79,6 @@ private fun UpdateCategoriesScreenContent(
     if (state.isLoading.not()) {
         Scaffold(
             topBar = { ChangeTagsAppBar(onBackClick = listener::onBackClick) },
-            bottomBar = {
-                SaveChangeButton(
-                    onSaveClick = listener::onSaveClick,
-                    isButtonEnabled = state.saveButtonEnabled(),
-                    isButtonLoading = state.isSaveButtonLoading,
-                    modifier = Modifier
-                        .padding(
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            bottom = Theme.spacing._24
-                        )
-                )
-            },
             snakeBar = {
                 state.errorState?.let { errorState ->
                     TrendsSnackBar(
@@ -98,24 +88,40 @@ private fun UpdateCategoriesScreenContent(
                 }
             }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = rememberScrollState())
-                    .padding(horizontal = Theme.spacing._16)
-            ) {
-                ChooseInterestsMessage()
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
-                            modifier = Modifier.padding(
-                                bottom = Theme.spacing._12,
-                                end = Theme.spacing._8
-                            )
+            when{
+                state.errorState == ErrorState.NoInternet ->{
+                    NoConnection { listener.onRetryClick()  }
+                }
+                else ->{
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(state = rememberScrollState())
+                            .padding(horizontal = Theme.spacing._16)
+                    ) {
+                        ChooseInterestsMessage()
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+                        ) {
+                            state.categories.forEach { category ->
+                                CategoryItem(
+                                    category = category,
+                                    onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                                    modifier = Modifier.padding(
+                                        bottom = Theme.spacing._12,
+                                        end = Theme.spacing._8
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        SaveChangeButton(
+                            onSaveClick = listener::onSaveClick,
+                            isButtonEnabled = state.saveButtonEnabled(),
+                            isButtonLoading = state.isSaveButtonLoading,
+                            modifier = Modifier.padding(bottom = Theme.spacing._24)
                         )
                     }
                 }

@@ -86,8 +86,8 @@
     <string name="avatar_image">avatar image</string>
 
     <string name="empty_trends_icon">Empty Trends Icon</string>
-    <string name="no_trends_yet">No trends yet!</string>
-    <string name="no_trends_yet_description">
+    <string name="empty_trends_title">No trends yet!</string>
+    <string name="empty_trends_description">
         Start adding your tagged products to the shelf by clicking the Add button above.</string>
 
     <string name="no_connection_icon">No Connection Icon</string>
