@@ -23,11 +23,11 @@ import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -389,7 +389,15 @@ class ChatViewModel(
     override fun onDownloadImageClicked(url: String) {
         tryToExecute(
             execute = { imageDownloaderService.downloadImageToGallery(url) },
-            onSuccess = { onDownloadImageSuccess() },
+            onSuccess = { success ->
+                if (success) onDownloadImageSuccess()
+                else {
+                    showSnackBar(
+                        Res.string.error,
+                        Res.string.error_failed_to_download_image
+                    )
+                }
+            },
             onError = {
                 showSnackBar(
                     Res.string.error,
