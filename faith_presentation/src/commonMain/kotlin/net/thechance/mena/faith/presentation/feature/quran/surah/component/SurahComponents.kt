@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.bismillah
@@ -32,11 +34,14 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptio
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.quran
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
+import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun SurahAppBar(
@@ -184,4 +189,43 @@ private fun findClickedAyahIndexFromPosition(ayat: List<Ayah>, position: Int): I
         currentPosition = end + 1
     }
     return -1
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UnifiedChunkAyatPreview() {
+    QuranTheme {
+        CompositionLocalProvider(LocalNavController provides rememberNavController()) {
+            val sampleChunk = listOf(
+                Ayah(1, 1, "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "بسم الله الرحمن الرحيم"),
+                Ayah(2, 1, "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "الحمد لله رب العالمين"),
+                Ayah(3, 1, "الرَّحْمَٰنِ الرَّحِيمِ", "الرحمن الرحيم")
+            )
+
+            UnifiedChunkAyat(
+                chunkAyat = sampleChunk,
+                selectedAyahIndex = 2,
+                textLayoutResult = null,
+                onTextLayoutResultChange = {},
+                onLongPress = {},
+                onDismiss = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BasmalaHeaderPreview() {
+    QuranTheme {
+        BasmalaHeader(selectedAyahIndex = 1, onDismissActionButtons = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SurahAppBarPreview() {
+    QuranTheme {
+        SurahAppBar(surahName = "الفاتحة", onSearchClick = {}, onBackClick = {})
+    }
 }
