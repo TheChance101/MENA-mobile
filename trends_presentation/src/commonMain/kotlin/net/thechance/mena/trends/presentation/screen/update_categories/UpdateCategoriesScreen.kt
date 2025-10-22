@@ -34,8 +34,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.screen.manage_my_trends.component.NoConnection
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
@@ -75,80 +73,56 @@ private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
-    when {
-        state.isLoading -> {
-            LoadingProgressBar()
-        }
-
-        state.errorState == ErrorState.NoInternet -> {
-            NoConnection(onRetry = listener::onRetryClick)
-        }
-
-        else -> {
-            UpdateCategoriesContent(listener, state)
-        }
-    }
-}
-
-@Composable
-private fun UpdateCategoriesContent(
-    listener: UpdateCategoriesInteractionListener,
-    state: UpdateCategoriesScreenState
-) {
-    Scaffold(
-        topBar = { ChangeTagsAppBar(onBackClick = listener::onBackClick) },
-        bottomBar = {
-            SaveChangeButton(
-                onSaveClick = listener::onSaveClick,
-                isButtonEnabled = state.saveButtonEnabled(),
-                isButtonLoading = state.isSaveButtonLoading,
-                modifier = Modifier
-                    .padding(
-                        start = Theme.spacing._16,
-                        end = Theme.spacing._16,
-                        bottom = Theme.spacing._24
-                    )
-            )
-        },
-        snakeBar = {
-            state.errorState?.let { errorState ->
-                TrendsSnackBar(
-                    message = stringResource(errorState.toStringResource()),
-                    status = SnackBarStatus.Error
+    if (state.isLoading.not()) {
+        Scaffold(
+            topBar = { ChangeTagsAppBar(onBackClick = listener::onBackClick) },
+            bottomBar = {
+                SaveChangeButton(
+                    onSaveClick = listener::onSaveClick,
+                    isButtonEnabled = state.saveButtonEnabled(),
+                    isButtonLoading = state.isSaveButtonLoading,
+                    modifier = Modifier
+                        .padding(
+                            start = Theme.spacing._16,
+                            end = Theme.spacing._16,
+                            bottom = Theme.spacing._24
+                        )
                 )
+            },
+            snakeBar = {
+                state.errorState?.let { errorState ->
+                    TrendsSnackBar(
+                        message = stringResource(errorState.toStringResource()),
+                        status = SnackBarStatus.Error
+                    )
+                }
             }
-        }
-    ) {
-        CategoriesListSection(state, listener)
-    }
-}
-
-@Composable
-private fun CategoriesListSection(
-    state: UpdateCategoriesScreenState,
-    listener: UpdateCategoriesInteractionListener
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(state = rememberScrollState())
-            .padding(horizontal = Theme.spacing._16)
-    ) {
-        ChooseInterestsMessage()
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
         ) {
-            state.categories.forEach { category ->
-                CategoryItem(
-                    category = category,
-                    onClick = { id -> listener.onCategoryClick(categoryId = id) },
-                    modifier = Modifier.padding(
-                        bottom = Theme.spacing._12,
-                        end = Theme.spacing._8
-                    )
-                )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16)
+            ) {
+                ChooseInterestsMessage()
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+                ) {
+                    state.categories.forEach { category ->
+                        CategoryItem(
+                            category = category,
+                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                            modifier = Modifier.padding(
+                                bottom = Theme.spacing._12,
+                                end = Theme.spacing._8
+                            )
+                        )
+                    }
+                }
             }
         }
+    } else {
+        LoadingProgressBar()
     }
 }
 
@@ -220,10 +194,7 @@ private fun UpdateCategoriesScreenPreview() {
             state = UpdateCategoriesScreenState(),
             listener = object : UpdateCategoriesInteractionListener {
                 override fun onBackClick() {}
-                override fun onRetryClick() {
-                    TODO("Not yet implemented")
-                }
-
+                override fun onRetryClick() {}
                 override fun onCategoryClick(categoryId: String) {}
                 override fun onSaveClick() {}
             }

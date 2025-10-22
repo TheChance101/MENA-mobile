@@ -38,8 +38,8 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
-import net.thechance.mena.trends.presentation.screen.manage_my_trends.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource

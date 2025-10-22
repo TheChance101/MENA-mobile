@@ -25,10 +25,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.screen.manage_my_trends.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.NextButton
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -50,25 +50,17 @@ internal fun CategoryPickScreen(
         }
     }
 
-    CategoryPickScreenContent(state = state, listener = viewModel)
-}
-
-@Composable
-private fun CategoryPickScreenContent(
-    state: CategoryPickScreenState,
-    listener: CategoryPickInteractionListener
-) {
     when {
-        state.error == ErrorState.NoInternet -> { NoConnection(onRetry = listener::onRetryClick) }
+        state.error == ErrorState.NoInternet -> { NoConnection(onRetry = viewModel::onRetryClick) }
 
         state.isLoading -> { LoadingProgressBar() }
 
-        else -> { CategoryPickContent(state, listener) }
+        else -> { CategoryPickScreenContent(state = state, listener = viewModel) }
     }
 }
 
 @Composable
-private fun CategoryPickContent(
+private fun CategoryPickScreenContent(
     state: CategoryPickScreenState,
     listener: CategoryPickInteractionListener
 ) {
