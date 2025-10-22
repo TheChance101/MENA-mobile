@@ -1,20 +1,17 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
-import androidx.paging.PagingData
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ShelfDetailsUiStateTest {
 
     @Test
     fun `default state SHOULD have empty PagingData for products shelf`() = runTest {
         val state = ShelfDetailsUiState()
-        val data = state.productsShelf.first()
-        assertTrue(data == PagingData.empty<DukanDetailsUiState.ProductUiState>())
+        val data = state.productsShelf
+        assertEquals(data, emptyFlow())
     }
 
     @Test

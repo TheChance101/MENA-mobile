@@ -1,12 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
@@ -107,27 +109,20 @@ class ManageDukanViewModel(
     override fun onShowDeleteShelfDialog(
         shelfId: String
     ) {
-        tryToCollect(
-            block = { state.value.products },
-            onCollect = { pagingData ->
-                var hasProducts = false
-
-                pagingData.map {
-                    hasProducts = true
-                }
-
-                updateState {
-                    copy(
-                        deleteDialog = DeleteDialogState(
-                            title = updateDialogTitle(hasProducts),
-                            description = updateDialogDescription(hasProducts),
-                            type = updateDialogType(hasProducts),
-                            shelfId = shelfId,
-                        )
+        viewModelScope.launch(defaultDispatcher) {
+            val hasProducts = state.value.products.firstOrNull()
+            val productIsNotEmpty = hasProducts != null
+            updateState {
+                copy(
+                    deleteDialog = DeleteDialogState(
+                        title = updateDialogTitle(productIsNotEmpty),
+                        description = updateDialogDescription(productIsNotEmpty),
+                        type = updateDialogType(productIsNotEmpty),
+                        shelfId = shelfId,
                     )
-                }
+                )
             }
-        )
+        }
     }
 
     override fun onDeleteConfirmed(shelfId: String) {

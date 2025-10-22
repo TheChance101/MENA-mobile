@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,8 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
@@ -33,34 +36,44 @@ fun SmallImageDukanShelves(
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
+    val shelves = state.shelves.collectAsLazyPagingItems()
 
-    ShelvesContent(
-        state = state,
-        listener = listener,
-        lazyListState = lazyListState,
-        modifier = modifier
-    )
+    AnimatedContent(
+        shelves.loadState.refresh
+    ) {
+        when (it) {
+            LoadState.Loading -> SmallImageProductSkeleton()
+            is LoadState.NotLoading -> ShelvesContent(
+                shelves = shelves,
+                dukanInfo = state.dukanInfo,
+                listener = listener,
+                lazyListState = lazyListState,
+                modifier = modifier
+            )
+
+            is LoadState.Error -> {}
+        }
+    }
 }
 
 @Composable
 private fun ShelvesContent(
-    state: DukanDetailsUiState,
+    shelves: LazyPagingItems<ShelfUiState>,
+    dukanInfo: DukanDetailsUiState.DukanInfo,
     listener: DukanDetailsInteractionListener,
     lazyListState: LazyListState,
     modifier: Modifier,
 ) {
-    val shelfs = state.shelves.collectAsLazyPagingItems()
-
     LazyColumn(
         modifier = modifier,
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(vertical = Theme.spacing._16),
     ) {
-        items(count = shelfs.itemCount, key = { shelfs[it]?.id.orEmpty() }) { index ->
-            val shelf = shelfs[index] ?: return@items
+        items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) { index ->
+            val shelf = shelves[index] ?: return@items
             ProductsHeader(
-                viewAllColor = Color(state.dukanInfo.color),
+                viewAllColor = Color(dukanInfo.color),
                 shelfName = shelf.name,
                 onClick = {
                     listener.onViewAllShelfProductsClicked(
@@ -77,7 +90,7 @@ private fun ShelvesContent(
             ShelfProducts(
                 shelf = shelf,
                 listener = listener,
-                cartColor = Color(state.dukanInfo.color)
+                cartColor = Color(dukanInfo.color)
             )
         }
     }

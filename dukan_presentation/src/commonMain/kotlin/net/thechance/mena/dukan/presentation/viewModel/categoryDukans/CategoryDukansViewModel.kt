@@ -56,15 +56,15 @@ class CategoryDukansViewModel(
 //        }
     }
 
-    private fun List<DukanUiState>.toggleFavoriteBest(dukanId: String): List<DukanUiState> {
-        return map { item ->
-            if (item.id == dukanId) {
-                item.copy(isFavorite = !item.isFavorite)
-            } else {
-                item
-            }
-        }
-    }
+//    private fun List<DukanUiState>.toggleFavoriteBest(dukanId: String): List<DukanUiState> {
+//        return map { item ->
+//            if (item.id == dukanId) {
+//                item.copy(isFavorite = !item.isFavorite)
+//            } else {
+//                item
+//            }
+//        }
+//    }
 
     private fun collectDukans(categoryId: String) {
         tryToCollect(
