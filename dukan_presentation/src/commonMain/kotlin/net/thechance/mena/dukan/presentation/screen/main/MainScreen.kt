@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.best_dukans_around_you
 import mena.dukan_presentation.generated.resources.editor_pick_dukans
@@ -37,12 +39,6 @@ import net.thechance.mena.dukan.presentation.screen.main.components.categorySect
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.editorPickDukanItems
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
-import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.PagerOld
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfigOld
-import net.thechance.mena.dukan.presentation.util.pagination.PagingDataOld
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewBestNearestDukanPagingSourceOld
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewEditorPickDukanItemsListPagingSourceOld
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewMainScreenInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
@@ -96,8 +92,6 @@ fun MainScreen(
     MainContent(
         listener = viewModel,
         state = state.value,
-        editorPickDukanPagerOld = viewModel.editorPickDukanPagerOld,
-        bestNearestDukanPagerOld = viewModel.bestNearestDukanPagerOld
     )
 }
 
@@ -105,8 +99,6 @@ fun MainScreen(
 private fun MainContent(
     listener: MainInteractionListener,
     state: MainScreenUiState,
-    editorPickDukanPagerOld: PagerOld<Int, MainScreenUiState.EditorPickDukanUiState>,
-    bestNearestDukanPagerOld: PagerOld<Int, MainScreenUiState.BestNearestDukanUiState>
 ) {
 
     AnimatedContent(
@@ -130,11 +122,9 @@ private fun MainContent(
             },
             snakeBar = { ManageDukanSnackbar(state.snackBarState, listener) }
         ) {
-            val mainListState = rememberLazyListState()
-            mainListState.LoadMoreOnScroll(editorPickDukanPagerOld)
-            LazyColumn(
-                state = mainListState
-            ) {
+            val dukans = state.editorPickDukans.collectAsLazyPagingItems()
+
+            LazyColumn {
                 item {
                     Text(
                         text = stringResource(Res.string.what_do_you_need),
@@ -167,7 +157,6 @@ private fun MainContent(
                     BestNearestDukanSection(
                         state = state,
                         onDukanClick = listener::onNearestDukanClick,
-                        pagerOld = bestNearestDukanPagerOld,
                         modifier = Modifier
                     )
                 }
@@ -185,12 +174,11 @@ private fun MainContent(
                     )
                 }
                 editorPickDukanItems(
-                    state = state,
+                    dukans = dukans,
                     onDukanClick = listener::onEditorPickDukanClick
                 )
             }
         }
-
     }
 }
 
@@ -235,17 +223,9 @@ private fun MainScreenPreview() {
                 listener = PreviewMainScreenInteractionListener,
                 state = MainScreenUiState(
                     categories = fakeCategories(),
-                    bestNearestDukans = PagingDataOld(items = fakeBestNearestDuknas()),
-                    editorPickDukans = PagingDataOld(items = fakeDukans())
+                    bestNearestDukans = flowOf(PagingData.from(fakeBestNearestDuknas())),
+                    editorPickDukans = flowOf(PagingData.from(fakeDukans()))
                 ),
-                editorPickDukanPagerOld = PagerOld(
-                    config = PagingConfigOld(),
-                    pagingSourceOldFactory = { PreviewEditorPickDukanItemsListPagingSourceOld }
-                ),
-                bestNearestDukanPagerOld = PagerOld(
-                    config = PagingConfigOld(),
-                    pagingSourceOldFactory = { PreviewBestNearestDukanPagingSourceOld }
-                )
             )
         }
     }

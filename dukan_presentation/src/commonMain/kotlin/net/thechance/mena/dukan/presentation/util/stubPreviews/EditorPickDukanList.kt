@@ -1,22 +1,6 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
-import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagingSourceOld
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
-
-object PreviewEditorPickDukanItemsListPagingSourceOld :
-    BasePagingSourceOld<MainScreenUiState.EditorPickDukanUiState>() {
-    override suspend fun onFetchPage(pageNumber: Int): PagedResult<MainScreenUiState.EditorPickDukanUiState> {
-        return PagedResult(
-            items = fakeDukans(),
-            hasPrevious = false,
-            hasNext = true,
-            currentPage = pageNumber,
-            totalPages = 1000,
-            totalItems = 1000000
-        )
-    }
-}
 
 fun fakeDukans(): List<MainScreenUiState.EditorPickDukanUiState> {
     return listOf(
