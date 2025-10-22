@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.SkeletonOverlayShape
-import net.thechance.mena.dukan.presentation.component.productCard.LoadingProductCard
+import net.thechance.mena.dukan.presentation.component.loading.SkeletonOverlayShape
+import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 
 @Composable
 fun SmallImageProductSkeleton() {

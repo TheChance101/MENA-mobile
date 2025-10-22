@@ -20,12 +20,11 @@ import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
-import net.thechance.mena.dukan.domain.repository.MediaRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
-import net.thechance.mena.dukan.presentation.component.productImage.ProductImageState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.util.rounded
@@ -36,7 +35,6 @@ import org.jetbrains.compose.resources.StringResource
 class CreateProductViewModel(
     private val productRepository: ProductRepository,
     private val shelfRepository: ShelfRepository,
-    private val mediaRepository: MediaRepository,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<CreateProductUiState, CreateProductEffect>(
     initialState = CreateProductUiState(),
@@ -235,7 +233,7 @@ class CreateProductViewModel(
             params = state.value.toCreateProductParam(state.value.selectedShelf!!.id)
         )
 
-        mediaRepository.uploadProductImages(
+        productRepository.uploadProductImages(
             fileName = state.value.images.map {
                 state.value.productName.trim().replace(" ", "_") +
                         it.image.toPngByteArray().toFileName()

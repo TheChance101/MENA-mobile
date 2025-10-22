@@ -38,7 +38,7 @@ import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -52,7 +52,7 @@ import kotlin.time.ExperimentalTime
 class ExportTransactionsViewModelTest {
     private val stringProvider = FakeStringProvider()
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
-    private val pdfHandler = mock<PdfHandler>(mode = MockMode.autofill)
+    private val fileManager = mock<FileManager>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ExportTransactionsViewModel
@@ -247,7 +247,7 @@ class ExportTransactionsViewModelTest {
     fun `onDownloadClicked with non-empty pdf should show success snackBar`() = runTest {
         everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.savePdf(any(), any())
+            fileManager.saveFile(any(), any(), any())
         } returns "MENA/statement_123.pdf"
 
         initViewModel()
@@ -295,7 +295,7 @@ class ExportTransactionsViewModelTest {
             repository.getStatementWithMetadata(any())
         } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.savePdf(any(), any())
+            fileManager.saveFile(any(), any(), any())
         } returns "MENA/statement_123.pdf"
 
         initViewModel()
@@ -319,7 +319,7 @@ class ExportTransactionsViewModelTest {
             repository.getStatementWithMetadata(any())
         } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.savePdf(any(), any())
+            fileManager.saveFile(any(), any(), any())
         } throws IOException()
 
         initViewModel()
@@ -490,7 +490,7 @@ class ExportTransactionsViewModelTest {
     fun whenDownloadSuccess_thenIsDownloadLoadingResetsToFalse() = runTest {
         everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.savePdf(any(), any())
+            fileManager.saveFile(any(), any(), any())
         } returns "MENA/statement_123.pdf"
 
         initViewModel()
@@ -557,7 +557,7 @@ class ExportTransactionsViewModelTest {
     fun `downloadPdf returns success with file path`() = runTest {
         everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata()
         everySuspend {
-            pdfHandler.savePdf(any(), any())
+            fileManager.saveFile(any(), any(), any())
         } returns "Downloads/MENA/statement_1234567890.pdf"
 
         initViewModel()
@@ -579,7 +579,7 @@ class ExportTransactionsViewModelTest {
         viewModel = ExportTransactionsViewModel(
             transactionRepository = transactionRepository,
             statementRepository = repository,
-            pdfHandler = pdfHandler,
+            fileManager = fileManager,
             dispatcher = testDispatcher,
             stringProvider = stringProvider
         )

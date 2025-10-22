@@ -16,6 +16,7 @@ import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.domain.exceptions.WalletException
+import kotlin.coroutines.cancellation.CancellationException
 
 abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
     private val _state = MutableStateFlow(initialState)
@@ -48,9 +49,13 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
         return viewModelScope.launch(dispatcher) {
             try {
                 onStart?.invoke()
-                runCatching { callee.invoke() }
-                    .onSuccess { result -> onSuccess(result) }
-                    .onFailure { throwable -> onError(mapError(throwable)) }
+                callee().let { result ->
+                    onSuccess(result)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (t: Throwable) {
+                onError(mapError(t))
             } finally {
                 onFinish?.invoke()
             }

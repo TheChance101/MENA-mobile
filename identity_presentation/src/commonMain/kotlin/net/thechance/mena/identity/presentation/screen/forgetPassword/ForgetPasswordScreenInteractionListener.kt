@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.forgetPassword
 
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 
 interface ForgetPasswordScreenInteractionListener : BaseInteractionListener{
     fun onSelectCountryItem(country: MenaCountry)

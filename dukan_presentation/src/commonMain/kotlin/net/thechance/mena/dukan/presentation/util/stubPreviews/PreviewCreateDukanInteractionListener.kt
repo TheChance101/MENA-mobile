@@ -16,10 +16,11 @@ object PreviewCreateDukanInteractionListener : CreateDukanInteractionListener {
     override fun onStyleClicked(style: CreateDukanUiState.Style) {}
     override fun onClickUploadImage(image: ImageSrc) {}
     override fun onNameChanged(name: String) {}
-    override fun onCategorySelected(category: DukanCategoryUiState): Boolean = true
-    override fun onCategoryDeselected(category: DukanCategoryUiState): Boolean = true
     override fun onCategoryEnabled(category: DukanCategoryUiState): Boolean = true
     override fun isCategorySelected(): (DukanCategoryUiState) -> Boolean = { false }
+    override fun onCategoryClicked(category: DukanCategoryUiState): Boolean {
+        return true
+    }
     override fun onCLickNext() {}
     override fun onImageCrop(image: ImageBitmap) {}
     override fun onCancelCrop() {}

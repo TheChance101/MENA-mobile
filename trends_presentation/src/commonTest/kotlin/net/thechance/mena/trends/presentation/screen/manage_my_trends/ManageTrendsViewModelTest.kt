@@ -76,17 +76,17 @@ class ManageTrendsViewModelTest {
         }
 
     @Test
-    fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
+    fun `onClickReel should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         viewModel.effect.test {
-            viewModel.onReelClick(REEL_ID)
+            viewModel.onClickReel(REEL_ID)
             assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateToTrend(REEL_ID))
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onBackClick should navigate back`() = runTest(testDispatcher) {
-        viewModel.onBackClick()
+    fun `onClickBack should navigate back`() = runTest(testDispatcher) {
+        viewModel.onClickBack()
 
         viewModel.effect.test {
             assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateBack)

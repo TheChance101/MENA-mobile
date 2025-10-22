@@ -13,9 +13,9 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.dukan.presentation.component.DukanCard
-import net.thechance.mena.dukan.presentation.component.EmptyStateContent
-import net.thechance.mena.dukan.presentation.component.LazyVerticalGridItems
+import net.thechance.mena.dukan.presentation.component.shared.DukanCard
+import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
+import net.thechance.mena.dukan.presentation.component.shared.LazyVerticalGridItems
 import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
 import net.thechance.mena.dukan.presentation.util.pagination.Pager

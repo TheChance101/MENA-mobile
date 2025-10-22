@@ -17,6 +17,7 @@ import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share_
 import mena.wallet_presentation.generated.resources.share_button_title
+import mena.wallet_presentation.generated.resources.share_pdf
 import mena.wallet_presentation.generated.resources.statement
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -26,9 +27,11 @@ import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
+import net.thechance.mena.wallet.presentation.utils.FileSharer
+import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -41,7 +44,7 @@ fun StatementDetailsScreen(
     viewModel: StatementDetailsViewModel = koinViewModel(
         parameters = { parametersOf(statementLocation) }
     ),
-    pdfHandler: PdfHandler = koinInject()
+    fileSharer: FileSharer = koinInject()
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -50,10 +53,10 @@ fun StatementDetailsScreen(
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onStatementDetailsEffect(
+            handleEffects(
                 effect = effect,
                 navController = navController,
-                shareStatement = pdfHandler::sharePdf
+                shareStatement = fileSharer::shareFile
             )
         }
     )
@@ -122,17 +125,23 @@ private fun StatementViewer(
     }
 }
 
-private const val STATEMENT_FILE_NAME = "statement.pdf"
-private suspend fun onStatementDetailsEffect(
+private suspend fun handleEffects(
     effect: StatementDetailsEffect,
     navController: NavController,
-    shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
+    shareStatement: suspend (statement: ByteArray, fileName: String, mimeType: String, shareTitle: String) -> Unit
 ) {
 
     when (effect) {
         StatementDetailsEffect.NavigateBack -> navController.popBackStack()
         is StatementDetailsEffect.ShareStatement -> {
-            shareStatement(effect.statement, STATEMENT_FILE_NAME)
+            shareStatement(
+                effect.statement,
+                STATEMENT_FILE_NAME,
+                MimeType.PDF,
+                getString(Res.string.share_pdf)
+            )
         }
     }
 }
+
+private const val STATEMENT_FILE_NAME = "statement.pdf"

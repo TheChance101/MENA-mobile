@@ -24,7 +24,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.SnackBar
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
@@ -47,11 +47,10 @@ fun CreateShelfScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            CreateShelfEffect.NavigateBack -> navController.popBackStack()
+            CreateShelfEffect.NavigateBack -> navController.navigateUp()
             CreateShelfEffect.NavigateToManageDukan -> {
-                navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.set(CreateShelfArgs.createShelfSnackBar, "")
+                val backStack = navController.previousBackStackEntry
+                backStack?.savedStateHandle[CreateShelfArgs.IS_SHELF_CREATED] = true
                 navController.popBackStack()
             }
         }
@@ -97,6 +96,14 @@ private fun CreateShelfContent(
                 isLoading = state.isLoading,
                 contentPadding = PaddingValues(vertical = Theme.spacing._12)
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = interactionListener::onDismissSnackBar
+                )
+            }
         }
     ) {
         LazyColumn(
@@ -128,12 +135,6 @@ private fun CreateShelfContent(
                 )
             }
         }
-    }
-    state.snackBarState?.let { snackBarState ->
-        SnackBar(
-            snackBarUiState = snackBarState,
-            onDismiss = interactionListener::onDismissSnackBar
-        )
     }
 }
 

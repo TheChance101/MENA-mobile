@@ -78,13 +78,13 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onCategoryClick should toggle category selection state`() = runTest(testDispatcher) {
+    fun `onClickCategory should toggle category selection state`() = runTest(testDispatcher) {
         viewModel.state.test {
             skipItems(2)
             val state = awaitItem()
             val firstCategory = state.categories.first()
             firstCategory.value.id?.let {
-                viewModel.onCategoryClick(it)
+                viewModel.onClickCategory(it)
             }
 
             val updatedState = awaitItem()
@@ -96,8 +96,8 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onBackClick should send NavigateBack effect when called`() = runTest(testDispatcher) {
-        viewModel.onBackClick()
+    fun `onClickBack should send NavigateBack effect when called`() = runTest(testDispatcher) {
+        viewModel.onClickBack()
 
         viewModel.effect.test {
             val effect = awaitItem()
@@ -107,11 +107,11 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onSaveClick should sendEffect NavigateToTrends when patchUserCategories is successful`() =
+    fun `onClickSave should sendEffect NavigateToTrends when patchUserCategories is successful`() =
         runTest(testDispatcher) {
             everySuspend { repository.updateUserCategories(any(), any()) } returns Unit
 
-            viewModel.onSaveClick()
+            viewModel.onClickSave()
 
             viewModel.effect.test {
                 val effect = awaitItem()
@@ -121,13 +121,13 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onSaveClick should set errorState when patchUserCategories throws exception`() =
+    fun `onClickSave should set errorState when patchUserCategories throws exception`() =
         runTest(testDispatcher) {
             everySuspend {
                 repository.updateUserCategories(any(), any())
             } throws Exception()
 
-            viewModel.onSaveClick()
+            viewModel.onClickSave()
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.state.test {

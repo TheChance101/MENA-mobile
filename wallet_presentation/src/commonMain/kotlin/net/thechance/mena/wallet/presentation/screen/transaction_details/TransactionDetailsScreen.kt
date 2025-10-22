@@ -14,6 +14,7 @@ import io.github.suwasto.capturablecompose.rememberCaptureController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
+import mena.wallet_presentation.generated.resources.share_image
 import mena.wallet_presentation.generated.resources.transaction_details_header
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -26,8 +27,9 @@ import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsContent
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.TransactionDetailsScreenShot
-import net.thechance.mena.wallet.presentation.utils.ImageSharer
+import net.thechance.mena.wallet.presentation.utils.FileSharer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -39,7 +41,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun TransactionDetailsScreen(
     viewModel: TransactionDetailsViewModel = koinViewModel(),
-    imageSharer: ImageSharer = koinInject(),
+    fileSharer: FileSharer = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val captureController = rememberCaptureController()
@@ -51,7 +53,7 @@ fun TransactionDetailsScreen(
             onTransactionDetailsEffect(
                 effect = effect,
                 navController = navController,
-                shareImage = imageSharer::shareImage,
+                shareImage = fileSharer::shareFile,
                 captureImage = captureController::capture,
                 onCaptureError = viewModel::onCaptureError
             )
@@ -141,7 +143,7 @@ private fun TransactionDetailsSuccessContent(
 private suspend fun onTransactionDetailsEffect(
     effect: TransactionDetailsEffect,
     navController: NavController,
-    shareImage: suspend (ByteArray, String, String) -> Unit,
+    shareImage: suspend (image: ByteArray, fileName: String, mimeType: String, shareTitle: String) -> Unit,
     captureImage: suspend () -> Unit,
     onCaptureError: suspend () -> Unit
 ) {
@@ -149,7 +151,7 @@ private suspend fun onTransactionDetailsEffect(
         TransactionDetailsEffect.NavigateBack -> navController.popBackStack()
 
         is TransactionDetailsEffect.ShareImage -> {
-            shareImage(effect.imageBytes, effect.fileName, effect.mimeType)
+            shareImage(effect.imageBytes, effect.fileName, effect.mimeType, getString(Res.string.share_image))
         }
 
         TransactionDetailsEffect.CaptureImage -> {

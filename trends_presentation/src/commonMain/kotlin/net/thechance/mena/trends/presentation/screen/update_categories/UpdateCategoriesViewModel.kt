@@ -35,13 +35,13 @@ internal class UpdateCategoriesViewModel(
         )
     }
 
-    override fun onCategoryClick(categoryId: String) = updateState {
+    override fun onClickCategory(categoryId: String) = updateState {
         copy(categories = categories.toggleCategory(categoryId))
     }
 
-    override fun onBackClick() = sendEffect(UpdateCategoriesScreenEffect.NavigateBack)
+    override fun onClickBack() = sendEffect(UpdateCategoriesScreenEffect.NavigateBack)
 
-    override fun onSaveClick() {
+    override fun onClickSave() {
         tryToExecute(
             block = { saveSelectedCategories() },
             onSuccess = { sendEffect(UpdateCategoriesScreenEffect.NavigateToTrends) },

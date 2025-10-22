@@ -24,6 +24,7 @@ import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
+import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
@@ -195,12 +196,14 @@ fun createChatRepository(
 fun createMessageRepository(
     httpClient: HttpClient,
     webSocketManager: WebSocketManager,
+    messageSenderFactory: MessageSenderFactory,
     messageDao: MessageDao,
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
         webSocketManager = webSocketManager,
         messageDao = messageDao,
         client =httpClient,
+        messageSenderFactory = messageSenderFactory,
         json = jsonSerialization
     )
 }

@@ -5,8 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.ErrorState
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.mapper.createNavigateToHomeEffect
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
 class LoginScreenViewModel(
@@ -20,7 +21,7 @@ class LoginScreenViewModel(
         tryToExecute(
             function = ::onLogin,
             onSuccess = ::onLoginSuccess,
-            onError = ::onErrorAccrue,
+            onError = ::onLoginError,
             dispatcher = dispatcher
         )
     }
@@ -35,10 +36,10 @@ class LoginScreenViewModel(
 
     private fun onLoginSuccess() {
         updateState { copy(isLoading = false) }
-        sendNewEffect(LoginScreenUIEffect.NavigateToHome)
+        sendNewEffect(createNavigateToHomeEffect())
     }
 
-    private fun onErrorAccrue(errorState: ErrorState) {
+    private fun onLoginError(errorState: ErrorState) {
         updateState {
             copy(
                 isLoading = false,
@@ -89,8 +90,9 @@ class LoginScreenViewModel(
     }
 
 
-    override fun onSelectCountryItem(country: MenaCountry) {
+    override fun onConfirmCountryItem(country: MenaCountry) {
         updateState { copy(currentCountry = country, showCountryBottomSheet = false) }
+        changeIsLoginEnabled()
     }
 
     override fun onDismissBottomSheet() {

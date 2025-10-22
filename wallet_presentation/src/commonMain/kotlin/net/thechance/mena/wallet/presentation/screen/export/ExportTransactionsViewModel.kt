@@ -34,7 +34,8 @@ import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
+import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.jetbrains.compose.resources.StringResource
@@ -49,8 +50,8 @@ import kotlin.uuid.Uuid
 class ExportTransactionsViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val statementRepository: StatementRepository,
-    @Provided private val pdfHandler: PdfHandler,
-    private val stringProvider: StringProvider,
+    @Provided private val fileManager: FileManager,
+    @Provided private val stringProvider: StringProvider,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
     ExportTransactionsState()
@@ -270,9 +271,10 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun saveStatementPdfToCache(statement: StatementWithMetaData): String {
-        return pdfHandler.savePdf(
-            byteArray = statement.byteArray,
-            location = StorageLocation.Cache(getUniqueStatementFileName())
+        return fileManager.saveFile(
+            data = statement.byteArray,
+            location = StorageLocation.Cache(getUniqueStatementFileName()),
+            mimeType = MimeType.PDF
         )
     }
 
@@ -357,9 +359,10 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun saveStatementPdfToDownloads(statement: StatementWithMetaData): String {
-        return pdfHandler.savePdf(
-            byteArray = statement.byteArray,
-            location = StorageLocation.Downloads(getUniqueStatementFileName())
+        return fileManager.saveFile(
+            data = statement.byteArray,
+            location = StorageLocation.Downloads(getUniqueStatementFileName()),
+            mimeType = MimeType.PDF
         )
     }
 

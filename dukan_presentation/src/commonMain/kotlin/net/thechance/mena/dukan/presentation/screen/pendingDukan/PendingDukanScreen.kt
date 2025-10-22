@@ -22,8 +22,8 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.AnnotatedText
-import net.thechance.mena.dukan.presentation.component.ImageWithTextContainer
+import net.thechance.mena.dukan.presentation.component.shared.AnnotatedText
+import net.thechance.mena.dukan.presentation.component.state.ImageWithTextContainer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

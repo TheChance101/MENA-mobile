@@ -69,8 +69,8 @@ class VideoDescriptionViewModelTest {
         }
 
     @Test
-    fun `onBackClick should send NavigateBack effect when called`() = runTest {
-        viewModel.onBackClick()
+    fun `onClickBack should send NavigateBack effect when called`() = runTest {
+        viewModel.onClickBack()
 
         viewModel.effect.test {
             val effect = awaitItem()
@@ -79,8 +79,8 @@ class VideoDescriptionViewModelTest {
     }
 
     @Test
-    fun `onNextClick should send NavigateToNext effect when called`() = runTest {
-        viewModel.onNextClick()
+    fun `onClickNext should send NavigateToNext effect when called`() = runTest {
+        viewModel.onClickNext()
 
         viewModel.effect.test {
             val effect = awaitItem()

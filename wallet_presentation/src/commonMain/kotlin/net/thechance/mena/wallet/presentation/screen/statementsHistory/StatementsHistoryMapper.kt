@@ -13,6 +13,7 @@ fun Statement.toUiState(): StatementsHistoryScreenState.StatementItem {
         endDate = formatLocalDate(date = endDate, outputFormat = "MMM dd yyyy"),
         totalInflow = totalInflows,
         totalOutflow = totalOutflows,
-        fileName = fileName
+        fileName = fileName,
+        isDeleting = false
     )
 }

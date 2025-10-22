@@ -23,31 +23,29 @@ class SearchViewModel(
         searchArgs.surahId,
         searchArgs.surahName
     )
-),
-    SearchInteractionListener {
+), SearchInteractionListener {
+
     private var searchJob: Job? = null
 
     init {
-        handleHint()
+        initializeSearchHint()
     }
 
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
-        searchJob?.cancel()
-        if (query.length < LENGTH_OF_SHORTEST_WORD_IN_QURAN) {
-            updateState { it.copy(searchResult = emptyList()) }
-            return
+        cancelPreviousSearch()
+
+        if (isQueryTooShort(query)) return
+
+        performSearchWithDelay(query)
+    }
+
+    override fun onSearchResultClick(surahId: Int, ayahId: Int) {
+        if (uiState.value.surahId != null) {
+            sendEffect(SearchEffect.NavigateBack(ayahId))
+        } else {
+            navigateToSurah(surahId, ayahId)
         }
-        searchJob = tryToExecute(
-            delayMillis = 1000L,
-            execute = {
-                uiState.value.surahId?.let {
-                    repository.searchForAyahInSurah(it, query)
-                } ?: repository.searchForAyahInQuran(query)
-            },
-            onSuccess = ::onGetSearchResultSuccess,
-            dispatcher = dispatcher
-        )
     }
 
     override fun onClearQueryClick() {
@@ -58,35 +56,75 @@ class SearchViewModel(
         sendEffect(SearchEffect.NavigateBack())
     }
 
-    override fun onSearchResultClick(surahId: Int, ayahId: Int) {
-        uiState.value.surahId?.let {
-            sendEffect(SearchEffect.NavigateBack(ayahId))
-        } ?: sendEffect(
-            SearchEffect.NavigateToSurah(
-                surahId,
-                ayahId,
-                Surah.SurahOrder.entries[surahId - 1].name
-            )
+    private fun cancelPreviousSearch() {
+        searchJob?.cancel()
+    }
+
+    private fun performSearchWithDelay(query: String) {
+        searchJob = tryToExecute(
+            execute = { searchForAyah(query) },
+            onSuccess = ::onSearchResultSuccess,
+            dispatcher = dispatcher,
+            delayMillis = SEARCH_DEBOUNCE_DELAY
         )
     }
 
-    private fun handleHint() {
-        tryToExecute({
-            val hintPostfix = uiState.value.surahName ?: getString(Res.string.quran)
-            val hint = getString(Res.string.search_in_surah_hint, hintPostfix)
-            updateState { it.copy(hint = hint) }
-        })
+    private fun isQueryTooShort(query: String): Boolean {
+        val isTooShort = query.length < MIN_SEARCH_QUERY_LENGTH
+        if (isTooShort) {
+            clearSearchResults()
+        }
+        return isTooShort
     }
 
-    private fun onGetSearchResultSuccess(ayat: List<Ayah>) {
-        updateState {
-            it.copy(searchResult = ayat.map { ayah ->
-                ayah.toSearchResult(it.surahName)
-            })
+    private fun clearSearchResults() {
+        updateState { it.copy(searchResults = emptyList()) }
+    }
+
+    private suspend fun searchForAyah(query: String): List<Ayah> {
+        return if (uiState.value.surahId != null) {
+            searchInCurrentSurah(query)
+        } else {
+            repository.searchForAyahInQuran(query)
         }
     }
 
+    private suspend fun searchInCurrentSurah(query: String): List<Ayah> {
+        return repository.searchForAyahInSurah(uiState.value.surahId!!, query)
+    }
+
+    private fun navigateToSurah(surahId: Int, ayahId: Int) {
+        val surahName = getSurahName(surahId)
+        sendEffect(SearchEffect.NavigateToSurah(surahId, ayahId, surahName))
+    }
+
+    private fun getSurahName(surahId: Int): String {
+        return Surah.SurahOrder.entries[surahId - 1].name
+    }
+
+    private fun initializeSearchHint() {
+        tryToExecute(
+            execute = {
+                val hint = buildSearchHint()
+                updateState { it.copy(queryHint = hint) }
+            }
+        )
+    }
+
+    private suspend fun buildSearchHint(): String {
+        val surahName = uiState.value.surahName ?: getString(Res.string.quran)
+        return getString(Res.string.search_in_surah_hint, surahName)
+    }
+
+    private fun onSearchResultSuccess(ayat: List<Ayah>) {
+        val searchResults = ayat.map { ayah ->
+            ayah.toSearchResults(uiState.value.surahName)
+        }
+        updateState { it.copy(searchResults = searchResults) }
+    }
+
     private companion object {
-        const val LENGTH_OF_SHORTEST_WORD_IN_QURAN = 2
+        const val MIN_SEARCH_QUERY_LENGTH = 2
+        const val SEARCH_DEBOUNCE_DELAY = 1000L
     }
 }

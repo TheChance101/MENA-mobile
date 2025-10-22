@@ -21,9 +21,8 @@ import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.domain.repository.MediaRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
@@ -32,7 +31,6 @@ import org.maplibre.compose.camera.CameraPosition
 
 class CreateDukanViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
-    private val mediaRepository: MediaRepository,
     private val locationRepository: LocationRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CreateDukanUiState, CreateDukanEffect>(
@@ -168,7 +166,14 @@ class CreateDukanViewModel(
         return { category -> state.value.selectedCategories.contains(category) }
     }
 
-    override fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+    override fun onCategoryClicked(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+        val isSelected = state.value.selectedCategories.contains(category)
+        return if (isSelected) onCategoryDeselected(category)
+        else onCategorySelected(category)
+
+    }
+
+    private fun onCategorySelected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         if (!canSelectMoreCategories(state.value)) return false
 
         addCategoryToSelection(category)
@@ -176,7 +181,7 @@ class CreateDukanViewModel(
         return true
     }
 
-    override fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
+    private fun onCategoryDeselected(category: CreateDukanUiState.DukanCategoryUiState): Boolean {
         removeCategoryFromSelection(category)
         updateNextButtonEnableState()
         return true
@@ -213,7 +218,7 @@ class CreateDukanViewModel(
         state.value.croppedImage?.let {
             val fileName = state.value.name.replace(" ", "_")
                 .plus("dukan_image")
-            mediaRepository.uploadDukanImage(fileName, it.toPngByteArray())
+            dukanManagementRepository.uploadDukanImage(fileName, it.toPngByteArray())
         }
     }
 
@@ -231,9 +236,7 @@ class CreateDukanViewModel(
     private fun nextStep(step: CreateDukanStep): CreateDukanStep {
         return when (step) {
             CreateDukanStep.BASIC_INFORMATION -> CreateDukanStep.SELECT_IMAGE
-
             CreateDukanStep.SELECT_IMAGE -> CreateDukanStep.SELECT_LOCATION
-
             CreateDukanStep.SELECT_LOCATION -> {
                 updateState { copy(isMapLocked = true) }
                 CreateDukanStep.SELECT_STYLE
@@ -266,18 +269,14 @@ class CreateDukanViewModel(
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
     }
 
-    private fun onMapClickedSuccess(address: String) {
-        onAddressChanged(address)
-    }
+    private fun onMapClickedSuccess(address: String) = onAddressChanged(address)
 
     override fun onAddressChanged(address: String) {
         updateState { copy(address = address) }
         updateNextButtonEnableState()
     }
 
-    override fun onCameraMoved(
-        camera: CameraPosition
-    ) {
+    override fun onCameraMoved(camera: CameraPosition) {
         updateState { copy(cameraPosition = camera) }
     }
 

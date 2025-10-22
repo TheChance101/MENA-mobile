@@ -10,7 +10,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.domain.exception.InvalidOTPException
+import java.lang.Exception
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -70,7 +70,7 @@ class OtpScreenViewModelTest {
     @Test
     fun `should show error message when otp is incorrect and user click on verify button`() =
         runTest {
-            coEvery { resetPasswordRepository.verifyOTPCode(any(),) } throws InvalidOTPException()
+            coEvery { resetPasswordRepository.verifyOTPCode(any(),) } throws Exception("Test error")
 
             viewModel.onClickVerify()
             advanceUntilIdle()
