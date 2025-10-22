@@ -11,7 +11,6 @@ import mena.faith_presentation.generated.resources.qiblah_direction
 import mena.faith_presentation.generated.resources.quran_kareem
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -49,31 +48,23 @@ data class FeatureItem(
     val onClick: () -> Unit
 )
 
-enum class FaithFeatureType(
-    val titleRes: StringResource,
-    val iconRes: DrawableResource,
-    val getAction: (FeatureInteractionListener) -> () -> Unit
-) {
-    QURAN(
-        titleRes = Res.string.quran_kareem,
-        iconRes = Res.drawable.ic_quran,
-        getAction = { it::onQuranClick }
-    ),
-    QIBLAH(
-        titleRes = Res.string.qiblah_direction,
-        iconRes = Res.drawable.ic_kaaba,
-        getAction = { it::onQiblahClick }
-    ),
-    MOSQUES(
-        titleRes = Res.string.nearby_mosques,
-        iconRes = Res.drawable.ic_mosque,
-        getAction = { it::onMosquesClick }
-    );
-
-    @Composable
-    fun toFeatureItem(listener: FeatureInteractionListener) = FeatureItem(
-        title = stringResource(titleRes),
-        icon = painterResource(iconRes),
-        onClick = getAction(listener)
+@Composable
+fun faithFeatureCards(listener: MainInteractionListener): List<FeatureItem> {
+    return listOf(
+        FeatureItem(
+            title = stringResource(Res.string.quran_kareem),
+            icon = painterResource(Res.drawable.ic_quran),
+            onClick = listener::onQuranClick
+        ),
+        FeatureItem(
+            title = stringResource(Res.string.qiblah_direction),
+            icon = painterResource(Res.drawable.ic_kaaba),
+            onClick = listener::onQiblahClick
+        ),
+        FeatureItem(
+            title = stringResource(Res.string.nearby_mosques),
+            icon = painterResource(Res.drawable.ic_mosque),
+            onClick = listener::onMosquesClick
+        )
     )
 }
