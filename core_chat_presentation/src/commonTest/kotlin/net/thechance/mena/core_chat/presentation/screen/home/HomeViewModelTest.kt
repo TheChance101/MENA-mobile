@@ -393,6 +393,7 @@ class HomeViewModelTest {
             assertThat(chatStatus is ChatUiState.Status.Received).isTrue()
         }
     }
+
     private fun createViewModel(): HomeViewModel {
         return HomeViewModel(
             contactsRepository = contactsRepository,
