@@ -3,6 +3,7 @@ package net.thechance.mena.trends.data.client
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.HttpTimeoutConfig
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -40,6 +41,11 @@ class NetworkClient : KoinComponent {
                     }
                 }
             }
+
+            install(HttpTimeout) {
+                connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+                requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+            }
         }
     }
 
@@ -56,6 +62,11 @@ class NetworkClient : KoinComponent {
                         println("Upload Http Client: $message")
                     }
                 }
+            }
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
+                socketTimeoutMillis = HttpTimeoutConfig.INFINITE_TIMEOUT_MS
             }
         }
     }
@@ -89,11 +100,6 @@ class NetworkClient : KoinComponent {
                     ignoreUnknownKeys = true
                 }
             )
-        }
-
-        builder.install(HttpTimeout) {
-            connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-            requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
         }
     }
 
