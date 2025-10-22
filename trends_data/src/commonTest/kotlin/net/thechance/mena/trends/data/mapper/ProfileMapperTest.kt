@@ -3,7 +3,7 @@ package net.thechance.mena.trends.data.mapper
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import net.thechance.mena.trends.data.dto.UserInfoDto
+import net.thechance.mena.trends.data.dto.UserDto
 import kotlin.test.Test
 
 internal class ProfileMapperTest {
@@ -11,7 +11,7 @@ internal class ProfileMapperTest {
     @Test
     fun `profileDto toEntity() should map correctly`() {
 
-        val profile = userInfoDto[0].toEntity()
+        val profile = userDtos[0].toEntity()
 
         assertThat(profile.firstName).isEqualTo("nour")
         assertThat(profile.lastName).isEqualTo("nour")
@@ -22,7 +22,7 @@ internal class ProfileMapperTest {
     @Test
     fun `profileDto with null  toEntity() should map to empty string`() {
 
-        val profile = userInfoDto[1].toEntity()
+        val profile = userDtos[1].toEntity()
 
         assertThat(profile.firstName).isEmpty()
         assertThat(profile.lastName).isEmpty()
@@ -30,14 +30,14 @@ internal class ProfileMapperTest {
         assertThat(profile.username).isEmpty()
     }
     private companion object {
-        val userInfoDto = listOf(
-            UserInfoDto(
+        val userDtos = listOf(
+            UserDto(
                 firstName = "nour",
                 lastName = "nour",
                 profileImageUrl = "img.jpg",
                 username = "nour"
             ),
-            UserInfoDto(
+            UserDto(
                 firstName = null,
                 lastName = null,
                 profileImageUrl = null,

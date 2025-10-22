@@ -34,7 +34,8 @@ import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
+import net.thechance.mena.wallet.presentation.utils.FileManager
+import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.jetbrains.compose.resources.StringResource
@@ -42,14 +43,16 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @KoinViewModel
 class ExportTransactionsViewModel(
     @Provided private val transactionRepository: TransactionRepository,
     @Provided private val statementRepository: StatementRepository,
-    @Provided private val pdfHandler: PdfHandler,
-    private val stringProvider: StringProvider,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    @Provided private val fileManager: FileManager,
+    @Provided private val stringProvider: StringProvider,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ExportTransactionsState, ExportTransactionsEffect>(
     ExportTransactionsState()
 ), ExportTransactionsListener {
@@ -79,10 +82,10 @@ class ExportTransactionsViewModel(
     }
 
     override fun onTypeSelected(type: FilterType) {
-        val current = currentState.selectedTransactionsTypes
+        val current = currentState.filterState.selectedTransactionsTypes
         val newSet = if (current.contains(type)) current - type else current + type
-
-        val newState = currentState.copy(selectedTransactionsTypes = newSet)
+        val newState =
+            currentState.copy(filterState = currentState.filterState.copy(selectedTransactionsTypes = newSet))
 
         updateState {
             newState.copy(
@@ -96,7 +99,7 @@ class ExportTransactionsViewModel(
     }
 
     override fun onStartDateClicked() {
-        val currentStartDate = currentState.startDate
+        val currentStartDate = currentState.filterState.startDate
         if (currentStartDate != null) {
             openStartDatePickerWithExistingDate(currentStartDate)
         } else {
@@ -106,27 +109,25 @@ class ExportTransactionsViewModel(
 
     @OptIn(ExperimentalTime::class)
     override fun onEndDateClicked() {
-        val currentEndDate = currentState.endDate
-        updateState {
-            it.copy(
-                isDateBottomSheetVisible = true,
-                datePickerMode = ExportTransactionsState.DatePickerMode.END_DATE,
-                defaultEndDate = currentEndDate ?: Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val currentEndDate = currentState.filterState.endDate
+        updateState { oldState ->
+            oldState.copy(
+                dateState = oldState.dateState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = ExportTransactionsState.DatePickerMode.END_DATE,
+                    defaultEndDate = currentEndDate ?: Clock.System.now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+                )
             )
         }
     }
 
     override fun onDismissDatePicker() {
-        updateState {
-            it.copy(
-                isDateBottomSheetVisible = false
-            )
-        }
+        updateState { it.copy(dateState = it.dateState.copy(isDateBottomSheetVisible = false)) }
     }
 
     override fun onPickDateClicked(date: LocalDate) {
-        val updatedState = when (currentState.datePickerMode) {
+        val updatedState = when (currentState.dateState.datePickerMode) {
             ExportTransactionsState.DatePickerMode.START_DATE -> updateStartDate(date)
             ExportTransactionsState.DatePickerMode.END_DATE -> updateEndDate(date)
         }
@@ -134,7 +135,6 @@ class ExportTransactionsViewModel(
         applyStateWithUpdatedButtons(updatedState)
         onDismissDatePicker()
     }
-
 
     override fun onViewAndShareClicked() {
         if (areDatesValid().not()) {
@@ -145,8 +145,8 @@ class ExportTransactionsViewModel(
             onStart = ::onViewAndShareStart,
             callee = ::getStatement,
             onSuccess = ::saveStatementToCache,
-            onError = { error -> onViewAndShareError(error) },
-            dispatcher = ioDispatcher
+            onError = ::onViewAndShareError,
+            dispatcher = dispatcher
         )
     }
 
@@ -160,14 +160,14 @@ class ExportTransactionsViewModel(
             onStart = ::onDownloadStart,
             callee = ::getStatement,
             onSuccess = { statement -> downloadStatement(statement) },
-            onError = { error -> handleDownloadError(error) },
-            dispatcher = ioDispatcher
+            onError = ::handleDownloadError,
+            dispatcher = dispatcher
         )
     }
 
     private fun areDatesValid(): Boolean {
-        val startDate = currentState.startDate
-        val endDate = currentState.endDate
+        val startDate = currentState.filterState.startDate
+        val endDate = currentState.filterState.endDate
         return (startDate != null && endDate != null && startDate > endDate).not()
     }
 
@@ -183,15 +183,15 @@ class ExportTransactionsViewModel(
 
     private fun updateStartDate(date: LocalDate): ExportTransactionsState {
         return currentState.copy(
-            startDate = date,
-            defaultStartDate = date
+            filterState = currentState.filterState.copy(startDate = date),
+            dateState = currentState.dateState.copy(defaultStartDate = date)
         )
     }
 
     private fun updateEndDate(date: LocalDate): ExportTransactionsState {
         return currentState.copy(
-            endDate = date,
-            defaultEndDate = date
+            filterState = currentState.filterState.copy(endDate = date),
+            dateState = currentState.dateState.copy(defaultEndDate = date)
         )
     }
 
@@ -207,11 +207,13 @@ class ExportTransactionsViewModel(
     }
 
     private fun openStartDatePickerWithExistingDate(currentStartDate: LocalDate) {
-        updateState {
-            it.copy(
-                isDateBottomSheetVisible = true,
-                datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
-                defaultStartDate = currentStartDate
+        updateState { oldState ->
+            oldState.copy(
+                dateState = oldState.dateState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
+                    defaultStartDate = currentStartDate
+                )
             )
         }
     }
@@ -225,9 +227,9 @@ class ExportTransactionsViewModel(
         )
     }
 
-    private suspend fun onGetFirstTransactionDateError(throwable: ErrorState) {
+    private suspend fun onGetFirstTransactionDateError(error: ErrorState) {
         handleError(
-            error = throwable,
+            error = error,
             title = stringProvider.getString(Res.string.error),
             message = stringProvider.getString(Res.string.failed_to_load_date_picker),
             isSuccess = false
@@ -235,12 +237,14 @@ class ExportTransactionsViewModel(
     }
 
     private fun onGetFirstTransactionDateSuccess(date: LocalDate?) {
-        updateState {
-            val currentStartDate = it.startDate ?: date
-            it.copy(
-                defaultStartDate = currentStartDate,
-                isDateBottomSheetVisible = true,
-                datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
+        updateState { oldState ->
+            val currentStartDate = oldState.filterState.startDate ?: date
+            oldState.copy(
+                dateState = oldState.dateState.copy(
+                    defaultStartDate = currentStartDate,
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
+                )
             )
         }
     }
@@ -260,14 +264,17 @@ class ExportTransactionsViewModel(
 
     private fun saveStatementToCache(statement: StatementWithMetaData) {
         tryToExecute(
-            callee = {
-                pdfHandler.savePdf(
-                    byteArray = statement.byteArray,
-                    location = StorageLocation.Cache(getUniqueStatementFileName())
-                )
-            },
+            callee = { saveStatementPdfToCache(statement) },
             onSuccess = ::onSaveStatementToCacheSuccess,
             onError = ::onViewAndShareError
+        )
+    }
+
+    private suspend fun saveStatementPdfToCache(statement: StatementWithMetaData): String {
+        return fileManager.saveFile(
+            data = statement.byteArray,
+            location = StorageLocation.Cache(getUniqueStatementFileName()),
+            mimeType = MimeType.PDF
         )
     }
 
@@ -275,13 +282,16 @@ class ExportTransactionsViewModel(
         resetViewAndShareState()
 
         val fileName = statementPath.substringAfterLast("/")
-        sendEffect(ExportTransactionsEffect.NavigateToViewFileScreen(
-            StorageLocation.Cache(fileName))
+        sendEffect(
+            ExportTransactionsEffect.NavigateToViewFileScreen(
+                StorageLocation.Cache(fileName)
+            )
         )
     }
 
     private suspend fun onViewAndShareError(error: ErrorState) {
         resetViewAndShareState()
+
         handleError(
             error = error,
             title = stringProvider.getString(Res.string.error),
@@ -301,8 +311,9 @@ class ExportTransactionsViewModel(
         }
         showToast(messageRes = Res.string.downloading_started)
     }
+
     @OptIn(ExperimentalTime::class)
-    private suspend fun getStatement(): StatementWithMetaData{
+    private suspend fun getStatement(): StatementWithMetaData {
         return if (currentState.isCustomFilterCardSelected) {
             statementRepository.getStatementWithMetadata(
                 getTransactionFilterParams()
@@ -317,12 +328,11 @@ class ExportTransactionsViewModel(
             year(); char('-'); monthNumber(); char('-')
             day(padding = Padding.ZERO)
         }
-        val startDateTime = currentState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
-
-        val endDateTime = currentState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
+        val startDateTime = currentState.filterState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
+        val endDateTime = currentState.filterState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
 
         return TransactionFilterParams(
-            types = currentState.selectedTransactionsTypes.map { it.toDomain() },
+            types = currentState.filterState.selectedTransactionsTypes.map { it.toDomain() },
             startDate = startDateTime,
             endDate = endDateTime
         )
@@ -330,6 +340,7 @@ class ExportTransactionsViewModel(
 
     private suspend fun handleDownloadError(error: ErrorState) {
         resetDownloadState()
+
         handleError(
             error = error,
             title = stringProvider.getString(Res.string.download_failed),
@@ -340,18 +351,22 @@ class ExportTransactionsViewModel(
 
     private fun downloadStatement(statement: StatementWithMetaData) {
         tryToExecute(
-            callee = {
-                pdfHandler.savePdf(
-                    byteArray = statement.byteArray,
-                    location = StorageLocation.Downloads(getUniqueStatementFileName())
-                )
-            },
+            callee = { saveStatementPdfToDownloads(statement) },
             onSuccess = { filePath -> onDownloadSuccess(filePath, statement) },
             onError = ::onDownloadFailure,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
+    private suspend fun saveStatementPdfToDownloads(statement: StatementWithMetaData): String {
+        return fileManager.saveFile(
+            data = statement.byteArray,
+            location = StorageLocation.Downloads(getUniqueStatementFileName()),
+            mimeType = MimeType.PDF
+        )
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
     private fun onDownloadSuccess(filePath: String, statement: StatementWithMetaData) {
         resetDownloadState()
 
@@ -359,7 +374,7 @@ class ExportTransactionsViewModel(
         saveStatementToDatabase(
             filePath = filePath,
             statement = Statement(
-                id = 0L,
+                id = Uuid.random(),
                 startDate = statement.startDate,
                 endDate = statement.endDate,
                 totalInflows = statement.totalInflows,
@@ -384,8 +399,10 @@ class ExportTransactionsViewModel(
             isSuccess = true
         )
     }
+
     private suspend fun onDownloadFailure(error: ErrorState) {
         resetDownloadState()
+
         showSnackBar(
             title = stringProvider.getString(Res.string.download_failed),
             message = stringProvider.getString(Res.string.something_went_wrong),
@@ -404,7 +421,6 @@ class ExportTransactionsViewModel(
             is ErrorState.NoInternet -> {
                 updateState { oldState ->
                     oldState.copy(
-                        noInternetConnection = true,
                         isDownloadLoading = false,
                         isViewAndShareLoading = false
                     )

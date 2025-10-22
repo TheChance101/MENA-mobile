@@ -3,7 +3,7 @@ package net.thechance.mena.identity.presentation.screen.addresses.addEditLocatio
 import androidx.compose.ui.unit.DpOffset
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
@@ -37,6 +37,5 @@ fun AddEditAddressUIState.toEntity() : Address = Address(
     latitude = coordinates.latitude,
     longitude = coordinates.longitude,
     addressLine = addressDetails,
-    addressType = if(otherAddressType.isNullOrBlank()) addressType!! else AddressType.Other(otherAddressType),
-    isActive = isMainAddress
+    addressType = if(otherAddressType.isNullOrBlank()) addressType ?: AddressType.Home else AddressType.Other(otherAddressType)
 )

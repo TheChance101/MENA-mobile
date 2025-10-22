@@ -74,7 +74,7 @@
     <string name="dismiss_title">Unable to Delete Shelf</string>
     <string name="dismiss_description">This shelf has a products inside it, you can’t delete it until remove products.</string>
     <string name="error_for_delete_shelf">Error deleting shelf</string>
-    <string name="shelf_name_is_invalid">Shelf name is invalid</string>
+    <string name="shelf_name_is_invalid">Shelf name is invalid.Only letters, spaces, and hyphens are allowed.</string>
     <string name="shelf_name_already_exists">Shelf name already exists</string>
     <string name="products_count">%1$d products</string>
     <string name="something_went_wrong">Something went wrong</string>
@@ -114,8 +114,8 @@
     <string name="wide_product_image">Product Image</string>
     <string name="wide_discount_icon">Discount Icon</string>
 
-
-
+    <string name="dukan_creation_failed">Dukan creation failed</string>"
+    <string name="invalid_image_format">Invalid image format</string>"
 
     <string name="no_internet_title">Oops! It looks like you’re offline.</string>
     <string name="no_internet_message">Check your connection and try again</string>

@@ -7,10 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.repository.ProductRepository
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_COLOR
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_STYLE
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_ID
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.SHELF_NAME
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_COLOR
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_STYLE
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_ID
+import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_NAME
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
@@ -69,20 +69,15 @@ class ShelfDetailsViewModel(
         }
     }
 
-    private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) {
-        val productsState = when {
-            products.isLoading && products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.LOADING
-            products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.EMPTY
-            else -> ShelfDetailsUiState.ProductsState.LOADED
-        }
+    private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) =
         updateState {
-            copy(
-                productsShelf = products,
-                productsState = productsState,
-            )
+            val state = when {
+                products.isLoading && products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.LOADING
+                products.error != null -> ShelfDetailsUiState.ProductsState.ERROR
+                else -> ShelfDetailsUiState.ProductsState.LOADED
+            }
+            copy(productsShelf = products, productsState = state)
         }
-    }
-
 
     override fun onBackClicked() {
         emitEffect(ShelfDetailsEffects.NavigateBack)
@@ -90,17 +85,10 @@ class ShelfDetailsViewModel(
 
     override fun onAddToCartClick(productId: String) {
         updateState {
-            copy(
-                productsShelf = productsShelf.copy(
-                    items = productsShelf.items.map { product ->
-                        if (product.id == productId) {
-                            product.copy(inCartQuantity = 1)
-                        } else {
-                            product
-                        }
-                    }
-                )
-            )
+            val updatedItems = productsShelf.items.map {
+                if (it.id == productId) it.copy(inCartQuantity = 1) else it
+            }
+            copy(productsShelf = productsShelf.copy(items = updatedItems))
         }
     }
 }

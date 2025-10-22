@@ -24,25 +24,22 @@ import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.data.util.NetworkConstants.FEED_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.JPEG_EXTENSION
 import net.thechance.mena.trends.data.util.NetworkConstants.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
+import net.thechance.mena.trends.data.util.NetworkConstants.PROFILE_REELS_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkConstants.REELS_FEED_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
-import net.thechance.mena.trends.data.util.NetworkConstants.TRENDS_PATH
-import net.thechance.mena.trends.data.util.NetworkConstants.USER
 import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
 import net.thechance.mena.trends.data.util.NetworkConstants.VIEW_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.VideoFileHandler
-import net.thechance.mena.trends.data.util.getMediaMimeType
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.entity.UploadReelProgress
+import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
@@ -55,13 +52,13 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun deleteReelById(id: String) {
         safeApiCall<Unit> {
-            networkClient.delete("$TRENDS_PATH/$REELS_ENDPOINT/$id")
+            networkClient.delete("$REELS_ENDPOINT/$id")
         }
     }
 
     override suspend fun getAllCurrentUserReels(pageNumber: Int): List<Reel> {
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
-            networkClient.get("$TRENDS_PATH/$USER/$REELS_ENDPOINT") {
+            networkClient.get(PROFILE_REELS_ENDPOINT) {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
         }.results?.map { it.toEntity() }.orEmpty()
@@ -69,8 +66,8 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun getFeedReels(page: Int, reelId: String?): List<Reel> {
         val endpoint = reelId?.let {
-            "$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT/$it"
-        } ?: "$TRENDS_PATH/$REELS_ENDPOINT/$FEED_ENDPOINT"
+            "$REELS_FEED_ENDPOINT/$it"
+        } ?: REELS_FEED_ENDPOINT
 
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
             networkClient.get(endpoint) {
@@ -86,32 +83,26 @@ internal class ReelsRepositoryImpl(
     ) {
         val request = UpdateReelRequestDTO(description, categoryIds)
         safeApiCall<Unit> {
-            networkClient.put("$TRENDS_PATH/$REELS_ENDPOINT/$id") {
+            networkClient.put("$REELS_ENDPOINT/$id") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
         }
     }
 
-    override fun uploadReel(
-        filePath: String,
-        fileName: String,
-        size: Long
-    ): Flow<UploadReelProgress> {
+    override fun uploadReel(filePath: String, size: Long): Flow<UploadReelStatus> {
         return channelFlow {
-            val response = getUploadReelResponse(filePath, fileName, size) { sent, total ->
+            val response = getUploadReelResponse(filePath, size) { sent, total ->
                 send(
-                    UploadReelProgress(
+                    UploadReelStatus.UploadReelProgress(
                         numberOfUploadedBytes = sent,
                         totalBytes = total
                     )
                 )
             }
             send(
-                UploadReelProgress(
+                UploadReelStatus.UploadReelSuccess(
                     reelId = response.reelId.orEmpty(),
-                    numberOfUploadedBytes = size,
-                    totalBytes = size
                 )
             )
         }
@@ -119,19 +110,17 @@ internal class ReelsRepositoryImpl(
 
     private suspend fun getUploadReelResponse(
         filePath: String,
-        fileName: String,
         size: Long,
         onProgress: suspend (sent: Long, total: Long) -> Unit
     ): UploadReelResponse {
         return safeApiCall<UploadReelResponse> {
             val fileSource = videoFileHandler.readFile(filePath)
-            networkClient.post(urlString = "$TRENDS_PATH/$REELS_ENDPOINT") {
+            networkClient.post(urlString = REELS_ENDPOINT) {
                 setUploadRequestTimeout()
                 setBody(
                     createRequestBody(
-                        fileName = fileName,
                         key = VIDEO,
-                        mimeType = getMediaMimeType(fileName),
+                        mimeType = videoFileHandler.getMimeType(filePath),
                         input = InputProvider(size) { fileSource.buffered() }
                     )
                 )
@@ -140,16 +129,11 @@ internal class ReelsRepositoryImpl(
         }
     }
 
-    override suspend fun uploadReelThumbnail(
-        reelId: String,
-        fileName: String,
-        thumbnail: ByteArray
-    ) {
+    override suspend fun uploadReelThumbnail(reelId: String, thumbnail: ByteArray) {
         safeApiCall<Unit> {
             networkClient.put(urlString = "$THUMBNAIL_ENDPOINT/${reelId}") {
                 setBody(
                     createRequestBody(
-                        fileName = "$reelId$JPEG_EXTENSION",
                         key = THUMBNAIL,
                         mimeType = THUMBNAIL_MIME_TYPE,
                         input = InputProvider { ByteReadChannel(thumbnail).asSource().buffered() }
@@ -163,8 +147,8 @@ internal class ReelsRepositoryImpl(
         return videoFileHandler.getDuration(filePath)
     }
 
-    override suspend fun getReelThumbnail(filePath: String, timeMs: Long): ByteArray? {
-        return videoFileHandler.extractVideoFrame(filePath, timeMs)
+    override suspend fun extractReelThumbnail(filePath: String, timeInMillis: Long): ByteArray? {
+        return videoFileHandler.extractVideoFrame(filePath, timeInMillis)
     }
 
     override suspend fun toggleReelLike(reelId: String): Reel {
@@ -180,7 +164,6 @@ internal class ReelsRepositoryImpl(
     }
 
     private fun createRequestBody(
-        fileName: String,
         key: String,
         mimeType: String,
         input: InputProvider
@@ -192,7 +175,7 @@ internal class ReelsRepositoryImpl(
                     value = input,
                     headers = Headers.build {
                         append(HttpHeaders.ContentType, mimeType)
-                        append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
+                        append(HttpHeaders.ContentDisposition, "filename=\"\"")
                     }
                 )
             }

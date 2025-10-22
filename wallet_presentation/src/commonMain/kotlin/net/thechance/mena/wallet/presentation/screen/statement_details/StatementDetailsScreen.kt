@@ -1,41 +1,37 @@
 package net.thechance.mena.wallet.presentation.screen.statement_details
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share_
-import mena.wallet_presentation.generated.resources.img_no_internet
-import mena.wallet_presentation.generated.resources.no_internet_content
-import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.share_button_title
+import mena.wallet_presentation.generated.resources.share_pdf
 import mena.wallet_presentation.generated.resources.statement
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.base.UiState
 import net.thechance.mena.wallet.presentation.component.ErrorView
-import net.thechance.mena.wallet.presentation.component.PdfViewer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
+import net.thechance.mena.wallet.presentation.utils.FileSharer
+import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -44,23 +40,23 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun StatementDetailsScreen(
-    onNavigateBackClicked: () -> Unit,
     statementLocation: StorageLocation,
     viewModel: StatementDetailsViewModel = koinViewModel(
         parameters = { parametersOf(statementLocation) }
     ),
-    pdfHandler: PdfHandler = koinInject()
+    fileSharer: FileSharer = koinInject()
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             handleEffects(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                shareStatement = pdfHandler::sharePdf
+                navController = navController,
+                shareStatement = fileSharer::shareFile
             )
         }
     )
@@ -93,6 +89,7 @@ private fun StatementDetailsContent(
                 onLeadingClick = listener::onNavigateBackClicked,
             )
         },
+        isLoading = state.isLoading,
         bottomContent = {
             PrimaryButton(
                 modifier = Modifier
@@ -104,53 +101,47 @@ private fun StatementDetailsContent(
                 onClick = listener::onShareClicked,
                 trailingIcon = painterResource(Res.drawable.ic_share_),
                 iconSize = 20.dp,
-                isLoading = state.statement is UiState.Loading,
+                isLoading = state.isLoading,
             )
         },
     ) {
-        StatementViewer(statement = state.statement) {
-            listener.onRetryClicked()
-        }
+        StatementViewer(state = state, onRetry = { listener.onRetryClicked() })
     }
 }
 
 @Composable
-fun StatementViewer(
-    statement: UiState<ByteArray>,
+private fun StatementViewer(
+    state: StatementDetailsScreenState,
     onRetry: () -> Unit
 ) {
-    when (statement) {
-        is UiState.Error -> {
-            if (statement.error is ErrorState.NoInternet)
-                ErrorView(
-                    image = painterResource(Res.drawable.img_no_internet),
-                    title = stringResource(Res.string.no_internet_title),
-                    description = stringResource(Res.string.no_internet_content),
-                    onRetry = onRetry
-                )
-            else
-                ErrorView(onRetry = onRetry)
+    when {
+        state.errorState != null -> {
+            ErrorView(onRetry = onRetry)
         }
 
-        UiState.Loading ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-
-        is UiState.Success<ByteArray> -> PdfViewer(pdf = statement.data)
-        UiState.Idle -> Unit
+        else -> {
+            PdfViewer(pdf = state.statement)
+        }
     }
 }
 
 private suspend fun handleEffects(
     effect: StatementDetailsEffect,
-    onNavigateBackClicked: () -> Unit,
-    shareStatement: suspend (statement: ByteArray, fileName: String) -> Unit
+    navController: NavController,
+    shareStatement: suspend (statement: ByteArray, fileName: String, mimeType: String, shareTitle: String) -> Unit
 ) {
+
     when (effect) {
-        StatementDetailsEffect.NavigateBack -> onNavigateBackClicked()
+        StatementDetailsEffect.NavigateBack -> navController.popBackStack()
         is StatementDetailsEffect.ShareStatement -> {
-            shareStatement(effect.statement, "statement.pdf")
+            shareStatement(
+                effect.statement,
+                STATEMENT_FILE_NAME,
+                MimeType.PDF,
+                getString(Res.string.share_pdf)
+            )
         }
     }
 }
+
+private const val STATEMENT_FILE_NAME = "statement.pdf"

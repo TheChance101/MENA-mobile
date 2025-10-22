@@ -1,25 +1,35 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
-import net.thechance.mena.dukan.data.repository.dto.DukanCategoryDto
-import net.thechance.mena.dukan.data.repository.dto.DukanColorDto
-import net.thechance.mena.dukan.data.repository.dto.MyDukanStatusDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
+import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
+import net.thechance.mena.dukan.data.mapper.toCategoryList
+import net.thechance.mena.dukan.data.mapper.toColorsList
+import net.thechance.mena.dukan.data.mapper.toCreateDukanRequest
+import net.thechance.mena.dukan.data.mapper.toMyDukanStatus
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class DukanMappersTest {
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `Dukan to CreateDukanRequest maps correctly`() {
+        val dukanId = Uuid.random()
+        val categoryId = Uuid.random()
+        val colorId = Uuid.random()
         val dukan = Dukan(
-            id = "1",
+            id = dukanId,
             name = "My Dukan",
-            categories = setOf(Category("cat1", "Category 1", "")),
+            categories = setOf(Category(categoryId, "Category 1", "")),
             address = "Baghdad",
             coordinates = Dukan.Coordinates(33.3, 44.4),
-            color = Color("color1", "#FFFFFF"),
+            color = Color(colorId, "#FFFFFF"),
             style = Dukan.Style.WIDE_IMAGE,
             imageUrl = "",
             status = Dukan.Status.PENDING,
@@ -28,45 +38,52 @@ class DukanMappersTest {
         val request = dukan.toCreateDukanRequest()
 
         assertEquals("My Dukan", request.name)
-        assertEquals(setOf("cat1"), request.categoryIds)
+        assertEquals(setOf(categoryId), request.categoryIds)
         assertEquals("Baghdad", request.address)
         assertEquals(33.3, request.latitude)
         assertEquals(44.4, request.longitude)
-        assertEquals("color1", request.colorId)
+        assertEquals(colorId, request.colorId)
         assertEquals("WIDE_IMAGE", request.style)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `List of DukanCategoryDto toCategoryList maps correctly`() {
+        val id1 = Uuid.random()
+        val id2 = Uuid.random()
+
         val dtos = listOf(
-            DukanCategoryDto("1", "Food", "food.png"),
-            DukanCategoryDto("2", "Clothes", "clothes.png")
+            DukanCategoryDto(id1, "Food", "food.png"),
+            DukanCategoryDto(id2, "Clothes", "clothes.png")
         )
 
         val categories = dtos.toCategoryList()
 
         assertEquals(2, categories.size)
-        assertEquals("1", categories[0].id)
+        assertEquals(id1, categories[0].id)
         assertEquals("Food", categories[0].name)
         assertEquals("food.png", categories[0].imageUrl)
-        assertEquals("2", categories[1].id)
+        assertEquals(id2, categories[1].id)
         assertEquals("Clothes", categories[1].name)
         assertEquals("clothes.png", categories[1].imageUrl)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `List of DukanColorDto toColorsList maps correctly`() {
+        val id1 = Uuid.random()
+        val id2 = Uuid.random()
         val dtos = listOf(
-            DukanColorDto("red", "#FF0000"),
-            DukanColorDto("green", "#00FF00")
+            DukanColorDto(id1, "#FF0000"),
+            DukanColorDto(id2, "#00FF00")
         )
 
         val colors = dtos.toColorsList()
 
         assertEquals(2, colors.size)
-        assertEquals("red", colors[0].id)
+        assertEquals(id1, colors[0].id)
         assertEquals("#FF0000", colors[0].hexCode)
-        assertEquals("green", colors[1].id)
+        assertEquals(id2, colors[1].id)
         assertEquals("#00FF00", colors[1].hexCode)
     }
 

@@ -20,7 +20,7 @@ fun ManageShelfScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             ManageShelfEffect.NavigateBack -> navController.popBackStack()
-            is ManageShelfEffect.DeleteShelf -> {
+            is ManageShelfEffect.NavigateBackWithShelfId -> {
                 navController.previousBackStackEntry
                     ?.savedStateHandle
                     ?.set(ManageShelfArgs.deletedShelfId, effect.shelfId)

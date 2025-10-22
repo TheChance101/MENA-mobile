@@ -15,9 +15,9 @@ import mena.dukan_presentation.generated.resources.menu_circle
 import mena.dukan_presentation.generated.resources.view_more
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.CategoryCard
+import net.thechance.mena.dukan.presentation.component.shared.CategoryCard
 import net.thechance.mena.dukan.presentation.util.getScreenWidth
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

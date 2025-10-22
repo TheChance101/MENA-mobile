@@ -1,28 +1,37 @@
 package net.thechance.mena.dukan.data.repository.mockEngine.product
 
-import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
-import net.thechance.mena.dukan.data.repository.dto.product.ProductDto
-import net.thechance.mena.dukan.data.repository.mapper.toDomain
+
+import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.product.ProductDto
+import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.util.PagedResult
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 val createdProductResponseId = "jdoiejdfioewj3229048jsdfjfioewsdfio"
-val demoShelfID = "shelf-123"
+@OptIn(ExperimentalUuidApi::class)
+val demoShelfID = Uuid.random()
+@OptIn(ExperimentalUuidApi::class)
 val productDto1 = ProductDto(
 
-    id = "p1",
+    id = Uuid.random(),
     name = "Demo Product 1",
     shelfId = demoShelfID,
     price = 9.99,
     description = "This is a demo product",
-    imageUrls = listOf("https://picsum.photos/200/200?random=1","https://picsum.photos/200/200?random=2"),
+    imageUrls = listOf(
+        "https://picsum.photos/200/200?random=1",
+        "https://picsum.photos/200/200?random=2"
+    ),
     createdAt = "2025-09-26T15:26:41.300823Z"
 )
 
 
+@OptIn(ExperimentalUuidApi::class)
 val productDto2 = ProductDto(
-    id = "p2",
+    id =  Uuid.random(),
     name = "Demo Product 2",
     shelfId = demoShelfID,
     price = 19.99,

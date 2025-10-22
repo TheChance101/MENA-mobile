@@ -1,21 +1,20 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanCategories
 
-
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong_while_fetching_categories
+import mena.dukan_presentation.generated.resources.no_internet_message
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.repository.DukanRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
-
+import org.jetbrains.compose.resources.StringResource
 
 class DukanCategoriesViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<DukanCategoriesUiState, DukanCategoriesEffects>(
     initialState = DukanCategoriesUiState(),
@@ -34,42 +33,22 @@ class DukanCategoriesViewModel(
         )
     }
 
-    private suspend fun getCategoriesBlock(): List<CategoryUiState> {
-        return dukanRepository.getCategories().map { it.toUiState() }
+    private suspend fun getCategoriesBlock(): List<DukanCategoriesUiState.CategoryUiState> {
+        return dukanManagementRepository.getCategories().map { it.toUiState() }
     }
 
-    private fun onGetCategoriesSuccess(categories: List<CategoryUiState>) {
+    private fun onGetCategoriesSuccess(categories: List<DukanCategoriesUiState.CategoryUiState>) {
         updateState { copy(categories = categories) }
     }
 
     private fun onGetCategoriesError(error: Throwable) {
-        when (error) {
-            is NoInternetException -> handleNoInternetException()
-            else -> handleCategoriesNotFoundException()
+        val messageRes = when (error) {
+            is NoInternetException -> Res.string.no_internet_message
+            else -> Res.string.something_went_wrong
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
-    private fun handleNoInternetException() {
-        updateState {
-            copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-    }
-
-    private fun handleCategoriesNotFoundException() {
-        updateState {
-            copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.something_went_wrong_while_fetching_categories,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-    }
 
     override fun onBackClicked() {
         emitEffect(effect = DukanCategoriesEffects.NavigateBack)
@@ -89,5 +68,16 @@ class DukanCategoriesViewModel(
 
     override fun onDismissSnackBar() {
         updateState { copy(snackBarUiState = null) }
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                )
+            )
+        }
     }
 }

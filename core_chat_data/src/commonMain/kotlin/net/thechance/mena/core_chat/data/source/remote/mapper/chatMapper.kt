@@ -6,15 +6,18 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.model.PagedData
+import kotlin.collections.orEmpty
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -113,5 +116,20 @@ fun MarkAsReadResponse.toEntity(): MarkMessageAsReadEvent {
         readByUserId = Uuid.parse(readByUserId),
         chatId = Uuid.parse(chatId),
         readByMe = readByMe
+    )
+}
+
+fun List<MessageDto>.toListOfMessages(): List<Message> {
+    return mapNotNull { it.toDomain() }
+}
+
+
+fun PagedDataDto<MessageDto>.toPagedListOfMessages(): PagedData<Message> {
+    return PagedData(
+        data = data
+            .orEmpty()
+            .toListOfMessages(),
+        totalItems = totalItems ?: 0,
+        isLastPage = (pageNumber ?: 0) >= (totalPages ?: 0)
     )
 }

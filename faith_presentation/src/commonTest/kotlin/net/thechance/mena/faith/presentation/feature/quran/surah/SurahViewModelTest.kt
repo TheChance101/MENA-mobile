@@ -3,6 +3,7 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -15,8 +16,9 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.feature.quran.surah.args.ISurahArgs
-import net.thechance.mena.faith.presentation.util.ClipboardManager
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
+import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
+import net.thechance.mena.faith.presentation.utils.ClipboardManager
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -31,8 +33,9 @@ class SurahViewModelTest {
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val bookmarkRepository: BookmarkRepository = mock(mode = MockMode.autofill)
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
+    private val snackbarHandler: SnackbarHandler = mock(mode = MockMode.autofill)
 
-    private val surahArgs = mock<ISurahArgs>(mode = MockMode.autofill)
+    private val surahArgs = mock<SurahArgs>(mode = MockMode.autofill)
 
     @BeforeTest
     fun setup() {
@@ -43,7 +46,7 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            snackBarHandler = FakeSnackbarHandler()
+            snackbarHandler = SnackbarHandler.Empty
         )
     }
 
@@ -81,7 +84,7 @@ class SurahViewModelTest {
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         // Then
-        assertEquals(TEST_AYAH_INDEX, testViewModel.uiState.value.selectedAyahIndex)
+        assertEquals(TEST_AYAH_INDEX, testViewModel.uiState.value.selectedAyahNumber)
     }
 
     @Test
@@ -94,7 +97,7 @@ class SurahViewModelTest {
 
         // Then
         assertEquals(SECOND_AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
-        assertEquals(SECOND_AYAH_INDEX, testViewModel.uiState.value.selectedAyahIndex)
+        assertEquals(SECOND_AYAH_INDEX, testViewModel.uiState.value.selectedAyahNumber)
     }
 
     @Test
@@ -108,7 +111,7 @@ class SurahViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             // Then
-            assertEquals(0, testViewModel.uiState.value.selectedAyahIndex)
+            assertEquals(0, testViewModel.uiState.value.selectedAyahNumber)
         }
 
     @Test
@@ -219,7 +222,7 @@ class SurahViewModelTest {
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, SECOND_AYAH_INDEX)
 
             // Then
-            assertEquals(SECOND_AYAH_INDEX, testViewModel.uiState.value.selectedAyahIndex)
+            assertEquals(SECOND_AYAH_INDEX, testViewModel.uiState.value.selectedAyahNumber)
         }
 
     @Test
@@ -245,7 +248,183 @@ class SurahViewModelTest {
         assertEquals(AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
     }
 
+    @Test
+    fun `onBookmarkClick should add bookmark successfully`() = runTest(testDispatcher) {
+        // Given
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+
+        testViewModel = SurahViewModel(
+            surahArgs = surahArgs,
+            dispatcher = testDispatcher,
+            quranRepository = quranRepository,
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository,
+            snackbarHandler = snackbarHandler
+        )
+        advanceUntilIdle()
+
+        // When
+        testViewModel.onBookmarkClick(TEST_AYAH_NUMBER)
+        advanceUntilIdle()
+
+        // Then - Verify bookmark was added
+        assertEquals(false, testViewModel.uiState.value.isAyahActionButtonsVisible)
+    }
+
+    @Test
+    fun `onBookmarkClick should show success snackbar after adding bookmark`() =
+        runTest(testDispatcher) {
+            // Given
+            everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+
+            testViewModel = SurahViewModel(
+                surahArgs = surahArgs,
+                dispatcher = testDispatcher,
+                quranRepository = quranRepository,
+                clipboardManager = clipboardManager,
+                bookmarkRepository = bookmarkRepository,
+                snackbarHandler = snackbarHandler
+            )
+            advanceUntilIdle()
+
+            // When
+            testViewModel.onBookmarkClick(TEST_AYAH_NUMBER)
+            advanceUntilIdle()
+
+            // Then
+            assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
+        }
+
+
+    @Test
+    fun `onFirstVisibleAyahChanged should save last ayah for tilawah`() = runTest(testDispatcher) {
+        // Given
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+
+        testViewModel = SurahViewModel(
+            surahArgs = surahArgs,
+            dispatcher = testDispatcher,
+            quranRepository = quranRepository,
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository,
+            snackbarHandler = snackbarHandler
+        )
+        advanceUntilIdle()
+
+        // When
+        testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
+        advanceUntilIdle()
+    }
+
+    @Test
+    fun `onFirstVisibleAyahChanged should track ayah with correct surah id`() =
+        runTest(testDispatcher) {
+            // Given
+            everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+
+            testViewModel = SurahViewModel(
+                surahArgs = surahArgs,
+                dispatcher = testDispatcher,
+                quranRepository = quranRepository,
+                clipboardManager = clipboardManager,
+                bookmarkRepository = bookmarkRepository,
+                snackbarHandler = snackbarHandler
+            )
+            advanceUntilIdle()
+
+            // When
+            testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
+            advanceUntilIdle()
+        }
+
+
+    @Test
+    fun `updateContinueTilawah should include surah name in saved data`() =
+        runTest(testDispatcher) {
+            // Given
+            everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+
+            testViewModel = SurahViewModel(
+                surahArgs = surahArgs,
+                dispatcher = testDispatcher,
+                quranRepository = quranRepository,
+                clipboardManager = clipboardManager,
+                bookmarkRepository = bookmarkRepository,
+                snackbarHandler = snackbarHandler
+            )
+            advanceUntilIdle()
+
+            // When
+            testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
+            advanceUntilIdle()
+
+        }
+
+    @Test
+    fun `onCopyClick should hide action buttons after successful copy`() = runTest(testDispatcher) {
+        // Given
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+
+        testViewModel = SurahViewModel(
+            surahArgs = surahArgs,
+            dispatcher = testDispatcher,
+            quranRepository = quranRepository,
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository,
+            snackbarHandler = snackbarHandler
+        )
+        advanceUntilIdle()
+
+        // When
+        testViewModel.onCopyClick(AYAH_CONTENT)
+        advanceUntilIdle()
+
+        // Then
+        assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
+    }
+
+    @Test
+    fun `onCopyClick should store copied ayah content in state`() = runTest(testDispatcher) {
+        // Given
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+
+        testViewModel = SurahViewModel(
+            surahArgs = surahArgs,
+            dispatcher = testDispatcher,
+            quranRepository = quranRepository,
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository,
+            snackbarHandler = snackbarHandler
+        )
+        advanceUntilIdle()
+
+        // When
+        testViewModel.onCopyClick(AYAH_CONTENT)
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
+    }
+
+    @Test
+    fun `updateContinueTilawah should save last ayah for tilawah correctly`() = runTest {
+        // Given
+        every { surahArgs.surahId } returns SURAH_BAQARAH_ID
+        every { surahArgs.surahName } returns SURAH_BAQARAH
+        everySuspend { quranRepository.saveLastAyahForTilawah(any()) } returns Unit
+
+        // When
+        testViewModel.updateContinueTilawah(5)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        assertEquals(SURAH_BAQARAH_ID, surahArgs.surahId)
+        assertEquals(SURAH_BAQARAH, surahArgs.surahName)
+    }
+
+
     private companion object {
+        const val TRACKED_AYAH_NUMBER = 5
         const val DEFAULT_SURAH_ID = 1
         const val TEST_AYAH_INDEX = 0
         const val SECOND_AYAH_INDEX = 1
@@ -259,7 +438,9 @@ class SurahViewModelTest {
         const val AYAH_TO_SHARE = "Ayah to share"
         const val EMPTY_STRING = ""
         const val AYAH_CONTENT = "Test ayah content"
-        const val AYAH_TO_COPY = "Ayah to copy"
+        const val AYAH_TO_COPY = "Test ayah to copy"
+        const val SURAH_BAQARAH = "Al-Baqarah"
+        const val SURAH_BAQARAH_ID = 2
         private val dummyAyat = listOf(
             Ayah(
                 number = 1,
@@ -285,6 +466,7 @@ class SurahViewModelTest {
                 content = "مَالِكِ يَوْمِ الدِّينِ",
                 plainContent = "مالك يوم الدين"
             )
+
         )
     }
 }

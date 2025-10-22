@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -91,50 +92,52 @@ private fun MyAddressesMap(
     latitude: Double?,
     modifier: Modifier = Modifier
 ) {
-    val camera =
-        rememberCameraState(
-            firstPosition = CameraPosition(
-                target = Position(
-                    longitude = longitude ?: 20.0,
-                    latitude = latitude ?: 20.0
-                ), zoom = 14.0
-            )
-        )
+    val defaultPosition = remember { Position(longitude = 20.0, latitude = 20.0) }
+    val targetPosition = remember(longitude, latitude) {
+        if (longitude != null && latitude != null) {
+            Position(longitude = longitude, latitude = latitude)
+        } else null
+    }
 
-    if (longitude != null && latitude != null) {
-        LaunchedEffect(Unit) {
+    val camera = rememberCameraState(
+        firstPosition = CameraPosition(
+            target = targetPosition ?: defaultPosition,
+            zoom = 14.0
+        )
+    )
+
+    LaunchedEffect(targetPosition, animateToCurrentLocation) {
+        if (targetPosition != null && animateToCurrentLocation) {
             camera.animateTo(
                 finalPosition = CameraPosition(
-                    target = Position(
-                        longitude = longitude,
-                        latitude = latitude
-                    ), zoom = 14.0
+                    target = targetPosition,
+                    zoom = 14.0
                 ),
             )
         }
     }
 
-    BoxWithConstraints(
-        modifier = modifier
-    ) {
-        SetAnchorInCenter(
-            animateToCurrentLocation = animateToCurrentLocation,
-            longitude = longitude,
-            latitude = latitude,
-            camera = camera,
-            maxWidth = maxWidth,
-            maxHeight = maxHeight,
-        )
+    BoxWithConstraints(modifier = modifier) {
+        if (targetPosition != null) {
+            SetAnchorInCenter(
+                animateToCurrentLocation = animateToCurrentLocation,
+                longitude = longitude,
+                latitude = latitude,
+                camera = camera,
+                maxWidth = maxWidth,
+                maxHeight = maxHeight,
+            )
+        }
+        
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
             baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
-            options =
-                MapOptions(
-                    gestureOptions = GestureOptions.AllDisabled,
-                    ornamentOptions = OrnamentOptions.AllDisabled,
-                    renderOptions = RenderOptions.Standard
-                )
+            options = MapOptions(
+                gestureOptions = GestureOptions.AllDisabled,
+                ornamentOptions = OrnamentOptions.AllDisabled,
+                renderOptions = RenderOptions.Standard
+            )
         )
 
         Image(
@@ -143,9 +146,7 @@ private fun MyAddressesMap(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .size(22.dp, 28.38.dp)
-                .offset(
-                    y = Theme.spacing._16
-                )
+                .offset(y = Theme.spacing._16)
         )
     }
 }
