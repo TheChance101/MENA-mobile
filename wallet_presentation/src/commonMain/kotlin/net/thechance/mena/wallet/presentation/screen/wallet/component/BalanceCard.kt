@@ -46,6 +46,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.ErrorState
+import net.thechance.mena.wallet.presentation.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.screen.wallet.WalletScreenState
 import net.thechance.mena.wallet.presentation.utils.formatBalance
 import net.thechance.mena.wallet.presentation.utils.noRippleClickable

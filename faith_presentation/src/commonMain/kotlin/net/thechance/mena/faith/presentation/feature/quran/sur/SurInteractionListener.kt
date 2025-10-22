@@ -5,5 +5,4 @@ interface SurInteractionListener {
     fun onBackClick()
     fun onBookmarkClick()
     fun onSearchClick()
-
 }

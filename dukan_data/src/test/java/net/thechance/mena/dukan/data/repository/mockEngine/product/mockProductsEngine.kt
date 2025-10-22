@@ -13,16 +13,16 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
+import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
-import net.thechance.mena.dukan.data.repository.dto.PageResponseDto
-import net.thechance.mena.dukan.data.repository.dto.product.CreateProductResponse
-import net.thechance.mena.dukan.data.repository.dto.product.ProductDto
-import net.thechance.mena.dukan.data.repository.mockEngine.jsonHeaders
-import net.thechance.mena.dukan.data.repository.mockEngine.jsonSerialization
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
 
 
 fun MockRequestHandleScope.defaultCreateProductResponse() = respond(
-    content =  jsonSerialization.encodeToString(
+    content = jsonSerialization.encodeToString(
         CreateProductResponse(productId = createdProductResponseId)
     ),
     status = HttpStatusCode.OK,
@@ -64,15 +64,21 @@ fun createProductHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): HttpClient{
-    return HttpClient(MockEngine{ request ->
-        when(request.url.encodedPath){
-            "/dukan/product/create" -> createResponse?.invoke(this) ?: defaultCreateProductResponse()
-            "/dukan/product/shelf-123" -> paginatedResponse?.invoke(this) ?: defaultPaginatedProductResponse()
-            "/dukan/product/images/$createdProductResponseId" -> uploadImagesResponse?.invoke(this) ?: defaultImagesUploadResponse()
+): HttpClient {
+    return HttpClient(MockEngine { request ->
+        when (request.url.encodedPath) {
+            "/dukan/product/create" -> createResponse?.invoke(this)
+                ?: defaultCreateProductResponse()
+
+            "/dukan/product/shelf-123" -> paginatedResponse?.invoke(this)
+                ?: defaultPaginatedProductResponse()
+
+            "/dukan/product/images/$createdProductResponseId" -> uploadImagesResponse?.invoke(this)
+                ?: defaultImagesUploadResponse()
+
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
-    }){
+    }) {
         install(ContentNegotiation) { json(jsonSerialization) }
         install(DefaultRequest) { contentType(ContentType.Application.Json) }
     }

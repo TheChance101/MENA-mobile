@@ -11,6 +11,8 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.char
 import kotlinx.datetime.minus
 import kotlinx.datetime.toLocalDateTime
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.yesterday
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -79,13 +81,11 @@ fun LocalTime.toHoursMinutesAgo(): String {
         } else "$hoursAgo hours ago"
 }
 
-fun getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(dateTime: LocalDateTime): String {
+fun getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(dateTime: LocalDateTime): UiText {
     val now = LocalDateTime.now()
-    val today = now
-
     return when (dateTime.date) {
-        today.date -> dateTime.formatAsTime()
-        today.date.minusDays(1) -> "Yesterday"
-        else -> dateTime.date.format("dd-MM-yyyy")
+        now.date -> UiText.DynamicString(dateTime.formatAsTime())
+        now.date.minusDays(1) -> UiText.StringRes(Res.string.yesterday)
+        else -> UiText.DynamicString(dateTime.date.format())
     }
 }

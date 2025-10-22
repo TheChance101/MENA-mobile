@@ -23,10 +23,10 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class WalletViewModel(
-    private val stringProvider: StringProvider,
+    @Provided private val stringProvider: StringProvider,
     @Provided private val balanceRepository: BalanceRepository,
     @Provided private val transactionRepository: TransactionRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<WalletScreenState, WalletEffect>(WalletScreenState()), WalletInteractionListener {
 
     init {
@@ -40,7 +40,7 @@ class WalletViewModel(
             callee = { balanceRepository.getBalance() },
             onSuccess = ::onGetBalanceSuccess,
             onError = ::onGetBalanceError,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -131,7 +131,7 @@ class WalletViewModel(
             },
             onSuccess = { onAddPendingTransactionSuccess(it, amount) },
             onError = ::onAddPendingTransactionError,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 

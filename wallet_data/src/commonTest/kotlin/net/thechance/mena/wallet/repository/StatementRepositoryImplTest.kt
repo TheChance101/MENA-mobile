@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.repository
 
 import dev.mokkery.MockMode
@@ -24,7 +26,6 @@ import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Statement
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -32,6 +33,8 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class StatementRepositoryImplTest {
 
@@ -80,7 +83,7 @@ class StatementRepositoryImplTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `getStatements should throw UnknownException when dao throws`() = runTest(testDispatcher) {
+    fun `getStatements should throw Exception when dao throws`() = runTest(testDispatcher) {
         // arrange
         networkClient = createNetworkClient()
         statementDao = mock(mode = MockMode.autofill)
@@ -93,14 +96,14 @@ class StatementRepositoryImplTest {
         statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
         // act & assert
-        assertFailsWith<UnknownException> {
+        assertFailsWith<Exception> {
             statementRepository.getStatements(page = 1, pageSize = 10)
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `insertStatement should throw UnknownException when dao throws`() =
+    fun `insertStatement should throw Exception when dao throws`() =
         runTest(testDispatcher) {
             // arrange
             networkClient = createNetworkClient()
@@ -109,14 +112,14 @@ class StatementRepositoryImplTest {
             statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             // act & assert
-            assertFailsWith<UnknownException> {
+            assertFailsWith<Exception> {
                 statementRepository.insertStatement(testStatement())
             }
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `deleteStatementById should throw UnknownException when dao throws`() =
+    fun `deleteStatementById should throw Exception when dao throws`() =
         runTest(testDispatcher) {
             // arrange
             networkClient = createNetworkClient()
@@ -125,14 +128,14 @@ class StatementRepositoryImplTest {
             statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             // act & assert
-            assertFailsWith<UnknownException> {
-                statementRepository.deleteStatementById(123L)
+            assertFailsWith<Exception> {
+                statementRepository.deleteStatementById(Uuid.random())
             }
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `getStatementById should throw UnknownException when dao throws`() =
+    fun `getStatementById should throw Exception when dao throws`() =
         runTest(testDispatcher) {
             // arrange
             networkClient = createNetworkClient()
@@ -141,14 +144,14 @@ class StatementRepositoryImplTest {
             statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             // act & assert
-            assertFailsWith<UnknownException> {
-                statementRepository.getStatementById(123L)
+            assertFailsWith<Exception> {
+                statementRepository.getStatementById(Uuid.random())
             }
         }
 
     @OptIn(ExperimentalTime::class)
     private fun testStatement() = Statement(
-        id = 0L,
+        id = Uuid.random(),
         startDate = LocalDate.parse("2025-01-01"),
         endDate = LocalDate.parse("2025-01-31"),
         totalInflows = 100.0,

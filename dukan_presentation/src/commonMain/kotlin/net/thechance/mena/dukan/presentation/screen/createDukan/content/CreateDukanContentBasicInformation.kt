@@ -27,17 +27,17 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.SelectionRow
+import net.thechance.mena.dukan.presentation.component.chip.SelectionRow
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.DukanCategoryUiState
+import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CreateDukanContentBasicInformation(
+fun CreateDukanPagerContent(
     state: CreateDukanUiState,
     interactionListener: CreateDukanInteractionListener
 ) {
@@ -56,11 +56,9 @@ fun CreateDukanContentBasicInformation(
                 value = state.name,
                 onValueChanged = interactionListener::onNameChanged,
                 hint = stringResource(Res.string.enter_dukan_name),
-                modifier = Modifier.padding(
-                    start = Theme.spacing._16,
-                    end = Theme.spacing._16,
-                    bottom = Theme.spacing._12
-                ),
+                modifier = Modifier
+                    .padding(horizontal = Theme.spacing._16)
+                    .padding(bottom = Theme.spacing._12),
                 leadingIcon = painterResource(Res.drawable.ic_shop),
                 title = stringResource(Res.string.dukan_name),
                 leadingIconTint = Theme.colorScheme.shadePrimary
@@ -72,11 +70,8 @@ fun CreateDukanContentBasicInformation(
             SelectionRow(
                 availableItems = state.dukanCategories,
                 isItemSelected = interactionListener.isCategorySelected(),
-                onItemSelected = interactionListener::onCategorySelected,
-                onItemDeselected = interactionListener::onCategoryDeselected,
-                onItemEnabled = interactionListener::onCategoryEnabled,
-                getItemName = { it.name },
-                getItemImageUrl = { it.imageUrl }
+                onItemClicked = interactionListener::onCategoryClicked,
+                onItemEnabled = interactionListener::onCategoryEnabled
             )
         }
     }
@@ -96,11 +91,9 @@ private fun HeaderSection() {
         text = stringResource(Res.string.fill_name_and_select_category),
         style = Theme.typography.body.small,
         color = Theme.colorScheme.shadeSecondary,
-        modifier = Modifier.padding(
-            start = Theme.spacing._16,
-            end = Theme.spacing._16,
-            bottom = Theme.spacing._16
-        ),
+        modifier = Modifier
+            .padding(horizontal = Theme.spacing._16)
+            .padding(bottom = Theme.spacing._16),
         textAlign = TextAlign.Start
     )
 }
@@ -111,25 +104,22 @@ private fun CategoryHeaderSection() {
         text = stringResource(Res.string.category),
         style = Theme.typography.title.small,
         color = Theme.colorScheme.shadePrimary,
-        modifier = Modifier.padding(
-            start = Theme.spacing._16,
-            end = Theme.spacing._16,
-            bottom = Theme.spacing._4
-        ),
+        modifier = Modifier
+            .padding(horizontal = Theme.spacing._16)
+            .padding(bottom = Theme.spacing._4),
         textAlign = TextAlign.Start
     )
 
     Row(
-        modifier = Modifier.padding(
-            start = Theme.spacing._16,
-            end = Theme.spacing._16,
-            bottom = Theme.spacing._8
-        ),
+        modifier = Modifier
+            .padding(horizontal = Theme.spacing._16)
+            .padding(bottom = Theme.spacing._8),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             modifier = Modifier
-                .padding(top = Theme.spacing._2, bottom = Theme.spacing._2, end = Theme.spacing._2)
+                .padding(vertical = Theme.spacing._2)
+                .padding(bottom = Theme.spacing._2)
                 .align(Alignment.CenterVertically)
                 .size(12.dp),
             painter = painterResource(Res.drawable.ic_alert_circle),
@@ -160,7 +150,7 @@ private fun CreateDukanContentBasicInformationPreview() {
     )
 
     MenaTheme {
-        CreateDukanContentBasicInformation(
+        CreateDukanPagerContent(
             state = mockState,
             interactionListener = PreviewCreateDukanInteractionListener
         )

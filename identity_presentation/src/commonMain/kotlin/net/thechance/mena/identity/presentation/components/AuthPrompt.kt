@@ -33,7 +33,7 @@ internal fun AuthPrompt(
         )
         TextButton(
             text = actionLabel,
-            onClick = { onActionClick() },
+            onClick = onActionClick,
             isEnabled = isEnabled
         )
     }

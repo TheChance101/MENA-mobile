@@ -24,11 +24,12 @@ internal fun PhoneNumberInput(
     onCountryClick: () -> Unit,
     phoneNumber: String,
     onPhoneChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    phoneMasks: Map<Int, String> = defaultPhoneMasks,
+    phoneNumberFilter: (String) -> String = { it.filter { char -> char.isDigit() } }
 ) {
     Row(
-        modifier
-            .fillMaxWidth(),
+        modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -41,21 +42,21 @@ internal fun PhoneNumberInput(
         MobileNumberTextField(
             value = phoneNumber,
             leadingIcon = painterResource(Res.drawable.ic_phone),
-            onValueChanged = { new ->
-                val filtered = new.filter { it.isDigit() }
+            onValueChanged = { newValue ->
+                val filtered = phoneNumberFilter(newValue)
                 onPhoneChange(filtered)
             },
-            visualTransformation = LengthBasedPhoneVisualTransformation(
-                masks = mapOf(
-                    8 to "## ### ###",
-                    9 to "### ### ###",
-                    10 to "### ### ####",
-                    11 to "#### #### ###",
-                )
-            ),
+            visualTransformation = LengthBasedPhoneVisualTransformation(masks = phoneMasks),
             hint = "",
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
             modifier = Modifier.weight(1f)
         )
     }
 }
+
+private val defaultPhoneMasks = mapOf(
+    8 to "## ### ###",
+    9 to "### ### ###",
+    10 to "### ### ####",
+    11 to "#### #### ###",
+)

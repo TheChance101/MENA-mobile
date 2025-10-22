@@ -1,8 +1,6 @@
 package net.thechance.mena.wallet.domain.entity
 
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -16,3 +14,26 @@ data class Transaction (
     val receiverName: String,
     val type: TransactionType
 )
+
+enum class TransactionType {
+    SENT,
+    RECEIVED,
+    ONLINE_PURCHASE;
+
+    companion object {
+        fun valueOfOrDefault(value: String?): TransactionType {
+            return runCatching { value?.let { TransactionType.valueOf(it) } ?: SENT }.getOrDefault (SENT)
+        }
+    }
+}
+
+enum class TransactionStatus {
+    SUCCESS,
+    FAILED;
+
+    companion object {
+        fun valueOfOrDefault(value: String?): TransactionStatus {
+            return runCatching { value?.let { valueOf(it) } ?: SUCCESS }.getOrDefault(SUCCESS)
+        }
+    }
+}

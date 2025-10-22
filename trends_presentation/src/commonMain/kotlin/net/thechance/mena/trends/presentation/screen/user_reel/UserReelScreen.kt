@@ -114,7 +114,7 @@ private fun UserReelScreenContent(
                                 .align(Alignment.End)
                                 .padding(top = 24.dp, bottom = Theme.spacing._12, end = Theme.spacing._8)
                                 .clickable(
-                                    onClick = { listener.onConfirmDeleteClick() },
+                                    onClick = { listener.onClickConfirmDelete() },
                                     role = Role.Button,
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
@@ -131,13 +131,13 @@ private fun UserReelScreenContent(
                     isVisible = state.isReelDeleted == true && state.error == null,
                     onDismiss = {
                         listener.onDismissSuccessDialog()
-                        listener.onBackClick()
+                        listener.onClickBack()
                     },
                     dismissOnBackPress = true,
                     dismissOnClickOutside = true,
                     onCancelClick = {
                         listener.onDismissSuccessDialog()
-                        listener.onBackClick()
+                        listener.onClickBack()
                     },
                     dialogCornerShape = RoundedCornerShape(Theme.radius.md),
                     cancelBackgroundShape = RoundedCornerShape(50),
@@ -170,7 +170,7 @@ private fun UserReelScreenContent(
             pageCount = { reels.itemCount },
         )
 
-        TopAppBar(onBackClick = listener::onBackClick, modifier = Modifier.zIndex(5f))
+        TopAppBar(onBackClick = listener::onClickBack, modifier = Modifier.zIndex(5f))
 
         VerticalPager(
             state = pagerState,
@@ -183,11 +183,11 @@ private fun UserReelScreenContent(
                     reel = reel,
                     shouldRender = (pagerState.currentPage == page),
                     isDescriptionExpanded = state.isDescriptionExpanded,
-                    onDeleteClick = listener::onDeleteClick,
-                    onDescriptionClick = listener::onDescriptionClick,
-                    onPublisherInfoClick = listener::onPublisherInfoClick,
+                    onDeleteClick = listener::onClickDelete,
+                    onDescriptionClick = listener::onClickDescription,
+                    onPublisherInfoClick = listener::onClickPublisherInfo,
                     incrementViewsCount = { listener.increaseReelView(reel.id) },
-                    onLikeClick = { listener.onLikeClick(reel.id) }
+                    onLikeClick = { listener.onClickLike(reel.id) }
                 )
             }
         }

@@ -31,10 +31,8 @@ fun AnimatedTrailingIcon(
 ) {
     AnimatedVisibility(
         visible = !isEditMode && !hasStatements,
-        enter = fadeIn(tween(300)) +
-                scaleIn(tween(300)),
-        exit = fadeOut(tween(300)) +
-                scaleOut(tween(300))
+        enter = ENTER_ANIMATION,
+        exit = EXIT_ANIMATION
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_edit),
@@ -51,3 +49,11 @@ fun AnimatedTrailingIcon(
         )
     }
 }
+
+private val ANIMATION_DURATION = 300
+
+private val ENTER_ANIMATION = fadeIn(tween(ANIMATION_DURATION)) +
+    scaleIn(tween(ANIMATION_DURATION))
+
+private val EXIT_ANIMATION = fadeOut(tween(ANIMATION_DURATION)) +
+    scaleOut(tween(ANIMATION_DURATION))

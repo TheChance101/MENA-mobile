@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.statementsHistory.component
 
 import androidx.compose.animation.core.Animatable
@@ -29,6 +31,7 @@ import net.thechance.mena.wallet.presentation.screen.transaction_history.compone
 import net.thechance.mena.wallet.presentation.utils.PaginationTrigger
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun StatementsListContent(
@@ -100,18 +103,8 @@ fun StatementsListContent(
                 cardOffsetX = cardOffsetX.value.roundToInt(),
                 historyIconOffsetX = historyIconOffsetX.value.roundToInt(),
                 deleteButtonOffsetX = deleteButtonOffsetX.value.roundToInt(),
-                onDeleteClicked = { onDeleteComplete ->
-                    listener.onDeleteClicked(
-                        statement = statement,
-                        onDeleteComplete = onDeleteComplete
-                    )
-                },
-                onStatementCardClicked = { onViewStatementAvailable ->
-                    listener.onStatementCardClicked(
-                        statement,
-                        onViewStatementAvailable = onViewStatementAvailable
-                    )
-                }
+                onDeleteClicked = { listener.onDeleteClicked(statement) },
+                onStatementCardClicked = { listener.onStatementCardClicked(statement) }
             )
         }
 

@@ -73,8 +73,8 @@ internal fun HomeScreen(
     val reels = state.reels.collectAsLazyPagingItems()
 
     HomeScreenScaffold(
-        onManageMyTrendsClick = viewModel::onManageMyTrendsClick,
-        onEditTagsClick = viewModel::onEditTagsClick
+        onClickManageMyTrends = viewModel::onClickManageMyTrends,
+        onClickEditTags = viewModel::onClickEditTags
     ) {
         when {
             reels.loadState.refresh.toErrorState() == ErrorState.NoInternet -> {
@@ -97,15 +97,15 @@ internal fun HomeScreen(
 
 @Composable
 private fun HomeScreenScaffold(
-    onManageMyTrendsClick: () -> Unit,
-    onEditTagsClick: () -> Unit,
+    onClickManageMyTrends: () -> Unit,
+    onClickEditTags: () -> Unit,
     content: @Composable () -> Unit
 ) {
     Scaffold(
         topBar = {
             TrendsAppBar(
-                onManageMyTrendsClick = onManageMyTrendsClick,
-                onEditTagsClick = onEditTagsClick
+                onManageMyTrendsClick = onClickManageMyTrends,
+                onEditTagsClick = onClickEditTags
             )
         },
         content = content
@@ -129,8 +129,8 @@ private fun ReelScreenContent(
             items(reels.itemSnapshotList.items) { reel ->
                 FeedReelCard(
                     reel = reel,
-                    onLikeClick = { listener.onLikeClick(reel.id) },
-                    onReelClick = { listener.onReelClick(reel.id) }
+                    onLikeClick = { listener.onClickLike(reel.id) },
+                    onReelClick = { listener.onClickReel(reel.id) }
                 )
             }
         }
@@ -144,7 +144,7 @@ private fun ReelScreenContent(
                 .size(56.dp)
                 .clip(RoundedCornerShape(Theme.radius.lg))
                 .background(Theme.colorScheme.primary.primary)
-                .noRippleClickable { listener.onAddReelClick() }
+                .noRippleClickable { listener.onClickAddReel() }
                 .padding(Theme.spacing._16)
         )
     }

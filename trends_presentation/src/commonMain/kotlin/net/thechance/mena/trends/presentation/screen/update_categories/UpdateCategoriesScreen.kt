@@ -63,7 +63,7 @@ internal fun UpdateCategoriesScreen(
     }
 
     UpdateCategoriesScaffold(
-        onBackClick = viewModel::onBackClick
+        onBackClick = viewModel::onClickBack
     ) {
         when {
             state.errorState == ErrorState.NoInternet -> {
@@ -111,7 +111,7 @@ private fun UpdateCategoriesScreenContent(
                 state.categories.forEach { category ->
                     CategoryItem(
                         category = category,
-                        onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                        onClick = { id -> listener.onClickCategory(categoryId = id) },
                         modifier = Modifier.padding(
                             bottom = Theme.spacing._12,
                             end = Theme.spacing._8
@@ -123,7 +123,7 @@ private fun UpdateCategoriesScreenContent(
             Spacer(modifier = Modifier.weight(1f))
 
             SaveChangeButton(
-                onSaveClick = listener::onSaveClick,
+                onSaveClick = listener::onClickSave,
                 isButtonEnabled = state.saveButtonEnabled(),
                 isButtonLoading = state.isSaveButtonLoading,
                 modifier = Modifier.padding(bottom = Theme.spacing._24)
@@ -201,10 +201,10 @@ private fun UpdateCategoriesScreenPreview() {
         UpdateCategoriesScreenContent(
             state = UpdateCategoriesScreenState(),
             listener = object : UpdateCategoriesInteractionListener {
-                override fun onBackClick() {}
-                override fun onRetryClick() {}
-                override fun onCategoryClick(categoryId: String) {}
-                override fun onSaveClick() {}
+                override fun onClickBack() {}
+                override fun onClickRetry() {}
+                override fun onClickCategory(categoryId: String) {}
+                override fun onClickSave() {}
             }
         )
     }
