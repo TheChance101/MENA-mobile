@@ -34,7 +34,7 @@ class BookmarkViewModel(
     private val cachedBookmarksFlow =
         createBookmarksPagingSource()
             .map { pagingData ->
-                pagingData.map { bookmark -> bookmark.toUiState() }
+                pagingData.map(AyahBookmark::toUiState)
             }.cachedIn(viewModelScope)
 
     private val deletedBookmarkIdsFlow = MutableStateFlow(setOf<Int>())
