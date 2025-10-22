@@ -6,7 +6,7 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.mapper.createNavigateToHomeEffect
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 
