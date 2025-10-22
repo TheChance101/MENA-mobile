@@ -13,7 +13,7 @@ import net.thechance.mena.core_chat.domain.exception.UnknownException
 
 suspend fun <T> tryNetworkCall(
     defaultException: (Throwable) -> ChatException = { e ->
-        UnknownException("Unknown error occurred", e)
+        UnknownException("Unknown error occurred")
     },
     bodyType: TypeInfo,
     maxAttempts: Int = 1,
@@ -47,11 +47,9 @@ private suspend fun <T> runCatchingWithException(
 ): T? {
     return try {
         block()
-    } catch (e: ContactsPermissionDeniedException) {
+    } catch (_: ContactsPermissionDeniedException) {
         throw net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException(
-            "Contacts Permission Denied!",
-            e
-        )
+            "Contacts Permission Denied!")
     } catch (e: ChatException) {
         throw e
     } catch (e: Throwable) {
