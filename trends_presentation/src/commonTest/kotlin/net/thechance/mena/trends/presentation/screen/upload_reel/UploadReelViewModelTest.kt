@@ -14,11 +14,10 @@ import dev.mokkery.verify
 import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.domain.model.UploadReelStatus
+import net.thechance.mena.trends.domain.model.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingReelState
@@ -32,7 +31,7 @@ import kotlin.test.Test
 class UploadReelViewModelTest : TestExtensions() {
 
     private val repository: ReelsRepository = mock {
-        everySuspend { uploadReel(any(), any()) } returns emptyFlow()
+        everySuspend { uploadReel(any(), any()) } returns FAKE_TREND_ID
         everySuspend { uploadReelThumbnail(any(), any()) } returns Unit
         everySuspend { getReelDuration(any()) } returns VALID_DURATION
         everySuspend { extractReelThumbnail(any(), any()) } returns byteArray
@@ -88,7 +87,7 @@ class UploadReelViewModelTest : TestExtensions() {
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
-        verify(exactly(1)) { repository.uploadReel(any(), any()) }
+        verifySuspend(exactly(1)) { repository.uploadReel(any(), any()) }
     }
 
     @Test
@@ -132,21 +131,11 @@ class UploadReelViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onCancelUploadClick should update screen with the initial state`() = runTest(testDispatcher) {
-        viewModel.onCancelUploadClick()
-        advanceUntilIdle()
-
-        viewModel.state.test {
-            assertThat(awaitItem()).isEqualTo(initialScreenState)
-        }
-    }
-
-    @Test
     fun `onRetryUploadClick should call uploadTrend from repository`() = runTest(testDispatcher) {
         viewModel.onRetryUploadClick()
         advanceUntilIdle()
 
-        verify(exactly(1)) { repository.uploadReel(any(), any()) }
+        verifySuspend(exactly(1)) { repository.uploadReel(any(), any()) }
     }
 
     @Test
@@ -160,22 +149,20 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onNextClick should send NavigateToAddDescription effect if upload thumbnail success`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
-
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
         viewModel.onNextClick()
 
         viewModel.effect.test {
-            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.NavigateToAddDescription("id1"))
+            assertThat(awaitItem()).isEqualTo(
+                UploadReelScreenEffect.NavigateToAddDescription(FAKE_TREND_ID)
+            )
         }
     }
 
     @Test
     fun `onNextClick should update thumbnail in state if upload thumbnail success`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
-
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
@@ -189,7 +176,6 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onNextClick should update state with error if upload thumbnail failed`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
         everySuspend { repository.uploadReelThumbnail(any(), any()) } throws Exception("Failed")
 
         viewModel.onRetrieveVideo(validFile)
@@ -237,33 +223,33 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `should update state with progress of uploaded bytes when uploading`() = runTest {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadInProgress)
+        every { repository.observeUploadReelProgress() } returns uploadInProgress
 
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
         viewModel.state.test {
             assertThat(awaitItem().sizeUploaded).isEqualTo(
-                formatBytes(uploadInProgress.numberOfUploadedBytes, false)
+                formatBytes(uploadInProgress.value.numberOfUploadedBytes, false)
             )
         }
     }
 
     @Test
     fun `should update state with reelId when uploaded successfully`() = runTest {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
+        everySuspend { repository.uploadReel(any(), any()) } returns FAKE_TREND_ID
 
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().reelId).isEqualTo(uploadDone.reelId)
+            assertThat(awaitItem().reelId).isEqualTo(FAKE_TREND_ID)
         }
     }
 
     @Test
     fun `onNextClick should send NavigateToAddDescription effect`() = runTest(testDispatcher) {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
+        everySuspend { repository.uploadReel(any(), any()) } returns FAKE_TREND_ID
 
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()
@@ -281,7 +267,6 @@ class UploadReelViewModelTest : TestExtensions() {
     @Test
     fun `onCancelUploadClick should reset screen state`() = runTest {
         viewModel.onCancelUploadClick()
-        advanceUntilIdle()
 
         viewModel.state.test {
             assertThat(awaitItem()).isEqualTo(initialScreenState)
@@ -290,7 +275,6 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onDeleteVideoClick should call deleteReelById if state has reel id`() = runTest {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
         everySuspend { repository.deleteReelById(any()) } returns Unit
 
         viewModel.onRetrieveVideo(validFile)
@@ -304,7 +288,6 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onDeleteVideoClick should reset screen state to initial`() = runTest {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
         everySuspend { repository.deleteReelById(any()) } returns Unit
 
         viewModel.onRetrieveVideo(validFile)
@@ -320,7 +303,6 @@ class UploadReelViewModelTest : TestExtensions() {
 
     @Test
     fun `onDeleteVideoClick should update errorState when repository throws exception`() = runTest {
-        every { repository.uploadReel(any(), any()) } returns flowOf(uploadDone)
         everySuspend { repository.deleteReelById(any()) } throws Exception("Delete failed")
 
         viewModel.onRetrieveVideo(validFile)
@@ -338,9 +320,10 @@ class UploadReelViewModelTest : TestExtensions() {
         const val INVALID_SIZE = 200 * 1024 * 1024 + 1L
         const val VALID_SIZE = 50 * 1024 * 1024L
         const val VALID_DURATION = 30_000L
+        const val FAKE_TREND_ID = "uuid"
+
         val byteArray = ByteArray(0)
-        val uploadInProgress = UploadReelStatus.UploadReelProgress( 50, 100)
-        val uploadDone = UploadReelStatus.UploadReelSuccess("id1",)
+        val uploadInProgress = MutableStateFlow(UploadReelProgress(50, 100))
 
         val initialScreenState = UploadReelScreenState()
         val initialFileState = FileUiState()
