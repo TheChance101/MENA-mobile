@@ -19,7 +19,6 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
-import net.thechance.mena.core_chat.data.source.remote.dto.SendMessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
@@ -27,9 +26,6 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessa
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.data.utils.MessageEvent
-import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
-import net.thechance.mena.core_chat.domain.entity.ImageData
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
