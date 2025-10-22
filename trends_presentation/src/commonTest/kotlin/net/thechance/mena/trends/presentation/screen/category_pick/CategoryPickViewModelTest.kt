@@ -137,4 +137,16 @@ class CategoryPickViewModelTest : TestExtensions() {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `onRetryClick should called loadCategories when called`() = runTest{
+        viewModel.onRetryClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals(categories.size, state.categories.size)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

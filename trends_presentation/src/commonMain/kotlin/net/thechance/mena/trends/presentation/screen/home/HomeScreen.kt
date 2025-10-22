@@ -96,17 +96,11 @@ private fun ReelScreenContent(
         Box(modifier = Modifier.fillMaxSize()) {
 
             when {
-                state.error == ErrorState.NoInternet -> {
-                    NoConnection(onRetry = listener::onRetryClick)
-                }
+                state.error == ErrorState.NoInternet -> { NoConnection(onRetry = listener::onRetryClick) }
 
-                reels.itemCount > 0 -> {
-                    ReelsListSection(reels, listener)
-                }
+                reels.itemCount > 0 -> { ReelsListSection(reels, listener) }
 
-                else -> {
-                    EmptyTrends()
-                }
+                else -> { EmptyTrends() }
             }
         }
     }

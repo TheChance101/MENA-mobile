@@ -4,6 +4,7 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -126,6 +127,16 @@ class ReelViewModelTest {
         assertThat(viewModel.state.value.error != null).isTrue()
     }
 
+    @Test
+    fun `onRetryClick should called loadCategories when called`() = runTest{
+        viewModel.onRetryClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.error).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
     companion object {
         private val testReel = Reel(
             id = "1",
