@@ -2,11 +2,14 @@ package net.thechance.mena.trends.data.repository
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isGreaterThan
 import assertk.assertions.isSuccess
+import dev.mokkery.every
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.data.repository.util.VideoFileHandlerMock
 import net.thechance.mena.trends.data.repository.util.addViewReelResponse
@@ -18,6 +21,7 @@ import net.thechance.mena.trends.data.repository.util.toggleLikeReelResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.domain.model.UploadReelProgress
 import kotlin.test.Test
 import kotlin.test.assertFails
 
@@ -75,12 +79,13 @@ internal class ReelRepositoryImplTest {
 
         assertThat(result).isSuccess()
     }
+
     @Test
     fun `uploadReel should call fileReader with correct file path`() = runTest {
         networkClient = createReelsHttpClient { uploadReelResponse() }
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
-        repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE).collect()
+        repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE)
 
         verifySuspend { videoHandler.readFile(FAKE_FILE_PATH) }
     }
@@ -93,7 +98,7 @@ internal class ReelRepositoryImplTest {
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
-            repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE).collect()
+            repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE)
         }
     }
 
@@ -105,7 +110,7 @@ internal class ReelRepositoryImplTest {
         repository = ReelsRepositoryImpl(networkClient, videoHandler)
 
         assertFails {
-            repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE).collect()
+            repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE)
         }
     }
 
@@ -119,6 +124,23 @@ internal class ReelRepositoryImplTest {
         }
 
         assertThat(result).isSuccess()
+    }
+
+    @Test
+    fun `observeUploadReelProgress emits new value when uploadReel is called`() = runTest {
+        networkClient = createReelsHttpClient { uploadReelResponse() }
+        repository = ReelsRepositoryImpl(networkClient, videoHandler)
+
+        val emissions = mutableListOf<UploadReelProgress>()
+        val job = launch {
+            repository.observeUploadReelProgress().collect { emissions.add(it) }
+        }
+
+        repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE)
+        advanceUntilIdle()
+        job.cancel()
+
+        assertThat(emissions.size).isGreaterThan(0)
     }
 
     @Test
@@ -204,7 +226,6 @@ internal class ReelRepositoryImplTest {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
         const val FAKE_FILE_PATH = "path/to/file"
-        const val FAKE_FILE_NAME = "fileName"
         const val FAKE_DURATION = 1000L
         const val REEL_ID = "12345"
     }
