@@ -9,14 +9,8 @@ interface ReelsRepository {
     suspend fun getAllCurrentUserReels(pageNumber: Int): List<Reel>
     suspend fun updateReelById(id: String, description: String, categoryIds: List<String>)
     suspend fun getFeedReels(page: Int, reelId: String? = null): List<Reel>
-
-
-
-    suspend fun uploadReel(filePath: String, size: Long): String    // reel id from response
+    suspend fun uploadReel(filePath: String, size: Long): String
     fun observeUploadReelProgress(): StateFlow<UploadReelProgress>
-
-
-
     suspend fun uploadReelThumbnail(reelId: String, thumbnail: ByteArray)
     suspend fun getReelDuration(filePath: String): Long?
     suspend fun extractReelThumbnail(filePath: String, timeInMillis: Long = 0L): ByteArray?
