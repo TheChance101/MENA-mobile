@@ -1,10 +1,8 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct.component
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -17,12 +15,14 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-fun LazyListScope.descriptionSection(
+@Composable
+fun DescriptionSection(
     description: String,
     isTextFieldEnabled: Boolean,
-    onDescriptionChange: (String) -> Unit
+    onDescriptionChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    item {
+    Column(modifier) {
         Text(
             text = stringResource(Res.string.description),
             style = Theme.typography.title.small,
@@ -46,14 +46,10 @@ fun LazyListScope.descriptionSection(
 @Composable
 private fun DescriptionSectionPreview() {
     MenaTheme {
-        LazyColumn(
-            modifier = Modifier.background(Theme.colorScheme.background.surface)
-        ) {
-            descriptionSection(
-                description = "This is a description",
-                isTextFieldEnabled = true,
-                onDescriptionChange = {}
-            )
-        }
+        DescriptionSection(
+            description = "This is a description",
+            isTextFieldEnabled = true,
+            onDescriptionChange = {}
+        )
     }
 }

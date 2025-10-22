@@ -78,13 +78,13 @@ class CategoryPickViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onCategoryClick should toggle category selection state`() = runTest(testDispatcher) {
+    fun `onClickCategory should toggle category selection state`() = runTest(testDispatcher) {
         viewModel.state.test {
             skipItems(2)
             val state = awaitItem()
             val firstCategory = state.categories.first()
             firstCategory.value.id?.let {
-                viewModel.onCategoryClick(it)
+                viewModel.onClickCategory(it)
             }
 
             val updatedState = awaitItem()
@@ -96,8 +96,8 @@ class CategoryPickViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onBackClick should send NavigateBack effect when called`() = runTest(testDispatcher) {
-        viewModel.onBackClick()
+    fun `onClickBack should send NavigateBack effect when called`() = runTest(testDispatcher) {
+        viewModel.onClickBack()
 
         viewModel.effect.test {
             val effect = awaitItem()
@@ -107,12 +107,12 @@ class CategoryPickViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onNextClick should called updateUserInterestedCategories from repository with success`() =
+    fun `onClickNext should called updateUserInterestedCategories from repository with success`() =
         runTest(testDispatcher) {
             val selectedIds = listOf(categories.first().id)
             everySuspend { repository.initializeUserCategories(selectedIds) } returns Unit
 
-            viewModel.onNextClick()
+            viewModel.onClickNext()
 
             viewModel.effect.test {
                 val effect = awaitItem()
@@ -122,13 +122,13 @@ class CategoryPickViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onNextClick should throw exception when called`() =
+    fun `onClickNext should throw exception when called`() =
         runTest(testDispatcher) {
             everySuspend {
                 repository.initializeUserCategories(any())
             } throws Exception()
 
-            viewModel.onNextClick()
+            viewModel.onClickNext()
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.state.test {

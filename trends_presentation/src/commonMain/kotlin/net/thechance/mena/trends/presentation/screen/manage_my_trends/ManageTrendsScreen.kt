@@ -84,7 +84,7 @@ private fun ManageTrendsScreenContent(
     listener: ManageTrendsInteractionListener
 ) {
     Scaffold(
-        topBar = { ManageMyTrendsAppBar(onBackClick = listener::onBackClick) }
+        topBar = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) }
     ) {
         Column(
             modifier = Modifier
@@ -106,7 +106,7 @@ private fun ManageTrendsScreenContent(
 
             SegmentSection(
                 reels = state.reels.collectAsLazyPagingItems(),
-                onTrendClick = listener::onReelClick,
+                onTrendClick = listener::onClickReel,
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 trendsTitle = stringResource(Res.string.my_trends),
                 favoriteTitle = stringResource(Res.string.favorite)

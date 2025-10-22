@@ -63,7 +63,7 @@ private fun CategoryPickScreenContent(
         Scaffold(
             bottomBar = {
                 NextButton(
-                    onNextClick = listener::onNextClick,
+                    onNextClick = listener::onClickNext,
                     isButtonEnabled = state.isNextButtonEnabled(),
                     isButtonLoading = state.isNextButtonLoading,
                     modifier = Modifier.padding(horizontal = Theme.spacing._16)
@@ -83,7 +83,7 @@ private fun CategoryPickScreenContent(
                     state.categories.forEach { category ->
                         CategoryItem(
                             category = category,
-                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                            onClick = { id -> listener.onClickCategory(categoryId = id) },
                             modifier = Modifier.padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
                         )
                     }
@@ -131,9 +131,9 @@ private fun CategoryPickScreenPreview() {
         CategoryPickScreenContent(
             state = CategoryPickScreenState(),
             listener = object : CategoryPickInteractionListener {
-                override fun onBackClick() {}
-                override fun onCategoryClick(categoryId: String) {}
-                override fun onNextClick() {}
+                override fun onClickBack() {}
+                override fun onClickCategory(categoryId: String) {}
+                override fun onClickNext() {}
             }
         )
     }

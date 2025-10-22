@@ -89,7 +89,7 @@ private fun UploadReelScreenContent(
     )
 
     Scaffold(
-        topBar = { UploadReelScreenTopBar(onBackClick = listener::onBackClick) },
+        topBar = { UploadReelScreenTopBar(onBackClick = listener::onClickBack) },
         snakeBar = {
             state.errorState?.let { errorState ->
                TrendsSnackBar(
@@ -130,9 +130,9 @@ private fun UploadReelScreenContent(
                     progress = state.uploadingProgress,
                 ) { action ->
                     when (action) {
-                        VideoAction.Cancel -> listener.onCancelUploadClick()
-                        VideoAction.Retry -> listener.onRetryUploadClick()
-                        VideoAction.Delete -> listener.onDeleteVideoClick()
+                        VideoAction.Cancel -> listener.onClickCancelUpload()
+                        VideoAction.Retry -> listener.onClickRetryUpload()
+                        VideoAction.Delete -> listener.onClickDeleteVideo()
                     }
                 }
             }
@@ -141,7 +141,7 @@ private fun UploadReelScreenContent(
 
             NextButton(
                 modifier = Modifier.padding(vertical = Theme.spacing._24),
-                onNextClick = listener::onNextClick,
+                onNextClick = listener::onClickNext,
                 isButtonEnabled = state.isNextButtonEnabled,
                 isButtonLoading = state.isNextButtonLoading
             )

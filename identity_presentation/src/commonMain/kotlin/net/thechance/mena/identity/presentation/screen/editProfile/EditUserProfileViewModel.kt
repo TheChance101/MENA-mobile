@@ -8,15 +8,15 @@ import kotlinx.coroutines.IO
 import kotlinx.datetime.LocalDate
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_camera_permission_required
-import mena.identity_presentation.generated.resources.error_firstname_required
-import mena.identity_presentation.generated.resources.error_lastname_required
+import mena.identity_presentation.generated.resources.error_first_name_required
+import mena.identity_presentation.generated.resources.error_last_name_required
 import mena.identity_presentation.generated.resources.error_username_required
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.getCurrentDate
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.ErrorState
+import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import kotlin.uuid.ExperimentalUuidApi
@@ -59,6 +59,10 @@ class EditUserProfileViewModel(
         }
     }
 
+    private fun onErrorOccurred(errorState: ErrorState) {
+        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
+    }
+
     override fun onChangeFirstName(firstName: String) {
         updateState { copy(firstName = firstName) }
     }
@@ -76,56 +80,75 @@ class EditUserProfileViewModel(
     }
 
     override fun onClickSaveButton() {
-        if (state.value.username.isEmpty()) {
-            updateState { copy(errorMessage = Res.string.error_username_required) }
-            return
-        }
-        if (state.value.firstName.isEmpty()) {
-            updateState { copy(errorMessage = Res.string.error_firstname_required) }
-            return
-        }
-        if (state.value.lastName.isEmpty()) {
-            updateState { copy(errorMessage = Res.string.error_lastname_required) }
-            return
-        }
+        if (!validateFormInputs()) return
 
-        updateState { copy(isLoading = true) }
-
+        updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
-            function = ::onSave,
-            onError = ::onErrorOccurred,
-            onSuccess = ::onSaveSuccess
+            function = ::saveUserProfile,
+            onSuccess = ::handleSaveSuccess,
+            onError = ::handleSaveError,
+            dispatcher = dispatcher
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    private suspend fun onSave() {
-        if (userId == null) {
-            onErrorOccurred(ErrorState.InvalidMobileNumber)
-            return
-        }
-        userId?.let { userId ->
-            val value = state.value
-            val user = User(
-                id = userId,
-                firstName = value.firstName,
-                lastName = value.lastName,
-                username = value.username.lowercase(),
-                profileImageUrl = value.profileImageUrl,
-                birthDate = value.birthDate ?: getCurrentDate(),
-                gender = value.gender,
-            )
-            userRepository.updateUser(
-                user = user,
-                shouldUpdateImage = value.shouldUpdateImage,
-                imageByteArray = value.profileImageBitmap?.encodeToByteArray()
-            )
+    private fun validateFormInputs(): Boolean {
+        val currentState = state.value
+
+        return when {
+            currentState.username.isEmpty() -> {
+                updateState { copy(errorMessage = Res.string.error_username_required) }
+                false
+            }
+
+            currentState.firstName.isEmpty() -> {
+                updateState { copy(errorMessage = Res.string.error_first_name_required) }
+                false
+            }
+
+            currentState.lastName.isEmpty() -> {
+                updateState { copy(errorMessage = Res.string.error_last_name_required) }
+                false
+            }
+
+            else -> true
         }
     }
 
-    private fun onSaveSuccess() {
+    @OptIn(ExperimentalUuidApi::class)
+    private suspend fun saveUserProfile() {
+        if (userId == null) {
+            throw Exception("User ID not found")
+        }
+
+        val value = state.value
+        val user = User(
+            id = userId!!,
+            firstName = value.firstName,
+            lastName = value.lastName,
+            username = value.username.lowercase(),
+            profileImageUrl = value.profileImageUrl,
+            birthDate = value.birthDate ?: getCurrentDate(),
+            gender = value.gender,
+        )
+        userRepository.updateUser(
+            user = user,
+            shouldUpdateImage = value.shouldUpdateImage,
+            imageByteArray = value.profileImageBitmap?.encodeToByteArray()
+        )
+    }
+
+    private fun handleSaveSuccess() {
         updateState { copy(isLoading = false) }
         sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile)
+    }
+
+    private fun handleSaveError(errorState: ErrorState) {
+        updateState {
+            copy(
+                isLoading = false,
+                errorMessage = mapErrorToMessage(errorState)
+            )
+        }
     }
 
     override fun onClickCancelButton() {
@@ -183,23 +206,24 @@ class EditUserProfileViewModel(
 
     override fun onTakeImageFromCamera() {
         tryToExecute(
-            function = ::onAskForCameraPermission,
-            onError = ::onErrorOccurred
+            function = ::requestCameraPermission,
+            onError = ::handleCameraPermissionError,
+            dispatcher = dispatcher
         )
     }
 
-    private suspend fun onAskForCameraPermission() {
+    private suspend fun requestCameraPermission() {
         permissionManager.requestCameraPermission(
             onGranted = { updateState { copy(showCamera = true) } },
             onDenied = { updateState { copy(errorMessage = Res.string.error_camera_permission_required) } }
         )
     }
 
-    override fun onOpenCamera() {
-        updateState { copy(showCamera = false) }
+    private fun handleCameraPermissionError(errorState: ErrorState) {
+        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
     }
 
-    private fun onErrorOccurred(errorState: ErrorState) {
-        updateState { copy(isLoading = false, errorMessage = mapErrorToMessage(errorState)) }
+    override fun onOpenCamera() {
+        updateState { copy(showCamera = false) }
     }
 }

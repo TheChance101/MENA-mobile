@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
-import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 
 sealed interface PickLocationScreenUIEffect {
     data object NavigateBack : PickLocationScreenUIEffect

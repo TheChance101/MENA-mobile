@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.data.dataSource.remote.dto
+package net.thechance.mena.identity.data.dto.auth
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

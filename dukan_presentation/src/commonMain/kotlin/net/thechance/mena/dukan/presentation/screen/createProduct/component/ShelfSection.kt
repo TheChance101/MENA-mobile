@@ -1,19 +1,13 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct.component
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -30,17 +24,20 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingHorizontalList
+import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-fun LazyListScope.shelfSection(
+@Composable
+fun ShelfSection(
     shelves: List<CreateProductUiState.ShelfUiState>,
     isShelvesLoading: Boolean,
-    onShelfSelect: (CreateProductUiState.ShelfUiState) -> Unit
+    onShelfSelect: (CreateProductUiState.ShelfUiState) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    item {
+    Column(modifier){
         Text(
             text = stringResource(Res.string.shelf),
             style = Theme.typography.title.small,
@@ -67,14 +64,12 @@ fun LazyListScope.shelfSection(
         }
         AnimatedContent(
             targetState = isShelvesLoading,
-            transitionSpec = {
-                fadeIn(tween()) togetherWith fadeOut(tween())
-            },
+            transitionSpec = { fadeTransitionSpec() },
             label = "shelves loading"
-        ) {
-            if (it) {
+        ) { isShelvesLoadingState ->
+            if (isShelvesLoadingState) {
                 LoadingShelves()
-            } else{
+            } else {
                 LoadedShelves(shelves, onShelfSelect)
             }
         }
@@ -82,7 +77,7 @@ fun LazyListScope.shelfSection(
 }
 
 @Composable
-private fun LoadingShelves(){
+private fun LoadingShelves() {
     LoadingHorizontalList {
         Chip(
             text = "             ",
@@ -92,6 +87,7 @@ private fun LoadingShelves(){
         )
     }
 }
+
 @Composable
 private fun LoadedShelves(
     shelves: List<CreateProductUiState.ShelfUiState>,
@@ -123,30 +119,26 @@ private fun LoadedShelves(
 @Composable
 private fun ShelvesSectionPreview() {
     MenaTheme {
-        LazyColumn(
-            modifier = Modifier.background(Theme.colorScheme.background.surface)
-        ) {
-            shelfSection(
-                shelves = listOf(
-                    CreateProductUiState.ShelfUiState(
-                        id = "1",
-                        name = "shelf 1",
-                        isSelected = true
-                    ),
-                    CreateProductUiState.ShelfUiState(
-                        id = "2",
-                        name = "shelf 2",
-                        isSelected = false
-                    ),
-                    CreateProductUiState.ShelfUiState(
-                        id = "3",
-                        name = "shelf 3",
-                        isSelected = false
-                    ),
+        ShelfSection(
+            shelves = listOf(
+                CreateProductUiState.ShelfUiState(
+                    id = "1",
+                    name = "shelf 1",
+                    isSelected = true
                 ),
-                onShelfSelect = {},
-                isShelvesLoading = false
-            )
-        }
+                CreateProductUiState.ShelfUiState(
+                    id = "2",
+                    name = "shelf 2",
+                    isSelected = false
+                ),
+                CreateProductUiState.ShelfUiState(
+                    id = "3",
+                    name = "shelf 3",
+                    isSelected = false
+                ),
+            ),
+            onShelfSelect = {},
+            isShelvesLoading = false
+        )
     }
 }

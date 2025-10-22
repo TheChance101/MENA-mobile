@@ -143,7 +143,7 @@ internal class UploadReelViewModel(
         updateState { copy(errorState = errorState) }
     }
 
-    override fun onNextClick() {
+    override fun onClickNext() {
         uploadThumbnail()
     }
 
@@ -183,16 +183,16 @@ internal class UploadReelViewModel(
         updateState { copy(errorState = errorState) }
     }
 
-    override fun onBackClick() {
+    override fun onClickBack() {
         sendEffect(UploadReelScreenEffect.NavigateBack)
     }
 
-    override fun onCancelUploadClick() {
+    override fun onClickCancelUpload() {
         uploadingTrendJob?.cancel()
         updateState { UploadReelScreenState() }
     }
 
-    override fun onDeleteVideoClick() {
+    override fun onClickDeleteVideo() {
         tryToExecute(
             block = { state.value.reelId?.let { reelsRepository.deleteReelById(id = it) } },
             onSuccess = { updateState { UploadReelScreenState() } },
@@ -201,7 +201,7 @@ internal class UploadReelViewModel(
         )
     }
 
-    override fun onRetryUploadClick() {
+    override fun onClickRetryUpload() {
         uploadTrend()
     }
 }

@@ -1,0 +1,28 @@
+package net.thechance.mena.identity.presentation.mapper
+
+import net.thechance.mena.identity.presentation.base.error.AuthenticationErrorState
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_invalid_country_code
+import mena.identity_presentation.generated.resources.error_invalid_mobile_number
+import mena.identity_presentation.generated.resources.error_invalid_otp
+import mena.identity_presentation.generated.resources.error_invalid_password
+import mena.identity_presentation.generated.resources.error_no_network
+import mena.identity_presentation.generated.resources.error_otp_expired
+import mena.identity_presentation.generated.resources.error_something_went_wrong
+import mena.identity_presentation.generated.resources.error_too_many_requests
+import mena.identity_presentation.generated.resources.error_user_blocked
+import org.jetbrains.compose.resources.StringResource
+
+internal fun mapAuthenticationErrorToMessage(error: AuthenticationErrorState): StringResource {
+    return when (error) {
+        AuthenticationErrorState.InvalidCountryCode -> Res.string.error_invalid_country_code
+        AuthenticationErrorState.InvalidMobileNumber -> Res.string.error_invalid_mobile_number
+        AuthenticationErrorState.InvalidPassword -> Res.string.error_invalid_password
+        AuthenticationErrorState.InvalidOTP -> Res.string.error_invalid_otp
+        AuthenticationErrorState.UserIsBlocked -> Res.string.error_user_blocked
+        AuthenticationErrorState.TooManyRequests -> Res.string.error_too_many_requests
+        AuthenticationErrorState.OTPExpired -> Res.string.error_otp_expired
+        AuthenticationErrorState.NoNetwork -> Res.string.error_no_network
+        is AuthenticationErrorState.SomethingWentWrong -> Res.string.error_something_went_wrong
+    }
+}

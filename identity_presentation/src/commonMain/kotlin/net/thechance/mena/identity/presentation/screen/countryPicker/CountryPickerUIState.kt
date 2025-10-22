@@ -1,6 +1,6 @@
-package net.thechance.mena.identity.presentation.bottomSheet.countryPicker
+package net.thechance.mena.identity.presentation.screen.countryPicker
 
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 
 data class CountryPickerUIState(
     val selectedCountry: MenaCountry? = MenaCountry.IRAQ,

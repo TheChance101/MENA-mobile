@@ -12,11 +12,11 @@ internal class VideoDescriptionViewModel(
     VideoDescriptionInteractionListener {
 
 
-    override fun onBackClick() {
+    override fun onClickBack() {
         sendEffect(VideoDescriptionEffect.NavigateBack)
     }
 
-    override fun onNextClick() {
+    override fun onClickNext() {
         sendEffect(
             VideoDescriptionEffect.NavigateToSelectCategories(
                 state.value.description,
