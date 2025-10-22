@@ -390,26 +390,28 @@ class ChatViewModel(
         tryToExecute(
             execute = { imageDownloaderService.downloadImageToGallery(url) },
             onSuccess = { success ->
-                if (success) onDownloadImageSuccess()
-                else {
-                    showSnackBar(
-                        Res.string.error,
-                        Res.string.error_failed_to_download_image
-                    )
-                }
+                onDownloadImageSuccess(success)
             },
             onError = {
-                showSnackBar(
-                    Res.string.error,
-                    Res.string.error_failed_to_download_image,
-                    true
-                )
+                onDownloadImageError()
             }
         )
     }
 
-    private fun onDownloadImageSuccess() {
-        showSnackBar(Res.string.success, Res.string.image_saved_successfully, isError = false)
+    private fun onDownloadImageSuccess(isSuccess: Boolean) {
+        if (isSuccess) {
+            showSnackBar(Res.string.success, Res.string.image_saved_successfully, isError = false)
+        } else {
+            onDownloadImageError()
+        }
+    }
+
+    private fun onDownloadImageError() {
+        showSnackBar(
+            Res.string.error,
+            Res.string.error_failed_to_download_image,
+            true
+        )
     }
 
     override fun onCloseImageViewClicked() {
