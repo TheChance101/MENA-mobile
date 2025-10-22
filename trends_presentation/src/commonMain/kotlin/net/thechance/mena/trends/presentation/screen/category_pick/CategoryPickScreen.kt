@@ -51,11 +51,17 @@ internal fun CategoryPickScreen(
     }
 
     when {
-        state.error == ErrorState.NoInternet -> { NoConnection(onRetry = viewModel::onRetryClick) }
+        state.error == ErrorState.NoInternet -> {
+            NoConnection(onRetry = viewModel::onRetryClick)
+        }
 
-        state.isLoading -> { LoadingProgressBar() }
+        state.isLoading -> {
+            LoadingProgressBar()
+        }
 
-        else -> { CategoryPickScreenContent(state = state, listener = viewModel) }
+        else -> {
+            CategoryPickScreenContent(state = state, listener = viewModel)
+        }
     }
 }
 
@@ -64,38 +70,41 @@ private fun CategoryPickScreenContent(
     state: CategoryPickScreenState,
     listener: CategoryPickInteractionListener
 ) {
-    Scaffold(
-        bottomBar = {
-            NextButton(
-                onNextClick = listener::onNextClick,
-                isButtonEnabled = state.isNextButtonEnabled(),
-                isButtonLoading = state.isNextButtonLoading,
-                modifier = Modifier.padding(horizontal = Theme.spacing._16)
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = Theme.spacing._16)
-        ) {
-            ChooseInterestsMessage()
+    if (state.isLoading.not()) {
 
-            FlowRow(
+        Scaffold(
+            bottomBar = {
+                NextButton(
+                    onNextClick = listener::onNextClick,
+                    isButtonEnabled = state.isNextButtonEnabled(),
+                    isButtonLoading = state.isNextButtonLoading,
+                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
+                )
+            }
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = Theme.spacing._24)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16)
             ) {
-                state.categories.forEach { category ->
-                    CategoryItem(
-                        category = category,
-                        onClick = { id -> listener.onCategoryClick(categoryId = id) },
-                        modifier = Modifier.padding(
-                            bottom = Theme.spacing._12,
-                            end = Theme.spacing._8
+                ChooseInterestsMessage()
+
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = Theme.spacing._24)
+                ) {
+                    state.categories.forEach { category ->
+                        CategoryItem(
+                            category = category,
+                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                            modifier = Modifier.padding(
+                                bottom = Theme.spacing._12,
+                                end = Theme.spacing._8
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
