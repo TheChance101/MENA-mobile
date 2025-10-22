@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.presentation.screen.manage_my_trends.component
+package net.thechance.mena.trends.presentation.shared.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_no_connection
-import mena.trends_presentation.generated.resources.no_connection_description
-import mena.trends_presentation.generated.resources.no_connection_icon
-import mena.trends_presentation.generated.resources.no_connection_title
 import mena.trends_presentation.generated.resources.re_try
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -27,7 +25,14 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun NoConnection(modifier: Modifier = Modifier, onRetry: () -> Unit) {
+fun StatePlaceholder(
+    modifier: Modifier = Modifier,
+    isBottomVisible: Boolean = false,
+    stateIcon: Painter,
+    stateTitle: String,
+    stateDescription: String,
+    onRetry: () -> Unit = {}
+) {
     Column(
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -36,41 +41,50 @@ fun NoConnection(modifier: Modifier = Modifier, onRetry: () -> Unit) {
             .padding(horizontal = Theme.spacing._24)
     ) {
         Image(
-            painter = painterResource(Res.drawable.ic_no_connection),
-            contentDescription = stringResource(Res.string.no_connection_icon),
+            painter = stateIcon,
+            contentDescription = stateTitle,
             modifier = Modifier
                 .size(128.dp)
                 .padding(bottom = Theme.spacing._12)
         )
 
         Text(
-            text = stringResource(Res.string.no_connection_title),
+            text = stateTitle,
             style = Theme.typography.title.small,
             textAlign = TextAlign.Center,
             color = Theme.colorScheme.shadePrimary,
         )
 
         Text(
-            text = stringResource(Res.string.no_connection_description),
+            text = stateDescription,
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._2, bottom = Theme.spacing._12)
+            modifier = Modifier.fillMaxWidth()
+                .padding(top = Theme.spacing._2, bottom = Theme.spacing._12)
         )
 
-        PrimaryButton(
-            text = stringResource(Res.string.re_try),
-            onClick = onRetry,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (isBottomVisible) {
+            PrimaryButton(
+                text = stringResource(Res.string.re_try),
+                onClick = onRetry,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewNoConnection() {
+fun PreviewBaseStateComponent() {
     MenaTheme {
-        NoConnection {
-        }
+        StatePlaceholder(
+            stateIcon = painterResource(Res.drawable.ic_no_connection),
+            stateTitle = "No Connection",
+            stateDescription = "Please check your internet connection and try again.",
+            isBottomVisible = false,
+            onRetry = {}
+        )
     }
 }
+
