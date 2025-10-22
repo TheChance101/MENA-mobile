@@ -92,6 +92,7 @@ class LoginScreenViewModel(
 
     override fun onSelectCountryItem(country: MenaCountry) {
         updateState { copy(currentCountry = country, showCountryBottomSheet = false) }
+        changeIsLoginEnabled()
     }
 
     override fun onDismissBottomSheet() {
