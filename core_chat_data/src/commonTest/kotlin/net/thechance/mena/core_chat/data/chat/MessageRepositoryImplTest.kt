@@ -176,7 +176,7 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should return local messages from database when getLocalMessages is called`() = runTest {
+    fun `should return local messages from database when observePendingMessagesByChatId is called`() = runTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
         val message2 = createMessage(senderId = userId, chatId = chatId)
         val messageEntities = listOf(
@@ -207,7 +207,7 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should return flow when getMessages is called and websocket is connected`() = runTest {
+    fun `should return flow when observeMessagesForChatOrAll is called and websocket is connected`() = runTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
