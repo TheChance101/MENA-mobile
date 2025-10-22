@@ -4,6 +4,5 @@ import net.thechance.mena.dukan.presentation.viewModel.manageShelf.ManageShelfIn
 
 object PreviewManageShelfInteractionListener: ManageShelfInteractionListener {
     override fun onBackClicked() {}
-
     override fun onDeleteClicked() {}
 }
