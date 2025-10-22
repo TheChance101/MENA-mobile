@@ -4,6 +4,7 @@ import io.ktor.client.plugins.HttpTimeoutConfig
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.plugins.timeout
 import io.ktor.client.request.HttpRequestBuilder
+import net.thechance.mena.trends.domain.model.UploadReelProgress
 
 fun HttpRequestBuilder.setUploadRequestTimeout() {
     timeout {
@@ -13,11 +14,16 @@ fun HttpRequestBuilder.setUploadRequestTimeout() {
 }
 
 fun HttpRequestBuilder.observeUploading(
-    onProgress: suspend (sent: Long, total: Long) -> Unit
+    onProgress: suspend (UploadReelProgress) -> Unit
 ) {
     onUpload { bytesSentTotal, contentLength ->
         if (contentLength != null && contentLength > 0) {
-            onProgress(bytesSentTotal, contentLength)
+            onProgress(
+                UploadReelProgress(
+                    numberOfUploadedBytes = bytesSentTotal,
+                    totalBytes = contentLength
+                )
+            )
         }
     }
 }
