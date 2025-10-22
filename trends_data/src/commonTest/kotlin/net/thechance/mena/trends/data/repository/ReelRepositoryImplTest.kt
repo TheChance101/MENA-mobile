@@ -4,7 +4,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isSuccess
-import dev.mokkery.every
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
