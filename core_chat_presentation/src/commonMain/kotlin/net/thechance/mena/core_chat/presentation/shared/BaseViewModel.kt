@@ -27,6 +27,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 open class BaseViewModel<S, E>(
     initialState: S,
@@ -41,9 +43,18 @@ open class BaseViewModel<S, E>(
 
     protected fun updateState(updater: (S) -> S) = _state.update(updater)
 
+    private var lastEffect: E? = null
+    private var lastEffectTime: Long = 0L
+
+    @OptIn(ExperimentalTime::class)
     fun emitEffect(effect: E) {
         viewModelScope.launch(defaultDispatcher) {
-            _effect.emit(effect)
+            val now = Clock.System.now().toEpochMilliseconds()
+            if (effect != lastEffect ||  now - lastEffectTime > 500) {
+                _effect.emit(effect)
+                lastEffect = effect
+                lastEffectTime = now
+            }
         }
     }
 
