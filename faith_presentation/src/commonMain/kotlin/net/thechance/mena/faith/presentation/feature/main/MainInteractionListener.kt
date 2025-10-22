@@ -1,8 +1,12 @@
 package net.thechance.mena.faith.presentation.feature.main
 
-interface MainInteractionListener {
-    fun onContinueTilawahClick(surahId: Int, surahName: String, ayahNumber: Int)
+interface FeatureInteractionListener {
     fun onQuranClick()
     fun onQiblahClick()
     fun onMosquesClick()
+}
+
+
+interface MainInteractionListener : FeatureInteractionListener {
+    fun onContinueTilawahClick(surahId: Int, surahName: String, ayahNumber: Int)
 }
