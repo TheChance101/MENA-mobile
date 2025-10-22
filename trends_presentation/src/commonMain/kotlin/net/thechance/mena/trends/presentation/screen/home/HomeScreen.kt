@@ -37,6 +37,7 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -76,7 +77,7 @@ internal fun HomeScreen(
         onEditTagsClick = viewModel::onEditTagsClick
     ) {
         when {
-            state.error == ErrorState.NoInternet -> {
+            reels.loadState.refresh.toErrorState() == ErrorState.NoInternet -> {
                 NoConnection(onRetry = viewModel::onRetryClick)
             }
 
