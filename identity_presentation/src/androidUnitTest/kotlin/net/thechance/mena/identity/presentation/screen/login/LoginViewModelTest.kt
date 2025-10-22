@@ -38,7 +38,7 @@ class LoginViewModelTest {
 
 
     private fun setupValidCountry() {
-        viewModel.onSelectCountryItem(selectedCountry)
+        viewModel.onConfirmCountryItem(selectedCountry)
     }
 
     @Test
@@ -149,7 +149,7 @@ class LoginViewModelTest {
     fun `should login button is disabled when password is empty`() = runTest {
         val phoneNumber = "1100661617"
 
-        viewModel.onSelectCountryItem(selectedCountry)
+        viewModel.onConfirmCountryItem(selectedCountry)
         viewModel.onPhoneChanged(phoneNumber)
 
         testDispatcher.scheduler.advanceUntilIdle()

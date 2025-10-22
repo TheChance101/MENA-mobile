@@ -67,7 +67,7 @@ class LoginScreen : BaseScreen<
                     CountryPicker(
                         isVisible = showBottomSheet,
                         currentCountry = state.currentCountry,
-                        onClickConfirm = listener::onSelectCountryItem,
+                        onClickConfirm = listener::onConfirmCountryItem,
                         onDismiss = listener::onDismissBottomSheet,
                     )
                 }

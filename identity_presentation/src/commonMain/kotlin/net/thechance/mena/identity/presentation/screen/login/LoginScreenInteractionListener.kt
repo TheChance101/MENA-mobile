@@ -13,6 +13,6 @@ interface LoginScreenInteractionListener : BaseInteractionListener {
     fun onPasswordChanged(password: String)
     fun onPasswordVisibilityToggled()
     fun clearErrorMessage()
-    fun onSelectCountryItem(country: MenaCountry)
+    fun onConfirmCountryItem(country: MenaCountry)
     fun onDismissBottomSheet()
 }
