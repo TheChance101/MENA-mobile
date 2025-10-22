@@ -21,6 +21,6 @@ sealed interface MessageContent {
 }
 
 sealed interface ImageData {
-    data class Remote(val urls: List<String>) : ImageData
-    data class Local(val byteArrays: List<ByteArray>) : ImageData
+    data class ImageUrl(val urls: List<String>) : ImageData
+    data class ImageByteArray(val byteArrays: List<ByteArray>) : ImageData
 }

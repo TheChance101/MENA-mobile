@@ -27,8 +27,8 @@ fun MessageContent(
         is MessageContent.Images -> {
             val source = messageContent.source
             val images = when (source) {
-                is ImageData.Local -> source.byteArrays
-                is ImageData.Remote -> source.urls
+                is ImageData.ImageByteArray -> source.byteArrays
+                is ImageData.ImageUrl -> source.urls
             }
             ImageMessageContent(
                 images = images,

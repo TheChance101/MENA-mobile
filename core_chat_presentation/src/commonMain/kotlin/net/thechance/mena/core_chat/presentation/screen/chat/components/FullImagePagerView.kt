@@ -67,11 +67,11 @@ fun FullImagePagerView(
         initialPage = initialPage,
         pageCount = {
             when (imagesSource) {
-                is ImageData.Remote -> {
+                is ImageData.ImageUrl -> {
                     imagesSource.urls.size
                 }
 
-                is ImageData.Local -> {
+                is ImageData.ImageByteArray -> {
                     imagesSource.byteArrays.size
                 }
             }
@@ -99,9 +99,9 @@ fun FullImagePagerView(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
             time = message.sendTime,
-            isDownloadButtonVisible = imagesSource is ImageData.Remote,
+            isDownloadButtonVisible = imagesSource is ImageData.ImageUrl,
             onDownloadClicked = {
-                if (imagesSource is ImageData.Remote)
+                if (imagesSource is ImageData.ImageUrl)
                     onDownloadClick(imagesSource.urls[pagerState.currentPage])
             },
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -238,7 +238,7 @@ private fun ImagePager(
     imagesSource: ImageData
 ) {
     when (imagesSource) {
-        is ImageData.Remote -> HorizontalImagePager(state, imagesSource.urls)
-        is ImageData.Local -> HorizontalImagePager(state, imagesSource.byteArrays)
+        is ImageData.ImageUrl -> HorizontalImagePager(state, imagesSource.urls)
+        is ImageData.ImageByteArray -> HorizontalImagePager(state, imagesSource.byteArrays)
     }
 }

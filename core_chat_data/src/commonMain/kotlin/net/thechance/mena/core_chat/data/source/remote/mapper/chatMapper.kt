@@ -27,7 +27,7 @@ import kotlin.uuid.Uuid
 fun MessageDto.toDomain(): Message? {
     val content = when {
         !text.isNullOrBlank() -> MessageContent.Text(text)
-        !images.isNullOrEmpty() -> MessageContent.Images(ImageData.Remote(images))
+        !images.isNullOrEmpty() -> MessageContent.Images(ImageData.ImageUrl(images))
         else -> return null
     }
 
@@ -56,7 +56,7 @@ fun Message.toLocalDto(): MessageLocalDto {
     val content = this.content
     val text = if (content is MessageContent.Text) content.text else null
     val source = if (content is MessageContent.Images) content.source else null
-    val images = if (source is ImageData.Local) source.byteArrays else null
+    val images = if (source is ImageData.ImageByteArray) source.byteArrays else null
 
 
     return MessageLocalDto(
@@ -75,7 +75,7 @@ fun MessageLocalDto.toDomain(): Message {
     val content = if (text != null) {
         MessageContent.Text(text)
     } else if (images != null) {
-        MessageContent.Images(ImageData.Local(images))
+        MessageContent.Images(ImageData.ImageByteArray(images))
     } else {
         error("Invalid message content")
     }
