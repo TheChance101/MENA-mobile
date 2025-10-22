@@ -1,9 +1,11 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
+import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.model.mapper.toUserCategoryUiState
@@ -16,7 +18,7 @@ import org.koin.core.annotation.Provided
 internal class UpdateCategoriesViewModel(
     @Provided private val repository: CategoryRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<UpdateCategoriesScreenState, UpdateCategoriesScreenEffect>(
+) : BaseViewModel<UpdateCategoriesScreenState, UpdateCategoriesScreenEffect, UpdateCategoryErrorState>(
     initialState = UpdateCategoriesScreenState()
 ), UpdateCategoriesInteractionListener {
 
@@ -31,7 +33,8 @@ internal class UpdateCategoriesViewModel(
             onError = { errorState -> updateState { copy(errorState = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -48,7 +51,8 @@ internal class UpdateCategoriesViewModel(
             onStart = { updateState { copy(isSaveButtonLoading = true) } },
             onEnd = { updateState { copy(isSaveButtonLoading = false) } },
             onError = { errorState -> updateState { copy(errorState = errorState) } },
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -69,5 +73,17 @@ internal class UpdateCategoriesViewModel(
                 categories = categories.toUserCategoryUiState()
             )
         }
+    }
+
+    private fun mapError(throwable: Throwable): UpdateCategoryErrorState {
+        return when (throwable) {
+            is NoInternetException -> UpdateCategoryErrorState.NoInternet
+            else -> UpdateCategoryErrorState.RequestFailed(throwable.message).also { logError(throwable) }
+        }.also { errorState ->
+            Logger.e(TAG) { errorState.toString() }
+        }
+    }
+    private companion object{
+        const val  TAG ="UpdateCategoryErrorState"
     }
 }

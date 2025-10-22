@@ -3,11 +3,13 @@ package net.thechance.mena.trends.presentation.screen.home
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -18,7 +20,7 @@ import org.koin.core.annotation.Provided
 internal class HomeViewModel(
     @Provided private val repository: ReelsRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<HomeScreenState, HomeUiEffect>(HomeScreenState()),
+) : BaseViewModel<HomeScreenState, HomeUiEffect, HomeErrorState>(HomeScreenState()),
     HomeInteractionListener {
 
     init {
@@ -35,9 +37,8 @@ internal class HomeViewModel(
             },
             dispatcher = ioDispatcher,
             scope = viewModelScope,
-            onSuccess = { updatedReel ->
-                updateReelInPagingData(reelId) { updatedReel.toUiState() }
-            }
+            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUiState() } },
+            errorMapper = ::mapError
         )
     }
 
@@ -69,7 +70,8 @@ internal class HomeViewModel(
             },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = ioDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -98,5 +100,18 @@ internal class HomeViewModel(
 
     override fun onLikeClick(reelId: String) {
         toggleReelLike(reelId)
+    }
+
+    private fun mapError(throwable: Throwable): HomeErrorState {
+        return when (throwable) {
+            is NoInternetException -> HomeErrorState.NoInternet
+            else -> HomeErrorState.RequestFailed(throwable.message).also { logError(throwable) }
+        }.also { errorState ->
+            Logger.e(TAG) { errorState.toString() }
+        }
+    }
+
+    private companion object {
+        const val TAG = "HomeErrorState"
     }
 }

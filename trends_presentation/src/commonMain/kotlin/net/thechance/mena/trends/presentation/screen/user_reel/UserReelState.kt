@@ -4,13 +4,12 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 
 internal data class UserReelState(
     val reels: Flow<PagingData<UserReelUiState>> = flowOf(),
     val isLoading: Boolean = false,
-    val error: ErrorState? = null,
+    val error: UserReelErrorState? = null,
     val isConfirmationDialogVisible: Boolean = false,
     val isReelDeleted: Boolean? = null,
     val isDescriptionExpanded: Boolean = false,
@@ -29,3 +28,8 @@ internal data class UserReelUiState(
     val isCurrentUserOwner: Boolean = false,
     val isLiked: Boolean = false
 )
+
+internal sealed class UserReelErrorState {
+    object NoInternet : UserReelErrorState()
+    data class RequestFailed(val message: String? = "Request failed") : UserReelErrorState()
+}

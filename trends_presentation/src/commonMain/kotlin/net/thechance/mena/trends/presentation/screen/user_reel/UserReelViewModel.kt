@@ -3,11 +3,13 @@ package net.thechance.mena.trends.presentation.screen.user_reel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -20,7 +22,7 @@ internal class UserReelViewModel(
     @Provided private val userReelArgs: UserReelArgs,
     @Provided private val reelsRepository: ReelsRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
+) : BaseViewModel<UserReelState, UserReelEffect, UserReelErrorState>(UserReelState()), UserReelInteractionListener {
 
     init {
         getFeedReals()
@@ -36,7 +38,8 @@ internal class UserReelViewModel(
             },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = ioDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -62,6 +65,7 @@ internal class UserReelViewModel(
             block = { reelsRepository.addReelView(reelId) },
             onError = { error -> updateState { copy(error = error) } },
             dispatcher = ioDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -77,7 +81,8 @@ internal class UserReelViewModel(
             scope = viewModelScope,
             onSuccess = { updatedReel ->
                 updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() }
-            }
+            },
+            errorMapper = ::mapError
         )
     }
 
@@ -126,7 +131,8 @@ internal class UserReelViewModel(
             block = { reelsRepository.deleteReelById(userReelArgs.realId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
-            dispatcher = ioDispatcher
+            dispatcher = ioDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -150,5 +156,18 @@ internal class UserReelViewModel(
         updateState {
             copy(isReelDeleted = null, isConfirmationDialogVisible = false, error = null)
         }
+    }
+
+    private fun mapError(throwable: Throwable): UserReelErrorState {
+        return when (throwable) {
+            is NoInternetException -> UserReelErrorState.NoInternet
+            else -> UserReelErrorState.RequestFailed(throwable.message).also { logError(throwable)}
+        }.also { errorState ->
+            Logger.e(TAG) { errorState.toString() }
+        }
+    }
+
+    private companion object{
+        const val  TAG ="UserReelErrorState"
     }
 }

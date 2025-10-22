@@ -2,13 +2,12 @@ package net.thechance.mena.trends.presentation.screen.manage_my_trends
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import org.jetbrains.compose.resources.StringResource
 
 
 internal data class ManageTrendsScreenState(
     val isLoading: Boolean = true,
-    val error: ErrorState? = null,
+    val error: ManageTrendsErrorState? = null,
     val reels: Flow<PagingData<ReelUiState>> = flowOf(),
     val profile: UserInfoUiState = UserInfoUiState(),
     val currentTab: String = "",
@@ -22,3 +21,8 @@ internal data class UserInfoUiState(
     val userName: String = "",
     val profileImageUrl: String = "",
 )
+
+internal sealed class ManageTrendsErrorState {
+    object NoInternet : ManageTrendsErrorState()
+    data class RequestFailed(val message: String? = "Request failed") : ManageTrendsErrorState()
+}

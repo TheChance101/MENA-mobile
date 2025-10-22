@@ -8,7 +8,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class VideoDescriptionViewModel(
     @Provided private val videoDescriptionArgs: VideoDescriptionArgs
-) : BaseViewModel<VideoDescriptionScreenState, VideoDescriptionEffect>(initialState = VideoDescriptionScreenState()),
+) : BaseViewModel<VideoDescriptionScreenState, VideoDescriptionEffect, VideoDescriptionErrorState>(initialState = VideoDescriptionScreenState()),
     VideoDescriptionInteractionListener {
 
 

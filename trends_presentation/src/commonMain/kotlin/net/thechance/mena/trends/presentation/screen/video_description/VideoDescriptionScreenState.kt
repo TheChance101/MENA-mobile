@@ -6,3 +6,5 @@ internal data class VideoDescriptionScreenState(
     val maxNumberOfCharacters: Int = 3000,
     val isButtonEnabled: Boolean = true,
 )
+
+internal sealed class VideoDescriptionErrorState

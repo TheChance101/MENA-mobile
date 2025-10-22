@@ -1,14 +1,17 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import net.thechance.mena.trends.domain.entity.UploadReelProgress
+import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
+import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
+import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.formatBytes
 import org.koin.android.annotation.KoinViewModel
@@ -19,7 +22,7 @@ internal class UploadReelViewModel(
     @Provided private val reelsRepository: ReelsRepository,
     @Provided private val videoValidator: VideoValidator,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<UploadReelScreenState, UploadReelScreenEffect>(
+) : BaseViewModel<UploadReelScreenState, UploadReelScreenEffect, UploadReelErrorState>(
     UploadReelScreenState()
 ), UploadReelInteractionListener {
 
@@ -35,7 +38,8 @@ internal class UploadReelViewModel(
             block = { validateFile() },
             onError = ::onValidationError,
             onSuccess = { onValidationSuccess() },
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -53,7 +57,7 @@ internal class UploadReelViewModel(
         uploadTrend()
     }
 
-    private fun onValidationError(errorState: ErrorState) {
+    private fun onValidationError(errorState: UploadReelErrorState) {
         updateState { copy(errorState = errorState) }
     }
 
@@ -70,7 +74,8 @@ internal class UploadReelViewModel(
             onNewValue = ::onCollectUploadProgress,
             onError = ::onUploadError,
             onEnd = ::onUploadCompleted,
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -92,7 +97,7 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onUploadError(errorState: ErrorState) {
+    private fun onUploadError(errorState: UploadReelErrorState) {
         updateState {
             copy(
                 uploadingState = UploadReelScreenState.UploadingReelState.FAILED,
@@ -122,18 +127,21 @@ internal class UploadReelViewModel(
             onError = ::onExtractFrameError,
             onStart = { updateState { copy(isThumbnailLoading = true) } },
             onEnd = { updateState { copy(isThumbnailLoading = false) } },
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
+            errorMapper = ::mapError
         )
     }
 
     private fun onExtractFrameSuccess(thumbnail: ByteArray?) {
-        updateState { copy(
-            thumbnail = thumbnail,
-            isNextButtonEnabled = true,
-        ) }
+        updateState {
+            copy(
+                thumbnail = thumbnail,
+                isNextButtonEnabled = true,
+            )
+        }
     }
 
-    private fun onExtractFrameError(errorState: ErrorState) {
+    private fun onExtractFrameError(errorState: UploadReelErrorState) {
         updateState { copy(errorState = errorState) }
     }
 
@@ -141,7 +149,7 @@ internal class UploadReelViewModel(
         uploadThumbnail()
     }
 
-    private fun uploadThumbnail(){
+    private fun uploadThumbnail() {
         tryToExecute(
             block = {
                 state.value.reelId?.let { reelId ->
@@ -156,7 +164,8 @@ internal class UploadReelViewModel(
             onEnd = ::onUploadThumbnailFinished,
             onSuccess = { onUploadThumbnailSuccess() },
             onError = ::onUploadThumbnailError,
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -168,13 +177,13 @@ internal class UploadReelViewModel(
         updateState { copy(isNextButtonLoading = false) }
     }
 
-    private fun onUploadThumbnailSuccess(){
+    private fun onUploadThumbnailSuccess() {
         state.value.reelId?.let {
             sendEffect(UploadReelScreenEffect.NavigateToAddDescription(it))
         }
     }
 
-    private fun onUploadThumbnailError(errorState: ErrorState) {
+    private fun onUploadThumbnailError(errorState: UploadReelErrorState) {
         updateState { copy(errorState = errorState) }
     }
 
@@ -192,11 +201,27 @@ internal class UploadReelViewModel(
             block = { state.value.reelId?.let { reelsRepository.deleteReelById(id = it) } },
             onSuccess = { updateState { UploadReelScreenState() } },
             onError = { errorState -> updateState { copy(errorState = errorState) } },
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
+            errorMapper = ::mapError
         )
     }
 
     override fun onRetryUploadClick() {
         uploadTrend()
+    }
+
+    private fun mapError(throwable: Throwable): UploadReelErrorState {
+        return when (throwable) {
+            is NoInternetException -> UploadReelErrorState.NoInternet
+            is MaxFileDurationExceededException -> UploadReelErrorState.DurationTooLarge
+            is MaxFileSizeExceededException -> UploadReelErrorState.FileTooLarge
+            else -> UploadReelErrorState.RequestFailed(throwable.message)
+        }.also { errorState ->
+            Logger.e(TAG) { errorState.toString() }
+        }
+    }
+
+    private companion object {
+        const val TAG = "UploadReelErrorState"
     }
 }

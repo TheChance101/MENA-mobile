@@ -22,7 +22,6 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -200,7 +199,7 @@ class UserReelViewModelTest {
 
             errorViewModel.state.test {
                 val errorState = awaitItem()
-                assertNotNull(errorState.error is ErrorState)
+                assertNotNull(errorState.error is UserReelErrorState)
                 cancelAndIgnoreRemainingEvents()
             }
         }

@@ -22,13 +22,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
-import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
-import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
 import kotlin.coroutines.cancellation.CancellationException
 
-internal abstract class BaseViewModel<State, Effect>(
+internal abstract class BaseViewModel<State, Effect, Error>(
     initialState: State
 ) : ViewModel() {
 
@@ -42,9 +39,7 @@ internal abstract class BaseViewModel<State, Effect>(
         _state.update { updater(it) }
     }
 
-    protected fun sendEffect(
-        effect: Effect,
-    ) {
+    protected fun sendEffect(effect: Effect) {
         viewModelScope.launch(Dispatchers.Main) {
             _effect.emit(effect)
         }
@@ -53,14 +48,15 @@ internal abstract class BaseViewModel<State, Effect>(
     protected fun <R> tryToExecute(
         block: suspend () -> R,
         onSuccess: (R) -> Unit = {},
-        onError: (ErrorState) -> Unit = {},
+        onError: (Error) -> Unit = {},
         onStart: () -> Unit = {},
         onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         scope: CoroutineScope = viewModelScope,
+        errorMapper: (Throwable) -> Error
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            onError(ErrorState.RequestFailed(exception.message))
+            onError(errorMapper(exception))
         }
 
         return scope.launch(dispatcher + exceptionHandler) {
@@ -68,12 +64,7 @@ internal abstract class BaseViewModel<State, Effect>(
 
             runCatching { block() }
                 .onSuccess { onSuccess(it) }
-                .onFailure {
-                    mapExceptionToErrorState(
-                        throwable = it,
-                        onError = onError
-                    )
-                }
+                .onFailure { onError(errorMapper(it)) }
             onEnd()
         }
     }
@@ -82,14 +73,15 @@ internal abstract class BaseViewModel<State, Effect>(
         block: () -> Flow<R>,
         onStart: () -> Unit = {},
         onNewValue: (R) -> Unit,
-        onError: (ErrorState) -> Unit,
+        onError: (Error) -> Unit,
         onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        scope: CoroutineScope = viewModelScope
+        scope: CoroutineScope = viewModelScope,
+        errorMapper: (Throwable) -> Error
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            if(exception is kotlinx.coroutines.CancellationException) return@CoroutineExceptionHandler
-            onError(ErrorState.RequestFailed(exception.message))
+            if (exception is CancellationException) return@CoroutineExceptionHandler
+            onError(errorMapper(exception))
         }
 
         return scope.launch(dispatcher + exceptionHandler) {
@@ -99,32 +91,16 @@ internal abstract class BaseViewModel<State, Effect>(
                 .onEach { onNewValue(it) }
                 .onCompletion { throwable ->
                     throwable?.let {
-                        if(throwable is CancellationException) return@onCompletion
-                        mapExceptionToErrorState(throwable, onError)
+                        if (it is CancellationException) return@onCompletion
+                        onError(errorMapper(it))
                     } ?: onEnd()
                 }
-                .catch { throwable -> mapExceptionToErrorState(throwable, onError) }
+                .catch { throwable -> onError(errorMapper(throwable)) }
                 .collect()
         }
     }
 
-    private suspend fun mapExceptionToErrorState(
-        throwable: Throwable,
-        onError: suspend (ErrorState) -> Unit,
-    ) {
-        logError(throwable)
-        val message = throwable.message
-        when (throwable) {
-            is NoInternetException -> ErrorState.NoInternet
-            is MaxFileSizeExceededException -> ErrorState.FileTooLarge
-            is MaxFileDurationExceededException -> ErrorState.DurationTooLarge
-            else -> ErrorState.RequestFailed(message).also { logError(throwable) }
-        }.also { errorState ->
-            Logger.e(LOG_TAG){errorState.toString()}
-        }.let { onError(it) }
-    }
-
-    private fun logError(throwable: Throwable) {
+    fun logError(throwable: Throwable) {
         Logger.e(LOG_TAG){"${throwable}: ${throwable.message}"}
     }
 

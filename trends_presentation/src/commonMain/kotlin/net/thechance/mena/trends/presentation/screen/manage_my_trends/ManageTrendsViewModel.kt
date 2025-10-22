@@ -3,12 +3,14 @@ package net.thechance.mena.trends.presentation.screen.manage_my_trends
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.repository.UserRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -23,7 +25,7 @@ internal class ManageTrendsViewModel(
     @Provided private val userRepository: UserRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ManageTrendsScreenState,
-        ManageTrendsUiEffect>(ManageTrendsScreenState()),
+        ManageTrendsUiEffect, ManageTrendsErrorState>(ManageTrendsScreenState()),
     ManageTrendsInteractionListener {
 
     init {
@@ -43,7 +45,8 @@ internal class ManageTrendsViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = ioDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -54,7 +57,8 @@ internal class ManageTrendsViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = ioDispatcher,
+            errorMapper = ::mapError
         )
     }
 
@@ -65,11 +69,23 @@ internal class ManageTrendsViewModel(
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
+    private fun mapError(throwable: Throwable): ManageTrendsErrorState {
+        return when (throwable) {
+            is NoInternetException -> ManageTrendsErrorState.NoInternet
+            else -> ManageTrendsErrorState.RequestFailed(throwable.message).also { logError(throwable) }
+        }.also { errorState ->
+            Logger.e(TAG) { errorState.toString() }
+        }
+    }
+
     override fun onReelClick(reelId: String) {
         sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId))
     }
 
     override fun onBackClick() {
         sendEffect(ManageTrendsUiEffect.NavigateBack)
+    }
+    private companion object{
+      const val  TAG ="ManageTrendsErrorState"
     }
 }
