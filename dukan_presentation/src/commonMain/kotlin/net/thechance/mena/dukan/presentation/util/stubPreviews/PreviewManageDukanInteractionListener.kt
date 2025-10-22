@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
-import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ShelfUiState

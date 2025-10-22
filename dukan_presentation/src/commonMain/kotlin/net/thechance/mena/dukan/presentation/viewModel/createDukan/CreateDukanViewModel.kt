@@ -21,8 +21,8 @@ import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
@@ -241,6 +241,7 @@ class CreateDukanViewModel(
                 updateState { copy(isMapLocked = true) }
                 CreateDukanStep.SELECT_STYLE
             }
+
             CreateDukanStep.SELECT_STYLE -> step
         }
     }
@@ -298,6 +299,7 @@ class CreateDukanViewModel(
                 updateState { copy(isMapLocked = state.value.pointerLocation != null) }
                 CreateDukanStep.SELECT_IMAGE
             }
+
             CreateDukanStep.SELECT_STYLE -> CreateDukanStep.SELECT_LOCATION
         }
 

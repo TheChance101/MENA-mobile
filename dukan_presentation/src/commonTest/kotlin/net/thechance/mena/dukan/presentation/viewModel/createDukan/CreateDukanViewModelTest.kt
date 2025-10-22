@@ -23,8 +23,8 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -584,16 +584,16 @@ class CreateDukanViewModelTest {
     @Test
     fun `onCategoryClicked SHOULD handle empty selection correctly when removing non-existent category`() =
         runTest {
-        // Given
+            // Given
             createDukanViewModel.updateState { copy(selectedCategories = emptySet()) }
 
-        // When
+            // When
             createDukanViewModel.onCategoryClicked(fakeCategories()[0].toUiState())
 
-        // Then
+            // Then
             val selectedCategories = createDukanViewModel.state.value.selectedCategories
             assertTrue(selectedCategories.contains(fakeCategories()[0].toUiState()))
-    }
+        }
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar when called`() = runTest {

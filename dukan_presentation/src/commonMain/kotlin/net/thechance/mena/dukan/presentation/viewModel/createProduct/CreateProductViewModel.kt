@@ -22,9 +22,9 @@ import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
-import net.thechance.mena.dukan.presentation.component.productImage.ProductImageState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.util.rounded

@@ -14,8 +14,11 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.mapper.toEntity
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,6 +50,7 @@ class AddressesScreenViewModelTest {
     fun `init() should fetch addresses and update state on success`() = runTest {
         val fakeAddresses = listOf(createFakeAddress())
         coEvery { addressRepository.getUserAddresses() } returns fakeAddresses.map { it.toEntity() }
+        coEvery { addressRepository.getActiveAddress() } returns null
 
         viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
 
@@ -59,6 +63,7 @@ class AddressesScreenViewModelTest {
     @Test
     fun `onBackButtonClicked() should emit NavigateBack effect`() = runTest {
         coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        coEvery { addressRepository.getActiveAddress() } returns null
         viewModel.effect.test {
             viewModel.onBackButtonClicked()
             assertTrue(awaitItem() is AddressesScreenUIEffect.NavigateBack)
@@ -70,6 +75,7 @@ class AddressesScreenViewModelTest {
     fun `onAddButtonClicked() should emit NavigateToAddressDetailsScreen with null id`() =
         runTest {
             coEvery { addressRepository.getUserAddresses() } returns emptyList()
+            coEvery { addressRepository.getActiveAddress() } returns null
 
             viewModel.effect.test {
                 viewModel.onAddButtonClicked()
@@ -82,6 +88,7 @@ class AddressesScreenViewModelTest {
     @Test
     fun `onDeleteAddressClicked() should show delete dialog`() = runTest {
         coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        coEvery { addressRepository.getActiveAddress() } returns null
         val addressId = Uuid.random()
 
         viewModel.onDeleteAddressClicked(addressId)
@@ -94,8 +101,11 @@ class AddressesScreenViewModelTest {
     fun `onConfirmDeleteAddress() should call deleteAddress when address is valid`() = runTest {
         val address = createFakeAddress().copy(isMainAddress = false)
         coEvery { addressRepository.getUserAddresses() } returns listOf(address.toEntity())
+        coEvery { addressRepository.getActiveAddress() } returns null
         coEvery { addressRepository.deleteAddress(any()) } returns Unit
 
+        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+        advanceUntilIdle()
         viewModel.onDeleteAddressClicked(address.id!!)
         advanceUntilIdle()
 
@@ -107,9 +117,13 @@ class AddressesScreenViewModelTest {
 
     @Test
     fun `onConfirmDeleteAddress() should delete address and show success snackbar`() = runTest {
-        val address = createFakeAddress()
-        coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        val address = createFakeAddress().copy(isMainAddress = false)
+        coEvery { addressRepository.getUserAddresses() } returns listOf(address.toEntity())
+        coEvery { addressRepository.getActiveAddress() } returns null
         coEvery { addressRepository.deleteAddress(any()) } returns Unit
+        
+        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+        advanceUntilIdle()
         viewModel.onDeleteAddressClicked(address.id!!)
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -125,6 +139,7 @@ class AddressesScreenViewModelTest {
     @Test
     fun `onDismissDeleteDialog() should hide delete dialog`() = runTest {
         coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        coEvery { addressRepository.getActiveAddress() } returns null
         viewModel.onDeleteAddressClicked(Uuid.random())
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -148,6 +163,7 @@ class AddressesScreenViewModelTest {
     @Test
     fun `onEditAddressClicked() should emit NavigateToAddressDetailsScreen effect`() = runTest {
         coEvery { addressRepository.getUserAddresses() } returns emptyList()
+        coEvery { addressRepository.getActiveAddress() } returns null
         val fakeAddressUIState = AddressUIState(
             id = Uuid.random(),
             addressType = AddressType.Home,
@@ -170,7 +186,11 @@ class AddressesScreenViewModelTest {
     fun `onConfirmDeleteAddress() should show success snackbar after deletion`() = runTest {
         val address = createFakeAddress(isMain = false)
         coEvery { addressRepository.getUserAddresses() } returns listOf(address.toEntity())
+        coEvery { addressRepository.getActiveAddress() } returns null
         coEvery { addressRepository.deleteAddress(any()) } returns Unit
+
+        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+        advanceUntilIdle()
 
         viewModel.onDeleteAddressClicked(address.id!!)
         advanceUntilIdle()

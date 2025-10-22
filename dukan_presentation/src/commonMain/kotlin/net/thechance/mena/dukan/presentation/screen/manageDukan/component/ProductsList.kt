@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.LazyVerticalGridItems
-import net.thechance.mena.dukan.presentation.component.productCard.EditProductIcon
-import net.thechance.mena.dukan.presentation.component.productCard.ProductCard
+import net.thechance.mena.dukan.presentation.component.shared.LazyVerticalGridItems
+import net.thechance.mena.dukan.presentation.component.product.EditProductIcon
+import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeProductPagingSource

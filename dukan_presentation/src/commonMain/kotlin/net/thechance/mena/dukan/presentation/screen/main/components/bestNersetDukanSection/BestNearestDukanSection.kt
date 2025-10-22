@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.dukan.presentation.component.LazyRowItems
-import net.thechance.mena.dukan.presentation.component.LoadingHorizontalList
+import net.thechance.mena.dukan.presentation.component.shared.LazyRowItems
+import net.thechance.mena.dukan.presentation.component.loading.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewBestNearestDukanPagingSource

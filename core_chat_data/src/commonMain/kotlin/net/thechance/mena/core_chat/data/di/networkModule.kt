@@ -1,6 +1,9 @@
 package net.thechance.mena.core_chat.data.di
 
 import kotlinx.serialization.json.Json
+import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
+import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
+import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -34,8 +37,19 @@ internal val networkModule = module {
     }
 
     single<ImageDownloader> { ImageDownloaderImp() }
+
+    single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT)), get()) }
+    single(named(TEXT_MESSAGE_SENDER)) { TextMessageSender(get(), get(named(CHAT_JSON))) }
+    single {
+        MessageSenderFactory(
+            textMessageSender = get(named(TEXT_MESSAGE_SENDER)),
+            imageMessageSender = get(named(IMAGE_MESSAGE_SENDER))
+        )
+    }
 }
 
 private const val BASE_URL = "baseUrl"
 const val CHAT_CLIENT = "chatClient"
 const val CHAT_JSON = "chatJson"
+const val IMAGE_MESSAGE_SENDER = "image_message_sender"
+const val TEXT_MESSAGE_SENDER = "text_message_sender"

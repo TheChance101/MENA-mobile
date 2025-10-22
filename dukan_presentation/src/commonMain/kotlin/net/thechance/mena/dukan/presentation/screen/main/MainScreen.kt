@@ -24,9 +24,9 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.NoInternetContent
-import net.thechance.mena.dukan.presentation.component.SnackBar
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreenRoute

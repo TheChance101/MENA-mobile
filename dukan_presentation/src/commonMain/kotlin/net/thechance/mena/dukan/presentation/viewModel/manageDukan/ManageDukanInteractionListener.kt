@@ -1,6 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
-import net.thechance.mena.dukan.presentation.component.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import org.jetbrains.compose.resources.StringResource
 
 interface ManageDukanInteractionListener {

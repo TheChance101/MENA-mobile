@@ -35,36 +35,36 @@ class ReelViewModelTest {
     }
 
     @Test
-    fun `onVideoClick should send NavigateToReelDetails effect`() = runTest {
+    fun `onClickReel should send NavigateToReelDetails effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onReelClick("1")
+            viewModel.onClickReel("1")
             assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToReelDetails("1"))
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onAddReelClick should send NavigateToAddReel effect`() = runTest {
+    fun `onClickAddReel should send NavigateToAddReel effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onAddReelClick()
+            viewModel.onClickAddReel()
             assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToAddReel)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onManageTrendsClick should send NavigateToManageTrends effect`() = runTest {
+    fun `onClickManageMyTrends should send NavigateToManageTrends effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onManageMyTrendsClick()
+            viewModel.onClickManageMyTrends()
             assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToManageMyTrends)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onEditTagsClick should send NavigateToChangeTags effect`() = runTest {
+    fun `onClickEditTags should send NavigateToChangeTags effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onEditTagsClick()
+            viewModel.onClickEditTags()
             assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToChangeTags)
             cancelAndIgnoreRemainingEvents()
         }
@@ -80,7 +80,7 @@ class ReelViewModelTest {
     }
 
     @Test
-    fun `onLikeClick should increment likes count`() = runTest {
+    fun `onClickLike should increment likes count`() = runTest {
         everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
         everySuspend { repository.toggleReelLike("1") } returns testReel.copy(
             isLiked = true,
@@ -94,7 +94,7 @@ class ReelViewModelTest {
 
         viewModel.state.test {
 
-            viewModel.onLikeClick("1")
+            viewModel.onClickLike("1")
             advanceUntilIdle()
 
             val state = awaitItem()
@@ -108,14 +108,14 @@ class ReelViewModelTest {
     }
 
     @Test
-    fun `onLikeClick should revert optimistic update when toggleReelLike fails`() = runTest {
+    fun `onClickLike should revert optimistic update when toggleReelLike fails`() = runTest {
         everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
         everySuspend { repository.toggleReelLike("1") } throws Exception("Network error")
 
         advanceUntilIdle()
         val initial = viewModel.state.value.reels.asSnapshot().first()
 
-        viewModel.onLikeClick("1")
+        viewModel.onClickLike("1")
         advanceUntilIdle()
 
         val reverted = viewModel.state.value.reels.asSnapshot().first()

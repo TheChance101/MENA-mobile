@@ -32,27 +32,27 @@ val faithDataModule = module {
     singleOf(::QuranRepositoryImpl) bind QuranRepository::class
     singleOf(::PrayerTimeRepositoryImpl) bind PrayerTimeRepository::class
 
-    single<HttpClient>(named("faithHttpClient")) {
+    single<HttpClient>(named(FAITH_HTTP_CLIENT_KEY)) {
         NetworkClient(
             authorizationService = get(),
-            baseUrl = get(named("baseUrl"))
+            baseUrl = get(named(BASE_URL_KEY))
         ).provideHttpClient()
     }
 
-    single<Ktorfit>(named("faithKtorfit")) {
+    single<Ktorfit>(named(FAITH_KTORFIT_KEY)) {
         Ktorfit.Builder()
-            .httpClient(get<HttpClient>(named("faithHttpClient")))
-            .baseUrl(get<String>(named("baseUrl")) + "/")
+            .httpClient(get<HttpClient>(named(FAITH_HTTP_CLIENT_KEY)))
+            .baseUrl(get<String>(named(BASE_URL_KEY)) + "/")
             .converterFactories(ResponseConverterFactory())
             .build()
     }
 
     single<BookmarkApiService> {
-        get<Ktorfit>(named("faithKtorfit")).createBookmarkApiService()
+        get<Ktorfit>(named(FAITH_KTORFIT_KEY)).createBookmarkApiService()
     }
 
     single<PrayerTimeApiService> {
-        get<Ktorfit>(named("faithKtorfit")).createPrayerTimeApiService()
+        get<Ktorfit>(named(FAITH_KTORFIT_KEY)).createPrayerTimeApiService()
     }
 
     singleOf(::BookmarkRepositoryImpl) bind BookmarkRepository::class
@@ -61,3 +61,8 @@ val faithDataModule = module {
     singleOf(::TilawahDataStoreImpl) bind TilawahDataStore::class
 
 }
+
+private const val BASE_URL_KEY = "baseUrl"
+private const val FAITH_HTTP_CLIENT_KEY = "faithHttpClient"
+private const val FAITH_KTORFIT_KEY = "faithKtorfit"
+

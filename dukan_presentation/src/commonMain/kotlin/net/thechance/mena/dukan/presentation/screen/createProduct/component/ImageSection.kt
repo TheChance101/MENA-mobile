@@ -4,15 +4,13 @@ import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -30,22 +28,24 @@ import mena.dukan_presentation.generated.resources.image_1_1
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.productImage.DisplayProductImage
-import net.thechance.mena.dukan.presentation.component.productImage.ProductImageState
-import net.thechance.mena.dukan.presentation.component.productImage.UploadProductImage
+import net.thechance.mena.dukan.presentation.component.product.productImage.DisplayProductImage
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
+import net.thechance.mena.dukan.presentation.component.product.productImage.UploadProductImage
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-fun LazyListScope.imageSection(
+@Composable
+fun ImageSection(
     images: List<CreateProductUiState.ProductImageUi>,
     isUploadingImageEnabled: Boolean,
     isCancelImageEnabled: Boolean,
     onUploadImageClick: (image: ImageFile) -> Unit,
     onCancelImageClick: (image: ImageBitmap) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    item {
+    Column(modifier) {
         val lazyListImageState = rememberLazyListState()
         var previousSize by remember { mutableStateOf(images.size) }
         LaunchedEffect(images.size) {
@@ -110,36 +110,32 @@ fun LazyListScope.imageSection(
 @Composable
 private fun ImageSectionPreview() {
     MenaTheme {
-        LazyColumn(
-            modifier = Modifier
-                .background(Theme.colorScheme.background.surface)
-        ) {
-            imageSection(
-                images = listOf(
-                    CreateProductUiState.ProductImageUi(
-                        id = 1L,
-                        image = ImageBitmap(100, 100),
-                        imageSizeInMegaByte = 0.8,
-                        imageState = ProductImageState.LOADING
-                    ),
-                    CreateProductUiState.ProductImageUi(
-                        id = 2L,
-                        image = ImageBitmap(100, 100),
-                        imageSizeInMegaByte = 0.5,
-                        imageState = ProductImageState.SUCCESS
-                    ),
-                    CreateProductUiState.ProductImageUi(
-                        id = 3L,
-                        image = ImageBitmap(100, 100),
-                        imageSizeInMegaByte = 0.5,
-                        imageState = ProductImageState.SUCCESS
-                    )
+        ImageSection(
+            images = listOf(
+                CreateProductUiState.ProductImageUi(
+                    id = 1L,
+                    image = ImageBitmap(100, 100),
+                    imageSizeInMegaByte = 0.8,
+                    imageState = ProductImageState.LOADING
                 ),
-                isUploadingImageEnabled = true,
-                isCancelImageEnabled = true,
-                onUploadImageClick = {},
-                onCancelImageClick = {}
-            )
-        }
+                CreateProductUiState.ProductImageUi(
+                    id = 2L,
+                    image = ImageBitmap(100, 100),
+                    imageSizeInMegaByte = 0.5,
+                    imageState = ProductImageState.SUCCESS
+                ),
+                CreateProductUiState.ProductImageUi(
+                    id = 3L,
+                    image = ImageBitmap(100, 100),
+                    imageSizeInMegaByte = 0.5,
+                    imageState = ProductImageState.SUCCESS
+                )
+            ),
+            isUploadingImageEnabled = true,
+            isCancelImageEnabled = true,
+            onUploadImageClick = {},
+            onCancelImageClick = {}
+        )
+
     }
 }

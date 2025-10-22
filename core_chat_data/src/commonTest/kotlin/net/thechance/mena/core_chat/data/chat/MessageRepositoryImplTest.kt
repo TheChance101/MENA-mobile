@@ -25,6 +25,10 @@ import net.thechance.mena.core_chat.data.createHttpClient
 import net.thechance.mena.core_chat.data.createMessageRepository
 import net.thechance.mena.core_chat.data.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.defaultUploadImagesResponse
+import net.thechance.mena.core_chat.data.jsonSerialization
+import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
+import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
+import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
@@ -48,6 +52,9 @@ class MessageRepositoryImplTest {
     private lateinit var httpClient: HttpClient
     private lateinit var repository: MessageRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
+    private lateinit var messageSenderFactory: MessageSenderFactory
+    private lateinit var textMessageSender: TextMessageSender
+    private lateinit var imageMessageSender: ImageMessageSender
     private lateinit var messageDao: MessageDao
 
     @BeforeTest
@@ -56,9 +63,22 @@ class MessageRepositoryImplTest {
         webSocketManager = mock<WebSocketManager>()
         messageDao = mock<MessageDao>()
 
+        textMessageSender = TextMessageSender(
+            webSocketManager = webSocketManager,
+            json = jsonSerialization
+        )
+
+        imageMessageSender = ImageMessageSender(
+            client = httpClient,
+            messageDao = messageDao
+        )
+
+        messageSenderFactory = MessageSenderFactory(textMessageSender, imageMessageSender)
+
         repository = createMessageRepository(
             webSocketManager = webSocketManager,
             messageDao = messageDao,
+            messageSenderFactory = messageSenderFactory,
             httpClient = httpClient
         )
     }
@@ -69,9 +89,10 @@ class MessageRepositoryImplTest {
             chatHistoryResponse = { defaultChatHistoryResponse() }
         )
         repository = createMessageRepository(
-            webSocketManager = mock<WebSocketManager>(),
-            messageDao = mock<MessageDao>(),
-            httpClient = httpClient
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageSenderFactory = messageSenderFactory,
+            messageDao = messageDao,
         )
 
         val result = repository.loadMessages(chatId, 1, 40)
@@ -100,6 +121,7 @@ class MessageRepositoryImplTest {
         repository = createMessageRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
+            messageSenderFactory = messageSenderFactory,
             messageDao = messageDao,
         )
 
@@ -212,10 +234,12 @@ class MessageRepositoryImplTest {
             httpClient = createHttpClient(
                 imagesResponse = { defaultUploadImagesResponse() }
             )
+
             repository = createMessageRepository(
                 httpClient = httpClient,
                 webSocketManager = webSocketManager,
-                messageDao = messageDao
+                messageSenderFactory = messageSenderFactory,
+                messageDao = messageDao,
             )
 
             val byteArrays = listOf(ByteArray(10), ByteArray(20))
@@ -238,14 +262,15 @@ class MessageRepositoryImplTest {
         everySuspend { messageDao.insertMessage(any()) } returns Unit
         everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
 
-        // Simulate failed upload
         httpClient = createHttpClient(
             imagesResponse = { respondError(HttpStatusCode.InternalServerError) }
         )
+
         repository = createMessageRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageSenderFactory = messageSenderFactory,
+            messageDao = messageDao,
         )
 
         val byteArrays = listOf(ByteArray(10))
