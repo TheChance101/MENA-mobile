@@ -9,9 +9,7 @@ import io.ktor.util.reflect.TypeInfo
 import net.thechance.mena.core_chat.domain.exception.*
 
 suspend fun <T> tryNetworkCall(
-    defaultException: (Throwable) -> ChatException = {
-        UnknownException("Unknown error occurred")
-    },
+    defaultException: ChatException = UnknownException("Unknown error occurred"),
     bodyType: TypeInfo,
     call: suspend () -> HttpResponse,
 ): T? {
@@ -22,7 +20,7 @@ suspend fun <T> tryNetworkCall(
 }
 
 private suspend fun <T> runCatchingWithException(
-    defaultException: (Throwable) -> ChatException,
+    defaultException: ChatException = UnknownException("Unknown error occurred"),
     block: suspend () -> T?
 ): T? {
     return try {
@@ -32,9 +30,10 @@ private suspend fun <T> runCatchingWithException(
     } catch (e: ChatException) {
         throw e
     } catch (e: Throwable) {
-        throw defaultException(e)
+        throw defaultException
     }
 }
+
 
 private suspend fun <T> HttpResponse.getSuccessBodyOrThrow(bodyType: TypeInfo): T? {
     return when {
