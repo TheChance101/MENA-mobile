@@ -276,6 +276,22 @@ class ChatViewModelTest {
         chatViewModel.onDownloadImageClicked(imageUrl)
         verifySuspend { chatViewModel.onDownloadImageClicked(imageUrl) }
     }
+    @Test
+    fun `onDownloadImageClicked should show snackbar when downloadImageToGallery fails and return false`() {
+        everySuspend { imageDownloaderService.downloadImageToGallery(any()) } returns false
+        chatViewModel.onDownloadImageClicked(imageUrl)
+        verifySuspend {
+            effector.showSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(Res.string.error),
+                    message = UiText.StringRes(
+                        Res.string.error_failed_to_download_image
+                    ),
+                    isError = true
+                )
+            )
+        }
+    }
 
     @Test
     fun `onDownloadImageClicked should show error snackbar on failure`() {
