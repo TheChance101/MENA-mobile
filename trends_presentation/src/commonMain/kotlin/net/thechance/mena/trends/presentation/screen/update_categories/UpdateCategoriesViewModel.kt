@@ -41,7 +41,10 @@ internal class UpdateCategoriesViewModel(
 
     override fun onBackClick() = sendEffect(UpdateCategoriesScreenEffect.NavigateBack)
 
-    override fun onRetryClick() { getCategories() }
+    override fun onRetryClick() {
+        updateState{ copy(errorState = null) }
+        getCategories()
+    }
 
     override fun onSaveClick() {
         tryToExecute(

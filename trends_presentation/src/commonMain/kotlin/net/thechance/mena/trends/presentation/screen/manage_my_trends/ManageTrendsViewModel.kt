@@ -74,6 +74,7 @@ internal class ManageTrendsViewModel(
     }
 
     override fun onRetryClick() {
+        updateState { copy(error = null) }
         getReels()
         getCurrentUserInfo()
     }

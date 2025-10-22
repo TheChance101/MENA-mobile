@@ -61,7 +61,10 @@ internal class CategoryPickViewModel(
     }
 
     override fun onBackClick() = sendEffect(CategoryPickScreenEffect.NavigateBack)
-    override fun onRetryClick() { loadCategories() }
+    override fun onRetryClick() {
+        updateState { copy(error = null) }
+        loadCategories()
+    }
 
     private fun startLoading() = updateState { copy(isLoading = true) }
     private fun endLoading() = updateState { copy(isLoading = false) }

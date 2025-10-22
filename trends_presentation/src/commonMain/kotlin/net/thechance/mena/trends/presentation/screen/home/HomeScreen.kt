@@ -3,7 +3,6 @@ package net.thechance.mena.trends.presentation.screen.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
@@ -71,9 +69,45 @@ internal fun HomeScreen(
 
     LaunchedEffect(Unit) { viewModel.getFeedReels() }
 
-    ReelScreenContent(
-        state = state,
-        listener = viewModel,
+    val reels = state.reels.collectAsLazyPagingItems()
+
+    HomeScreenScaffold(
+        onManageMyTrendsClick = viewModel::onManageMyTrendsClick,
+        onEditTagsClick = viewModel::onEditTagsClick
+    ) {
+        when {
+            state.error == ErrorState.NoInternet -> {
+                NoConnection(onRetry = viewModel::onRetryClick)
+            }
+
+            reels.itemCount > 0 -> {
+                ReelScreenContent(
+                    state = state,
+                    listener = viewModel
+                )
+            }
+
+            else -> {
+                EmptyTrends()
+            }
+        }
+    }
+}
+
+@Composable
+private fun HomeScreenScaffold(
+    onManageMyTrendsClick: () -> Unit,
+    onEditTagsClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TrendsAppBar(
+                onManageMyTrendsClick = onManageMyTrendsClick,
+                onEditTagsClick = onEditTagsClick
+            )
+        },
+        content = content
     )
 }
 
@@ -82,8 +116,6 @@ private fun ReelScreenContent(
     state: HomeScreenState,
     listener: HomeInteractionListener,
 ) {
-    val reels = state.reels.collectAsLazyPagingItems()
-
     Scaffold(
         topBar = {
             TrendsAppBar(
@@ -92,53 +124,38 @@ private fun ReelScreenContent(
             )
         }
     ) {
-
         Box(modifier = Modifier.fillMaxSize()) {
-
-            when {
-                state.error == ErrorState.NoInternet -> { NoConnection(onRetry = listener::onRetryClick) }
-
-                reels.itemCount > 0 -> { ReelsListSection(reels, listener) }
-
-                else -> { EmptyTrends() }
+            val reels = state.reels.collectAsLazyPagingItems()
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = Theme.spacing._16),
+                contentPadding = PaddingValues(vertical = Theme.spacing._8),
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+            ) {
+                items(reels.itemSnapshotList.items) { reel ->
+                    FeedReelCard(
+                        reel = reel,
+                        onLikeClick = { listener.onLikeClick(reel.id) },
+                        onReelClick = { listener.onReelClick(reel.id) }
+                    )
+                }
             }
-        }
-    }
-}
 
-@Composable
-private fun BoxScope.ReelsListSection(
-    reels: LazyPagingItems<ReelUiState>,
-    listener: HomeInteractionListener
-) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = Theme.spacing._16),
-        contentPadding = PaddingValues(vertical = Theme.spacing._8),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-    ) {
-        items(reels.itemSnapshotList.items) { reel ->
-            FeedReelCard(
-                reel = reel,
-                onLikeClick = { listener.onLikeClick(reel.id) },
-                onReelClick = { listener.onReelClick(reel.id) }
+            Icon(
+                painter = painterResource(Res.drawable.ic_add_real),
+                contentDescription = stringResource(Res.string.add_reel),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(Theme.radius.lg))
+                    .background(Theme.colorScheme.primary.primary)
+                    .noRippleClickable { listener.onAddReelClick() }
+                    .padding(Theme.spacing._16)
             )
         }
     }
-
-    Icon(
-        painter = painterResource(Res.drawable.ic_add_real),
-        contentDescription = stringResource(Res.string.add_reel),
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-            .size(56.dp)
-            .clip(RoundedCornerShape(Theme.radius.lg))
-            .background(Theme.colorScheme.primary.primary)
-            .noRippleClickable { listener.onAddReelClick() }
-            .padding(Theme.spacing._16)
-    )
 }
 
 @Composable

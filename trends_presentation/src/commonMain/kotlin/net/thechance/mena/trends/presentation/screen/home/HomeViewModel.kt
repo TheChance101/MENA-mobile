@@ -97,6 +97,7 @@ internal class HomeViewModel(
     }
 
     override fun onRetryClick() {
+        updateState { copy(error = null) }
         getFeedReels()
     }
 

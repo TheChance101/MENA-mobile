@@ -65,9 +65,33 @@ internal fun UpdateCategoriesScreen(
         viewModel.getCategories()
     }
 
-    UpdateCategoriesScreenContent(
-        state = state,
-        listener = viewModel
+    UpdateCategoriesScaffold(
+        onBackClick = viewModel::onBackClick
+    ) {
+        when {
+            state.errorState == ErrorState.NoInternet -> {
+                NoConnection { viewModel.onRetryClick() }
+            }
+
+            else -> {
+                UpdateCategoriesScreenContent(
+                    state = state,
+                    listener = viewModel
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+private fun UpdateCategoriesScaffold(
+    onBackClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Scaffold(
+        topBar = { ChangeTagsAppBar(onBackClick) },
+        content = content
     )
 }
 
@@ -88,43 +112,36 @@ private fun UpdateCategoriesScreenContent(
                 }
             }
         ) {
-            when{
-                state.errorState == ErrorState.NoInternet ->{
-                    NoConnection { listener.onRetryClick()  }
-                }
-                else ->{
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(state = rememberScrollState())
-                            .padding(horizontal = Theme.spacing._16)
-                    ) {
-                        ChooseInterestsMessage()
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
-                        ) {
-                            state.categories.forEach { category ->
-                                CategoryItem(
-                                    category = category,
-                                    onClick = { id -> listener.onCategoryClick(categoryId = id) },
-                                    modifier = Modifier.padding(
-                                        bottom = Theme.spacing._12,
-                                        end = Theme.spacing._8
-                                    )
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        SaveChangeButton(
-                            onSaveClick = listener::onSaveClick,
-                            isButtonEnabled = state.saveButtonEnabled(),
-                            isButtonLoading = state.isSaveButtonLoading,
-                            modifier = Modifier.padding(bottom = Theme.spacing._24)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16)
+            ) {
+                ChooseInterestsMessage()
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+                ) {
+                    state.categories.forEach { category ->
+                        CategoryItem(
+                            category = category,
+                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                            modifier = Modifier.padding(
+                                bottom = Theme.spacing._12,
+                                end = Theme.spacing._8
+                            )
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                SaveChangeButton(
+                    onSaveClick = listener::onSaveClick,
+                    isButtonEnabled = state.saveButtonEnabled(),
+                    isButtonLoading = state.isSaveButtonLoading,
+                    modifier = Modifier.padding(bottom = Theme.spacing._24)
+                )
             }
         }
     } else {

@@ -15,23 +15,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_no_connection
-import mena.trends_presentation.generated.resources.re_try
-import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun StatePlaceholder(
+    icon: Painter,
+    title: String,
+    description: String,
     modifier: Modifier = Modifier,
-    isBottomVisible: Boolean = false,
-    stateIcon: Painter,
-    stateTitle: String,
-    stateDescription: String,
-    onRetry: () -> Unit = {}
+    bottomContent: (@Composable () -> Unit)? = null
 ) {
     Column(
         horizontalAlignment = CenterHorizontally,
@@ -41,22 +37,22 @@ fun StatePlaceholder(
             .padding(horizontal = Theme.spacing._24)
     ) {
         Image(
-            painter = stateIcon,
-            contentDescription = stateTitle,
+            painter = icon,
+            contentDescription = title,
             modifier = Modifier
                 .size(128.dp)
                 .padding(bottom = Theme.spacing._12)
         )
 
         Text(
-            text = stateTitle,
+            text = title,
             style = Theme.typography.title.small,
             textAlign = TextAlign.Center,
             color = Theme.colorScheme.shadePrimary,
         )
 
         Text(
-            text = stateDescription,
+            text = description,
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
             textAlign = TextAlign.Center,
@@ -64,13 +60,7 @@ fun StatePlaceholder(
                 .padding(top = Theme.spacing._2, bottom = Theme.spacing._12)
         )
 
-        if (isBottomVisible) {
-            PrimaryButton(
-                text = stringResource(Res.string.re_try),
-                onClick = onRetry,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        bottomContent?.invoke()
     }
 }
 
@@ -79,11 +69,9 @@ fun StatePlaceholder(
 fun PreviewBaseStateComponent() {
     MenaTheme {
         StatePlaceholder(
-            stateIcon = painterResource(Res.drawable.ic_no_connection),
-            stateTitle = "No Connection",
-            stateDescription = "Please check your internet connection and try again.",
-            isBottomVisible = false,
-            onRetry = {}
+            icon = painterResource(Res.drawable.ic_no_connection),
+            title = "No Connection",
+            description = "Please check your internet connection and try again."
         )
     }
 }

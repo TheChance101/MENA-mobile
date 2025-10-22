@@ -74,9 +74,32 @@ internal fun ManageTrendsScreen(
         viewModel.getReels()
     }
 
-    ManageTrendsScreenContent(
-        state = state,
-        listener = viewModel
+    ManageTrendsScaffold(
+        onBackClick = viewModel::onBackClick
+    ) {
+        when {
+            state.error == ErrorState.NoInternet -> {
+                NoConnection(onRetry = viewModel::onRetryClick)
+            }
+
+            else -> {
+                ManageTrendsScreenContent(
+                    state = state,
+                    listener = viewModel
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ManageTrendsScaffold(
+    onBackClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Scaffold(
+        topBar = { ManageMyTrendsAppBar(onBackClick = onBackClick) },
+        content = content
     )
 }
 
@@ -88,38 +111,31 @@ private fun ManageTrendsScreenContent(
     Scaffold(
         topBar = { ManageMyTrendsAppBar(onBackClick = listener::onBackClick) }
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            UserAvatar(
+                profileImageUrl = state.profile.profileImageUrl,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
 
-        when {
-            state.error == ErrorState.NoInternet -> { NoConnection(onRetry = listener::onRetryClick) }
+            Text(
+                text = state.profile.userName,
+                style = Theme.typography.label.medium,
+                modifier = Modifier
+                    .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
+                    .align(Alignment.CenterHorizontally)
+            )
 
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    UserAvatar(
-                        profileImageUrl = state.profile.profileImageUrl,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-
-                    Text(
-                        text = state.profile.userName,
-                        style = Theme.typography.label.medium,
-                        modifier = Modifier
-                            .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
-                            .align(Alignment.CenterHorizontally)
-                    )
-
-                    SegmentSection(
-                        reels = state.reels.collectAsLazyPagingItems(),
-                        onTrendClick = listener::onReelClick,
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        trendsTitle = stringResource(Res.string.my_trends),
-                        favoriteTitle = stringResource(Res.string.favorite)
-                    )
-                }
-            }
+            SegmentSection(
+                reels = state.reels.collectAsLazyPagingItems(),
+                onTrendClick = listener::onReelClick,
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                trendsTitle = stringResource(Res.string.my_trends),
+                favoriteTitle = stringResource(Res.string.favorite)
+            )
         }
     }
 }
