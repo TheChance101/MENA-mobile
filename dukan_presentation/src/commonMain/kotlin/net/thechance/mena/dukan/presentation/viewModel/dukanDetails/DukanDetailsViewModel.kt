@@ -75,12 +75,17 @@ class DukanDetailsViewModel(
                 dukanId = dukanId,
                 pageNumber = pageNumber,
                 pageSize = pageSize
-            ).items
+            )
         }
     }
 
     private fun onShelvesLoaded(shelves: PagingData<ShelfUiState>) {
         if (isWideImageStyle()) {
+            updateState {
+                copy(
+                    shelves = flowOf(shelves)
+                )
+            }
             loadProductsPaging()
         } else {
             loadProductsLimited(shelves)

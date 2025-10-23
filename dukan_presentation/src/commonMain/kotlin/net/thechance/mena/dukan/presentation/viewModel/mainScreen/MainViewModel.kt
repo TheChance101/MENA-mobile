@@ -49,7 +49,7 @@ class MainViewModel(
                     dukanDiscoveryRepository.getEditorPicksDukans(
                         page = currentPage,
                         size = pageSize
-                    ).items
+                    )
                 }
             },
             onCollect = ::onLoadedEditorPicksDukan,
@@ -73,7 +73,7 @@ class MainViewModel(
                     dukanDiscoveryRepository.getBestAroundDukans(
                         page = currentPage,
                         size = pageSize
-                    ).items
+                    )
                 }
             },
             onCollect = ::onLoadedBestNearestDukans,

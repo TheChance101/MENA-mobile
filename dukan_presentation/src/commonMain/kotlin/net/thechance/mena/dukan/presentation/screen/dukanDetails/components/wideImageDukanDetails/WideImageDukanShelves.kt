@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
@@ -43,12 +45,21 @@ fun WideImageDukanShelves(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(top = Theme.spacing._16)
         )
-        LoadedShelves(
-            shelves = shelves,
-            selectedShelfId = state.shelfIdSelected,
-            onShelfClick = listener::onShelfClicked,
-            chipColor = Color(state.dukanInfo.color),
-        )
+        AnimatedContent(
+            targetState = shelves.loadState.refresh,
+        ) {
+            when (it) {
+                LoadState.Loading -> LoadingShelves()
+                is LoadState.NotLoading -> LoadedShelves(
+                    shelves = shelves,
+                    selectedShelfId = state.shelfIdSelected,
+                    onShelfClick = listener::onShelfClicked,
+                    chipColor = Color(state.dukanInfo.color),
+                )
+
+                is LoadState.Error -> {}
+            }
+        }
     }
 }
 
@@ -70,7 +81,6 @@ private fun LoadingShelves() {
         }
     }
 }
-
 @Composable
 private fun LoadedShelves(
     shelves: LazyPagingItems<ShelfUiState>,

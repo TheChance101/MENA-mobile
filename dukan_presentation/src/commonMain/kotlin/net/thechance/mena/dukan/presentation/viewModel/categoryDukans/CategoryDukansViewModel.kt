@@ -76,7 +76,7 @@ class CategoryDukansViewModel(
                         categoryId = categoryId,
                         page = pageNumber,
                         size = 20
-                    ).items
+                    )
                 }
             },
             onCollect = ::onDukansLoaded

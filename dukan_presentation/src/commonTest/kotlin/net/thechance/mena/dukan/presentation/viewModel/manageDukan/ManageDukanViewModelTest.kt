@@ -65,7 +65,6 @@ class ManageDukanViewModelTest {
         } returns PagedResult(
             items = emptyList(),
             currentPage = 1,
-            totalPages = 1,
             totalItems = 0
         )
 
@@ -430,7 +429,6 @@ class ManageDukanViewModelTest {
         } returns PagedResult(
             items = emptyList(),
             currentPage = 1,
-            totalPages = 1,
             totalItems = 0
         )
 
