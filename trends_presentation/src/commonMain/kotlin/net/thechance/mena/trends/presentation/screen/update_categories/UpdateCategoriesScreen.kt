@@ -1,12 +1,10 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
-import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,12 +28,18 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
+import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -71,44 +75,63 @@ private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
-    TrendsScaffold(
+    when {
+        state.isLoading -> LoadingProgressBar()
+        state.errorState == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
+        else -> UpdateCategoryScreenBody(listener, state)
+    }
+}
+
+@Composable
+private fun UpdateCategoryScreenBody(
+    listener: UpdateCategoriesInteractionListener,
+    state: UpdateCategoriesScreenState
+) {
+    Scaffold(
         topBar = { ChangeTagsAppBar(onBackClick = listener::onClickBack) },
-        errorState = state.errorState
-    ) {
-        if (state.isLoading.not()) {
-            Column(
+        bottomBar = {
+            SaveChangeButton(
+                onSaveClick = listener::onClickSave,
+                isButtonEnabled = state.saveButtonEnabled(),
+                isButtonLoading = state.isSaveButtonLoading,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = rememberScrollState())
-                    .padding(horizontal = Theme.spacing._16)
-            ) {
-                ChooseInterestsMessage()
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onClickCategory(categoryId = id) },
-                            modifier = Modifier.padding(
-                                bottom = Theme.spacing._12,
-                                end = Theme.spacing._8
-                            )
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                SaveChangeButton(
-                    onSaveClick = listener::onClickSave,
-                    isButtonEnabled = state.saveButtonEnabled(),
-                    isButtonLoading = state.isSaveButtonLoading,
-                    modifier = Modifier.padding(bottom = Theme.spacing._24)
+                    .padding(
+                        start = Theme.spacing._16,
+                        end = Theme.spacing._16,
+                        bottom = Theme.spacing._24
+                    )
+            )
+        },
+        snakeBar = {
+            state.errorState?.let { errorState ->
+                TrendsSnackBar(
+                    message = stringResource(errorState.toStringResource()),
+                    status = SnackBarStatus.Error
                 )
             }
-        } else {
-            LoadingProgressBar()
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
+                .padding(horizontal = Theme.spacing._16)
+        ) {
+            ChooseInterestsMessage()
+            FlowRow(
+                modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+            ) {
+                state.categories.forEach { category ->
+                    CategoryItem(
+                        category = category,
+                        onClick = { id -> listener.onClickCategory(categoryId = id) },
+                        modifier = Modifier.padding(
+                            bottom = Theme.spacing._12,
+                            end = Theme.spacing._8
+                        )
+                    )
+                }
+            }
         }
     }
 }

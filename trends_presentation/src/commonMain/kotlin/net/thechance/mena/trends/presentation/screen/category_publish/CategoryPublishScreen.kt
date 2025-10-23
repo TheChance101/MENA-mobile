@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
-import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +30,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -71,79 +71,86 @@ private fun CategoryPublishContent(
     state: CategoryPublishState,
     listener: CategoryPublishInteractionListener,
 ) {
-    if (state.isLoading.not()) {
-        TrendsScaffold(
-            topBar = { CategoryPublishAppBar(listener::onClickBack) },
-            bottomContent = {
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
-                    text = stringResource(resource = Res.string.upload_video),
-                    onClick = listener::onClickPublish,
-                    isEnabled = state.isPublishButtonEnabled,
-                    isLoading = state.isPublishButtonLoadingVisible,
-                    contentPadding = PaddingValues(vertical = 13.dp)
-                )
-            },
-            modifier = Modifier.padding(bottom = Theme.spacing._24)
+    when{
+        state.isLoading -> LoadingProgressBar()
+        else -> CategoryPublishScreenBody(listener, state)
+    }
+}
+
+@Composable
+private fun CategoryPublishScreenBody(
+    listener: CategoryPublishInteractionListener,
+    state: CategoryPublishState
+) {
+    Scaffold(
+        topBar = { CategoryPublishAppBar(listener::onClickBack) },
+        bottomBar = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
+                text = stringResource(resource = Res.string.upload_video),
+                onClick = listener::onClickPublish,
+                isEnabled = state.isPublishButtonEnabled,
+                isLoading = state.isPublishButtonLoadingVisible,
+                contentPadding = PaddingValues(vertical = 13.dp)
+            )
+        },
+        modifier = Modifier.padding(bottom = Theme.spacing._24)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            Column(
+            Text(
+                text = stringResource(Res.string.add_categories_to_video),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        bottom = Theme.spacing._4,
+                        start = Theme.spacing._16,
+                        end = Theme.spacing._16,
+                        top = Theme.spacing._16
+                    )
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Theme.spacing._16)
+                    .padding(bottom = Theme.spacing._24),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(Res.string.add_categories_to_video),
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .padding(
-                            bottom = Theme.spacing._4,
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            top = Theme.spacing._16
-                        )
+                Icon(
+                    painter = painterResource(Res.drawable.ic_hint),
+                    contentDescription = stringResource(Res.string.publish_hint),
+                    tint = Theme.colorScheme.shadeSecondary,
+                    modifier = Modifier.padding(end = Theme.spacing._2)
                 )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._24),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_hint),
-                        contentDescription = stringResource(Res.string.publish_hint),
-                        tint  = Theme.colorScheme.shadeSecondary,
-                        modifier = Modifier.padding(end = Theme.spacing._2)
-                    )
+                Text(
+                    text = stringResource(Res.string.choose_categories),
+                    style = Theme.typography.label.small,
+                    color = Theme.colorScheme.shadeSecondary,
+                    modifier = Modifier.padding(end = Theme.spacing._16)
+                )
+            }
 
-                    Text(
-                        text = stringResource(Res.string.choose_categories),
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.shadeSecondary,
-                        modifier = Modifier.padding(end = Theme.spacing._16)
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Theme.spacing._16)
+            ) {
+                state.categories.forEach { category ->
+                    CategoryItem(
+                        category = category,
+                        onClick = { id -> listener.onClickCategory(id) },
+                        modifier = Modifier
+                            .padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
                     )
-                }
-
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onClickCategory(id) },
-                            modifier = Modifier
-                                .padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
-                        )
-                    }
                 }
             }
         }
-    } else {
-        LoadingProgressBar()
     }
 }
 
@@ -180,7 +187,7 @@ private fun LoadingProgressBar() {
 @Composable
 private fun CategoryPublishScreenPreview() {
     MenaTheme {
-        CategoryPublishContent(
+        CategoryPublishScreenBody(
             state = CategoryPublishState(),
             listener = object : CategoryPublishInteractionListener {
                 override fun onClickBack() {}

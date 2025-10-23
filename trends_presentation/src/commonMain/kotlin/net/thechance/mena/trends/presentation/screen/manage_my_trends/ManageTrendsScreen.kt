@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
-import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,14 +41,20 @@ import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.segment.Segment
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -83,9 +88,20 @@ private fun ManageTrendsScreenContent(
     state: ManageTrendsScreenState,
     listener: ManageTrendsInteractionListener
 ) {
-    TrendsScaffold(
-        topBar = { ManageMyTrendsAppBar(onBackClick = { listener.onClickBack() }) },
-        errorState = state.error
+    when {
+        state.isLoading -> LoadingProgressBar()
+        state.error == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
+        else -> ManageTrendsScreenBody(listener, state)
+    }
+}
+
+@Composable
+private fun ManageTrendsScreenBody(
+    listener: ManageTrendsInteractionListener,
+    state: ManageTrendsScreenState
+) {
+    Scaffold(
+        topBar = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) }
     ) {
         Column(
             modifier = Modifier
@@ -211,6 +227,33 @@ private fun TrendItem(
             contentDescription = stringResource(resource = Res.string.trend_image_desc),
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+private fun LoadingProgressBar() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Theme.colorScheme.background.surface),
+        contentAlignment = Alignment.Center
+    ) {
+        DotsProgressIndicator()
+    }
+}
+
+@Preview
+@Composable
+private fun ManageMyTrendsPreview() {
+    MenaTheme {
+        ManageTrendsScreenBody(
+            state = ManageTrendsScreenState(),
+            listener = object : ManageTrendsInteractionListener {
+                override fun onClickReel(reelId: String) {}
+                override fun onClickBack() {}
+                override fun onClickRetry() {}
+            }
         )
     }
 }
