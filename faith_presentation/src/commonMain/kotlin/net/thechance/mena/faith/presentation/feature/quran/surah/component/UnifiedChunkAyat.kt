@@ -12,13 +12,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDirection
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
+import net.thechance.mena.faith.presentation.components.getAyahTextStyle
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.designSystem.theme.quran
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -82,11 +80,7 @@ private fun findClickedAyahIndexFromPosition(ayat: List<Ayah>, position: Int): I
     return -1
 }
 
-@Composable
-fun getAyahTextStyle() = Theme.typography.quran.large.copy(
-    textDirection = TextDirection.Rtl,
-    textAlign = TextAlign.Justify
-)
+
 
 @Preview()
 @Composable
