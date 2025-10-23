@@ -90,7 +90,7 @@ private fun Content(
                 enter = fadeIn(tween()),
                 exit = fadeOut(tween()),
             ) {
-                EmptyBookmarkState(listener = listener)
+                EmptyBookmarkState(listener::onBackClick)
             }
 
             AnimatedVisibility(
@@ -109,7 +109,7 @@ private fun Content(
 }
 
 @Composable
-private fun EmptyBookmarkState(listener: BookmarkInteractionListener) {
+private fun EmptyBookmarkState(onStartTilawahClick: () -> Unit) {
     EmptyBookmarkState(
         title = stringResource(Res.string.empty_state_bookmark_title),
         icon = painterResource(Res.drawable.ic_not_saved_book_mark),
@@ -120,7 +120,7 @@ private fun EmptyBookmarkState(listener: BookmarkInteractionListener) {
             .padding(bottom = 80.dp)
             .verticalScroll(rememberScrollState())
             .padding(bottom = Theme.spacing._16),
-        onClickButton = { listener.onStartTilawahClick() }
+        onClickButton = onStartTilawahClick
     )
 }
 
