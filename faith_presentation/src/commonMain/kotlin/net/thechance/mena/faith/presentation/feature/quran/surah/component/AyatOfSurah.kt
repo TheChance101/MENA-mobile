@@ -116,7 +116,7 @@ private fun rememberPreRenderedChunks(ayahChunks: List<List<Ayah>>): List<Annota
     }
 }
 
-@Preview(showBackground = true)
+@Preview()
 @Composable
 fun AyatOfSurahPreview() {
     QuranTheme {

@@ -98,8 +98,7 @@ fun HideAyahActionButtonsOnScroll(
     LaunchedEffect(lazyListState, state.isAyahActionButtonsVisible) {
         snapshotFlow { lazyListState.isScrollInProgress }
             .collect { isScrolling ->
-                if (isScrolling && state.isAyahActionButtonsVisible)
-                    listener.onDismissActionButtons()
+                if (isScrolling && state.isAyahActionButtonsVisible) listener.onDismissActionButtons()
             }
     }
 }

@@ -1,5 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -35,10 +39,35 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
+import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+internal fun AnimatedAyahActionButtons(
+    state: SurahUiState,
+    listener: SurahInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = state.isAyahActionButtonsVisible,
+        enter = fadeIn(animationSpec = tween()),
+        exit = fadeOut(animationSpec = tween()),
+        modifier = modifier
+    ) {
+        if (isValidAyahSelection(state)) {
+            val selectedAyah = state.selectedAyahNumber?.let { state.ayatOfSurah[it.dec()] }
+            AyahActionButtons(
+                onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
+                onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
+                onShareClick = { listener.onShareClick(state.selectedAyah) }
+            )
+        }
+    }
+}
 
 @Composable
 internal fun AyahActionButtons(
@@ -128,7 +157,13 @@ private fun VerticalDivider(
     )
 }
 
-@Preview(showBackground = true)
+private fun isValidAyahSelection(state: SurahUiState): Boolean {
+    return state.selectedAyahNumber != null &&
+            state.selectedAyahNumber >= 0 &&
+            state.selectedAyahNumber < state.ayatOfSurah.size
+}
+
+@Preview()
 @Composable
 fun AyahActionButtonsPreview() {
     QuranTheme {

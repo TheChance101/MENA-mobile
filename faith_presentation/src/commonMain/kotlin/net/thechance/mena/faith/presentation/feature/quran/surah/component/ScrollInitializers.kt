@@ -65,9 +65,7 @@ private fun HandleBackStackAyahHighlight(
 
         ayahNumberFromBackStack?.let(highlightAyah)
 
-        if (selectedAyahIndex == null) {
-            navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("ayahNumber")
-        }
+        if (selectedAyahIndex == null) navController.currentBackStackEntry?.savedStateHandle?.remove<Int>("ayahNumber")
     }
 }
 
@@ -80,9 +78,7 @@ private fun ScrollToInitialChunk(
     LaunchedEffect(initialAyahToScroll) {
         initialAyahToScroll?.let { ayahNumber ->
             val scrollIndex = calculateScrollIndex(ayahNumber, isBasmalaVisible)
-            if (lazyListState.firstVisibleItemIndex != scrollIndex) {
-                lazyListState.scrollToItem(scrollIndex)
-            }
+            if (lazyListState.firstVisibleItemIndex != scrollIndex) lazyListState.scrollToItem(scrollIndex)
         }
     }
 }
