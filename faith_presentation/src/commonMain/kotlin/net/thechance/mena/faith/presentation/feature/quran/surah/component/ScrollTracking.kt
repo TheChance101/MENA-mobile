@@ -21,7 +21,7 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
  * - [HideAyahActionButtonsOnScroll] → Dismisses UI action buttons while scrolling.
  *
  * Utility functions:
- * - [findFirstVisibleAyahInChunk] → Determines the first visible Ayah based on text layout and scroll offset.
+ * - [getFirstVisibleAyahInChunk] → Determines the first visible Ayah based on text layout and scroll offset.
  *
  * Lifecycle:
  * Runs continuously during Surah reading to keep the UI synchronized with the reader’s position.
@@ -78,7 +78,7 @@ fun TrackContinueTilawahPosition(
 
             if (chunkIndex in ayahChunks.indices) {
                 val chunk = ayahChunks[chunkIndex]
-                val visibleAyahNumber = findFirstVisibleAyahInChunk(chunk, layout, scrollOffset)
+                val visibleAyahNumber = getFirstVisibleAyahInChunk(chunk, layout, scrollOffset)
 
                 if (visibleAyahNumber != null && visibleAyahNumber != lastReportedAyahNumber) {
                     lastReportedAyahNumber = visibleAyahNumber
@@ -117,18 +117,23 @@ fun InitializeBasmalaTilawahPosition(
 private fun getChunkIndexFromVisibleItem(visibleItemIndex: Int, isBasmalaVisible: Boolean): Int =
     if (isBasmalaVisible) visibleItemIndex - 1 else visibleItemIndex
 
-private fun findFirstVisibleAyahInChunk(
+private fun getFirstVisibleAyahInChunk(
     chunk: List<Ayah>,
     textLayoutResult: TextLayoutResult,
     scrollOffset: Int
 ): Int? {
-    var charPositionInChunk = 0
-    for (ayah in chunk) {
-        val lineTop = textLayoutResult.getLineTop(textLayoutResult.getLineForOffset(charPositionInChunk)).toInt()
-        if (lineTop >= scrollOffset) return ayah.number
-        charPositionInChunk += ayah.content.length + 1
+    var currentCharPosition = 0
+
+    chunk.forEach { ayah ->
+        val ayahLength = ayah.content.length
+        val lineForOffset = textLayoutResult.getLineForOffset(currentCharPosition)
+        val lineTop = textLayoutResult.getLineTop(lineForOffset)
+
+        if (lineTop.toInt() >= scrollOffset) return ayah.number
+        currentCharPosition += ayahLength + 1
     }
-    return chunk.firstOrNull()?.number
+
+    return chunk.lastOrNull()?.number
 }
 
 const val AYAT_PER_PAGE = 70
