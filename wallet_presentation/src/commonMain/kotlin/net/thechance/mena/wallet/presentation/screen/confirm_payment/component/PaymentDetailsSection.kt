@@ -57,7 +57,6 @@ internal fun PaymentDetailsSection(
         Text(
             modifier = Modifier
                 .padding(top = 16.dp)
-                .padding(top = 16.dp)
                 .fillMaxWidth(),
             text = userMessage,
             style = Theme.typography.body.small,
