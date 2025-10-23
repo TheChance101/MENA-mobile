@@ -1,10 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.main_container
 
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import org.koin.android.annotation.KoinViewModel
