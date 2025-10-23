@@ -8,11 +8,12 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
+import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository

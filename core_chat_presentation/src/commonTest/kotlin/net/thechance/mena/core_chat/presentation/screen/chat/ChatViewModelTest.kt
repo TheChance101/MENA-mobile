@@ -41,8 +41,8 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
-import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.test.AfterTest
@@ -80,7 +80,7 @@ class ChatViewModelTest {
         )
         every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
-        everySuspend { messageRepository.markMessagesAsRead(any()) } returns Unit
+        everySuspend { messageRepository.markMessagesOfChatAsRead(any()) } returns Unit
 
         viewModel = createViewModel()
     }
@@ -125,9 +125,7 @@ class ChatViewModelTest {
         assertThat(
             viewModel.state.value.chatListItems.currentUiMessages()
                 .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(
-            listOf(messages.first().toUi(chatRequesterId))
-        )
+        ).isEqualTo(messages.map{ it.toUi(chatRequesterId) }.reversed())
     }
 
     @Test
@@ -277,10 +275,10 @@ class ChatViewModelTest {
         everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns true
         advanceUntilIdle()
 
-        chatViewModel.onDownloadImageClicked(imageUrl)
+        viewModel.onDownloadImageClicked(imageUrl)
         advanceUntilIdle()
 
-        verifySuspend { chatViewModel.onDownloadImageClicked(imageUrl) }
+        verifySuspend { viewModel.onDownloadImageClicked(imageUrl) }
     }
 
     @Test
