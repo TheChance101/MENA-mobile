@@ -1,10 +1,10 @@
 package net.thechance.mena.wallet.presentation.screen.export
 
 import kotlinx.datetime.LocalDate
-import net.thechance.mena.wallet.presentation.model.ToastState
 
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import org.jetbrains.compose.resources.StringResource
 
 data class ExportTransactionsState(
     val snackBar: SnackBarState = SnackBarState(),
@@ -32,6 +32,11 @@ data class ExportTransactionsState(
         val datePickerMode: DatePickerMode = DatePickerMode.START_DATE,
         val defaultStartDate: LocalDate? = null,
         val defaultEndDate: LocalDate? = null,
+    )
+
+    data class ToastState(
+        val isVisible: Boolean = false,
+        val messageRes: StringResource? = null,
     )
 
     enum class DatePickerMode {

@@ -23,7 +23,7 @@ import mena.wallet_presentation.generated.resources.downloading_started
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.model.ToastState
+import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -31,7 +31,7 @@ private const val ANIMATION_DURATION = 500
 
 @Composable
 fun DownloadingToast(
-    toastState: ToastState,
+    toastState: ExportTransactionsState.ToastState,
     modifier: Modifier = Modifier,
     toastBackgroundColor: Color = Color(0xB2121212)
 ) {
@@ -81,7 +81,7 @@ private fun CustomToastPreview() {
             verticalArrangement = Arrangement.Center
         ) {
             DownloadingToast(
-                toastState = ToastState(
+                toastState = ExportTransactionsState.ToastState(
                     messageRes = Res.string.downloading_started,
                     isVisible = true
                 )

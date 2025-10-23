@@ -5,19 +5,13 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kover)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.androidLibrary)
 }
 
 kotlin {
+    jvm()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
 
     sourceSets {
         commonMain.dependencies {
@@ -33,17 +27,6 @@ kotlin {
     sourceSets.named("commonMain").configure {
         kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
     }
-}
-
-android {
-    namespace = "net.thechance.mena.wallet.domain"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
-
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 }
 
 ksp {
@@ -74,8 +57,7 @@ kover.reports {
                 "**.repository.**",
                 "**.generated.**",
                 "**.entity.**",
-                "**.model.**",
-                "**.utils.**",
+                "**.model.**"
             )
         }
     }

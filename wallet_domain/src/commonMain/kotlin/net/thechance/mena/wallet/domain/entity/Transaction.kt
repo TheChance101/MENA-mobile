@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 data class Transaction (
     val id: Uuid,
     val createdAt: LocalDateTime,
-    val amount: Currency,
+    val amount: Double,
     val status: TransactionStatus,
     val senderName: String,
     val receiverName: String,

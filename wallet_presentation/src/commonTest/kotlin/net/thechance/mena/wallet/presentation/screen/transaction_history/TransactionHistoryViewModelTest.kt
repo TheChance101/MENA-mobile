@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import net.thechance.mena.wallet.domain.entity.Currency
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
@@ -302,7 +301,7 @@ class TransactionHistoryViewModelTest {
                     date = LocalDate(2025, 8, 20),
                     time = LocalTime(12, 0)
                 ),
-                amount = Currency(silvers = 120.0),
+                amount = 120.0,
                 status = TransactionStatus.SUCCESS,
                 senderName = "Alice",
                 receiverName = "Bob",
@@ -314,7 +313,7 @@ class TransactionHistoryViewModelTest {
                     date = LocalDate(2025, 8, 20),
                     time = LocalTime(12, 0)
                 ),
-                amount = Currency(silvers = 75.5),
+                amount = 75.5,
                 status = TransactionStatus.FAILED,
                 senderName = "Charlie",
                 receiverName = "You",
@@ -326,7 +325,7 @@ class TransactionHistoryViewModelTest {
                     date = LocalDate(2025, 8, 20),
                     time = LocalTime(12, 0)
                 ),
-                amount = Currency(silvers = 200.0),
+                amount = 200.0,
                 status = TransactionStatus.SUCCESS,
                 senderName = "Online Shop",
                 receiverName = "You",

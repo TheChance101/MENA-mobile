@@ -22,7 +22,6 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
-import net.thechance.mena.wallet.domain.entity.Currency
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
@@ -279,7 +278,7 @@ class TransactionDetailsViewModelTest {
                 date = LocalDate(2025, 8, 20),
                 time = LocalTime(12, 0)
             ),
-            amount = Currency(silvers = 5000.0),
+            amount = 5000.0,
             status = TransactionStatus.SUCCESS,
             senderName = "Nour Elhoda",
             receiverName = "Nour Elhoda",

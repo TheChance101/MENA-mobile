@@ -3,7 +3,7 @@
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
 
 import net.thechance.mena.wallet.domain.entity.Statement
-import net.thechance.mena.wallet.domain.utils.formatLocalDate
+import net.thechance.mena.wallet.presentation.utils.formatLocalDate
 import kotlin.uuid.ExperimentalUuidApi
 
 fun Statement.toUiState(): StatementsHistoryScreenState.StatementItem {

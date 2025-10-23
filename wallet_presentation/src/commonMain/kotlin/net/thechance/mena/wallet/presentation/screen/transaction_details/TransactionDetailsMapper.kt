@@ -16,7 +16,7 @@ import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionStatusUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionTypeUiState
-import net.thechance.mena.wallet.domain.utils.formatLocalDateTime
+import net.thechance.mena.wallet.presentation.utils.formatLocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 
 fun Transaction.toUi() = TransactionDetailsScreenState.TransactionDetailsUiState(
@@ -39,7 +39,7 @@ private fun Transaction.getTransactionId(): String =
     Constants.ID_PREFIX + id.toString().substring(0, Constants.ID_LENGTH)
 
 private fun Transaction.getAmount(): String =
-    amount.silvers.toString().replace(oldValue = ".", newValue = ",")
+    amount.toString().replace(oldValue = ".", newValue = ",")
 
 private fun Transaction.getTransactionDate(): String =
     formatLocalDateTime(date = createdAt, outputFormat = "dd MMM yyyy, h:mm a")

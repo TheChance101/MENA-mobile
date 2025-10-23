@@ -35,7 +35,6 @@ import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.model.ToastState
 import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import kotlin.test.AfterTest
@@ -594,7 +593,7 @@ class ExportTransactionsViewModelTest {
 
     private fun assertToastState(
         isVisible: Boolean,
-        toastState: ToastState
+        toastState: ExportTransactionsState.ToastState
     ) {
         assertEquals(isVisible, toastState.isVisible)
     }

@@ -6,7 +6,7 @@ import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
-import net.thechance.mena.wallet.domain.utils.formatLocalDateTime
+import net.thechance.mena.wallet.presentation.utils.formatLocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -14,7 +14,7 @@ fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState 
     TransactionHistoryScreenState.TransactionHistoryUiState(
         id = id,
         timeAndDate = formatLocalDateTime(date = createdAt, outputFormat = "dd MMM, h:mm a"),
-        amount = amount.silvers.toString(),
+        amount = amount.toString(),
         type = getTransactionType(),
         status = getTransactionStatus(),
         contactName = getUserName()

@@ -14,7 +14,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.transaction.TransactionRepositoryImpl
-import net.thechance.mena.wallet.domain.entity.Currency
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
@@ -42,7 +41,7 @@ class TransactionRepositoryImplTest {
         val result = transactionRepository.getTransactionHistory(PAGE, PAGE_SIZE, null)
         assertEquals(1, result.size)
         val transaction: Transaction = result.first()
-        assertEquals(EXPECTED_AMOUNT, transaction.amount.silvers)
+        assertEquals(EXPECTED_AMOUNT, transaction.amount)
         assertEquals(TransactionStatus.SUCCESS, transaction.status)
         assertEquals(TransactionType.SENT, transaction.type)
 
@@ -189,12 +188,12 @@ class TransactionRepositoryImplTest {
                 date = LocalDate(2025, 8, 20),
                 time = LocalTime(12, 0)
             ),
-            amount = Currency(silvers = 5000.0),
-                status = TransactionStatus.SUCCESS,
-                senderName = "Nour Elhoda",
-                receiverName = "Nour Elhoda",
-                type = TransactionType.RECEIVED
-            )
+            amount = 5000.0,
+            status = TransactionStatus.SUCCESS,
+            senderName = "Nour Elhoda",
+            receiverName = "Nour Elhoda",
+            type = TransactionType.RECEIVED
+        )
 
         val transactionResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
             {
@@ -207,7 +206,7 @@ class TransactionRepositoryImplTest {
                         "status": "SUCCESS",
                         "type": "RECEIVED",
                         "createdAt": "2025-08-20T12:00",
-                        "amount": ${transaction1.amount.silvers}
+                        "amount": ${transaction1.amount}
                     }
                     """,
                     status = HttpStatusCode.OK,

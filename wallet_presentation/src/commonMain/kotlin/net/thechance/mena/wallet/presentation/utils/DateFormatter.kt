@@ -1,4 +1,4 @@
-package net.thechance.mena.wallet.domain.utils
+package net.thechance.mena.wallet.presentation.utils
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
