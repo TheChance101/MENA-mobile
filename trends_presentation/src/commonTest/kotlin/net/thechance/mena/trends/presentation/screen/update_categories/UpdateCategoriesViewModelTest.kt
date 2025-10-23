@@ -115,7 +115,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
 
             viewModel.effect.test {
                 val effect = awaitItem()
-                assertTrue(effect is UpdateCategoriesScreenEffect.NavigateToTrends)
+                assertTrue(effect is UpdateCategoriesScreenEffect.SaveSuccess)
                 cancelAndIgnoreRemainingEvents()
             }
         }
