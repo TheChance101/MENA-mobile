@@ -30,8 +30,6 @@ interface SnackbarHandler {
 
     fun hideSnackBar() = Napier.e { "Snackbar is Empty" }
 
-    fun clear() = Napier.e { "Snackbar clear() not implemented" }
-
     companion object {
         val Empty = object : SnackbarHandler {
             override val snackBarState = MutableStateFlow(SnackBarState())
@@ -64,9 +62,7 @@ class DefaultSnackbarHandlerImpl : SnackbarHandler {
             snackBarState.update { it.copy(isVisible = false) }
         }
     }
-    override fun clear() {
-        snackBarState.value = SnackBarState()
-    }
+
     override fun showSnackBar(
         message: StringResource,
         status: SnackBarState.Status,
