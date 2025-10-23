@@ -13,5 +13,4 @@ interface ChatRepository {
     suspend fun disconnect()
     suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary>
     suspend fun getChatSummaryById(chatId: Uuid): ChatSummary
-    suspend fun downloadImage(url: String)
 }

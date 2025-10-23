@@ -22,16 +22,17 @@ import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
+import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.SnackBarData
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
@@ -47,6 +48,7 @@ class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val userRepository: UserRepository,
+    private val imageDownloaderService: ImageDownloaderService,
     chatArgs: ChatArgs,
     effector: ChatEffector,
     private val permissionsController: PermissionsController,
@@ -160,7 +162,7 @@ class ChatViewModel(
             return
         }
 
-        val content = MessageContent.Images(ImagesSource.Local(imageByteArrays))
+        val content = MessageContent.Images(ImageData.ImageByteArray(imageByteArrays))
 
         sendImageMessage(chatId, senderId, content)
     }
@@ -265,7 +267,7 @@ class ChatViewModel(
 
     private fun subscribeToNewMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { messageRepository.getMessages(chatId) },
+            collect = { messageRepository.observeMessagesForChatOrAll(chatId) },
             onCollect = ::onCollectNewMessage,
             onError = {
                 showSnackBar(
@@ -282,13 +284,13 @@ class ChatViewModel(
 
         newMessages = newMessages.toMutableList().apply { add(0, message) }
         rebuildUiMessages()
-        messageRepository.markMessagesAsRead(message.chatId)
+        messageRepository.markMessagesOfChatAsRead(message.chatId)
 
     }
 
     private fun subscribeToPendingMessages(chatId: Uuid) {
         tryToCollect(
-            collect = { messageRepository.getLocalMessages(chatId) },
+            collect = { messageRepository.observePendingMessagesByChatId(chatId) },
             onCollect = ::onCollectPendingMessages
         )
     }
@@ -320,7 +322,7 @@ class ChatViewModel(
     private suspend fun onGetChatHistorySuccess(messages: PagedData<Message>) {
         messagesHistoryCache = messagesHistoryCache.toMutableList().apply { addAll(messages.data) }
         rebuildUiMessages()
-        messageRepository.markMessagesAsRead(state.value.chatId ?: return)
+        messageRepository.markMessagesOfChatAsRead(state.value.chatId ?: return)
 
     }
 
@@ -386,20 +388,22 @@ class ChatViewModel(
 
     override fun onDownloadImageClicked(url: String) {
         tryToExecute(
-            execute = { chatRepository.downloadImage(url) },
-            onSuccess = { onDownloadImageSuccess() },
-            onError = {
-                showSnackBar(
-                    Res.string.error,
-                    Res.string.error_failed_to_download_image,
-                    true
-                )
-            }
+            execute = { imageDownloaderService.downloadImageToGallery(url) },
+            onSuccess = ::onDownloadImageSuccess,
+            onError = { onDownloadImageError() }
         )
     }
 
-    private fun onDownloadImageSuccess() {
-        showSnackBar(Res.string.success, Res.string.image_saved_successfully, isError = false)
+    private fun onDownloadImageSuccess(isSuccess: Boolean) {
+        if (isSuccess) {
+            showSnackBar(Res.string.success, Res.string.image_saved_successfully, isError = false)
+        } else {
+            onDownloadImageError()
+        }
+    }
+
+    private fun onDownloadImageError() {
+        showSnackBar(Res.string.error, Res.string.error_failed_to_download_image, true)
     }
 
     override fun onCloseImageViewClicked() {

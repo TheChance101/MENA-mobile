@@ -36,7 +36,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -176,7 +176,7 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should return local messages from database when getLocalMessages is called`() = runTest {
+    fun `should return local messages from database when observePendingMessagesByChatId is called`() = runTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
         val message2 = createMessage(senderId = userId, chatId = chatId)
         val messageEntities = listOf(
@@ -188,7 +188,7 @@ class MessageRepositoryImplTest {
             messageEntities
         )
 
-        val result = repository.getLocalMessages(chatId).first()
+        val result = repository.observePendingMessagesByChatId(chatId).first()
 
 
         assertThat(result).isNotEmpty()
@@ -200,14 +200,14 @@ class MessageRepositoryImplTest {
     fun `should return empty list when no local messages exist for chat`() = runTest {
         everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
 
-        val result = repository.getLocalMessages(chatId).first()
+        val result = repository.observePendingMessagesByChatId(chatId).first()
 
         assertThat(result.isEmpty()).isTrue()
         verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
     }
 
     @Test
-    fun `should return flow when getMessages is called and websocket is connected`() = runTest {
+    fun `should return flow when observeMessagesForChatOrAll is called and websocket is connected`() = runTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
@@ -218,7 +218,7 @@ class MessageRepositoryImplTest {
             )
         }
 
-        val flow = repository.getMessages(chatId)
+        val flow = repository.observeMessagesForChatOrAll(chatId)
 
         assertThat(flow).isNotNull()
     }
@@ -246,7 +246,7 @@ class MessageRepositoryImplTest {
             val message = createMessage(
                 senderId = userId,
                 chatId = chatId,
-                content = MessageContent.Images(ImagesSource.Local(byteArrays))
+                content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
             )
 
             repository.sendMessage(message)
@@ -277,7 +277,7 @@ class MessageRepositoryImplTest {
         val message = createMessage(
             senderId = userId,
             chatId = chatId,
-            content = MessageContent.Images(ImagesSource.Local(byteArrays))
+            content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
         )
 
         assertFailsWith<SendMessageFailedException> {

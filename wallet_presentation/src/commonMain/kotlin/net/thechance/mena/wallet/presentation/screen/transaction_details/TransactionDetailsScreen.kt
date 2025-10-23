@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import io.github.suwasto.capturablecompose.CaptureController
@@ -77,10 +78,7 @@ private fun TransactionDetailsScreenContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.transaction_details_header),
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._8
-                ),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -120,7 +118,7 @@ private fun TransactionDetailsSuccessContent(
     state: TransactionDetailsScreenState,
     interactionListener: TransactionDetailsInteractionListener,
     captureController: CaptureController
-){
+) {
     Box {
         DetailsContent(
             transactionDetailsUiState = state.transactionDetailsUiState,
@@ -143,7 +141,12 @@ private fun TransactionDetailsSuccessContent(
 private suspend fun onTransactionDetailsEffect(
     effect: TransactionDetailsEffect,
     navController: NavController,
-    shareImage: suspend (image: ByteArray, fileName: String, mimeType: String, shareTitle: String) -> Unit,
+    shareImage: suspend (
+        image: ByteArray,
+        fileName: String,
+        mimeType: String,
+        shareTitle: String
+    ) -> Unit,
     captureImage: suspend () -> Unit,
     onCaptureError: suspend () -> Unit
 ) {
@@ -151,13 +154,18 @@ private suspend fun onTransactionDetailsEffect(
         TransactionDetailsEffect.NavigateBack -> navController.popBackStack()
 
         is TransactionDetailsEffect.ShareImage -> {
-            shareImage(effect.imageBytes, effect.fileName, effect.mimeType, getString(Res.string.share_image))
+            shareImage(
+                effect.imageBytes,
+                effect.fileName,
+                effect.mimeType,
+                getString(Res.string.share_image)
+            )
         }
 
         TransactionDetailsEffect.CaptureImage -> {
             try {
                 captureImage()
-            }catch (_: Throwable){
+            } catch (_: Throwable) {
                 onCaptureError()
             }
         }

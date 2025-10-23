@@ -1,58 +1,27 @@
 package net.thechance.mena.faith.presentation.feature.quran.sur
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.ayat
-import mena.faith_presentation.generated.resources.ayat_count_format
-import mena.faith_presentation.generated.resources.back_icon
-import mena.faith_presentation.generated.resources.bookmark_icon
 import mena.faith_presentation.generated.resources.ic_al_fatihah
-import mena.faith_presentation.generated.resources.ic_arrow_left
-import mena.faith_presentation.generated.resources.ic_bookmark
-import mena.faith_presentation.generated.resources.ic_moshaf
-import mena.faith_presentation.generated.resources.ic_search
-import mena.faith_presentation.generated.resources.ic_surah_number_container
-import mena.faith_presentation.generated.resources.madani
-import mena.faith_presentation.generated.resources.makki
-import mena.faith_presentation.generated.resources.moshaf_icon
-import mena.faith_presentation.generated.resources.quran
-import mena.faith_presentation.generated.resources.search_icon
 import mena.faith_presentation.generated.resources.sur
-import mena.faith_presentation.generated.resources.surah_arabic_name_icon
-import mena.faith_presentation.generated.resources.surah_number_container_icon
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.feature.quran.sur.component.SurTopbar
+import net.thechance.mena.faith.presentation.feature.quran.sur.component.SurahItem
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -98,7 +67,7 @@ private fun Content(
 ) {
     Scaffold(
         topBar = {
-            Topbar(
+            SurTopbar(
                 modifier = Modifier.padding(horizontal = Theme.spacing._16),
                 onBackClick = { listener.onBackClick() },
                 onBookmarkClick = { listener.onBookmarkClick() },
@@ -137,189 +106,6 @@ private fun Content(
         }
     }
 }
-
-@Composable
-private fun Topbar(
-    onBackClick: () -> Unit,
-    onBookmarkClick: () -> Unit,
-    onSearchClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    AppBar(
-        title = stringResource(resource = Res.string.quran),
-        modifier = modifier,
-        contentPadding = PaddingValues(vertical = Theme.spacing._8),
-        leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(resource = Res.string.back_icon),
-                tint = Theme.colorScheme.primary.primary,
-                modifier = Modifier.size(20.dp)
-            )
-
-        },
-        onLeadingClick = onBackClick,
-        trailingContent = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-            ) {
-                AppBarIcon(
-                    iconRes = painterResource(Res.drawable.ic_search),
-                    contentDescription = stringResource(resource = Res.string.search_icon),
-                    onClick = onSearchClick
-                )
-
-                AppBarIcon(
-                    iconRes = painterResource(Res.drawable.ic_bookmark),
-                    contentDescription = stringResource(resource = Res.string.bookmark_icon),
-                    onClick = onBookmarkClick
-                )
-            }
-        }
-    )
-}
-
-@Composable
-private fun AppBarIcon(
-    iconRes: Painter,
-    contentDescription: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AppBarOptionContainer(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Icon(
-            painter = iconRes,
-            contentDescription = contentDescription,
-            tint = Theme.colorScheme.primary.primary,
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
-
-@Composable
-private fun SurahItem(
-    surah: SurUiState.SurahUiState,
-    onClick: (id: Int) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(Theme.radius.md))
-            .background(
-                color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.md)
-            )
-            .clickable { onClick(surah.id) }
-            .padding(vertical = Theme.spacing._8, horizontal = Theme.spacing._12),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SurahNumberContainer(
-            surahNumber = surah.surahOrder,
-            modifier = Modifier.padding(end = Theme.spacing._12)
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = surah.surahName,
-                style = Theme.typography.label.medium,
-                color = Theme.colorScheme.shadePrimary,
-                modifier = Modifier.padding(bottom = Theme.spacing._2)
-            )
-
-            SurahDetailsRow(ayatNumber = surah.ayatCount, isMakki = surah.isMakki)
-        }
-
-        Icon(
-            painter = painterResource(resource = surah.arabicNameImg),
-            contentDescription = stringResource(resource = Res.string.surah_arabic_name_icon),
-            tint = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.size(48.dp)
-        )
-    }
-}
-
-@Composable
-private fun SurahDetailsRow(
-    ayatNumber: Int,
-    isMakki: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(resource = Res.drawable.ic_moshaf),
-            tint = Theme.colorScheme.shadeSecondary,
-            contentDescription = stringResource(resource = Res.string.moshaf_icon),
-            modifier = Modifier
-                .size(Theme.spacing._16)
-                .padding(end = Theme.spacing._4)
-        )
-
-        Text(
-            text = stringResource(
-                resource = Res.string.ayat_count_format,
-                ayatNumber,
-                stringResource(resource = Res.string.ayat)
-            ),
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadeSecondary
-        )
-
-        Box(
-            modifier = Modifier
-                .padding(horizontal = Theme.spacing._8)
-                .size(3.dp)
-                .background(
-                    color = Theme.colorScheme.shadeTertiary,
-                    shape = RoundedCornerShape(Theme.radius.full)
-                )
-        )
-
-        Text(
-            text = if (isMakki) stringResource(resource = Res.string.makki)
-            else stringResource(resource = Res.string.madani),
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadeSecondary
-        )
-    }
-}
-
-@Composable
-private fun SurahNumberContainer(
-    surahNumber: Int,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.size(36.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(resource = Res.drawable.ic_surah_number_container),
-            contentDescription = stringResource(resource = Res.string.surah_number_container_icon),
-            modifier = Modifier.fillMaxSize()
-        )
-
-        Text(
-            text = surahNumber.twoDigitsMinimum(),
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.secondary.secondary
-        )
-    }
-}
-
-private fun Int.twoDigitsMinimum(): String = this.toString().padStart(2, '0')
 
 @Preview
 @Composable

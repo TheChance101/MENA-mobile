@@ -24,10 +24,9 @@ class SurViewModel(
     override fun onBookmarkClick() = sendEffect(SurEffect.NavigateToBookmark)
     override fun onSearchClick() = sendEffect(SurEffect.NavigateToSearch)
 
-
     private fun initializeSur() {
         tryToExecute(
-            execute = { quranRepository.getAllSur() },
+            execute = { quranRepository.getSur() },
             onSuccess = { sur -> handleSuccessState(sur) },
             dispatcher = dispatcher
         )
