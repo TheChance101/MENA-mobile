@@ -82,7 +82,7 @@ class HomeViewModel(
 
     private fun listenToIncomingMessages() {
         tryToCollect(
-            collect = {messageRepository.getMessages() },
+            collect = {messageRepository.observeMessagesForChatOrAll() },
             onCollect = ::onCollectMessage,
             onError = { },
         )
@@ -174,7 +174,7 @@ class HomeViewModel(
     override fun onNewChatClicked() {
         tryToExecute(
             onStart = { updateState { it.copy(isLoading = false) } },
-            execute = { contactsRepository.getSyncStatus() },
+            execute = { contactsRepository.getHasUserSyncedContactsStatus() },
             onSuccess = { isSynced ->
                 updateState { it.copy(isSynced = isSynced, isLoading = false) }
                 if (isSynced) {

@@ -7,8 +7,8 @@ data class SearchUiState(
     val surahId: Int?,
     val surahName: String?,
     val query: String = "",
-    val searchResult: List<SearchResult> = emptyList(),
-    val hint: String = ""
+    val searchResults: List<SearchResult> = emptyList(),
+    val queryHint: String = ""
 ) {
     data class SearchResult(
         val number: Int,
@@ -19,7 +19,7 @@ data class SearchUiState(
     )
 }
 
-fun Ayah.toSearchResult(surahName: String? = null) = SearchUiState.SearchResult(
+fun Ayah.toSearchResults(surahName: String? = null) = SearchUiState.SearchResult(
     number = number,
     surahId = surahId,
     surahName = surahName ?: Surah.SurahOrder.entries[surahId - 1].name,

@@ -11,7 +11,7 @@ import kotlinx.serialization.SerializationException
 import net.thechance.mena.wallet.data.dto.ErrorDto
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 
 suspend inline fun <reified T> safeApiCall(
     noinline execute: suspend () -> HttpResponse
@@ -26,21 +26,33 @@ suspend fun executeRequest(execute: suspend () -> HttpResponse): HttpResponse {
     } catch (e: IOException) {
         throw NoInternetException(e.message.orEmpty())
     } catch (e: Exception) {
-        throw UnknownException(e.message.orEmpty())
+        throw UnknownNetworkException(e.message.orEmpty())
     }
 }
 
 suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
-    if (response.status.value == HttpStatusCode.NoContent.value) throw NoDataFoundException("No Data Found: " + parseErrorMessage(response))
+    if (response.status.value == HttpStatusCode.NoContent.value)
+        throw NoDataFoundException("No Data Found: " + parseErrorMessage(response))
 
-    if (response.status.isSuccess()) { return parseBody<T>(response)}
+    if (response.status.isSuccess()) {
+        return parseBody<T>(response)
+    }
 
     when (response.status) {
-        HttpStatusCode.Unauthorized -> throw UnknownException("Unauthorized: " + parseErrorMessage(response))
-        HttpStatusCode.RequestTimeout -> throw UnknownException("Request timeout: " + parseErrorMessage(response))
-        HttpStatusCode.TooManyRequests -> throw UnknownException("Too many requests: " + parseErrorMessage(response))
-        in getServerErrorRange() -> throw UnknownException("Server error: " + parseErrorMessage(response))
-        else -> throw UnknownException(parseErrorMessage(response))
+        HttpStatusCode.Unauthorized ->
+            throw UnknownNetworkException("Unauthorized: " + parseErrorMessage(response))
+
+        HttpStatusCode.RequestTimeout ->
+            throw UnknownNetworkException("Request timeout: " + parseErrorMessage(response))
+
+        HttpStatusCode.TooManyRequests ->
+            throw UnknownNetworkException("Too many requests: " + parseErrorMessage(response))
+
+        in getServerErrorRange() ->
+            throw UnknownNetworkException("Server error: " + parseErrorMessage(response))
+
+        else ->
+            throw UnknownNetworkException(parseErrorMessage(response))
     }
 }
 
@@ -51,9 +63,9 @@ suspend inline fun <reified T> parseBody(response: HttpResponse): T {
     return try {
         response.body()
     } catch (_: SerializationException) {
-        throw UnknownException("Error parsing response")
+        throw UnknownNetworkException("Error parsing response")
     } catch (_: Exception) {
-        throw UnknownException("Unexpected error parsing response")
+        throw UnknownNetworkException("Unexpected error parsing response")
     }
 }
 
@@ -65,4 +77,5 @@ suspend fun parseErrorMessage(response: HttpResponse): String {
     }
 }
 
-fun getServerErrorRange() = HttpStatusCode.InternalServerError..HttpStatusCode.InsufficientStorage
+fun getServerErrorRange() =
+    HttpStatusCode.InternalServerError..HttpStatusCode.InsufficientStorage

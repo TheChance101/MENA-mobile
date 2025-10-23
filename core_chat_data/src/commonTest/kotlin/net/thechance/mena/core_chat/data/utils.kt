@@ -24,6 +24,7 @@ import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
+import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
@@ -34,8 +35,8 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
-import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -173,7 +174,6 @@ fun createRepository(
 fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
-    imageDownloader: ImageDownloader,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -188,19 +188,20 @@ fun createChatRepository(
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
         webSocketManager = webSocketManager,
-        imageDownloader = imageDownloader
     )
 
 }
 fun createMessageRepository(
     httpClient: HttpClient,
     webSocketManager: WebSocketManager,
+    messageSenderFactory: MessageSenderFactory,
     messageDao: MessageDao,
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
         webSocketManager = webSocketManager,
         messageDao = messageDao,
         client =httpClient,
+        messageSenderFactory = messageSenderFactory,
         json = jsonSerialization
     )
 }

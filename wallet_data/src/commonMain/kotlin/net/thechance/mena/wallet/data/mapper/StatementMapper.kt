@@ -9,7 +9,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import net.thechance.mena.wallet.data.dto.local.LocalStatement
 import net.thechance.mena.wallet.domain.entity.Statement
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import kotlin.uuid.ExperimentalUuidApi
@@ -44,7 +44,7 @@ fun LocalStatement.toEntity(): Statement {
         endDate = parseLocalDateOrDefault(this.endDate),
         totalInflows = totalInflows,
         totalOutflows = totalOutflows,
-        id = id.toUuidOrNull()?: throw UnknownException("Invalid statement id"),
+        id = id.toUuidOrNull()?: throw UnknownNetworkException("Invalid statement id"),
         fileName = fileName,
     )
 }

@@ -32,15 +32,15 @@ class DukanDiscoveryRepositoryImpl(
         page: Int,
         size: Int
     ): List<Dukan> {
-//        val location = locationService.getUserAddresses().first { it.isActive }
+//        val location = locationService.getActiveAddress()
         //TODO handle in backend
         val range = 30000
         return safeApiCall<PageResponseDto<DukanResponseDto>> {
             client.get("$DUKAN_BASE_PATH/nearby/best") {
                 parameter("page", page)
                 parameter("size", size)
-                parameter("lat", 33.3333)
-                parameter("lng", 44.4444)
+                parameter("lat", location?.latitude)
+                parameter("lng", location?.longitude)
                 parameter("range", range)
             }
         }.content.map { it.toEntity() }

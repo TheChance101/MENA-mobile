@@ -54,7 +54,7 @@ class SyncContactsViewModel(
 
     private suspend fun onSyncContactsSuccess() {
         if (state.value.isFirstSync) {
-            contactsRepository.setSyncStatus(true)
+            contactsRepository.setHasUserSyncedContactsStatus(true)
             popBackStack()
             navigate(ContactsRoute)
         } else {

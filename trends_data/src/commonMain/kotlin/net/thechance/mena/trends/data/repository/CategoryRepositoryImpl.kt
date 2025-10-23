@@ -7,10 +7,11 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIENT_NAME
 import net.thechance.mena.trends.data.dto.CategoryDto
+import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UpdateUserCategoriesRequest
 import net.thechance.mena.trends.data.dto.UpdateUserCategoriesResponse
-import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UserStatusResponse
 import net.thechance.mena.trends.data.mapper.toEntityList
 import net.thechance.mena.trends.data.util.NetworkConstants.CATEGORIES_ENDPOINT
@@ -19,12 +20,12 @@ import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
-import org.koin.core.annotation.Provided
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 
 @Single(binds = [CategoryRepository::class])
 internal class CategoryRepositoryImpl(
-    @Provided private val networkClient: HttpClient
+    @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient
 ) : CategoryRepository {
 
     override suspend fun getAllCategories(): List<Category> {

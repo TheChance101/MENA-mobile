@@ -11,10 +11,10 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error_invalid_mobile_number
-import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
+import mena.identity_presentation.generated.resources.error_something_went_wrong
+import java.lang.Exception
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -38,7 +38,7 @@ class LoginViewModelTest {
 
 
     private fun setupValidCountry() {
-        viewModel.onSelectCountryItem(selectedCountry)
+        viewModel.onConfirmCountryItem(selectedCountry)
     }
 
     @Test
@@ -61,8 +61,8 @@ class LoginViewModelTest {
     @Test
     fun `should show invalid mobile number message when mobile number is wrong`() = runTest {
 
-        val errorMessage = Res.string.error_invalid_mobile_number
-        coEvery { useCase.login(any(), any(), any()) } throws InvalidMobileNumberException("")
+        val errorMessage = Res.string.error_something_went_wrong
+        coEvery { useCase.login(any(), any(), any()) } throws Exception("Test error")
 
         viewModel.onLoginClicked()
 
@@ -149,7 +149,7 @@ class LoginViewModelTest {
     fun `should login button is disabled when password is empty`() = runTest {
         val phoneNumber = "1100661617"
 
-        viewModel.onSelectCountryItem(selectedCountry)
+        viewModel.onConfirmCountryItem(selectedCountry)
         viewModel.onPhoneChanged(phoneNumber)
 
         testDispatcher.scheduler.advanceUntilIdle()
