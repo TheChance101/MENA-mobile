@@ -200,7 +200,7 @@ class BookmarkViewModelTest {
     fun `onStartTilawahClick should emit NavigateBack effect`() = runTest(testDispatcher) {
         viewModel.uiEffect.test {
             viewModel.onStartTilawahClick()
-            assertEquals(BookmarkEffect.NavigateBack, awaitItem())
+            assertEquals(BookmarkEffect.NavigateToSur, awaitItem())
         }
     }
 
