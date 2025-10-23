@@ -29,16 +29,15 @@ import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.io.IOException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
-import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
-import net.thechance.mena.wallet.presentation.model.CustomToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.model.ToastState
 import net.thechance.mena.wallet.presentation.utils.FileManager
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -50,7 +49,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ExportTransactionsViewModelTest {
-    private val stringProvider = FakeStringProvider()
+    private val stringProvider = mock<StringProvider>(mode = MockMode.autofill)
     private val repository = mock<StatementRepository>(mode = MockMode.autofill)
     private val fileManager = mock<FileManager>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
@@ -595,7 +594,7 @@ class ExportTransactionsViewModelTest {
 
     private fun assertToastState(
         isVisible: Boolean,
-        toastState: CustomToastState
+        toastState: ToastState
     ) {
         assertEquals(isVisible, toastState.isVisible)
     }

@@ -31,7 +31,7 @@ import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.model.CustomToastState
+import net.thechance.mena.wallet.presentation.model.ToastState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import net.thechance.mena.wallet.presentation.utils.FileManager
@@ -485,7 +485,7 @@ class ExportTransactionsViewModel(
     ) {
         updateState { oldState ->
             oldState.copy(
-                toast = CustomToastState(
+                toast = ToastState(
                     isVisible = true,
                     messageRes = messageRes
                 )

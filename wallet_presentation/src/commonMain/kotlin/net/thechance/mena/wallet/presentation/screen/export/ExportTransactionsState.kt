@@ -1,14 +1,14 @@
 package net.thechance.mena.wallet.presentation.screen.export
 
 import kotlinx.datetime.LocalDate
-import net.thechance.mena.wallet.presentation.model.CustomToastState
+import net.thechance.mena.wallet.presentation.model.ToastState
 
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 
 data class ExportTransactionsState(
     val snackBar: SnackBarState = SnackBarState(),
-    val toast: CustomToastState = CustomToastState(),
+    val toast: ToastState = ToastState(),
     val isCustomFilterCardSelected: Boolean = false,
     val isDownloadLoading: Boolean = false,
     val isDownloadButtonEnabled: Boolean = true,
