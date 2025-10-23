@@ -326,7 +326,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery thows exception`() =
+    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery throws exception`() =
         runTest {
             everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } throws Exception()
             advanceUntilIdle()
@@ -393,13 +393,24 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onCameraClosed should close camera when called`() = runTest {
+    fun `onCameraResult should close camera when called`() = runTest {
         advanceUntilIdle()
 
-        viewModel.onCameraClosed()
+        viewModel.onCameraResult(null)
         advanceUntilIdle()
 
         assertThat(viewModel.state.value.isCameraOpen).isFalse()
+    }
+
+    @Test
+    fun `onSendImageClicked should send image message`() = runTest {
+        val imageBytes = listOf(byteArrayOf(1, 2, 3))
+        everySuspend { messageRepository.sendMessage(any()) } returns Unit
+
+        viewModel.onSendImageClicked(imageBytes)
+        advanceUntilIdle()
+
+        verifySuspend { messageRepository.sendMessage(any()) }
     }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =

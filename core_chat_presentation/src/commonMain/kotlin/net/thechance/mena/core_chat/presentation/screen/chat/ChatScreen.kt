@@ -22,7 +22,6 @@ import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import kotlinx.coroutines.flow.SharedFlow
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
-import net.thechance.mena.core_chat.presentation.camera.rememberCameraManager
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
@@ -33,6 +32,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
+import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -68,12 +68,7 @@ fun ChatScreenContent(
     val chatListState = rememberLazyListState()
 
     val cameraManager = rememberCameraManager(
-        onResult = { sharedImageByteArray ->
-            sharedImageByteArray?.let {
-                interactions.onSendImageClicked(listOf(sharedImageByteArray))
-            }
-            interactions.onCameraClosed()
-        }
+        onResult = interactions::onCameraResult
     )
 
     LaunchedEffect(state.isCameraOpen) {
