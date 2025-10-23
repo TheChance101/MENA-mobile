@@ -114,6 +114,11 @@ class SurahViewModel(
 
     override fun onBackClick() = sendEffect(SurahScreenEffect.NavigateBack)
 
+    override fun onCleared() {
+        super.onCleared()
+        snackbarHandler.clear()
+    }
+
     override fun onBookmarkClick(ayahNumber: Int) {
         tryToExecute(
             execute = {
