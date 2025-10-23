@@ -129,8 +129,8 @@ private fun WalletContent(
                 label = stringResource(Res.string.confirm_payment_header),
                 onClick = {
                     interactionListener.onPaymentClicked(
-                        amount = 222.22,
-                        receiverId = Uuid.parse("7a4d98f2-c9ef-4a9e-8d47-91a45b8854b9")
+                        amount = 225.5,
+                        receiverId = Uuid.parse("95950cab-758e-4c6c-8685-c252667561f2")
                     )
                 },
                 modifier = Modifier

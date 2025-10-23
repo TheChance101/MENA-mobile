@@ -31,11 +31,8 @@ fun SnackBarContainer(
     snackBarState: SnackBarState,
     modifier: Modifier = Modifier
 ) {
-    val targetTint = if (snackBarState.isSuccess) {
-        Theme.colorScheme.success
-    } else {
-        Theme.colorScheme.error
-    }
+    val targetTint =
+        if (snackBarState.isSuccess) Theme.colorScheme.success else Theme.colorScheme.error
 
     val animatedTint by animateColorAsState(
         targetValue = targetTint,
@@ -51,11 +48,8 @@ fun SnackBarContainer(
             targetState = snackBarState.isSuccess,
             animationSpec = tween(ANIMATION_DURATION)
         ) { isSuccess ->
-            val leadingIcon = if (isSuccess) {
-                Res.drawable.ic_check_circle
-            } else {
-                Res.drawable.ic_close_circle
-            }
+            val leadingIcon =
+                if (isSuccess) Res.drawable.ic_check_circle else Res.drawable.ic_close_circle
 
             SnackBar(
                 title = snackBarState.title ?: "",
