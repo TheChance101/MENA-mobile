@@ -12,6 +12,8 @@ import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.UploadReelErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.formatBytes
 import org.koin.android.annotation.KoinViewModel
@@ -22,7 +24,7 @@ internal class UploadReelViewModel(
     @Provided private val reelsRepository: ReelsRepository,
     @Provided private val videoValidator: VideoValidator,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<UploadReelScreenState, UploadReelScreenEffect, UploadReelErrorState>(
+) : BaseViewModel<UploadReelScreenState, UploadReelScreenEffect>(
     UploadReelScreenState()
 ), UploadReelInteractionListener {
 
@@ -38,8 +40,7 @@ internal class UploadReelViewModel(
             block = { validateFile() },
             onError = ::onValidationError,
             onSuccess = { onValidationSuccess() },
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -57,8 +58,12 @@ internal class UploadReelViewModel(
         uploadTrend()
     }
 
-    private fun onValidationError(errorState: UploadReelErrorState) {
-        updateState { copy(errorState = errorState) }
+    private fun onValidationError(errorState: ErrorState) {
+        val uploadReelError = when (errorState) {
+            is UploadReelErrorState -> errorState
+            else -> UploadReelErrorState.RequestTimeout
+        }
+        updateState { copy(errorState = uploadReelError) }
     }
 
     private fun uploadTrend() {
@@ -73,8 +78,7 @@ internal class UploadReelViewModel(
             onNewValue = ::onCollectUploadProgress,
             onError = ::onUploadError,
             onEnd = ::onUploadCompleted,
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -113,14 +117,20 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onUploadError(errorState:UploadReelErrorState ) {
+    private fun onUploadError(errorState: ErrorState) {
+        val uploadReelError = when (errorState) {
+            is UploadReelErrorState -> errorState
+            else -> UploadReelErrorState.RequestTimeout
+        }
+
         updateState {
             copy(
                 uploadingState = UploadReelScreenState.UploadingReelState.FAILED,
-                errorState = errorState
+                errorState = uploadReelError
             )
         }
     }
+
 
     private fun onUploadCompleted() {
         updateState {
@@ -144,7 +154,6 @@ internal class UploadReelViewModel(
             onStart = { updateState { copy(isThumbnailLoading = true) } },
             onEnd = { updateState { copy(isThumbnailLoading = false) } },
             dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
         )
     }
 
@@ -157,8 +166,12 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onExtractFrameError(errorState: UploadReelErrorState) {
-        updateState { copy(errorState = errorState) }
+    private fun onExtractFrameError(errorState: ErrorState) {
+        val uploadReelError = when (errorState) {
+            is UploadReelErrorState -> errorState
+            else -> UploadReelErrorState.RequestTimeout
+        }
+        updateState { copy(errorState = uploadReelError) }
     }
 
     override fun onNextClick() {
@@ -180,7 +193,6 @@ internal class UploadReelViewModel(
             onSuccess = { onUploadThumbnailSuccess() },
             onError = ::onUploadThumbnailError,
             dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
         )
     }
 
@@ -198,8 +210,12 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onUploadThumbnailError(errorState: UploadReelErrorState) {
-        updateState { copy(errorState = errorState) }
+    private fun onUploadThumbnailError(errorState: ErrorState) {
+        val uploadReelError = when (errorState) {
+            is UploadReelErrorState -> errorState
+            else -> UploadReelErrorState.RequestTimeout
+        }
+        updateState { copy(errorState = uploadReelError) }
     }
 
     override fun onBackClick() {
@@ -215,25 +231,35 @@ internal class UploadReelViewModel(
         tryToExecute(
             block = { state.value.reelId?.let { reelsRepository.deleteReelById(id = it) } },
             onSuccess = { updateState { UploadReelScreenState() } },
-            onError = { errorState -> updateState { copy(errorState = errorState) } },
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            onError = { errorState -> onDeleteVideoClickError(errorState) },
+            dispatcher = defaultDispatcher
         )
+    }
+
+    private fun onDeleteVideoClickError(errorState: ErrorState) {
+        val uploadReelError = when (errorState) {
+            is UploadReelErrorState -> errorState
+            else -> UploadReelErrorState.RequestTimeout
+        }
+
+        updateState { copy(errorState = uploadReelError) }
     }
 
     override fun onRetryUploadClick() {
         uploadTrend()
     }
 
-    private fun mapError(throwable: Throwable): UploadReelErrorState {
-        return when (throwable) {
-            is NoInternetException -> UploadReelErrorState.NoInternet
-            is MaxFileDurationExceededException -> UploadReelErrorState.DurationTooLarge
+    override suspend fun mapExceptionToErrorState(
+        throwable: Throwable,
+        onError: suspend (ErrorState) -> Unit
+    ) {
+        val errorState = when (throwable) {
+            is NoInternetException -> ErrorState.NoInternet
             is MaxFileSizeExceededException -> UploadReelErrorState.FileTooLarge
-            else -> UploadReelErrorState.RequestFailed(throwable.message)
-        }.also { errorState ->
-            Logger.e(TAG) { errorState.toString() }
-        }
+            is MaxFileDurationExceededException -> UploadReelErrorState.DurationTooLarge
+            else -> ErrorState.RequestFailed(throwable.message)
+        }.also { errorState -> Logger.e(TAG) { errorState.toString() } }
+        onError(errorState)
     }
 
     private companion object {

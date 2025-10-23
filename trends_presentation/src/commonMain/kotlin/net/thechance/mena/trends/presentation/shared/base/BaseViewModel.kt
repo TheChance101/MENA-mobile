@@ -22,10 +22,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
 import kotlin.coroutines.cancellation.CancellationException
 
-internal abstract class BaseViewModel<State, Effect, Error>(
+internal abstract class BaseViewModel<State, Effect>(
     initialState: State
 ) : ViewModel() {
 
@@ -48,15 +49,14 @@ internal abstract class BaseViewModel<State, Effect, Error>(
     protected fun <R> tryToExecute(
         block: suspend () -> R,
         onSuccess: (R) -> Unit = {},
-        onError: (Error) -> Unit = {},
+        onError: (ErrorState) -> Unit = {},
         onStart: () -> Unit = {},
         onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        scope: CoroutineScope = viewModelScope,
-        errorMapper: (Throwable) -> Error
+        scope: CoroutineScope = viewModelScope
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            onError(errorMapper(exception))
+            onError(ErrorState.RequestFailed(exception.message))
         }
 
         return scope.launch(dispatcher + exceptionHandler) {
@@ -64,7 +64,12 @@ internal abstract class BaseViewModel<State, Effect, Error>(
 
             runCatching { block() }
                 .onSuccess { onSuccess(it) }
-                .onFailure { onError(errorMapper(it)) }
+                .onFailure {
+                    mapExceptionToErrorState(
+                        throwable = it,
+                        onError = onError
+                    )
+                }
             onEnd()
         }
     }
@@ -73,15 +78,14 @@ internal abstract class BaseViewModel<State, Effect, Error>(
         block: () -> Flow<R>,
         onStart: () -> Unit = {},
         onNewValue: (R) -> Unit,
-        onError: (Error) -> Unit,
+        onError: (ErrorState) -> Unit,
         onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        scope: CoroutineScope = viewModelScope,
-        errorMapper: (Throwable) -> Error
+        scope: CoroutineScope = viewModelScope
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            if (exception is CancellationException) return@CoroutineExceptionHandler
-            onError(errorMapper(exception))
+            if(exception is kotlinx.coroutines.CancellationException) return@CoroutineExceptionHandler
+            onError(ErrorState.RequestFailed(exception.message))
         }
 
         return scope.launch(dispatcher + exceptionHandler) {
@@ -91,16 +95,30 @@ internal abstract class BaseViewModel<State, Effect, Error>(
                 .onEach { onNewValue(it) }
                 .onCompletion { throwable ->
                     throwable?.let {
-                        if (it is CancellationException) return@onCompletion
-                        onError(errorMapper(it))
+                        if(throwable is CancellationException) return@onCompletion
+                        mapExceptionToErrorState(throwable, onError)
                     } ?: onEnd()
                 }
-                .catch { throwable -> onError(errorMapper(throwable)) }
+                .catch { throwable -> mapExceptionToErrorState(throwable, onError) }
                 .collect()
         }
     }
 
-    fun logError(throwable: Throwable) {
+    protected open suspend fun mapExceptionToErrorState(
+        throwable: Throwable,
+        onError: suspend (ErrorState) -> Unit,
+    ) {
+        logError(throwable)
+        val message = throwable.message
+        when (throwable) {
+            is NoInternetException -> ErrorState.NoInternet
+            else -> ErrorState.RequestFailed(message).also { logError(throwable) }
+        }.also { errorState ->
+            Logger.e(LOG_TAG){errorState.toString()}
+        }.let { onError(it) }
+    }
+
+    private fun logError(throwable: Throwable) {
         Logger.e(LOG_TAG){"${throwable}: ${throwable.message}"}
     }
 
