@@ -78,7 +78,7 @@ private fun UpdateCategoriesScreenContent(
     Scaffold(
         topBar = { if (state.isLoading.not()) ChangeTagsAppBar(onBackClick = listener::onClickBack) },
         bottomBar = {
-            if (state.errorState !is ErrorState.NoInternet && state.isLoading.not()) {
+            if (state.errorState == null || state.isLoading.not()) {
                 SaveChangeButton(
                     onSaveClick = listener::onClickSave,
                     isButtonEnabled = state.saveButtonEnabled(),

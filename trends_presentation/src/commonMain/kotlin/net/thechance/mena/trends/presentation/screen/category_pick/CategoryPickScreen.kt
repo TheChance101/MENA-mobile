@@ -63,7 +63,7 @@ private fun CategoryPickScreenContent(
 ) {
     Scaffold(
         bottomBar = {
-            if (state.error == null){
+            if (state.error == null || state.isLoading.not()){
                 NextButton(
                     onNextClick = listener::onClickNext,
                     isButtonEnabled = state.isNextButtonEnabled(),
