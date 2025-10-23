@@ -68,7 +68,7 @@ internal fun UploadReelScreen(
                 snackBarController.showSnackBar(
                     SnackBarData(
                         message = getString(effect.errorState.toStringResource()),
-                        snackBarType = SnackBarStatus.Success,
+                        snackBarType = SnackBarStatus.Error,
                     )
                 )
             }
