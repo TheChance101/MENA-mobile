@@ -1,7 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +27,6 @@ import mena.trends_presentation.generated.resources.upload_video
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -37,6 +34,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -167,18 +165,6 @@ private fun CategoryPublishAppBar(
         title = stringResource(Res.string.new_trend),
         trailingContent = { UploadPageNumber(page = 3) }
     )
-}
-
-@Composable
-private fun LoadingProgressBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Theme.colorScheme.background.surface),
-        contentAlignment = Alignment.Center
-    ) {
-        DotsProgressIndicator()
-    }
 }
 
 @Preview(showBackground = true)

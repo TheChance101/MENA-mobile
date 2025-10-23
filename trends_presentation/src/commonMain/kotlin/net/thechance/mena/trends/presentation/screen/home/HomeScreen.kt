@@ -33,7 +33,6 @@ import mena.trends_presentation.generated.resources.trends_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -43,6 +42,7 @@ import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -105,7 +105,7 @@ private fun HomeScreenContent(
             Box(modifier = Modifier.fillMaxSize()) {
                 AnimatedVisibility(
                     visible = state.isLoading,
-                    content = { DotsProgressIndicator(Modifier.align(Alignment.Center)) }
+                    content = { LoadingProgressBar() }
                 )
 
                 AnimatedVisibility(
@@ -169,7 +169,6 @@ private fun ReelsListSection(
         }
     }
 }
-
 
 @Composable
 private fun TrendsAppBar(
