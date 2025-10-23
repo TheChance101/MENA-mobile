@@ -51,8 +51,7 @@ fun PrayerTimesCard(
     if (prayerTimesUiState == null) return
 
     Box(
-        modifier = modifier
-            .aspectRatio(2.65f),
+        modifier = modifier.aspectRatio(2.65f),
     ) {
         Box(
             modifier = Modifier

@@ -93,7 +93,7 @@ private fun Content(
     Scaffold(
         topBar = { MainTopBar(locationName = "Cairo, Egypt") }
     ) {
-        val faithFeatureCards = faithFeatureCards(listener)
+        val faithFeatureCards = faithFeatureCards(listener = listener)
 
         LazyVerticalGrid(
             modifier = Modifier
