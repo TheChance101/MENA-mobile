@@ -74,7 +74,7 @@ private fun CategoryPickScreenContent(
         },
     ) {
         when {
-            state.error == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
+            state.error is ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
             state.isLoading -> LoadingProgressBar()
             else -> {
                 CategoryPickScreenBody(

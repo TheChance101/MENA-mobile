@@ -104,7 +104,11 @@ private fun HomeScreenContent(
                         NoConnection { listener.onClickRetry() }
 
                     reels.itemSnapshotList.isEmpty() -> EmptyTrends()
-                    else -> HomeScreenBody(reels, listener)
+                    else -> ReelsListSection(reels, listener)
+                }
+
+                if (state.isLoading.not()) {
+                    AddTrendFAB(listener)
                 }
             }
         }
@@ -112,7 +116,23 @@ private fun HomeScreenContent(
 }
 
 @Composable
-private fun BoxScope.HomeScreenBody(
+private fun BoxScope.AddTrendFAB(listener: HomeInteractionListener) {
+    Icon(
+        painter = painterResource(Res.drawable.ic_add_real),
+        contentDescription = stringResource(Res.string.add_reel),
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
+            .size(56.dp)
+            .clip(RoundedCornerShape(Theme.radius.lg))
+            .background(Theme.colorScheme.primary.primary)
+            .noRippleClickable { listener.onClickAddReel() }
+            .padding(Theme.spacing._16),
+    )
+}
+
+@Composable
+private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     listener: HomeInteractionListener
 ) {
@@ -131,19 +151,6 @@ private fun BoxScope.HomeScreenBody(
             )
         }
     }
-
-    Icon(
-        painter = painterResource(Res.drawable.ic_add_real),
-        contentDescription = stringResource(Res.string.add_reel),
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-            .size(56.dp)
-            .clip(RoundedCornerShape(Theme.radius.lg))
-            .background(Theme.colorScheme.primary.primary)
-            .noRippleClickable { listener.onClickAddReel() }
-            .padding(Theme.spacing._16),
-    )
 }
 
 
@@ -185,7 +192,7 @@ private fun TrendsAppBar(
 private fun HomeScreenPreview() {
     MenaTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            HomeScreenBody(
+            ReelsListSection(
                 reels = HomeScreenState().reels.collectAsLazyPagingItems(),
                 listener = object : HomeInteractionListener {
                     override fun onClickLike(reelId: String) {}

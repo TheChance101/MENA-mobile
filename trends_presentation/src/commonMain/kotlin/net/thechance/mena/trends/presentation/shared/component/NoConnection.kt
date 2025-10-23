@@ -15,7 +15,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun NoConnection(modifier: Modifier = Modifier, onRetry: () -> Unit) {
+fun NoConnection(
+    modifier: Modifier = Modifier,
+    onRetry: () -> Unit
+) {
     StatePlaceholder(
         icon = painterResource(Res.drawable.ic_no_connection),
         title = stringResource(Res.string.no_connection_title),
