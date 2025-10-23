@@ -19,12 +19,14 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.PermissionManager
+import net.thechance.mena.identity.presentation.utils.ImageCacheManager
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class EditUserProfileViewModel(
     private val userRepository: UserRepository,
     private val permissionManager: PermissionManager,
+    private val imageCacheController: ImageCacheManager,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
@@ -189,13 +191,14 @@ class EditUserProfileViewModel(
     }
 
     override fun onRequireCropImage(imageBitmap: ImageBitmap) {
+        imageCacheController.cacheImage(PROFILE_IMAGE,imageBitmap)
         sendNewEffect(
             EditUserProfileUIEffect.NavigateToCropScreen(
-                imageBitmap = imageBitmap,
-                onResult = { croppedImageBitmap ->
+                imageKey = PROFILE_IMAGE,
+                onResult = { croppedImageKey ->
                     updateState {
                         copy(
-                            profileImageBitmap = croppedImageBitmap,
+                            profileImageBitmap = imageCacheController.getCachedImage(croppedImageKey),
                             shouldUpdateImage = true
                         )
                     }
@@ -225,5 +228,8 @@ class EditUserProfileViewModel(
 
     override fun onOpenCamera() {
         updateState { copy(showCamera = false) }
+    }
+    companion object{
+        const val PROFILE_IMAGE = "profile_image"
     }
 }
