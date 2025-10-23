@@ -1,11 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.main_container
 
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+
 data class MainContainerState(
     val isCategoriesAlreadySelectedByUser: Boolean? = null,
-    val error: MainContainerErrorState? = null,
+    val error: ErrorState? = null,
 )
-
-sealed class MainContainerErrorState {
-    object NoInternet : MainContainerErrorState()
-    data class Unknown(val message: String?) : MainContainerErrorState()
-}

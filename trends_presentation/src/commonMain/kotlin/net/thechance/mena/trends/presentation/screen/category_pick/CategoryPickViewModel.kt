@@ -1,11 +1,9 @@
 package net.thechance.mena.trends.presentation.screen.category_pick
 
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
-import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.model.mapper.toUserCategoryUiState
@@ -17,7 +15,7 @@ import org.koin.core.annotation.Provided
 internal class CategoryPickViewModel(
     @Provided private val repository: CategoryRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<CategoryPickScreenState, CategoryPickScreenEffect, CategoryPickErrorState>(
+) : BaseViewModel<CategoryPickScreenState, CategoryPickScreenEffect>(
     initialState = CategoryPickScreenState()
 ), CategoryPickInteractionListener {
 
@@ -32,8 +30,7 @@ internal class CategoryPickViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = ::startLoading,
             onEnd = ::endLoading,
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -52,8 +49,7 @@ internal class CategoryPickViewModel(
             onStart = ::startSaving,
             onEnd = ::endSaving,
             onError = { errorState -> updateState { copy(error = errorState) } },
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -64,13 +60,6 @@ internal class CategoryPickViewModel(
         repository.initializeUserCategories(selectedIds)
     }
 
-    private fun mapError(throwable: Throwable): CategoryPickErrorState {
-        return when (throwable) {
-            is NoInternetException -> CategoryPickErrorState.NoInternet
-            else -> CategoryPickErrorState.RequestFailed(throwable.message).also { logError(throwable) }
-        }.also { errorState -> Logger.e(TAG) { errorState.toString() } }
-    }
-
     override fun onBackClick() = sendEffect(CategoryPickScreenEffect.NavigateBack)
 
     private fun startLoading() = updateState { copy(isLoading = true) }
@@ -79,7 +68,4 @@ internal class CategoryPickViewModel(
     private fun startSaving() = updateState { copy(isNextButtonLoading = true) }
     private fun endSaving() = updateState { copy(isNextButtonLoading = false) }
 
-    private companion object{
-        const val TAG ="CategoryPickErrorState"
-    }
 }

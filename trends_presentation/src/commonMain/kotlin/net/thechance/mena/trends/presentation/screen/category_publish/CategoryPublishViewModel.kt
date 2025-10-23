@@ -1,15 +1,12 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
-import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.category_publish.args.CategoryPublishArgs
-import net.thechance.mena.trends.presentation.screen.home.HomeErrorState
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.model.mapper.toReelCategoryUiState
 import net.thechance.mena.trends.presentation.shared.model.toggleCategory
@@ -22,7 +19,7 @@ internal class CategoryPublishViewModel(
     @Provided private val categoryRepository: CategoryRepository,
     @Provided private val reelsRepository: ReelsRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<CategoryPublishState, CategoryPublishEffect,CategoryPublishErrorState>(
+) : BaseViewModel<CategoryPublishState, CategoryPublishEffect>(
     initialState = CategoryPublishState()
 ), CategoryPublishInteractionListener {
 
@@ -37,8 +34,7 @@ internal class CategoryPublishViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -59,8 +55,7 @@ internal class CategoryPublishViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isPublishButtonLoadingVisible = true) } },
             onEnd = { updateState { copy(isPublishButtonLoadingVisible = false) } },
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -76,18 +71,5 @@ internal class CategoryPublishViewModel(
                 categoryIds = selectedIds
             )
         }
-    }
-
-    private fun mapError(throwable: Throwable): CategoryPublishErrorState {
-        return when (throwable) {
-            is NoInternetException -> CategoryPublishErrorState.NoInternet
-            else -> CategoryPublishErrorState.RequestFailed(throwable.message).also { logError(throwable) }
-        }.also { errorState ->
-            Logger.e(TAG) { errorState.toString() }
-        }
-    }
-
-    private companion object{
-        const val TAG ="CategoryPublishErrorState"
     }
 }

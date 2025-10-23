@@ -14,7 +14,7 @@ import org.koin.core.annotation.Provided
 internal class MainContainerViewModel(
     @Provided private val repository: CategoryRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<MainContainerState, MainContainerEffect, MainContainerErrorState>(MainContainerState()) {
+) : BaseViewModel<MainContainerState, MainContainerEffect>(MainContainerState()) {
 
     init {
         checkIfUserSelectedCategories()
@@ -27,8 +27,7 @@ internal class MainContainerViewModel(
             onError = { errorState ->
                 updateState { copy(error = errorState, isCategoriesAlreadySelectedByUser = false) }
             },
-            dispatcher = defaultDispatcher,
-            errorMapper = ::mapError
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -43,18 +42,5 @@ internal class MainContainerViewModel(
         } else {
             sendEffect(MainContainerEffect.NavigateToCategoryPick)
         }
-    }
-
-    private fun mapError(throwable: Throwable): MainContainerErrorState {
-        return when (throwable) {
-            is NoInternetException -> MainContainerErrorState.NoInternet
-            else -> MainContainerErrorState.Unknown(message = throwable.message).also { logError(throwable)}
-        }.also { errorState ->
-            Logger.e(TAG) { errorState.toString() }
-        }
-    }
-
-    private companion object{
-        const val TAG ="MainContainerErrorState"
     }
 }
