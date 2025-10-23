@@ -198,7 +198,7 @@ class HomeViewModelTest {
     fun `onNewChatClicked should navigate to ContactsRoute when contacts are synced`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { contactsRepository.getSyncStatus() } returns true
+        everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns true
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
 
         val viewModel = createViewModel()
@@ -220,7 +220,7 @@ class HomeViewModelTest {
     fun `onNewChatClicked should navigate to SyncContactsRoute when contacts are not synced`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { contactsRepository.getSyncStatus() } returns false
+        everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns false
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
 
         val viewModel = createViewModel()

@@ -38,7 +38,7 @@ internal fun ColumnScope.DetailsInfo(
 ) {
     Box(
         modifier = modifier
-            .padding(vertical = Theme.spacing._12)
+            .padding(vertical = 12.dp)
             .height(1.dp)
             .fillMaxWidth()
             .background(color = Theme.colorScheme.stroke)
@@ -82,7 +82,7 @@ private fun DetailsInfoContent(
                 painter = it,
                 contentDescription = iconContentDescription,
                 modifier = Modifier
-                    .padding(end = Theme.spacing._4)
+                    .padding(end = 4.dp)
                     .size(20.dp),
                 tint = iconTint
             )

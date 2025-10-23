@@ -40,9 +40,9 @@ class ContactMappersTest {
         val dto = createPagedDataDto(
             data = listOf(
                 createContactDto(
-                firstName = "Bilal",
-                phone = "123"
-            )
+                    firstName = "Bilal",
+                    phone = "123"
+                )
             ),
             pageNumber = 5,
             totalItems = 1,
@@ -74,10 +74,10 @@ class ContactMappersTest {
         val dto = createPagedDataDto(
             data = listOf(
                 createContactDto(
-                firstName = "Bilal",
-                lastName = "Azzam",
-                phone = "789"
-            )
+                    firstName = "Bilal",
+                    lastName = "Azzam",
+                    phone = "789"
+                )
             ),
             pageNumber = 1,
             totalItems = null,

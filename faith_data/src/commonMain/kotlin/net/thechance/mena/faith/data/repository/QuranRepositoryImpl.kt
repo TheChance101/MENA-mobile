@@ -16,9 +16,9 @@ class QuranRepositoryImpl(
     val tilawahDataStore: TilawahDataStore
 ) : QuranRepository {
 
-    override suspend fun getAllSur(): List<Surah> =
+    override suspend fun getSur(): List<Surah> =
         executeLocalSafely {
-            ayahDao.getAllSur().map { it.toSurah() }
+            ayahDao.getSur().map { it.toSurah() }
         }
 
     override suspend fun getAyatOfSurah(surahId: Int): List<Ayah> =

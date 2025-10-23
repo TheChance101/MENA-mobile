@@ -24,10 +24,11 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.data.utils.MessageEvent
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -42,7 +43,7 @@ class MessageRepositoryImpl(
     private val messageDao: MessageDao,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
-) : BaseRepository, MessageRepository {
+) : MessageRepository {
     private val messageFlows = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -64,12 +65,12 @@ class MessageRepositoryImpl(
         messageDao.deleteMessage(message.id.toString())
     }
 
-    override fun getLocalMessages(chatId: Uuid): Flow<List<Message>> {
+    override fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>> {
         val failedEntities = messageDao.getMessagesByChat(chatId.toString())
         return failedEntities.map { it.toDomain() }
     }
 
-    override fun getMessages(chatId: Uuid?): Flow<Message> {
+    override fun observeMessagesForChatOrAll(chatId: Uuid?): Flow<Message> {
         if (webSocketManager.isConnected().not()) initializeWebsocketConnection()
         return messageFlows.filter { chatId == null || it.chatId == chatId }
     }
@@ -124,7 +125,7 @@ class MessageRepositoryImpl(
         }
     }
 
-    override suspend fun markMessagesAsRead(chatId: Uuid) {
+   override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
         webSocketManager.sendTextFrame(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))

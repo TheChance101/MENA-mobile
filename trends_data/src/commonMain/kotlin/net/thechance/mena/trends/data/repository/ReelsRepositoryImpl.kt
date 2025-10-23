@@ -19,6 +19,8 @@ import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.io.buffered
+import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIENT_NAME
+import net.thechance.mena.trends.data.di.TrendDataModule.Companion.UPLOAD_CLIENT_NAME
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
@@ -37,16 +39,17 @@ import net.thechance.mena.trends.data.util.NetworkConstants.VIEW_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
-import net.thechance.mena.trends.data.util.setUploadRequestTimeout
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
-    @Provided private val networkClient: HttpClient,
+    @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient,
+    @Named(UPLOAD_CLIENT_NAME) private val uploadClient: HttpClient,
     @Provided private val videoFileHandler: VideoFileHandler
 ) : ReelsRepository {
 
@@ -95,8 +98,7 @@ internal class ReelsRepositoryImpl(
     override suspend fun uploadReel(filePath: String, size: Long): String {
         return safeApiCall<UploadReelResponse> {
             val fileSource = videoFileHandler.readFile(filePath)
-            networkClient.post(urlString = REELS_ENDPOINT) {
-                setUploadRequestTimeout()
+            uploadClient.post(urlString = REELS_ENDPOINT) {
                 setBody(
                     createRequestBody(
                         key = VIDEO,
@@ -115,7 +117,7 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun uploadReelThumbnail(reelId: String, thumbnail: ByteArray) {
         safeApiCall<Unit> {
-            networkClient.put(urlString = "$THUMBNAIL_ENDPOINT/${reelId}") {
+            uploadClient.put(urlString = "$THUMBNAIL_ENDPOINT/${reelId}") {
                 setBody(
                     createRequestBody(
                         key = THUMBNAIL,
