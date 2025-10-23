@@ -14,5 +14,5 @@ internal actual fun platformModule(): Module = module {
     }
 
     single { PermissionManager() }
-    single <ImageCacheController>{ ImageCacheManagerImpl() }
+    single <ImageCacheManager>{ ImageCacheManagerImpl() }
 }
