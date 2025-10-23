@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.home
 
+import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,15 +31,12 @@ import mena.trends_presentation.generated.resources.trends_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
-import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -70,46 +68,7 @@ internal fun HomeScreen(
 
     LaunchedEffect(Unit) { viewModel.getFeedReels() }
 
-    val reels = state.reels.collectAsLazyPagingItems()
-
-    HomeScreenScaffold(
-        onClickManageMyTrends = viewModel::onClickManageMyTrends,
-        onClickEditTags = viewModel::onClickEditTags
-    ) {
-        when {
-            reels.loadState.refresh.toErrorState() == ErrorState.NoInternet -> {
-                NoConnection(onRetry = viewModel::onClickRetry)
-            }
-
-            reels.itemCount > 0 -> {
-                ReelScreenContent(
-                    state = state,
-                    listener = viewModel
-                )
-            }
-
-            else -> {
-                EmptyTrends()
-            }
-        }
-    }
-}
-
-@Composable
-private fun HomeScreenScaffold(
-    onClickManageMyTrends: () -> Unit,
-    onClickEditTags: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    Scaffold(
-        topBar = {
-            TrendsAppBar(
-                onManageMyTrendsClick = onClickManageMyTrends,
-                onEditTagsClick = onClickEditTags
-            )
-        },
-        content = content
-    )
+    ReelScreenContent(state = state, listener = viewModel)
 }
 
 @Composable
@@ -117,50 +76,64 @@ private fun ReelScreenContent(
     state: HomeScreenState,
     listener: HomeInteractionListener,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        val reels = state.reels.collectAsLazyPagingItems()
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = Theme.spacing._16),
-            contentPadding = PaddingValues(vertical = Theme.spacing._8),
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-        ) {
-            items(reels.itemSnapshotList.items) { reel ->
-                FeedReelCard(
-                    reel = reel,
-                    onLikeClick = { listener.onClickLike(reel.id) },
-                    onReelClick = { listener.onClickReel(reel.id) }
+    val reels = state.reels.collectAsLazyPagingItems()
+    TrendsScaffold(
+        topBar = {
+            TrendsAppBar(
+                onClickManageMyTrends = { listener.onClickManageMyTrends() },
+                onClickEditTags = { listener.onClickEditTags() }
+            )
+        },
+        errorState = reels.loadState.refresh.toErrorState()
+    ) {
+        if (reels.itemCount > 0) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = Theme.spacing._16),
+                    contentPadding = PaddingValues(vertical = Theme.spacing._8),
+                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+                ) {
+                    items(reels.itemSnapshotList.items) { reel ->
+                        FeedReelCard(
+                            reel = reel,
+                            onLikeClick = { listener.onClickLike(reel.id) },
+                            onReelClick = { listener.onClickReel(reel.id) }
+                        )
+                    }
+                }
+
+                Icon(
+                    painter = painterResource(Res.drawable.ic_add_real),
+                    contentDescription = stringResource(Res.string.add_reel),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(Theme.radius.lg))
+                        .background(Theme.colorScheme.primary.primary)
+                        .noRippleClickable { listener.onClickAddReel() }
+                        .padding(Theme.spacing._16)
                 )
             }
+        } else {
+            EmptyTrends()
         }
-
-        Icon(
-            painter = painterResource(Res.drawable.ic_add_real),
-            contentDescription = stringResource(Res.string.add_reel),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-                .size(56.dp)
-                .clip(RoundedCornerShape(Theme.radius.lg))
-                .background(Theme.colorScheme.primary.primary)
-                .noRippleClickable { listener.onClickAddReel() }
-                .padding(Theme.spacing._16)
-        )
     }
 }
 
 @Composable
 private fun TrendsAppBar(
-    onManageMyTrendsClick: () -> Unit,
-    onEditTagsClick: () -> Unit
+    onClickManageMyTrends: () -> Unit,
+    onClickEditTags: () -> Unit
 ) {
     AppBar(
         title = stringResource(Res.string.trends_title),
         trailingContent = {
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onManageMyTrendsClick
+                onClick = onClickManageMyTrends
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_account_setting),
@@ -170,7 +143,7 @@ private fun TrendsAppBar(
             }
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onEditTagsClick
+                onClick = onClickEditTags
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pencil_edit),

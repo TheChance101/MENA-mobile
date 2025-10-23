@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
+import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,15 +30,12 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
-import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
-import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -62,32 +60,9 @@ internal fun UpdateCategoriesScreen(
         viewModel.getCategories()
     }
 
-    UpdateCategoriesScaffold(
-        onBackClick = viewModel::onClickBack
-    ) {
-        when {
-            state.errorState == ErrorState.NoInternet -> {
-                NoConnection { viewModel.onClickRetry() }
-            }
-
-            else -> {
-                UpdateCategoriesScreenContent(
-                    state = state,
-                    listener = viewModel
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun UpdateCategoriesScaffold(
-    onBackClick: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    Scaffold(
-        topBar = { ChangeTagsAppBar(onBackClick) },
-        content = content
+    UpdateCategoriesScreenContent(
+        state = state,
+        listener = viewModel
     )
 }
 
@@ -96,40 +71,45 @@ private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
-    if (state.isLoading.not()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(state = rememberScrollState())
-                .padding(horizontal = Theme.spacing._16)
-        ) {
-            ChooseInterestsMessage()
-            FlowRow(
-                modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+    TrendsScaffold(
+        topBar = { ChangeTagsAppBar(onBackClick = listener::onClickBack) },
+        errorState = state.errorState
+    ) {
+        if (state.isLoading.not()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16)
             ) {
-                state.categories.forEach { category ->
-                    CategoryItem(
-                        category = category,
-                        onClick = { id -> listener.onClickCategory(categoryId = id) },
-                        modifier = Modifier.padding(
-                            bottom = Theme.spacing._12,
-                            end = Theme.spacing._8
+                ChooseInterestsMessage()
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+                ) {
+                    state.categories.forEach { category ->
+                        CategoryItem(
+                            category = category,
+                            onClick = { id -> listener.onClickCategory(categoryId = id) },
+                            modifier = Modifier.padding(
+                                bottom = Theme.spacing._12,
+                                end = Theme.spacing._8
+                            )
                         )
-                    )
+                    }
                 }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                SaveChangeButton(
+                    onSaveClick = listener::onClickSave,
+                    isButtonEnabled = state.saveButtonEnabled(),
+                    isButtonLoading = state.isSaveButtonLoading,
+                    modifier = Modifier.padding(bottom = Theme.spacing._24)
+                )
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            SaveChangeButton(
-                onSaveClick = listener::onClickSave,
-                isButtonEnabled = state.saveButtonEnabled(),
-                isButtonLoading = state.isSaveButtonLoading,
-                modifier = Modifier.padding(bottom = Theme.spacing._24)
-            )
+        } else {
+            LoadingProgressBar()
         }
-    } else {
-        LoadingProgressBar()
     }
 }
 

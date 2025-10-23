@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_pick
 
+import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,9 +25,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
-import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -48,19 +48,7 @@ internal fun CategoryPickScreen(
         }
     }
 
-    when {
-        state.error == ErrorState.NoInternet -> {
-            NoConnection(onRetry = viewModel::onClickRetry)
-        }
-
-        state.isLoading -> {
-            LoadingProgressBar()
-        }
-
-        else -> {
-            CategoryPickScreenContent(state = state, listener = viewModel)
-        }
-    }
+    CategoryPickScreenContent(state = state, listener = viewModel)
 }
 
 @Composable
@@ -68,31 +56,44 @@ private fun CategoryPickScreenContent(
     state: CategoryPickScreenState,
     listener: CategoryPickInteractionListener
 ) {
-    if (state.isLoading.not()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = Theme.spacing._16)
-        ) {
-            ChooseInterestsMessage()
-
-            FlowRow(
+    TrendsScaffold(
+        bottomContent = {
+            NextButton(
+                onNextClick = listener::onClickNext,
+                isButtonEnabled = state.isNextButtonEnabled(),
+                isButtonLoading = state.isNextButtonLoading,
+                modifier = Modifier.padding(horizontal = Theme.spacing._16)
+            )
+        },
+        errorState = state.error
+    ) {
+        if (state.isLoading.not()) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = Theme.spacing._24)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16)
             ) {
-                state.categories.forEach { category ->
-                    CategoryItem(
-                        category = category,
-                        onClick = { id -> listener.onClickCategory(categoryId = id) },
-                        modifier = Modifier.padding(
-                            bottom = Theme.spacing._12,
-                            end = Theme.spacing._8
+                ChooseInterestsMessage()
+
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = Theme.spacing._24)
+                ) {
+                    state.categories.forEach { category ->
+                        CategoryItem(
+                            category = category,
+                            onClick = { id -> listener.onClickCategory(categoryId = id) },
+                            modifier = Modifier.padding(
+                                bottom = Theme.spacing._12, end = Theme.spacing._8
+                            )
                         )
-                    )
+                    }
                 }
             }
+        } else {
+            LoadingProgressBar()
         }
     }
 }

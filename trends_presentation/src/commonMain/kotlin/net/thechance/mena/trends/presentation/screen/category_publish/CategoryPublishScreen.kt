@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
+import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
-import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -72,9 +72,9 @@ private fun CategoryPublishContent(
     listener: CategoryPublishInteractionListener,
 ) {
     if (state.isLoading.not()) {
-        Scaffold(
+        TrendsScaffold(
             topBar = { CategoryPublishAppBar(listener::onClickBack) },
-            bottomBar = {
+            bottomContent = {
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
                     text = stringResource(resource = Res.string.upload_video),

@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
+import TrendsScaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,14 +42,11 @@ import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.segment.Segment
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -74,32 +72,9 @@ internal fun ManageTrendsScreen(
         viewModel.getReels()
     }
 
-    ManageTrendsScaffold(
-        onBackClick = viewModel::onClickBack
-    ) {
-        when {
-            state.error == ErrorState.NoInternet -> {
-                NoConnection(onRetry = viewModel::onClickRetry)
-            }
-
-            else -> {
-                ManageTrendsScreenContent(
-                    state = state,
-                    listener = viewModel
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ManageTrendsScaffold(
-    onBackClick: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    Scaffold(
-        topBar = { ManageMyTrendsAppBar(onBackClick = onBackClick) },
-        content = content
+    ManageTrendsScreenContent(
+        state = state,
+        listener = viewModel
     )
 }
 
@@ -108,31 +83,36 @@ private fun ManageTrendsScreenContent(
     state: ManageTrendsScreenState,
     listener: ManageTrendsInteractionListener
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+    TrendsScaffold(
+        topBar = { ManageMyTrendsAppBar(onBackClick = { listener.onClickBack() }) },
+        errorState = state.error
     ) {
-        UserAvatar(
-            profileImageUrl = state.profile.profileImageUrl,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Text(
-            text = state.profile.userName,
-            style = Theme.typography.label.medium,
+        Column(
             modifier = Modifier
-                .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
-                .align(Alignment.CenterHorizontally)
-        )
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            UserAvatar(
+                profileImageUrl = state.profile.profileImageUrl,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
 
-        SegmentSection(
-            reels = state.reels.collectAsLazyPagingItems(),
-            onTrendClick = listener::onClickReel,
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            trendsTitle = stringResource(Res.string.my_trends),
-            favoriteTitle = stringResource(Res.string.favorite)
-        )
+            Text(
+                text = state.profile.userName,
+                style = Theme.typography.label.medium,
+                modifier = Modifier
+                    .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
+                    .align(Alignment.CenterHorizontally)
+            )
+
+            SegmentSection(
+                reels = state.reels.collectAsLazyPagingItems(),
+                onTrendClick = listener::onClickReel,
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                trendsTitle = stringResource(Res.string.my_trends),
+                favoriteTitle = stringResource(Res.string.favorite)
+            )
+        }
     }
 }
 
