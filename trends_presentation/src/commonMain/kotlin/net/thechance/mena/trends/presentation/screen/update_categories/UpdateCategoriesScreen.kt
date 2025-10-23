@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,21 +77,29 @@ private fun UpdateCategoriesScreenContent(
     listener: UpdateCategoriesInteractionListener
 ) {
     Scaffold(
-        topBar = { if (state.isLoading.not()) ChangeTagsAppBar(onBackClick = listener::onClickBack) },
+        topBar = {
+            AnimatedVisibility(
+                visible = state.isLoading.not(),
+                content = { ChangeTagsAppBar(onBackClick = listener::onClickBack) }
+            )
+        },
         bottomBar = {
-            if (state.errorState == null || state.isLoading.not()) {
-                SaveChangeButton(
-                    onSaveClick = listener::onClickSave,
-                    isButtonEnabled = state.saveButtonEnabled(),
-                    isButtonLoading = state.isSaveButtonLoading,
-                    modifier = Modifier
-                        .padding(
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            bottom = Theme.spacing._24
-                        )
-                )
-            }
+            AnimatedVisibility(
+                visible = state.errorState == null && state.isLoading.not(),
+                content = {
+                    SaveChangeButton(
+                        onSaveClick = listener::onClickSave,
+                        isButtonEnabled = state.saveButtonEnabled(),
+                        isButtonLoading = state.isSaveButtonLoading,
+                        modifier = Modifier
+                            .padding(
+                                start = Theme.spacing._16,
+                                end = Theme.spacing._16,
+                                bottom = Theme.spacing._24
+                            )
+                    )
+                }
+            )
         },
         snakeBar = {
             state.errorState?.let { errorState ->
@@ -101,11 +110,19 @@ private fun UpdateCategoriesScreenContent(
             }
         },
         content = {
-            when {
-                state.isLoading -> LoadingProgressBar()
-                state.errorState == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
-                else -> UpdateCategoryScreenBody(listener, state)
-            }
+            AnimatedVisibility(
+                visible = state.isLoading,
+                content = { LoadingProgressBar() })
+
+            AnimatedVisibility(
+                visible = state.errorState == null && state.isLoading.not(),
+                content = { UpdateCategoryScreenBody(listener, state) }
+            )
+
+            AnimatedVisibility(
+                visible = state.errorState == ErrorState.NoInternet,
+                content = { NoConnection { listener.onClickRetry() } }
+            )
         }
     )
 }

@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_pick
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,7 +64,7 @@ private fun CategoryPickScreenContent(
 ) {
     Scaffold(
         bottomBar = {
-            if (state.error == null || state.isLoading.not()){
+            if (state.error == null || state.isLoading.not()) {
                 NextButton(
                     onNextClick = listener::onClickNext,
                     isButtonEnabled = state.isNextButtonEnabled(),
@@ -71,18 +72,22 @@ private fun CategoryPickScreenContent(
                     modifier = Modifier.padding(horizontal = Theme.spacing._16)
                 )
             }
-        },
-    ) {
-        when {
-            state.error is ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
-            state.isLoading -> LoadingProgressBar()
-            else -> {
-                CategoryPickScreenBody(
-                    state = state,
-                    listener = listener
-                )
-            }
         }
+    ) {
+        AnimatedVisibility(
+            visible = state.error is ErrorState.NoInternet,
+            content = { NoConnection { listener.onClickRetry() } }
+        )
+
+        AnimatedVisibility(
+            visible = state.isLoading,
+            content = { LoadingProgressBar() }
+        )
+
+        AnimatedVisibility(
+            visible = state.error == null && state.isLoading.not(),
+            content = { CategoryPickScreenBody(state, listener) }
+        )
     }
 }
 

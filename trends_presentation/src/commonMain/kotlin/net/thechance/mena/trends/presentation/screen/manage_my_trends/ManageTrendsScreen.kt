@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -89,13 +90,26 @@ private fun ManageTrendsScreenContent(
     listener: ManageTrendsInteractionListener
 ) {
     Scaffold(
-        topBar = { if (state.isLoading.not()) ManageMyTrendsAppBar(onBackClick = listener::onClickBack) },
+        topBar = {
+            AnimatedVisibility(
+                visible = state.isLoading.not(),
+                content = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) })
+        },
         content = {
-            when {
-                state.isLoading -> LoadingProgressBar()
-                state.error == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
-                else -> ManageTrendsScreenBody(listener, state)
-            }
+            AnimatedVisibility(
+                visible = state.isLoading,
+                content = { LoadingProgressBar() }
+            )
+
+            AnimatedVisibility(
+                visible = state.error == ErrorState.NoInternet,
+                content = { NoConnection { listener.onClickRetry() } }
+            )
+
+            AnimatedVisibility(
+                visible = state.error == null && state.isLoading.not(),
+                content = { ManageTrendsScreenBody(listener, state) }
+            )
         }
     )
 }

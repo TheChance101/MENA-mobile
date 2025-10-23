@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -89,27 +90,43 @@ private fun HomeScreenContent(
     val reels = state.reels.collectAsLazyPagingItems()
     Scaffold(
         topBar = {
-            if (state.isLoading.not())
-                TrendsAppBar(
-                    onManageMyTrendsClick = listener::onClickManageMyTrends,
-                    onEditTagsClick = listener::onClickEditTags
-                )
-
+            AnimatedVisibility(
+                visible = state.isLoading.not(),
+                content = {
+                    TrendsAppBar(
+                        onManageMyTrendsClick = listener::onClickManageMyTrends,
+                        onEditTagsClick = listener::onClickEditTags
+                    )
+                }
+            )
         },
+
         content = {
             Box(modifier = Modifier.fillMaxSize()) {
-                when {
-                    state.isLoading -> DotsProgressIndicator(Modifier.align(Alignment.Center))
-                    reels.loadState.refresh.toErrorState() == ErrorState.NoInternet ->
-                        NoConnection { listener.onClickRetry() }
+                AnimatedVisibility(
+                    visible = state.isLoading,
+                    content = { DotsProgressIndicator(Modifier.align(Alignment.Center)) }
+                )
 
-                    reels.itemSnapshotList.isEmpty() -> EmptyTrends()
-                    else -> ReelsListSection(reels, listener)
-                }
+                AnimatedVisibility(
+                    visible = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet,
+                    content = { NoConnection { listener.onClickRetry() } }
+                )
 
-                if (state.isLoading.not()) {
-                    AddTrendFAB(listener)
-                }
+                AnimatedVisibility(
+                    visible = reels.itemSnapshotList.isEmpty() && state.isLoading.not(),
+                    content = { EmptyTrends() }
+                )
+
+                AnimatedVisibility(
+                    visible = reels.itemSnapshotList.isNotEmpty() && state.isLoading.not(),
+                    content = { ReelsListSection(reels, listener) }
+                )
+
+                AnimatedVisibility(
+                    visible = state.isLoading.not(),
+                    content = { AddTrendFAB(listener) }
+                )
             }
         }
     )
