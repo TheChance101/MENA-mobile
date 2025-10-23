@@ -6,7 +6,7 @@ import net.thechance.mena.trends.domain.entity.Category
 
 internal fun CategoryDto.toEntity(): Category? {
     return Category(
-        id = id.orEmpty(),
+        id = id,
         name = name.orEmpty(),
         emoji = emoji.orEmpty(),
         isSelected = isSelected.orFalse()

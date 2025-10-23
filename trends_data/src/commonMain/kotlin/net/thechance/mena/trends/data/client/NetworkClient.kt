@@ -21,11 +21,12 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.qualifier.named
 
+
 @Single
 class NetworkClient : KoinComponent {
 
     private val authorizationService: AuthorizationService by lazy { get() }
-    private val baseUrl: String by lazy { get(named(BASE_URL)) }
+    private val baseUrl: String by lazy { get(named(BASE_URL_KEY)) }
 
     @Single
     fun provideDefaultHttpClient(): HttpClient {
@@ -36,7 +37,7 @@ class NetworkClient : KoinComponent {
                 level = LogLevel.ALL
                 logger = object : Logger {
                     override fun log(message: String) {
-                        println("Default Http Client: $message")
+                        co.touchlab.kermit.Logger.e(DEFAULT_HTTP_CLIENT_LOG_TAG) { message }
                     }
                 }
             }
@@ -57,7 +58,7 @@ class NetworkClient : KoinComponent {
                 level = LogLevel.HEADERS
                 logger = object : Logger {
                     override fun log(message: String) {
-                        println("Upload Http Client: $message")
+                        co.touchlab.kermit.Logger.e(UPLOAD_HTTP_CLIENT_LOG_TAG) { message }
                     }
                 }
             }
@@ -103,6 +104,8 @@ class NetworkClient : KoinComponent {
 
     private companion object {
         const val TIME_OUT_INTERVAL_MILLI = 60_000L
-        const val BASE_URL = "baseUrl"
+        const val BASE_URL_KEY = "baseUrl"
+        const val UPLOAD_HTTP_CLIENT_LOG_TAG = "Upload Http Client"
+        const val DEFAULT_HTTP_CLIENT_LOG_TAG = "Default Http Client"
     }
 }
