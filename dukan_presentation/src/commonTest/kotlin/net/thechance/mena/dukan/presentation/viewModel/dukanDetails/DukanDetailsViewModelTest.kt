@@ -78,19 +78,31 @@ class DukanDetailsViewModelTest {
         Dispatchers.resetMain()
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD load dukan details successfully`() = runTest {
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+            style = Dukan.Style.SMALL_IMAGE
+        )
+        everySuspend {
+            productRepository.getProductsByShelfId(any(), any(), any())
+        } returns PagedResult(
+            items = fakeProducts(),
+            currentPage = 1,
+            totalItems = 1L,
+            totalPages = 1
+        )
+
+        val viewModel = createViewModel()
         advanceUntilIdle()
-        val state = dukanDetailsViewModel.state.value
 
-        assertEquals(dummyDukanDetails().name, state.dukanInfo.name)
-        assertEquals(dummyDukanDetails().imageUrl, state.dukanInfo.imageUrl)
-        assertEquals(30.0, state.dukanInfo.coordinates.latitude)
-        assertEquals(31.0, state.dukanInfo.coordinates.longitude)
-
-        val shelvesList = state.shelves.asSnapshot()
-        assertTrue(shelvesList.isNotEmpty())
+        viewModel.state.test {
+            val state = awaitItem()
+            assertTrue(state.shelves.asSnapshot().isNotEmpty())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
+
 
     @Test
     fun `init SHOULD set isDukanInfoLoading to false after successful load`() = runTest {

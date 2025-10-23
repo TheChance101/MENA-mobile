@@ -8,8 +8,6 @@ import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
@@ -101,18 +99,16 @@ class DukanDetailsViewModel(
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE
 
-    private suspend fun updateProductsShelves(
+
+    private fun updateProductsShelves(
         shelves: PagingData<ShelfUiState>
     ): PagingData<ShelfUiState> {
-        return coroutineScope {
-            shelves.map { shelf ->
-                async {
-                    val products = getInitialProductsForShelf(shelf.id)
-                    shelf.copy(products = products)
-                }.await()
-            }.filter { it.products.isNotEmpty() }
-        }
+        return shelves.map { shelf ->
+            val products = getInitialProductsForShelf(shelf.id)
+            shelf.copy(products = products)
+        }.filter { it.products.isNotEmpty() }
     }
+
 
     private suspend fun getInitialProductsForShelf(shelfId: String): List<ProductUiState> {
         val maxProducts = 6
