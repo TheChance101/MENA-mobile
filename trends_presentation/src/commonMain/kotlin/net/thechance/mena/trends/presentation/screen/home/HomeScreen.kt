@@ -87,7 +87,6 @@ private fun HomeScreenContent(
     state: HomeScreenState,
     listener: HomeInteractionListener,
 ) {
-    val reels = state.reels.collectAsLazyPagingItems()
     Scaffold(
         topBar = {
             AnimatedVisibility(
@@ -100,8 +99,9 @@ private fun HomeScreenContent(
                 }
             )
         },
-
         content = {
+            val reels = state.reels.collectAsLazyPagingItems()
+
             Box(modifier = Modifier.fillMaxSize()) {
                 AnimatedVisibility(
                     visible = state.isLoading,
@@ -120,12 +120,18 @@ private fun HomeScreenContent(
 
                 AnimatedVisibility(
                     visible = reels.itemSnapshotList.isNotEmpty() && state.isLoading.not(),
-                    content = { ReelsListSection(reels, listener) }
+                    content = {
+                        ReelsListSection(
+                            reels = reels,
+                            onClickLike = listener::onClickLike,
+                            onClickReel = listener::onClickReel
+                        )
+                    }
                 )
 
                 AnimatedVisibility(
                     visible = state.isLoading.not(),
-                    content = { AddTrendFAB(listener) }
+                    content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }, modifier = Modifier,) }
                 )
             }
         }
@@ -133,17 +139,20 @@ private fun HomeScreenContent(
 }
 
 @Composable
-private fun BoxScope.AddTrendFAB(listener: HomeInteractionListener) {
+private fun BoxScope.AddTrendFAB(
+    modifier: Modifier,
+    onClickFab: () -> Unit
+) {
     Icon(
         painter = painterResource(Res.drawable.ic_add_real),
         contentDescription = stringResource(Res.string.add_reel),
-        modifier = Modifier
+        modifier = modifier
             .align(Alignment.BottomEnd)
             .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
             .size(56.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.primary.primary)
-            .noRippleClickable { listener.onClickAddReel() }
+            .noRippleClickable { onClickFab() }
             .padding(Theme.spacing._16),
     )
 }
@@ -151,8 +160,9 @@ private fun BoxScope.AddTrendFAB(listener: HomeInteractionListener) {
 @Composable
 private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
-    listener: HomeInteractionListener
-) {
+    onClickLike: (reelId: String) -> Unit,
+    onClickReel: (reelId: String) -> Unit,
+){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -163,8 +173,8 @@ private fun ReelsListSection(
         items(reels.itemSnapshotList.items) { reel ->
             FeedReelCard(
                 reel = reel,
-                onLikeClick = { listener.onClickLike(reel.id) },
-                onReelClick = { listener.onClickReel(reel.id) }
+                onLikeClick = { onClickLike(reel.id) },
+                onReelClick = { onClickReel(reel.id) }
             )
         }
     }
@@ -208,8 +218,8 @@ private fun TrendsAppBar(
 private fun HomeScreenPreview() {
     MenaTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            ReelsListSection(
-                reels = HomeScreenState().reels.collectAsLazyPagingItems(),
+            HomeScreenContent(
+                state = HomeScreenState(),
                 listener = object : HomeInteractionListener {
                     override fun onClickLike(reelId: String) {}
                     override fun onClickAddReel() {}
