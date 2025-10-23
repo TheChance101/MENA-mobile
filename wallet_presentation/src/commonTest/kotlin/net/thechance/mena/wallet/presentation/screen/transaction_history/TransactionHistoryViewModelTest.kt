@@ -17,13 +17,14 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import net.thechance.mena.wallet.domain.entity.Currency
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
-import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,7 +36,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class TransactionHistoryViewModelTest {
-    private val stringProvider = FakeStringProvider()
+    private val stringProvider = mock<StringProvider>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: TransactionHistoryViewModel
@@ -301,7 +302,7 @@ class TransactionHistoryViewModelTest {
                     date = LocalDate(2025, 8, 20),
                     time = LocalTime(12, 0)
                 ),
-                amount = 120.0,
+                amount = Currency(silvers = 120.0),
                 status = TransactionStatus.SUCCESS,
                 senderName = "Alice",
                 receiverName = "Bob",
@@ -313,7 +314,7 @@ class TransactionHistoryViewModelTest {
                     date = LocalDate(2025, 8, 20),
                     time = LocalTime(12, 0)
                 ),
-                amount = 75.5,
+                amount = Currency(silvers = 75.5),
                 status = TransactionStatus.FAILED,
                 senderName = "Charlie",
                 receiverName = "You",
@@ -325,7 +326,7 @@ class TransactionHistoryViewModelTest {
                     date = LocalDate(2025, 8, 20),
                     time = LocalTime(12, 0)
                 ),
-                amount = 200.0,
+                amount = Currency(silvers = 200.0),
                 status = TransactionStatus.SUCCESS,
                 senderName = "Online Shop",
                 receiverName = "You",

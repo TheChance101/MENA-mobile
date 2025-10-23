@@ -20,9 +20,9 @@ import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
-import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.screen.confirm_payment.args.ConfirmPaymentArgs
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,7 +35,7 @@ import kotlin.uuid.Uuid
 class ConfirmPaymentViewModelTest {
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val balanceRepository = mock<BalanceRepository>(mode = MockMode.autofill)
-    private val stringProvider = FakeStringProvider()
+    private val stringProvider = mock<StringProvider>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private val confirmPaymentArgs: ConfirmPaymentArgs = object : ConfirmPaymentArgs {
         override val transactionId: String
@@ -137,7 +137,7 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(5)
+            skipItems(4)
             val errorState = awaitItem()
             assertEquals(ErrorState.Unknown, errorState.errorState)
             cancelAndIgnoreRemainingEvents()
@@ -165,7 +165,7 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(6)
+            skipItems(5)
             viewModel.onRefresh()
             val initialState = awaitItem()
             assertTrue(initialState.isLoading)

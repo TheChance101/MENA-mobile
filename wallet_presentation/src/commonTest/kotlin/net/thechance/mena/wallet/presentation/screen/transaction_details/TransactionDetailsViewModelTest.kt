@@ -22,13 +22,14 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
+import net.thechance.mena.wallet.domain.entity.Currency
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -39,10 +40,10 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TransactionDetailsViewModelTest {
-    private val stringProvider = FakeStringProvider()
+    private val stringProvider = mock<StringProvider>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-    private val transactionDetailsArgs : TransactionDetailsArgs = object : TransactionDetailsArgs {
+    private val transactionDetailsArgs: TransactionDetailsArgs = object : TransactionDetailsArgs {
         override val id: String
             get() = transaction1Id.toString()
     }
@@ -264,11 +265,11 @@ class TransactionDetailsViewModelTest {
     }
 
     private fun viewmodelSetup() = TransactionDetailsViewModel(
-            transactionRepository = transactionRepository,
-            transactionDetailsArgs = transactionDetailsArgs,
-            dispatcher = testDispatcher,
-            stringProvider = stringProvider
-        )
+        transactionRepository = transactionRepository,
+        transactionDetailsArgs = transactionDetailsArgs,
+        dispatcher = testDispatcher,
+        stringProvider = stringProvider
+    )
 
     private companion object {
         val transaction1Id = Uuid.random()
@@ -278,7 +279,7 @@ class TransactionDetailsViewModelTest {
                 date = LocalDate(2025, 8, 20),
                 time = LocalTime(12, 0)
             ),
-            amount = 5000.0,
+            amount = Currency(silvers = 5000.0),
             status = TransactionStatus.SUCCESS,
             senderName = "Nour Elhoda",
             receiverName = "Nour Elhoda",
