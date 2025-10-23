@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.data.mapper
 
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
+import net.thechance.mena.wallet.domain.entity.Currency
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
@@ -19,7 +20,7 @@ fun TransactionDto.toEntity(): Transaction {
         status = TransactionStatus.valueOfOrDefault(status),
         senderName = senderName ?: "",
         receiverName = receiverName ?: "",
-        amount = amount ?: 0.0,
+        amount = Currency(silvers = silvers ?: 0.0),
         type = TransactionType.valueOfOrDefault(type),
     )
 }

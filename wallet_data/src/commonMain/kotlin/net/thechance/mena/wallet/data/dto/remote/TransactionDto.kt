@@ -18,5 +18,5 @@ data class TransactionDto(
     @SerialName("createdAt")
     val createdAt: String? = null,
     @SerialName("amount")
-    val amount: Double? = null
+    val silvers: Double? = null
 )
