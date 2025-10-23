@@ -28,12 +28,13 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import mena.core_chat_presentation.generated.resources.image_saved_successfully
+import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
-import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -46,7 +47,6 @@ import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -269,24 +269,45 @@ class ChatViewModelTest {
         assertThat(chatViewModel.state.value.currentImageIndexForPreview).isEqualTo(index)
     }
 
-
     @Test
     fun `onDownloadImageClicked should call downloadImageToGallery when downloadImageToGallery succeeds and return true`() {
         everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns true
+
         chatViewModel.onDownloadImageClicked(imageUrl)
+
         verifySuspend { chatViewModel.onDownloadImageClicked(imageUrl) }
     }
+
     @Test
-    fun `onDownloadImageClicked should show snackbar when downloadImageToGallery fails and return false`() {
-        everySuspend { imageDownloaderService.downloadImageToGallery(any()) } returns false
+    fun `onDownloadImageClicked should show success snackBar on success`() {
+        everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns true
+
         chatViewModel.onDownloadImageClicked(imageUrl)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verifySuspend {
+            effector.showSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(Res.string.success),
+                    message = UiText.StringRes(Res.string.image_saved_successfully),
+                    isError = false
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `onDownloadImageClicked should show snackBar when downloadImageToGallery fails and return false`() {
+        everySuspend { imageDownloaderService.downloadImageToGallery(any()) } returns false
+
+        chatViewModel.onDownloadImageClicked(imageUrl)
+        testDispatcher.scheduler.advanceUntilIdle()
+
         verifySuspend {
             effector.showSnackBar(
                 SnackBarData(
                     title = UiText.StringRes(Res.string.error),
-                    message = UiText.StringRes(
-                        Res.string.error_failed_to_download_image
-                    ),
+                    message = UiText.StringRes(Res.string.error_failed_to_download_image),
                     isError = true
                 )
             )
@@ -294,7 +315,7 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onDownloadImageClicked should show error snackbar on failure`() {
+    fun `onDownloadImageClicked should show error snackBar on failure`() {
         everySuspend { imageDownloaderService.downloadImageToGallery(any()) } throws Exception()
 
         chatViewModel.onDownloadImageClicked(imageUrl)
