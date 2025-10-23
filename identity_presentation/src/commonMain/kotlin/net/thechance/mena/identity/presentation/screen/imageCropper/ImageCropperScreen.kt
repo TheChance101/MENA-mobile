@@ -12,7 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
@@ -30,8 +29,8 @@ import org.koin.core.parameter.parametersOf
 import sv.lib.squircleshape.SquircleShape
 
 class ImageCropperScreen(
-    private val image: ImageBitmap,
-    private val onResult: (ImageBitmap) -> Unit
+    private val imageKey: String,
+    private val onResult: (String) -> Unit,
 ) : BaseScreen<
         ImageCropperViewModel,
         ImageCropperScreenState,
@@ -41,7 +40,7 @@ class ImageCropperScreen(
     @Composable
     override fun Content() {
         InitScreen(
-            viewModel = getScreenModel(parameters = { parametersOf(image) })
+            viewModel = getScreenModel(parameters = { parametersOf(imageKey) })
         )
     }
 
@@ -50,6 +49,7 @@ class ImageCropperScreen(
         state: ImageCropperScreenState,
         listener: ImageCropperInteractionListener
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -72,11 +72,13 @@ class ImageCropperScreen(
 
             Spacer(Modifier.weight(0.2f))
 
-            ImageCropperComponent(
-                image = BitmapPainter(state.imageBitmap),
-                onSaveButtonClicked = listener::onCropImage,
-                onUploadAnotherImageClicked = listener::onChangeImage,
-            )
+            state.imageBitmap?.let {
+                ImageCropperComponent(
+                    image = BitmapPainter(it),
+                    onSaveButtonClicked = listener::onCropImage,
+                    onUploadAnotherImageClicked = listener::onChangeImage,
+                )
+            }
         }
     }
 
@@ -84,7 +86,7 @@ class ImageCropperScreen(
         when (effect) {
             is ImageCropperScreenEffect.NavigateBackToEditProfile -> navigator.pop()
             is ImageCropperScreenEffect.NavigateBackToEditProfileWithImage -> {
-                onResult(effect.imageBytes)
+                onResult(effect.imageKey)
                 navigator.pop()
             }
         }
