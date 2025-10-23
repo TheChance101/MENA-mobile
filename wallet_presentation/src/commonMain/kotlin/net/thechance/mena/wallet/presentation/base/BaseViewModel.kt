@@ -46,18 +46,25 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
     ): Job {
         return viewModelScope.launch(dispatcher) {
             try {
-                onStart?.invoke()
-                callee().let { result ->
-                    onSuccess(result)
-                }
+                safeInvoke(onStart)
+                val result = callee()
+                safeInvoke { onSuccess(result) }
             } catch (e: CancellationException) {
                 throw e
             } catch (t: Throwable) {
-                onError(mapError(t))
+                safeInvoke { onError(mapError(t)) }
             } finally {
-                onFinish?.invoke()
+                safeInvoke(onFinish)
             }
         }
+    }
+
+    private suspend fun safeInvoke(block: (suspend () -> Unit)?) {
+        try {
+            block?.invoke()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Throwable) { }
     }
 
     private fun mapError(throwable: Throwable): ErrorState {
