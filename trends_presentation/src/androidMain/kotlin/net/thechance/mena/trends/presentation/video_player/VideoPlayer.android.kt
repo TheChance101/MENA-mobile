@@ -41,6 +41,7 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_pause
 import mena.trends_presentation.generated.resources.pause_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
@@ -162,7 +163,15 @@ actual fun VideoPlayer(
         }
 
         if (isLoading && !isPause) {
-            Box(Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand))
+            Box(Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand)) {
+                DotsProgressIndicator(
+                    colors = listOf(
+                        Theme.colorScheme.stroke,
+                        Theme.colorScheme.shadeTertiary,
+                        Theme.colorScheme.primary.primary
+                    )
+                )
+            }
         }
 
         ProgressBar(
