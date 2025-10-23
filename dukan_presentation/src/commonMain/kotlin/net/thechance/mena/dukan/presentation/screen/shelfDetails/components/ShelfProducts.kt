@@ -97,10 +97,15 @@ private fun GetProductIconAction(
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
+    val lazyItems = state.productsShelf.collectAsLazyPagingItems()
+    val inCartQuantity = lazyItems.itemSnapshotList.items
+        .firstOrNull { it.id == product.id }
+        ?.inCartQuantity ?: 0
+
     when (style) {
         Style.SMALL_IMAGE -> {
             ProductActionIconSmallImageDukan(
-                inCartQuantity = state.productsShelf.collectAsLazyPagingItems().itemSnapshotList.items.first { it.id == product.id }.inCartQuantity,
+                inCartQuantity = inCartQuantity,
                 onAddClick = { listener.onAddToCartClick(product.id) },
                 onPlusClick = { },
                 onMinusClick = { },
@@ -110,7 +115,7 @@ private fun GetProductIconAction(
 
         else -> {
             ProductActionNoImageDukan(
-                inCartQuantity = state.productsShelf.collectAsLazyPagingItems().itemSnapshotList.items.first { it.id == product.id }.inCartQuantity,
+                inCartQuantity = inCartQuantity,
                 onAddClick = { listener.onAddToCartClick(product.id) },
                 onPlusClick = { },
                 onMinusClick = { },

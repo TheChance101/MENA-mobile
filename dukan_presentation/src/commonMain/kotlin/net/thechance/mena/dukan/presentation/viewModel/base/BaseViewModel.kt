@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -102,6 +103,6 @@ abstract class BaseViewModel<S, E>(
             }
         ).flow.map { pagingData ->
             pagingData.map(mapper)
-        }
+        }.cachedIn(viewModelScope)
     }
 }

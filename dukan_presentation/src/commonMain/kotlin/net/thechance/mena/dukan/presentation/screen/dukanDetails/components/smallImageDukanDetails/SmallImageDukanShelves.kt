@@ -70,7 +70,10 @@ private fun ShelvesContent(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(vertical = Theme.spacing._16),
     ) {
-        items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) { index ->
+        items(
+            count = shelves.itemCount,
+            key = { shelves[it]?.id.orEmpty() }
+        ) { index ->
             val shelf = shelves[index] ?: return@items
             ProductsHeader(
                 viewAllColor = Color(dukanInfo.color),

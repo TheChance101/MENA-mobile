@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.filter
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
@@ -11,7 +12,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -86,19 +86,17 @@ class DukanDetailsViewModel(
     private fun handleNonWideImageShelves(
         shelves: PagingData<ShelfUiState>,
     ) {
-        viewModelScope.launch {
             val updatedShelves = updateProductsShelves(shelves)
             updateState {
                 copy(
                     shelves = flowOf(updatedShelves)
                 )
             }
-        }
+
     }
 
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE
-
 
     private fun updateProductsShelves(
         shelves: PagingData<ShelfUiState>
@@ -108,7 +106,6 @@ class DukanDetailsViewModel(
             shelf.copy(products = products)
         }.filter { it.products.isNotEmpty() }
     }
-
 
     private suspend fun getInitialProductsForShelf(shelfId: String): List<ProductUiState> {
         val maxProducts = 6
@@ -134,7 +131,7 @@ class DukanDetailsViewModel(
                 page = pageNumber,
                 size = pageSize
             ).items
-        }
+        }.cachedIn(viewModelScope)
     }
 
     private fun onProductsLoaded(products: PagingData<ProductUiState>) {
@@ -211,5 +208,4 @@ class DukanDetailsViewModel(
             if (product.id == productId) product.copy(inCartQuantity = 1) else product
         }
     }
-
 }

@@ -56,6 +56,7 @@ koin = "4.0.0"
 multiplatformSettings = "1.3.0"
 ktorfit = "2.6.4"
 peekaboo = "0.5.2"
+paging = "3.4.0-alpha04"
 
 [libraries]
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
@@ -184,6 +185,10 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }
 contacts-provider = { module = "io.github.dev-bilal-azzam:contacts-provider", version.ref = "contacts-provider" }
+
+paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+paging-testing = { module = "androidx.paging:paging-testing", version.ref = "paging" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
