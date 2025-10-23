@@ -31,8 +31,8 @@ import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
-import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.ExportTransactionsScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionFilterBottomSheet
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
@@ -110,12 +110,18 @@ fun TransactionHistoryContent(
                 DatePickerBottomSheet(
                     isVisible = isVisible,
                     defaultSelectedDate = when (state.filterState.datePickerMode) {
-                        TransactionFilterState.DatePickerMode.START_DATE -> state.filterState.defaultStartDate
-                        TransactionFilterState.DatePickerMode.END_DATE -> state.filterState.defaultEndDate
+                        TransactionFilterState.DatePickerMode.START_DATE ->
+                            state.filterState.defaultStartDate
+
+                        TransactionFilterState.DatePickerMode.END_DATE ->
+                            state.filterState.defaultEndDate
                     },
                     title = when (state.filterState.datePickerMode) {
-                        TransactionFilterState.DatePickerMode.START_DATE -> stringResource(Res.string.pick_start_date)
-                        TransactionFilterState.DatePickerMode.END_DATE -> stringResource(Res.string.pick_end_date)
+                        TransactionFilterState.DatePickerMode.START_DATE ->
+                            stringResource(Res.string.pick_start_date)
+
+                        TransactionFilterState.DatePickerMode.END_DATE ->
+                            stringResource(Res.string.pick_end_date)
                     },
                     onPickClick = { day, month, year ->
                         val pickedDate = LocalDate(year, month, day)
@@ -130,7 +136,8 @@ fun TransactionHistoryContent(
         isLoading = state.isLoading,
         onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
     {
-        when {state.errorState != null ->
+        when {
+            state.errorState != null ->
                 ErrorView(onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
 
             state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
@@ -149,12 +156,16 @@ fun TransactionHistoryContent(
 }
 
 @OptIn(ExperimentalUuidApi::class)
-private fun onTransactionHistoryEffect(effect: TransactionHistoryEffect, navController: NavController) {
+private fun onTransactionHistoryEffect(
+    effect: TransactionHistoryEffect,
+    navController: NavController
+) {
     when (effect) {
         TransactionHistoryEffect.NavigateBack -> navController.popBackStack()
         TransactionHistoryEffect.NavigateToExportTransaction -> {
             navController.navigate(ExportTransactionsScreenRoute)
         }
+
         is TransactionHistoryEffect.NavigateToTransactionDetails -> {
             navController.navigate(TransactionDetailsScreenRoute(effect.id.toString()))
         }

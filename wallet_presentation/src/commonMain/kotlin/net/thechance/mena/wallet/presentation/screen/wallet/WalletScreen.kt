@@ -30,8 +30,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.ConfirmPaymentScreenRoute
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.StatementsHistoryScreenRoute
 import net.thechance.mena.wallet.presentation.navigation.TransactionsHistoryScreenRoute
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
@@ -110,7 +110,7 @@ private fun WalletContent(
                 onClick = interactionListener::onTransactionHistoryClicked,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Theme.spacing._24)
+                    .padding(top = 24.dp)
             )
 
             LabeledButtonWithCircularIcon(
@@ -120,7 +120,7 @@ private fun WalletContent(
                 onClick = interactionListener::onStatementHistoryClicked,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Theme.spacing._16)
+                    .padding(top = 16.dp)
             )
 
             LabeledButtonWithCircularIcon(
@@ -135,7 +135,7 @@ private fun WalletContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = Theme.spacing._16)
+                    .padding(top = 16.dp)
             )
         }
     }

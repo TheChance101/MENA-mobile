@@ -123,7 +123,7 @@ class ConfirmPaymentViewModelTest {
         viewModel.state.test {
             skipItems(4)
             val errorState = awaitItem()
-            assertEquals(ErrorState.Unknown, errorState.errorState)
+            assertEquals(ErrorState.UnknownError, errorState.errorState)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -139,7 +139,7 @@ class ConfirmPaymentViewModelTest {
         viewModel.state.test {
             skipItems(5)
             val errorState = awaitItem()
-            assertEquals(ErrorState.Unknown, errorState.errorState)
+            assertEquals(ErrorState.UnknownError, errorState.errorState)
             cancelAndIgnoreRemainingEvents()
         }
     }

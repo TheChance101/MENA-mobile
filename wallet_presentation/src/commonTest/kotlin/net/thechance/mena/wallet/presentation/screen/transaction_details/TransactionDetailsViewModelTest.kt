@@ -113,7 +113,7 @@ class TransactionDetailsViewModelTest {
             viewModel.state.test {
                 skipItems(2)
                 val errorState = awaitItem()
-                assertEquals(ErrorState.Unknown, errorState.errorState)
+                assertEquals(ErrorState.UnknownError, errorState.errorState)
                 cancelAndIgnoreRemainingEvents()
             }
         }

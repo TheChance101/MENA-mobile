@@ -22,7 +22,7 @@ import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.Chat
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -162,7 +162,7 @@ class ChatViewModel(
             return
         }
 
-        val content = MessageContent.Images(ImagesSource.Local(imageByteArrays))
+        val content = MessageContent.Images(ImageData.ImageByteArray(imageByteArrays))
 
         sendImageMessage(chatId, senderId, content)
     }
@@ -393,7 +393,6 @@ class ChatViewModel(
             onError = { onDownloadImageError() }
         )
     }
-
 
     private fun onDownloadImageSuccess(isSuccess: Boolean) {
         if (isSuccess) {

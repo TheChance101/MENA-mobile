@@ -118,7 +118,7 @@ private fun ExportTransactionFilterSection(
 
 @Preview
 @Composable
-fun ExportTransactionContentBodyPreview() {
+private fun ExportTransactionContentBodyPreview() {
     val mockState = ExportTransactionsState(
         isCustomFilterCardSelected = true,
         filterState = ExportTransactionsState.FilterState(

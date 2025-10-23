@@ -21,13 +21,13 @@ import mena.wallet_presentation.generated.resources.pick_start_date
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.wallet.presentation.screen.export.component.CustomToast
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.StatementDetailsScreenRoute
+import net.thechance.mena.wallet.presentation.screen.export.component.CustomToast
 import net.thechance.mena.wallet.presentation.screen.export.component.ExportTransactionContentBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -81,12 +81,18 @@ private fun ExportTransactionScreenContent(
                 DatePickerBottomSheet(
                     isVisible = isVisible,
                     defaultSelectedDate = when (state.dateState.datePickerMode) {
-                        ExportTransactionsState.DatePickerMode.START_DATE -> state.dateState.defaultStartDate
-                        ExportTransactionsState.DatePickerMode.END_DATE -> state.dateState.defaultEndDate
+                        ExportTransactionsState.DatePickerMode.START_DATE ->
+                            state.dateState.defaultStartDate
+
+                        ExportTransactionsState.DatePickerMode.END_DATE ->
+                            state.dateState.defaultEndDate
                     },
                     title = when (state.dateState.datePickerMode) {
-                        ExportTransactionsState.DatePickerMode.START_DATE -> stringResource(Res.string.pick_start_date)
-                        ExportTransactionsState.DatePickerMode.END_DATE -> stringResource(Res.string.pick_end_date)
+                        ExportTransactionsState.DatePickerMode.START_DATE ->
+                            stringResource(Res.string.pick_start_date)
+
+                        ExportTransactionsState.DatePickerMode.END_DATE ->
+                            stringResource(Res.string.pick_end_date)
                     },
                     onPickClick = { day, month, year ->
                         val pickedDate = LocalDate(year, month, day)
@@ -110,12 +116,21 @@ private fun ExportTransactionScreenContent(
     }
 }
 
-private fun onExportTransactionsEffect(effect: ExportTransactionsEffect, navController: NavController) {
+private fun onExportTransactionsEffect(
+    effect: ExportTransactionsEffect,
+    navController: NavController
+) {
     when (effect) {
-        is ExportTransactionsEffect.NavigateBack -> { navController.popBackStack() }
+        is ExportTransactionsEffect.NavigateBack -> {
+            navController.popBackStack()
+        }
 
         is ExportTransactionsEffect.NavigateToViewFileScreen -> {
-            navController.navigate(StatementDetailsScreenRoute(effect.statementLocation))
+            navController.navigate(
+                StatementDetailsScreenRoute(
+                    effect.statementLocation
+                )
+            )
         }
     }
 }

@@ -85,7 +85,7 @@ class WalletViewModelTest {
             skipItems(2)
 
             val errorState = awaitItem().balanceState.errorState
-            assertEquals(ErrorState.Unknown, errorState)
+            assertEquals(ErrorState.UnknownError, errorState)
 
             cancelAndIgnoreRemainingEvents()
         }

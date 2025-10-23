@@ -56,7 +56,8 @@ internal fun PaymentDetailsSection(
 
         Text(
             modifier = Modifier
-                .padding(top = Theme.spacing._16)
+                .padding(top = 16.dp)
+                .padding(top = 16.dp)
                 .fillMaxWidth(),
             text = userMessage,
             style = Theme.typography.body.small,
@@ -76,12 +77,12 @@ private fun PaymentInfoSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(Theme.spacing._16))
+            .clip(shape = RoundedCornerShape(16.dp))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.spacing._16)
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(Theme.spacing._24)
+            .padding(24.dp)
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -104,7 +105,7 @@ private fun PaymentAmount(
 ) {
     Row(
         modifier = modifier
-            .padding(top = Theme.spacing._8)
+            .padding(top = 8.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -116,8 +117,8 @@ private fun PaymentAmount(
         )
         Icon(
             modifier = Modifier
-                .padding(start = Theme.spacing._8)
-                .size(Theme.spacing._24),
+                .padding(start = 8.dp)
+                .size(24.dp),
             painter = painterResource(Res.drawable.img_silver),
             contentDescription = stringResource(Res.string.silver_coin),
         )
@@ -132,7 +133,7 @@ private fun ReceiverInfo(
 ) {
     Row(
         modifier = modifier
-            .padding(top = Theme.spacing._24)
+            .padding(top = 24.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -145,10 +146,10 @@ private fun ReceiverInfo(
         if (receiverImage == null) {
             Icon(
                 modifier = Modifier
-                    .padding(start = Theme.spacing._8)
+                    .padding(start = 8.dp)
                     .size(20.dp)
                     .background(color = Theme.colorScheme.stroke, shape = CircleShape)
-                    .padding(Theme.spacing._2)
+                    .padding(2.dp)
                     .clip(CircleShape),
                 painter = painterResource(Res.drawable.ic_user),
                 contentDescription = stringResource(Res.string.user_img),
@@ -157,7 +158,7 @@ private fun ReceiverInfo(
         } else {
             AsyncImage(
                 modifier = Modifier
-                    .padding(start = Theme.spacing._8)
+                    .padding(start = 8.dp)
                     .clip(CircleShape)
                     .size(20.dp),
                 model = receiverImage,
@@ -166,7 +167,7 @@ private fun ReceiverInfo(
             )
         }
         Text(
-            modifier = Modifier.padding(start = Theme.spacing._4),
+            modifier = Modifier.padding(start = 4.dp),
             text = receiverName,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary

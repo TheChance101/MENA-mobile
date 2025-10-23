@@ -20,7 +20,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
@@ -175,7 +175,7 @@ class StatementsHistoryViewModelTest {
 
     @Test
     fun `paginator should handle UnknownException and set error state`() = runTest(testDispatcher) {
-        everySuspend { statementRepository.getStatements(0, 20) } throws UnknownException()
+        everySuspend { statementRepository.getStatements(0, 20) } throws UnknownNetworkException()
 
         val viewModel = StatementsHistoryViewModel(
             statementRepository,
@@ -188,7 +188,7 @@ class StatementsHistoryViewModelTest {
         advanceUntilIdle()
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(ErrorState.Unknown, state.errorState)
+            assertEquals(ErrorState.UnknownError, state.errorState)
             assertFalse(state.isLoading)
             assertTrue(state.statements.isEmpty())
             cancelAndIgnoreRemainingEvents()
