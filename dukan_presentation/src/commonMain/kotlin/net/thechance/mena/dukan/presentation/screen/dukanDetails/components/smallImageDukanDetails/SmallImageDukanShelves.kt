@@ -79,7 +79,7 @@ private fun ShelvesContent(
                 viewAllColor = Color(dukanInfo.color),
                 shelfName = shelf.name,
                 onClick = {
-                    listener.onViewAllShelfProductsClicked(
+                    listener.onViewAllProductsShelfClicked(
                         shelf.id,
                         shelf.name
                     )
