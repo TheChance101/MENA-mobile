@@ -4,7 +4,7 @@ import net.thechance.mena.wallet.data.dto.remote.TransactionDto
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import kotlin.uuid.ExperimentalUuidApi
 
 fun List<TransactionDto>?.toTransactionEntityList(): List<Transaction> {
@@ -14,7 +14,7 @@ fun List<TransactionDto>?.toTransactionEntityList(): List<Transaction> {
 @OptIn(ExperimentalUuidApi::class)
 fun TransactionDto.toEntity(): Transaction {
     return Transaction(
-        id = id.toUuidOrNull()?: throw UnknownException("Invalid transaction id"),
+        id = id.toUuidOrNull()?: throw UnknownNetworkException("Invalid transaction id"),
         createdAt = parseLocalDateTimeOrDefault(createdAt),
         status = TransactionStatus.valueOfOrDefault(status),
         senderName = senderName ?: "",

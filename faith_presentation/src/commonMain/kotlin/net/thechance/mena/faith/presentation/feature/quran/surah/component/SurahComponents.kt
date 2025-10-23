@@ -117,7 +117,7 @@ internal fun AnimatedAyahActionButtons(
 private fun isValidAyahSelection(state: SurahUiState): Boolean {
     return state.selectedAyahNumber != null &&
             state.selectedAyahNumber >= 0 &&
-            state.selectedAyahNumber < state.ayatOfSurah.size
+            state.selectedAyahNumber <= state.ayatOfSurah.size
 }
 
 @Composable

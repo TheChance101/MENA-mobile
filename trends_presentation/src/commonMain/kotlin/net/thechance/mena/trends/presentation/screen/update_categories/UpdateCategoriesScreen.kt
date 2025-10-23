@@ -75,10 +75,10 @@ private fun UpdateCategoriesScreenContent(
 ) {
     if (state.isLoading.not()) {
         Scaffold(
-            topBar = { ChangeTagsAppBar(onBackClick = listener::onBackClick) },
+            topBar = { ChangeTagsAppBar(onBackClick = listener::onClickBack) },
             bottomBar = {
                 SaveChangeButton(
-                    onSaveClick = listener::onSaveClick,
+                    onSaveClick = listener::onClickSave,
                     isButtonEnabled = state.saveButtonEnabled(),
                     isButtonLoading = state.isSaveButtonLoading,
                     modifier = Modifier
@@ -111,7 +111,7 @@ private fun UpdateCategoriesScreenContent(
                     state.categories.forEach { category ->
                         CategoryItem(
                             category = category,
-                            onClick = { id -> listener.onCategoryClick(categoryId = id) },
+                            onClick = { id -> listener.onClickCategory(categoryId = id) },
                             modifier = Modifier.padding(
                                 bottom = Theme.spacing._12,
                                 end = Theme.spacing._8
@@ -193,9 +193,9 @@ private fun UpdateCategoriesScreenPreview() {
         UpdateCategoriesScreenContent(
             state = UpdateCategoriesScreenState(),
             listener = object : UpdateCategoriesInteractionListener {
-                override fun onBackClick() {}
-                override fun onCategoryClick(categoryId: String) {}
-                override fun onSaveClick() {}
+                override fun onClickBack() {}
+                override fun onClickCategory(categoryId: String) {}
+                override fun onClickSave() {}
             }
         )
     }

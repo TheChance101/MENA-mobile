@@ -33,30 +33,30 @@ fun createNetworkClient(
     return object : NetworkClient {
         override suspend fun get(
             urlString: String,
-            block: HttpRequestBuilder.() -> Unit
+            requestBuilder: HttpRequestBuilder.() -> Unit
         ): HttpResponse {
-            return getClient.get(urlString, block)
+            return getClient.get(urlString, requestBuilder)
         }
 
         override suspend fun post(
             urlString: String,
-            block: HttpRequestBuilder.() -> Unit
+            requestBuilder: HttpRequestBuilder.() -> Unit
         ): HttpResponse {
-            return postClient.post(urlString, block)
+            return postClient.post(urlString, requestBuilder)
         }
 
         override suspend fun put(
             urlString: String,
-            block: HttpRequestBuilder.() -> Unit
+            requestBuilder: HttpRequestBuilder.() -> Unit
         ): HttpResponse {
-            return putClient.put(urlString, block)
+            return putClient.put(urlString, requestBuilder)
         }
 
         override suspend fun delete(
             urlString: String,
-            block: HttpRequestBuilder.() -> Unit
+            requestBuilder: HttpRequestBuilder.() -> Unit
         ): HttpResponse {
-            return deleteClient.delete(urlString, block)
+            return deleteClient.delete(urlString, requestBuilder)
         }
     }
 }

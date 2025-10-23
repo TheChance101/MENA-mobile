@@ -25,6 +25,10 @@ import net.thechance.mena.core_chat.data.createHttpClient
 import net.thechance.mena.core_chat.data.createMessageRepository
 import net.thechance.mena.core_chat.data.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.defaultUploadImagesResponse
+import net.thechance.mena.core_chat.data.jsonSerialization
+import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
+import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
+import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
@@ -32,7 +36,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -48,6 +52,9 @@ class MessageRepositoryImplTest {
     private lateinit var httpClient: HttpClient
     private lateinit var repository: MessageRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
+    private lateinit var messageSenderFactory: MessageSenderFactory
+    private lateinit var textMessageSender: TextMessageSender
+    private lateinit var imageMessageSender: ImageMessageSender
     private lateinit var messageDao: MessageDao
 
     @BeforeTest
@@ -56,9 +63,22 @@ class MessageRepositoryImplTest {
         webSocketManager = mock<WebSocketManager>()
         messageDao = mock<MessageDao>()
 
+        textMessageSender = TextMessageSender(
+            webSocketManager = webSocketManager,
+            json = jsonSerialization
+        )
+
+        imageMessageSender = ImageMessageSender(
+            client = httpClient,
+            messageDao = messageDao
+        )
+
+        messageSenderFactory = MessageSenderFactory(textMessageSender, imageMessageSender)
+
         repository = createMessageRepository(
             webSocketManager = webSocketManager,
             messageDao = messageDao,
+            messageSenderFactory = messageSenderFactory,
             httpClient = httpClient
         )
     }
@@ -69,9 +89,10 @@ class MessageRepositoryImplTest {
             chatHistoryResponse = { defaultChatHistoryResponse() }
         )
         repository = createMessageRepository(
-            webSocketManager = mock<WebSocketManager>(),
-            messageDao = mock<MessageDao>(),
-            httpClient = httpClient
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageSenderFactory = messageSenderFactory,
+            messageDao = messageDao,
         )
 
         val result = repository.loadMessages(chatId, 1, 40)
@@ -100,6 +121,7 @@ class MessageRepositoryImplTest {
         repository = createMessageRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
+            messageSenderFactory = messageSenderFactory,
             messageDao = messageDao,
         )
 
@@ -154,7 +176,7 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should return local messages from database when getLocalMessages is called`() = runTest {
+    fun `should return local messages from database when observePendingMessagesByChatId is called`() = runTest {
         val message1 = createMessage(senderId = userId, chatId = chatId)
         val message2 = createMessage(senderId = userId, chatId = chatId)
         val messageEntities = listOf(
@@ -166,7 +188,7 @@ class MessageRepositoryImplTest {
             messageEntities
         )
 
-        val result = repository.getLocalMessages(chatId).first()
+        val result = repository.observePendingMessagesByChatId(chatId).first()
 
 
         assertThat(result).isNotEmpty()
@@ -178,14 +200,14 @@ class MessageRepositoryImplTest {
     fun `should return empty list when no local messages exist for chat`() = runTest {
         everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
 
-        val result = repository.getLocalMessages(chatId).first()
+        val result = repository.observePendingMessagesByChatId(chatId).first()
 
         assertThat(result.isEmpty()).isTrue()
         verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
     }
 
     @Test
-    fun `should return flow when getMessages is called and websocket is connected`() = runTest {
+    fun `should return flow when observeMessagesForChatOrAll is called and websocket is connected`() = runTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.connect(any()) } returns Unit
         everySuspend { webSocketManager.subscribe(any()) } returns Unit
@@ -196,7 +218,7 @@ class MessageRepositoryImplTest {
             )
         }
 
-        val flow = repository.getMessages(chatId)
+        val flow = repository.observeMessagesForChatOrAll(chatId)
 
         assertThat(flow).isNotNull()
     }
@@ -212,17 +234,19 @@ class MessageRepositoryImplTest {
             httpClient = createHttpClient(
                 imagesResponse = { defaultUploadImagesResponse() }
             )
+
             repository = createMessageRepository(
                 httpClient = httpClient,
                 webSocketManager = webSocketManager,
-                messageDao = messageDao
+                messageSenderFactory = messageSenderFactory,
+                messageDao = messageDao,
             )
 
             val byteArrays = listOf(ByteArray(10), ByteArray(20))
             val message = createMessage(
                 senderId = userId,
                 chatId = chatId,
-                content = MessageContent.Images(ImagesSource.Local(byteArrays))
+                content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
             )
 
             repository.sendMessage(message)
@@ -238,21 +262,22 @@ class MessageRepositoryImplTest {
         everySuspend { messageDao.insertMessage(any()) } returns Unit
         everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
 
-        // Simulate failed upload
         httpClient = createHttpClient(
             imagesResponse = { respondError(HttpStatusCode.InternalServerError) }
         )
+
         repository = createMessageRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            messageDao = messageDao
+            messageSenderFactory = messageSenderFactory,
+            messageDao = messageDao,
         )
 
         val byteArrays = listOf(ByteArray(10))
         val message = createMessage(
             senderId = userId,
             chatId = chatId,
-            content = MessageContent.Images(ImagesSource.Local(byteArrays))
+            content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
         )
 
         assertFailsWith<SendMessageFailedException> {

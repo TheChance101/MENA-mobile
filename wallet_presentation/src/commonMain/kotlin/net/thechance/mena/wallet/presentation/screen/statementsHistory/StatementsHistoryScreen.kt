@@ -8,13 +8,13 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.remove_statements
 import mena.wallet_presentation.generated.resources.statements
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
@@ -76,7 +76,7 @@ private fun EditModeContent(
 private fun EditModeAppBar(listener: StatementsHistoryInteractionListener) {
     AppBar(
         title = stringResource(Res.string.remove_statements),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         leadingContent = { AnimatedLeadingIcon(isEditMode = true) },
         onLeadingClick = { listener.onCancelEditModeClicked() },
         trailingContent = {
@@ -115,7 +115,7 @@ private fun NormalModeAppBar(
 ) {
     AppBar(
         title = stringResource(Res.string.statements),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         leadingContent = { AnimatedLeadingIcon(isEditMode = false) },
         onLeadingClick = { listener.onBackClicked() },
         trailingContent = {
@@ -128,11 +128,18 @@ private fun NormalModeAppBar(
     )
 }
 
-private fun onStatementHistoryEffect(effect: StatementsHistoryEffect, navController: NavController) {
+private fun onStatementHistoryEffect(
+    effect: StatementsHistoryEffect,
+    navController: NavController
+) {
     when (effect) {
         StatementsHistoryEffect.NavigateBack -> navController.popBackStack()
         is StatementsHistoryEffect.NavigateToStatementDetails -> {
-            navController.navigate(StatementDetailsScreenRoute(effect.statementLocation))
+            navController.navigate(
+                StatementDetailsScreenRoute(
+                    effect.statementLocation
+                )
+            )
         }
     }
 }

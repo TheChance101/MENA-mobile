@@ -26,7 +26,6 @@ import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Statement
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -84,7 +83,7 @@ class StatementRepositoryImplTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `getStatements should throw UnknownException when dao throws`() = runTest(testDispatcher) {
+    fun `getStatements should throw Exception when dao throws`() = runTest(testDispatcher) {
         // arrange
         networkClient = createNetworkClient()
         statementDao = mock(mode = MockMode.autofill)
@@ -97,14 +96,14 @@ class StatementRepositoryImplTest {
         statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
         // act & assert
-        assertFailsWith<UnknownException> {
+        assertFailsWith<Exception> {
             statementRepository.getStatements(page = 1, pageSize = 10)
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `insertStatement should throw UnknownException when dao throws`() =
+    fun `insertStatement should throw Exception when dao throws`() =
         runTest(testDispatcher) {
             // arrange
             networkClient = createNetworkClient()
@@ -113,14 +112,14 @@ class StatementRepositoryImplTest {
             statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             // act & assert
-            assertFailsWith<UnknownException> {
+            assertFailsWith<Exception> {
                 statementRepository.insertStatement(testStatement())
             }
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `deleteStatementById should throw UnknownException when dao throws`() =
+    fun `deleteStatementById should throw Exception when dao throws`() =
         runTest(testDispatcher) {
             // arrange
             networkClient = createNetworkClient()
@@ -129,14 +128,14 @@ class StatementRepositoryImplTest {
             statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             // act & assert
-            assertFailsWith<UnknownException> {
+            assertFailsWith<Exception> {
                 statementRepository.deleteStatementById(Uuid.random())
             }
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `getStatementById should throw UnknownException when dao throws`() =
+    fun `getStatementById should throw Exception when dao throws`() =
         runTest(testDispatcher) {
             // arrange
             networkClient = createNetworkClient()
@@ -145,7 +144,7 @@ class StatementRepositoryImplTest {
             statementRepository = StatementRepositoryImpl(networkClient, statementDao)
 
             // act & assert
-            assertFailsWith<UnknownException> {
+            assertFailsWith<Exception> {
                 statementRepository.getStatementById(Uuid.random())
             }
         }

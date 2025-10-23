@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses
+package net.thechance.mena.identity.presentation.screen.addresses.myAddresses
 
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.delete_address_description
@@ -54,11 +54,11 @@ enum class SnackBarType {
 }
 
 @OptIn(ExperimentalUuidApi::class)
-fun Address.toUiState(): AddressUIState {
+fun Address.toUiState(id: Uuid? = null, isMainAddress: Boolean = false): AddressUIState {
     return AddressUIState(
-        id = this.id,
+        id = id,
         addressType = addressType,
-        isMainAddress = this.isActive,
+        isMainAddress = isMainAddress,
         addressDetails = this.addressLine,
         coordinates = CoordinatesUiState(this.latitude, this.longitude),
     )

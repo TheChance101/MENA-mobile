@@ -23,7 +23,7 @@ interface AyahDao {
     FROM ayat 
     GROUP BY sura_no, sura_name_en
 """)
-    suspend fun getAllSur(): List<SurahDto>
+    suspend fun getSur(): List<SurahDto>
 
 
     @Query("SELECT * FROM ayat WHERE aya_no = :ayahId AND sura_no = :surahId")

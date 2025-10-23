@@ -1,10 +1,8 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct.component
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,12 +17,14 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-fun LazyListScope.productNameSection(
+@Composable
+fun ProductNameSection(
     productName: String,
     isTextFieldEnabled: Boolean,
-    onProductNameChange: (String) -> Unit
+    onProductNameChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    item {
+    Column(modifier){
         Text(
             text = stringResource(Res.string.product_name),
             style = Theme.typography.title.small,
@@ -50,14 +50,10 @@ fun LazyListScope.productNameSection(
 @Composable
 private fun ProductNameSectionPreview() {
     MenaTheme {
-        LazyColumn(
-            modifier = Modifier.background(Theme.colorScheme.background.surface)
-        ) {
-            productNameSection(
-                productName = "T-Shirt",
-                isTextFieldEnabled = true,
-                onProductNameChange = {}
-            )
-        }
+        ProductNameSection(
+            productName = "T-Shirt",
+            isTextFieldEnabled = true,
+            onProductNameChange = {}
+        )
     }
 }

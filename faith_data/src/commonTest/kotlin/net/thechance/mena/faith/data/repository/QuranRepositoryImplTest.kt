@@ -25,123 +25,92 @@ class QuranRepositoryImplTest {
 
 
     @Test
-    fun `getAllSur Should return list of sur when called`() = runTest {
-        // Given
-        everySuspend { mockDao.getAllSur() } returns SURAH_DTOS
+    fun `getSur Should return list of sur when called`() = runTest {
+        everySuspend { mockDao.getSur() } returns SURAH_DTOS
 
-        // When
-        val result = repository.getAllSur()
+        val result = repository.getSur()
 
-        // Then
         assertEquals(SUR_LIST, result)
     }
 
     @Test
-    fun `getAllSur Should return empty list when database is empty`() = runTest {
-        // Given
-        everySuspend { mockDao.getAllSur() } returns emptyList()
+    fun `getSur Should return empty list when database is empty`() = runTest {
+        everySuspend { mockDao.getSur() } returns emptyList()
 
-        // When
-        val result = repository.getAllSur()
+        val result = repository.getSur()
 
-        // Then
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `getAyatOfSurah Should return empty list when surah has no ayat`() = runTest {
-        // Given
         everySuspend { mockDao.getAyatOfSurah(1) } returns emptyList()
 
-        // When
         val result = repository.getAyatOfSurah(1)
 
-        // Then
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `getAyatOfSurah Should return empty list when surah id is non exist`() = runTest {
-        // Given
         everySuspend { mockDao.getAyatOfSurah(999) } returns emptyList()
 
-        // When
         val result = repository.getAyatOfSurah(999)
 
-        // Then
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `getAyatOfSurah Should return empty list when surah id is zero`() = runTest {
-        // Given
         everySuspend { mockDao.getAyatOfSurah(0) } returns emptyList()
 
-        // When
         val result = repository.getAyatOfSurah(0)
 
-        // Then
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `searchForAyahInQuran Should return empty list when no ayah match the query`() = runTest {
-        // Given
         everySuspend { mockDao.searchForAyahInQuran("nonexistent") } returns emptyList()
 
-        // When
         val result = repository.searchForAyahInQuran("nonexistent")
 
-        // Then
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `searchForAyahInSurah Should return empty list when no ayah match the query in the specified surah`() = runTest {
-        // Given
         everySuspend { mockDao.searchForAyahInSurah(1, "nonexistent") } returns emptyList()
 
-        // When
         val result = repository.searchForAyahInSurah(1, "nonexistent")
 
-        // Then
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `getLastAyahForTilawah should return stored ayah when datastore has value`() = runTest {
-        // Given
-
         everySuspend { tilawahDataStore.getLastAyah() } returns SAVED_TILAWAH_PROGRESS
 
-        // When
         val result = repository.getLastAyahForTilawah()
 
-        // Then
         assertEquals(SAVED_TILAWAH_PROGRESS, result)
     }
 
     @Test
     fun `getLastAyahForTilawah should return default ayah when datastore is empty`() = runTest {
-        // Given
         everySuspend { tilawahDataStore.getLastAyah() } returns null
 
-        // When
         val result = repository.getLastAyahForTilawah()
 
-        // Then
         assertEquals(DEFAULT_TILAWAH, result)
     }
 
     @Test
     fun `saveLastAyahForTilawah should call datastore saveLastAyah`() = runTest {
-        // Given
         val ayahToSave = TILAWAH_AYAH_TO_SAVE
 
-        // When
         repository.saveLastAyahForTilawah(ayahToSave)
 
-        // Then
         verifySuspend {
             tilawahDataStore.saveLastAyah(ayahToSave)
         }

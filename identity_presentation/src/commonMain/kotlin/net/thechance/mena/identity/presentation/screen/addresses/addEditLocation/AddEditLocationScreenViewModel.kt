@@ -13,12 +13,15 @@ import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.ErrorState
+import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.mapper.createNavigateToMapEffect
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
-import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
-import net.thechance.mena.identity.presentation.screen.addresses.SnackBarType
-import net.thechance.mena.identity.presentation.screen.addresses.SnackBarUiState
+import net.thechance.mena.identity.presentation.mapper.toAddressInput
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
+import net.thechance.mena.identity.presentation.utils.isSaveEnabled
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -56,28 +59,33 @@ class AddEditLocationScreenViewModel(
     }
 
     override fun onClickSave() {
-
         updateState { copy(isLoading = true, errorMessage = null) }
-
         tryToExecute(
-            function = ::onSave,
-            onSuccess = ::onSuccess,
-            onError = ::onError,
+            function = ::saveAddress,
+            onSuccess = ::onSaveAddressSuccess,
+            onError = ::onSaveAddressError,
             dispatcher = dispatcher
         )
     }
 
     override fun onChangeOtherAddressType(newType: String) {
-
-        updateState { copy(addressUIState.copy(addressType = AddressType.Other(newType), otherAddressType = newType)) }
+        updateState {
+            copy(
+                addressUIState.copy(
+                    addressType = AddressType.Other(newType),
+                    otherAddressType = newType
+                )
+            )
+        }
 
         changeIsSaveEnabled()
     }
 
     override fun onClickMap() {
         sendNewEffect(
-            AddEditLocationScreenUIEffect.NavigateToMap(
-                null, ::updateAddressFromPickLocation
+            createNavigateToMapEffect(
+                addressModel = null,
+                onSuccess = ::onAddressFromPickLocation
             )
         )
     }
@@ -87,70 +95,78 @@ class AddEditLocationScreenViewModel(
     }
 
     override fun onClickEdit() {
-        val currentState = state.value.addressUIState
+        val currentState = state.value
+        val addressModel = createAddressModelFromCurrentState(currentState)
         sendNewEffect(
-            AddEditLocationScreenUIEffect.NavigateToMap(
-                addressModel = AddressUIState(
-                    id = currentState.addressID,
-                    coordinates = CoordinatesUiState(
-                        currentState.coordinates.latitude,
-                        currentState.coordinates.longitude
-                    ),
-                    addressType = currentState.addressType ?: AddressType.Home,
-                    addressDetails = currentState.addressDetails,
-                    isMainAddress = currentState.isMainAddress
-                ), ::updateAddressFromPickLocation
+            createNavigateToMapEffect(
+                addressModel = addressModel,
+                onSuccess = ::onAddressFromPickLocation
             )
         )
     }
 
-    private suspend fun onSave() {
-        if (state.value.addressUIState.addressID != null) {
-            addressesRepository.editAddress(state.value.addressUIState.toEntity())
+    private suspend fun saveAddress() {
+        val addressInput = state.value.addressUIState.toAddressInput()
+        val addressId = state.value.addressUIState.addressID
+        if (addressId != null) {
+            addressesRepository.updateAddress(addressId, addressInput)
         } else {
-            addressesRepository.createAddress(state.value.addressUIState.toEntity())
+            addressesRepository.createAddress(addressInput)
         }
     }
 
-    private fun onSuccess() {
+    private fun onSaveAddressSuccess() {
         updateState { copy(isLoading = false) }
-        sendNewEffect(
-            AddEditLocationScreenUIEffect.NavigateBack(
-                SnackBarUiState(
-                    isVisible = true,
-                    snackBarType = SnackBarType.SUCCESS,
-                    message = if (state.value.addressUIState.addressID != null)
-                        Res.string.edit_location_successfully
-                    else
-                        Res.string.add_location_successfully
-                )
-            )
+        val isEditMode = state.value.addressUIState.addressID != null
+        val successMessage = if (isEditMode) Res.string.edit_location_successfully else Res.string.add_location_successfully
+        val snackBarState = SnackBarUiState(
+            isVisible = true,
+            snackBarType = SnackBarType.SUCCESS,
+            message = successMessage
         )
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack(snackBarState))
     }
 
-    private fun onError(errorState: ErrorState) {
-        updateState {
-            copy(
-                isLoading = false, errorMessage = mapErrorToMessage(errorState)
-            )
-        }
-        sendNewEffect(
-            AddEditLocationScreenUIEffect.NavigateBack(
-                SnackBarUiState(
-                    isVisible = true,
-                    snackBarType = SnackBarType.ERROR,
-                    message = Res.string.error
-                )
-            )
-        )
-
-    }
-
-    private fun updateAddressFromPickLocation(newAddress: AddressUIState) {
+    private fun onAddressFromPickLocation(newAddress: AddressUIState) {
         updateAddressState(newAddress, false)
     }
 
+    private fun onSaveAddressError(errorState: ErrorState) {
+        updateState {
+            copy(
+                isLoading = false,
+                errorMessage = mapErrorToMessage(errorState)
+            )
+        }
+        val snackBarState = SnackBarUiState(
+            isVisible = true,
+            snackBarType = SnackBarType.ERROR,
+            message = Res.string.error
+        )
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack(snackBarState))
+    }
+
+    private fun createAddressModelFromCurrentState(currentState: AddEditLocationScreenUIState): AddressUIState {
+        return AddressUIState(
+            id = currentState.addressUIState.addressID,
+            coordinates = CoordinatesUiState(
+                currentState.addressUIState.coordinates.latitude,
+                currentState.addressUIState.coordinates.longitude
+            ),
+            addressType = currentState.addressUIState.addressType ?: AddressType.Home,
+            addressDetails = currentState.addressUIState.addressDetails,
+            isMainAddress = currentState.addressUIState.isMainAddress
+        )
+    }
+
     private fun updateAddressState(newAddress: AddressUIState, updateOriginals: Boolean) {
+        updateAddressUIState(newAddress, updateOriginals)
+        if (updateOriginals) updateOriginalAddressUIState(newAddress)
+        updateMapState(newAddress)
+        changeIsSaveEnabled()
+    }
+
+    private fun updateAddressUIState(newAddress: AddressUIState, updateOriginals: Boolean) {
         updateState {
             copy(
                 addressUIState = addressUIState.copy(
@@ -160,15 +176,27 @@ class AddEditLocationScreenViewModel(
                     otherAddressType = if (newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null,
                     addressID = newAddress.id,
                     isMainAddress = newAddress.isMainAddress
-                ),
+                )
+            )
+        }
+    }
 
-                originalAddressUIState = if (updateOriginals) originalAddressUIState.copy(
+    private fun updateOriginalAddressUIState(newAddress: AddressUIState) {
+        updateState {
+            copy(
+                originalAddressUIState = originalAddressUIState.copy(
                     coordinates = newAddress.coordinates,
                     addressDetails = newAddress.addressDetails,
                     addressType = newAddress.addressType,
                     otherAddressType = if (newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null
-                ) else this.originalAddressUIState,
+                )
+            )
+        }
+    }
 
+    private fun updateMapState(newAddress: AddressUIState) {
+        updateState {
+            copy(
                 animateToCurrentLocation = true,
                 cameraPosition = CameraPosition(
                     target = Position(
@@ -176,43 +204,13 @@ class AddEditLocationScreenViewModel(
                         longitude = newAddress.coordinates.longitude,
                     ),
                     zoom = 15.0
-                ),
-
                 )
+            )
         }
-        changeIsSaveEnabled()
     }
 
     private fun changeIsSaveEnabled() {
-
-        val currentState = state.value
-        val isEditMode = currentState.addressUIState.addressID != null
-
-        val isEnabled = if (isEditMode) {
-            hasAddressChanged(currentState) && isAddressInputValid(currentState)
-        } else {
-            currentState.addressUIState.addressDetails.isNotBlank() && isAddressInputValid(
-                currentState
-            )
-        }
-
+        val isEnabled = state.value.isSaveEnabled()
         updateState { copy(isSaveEnabled = isEnabled) }
     }
-
-    private fun isAddressInputValid(currentState: AddEditLocationScreenUIState): Boolean {
-        return when (currentState.addressUIState.addressType) {
-            AddressType.Home -> true
-            AddressType.Office -> true
-            is AddressType.Other -> !currentState.addressUIState.otherAddressType.isNullOrBlank()
-            else -> false
-        }
-    }
-
-    private fun hasAddressChanged(currentState: AddEditLocationScreenUIState): Boolean {
-        return currentState.addressUIState.addressDetails != currentState.originalAddressUIState.addressDetails ||
-                currentState.addressUIState.addressType != currentState.originalAddressUIState.addressType ||
-                currentState.addressUIState.otherAddressType != currentState.originalAddressUIState.otherAddressType ||
-                currentState.addressUIState.coordinates != currentState.originalAddressUIState.coordinates
-    }
-
 }
