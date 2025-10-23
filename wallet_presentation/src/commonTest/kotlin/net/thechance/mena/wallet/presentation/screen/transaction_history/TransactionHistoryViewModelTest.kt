@@ -18,12 +18,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.domain.entity.TransactionStatus
+import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
-import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,7 +35,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class TransactionHistoryViewModelTest {
-    private val stringProvider = FakeStringProvider()
+    private val stringProvider = mock<StringProvider>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: TransactionHistoryViewModel
@@ -132,8 +132,8 @@ class TransactionHistoryViewModelTest {
     fun `page should be reset when onResetFilters is called`() = runTest(testDispatcher) {
         initViewModel()
 
-        viewModel.selectFilterType(FilterType.SENT)
-        viewModel.selectFilterStatus(FilterStatus.SUCCESS)
+        viewModel.onFilterTypeSelected(FilterType.SENT)
+        viewModel.onFilterStatusSelected(FilterStatus.SUCCESS)
         advanceUntilIdle()
 
         viewModel.onResetFilterClicked()
@@ -224,7 +224,7 @@ class TransactionHistoryViewModelTest {
             initViewModel()
 
             val filterType = FilterType.SENT
-            viewModel.selectFilterType(filterType)
+            viewModel.onFilterTypeSelected(filterType)
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -240,7 +240,7 @@ class TransactionHistoryViewModelTest {
             initViewModel()
 
             val filterStatus = FilterStatus.SUCCESS
-            viewModel.selectFilterStatus(filterStatus)
+            viewModel.onFilterStatusSelected(filterStatus)
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -270,8 +270,8 @@ class TransactionHistoryViewModelTest {
         runTest(testDispatcher) {
             initViewModel()
 
-            viewModel.selectFilterType(FilterType.SENT)
-            viewModel.selectFilterStatus(FilterStatus.SUCCESS)
+            viewModel.onFilterTypeSelected(FilterType.SENT)
+            viewModel.onFilterStatusSelected(FilterStatus.SUCCESS)
             advanceUntilIdle()
 
             viewModel.onRetryLoadTransactionHistoryClicked()
@@ -288,7 +288,7 @@ class TransactionHistoryViewModelTest {
         viewModel = TransactionHistoryViewModel(
             transactionRepository = transactionRepository,
             stringProvider = stringProvider,
-            ioDispatcher = testDispatcher
+            dispatcher = testDispatcher
         )
         advanceUntilIdle()
     }

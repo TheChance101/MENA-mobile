@@ -6,14 +6,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import io.github.suwasto.capturablecompose.CaptureController
 import io.github.suwasto.capturablecompose.rememberCaptureController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
+import mena.wallet_presentation.generated.resources.share_image
 import mena.wallet_presentation.generated.resources.transaction_details_header
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -22,40 +24,37 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.transaction_details.TransactionDetailsScreenState.TransactionDetailsUiState
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.DetailsContent
 import net.thechance.mena.wallet.presentation.screen.transaction_details.component.TransactionDetailsScreenShot
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
-import net.thechance.mena.wallet.presentation.utils.ImageSharer
+import net.thechance.mena.wallet.presentation.utils.FileSharer
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun TransactionDetailsScreen(
-    id: String,
-    onNavigateBackClicked: () -> Unit,
-    viewModel: TransactionDetailsViewModel = koinViewModel(
-        parameters = { parametersOf(TransactionDetailsArgs(id)) }
-    ),
-    imageSharer: ImageSharer = koinInject(),
+    viewModel: TransactionDetailsViewModel = koinViewModel(),
+    fileSharer: FileSharer = koinInject(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val captureController = rememberCaptureController()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
             onTransactionDetailsEffect(
                 effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                shareImage = imageSharer::shareImage,
+                navController = navController,
+                shareImage = fileSharer::shareFile,
                 captureImage = captureController::capture,
                 onCaptureError = viewModel::onCaptureError
             )
@@ -79,10 +78,7 @@ private fun TransactionDetailsScreenContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.transaction_details_header),
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._8
-                ),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -95,6 +91,7 @@ private fun TransactionDetailsScreenContent(
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
+        isLoading = state.isLoading,
         onRetry = { interactionListener.onRefresh() }
     ) {
         Crossfade(
@@ -102,12 +99,6 @@ private fun TransactionDetailsScreenContent(
             modifier = Modifier.fillMaxSize()
         ) {
             when {
-                state.isLoading -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
-                }
-
                 state.errorState != null -> ErrorView(onRetry = { interactionListener.onRefresh() })
 
                 else -> {
@@ -127,12 +118,12 @@ private fun TransactionDetailsSuccessContent(
     state: TransactionDetailsScreenState,
     interactionListener: TransactionDetailsInteractionListener,
     captureController: CaptureController
-){
+) {
     Box {
         DetailsContent(
             transactionDetailsUiState = state.transactionDetailsUiState,
             onShareReceiptButtonClicked = interactionListener::onShareReceiptButtonClicked,
-            isShareReceiptBtnLoading = state.isShareReceiptBtnLoading,
+            isShareReceiptButtonLoading = state.isShareReceiptBtnLoading,
         )
         TransactionDetailsScreenShot(
             captureController = captureController,
@@ -149,22 +140,32 @@ private fun TransactionDetailsSuccessContent(
 
 private suspend fun onTransactionDetailsEffect(
     effect: TransactionDetailsEffect,
-    onNavigateBackClicked: () -> Unit,
-    shareImage: suspend (ByteArray, String, String) -> Unit,
+    navController: NavController,
+    shareImage: suspend (
+        image: ByteArray,
+        fileName: String,
+        mimeType: String,
+        shareTitle: String
+    ) -> Unit,
     captureImage: suspend () -> Unit,
     onCaptureError: suspend () -> Unit
 ) {
     when (effect) {
-        TransactionDetailsEffect.NavigateBack -> onNavigateBackClicked()
+        TransactionDetailsEffect.NavigateBack -> navController.popBackStack()
 
         is TransactionDetailsEffect.ShareImage -> {
-            shareImage(effect.imageBytes, effect.fileName, effect.mimeType)
+            shareImage(
+                effect.imageBytes,
+                effect.fileName,
+                effect.mimeType,
+                getString(Res.string.share_image)
+            )
         }
 
         TransactionDetailsEffect.CaptureImage -> {
             try {
                 captureImage()
-            }catch (_: Throwable){
+            } catch (_: Throwable) {
                 onCaptureError()
             }
         }

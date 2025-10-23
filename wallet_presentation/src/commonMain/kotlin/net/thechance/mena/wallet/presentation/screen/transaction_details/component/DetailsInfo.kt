@@ -31,13 +31,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 internal fun ColumnScope.DetailsInfo(
     title: String,
     content: String,
+    modifier: Modifier = Modifier,
     icon: Painter? = null,
     iconContentDescription: String = "",
-    iconTint: Color = Theme.colorScheme.success
+    iconTint: Color = Theme.colorScheme.success,
 ) {
     Box(
-        modifier = Modifier
-            .padding(vertical = Theme.spacing._12)
+        modifier = modifier
+            .padding(vertical = 12.dp)
             .height(1.dp)
             .fillMaxWidth()
             .background(color = Theme.colorScheme.stroke)
@@ -53,6 +54,7 @@ internal fun ColumnScope.DetailsInfo(
             color = Theme.colorScheme.shadeSecondary,
             maxLines = 1
         )
+
         DetailsInfoContent(
             content = content,
             icon = icon,
@@ -65,21 +67,27 @@ internal fun ColumnScope.DetailsInfo(
 @Composable
 private fun DetailsInfoContent(
     content: String,
+    modifier: Modifier = Modifier,
     icon: Painter? = null,
     iconContentDescription: String = "",
     iconTint: Color = Theme.colorScheme.success
-){
-    Row {
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
+    ) {
         icon?.let {
             Icon(
-                painter = icon,
+                painter = it,
                 contentDescription = iconContentDescription,
                 modifier = Modifier
-                    .padding(end = Theme.spacing._4)
+                    .padding(end = 4.dp)
                     .size(20.dp),
                 tint = iconTint
             )
         }
+
         Text(
             text = content,
             style = Theme.typography.label.medium,

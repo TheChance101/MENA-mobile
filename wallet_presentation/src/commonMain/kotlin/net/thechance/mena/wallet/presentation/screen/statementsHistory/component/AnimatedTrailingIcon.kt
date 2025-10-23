@@ -8,6 +8,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,9 +20,11 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.edit
 import mena.wallet_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AnimatedTrailingIcon(
@@ -31,10 +34,8 @@ fun AnimatedTrailingIcon(
 ) {
     AnimatedVisibility(
         visible = !isEditMode && !hasStatements,
-        enter = fadeIn(tween(300)) +
-                scaleIn(tween(300)),
-        exit = fadeOut(tween(300)) +
-                scaleOut(tween(300))
+        enter = ENTER_ANIMATION,
+        exit = EXIT_ANIMATION
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_edit),
@@ -49,5 +50,27 @@ fun AnimatedTrailingIcon(
                 .clickable { onEditClicked() }
                 .padding(10.dp)
         )
+    }
+}
+
+private val ANIMATION_DURATION = 300
+
+private val ENTER_ANIMATION = fadeIn(tween(ANIMATION_DURATION)) +
+    scaleIn(tween(ANIMATION_DURATION))
+
+private val EXIT_ANIMATION = fadeOut(tween(ANIMATION_DURATION)) +
+    scaleOut(tween(ANIMATION_DURATION))
+
+@Preview
+@Composable
+private fun PreviewAnimatedTrailingIconNoStatementsNotEditMode() {
+    MenaTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            AnimatedTrailingIcon(
+                isEditMode = false,
+                hasStatements = false,
+                onEditClicked = {}
+            )
+        }
     }
 }

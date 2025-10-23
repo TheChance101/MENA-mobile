@@ -17,9 +17,7 @@ interface TransactionRepository {
 
     suspend fun getTransactionById(transactionId: Uuid): Transaction
     suspend fun getFirstTransactionDate(): LocalDate?
-    suspend fun addPendingTransaction(
-        receiverId: Uuid,
-        amount: Double
-    ): Uuid
+    suspend fun addPendingTransaction(receiverId: Uuid, amount: Double): Uuid
     suspend fun getTransactionReceiver(transactionId: Uuid): TransactionReceiver
+    suspend fun submitTransaction(transactionId: Uuid)
 }

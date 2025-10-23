@@ -108,6 +108,7 @@
     <string name="asr">Asr</string>
     <string name="maghrib">Maghrib</string>
     <string name="isha">Isha</string>
+    <string name="icon_shadow">icon shadow</string>
     <string name="sunrise">Sunrise</string>
     <string name="unknown_surah">Unknown Surah</string>
     <string name="ayah_number">Aya No %1$d</string>

@@ -1,9 +1,19 @@
 package net.thechance.mena.faith.presentation.feature.main
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.ic_kaaba
+import mena.faith_presentation.generated.resources.ic_mosque
+import mena.faith_presentation.generated.resources.ic_quran
+import mena.faith_presentation.generated.resources.nearby_mosques
+import mena.faith_presentation.generated.resources.qiblah_direction
+import mena.faith_presentation.generated.resources.quran_kareem
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 data class MainUiState(
     val isLoading: Boolean = false,
@@ -37,3 +47,24 @@ data class FeatureItem(
     val icon: Painter,
     val onClick: () -> Unit
 )
+
+@Composable
+fun faithFeatureCards(listener: MainInteractionListener): List<FeatureItem> {
+    return listOf(
+        FeatureItem(
+            title = stringResource(Res.string.quran_kareem),
+            icon = painterResource(Res.drawable.ic_quran),
+            onClick = listener::onQuranClick
+        ),
+        FeatureItem(
+            title = stringResource(Res.string.qiblah_direction),
+            icon = painterResource(Res.drawable.ic_kaaba),
+            onClick = listener::onQiblahClick
+        ),
+        FeatureItem(
+            title = stringResource(Res.string.nearby_mosques),
+            icon = painterResource(Res.drawable.ic_mosque),
+            onClick = listener::onMosquesClick
+        )
+    )
+}

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.wallet.presentation.screen.statementsHistory
 
 import androidx.lifecycle.viewModelScope
@@ -17,19 +19,21 @@ import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.Paginator
-import net.thechance.mena.wallet.presentation.utils.PdfHandler
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @KoinViewModel
 class StatementsHistoryViewModel(
     @Provided private val statementRepository: StatementRepository,
-    private val stringProvider: StringProvider,
-    @Provided private val pdfHandler: PdfHandler,
-    private val dispatcherIO: CoroutineDispatcher = Dispatchers.IO
+    @Provided private val stringProvider: StringProvider,
+    @Provided private val fileManager: FileManager,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<StatementsHistoryScreenState, StatementsHistoryEffect>
     (StatementsHistoryScreenState()), StatementsHistoryInteractionListener {
 
@@ -38,7 +42,7 @@ class StatementsHistoryViewModel(
     }
 
     private fun loadNextStatements() {
-        viewModelScope.launch(dispatcherIO) { paginator.loadNextItems() }
+        viewModelScope.launch(dispatcher) { paginator.loadNextItems() }
     }
 
     override fun onBackClicked() {
@@ -53,49 +57,57 @@ class StatementsHistoryViewModel(
         loadNextStatements()
     }
 
-    override fun onStatementCardClicked(
-        statement: StatementsHistoryScreenState.StatementItem,
-        onViewStatementAvailable: (isPdfFound: Boolean) -> Unit
-    ) {
+    override fun onStatementCardClicked(statement: StatementsHistoryScreenState.StatementItem) {
         val fileLocation = StorageLocation.Downloads(statement.fileName)
 
         tryToExecute(
-            callee = { pdfHandler.checkIfPdfExists(fileLocation) },
+            callee = { fileManager.checkIfFileExists(fileLocation) },
             onSuccess = { fileExists ->
                 if (fileExists) {
-                    onViewStatementAvailable(true)
                     sendEffect(StatementsHistoryEffect.NavigateToStatementDetails(fileLocation))
                 } else {
-                    onViewStatementAvailable(false)
                     deleteNotFoundStatement(statement)
                 }
             },
             onError = {
-                onViewStatementAvailable(false)
                 showSnackBar(
                     title = stringProvider.getString(Res.string.unknown_error_title),
                     message = stringProvider.getString(Res.string.unknown_error_description),
                     isSuccess = false
                 )
             },
-            dispatcher = dispatcherIO
+            dispatcher = dispatcher
         )
     }
 
+
+    private suspend fun markStatementAsDeleted(id: Uuid) {
+        updateState { current ->
+            val updatedStatements = current.statements.map { statement ->
+                if (statement.id == id) statement.copy(isDeleting = true) else statement
+            }
+            current.copy(statements = updatedStatements)
+        }
+
+        delay(ANIMATION_DELAY)
+
+        updateState {
+            val updatedStatements = it.statements.filter { statement -> statement.id != id }
+            it.copy(statements = updatedStatements)
+        }
+    }
 
     private fun deleteNotFoundStatement(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
             callee = { statementRepository.deleteStatementById(statement.id) },
             onSuccess = { onDeleteNotFoundStatementSuccess(statement.id) },
-            onError = { onDeleteNotFoundStatementError() },
-            dispatcher = dispatcherIO
+            onError = ::onDeleteNotFoundStatementError,
+            dispatcher = dispatcher
         )
     }
 
-    private suspend fun onDeleteNotFoundStatementSuccess(id: Long) {
-        delay(DELETE_DELAY_MS)
-
-        removeStatementFromState(id = id)
+    private suspend fun onDeleteNotFoundStatementSuccess(id: Uuid) {
+        markStatementAsDeleted(id = id)
 
         showSnackBar(
             title = stringProvider.getString(Res.string.file_missing),
@@ -104,18 +116,12 @@ class StatementsHistoryViewModel(
         )
     }
 
-    private suspend fun onDeleteNotFoundStatementError() {
+    private suspend fun onDeleteNotFoundStatementError(error: ErrorState) {
         showSnackBar(
             title = stringProvider.getString(Res.string.unknown_error_title),
             message = stringProvider.getString(Res.string.unknown_error_description),
             isSuccess = false
         )
-    }
-
-    private fun removeStatementFromState(id: Long) {
-        updateState { current ->
-            current.copy(statements = current.statements.filter { it.id != id })
-        }
     }
 
     override fun onEditClicked() {
@@ -126,50 +132,37 @@ class StatementsHistoryViewModel(
         updateState { it.copy(isEditMode = false) }
     }
 
-    override fun onDeleteClicked(
-        statement: StatementsHistoryScreenState.StatementItem,
-        onDeleteComplete: (isSuccess: Boolean) -> Unit
-    ) {
+    override fun onDeleteClicked(statement: StatementsHistoryScreenState.StatementItem) {
         tryToExecute(
             callee = { deleteStatementPdf(statement = statement) },
-            onSuccess = {
-                onDeleteStatementSuccess(
-                    id = statement.id,
-                    onDeleteComplete = onDeleteComplete
-                )
-            },
-            onError = {
-                showSnackBar(
-                    title = stringProvider.getString(Res.string.unknown_error_title),
-                    message = stringProvider.getString(Res.string.unknown_error_description),
-                    isSuccess = false
-                )
-                onDeleteComplete(false)
-            },
-            dispatcher = dispatcherIO
+            onSuccess = { onDeleteStatementSuccess(id = statement.id) },
+            onError = ::onDeleteStatementError,
+            dispatcher = dispatcher
         )
     }
 
     private suspend fun deleteStatementPdf(statement: StatementsHistoryScreenState.StatementItem) {
         val fileLocation = StorageLocation.Downloads(statement.fileName)
 
-        if (pdfHandler.checkIfPdfExists(fileLocation)) {
-            pdfHandler.deletePdf(fileLocation)
+        if (fileManager.checkIfFileExists(fileLocation)) {
+            fileManager.deleteFile(fileLocation)
         }
 
         statementRepository.deleteStatementById(statement.id)
     }
 
-    private suspend fun onDeleteStatementSuccess(
-        id: Long,
-        onDeleteComplete: (Boolean) -> Unit
-    ) {
-        delay(DELETE_DELAY_MS)
+    private suspend fun onDeleteStatementSuccess(id: Uuid) {
+        markStatementAsDeleted(id = id)
 
-        removeStatementFromState(id = id)
         updateState { it.copy(isEditMode = it.statements.isNotEmpty()) }
+    }
 
-        onDeleteComplete(true)
+    private suspend fun onDeleteStatementError(error: ErrorState) {
+        showSnackBar(
+            title = stringProvider.getString(Res.string.unknown_error_title),
+            message = stringProvider.getString(Res.string.unknown_error_description),
+            isSuccess = false
+        )
     }
 
     private fun onPaginationLoading(isLoading: Boolean) {
@@ -192,7 +185,7 @@ class StatementsHistoryViewModel(
     private fun onPaginationError(throwable: Throwable?) {
         when (throwable) {
             is NoInternetException -> updateState { it.copy(errorState = ErrorState.NoInternet) }
-            else -> updateState { it.copy(errorState = ErrorState.Unknown) }
+            else -> updateState { it.copy(errorState = ErrorState.UnknownError) }
         }
     }
 
@@ -246,6 +239,6 @@ class StatementsHistoryViewModel(
     private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
-        const val DELETE_DELAY_MS = 300L
+        const val ANIMATION_DELAY = 500L
     }
 }

@@ -11,7 +11,7 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.balance.BalanceRepositoryImpl
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -37,7 +37,7 @@ class BalanceRepositoryImplTest {
         networkClient = createNetworkClient(getRespond = errorResonance)
         balanceRepository = BalanceRepositoryImpl(networkClient)
 
-        assertFailsWith<UnknownException> {
+        assertFailsWith<UnknownNetworkException> {
             balanceRepository.getBalance()
         }
     }

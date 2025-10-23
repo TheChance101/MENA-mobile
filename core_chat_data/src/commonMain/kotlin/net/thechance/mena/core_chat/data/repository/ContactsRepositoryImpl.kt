@@ -18,6 +18,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toListOfContactCreationRequestDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfContacts
+import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ContactSyncFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
@@ -25,17 +26,18 @@ import net.thechance.mena.core_chat.domain.exception.DataStoreException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.core_chat.data.source.local.datastore.tryCall
 
 class ContactsRepositoryImpl(
     private val client: HttpClient,
     private val contactsProvider: ContactsProvider,
     private val dataStore: DataStore<Preferences>
-) : ContactsRepository, BaseRepository {
+) : ContactsRepository{
 
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun getUserContacts(pageNumber: Int): PagedData<Contact> {
         return tryNetworkCall<PagedDataDto<ContactDto>>(
-            defaultException = { ContactsFetchFailedException("Couldn't get user contacts", it) },
+            defaultException = ContactsFetchFailedException("Couldn't get user contacts") ,
             bodyType = typeInfo<PagedDataDto<ContactDto>>()
         ) {
             client.get(CONTACTS_ENDPOINT) {
@@ -47,7 +49,7 @@ class ContactsRepositoryImpl(
 
     override suspend fun syncContacts() {
         tryNetworkCall<Unit>(
-            defaultException = { ContactSyncFailedException("Couldn't sync user contacts", it) },
+            defaultException = ContactSyncFailedException("Couldn't sync user contacts") ,
             bodyType = typeInfo<Unit>()
         ) {
             val contacts = getDeviceContacts()
@@ -68,20 +70,20 @@ class ContactsRepositoryImpl(
         )
     }
 
-    override suspend fun getSyncStatus(): Boolean {
+    override suspend fun getHasUserSyncedContactsStatus(): Boolean {
         return tryCall(
-            defaultException = { DataStoreException("error with data store", it) }) {
+            defaultException = DataStoreException("error with data store") ) {
             dataStore.data.map {
                 it[USER_SYNCED_STATE_KEY]
             }.firstOrNull() == true
         }
     }
 
-    override suspend fun setSyncStatus(state: Boolean) {
+    override suspend fun setHasUserSyncedContactsStatus(isSynced: Boolean) {
         return tryCall(
-            defaultException = { DataStoreException("error with data store", it) }) {
+            defaultException = DataStoreException("error with data store") ) {
             dataStore.edit { preferences ->
-                preferences[USER_SYNCED_STATE_KEY] = state
+                preferences[USER_SYNCED_STATE_KEY] = isSynced
             }
         }
     }

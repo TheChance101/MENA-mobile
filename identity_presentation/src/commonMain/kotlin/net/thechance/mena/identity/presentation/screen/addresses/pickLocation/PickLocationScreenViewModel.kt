@@ -7,13 +7,13 @@ import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_location_is_turned_off
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
-import net.thechance.mena.identity.domain.util.Coordinates
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.ErrorState
+import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.addresses.AddressUIState
-import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.maplibre.compose.camera.CameraPosition
@@ -65,19 +65,30 @@ class PickLocationScreenViewModel(
 
     private fun getLocationName() {
         tryToExecute(
-            function = ::onGetLocationName,
-            onSuccess = ::onGetLocationNameSuccess,
-            onError = ::onError,
+            function = ::fetchLocationName,
+            onSuccess = ::onLocationNameSuccess,
+            onError = ::onLocationNameError,
             dispatcher = Dispatchers.Main
         )
     }
 
-    private suspend fun onGetLocationName(): String {
+    private suspend fun fetchLocationName(): String {
         return addressesRepository.getLocationName(state.value.currentLocation.toEntity())
     }
 
-    private fun onGetLocationNameSuccess(address: String) {
+    private fun onLocationNameSuccess(address: String) {
         updateState { copy(address = address) }
+        changeIsConfirmEnabled()
+    }
+
+    private fun onLocationNameError(errorState: ErrorState) {
+        updateState {
+            copy(
+                errorMessage = mapErrorToMessage(errorState),
+                isGpsButtonLoading = false,
+                address = ""
+            )
+        }
         changeIsConfirmEnabled()
     }
 
@@ -102,21 +113,19 @@ class PickLocationScreenViewModel(
 
     override fun onClickGps() {
         tryToExecute(
-            function = ::onGpsFetch,
-            onSuccess = ::onClickGpsSuccess,
-            onError = ::onClickGpsError,
+            function = ::fetchCurrentLocation,
+            onSuccess = ::onCurrentLocationSuccess,
+            onError = ::onCurrentLocationError,
             dispatcher = Dispatchers.Main
         )
     }
 
-    private suspend fun onGpsFetch(): Coordinates? {
+    private suspend fun fetchCurrentLocation(): Coordinates? {
         updateState { copy(isGpsButtonLoading = true) }
         return addressesRepository.getCurrentLocation()
     }
 
-    private fun onClickGpsSuccess(
-        coordinates: Coordinates?
-    ) {
+    private fun onCurrentLocationSuccess(coordinates: Coordinates?) {
         if (coordinates != null) {
             updateState {
                 copy(
@@ -130,20 +139,20 @@ class PickLocationScreenViewModel(
         }
     }
 
-    private fun onClickGpsError(errorState: ErrorState) {
+    private fun onCurrentLocationError(errorState: ErrorState) {
         checkLocationEnable()
     }
 
     private fun checkLocationEnable() {
         tryToExecute(
             function = { locationForegroundHandler.checkPermission() },
-            onSuccess = ::checkLocationEnableSuccess,
-            ::onError,
+            onSuccess = ::onPermissionCheckSuccess,
+            onError = ::onPermissionCheckError,
             dispatcher = dispatcher
         )
     }
 
-    private fun checkLocationEnableSuccess(permissionState: PermissionState) {
+    private fun onPermissionCheckSuccess(permissionState: PermissionState) {
         when (permissionState) {
             PermissionState.GRANTED -> {
                 updateState {
@@ -164,7 +173,7 @@ class PickLocationScreenViewModel(
         }
     }
 
-    private fun onError(errorState: ErrorState) {
+    private fun onPermissionCheckError(errorState: ErrorState) {
         updateState {
             copy(
                 errorMessage = mapErrorToMessage(errorState),

@@ -38,11 +38,11 @@ internal class CategoryPickViewModel(
         updateState { copy(categories = categories.toUserCategoryUiState()) }
     }
 
-    override fun onCategoryClick(categoryId: String) = updateState {
+    override fun onClickCategory(categoryId: String) = updateState {
         copy(categories = categories.toggleCategory(categoryId))
     }
 
-    override fun onNextClick() {
+    override fun onClickNext() {
         tryToExecute(
             block = { saveSelectedCategories() },
             onSuccess = { sendEffect(CategoryPickScreenEffect.NavigateToHome) },
@@ -60,7 +60,7 @@ internal class CategoryPickViewModel(
         repository.initializeUserCategories(selectedIds)
     }
 
-    override fun onBackClick() = sendEffect(CategoryPickScreenEffect.NavigateBack)
+    override fun onClickBack() = sendEffect(CategoryPickScreenEffect.NavigateBack)
 
     private fun startLoading() = updateState { copy(isLoading = true) }
     private fun endLoading() = updateState { copy(isLoading = false) }

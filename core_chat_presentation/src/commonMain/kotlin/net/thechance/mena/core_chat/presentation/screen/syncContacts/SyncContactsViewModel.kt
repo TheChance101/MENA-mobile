@@ -55,7 +55,7 @@ class SyncContactsViewModel(
 
     private suspend fun onSyncContactsSuccess() {
         if (state.value.isFirstSync) {
-            contactsRepository.setSyncStatus(true)
+            contactsRepository.setHasUserSyncedContactsStatus(true)
         }
         emitEffect(SyncContactsScreenEffect.NavigateToContactsAfterSyncSuccess)
     }

@@ -42,6 +42,7 @@ import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
+import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.test.AfterTest
@@ -57,6 +58,7 @@ class ChatViewModelTest {
     private val messageRepository = mock<MessageRepository>()
     private val userRepository = mock<UserRepository>()
     private val chatArgs = mock<ChatArgs>()
+    private val imageDownloaderService = mock<ImageDownloaderService>()
     private val permissionsController = mock<PermissionsController>()
     private lateinit var viewModel: ChatViewModel
 
@@ -64,7 +66,7 @@ class ChatViewModelTest {
 
 
     @BeforeTest
-    fun setup() = runTest {
+    fun setup() {
         Dispatchers.setMain(testDispatcher)
         every { chatArgs.chatId } returns chatId.toString()
         every { chatArgs.chatName } returns chatName
@@ -73,8 +75,10 @@ class ChatViewModelTest {
         everySuspend {
             messageRepository.loadMessages(chatId, any(), any())
         } returns PagedData(emptyList(), 0, true)
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
-        every { messageRepository.getMessages(chatId) } returns flowOf()
+        everySuspend { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(
+            emptyList()
+        )
+        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
         everySuspend { messageRepository.markMessagesAsRead(any()) } returns Unit
 
@@ -82,14 +86,16 @@ class ChatViewModelTest {
     }
 
     @AfterTest
-    fun tearDown() = runTest {
+    fun tearDown() {
         Dispatchers.resetMain()
     }
 
     @Test
     fun `init should update chat list when its loaded messages successfully`() = runTest {
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(messages)
-        every { messageRepository.getMessages(chatId) } returns flowOf()
+        everySuspend { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(
+            messages
+        )
+        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
         everySuspend {
             messageRepository.loadMessages(chatId, 0, 40)
@@ -107,12 +113,12 @@ class ChatViewModelTest {
     @Test
     fun `init should update uiMessage and chatListItems when receive new message`() = runTest {
         everySuspend { chatRepository.getChatById(chatId) } returns chat
-        every { messageRepository.getMessages(chatId) } returns flowOf(messages.first())
+        every { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(messages)
         every { messageRepository.observeReadMessages() } returns flowOf()
         everySuspend {
             messageRepository.loadMessages(chatId, any(), any())
         } returns PagedData(emptyList(), 80, false)
-        everySuspend { messageRepository.getLocalMessages(chatId) } returns flowOf(emptyList())
+        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf(messages.first())
 
         advanceUntilIdle()
 
@@ -267,41 +273,19 @@ class ChatViewModelTest {
         }
 
     @Test
-    fun `onDownloadImageClicked should call repository`() = runTest {
-        everySuspend { chatRepository.downloadImage(imageUrl) } returns Unit
+    fun `onDownloadImageClicked should call imageDownloaderService`() = runTest {
+        everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns true
         advanceUntilIdle()
 
-        viewModel.onDownloadImageClicked(imageUrl)
+        chatViewModel.onDownloadImageClicked(imageUrl)
         advanceUntilIdle()
 
-        verifySuspend { chatRepository.downloadImage(imageUrl) }
+        verifySuspend { chatViewModel.onDownloadImageClicked(imageUrl) }
     }
 
     @Test
-    fun `onDownloadImageClicked should emit success snackBar effect on success`() = runTest {
-        everySuspend { chatRepository.downloadImage(imageUrl) } returns Unit
-        advanceUntilIdle()
-
-        viewModel.effect.test {
-            viewModel.onDownloadImageClicked(imageUrl)
-            advanceUntilIdle()
-
-            assertEquals(
-                ChatScreenEffect.ShowSnackBar(
-                    SnackBarData(
-                        title = UiText.StringRes(Res.string.success),
-                        message = UiText.StringRes(Res.string.image_saved_successfully),
-                        isError = false
-                    )
-                ), awaitItem()
-            )
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `onDownloadImageClicked should emit error snackBar effect on failure`() = runTest {
-        everySuspend { chatRepository.downloadImage(imageUrl) } throws Exception()
+    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery fails and return false`() = runTest {
+        everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns false
         advanceUntilIdle()
 
         viewModel.effect.test {
@@ -322,6 +306,51 @@ class ChatViewModelTest {
     }
 
     @Test
+    fun `onDownloadImageClicked should emit success snackBar effect on success`() = runTest {
+        everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns true
+        advanceUntilIdle()
+
+        viewModel.effect.test {
+            viewModel.onDownloadImageClicked(imageUrl)
+            advanceUntilIdle()
+
+            assertEquals(
+                ChatScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.success),
+                        message = UiText.StringRes(Res.string.image_saved_successfully),
+                        isError = false
+                    )
+                ), awaitItem()
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery thows exception`() =
+        runTest {
+            everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } throws Exception()
+            advanceUntilIdle()
+
+            viewModel.effect.test {
+                viewModel.onDownloadImageClicked(imageUrl)
+                advanceUntilIdle()
+
+                assertEquals(
+                    ChatScreenEffect.ShowSnackBar(
+                        SnackBarData(
+                            title = UiText.StringRes(Res.string.error),
+                            message = UiText.StringRes(Res.string.error_failed_to_download_image),
+                            isError = true
+                        )
+                    ), awaitItem()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `onCloseImageViewClicked should reset image pager state`() = runTest {
         advanceUntilIdle()
 
@@ -332,7 +361,6 @@ class ChatViewModelTest {
         assertThat(viewModel.state.value.selectedMessage).isNull()
         assertThat(viewModel.state.value.currentImageIndexForPreview).isEqualTo(0)
     }
-
 
     @Test
     fun `onCameraClicked should check for camera permission when called`() = runTest {
@@ -387,6 +415,7 @@ class ChatViewModelTest {
             chatRepository,
             messageRepository,
             userRepository,
+            imageDownloaderService,
             chatArgs,
             permissionsController,
             testDispatcher

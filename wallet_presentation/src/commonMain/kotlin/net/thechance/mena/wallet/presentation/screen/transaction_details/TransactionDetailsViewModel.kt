@@ -12,6 +12,8 @@ import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
+import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.StringProvider
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -24,7 +26,7 @@ class TransactionDetailsViewModel(
     @Provided private val transactionDetailsArgs: TransactionDetailsArgs,
     @Provided val transactionRepository: TransactionRepository,
     @Provided private val stringProvider: StringProvider,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<TransactionDetailsScreenState, TransactionDetailsEffect>(
     TransactionDetailsScreenState()), TransactionDetailsInteractionListener {
 
@@ -44,7 +46,7 @@ class TransactionDetailsViewModel(
             onSuccess = ::onGetTransactionDetailsSuccess,
             onError = ::onGetTransactionDetailsError,
             onStart = ::onGetTransactionDetailsStart,
-            dispatcher = ioDispatcher
+            dispatcher = dispatcher
         )
     }
 
@@ -77,7 +79,7 @@ class TransactionDetailsViewModel(
             TransactionDetailsEffect.ShareImage(
                 imageBytes = byteArray,
                 fileName = "$fileName.png",
-                mimeType = IMAGE_TYPE
+                mimeType = MimeType.PNG
             )
         )
         stopButtonLoading()
@@ -131,9 +133,5 @@ class TransactionDetailsViewModel(
 
     private fun startButtonLoading() {
         updateState { it.copy(isShareReceiptBtnLoading = true) }
-    }
-
-    private companion object {
-        const val IMAGE_TYPE = "image/png"
     }
 }

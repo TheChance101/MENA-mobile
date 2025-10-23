@@ -6,11 +6,11 @@ import net.thechance.mena.wallet.data.dto.remote.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
 import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
-import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.mapper.toTransactionEntityList
 import net.thechance.mena.wallet.data.network_client.NetworkClient
+import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -30,7 +30,8 @@ class TransactionRepositoryImpl(
     ) = safeApiCall<PagedTransactionResponseDto> {
         networkClient.get(
             urlString = TRANSACTION_PATH,
-            block = transactionFilterParams?.toRequest(page = page, pageSize = pageSize) ?: {}
+            requestBuilder = transactionFilterParams?.toRequest(page = page, pageSize = pageSize)
+                ?: {}
         )
     }.transactions.toTransactionEntityList()
 
@@ -61,14 +62,24 @@ class TransactionRepositoryImpl(
         }.toEntity()
     }
 
+    override suspend fun submitTransaction(transactionId: Uuid) = safeApiCall<Unit> {
+        networkClient.post(getSubmitTransactionPath(transactionId))
+    }
+
+
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
+        const val PAYMENT_PATH = "wallet/payment"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/p2p/initiate"
         const val RECEIVER_DETAILS = "/receiver-details"
         const val ADD_TRANSACTION_PATH = "$TRANSACTION_PATH$ADD_TRANSACTION"
+
         fun getTransactionByIdPath(transactionId: Uuid) = "$TRANSACTION_PATH/$transactionId"
         fun getTransactionReceiverPath(transactionId: Uuid) =
             "$TRANSACTION_PATH/$transactionId$RECEIVER_DETAILS"
+
+        fun getSubmitTransactionPath(transactionId: Uuid) =
+            "$PAYMENT_PATH/$transactionId/submit"
     }
 }

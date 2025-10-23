@@ -1,12 +1,15 @@
 package net.thechance.mena.wallet.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.balance_fetch_error_description
@@ -28,36 +31,48 @@ fun SnackBarContainer(
     snackBarState: SnackBarState,
     modifier: Modifier = Modifier
 ) {
-    val (leadingIcon, tint) = if (snackBarState.isSuccess) {
-        Res.drawable.ic_check_circle to Theme.colorScheme.success
-    } else {
-        Res.drawable.ic_close_circle to Theme.colorScheme.error
-    }
+    val targetTint =
+        if (snackBarState.isSuccess) Theme.colorScheme.success else Theme.colorScheme.error
+
+    val animatedTint by animateColorAsState(
+        targetValue = targetTint,
+        animationSpec = tween(durationMillis = ANIMATION_DURATION),
+    )
 
     AnimatedVisibility(
         visible = snackBarState.isVisible,
-        enter =
-            fadeIn(tween(ANIMATION_DURATION)) +
-                    slideInVertically(
-                        animationSpec = tween(ANIMATION_DURATION),
-                        initialOffsetY = { -it/2 },
-                    ),
-        exit =
-            fadeOut(tween(ANIMATION_DURATION)) +
-                    slideOutVertically(
-                        animationSpec = tween(ANIMATION_DURATION),
-                        targetOffsetY = { -it/2 },
-                    ),
+        enter = ENTER_ANIMATION,
+        exit = EXIT_ANIMATION
     ) {
-        SnackBar(
-            title = snackBarState.title ?: "",
-            message = snackBarState.message ?: "",
-            leadingIcon = painterResource(leadingIcon),
-            modifier = modifier,
-            tint = tint
-        )
+        Crossfade(
+            targetState = snackBarState.isSuccess,
+            animationSpec = tween(ANIMATION_DURATION)
+        ) { isSuccess ->
+            val leadingIcon =
+                if (isSuccess) Res.drawable.ic_check_circle else Res.drawable.ic_close_circle
+
+            SnackBar(
+                title = snackBarState.title ?: "",
+                message = snackBarState.message ?: "",
+                leadingIcon = painterResource(leadingIcon),
+                modifier = modifier,
+                tint = animatedTint
+            )
+        }
     }
 }
+
+private val ENTER_ANIMATION = fadeIn(tween(ANIMATION_DURATION)) +
+        slideInVertically(
+            animationSpec = tween(ANIMATION_DURATION),
+            initialOffsetY = { -it / 2 },
+        )
+
+private val EXIT_ANIMATION = fadeOut(tween(ANIMATION_DURATION)) +
+        slideOutVertically(
+            animationSpec = tween(ANIMATION_DURATION),
+            targetOffsetY = { -it / 2 },
+        )
 
 @Preview
 @Composable
@@ -83,7 +98,7 @@ private fun SnackBarContainerSuccessPreview() {
                 isVisible = true,
                 title = stringResource(Res.string.error),
                 message = stringResource(Res.string.balance_fetch_error_description),
-                isSuccess =  true
+                isSuccess = true
             )
         )
     }

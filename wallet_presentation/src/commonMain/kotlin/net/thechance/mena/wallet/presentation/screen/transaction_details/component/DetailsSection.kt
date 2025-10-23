@@ -2,6 +2,7 @@ package net.thechance.mena.wallet.presentation.screen.transaction_details.compon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.date
@@ -34,42 +36,15 @@ internal fun DetailsSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16)
-            .clip(shape = RoundedCornerShape(Theme.spacing._16))
+            .padding(horizontal = 16.dp)
+            .clip(shape = RoundedCornerShape(16.dp))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.spacing._16)
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(Theme.spacing._16)
+            .padding(16.dp)
     ) {
-        TextWithIcon(
-            modifier = Modifier
-                .padding(top = Theme.spacing._8)
-                .align(Alignment.CenterHorizontally),
-            text = stringResource(transactionDetailsUiState.transactionType.titleRes),
-            textStyle = Theme.typography.label.small,
-            textColor = Theme.colorScheme.shadeSecondary,
-            icon = painterResource(transactionDetailsUiState.transactionType.iconRes),
-            iconContentDescription = stringResource(
-                resource = transactionDetailsUiState.transactionType.iconContentDescriptionRes
-            ),
-            iconTint = Theme.colorScheme.shadeSecondary,
-            iconSize = 16.dp,
-            gap = Theme.spacing._4,
-        )
-
-        TextWithIcon(
-            modifier = Modifier
-                .padding(vertical = Theme.spacing._8)
-                .align(Alignment.CenterHorizontally),
-            text = transactionDetailsUiState.amount,
-            textStyle = Theme.typography.headline.medium,
-            textColor = Theme.colorScheme.shadePrimary,
-            icon = painterResource(Res.drawable.img_silver),
-            iconContentDescription = stringResource(Res.string.silver_coin),
-            iconSize = Theme.spacing._24,
-            gap = Theme.spacing._8,
-        )
+        HeaderSection(transactionDetailsUiState)
 
         if (isUserNameShown) {
             DetailsInfo(
@@ -83,32 +58,70 @@ internal fun DetailsSection(
             content = stringResource(transactionDetailsUiState.transactionStatus.contentRes),
             icon = painterResource(transactionDetailsUiState.transactionStatus.iconRes),
             iconContentDescription = stringResource(transactionDetailsUiState.transactionStatus.iconContentDescriptionRes),
-            iconTint = when (transactionDetailsUiState.transactionStatus) {
-                TransactionStatusUiState.FAILED -> Theme.colorScheme.error
-                TransactionStatusUiState.SUCCESS -> Theme.colorScheme.success
-            }
+            iconTint = transactionDetailsUiState.transactionStatus.getStatusColor()
         )
 
-        DetailsInfo(
-            title = stringResource(Res.string.type),
-            content = stringResource(transactionDetailsUiState.typeContent),
-        )
-
-        DetailsInfo(
-            title = stringResource(transactionDetailsUiState.otherPartyTitle),
-            content = transactionDetailsUiState.otherParty,
-        )
-
-        DetailsInfo(
-            title = stringResource(Res.string.date),
-            content = transactionDetailsUiState.date,
-        )
-
-        DetailsInfo(
-            title = stringResource(Res.string.transaction_id),
-            content = transactionDetailsUiState.id,
-        )
+        DetailsInfoSection(transactionDetailsUiState)
     }
+}
+
+@Composable
+private fun ColumnScope.HeaderSection(transactionDetailsUiState: TransactionDetailsUiState) {
+    TextWithIcon(
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .align(Alignment.CenterHorizontally),
+        text = stringResource(transactionDetailsUiState.transactionType.titleRes),
+        textStyle = Theme.typography.label.small,
+        textColor = Theme.colorScheme.shadeSecondary,
+        icon = painterResource(transactionDetailsUiState.transactionType.iconRes),
+        iconContentDescription = stringResource(transactionDetailsUiState.transactionType.iconContentDescriptionRes),
+        iconTint = Theme.colorScheme.shadeSecondary,
+        iconSize = 16.dp,
+        gap = 4.dp,
+    )
+
+    TextWithIcon(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .align(Alignment.CenterHorizontally),
+        text = transactionDetailsUiState.amount,
+        textStyle = Theme.typography.headline.medium,
+        textColor = Theme.colorScheme.shadePrimary,
+        icon = painterResource(Res.drawable.img_silver),
+        iconContentDescription = stringResource(Res.string.silver_coin),
+        iconSize = 24.dp,
+        gap = 8.dp,
+    )
+}
+
+@Composable
+private fun ColumnScope.DetailsInfoSection(transactionDetailsUiState: TransactionDetailsUiState) {
+    DetailsInfo(
+        title = stringResource(Res.string.type),
+        content = stringResource(transactionDetailsUiState.typeContent),
+    )
+
+    DetailsInfo(
+        title = stringResource(transactionDetailsUiState.otherPartyTitle),
+        content = transactionDetailsUiState.otherParty,
+    )
+
+    DetailsInfo(
+        title = stringResource(Res.string.date),
+        content = transactionDetailsUiState.date,
+    )
+
+    DetailsInfo(
+        title = stringResource(Res.string.transaction_id),
+        content = transactionDetailsUiState.id,
+    )
+}
+
+@Composable
+private fun TransactionStatusUiState.getStatusColor(): Color = when (this) {
+    TransactionStatusUiState.FAILED -> Theme.colorScheme.error
+    TransactionStatusUiState.SUCCESS -> Theme.colorScheme.success
 }
 
 @Preview

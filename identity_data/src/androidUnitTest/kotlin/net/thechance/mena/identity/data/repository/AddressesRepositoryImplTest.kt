@@ -17,7 +17,8 @@ import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
-import net.thechance.mena.identity.domain.util.Coordinates as DomainCoordinates
+import net.thechance.mena.identity.domain.model.AddressInput
+import net.thechance.mena.identity.domain.model.Coordinates as DomainCoordinates
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -37,25 +38,26 @@ class AddressesRepositoryImplTest {
 
         addressRepositoryImpl = AddressesRepositoryImpl(client, geocoder)
 
-        addressRepositoryImpl.createAddress(fakeNewAddress)
+        addressRepositoryImpl.createAddress(fakeNewAddressInput)
     }
 
     @Test
-    fun `editAddress() should not throw exception when server returns 200`() = runTest {
+    fun `updateAddress() should not throw exception when server returns 200`() = runTest {
         client = mockHttpClient(Unit)
 
         addressRepositoryImpl = AddressesRepositoryImpl(client, geocoder)
 
-        addressRepositoryImpl.editAddress(fakeExistingAddress)
+        addressRepositoryImpl.updateAddress(fakeAddressId, fakeNewAddressInput)
     }
 
     @Test
     fun `getUserAddresses() should not throw exception when server returns 200`() = runTest {
-        client = mockHttpClient(Unit)
+        client = mockHttpClient(listOf(fakeAddressResponseDto))
 
         addressRepositoryImpl = AddressesRepositoryImpl(client, geocoder)
 
-        addressRepositoryImpl.editAddress(fakeExistingAddress)
+        val result = addressRepositoryImpl.getUserAddresses()
+        assertEquals(1, result.size)
     }
 
     @Test
@@ -64,7 +66,7 @@ class AddressesRepositoryImplTest {
 
         addressRepositoryImpl = AddressesRepositoryImpl(client, geocoder)
 
-        addressRepositoryImpl.editAddress(fakeExistingAddress)
+        addressRepositoryImpl.deleteAddress(fakeAddressId)
     }
 
     @Test
@@ -73,17 +75,17 @@ class AddressesRepositoryImplTest {
 
         addressRepositoryImpl = AddressesRepositoryImpl(client, geocoder)
 
-        assertFailure { addressRepositoryImpl.createAddress(fakeNewAddress) }
+        assertFailure { addressRepositoryImpl.createAddress(fakeNewAddressInput) }
             .isInstanceOf<UnAuthorizedException>()
     }
 
     @Test
-    fun `editAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest {
+    fun `updateAddress() should throw Unauthorized Exceptions when server returns 401`() = runTest {
         client = mockHttpClientError(HttpStatusCode.Unauthorized)
 
         addressRepositoryImpl = AddressesRepositoryImpl(client, geocoder)
 
-        assertFailure { addressRepositoryImpl.editAddress(fakeExistingAddress) }
+        assertFailure { addressRepositoryImpl.updateAddress(fakeAddressId, fakeNewAddressInput) }
             .isInstanceOf<UnAuthorizedException>()
     }
 
@@ -156,17 +158,19 @@ class AddressesRepositoryImplTest {
         )
     }
 
-    val fakeNewAddress = Address(
+    val fakeAddressId = Uuid.random()
+    
+    val fakeNewAddressInput = AddressInput(
         addressLine = "Cairo",
         addressType = AddressType.getAddressTypeFromString("Home"),
         latitude = 30.0444,
-        longitude = 31.2357,
-        isActive = false
+        longitude = 31.2357
     )
-    val fakeExistingAddress = Address(
-        id = Uuid.random(),
+    
+    val fakeAddressResponseDto = net.thechance.mena.identity.data.dto.addresses.AddressResponseDto(
+        id = fakeAddressId.toString(),
         addressLine = "Cairo",
-        addressType = AddressType.getAddressTypeFromString("Home"),
+        addressType = "Home",
         latitude = 30.0444,
         longitude = 31.2357,
         isActive = false

@@ -81,12 +81,11 @@ class UserRepositoryImpTest {
             client = httpClient,
         )
         userRepository.getUserInfo()
-        verify { user.toDomain()}
+        verify { user.toDomain() }
     }
 
 
-
-    private companion object{
+    private companion object {
         val user: UserDto = UserDto(
             firstName = "sam",
             lastName = "smith",

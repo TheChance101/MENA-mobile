@@ -10,7 +10,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -70,15 +70,14 @@ class HomeViewModel(
         val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
         updateState {
             it.copy(
-                chats =
-                    listOf(newChatSummary) + it.chats.filter { it.id != newChatSummary.id }
+                chats = listOf(newChatSummary) + it.chats.filter { it.id != newChatSummary.id }
             )
         }
     }
 
     private fun listenToIncomingMessages() {
         tryToCollect(
-            collect = { messageRepository.getMessages() },
+            collect = { messageRepository.observeMessagesForChatOrAll() },
             onCollect = ::onCollectMessage,
             onError = { },
         )
@@ -94,8 +93,7 @@ class HomeViewModel(
             val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
             updateState {
                 it.copy(
-                    chats =
-                        listOf(newChatSummary) + it.chats
+                    chats = listOf(newChatSummary) + it.chats
                 )
             }
             return
@@ -169,15 +167,26 @@ class HomeViewModel(
 
     override fun onNewChatClicked() {
         tryToExecute(
-            execute = { contactsRepository.getSyncStatus() },
-            onSuccess = { isSynced ->
-                updateState { it.copy(isSynced = isSynced) }
-                if (isSynced) {
-                    emitEffect(HomeScreenEffect.NavigateToContacts)
-                } else {
-                    emitEffect(HomeScreenEffect.NavigateToSyncContacts)
-                }
-            },
+            execute = { contactsRepository.getHasUserSyncedContactsStatus() },
+            onSuccess = ::onGetSyncStatusSuccess,
+            onError = { onGetSyncStatusError() }
+        )
+    }
+
+    private fun onGetSyncStatusSuccess(isSynced: Boolean) {
+        updateState { it.copy(isSynced = isSynced) }
+        if (isSynced) {
+            emitEffect(HomeScreenEffect.NavigateToContacts)
+        } else {
+            emitEffect(HomeScreenEffect.NavigateToSyncContacts)
+        }
+    }
+
+    private fun onGetSyncStatusError() {
+        showSnackBar(
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_sync_contacts_message,
+            isError = true
         )
     }
 

@@ -10,16 +10,16 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.repository.DukanRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.navigation.SavedStateHandleArgs.DUKAN_ID
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
 import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class DukanDetailsViewModel(
-    private val dukanRepository: DukanRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     private val shelfRepository: ShelfRepository,
     private val productRepository: ProductRepository,
     savedStateHandle: SavedStateHandle,
@@ -53,7 +53,7 @@ class DukanDetailsViewModel(
 
     private fun loadDukanDetails() {
         tryToExecute(
-            block = { dukanRepository.getDukanDetailsByDukanId(dukanId) },
+            block = { dukanManagementRepository.getDukanDetailsByDukanId(dukanId) },
             onSuccess = ::onLoadDukanDetailsSuccess,
             onError = ::onLoadDukanDetailsError
         )
@@ -229,7 +229,14 @@ class DukanDetailsViewModel(
 
     override fun onAddToCartClick(productId: String) {
         updateState {
-            copy(shelves = shelves.copy(items = updateShelvesWithAddedProduct(shelves.items, productId)))
+            copy(
+                shelves = shelves.copy(
+                    items = updateShelvesWithAddedProduct(
+                        shelves.items,
+                        productId
+                    )
+                )
+            )
         }
     }
 

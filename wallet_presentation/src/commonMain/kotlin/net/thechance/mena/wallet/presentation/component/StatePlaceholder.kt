@@ -1,10 +1,10 @@
 package net.thechance.mena.wallet.presentation.component
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.img_silver
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -28,8 +29,8 @@ fun StatePlaceholder(
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp),
-        horizontalAlignment=Alignment.CenterHorizontally,
-        verticalArrangement=Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             modifier = Modifier
@@ -58,11 +59,11 @@ fun StatePlaceholder(
 @Preview
 @Composable
 private fun StatePlaceholderPreview() {
-    MenaTheme{
-            StatePlaceholder(
-                image = painterResource(Res.drawable.img_silver),
-                title = "Error Title",
-                description = "This is a detailed description of the error."
-            )
-        }
+    MenaTheme {
+        StatePlaceholder(
+            image = painterResource(Res.drawable.img_silver),
+            title = "Error Title",
+            description = "This is a detailed description of the error."
+        )
+    }
 }

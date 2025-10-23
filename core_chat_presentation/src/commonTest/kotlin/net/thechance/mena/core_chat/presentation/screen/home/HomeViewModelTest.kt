@@ -29,6 +29,7 @@ import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -196,7 +197,7 @@ class HomeViewModelTest {
     fun `onNewChatClicked should emit NavigateToContacts effect when contacts are synced`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { contactsRepository.getSyncStatus() } returns true
+        everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns true
 
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -217,7 +218,7 @@ class HomeViewModelTest {
             everySuspend {
                 chatRepository.getChatsSummary(any(), any())
             } returns createEmptyPagedData()
-            everySuspend { contactsRepository.getSyncStatus() } returns false
+            everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns false
 
             val viewModel = createViewModel()
             advanceUntilIdle()
@@ -451,7 +452,7 @@ class HomeViewModelTest {
                 imageUrl = null,
                 lastMessage = ChatUiState.MessageUiState(
                     text = "Hello",
-                    time = "10:00 AM",
+                    time = UiText.DynamicString("12:00"),
                     isMine = true
                 ),
                 status = ChatUiState.Status.Read

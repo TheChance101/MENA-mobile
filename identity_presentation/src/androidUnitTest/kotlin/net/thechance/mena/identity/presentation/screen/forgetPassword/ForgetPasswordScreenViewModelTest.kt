@@ -9,12 +9,12 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
+import java.lang.Exception
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.MobileNumberValidator
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -84,7 +84,7 @@ class ForgetPasswordScreenViewModelTest {
             val phoneNumber = "01100661617"
             coEvery {
                 resetPasswordRepository.requestOTP(any(), any())
-            } throws InvalidMobileNumberException("")
+            } throws Exception("Test error")
             viewModel.onChangePhone(phoneNumber)
             viewModel.onSelectCountryItem(MenaCountry.EGYPT)
             viewModel.onDismissBottomSheet()

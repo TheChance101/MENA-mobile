@@ -7,9 +7,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
@@ -27,10 +25,8 @@ import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
-import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
-import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -46,7 +42,6 @@ class ChatRepositoryImplTest {
     private lateinit var repository: ChatRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
     private lateinit var messageDao: MessageDao
-    private lateinit var imageDownloader: ImageDownloader
     private val authRepository = mock<AuthenticationRepository>()
 
 
@@ -56,12 +51,10 @@ class ChatRepositoryImplTest {
         httpClient = createHttpClient()
         webSocketManager = mock<WebSocketManager>()
         messageDao = mock<MessageDao>()
-        imageDownloader = mock<ImageDownloader>()
 
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
         )
     }
 
@@ -71,8 +64,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
-        )
+
+            )
 
         val result = repository.getChatByContactUserId(userId)
 
@@ -87,7 +80,6 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
         )
 
         assertFailsWith<NotFoundException> {
@@ -112,7 +104,6 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
         )
 
         val result = repository.getChatById(testChatId)
@@ -133,8 +124,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
-        )
+
+            )
 
         assertFailsWith<NotFoundException> {
             repository.getChatById(testChatId)
@@ -149,8 +140,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
-        )
+
+            )
 
         val result = repository.getChatsSummary(
             pageNumber = 1,
@@ -167,7 +158,6 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
         )
 
         assertFailsWith<NotFoundException> {
@@ -177,27 +167,6 @@ class ChatRepositoryImplTest {
             )
         }
     }
-
-
-    @Test
-    fun `downloadImage should call imageDownloader and run successfully when downloadImageToGallery return true`() =
-        runTest {
-            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns true
-
-            repository.downloadImage(IMAGE_URL)
-
-            verifySuspend { imageDownloader.downloadImageToGallery(IMAGE_URL) }
-        }
-
-    @Test
-    fun `downloadImage should throw OperationFailedException when downloadImage return false`() =
-        runTest {
-            everySuspend { imageDownloader.downloadImageToGallery(any()) } returns false
-
-            assertFailsWith<OperationFailedException> {
-                repository.downloadImage(IMAGE_URL)
-            }
-        }
 
     @Test
     fun `should return chat summary when getChatSummaryById is successful`() = runTest {
@@ -216,7 +185,6 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
         )
 
         val result = repository.getChatSummaryById(testChatId)
@@ -235,7 +203,6 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            imageDownloader = imageDownloader
         )
 
         assertFailsWith<NotFoundException> {

@@ -66,7 +66,7 @@ kover.reports {
                 "**.di.**",
                 "**.util.**",
                 "**.dto.**",
-                "net.thechance.mena.dukan.data.repository.location.MobileGeocoderWrapper"
+                "net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper"
             )
         }
     }
