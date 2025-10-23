@@ -165,7 +165,7 @@ private fun isValidAyahSelection(state: SurahUiState): Boolean {
 
 @Preview()
 @Composable
-fun AyahActionButtonsPreview() {
+private fun Preview() {
     QuranTheme {
         CompositionLocalProvider(LocalNavController provides rememberNavController()) {
             AyahActionButtons(

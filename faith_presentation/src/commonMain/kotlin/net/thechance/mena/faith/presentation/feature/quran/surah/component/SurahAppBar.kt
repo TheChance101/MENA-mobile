@@ -49,7 +49,7 @@ internal fun SurahAppBar(
 
 @Preview()
 @Composable
-fun SurahAppBarPreview() {
+private fun Preview() {
     QuranTheme {
         SurahAppBar(surahName = "الفاتحة", onSearchClick = {}, onBackClick = {})
     }

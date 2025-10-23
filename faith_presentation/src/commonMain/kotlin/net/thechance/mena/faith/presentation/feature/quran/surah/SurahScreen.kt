@@ -104,7 +104,7 @@ private fun Content(
 
 @Composable
 @Preview
-private fun SurahScreenPreview() {
+private fun Preview() {
     QuranTheme {
         CompositionLocalProvider(LocalNavController provides rememberNavController()) {
             Content(

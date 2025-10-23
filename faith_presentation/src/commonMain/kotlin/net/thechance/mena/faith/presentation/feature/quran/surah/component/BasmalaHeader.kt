@@ -39,7 +39,7 @@ internal fun BasmalaHeader(
 
 @Preview()
 @Composable
-fun BasmalaHeaderPreview() {
+private fun Preview() {
     QuranTheme {
         BasmalaHeader(selectedAyahIndex = 1, onDismissActionButtons = {})
     }

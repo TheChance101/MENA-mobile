@@ -118,7 +118,7 @@ private fun rememberPreRenderedChunks(ayahChunks: List<List<Ayah>>): List<Annota
 
 @Preview()
 @Composable
-fun AyatOfSurahPreview() {
+private fun Preview() {
     QuranTheme {
         CompositionLocalProvider(LocalNavController provides rememberNavController()) {
             val sampleAyat = listOf(

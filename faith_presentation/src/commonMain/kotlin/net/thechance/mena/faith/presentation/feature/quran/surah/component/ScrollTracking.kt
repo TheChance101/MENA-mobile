@@ -60,7 +60,7 @@ fun SetupScrollTracking(
 }
 
 @Composable
-fun TrackContinueTilawahPosition(
+private fun TrackContinueTilawahPosition(
     lazyListState: LazyListState,
     ayahChunks: List<List<Ayah>>,
     isBasmalaVisible: Boolean,
@@ -90,7 +90,7 @@ fun TrackContinueTilawahPosition(
 }
 
 @Composable
-fun HideAyahActionButtonsOnScroll(
+private fun HideAyahActionButtonsOnScroll(
     lazyListState: LazyListState,
     state: SurahUiState,
     listener: SurahInteractionListener

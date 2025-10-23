@@ -84,7 +84,7 @@ private fun findClickedAyahIndexFromPosition(ayat: List<Ayah>, position: Int): I
 
 @Preview()
 @Composable
-fun UnifiedChunkAyatPreview() {
+private fun Preview() {
     QuranTheme {
         CompositionLocalProvider(LocalNavController provides rememberNavController()) {
             val sampleChunk = listOf(
