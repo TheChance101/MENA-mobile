@@ -20,6 +20,7 @@ import org.koin.core.annotation.Single
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.qualifier.named
+import co.touchlab.kermit.Logger as kermitLogger
 
 @Single
 class NetworkClient : KoinComponent {
@@ -36,7 +37,7 @@ class NetworkClient : KoinComponent {
                 level = LogLevel.ALL
                 logger = object : Logger {
                     override fun log(message: String) {
-                        co.touchlab.kermit.Logger.e(DEFAULT_HTTP_CLIENT_LOG_TAG) { message }
+                        kermitLogger.i(DEFAULT_HTTP_CLIENT_LOG_TAG) { message }
                     }
                 }
             }
@@ -57,7 +58,7 @@ class NetworkClient : KoinComponent {
                 level = LogLevel.HEADERS
                 logger = object : Logger {
                     override fun log(message: String) {
-                        co.touchlab.kermit.Logger.e(UPLOAD_HTTP_CLIENT_LOG_TAG) { message }
+                        kermitLogger.i(UPLOAD_HTTP_CLIENT_LOG_TAG) { message }
                     }
                 }
             }
