@@ -21,7 +21,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.qualifier.named
 
-
 @Single
 class NetworkClient : KoinComponent {
 
