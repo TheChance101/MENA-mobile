@@ -44,7 +44,7 @@ internal fun CategoryPickScreen(
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             is CategoryPickScreenEffect.NavigateBack -> navController.popBackStack()
-            is CategoryPickScreenEffect.NavigateToHome -> navController.navigate(Route.ReelHome) {
+            is CategoryPickScreenEffect.NavigateToHome -> navController.navigate(Route.Home) {
                 popUpTo(Route.Categories) { inclusive = true }
             }
         }
@@ -61,21 +61,27 @@ private fun CategoryPickScreenContent(
     state: CategoryPickScreenState,
     listener: CategoryPickInteractionListener
 ) {
-    when {
-        state.error == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
-        state.isLoading -> LoadingProgressBar()
-        else -> {
-            Scaffold(
-                bottomBar = {
-                    NextButton(
-                        onNextClick = listener::onClickNext,
-                        isButtonEnabled = state.isNextButtonEnabled(),
-                        isButtonLoading = state.isNextButtonLoading,
-                        modifier = Modifier.padding(horizontal = Theme.spacing._16)
-                    )
-                },
-                content = { CategoryPickScreenBody(state, listener) }
-            )
+    Scaffold(
+        bottomBar = {
+            if (state.error == null){
+                NextButton(
+                    onNextClick = listener::onClickNext,
+                    isButtonEnabled = state.isNextButtonEnabled(),
+                    isButtonLoading = state.isNextButtonLoading,
+                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
+                )
+            }
+        },
+    ) {
+        when {
+            state.error == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
+            state.isLoading -> LoadingProgressBar()
+            else -> {
+                CategoryPickScreenBody(
+                    state = state,
+                    listener = listener
+                )
+            }
         }
     }
 }

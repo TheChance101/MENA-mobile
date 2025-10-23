@@ -56,7 +56,7 @@ internal fun UpdateCategoriesScreen(
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             is UpdateCategoriesScreenEffect.NavigateBack -> navController.popBackStack()
-            is UpdateCategoriesScreenEffect.NavigateToTrends -> navController.navigate(Route.ReelHome)
+            is UpdateCategoriesScreenEffect.NavigateToTrends -> navController.navigate(Route.Home)
         }
     }
 
@@ -75,32 +75,22 @@ private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
-    when {
-        state.isLoading -> LoadingProgressBar()
-        state.errorState == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
-        else -> UpdateCategoryScreenBody(listener, state)
-    }
-}
-
-@Composable
-private fun UpdateCategoryScreenBody(
-    listener: UpdateCategoriesInteractionListener,
-    state: UpdateCategoriesScreenState
-) {
     Scaffold(
-        topBar = { ChangeTagsAppBar(onBackClick = listener::onClickBack) },
+        topBar = { if (state.isLoading.not()) ChangeTagsAppBar(onBackClick = listener::onClickBack) },
         bottomBar = {
-            SaveChangeButton(
-                onSaveClick = listener::onClickSave,
-                isButtonEnabled = state.saveButtonEnabled(),
-                isButtonLoading = state.isSaveButtonLoading,
-                modifier = Modifier
-                    .padding(
-                        start = Theme.spacing._16,
-                        end = Theme.spacing._16,
-                        bottom = Theme.spacing._24
-                    )
-            )
+            if (state.errorState !is ErrorState.NoInternet && state.isLoading.not()) {
+                SaveChangeButton(
+                    onSaveClick = listener::onClickSave,
+                    isButtonEnabled = state.saveButtonEnabled(),
+                    isButtonLoading = state.isSaveButtonLoading,
+                    modifier = Modifier
+                        .padding(
+                            start = Theme.spacing._16,
+                            end = Theme.spacing._16,
+                            bottom = Theme.spacing._24
+                        )
+                )
+            }
         },
         snakeBar = {
             state.errorState?.let { errorState ->
@@ -109,32 +99,48 @@ private fun UpdateCategoryScreenBody(
                     status = SnackBarStatus.Error
                 )
             }
+        },
+        content = {
+            when {
+                state.isLoading -> LoadingProgressBar()
+                state.errorState == ErrorState.NoInternet -> NoConnection { listener.onClickRetry() }
+                else -> UpdateCategoryScreenBody(listener, state)
+            }
         }
+    )
+}
+
+@Composable
+private fun UpdateCategoryScreenBody(
+    listener: UpdateCategoriesInteractionListener,
+    state: UpdateCategoriesScreenState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(state = rememberScrollState())
+            .padding(horizontal = Theme.spacing._16)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(state = rememberScrollState())
-                .padding(horizontal = Theme.spacing._16)
+
+        ChooseInterestsMessage()
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
         ) {
-            ChooseInterestsMessage()
-            FlowRow(
-                modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
-            ) {
-                state.categories.forEach { category ->
-                    CategoryItem(
-                        category = category,
-                        onClick = { id -> listener.onClickCategory(categoryId = id) },
-                        modifier = Modifier.padding(
-                            bottom = Theme.spacing._12,
-                            end = Theme.spacing._8
-                        )
+            state.categories.forEach { category ->
+                CategoryItem(
+                    category = category,
+                    onClick = { id -> listener.onClickCategory(categoryId = id) },
+                    modifier = Modifier.padding(
+                        bottom = Theme.spacing._12,
+                        end = Theme.spacing._8
                     )
-                }
+                )
             }
         }
     }
 }
+
 
 @Composable
 private fun SaveChangeButton(

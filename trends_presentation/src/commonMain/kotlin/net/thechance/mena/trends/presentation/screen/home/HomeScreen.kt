@@ -3,6 +3,7 @@ package net.thechance.mena.trends.presentation.screen.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -86,59 +87,65 @@ private fun HomeScreenContent(
     listener: HomeInteractionListener,
 ) {
     val reels = state.reels.collectAsLazyPagingItems()
-    when{
-        state.isLoading -> LoadingProgressBar()
-        reels.loadState.refresh.toErrorState() == ErrorState.NoInternet ->
-            NoConnection { listener.onClickRetry() }
-        reels.itemSnapshotList.isEmpty() -> EmptyTrends()
-        else -> HomeScreenBody(listener, reels)
-    }
-}
-@Composable
-private fun HomeScreenBody(
-    listener: HomeInteractionListener,
-    reels: LazyPagingItems<ReelUiState>
-) {
     Scaffold(
         topBar = {
-            TrendsAppBar(
-                onManageMyTrendsClick = listener::onClickManageMyTrends,
-                onEditTagsClick = listener::onClickEditTags
-            )
-        }
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16),
-                contentPadding = PaddingValues(vertical = Theme.spacing._8),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-            ) {
-                items(reels.itemSnapshotList.items) { reel ->
-                    FeedReelCard(
-                        reel = reel,
-                        onLikeClick = { listener.onClickLike(reel.id) },
-                        onReelClick = { listener.onClickReel(reel.id) }
-                    )
+            if (state.isLoading.not())
+                TrendsAppBar(
+                    onManageMyTrendsClick = listener::onClickManageMyTrends,
+                    onEditTagsClick = listener::onClickEditTags
+                )
+
+        },
+        content = {
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    state.isLoading -> DotsProgressIndicator(Modifier.align(Alignment.Center))
+                    reels.loadState.refresh.toErrorState() == ErrorState.NoInternet ->
+                        NoConnection { listener.onClickRetry() }
+
+                    reels.itemSnapshotList.isEmpty() -> EmptyTrends()
+                    else -> HomeScreenBody(reels, listener)
                 }
             }
+        }
+    )
+}
 
-            Icon(
-                painter = painterResource(Res.drawable.ic_add_real),
-                contentDescription = stringResource(Res.string.add_reel),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(Theme.radius.lg))
-                    .background(Theme.colorScheme.primary.primary)
-                    .noRippleClickable { listener.onClickAddReel() }
-                    .padding(Theme.spacing._16),
+@Composable
+private fun BoxScope.HomeScreenBody(
+    reels: LazyPagingItems<ReelUiState>,
+    listener: HomeInteractionListener
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = Theme.spacing._16),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+    ) {
+        items(reels.itemSnapshotList.items) { reel ->
+            FeedReelCard(
+                reel = reel,
+                onLikeClick = { listener.onClickLike(reel.id) },
+                onReelClick = { listener.onClickReel(reel.id) }
             )
         }
     }
+
+    Icon(
+        painter = painterResource(Res.drawable.ic_add_real),
+        contentDescription = stringResource(Res.string.add_reel),
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
+            .size(56.dp)
+            .clip(RoundedCornerShape(Theme.radius.lg))
+            .background(Theme.colorScheme.primary.primary)
+            .noRippleClickable { listener.onClickAddReel() }
+            .padding(Theme.spacing._16),
+    )
 }
+
 
 @Composable
 private fun TrendsAppBar(
@@ -158,6 +165,7 @@ private fun TrendsAppBar(
                     tint = Theme.colorScheme.shadePrimary
                 )
             }
+
             AppBarOptionContainer(
                 isBadgeVisible = false,
                 onClick = onEditTagsClick
@@ -172,32 +180,22 @@ private fun TrendsAppBar(
     )
 }
 
-@Composable
-private fun LoadingProgressBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Theme.colorScheme.background.surface),
-        contentAlignment = Alignment.Center
-    ) {
-        DotsProgressIndicator()
-    }
-}
-
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun HomeScreenPreview() {
     MenaTheme {
-        HomeScreenBody(
-            reels = HomeScreenState().reels.collectAsLazyPagingItems(),
-            listener = object : HomeInteractionListener {
-                override fun onClickLike(reelId: String) {}
-                override fun onClickAddReel() {}
-                override fun onClickEditTags() {}
-                override fun onClickManageMyTrends() {}
-                override fun onClickReel(reelId: String) {}
-                override fun onClickRetry() {}
-            }
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            HomeScreenBody(
+                reels = HomeScreenState().reels.collectAsLazyPagingItems(),
+                listener = object : HomeInteractionListener {
+                    override fun onClickLike(reelId: String) {}
+                    override fun onClickAddReel() {}
+                    override fun onClickEditTags() {}
+                    override fun onClickManageMyTrends() {}
+                    override fun onClickReel(reelId: String) {}
+                    override fun onClickRetry() {}
+                }
+            )
+        }
     }
 }
