@@ -12,7 +12,6 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
@@ -34,7 +33,7 @@ class NetworkClient : KoinComponent {
             baseConfig(this)
 
             install(Logging) {
-                level = LogLevel.BODY
+                level = LogLevel.ALL
                 logger = object : Logger {
                     override fun log(message: String) {
                         println("Default Http Client: $message")
@@ -56,7 +55,6 @@ class NetworkClient : KoinComponent {
 
             install(Logging) {
                 level = LogLevel.HEADERS
-                filter { request -> request.body !is MultiPartFormDataContent }
                 logger = object : Logger {
                     override fun log(message: String) {
                         println("Upload Http Client: $message")
