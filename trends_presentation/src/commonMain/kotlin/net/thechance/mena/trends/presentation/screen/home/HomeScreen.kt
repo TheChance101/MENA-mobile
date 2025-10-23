@@ -124,7 +124,7 @@ private fun BoxScope.AddTrendFAB(listener: HomeInteractionListener) {
             .align(Alignment.BottomEnd)
             .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
             .size(56.dp)
-            .clip(RoundedCornerShape(Theme.radius.lg))
+            .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.primary.primary)
             .noRippleClickable { listener.onClickAddReel() }
             .padding(Theme.spacing._16),
