@@ -31,6 +31,16 @@ fun ImageMessageContent(
         val gridWith = maxWidth
         val gridHeight = maxHeight
 
+        if (displayImages.size == 1) {
+            ImageGridItem(
+                imageUrl = displayImages[0],
+                index = 0,
+                onClick = onImageClick,
+                modifier = Modifier.fillMaxSize()
+            )
+            return@BoxWithConstraints
+        }
+
         LazyHorizontalGrid(
             rows = GridCells.Fixed(gridCells),
             modifier = Modifier
@@ -41,17 +51,6 @@ fun ImageMessageContent(
             userScrollEnabled = false
         ) {
             when (displayImages.size) {
-                1 -> {
-                    item {
-                        ImageGridItem(
-                            imageUrl = displayImages[0],
-                            index = 0,
-                            onClick = onImageClick,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
-
                 2 -> {
                     items(2) { index ->
                         ImageGridItem(
