@@ -104,7 +104,7 @@ private fun HideAyahActionButtonsOnScroll(
 }
 
 @Composable
-fun InitializeBasmalaTilawahPosition(
+private fun InitializeBasmalaTilawahPosition(
     state: SurahUiState,
     listener: SurahInteractionListener
 ) {
