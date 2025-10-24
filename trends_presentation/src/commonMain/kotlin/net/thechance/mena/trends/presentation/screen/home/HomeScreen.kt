@@ -101,6 +101,9 @@ private fun HomeScreenContent(
         },
         content = {
             val reels = state.reels.collectAsLazyPagingItems()
+            val shouldShowEmptyState  = reels.itemSnapshotList.isEmpty() &&
+                    !state.isLoading &&
+                    reels.loadState.refresh.toErrorState() == null
 
             Box(modifier = Modifier.fillMaxSize()) {
                 AnimatedVisibility(
@@ -114,7 +117,7 @@ private fun HomeScreenContent(
                 )
 
                 AnimatedVisibility(
-                    visible = reels.itemSnapshotList.isEmpty() && state.isLoading.not(),
+                    visible = shouldShowEmptyState,
                     content = { EmptyTrends() }
                 )
 
@@ -130,8 +133,9 @@ private fun HomeScreenContent(
                 )
 
                 AnimatedVisibility(
+                    modifier = Modifier.align(Alignment.BottomEnd),
                     visible = state.isLoading.not(),
-                    content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }, modifier = Modifier,) }
+                    content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
                 )
             }
         }
@@ -140,7 +144,7 @@ private fun HomeScreenContent(
 
 @Composable
 private fun BoxScope.AddTrendFAB(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onClickFab: () -> Unit
 ) {
     Icon(
@@ -162,7 +166,7 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String) -> Unit,
     onClickReel: (reelId: String) -> Unit,
-){
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()

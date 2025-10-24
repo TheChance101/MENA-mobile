@@ -61,7 +61,9 @@ private fun CategoryPickScreenContent(
 ) {
     Scaffold(
         bottomBar = {
-            if (state.error == null || state.isLoading.not()) {
+            AnimatedVisibility (
+                visible = state.error == null || state.isLoading.not()
+            ) {
                 NextButton(
                     onNextClick = listener::onClickNext,
                     isButtonEnabled = state.isNextButtonEnabled(),
@@ -101,6 +103,7 @@ private fun CategoryPickScreenBody(
     )
     {
         ChooseInterestsMessage()
+
         FlowRow(
             modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
         ) {
