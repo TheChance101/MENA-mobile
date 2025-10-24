@@ -48,8 +48,7 @@ internal fun PaymentActionButtons(
             text = stringResource(Res.string.close),
             onClick = onCancelClicked,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .fillMaxWidth(),
             contentPadding = PaddingValues(vertical = 13.dp),
             isEnabled = isCloseEnabled
         )

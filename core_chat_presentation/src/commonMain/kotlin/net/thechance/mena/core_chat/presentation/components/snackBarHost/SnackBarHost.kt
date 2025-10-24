@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.components
+package net.thechance.mena.core_chat.presentation.components.snackBarHost
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -11,11 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_snackbar_error
 import mena.core_chat_presentation.generated.resources.ic_snackbar_success
-import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.asString
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -23,42 +23,35 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun AnimatedSnackBarHost(
-    isVisible: Boolean,
-    data: SnackBarData,
-    onDismiss: () -> Unit,
+    snackBarHostController: SnackBarHostController,
     modifier: Modifier = Modifier,
 ) {
+    val state = snackBarHostController.state.collectAsStateWithLifecycle().value
 
-    val iconId = if (data.isError) Res.drawable.ic_snackbar_error else Res.drawable.ic_snackbar_success
+    val iconId = if (state.snackBarData.isError) Res.drawable.ic_snackbar_error
+    else Res.drawable.ic_snackbar_success
 
     AnimatedVisibility(
-        visible = isVisible,
+        visible = state.isVisible,
         enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
         exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
         modifier = modifier
             .fillMaxWidth()
             .padding(top = Theme.spacing._12)
     ) {
-        LaunchedEffect(data) {
-            delay(data.duration)
-            onDismiss()
+        LaunchedEffect(state.snackBarData) {
+            delay(state.snackBarData.duration)
+            snackBarHostController.dismissSnackBar()
         }
         SnackBar(
             modifier = modifier.clickable(
-                onClick = onDismiss,
+                onClick = snackBarHostController::dismissSnackBar,
                 indication = null,
                 interactionSource = null
             ),
-            title = data.title.asString(),
-            message = data.message.asString(),
+            title = state.snackBarData.title.asString(),
+            message = state.snackBarData.message.asString(),
             leadingIcon = painterResource(iconId),
         )
     }
 }
-
-data class SnackBarData(
-    val title: UiText,
-    val message: UiText,
-    val isError: Boolean = true,
-    val duration: Long = 2500
-)

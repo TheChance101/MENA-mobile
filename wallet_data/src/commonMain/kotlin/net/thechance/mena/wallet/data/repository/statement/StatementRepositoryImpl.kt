@@ -29,7 +29,7 @@ class StatementRepositoryImpl(
     ) = safeApiCall<HttpResponse> {
         networkClient.get(
             urlString = STATEMENT_PATH,
-            block = filterRequestParams?.toStatementRequest() ?: {}
+            requestBuilder = filterRequestParams?.toStatementRequest() ?: {}
         )
     }.toStatementWithMetaData()
 

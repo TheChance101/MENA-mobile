@@ -18,41 +18,27 @@ import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ChatException
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
-import net.thechance.mena.core_chat.presentation.components.SnackBarData
-import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
-import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
-import net.thechance.mena.core_chat.presentation.screen.syncContacts.IS_SYNC_SUCCESS
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BasePagingSource
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.UiText
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class ContactsViewModel(
     private val contactsRepository: ContactsRepository,
     private val chatRepository: ChatRepository,
-    effector: ChatEffector,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : BaseViewModel<ContactsScreenState>(ContactsScreenState(), effector, dispatcher),
+) : BaseViewModel<ContactsScreenState, ContactsScreenEffect>(ContactsScreenState(), dispatcher),
     ContactsScreenInteractionListener {
 
     init {
-        observeSyncSuccess()
         loadContacts()
     }
 
-    private fun observeSyncSuccess() {
-        tryToCollect(
-            collect = { popBackStackArgsFlow },
-            onCollect = { args ->
-                val success = args?.get(IS_SYNC_SUCCESS) as? Boolean ?: return@tryToCollect
-                if (success) {
-                    onRefreshContactsClicked()
-                    setNavigationArgs(IS_SYNC_SUCCESS to false)
-                }
-            }
-        )
+    fun onSyncSuccess() {
+        onRefreshContactsClicked()
     }
 
     private fun loadContacts() {
@@ -79,27 +65,26 @@ class ContactsViewModel(
     }
 
     override fun onBackClicked() {
-        popBackStack()
+        emitEffect(ContactsScreenEffect.NavigateBack)
     }
 
     override fun onReSyncClicked() {
-        navigate(SyncContactsRoute(forceSync = true))
+        emitEffect(ContactsScreenEffect.NavigateToSyncContacts)
     }
 
-    override fun onContactClicked(contactId: Uuid?) {
-        if (contactId == null) {
+    override fun onContactClicked(contactUserId: Uuid?) {
+        if (contactUserId == null) {
             showSnackBar(
-                SnackBarData(
-                    title = UiText.StringRes(Res.string.something_went_wrong),
-                    message = UiText.StringRes(Res.string.contact_not_mena_user),
-                )
+                titleStringResource = Res.string.something_went_wrong,
+                messageStringResource = Res.string.contact_not_mena_user,
+                isError = true
             )
             return
         }
-        navigateToChatByContactId(contactId)
+        navigateToChatByUserId(contactUserId)
     }
 
-    private fun navigateToChatByContactId(contactId: Uuid) {
+    private fun navigateToChatByUserId(contactId: Uuid) {
         tryToExecute(
             execute = { chatRepository.getChatByContactUserId(contactId) },
             onSuccess = ::onContactClickSuccess,
@@ -107,24 +92,43 @@ class ContactsViewModel(
         )
     }
 
-    private fun onContactClickSuccess(chat: Chat?) {
-        navigate(ChatDetailsRoute(chatId = chat?.id.toString() , chat?.name.orEmpty()))
+    private fun onContactClickSuccess(chat: Chat) {
+        emitEffect(
+            ContactsScreenEffect.NavigateToChat(
+                chatId = chat.id.toString(),
+                chatName = chat.name
+            )
+        )
     }
 
     private fun onContactClickError() {
         showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.something_went_wrong),
-                message = UiText.StringRes(Res.string.contact_not_mena_user),
-            )
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.contact_not_mena_user,
+            isError = true
         )
     }
 
     private fun onDataLoadError() {
         showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.something_went_wrong),
-                message = UiText.StringRes(Res.string.could_not_load_the_contacts),
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_load_the_contacts,
+            isError = true
+        )
+    }
+
+    private fun showSnackBar(
+        titleStringResource: StringResource,
+        messageStringResource: StringResource,
+        isError: Boolean = false
+    ) {
+        emitEffect(
+            ContactsScreenEffect.ShowSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(titleStringResource),
+                    message = UiText.StringRes(messageStringResource),
+                    isError = isError
+                )
             )
         )
     }

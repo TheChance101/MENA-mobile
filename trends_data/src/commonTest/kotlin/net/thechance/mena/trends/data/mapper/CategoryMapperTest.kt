@@ -3,7 +3,6 @@ package net.thechance.mena.trends.data.mapper
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.domain.entity.Category
 import kotlin.test.Test
@@ -29,13 +28,6 @@ internal class CategoryMapperTest {
         assertThat(category?.emoji).isEqualTo("")
     }
 
-    @Test
-    fun `categoryDto with null id toEntity() should return null`() {
-        val dto =  CategoryDto(id = null, name = "Sport", emoji = "⚽")
-        val category = dto.toEntity()
-
-        assertThat(category).isNull()
-    }
 
     @Test
     fun `List of categoryDto toEntity() should map to List of Category correctly`() {

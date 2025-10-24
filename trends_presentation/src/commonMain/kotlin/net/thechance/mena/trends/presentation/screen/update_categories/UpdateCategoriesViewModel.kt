@@ -73,4 +73,9 @@ internal class UpdateCategoriesViewModel(
             )
         }
     }
+
+    override fun onClickRetry() {
+        updateState{ copy(errorState = null) }
+        getCategories()
+    }
 }

@@ -56,7 +56,7 @@ private fun HorizontalDivider() {
 
 @Preview
 @Composable
-fun FilterSectionPreview() {
+private fun FilterSectionPreview() {
     val mockState = ExportTransactionsState.FilterState(
         selectedTransactionsTypes = setOf(FilterType.SENT, FilterType.ONLINE_PURCHASE),
         startDate = LocalDate(2023, 4, 2),

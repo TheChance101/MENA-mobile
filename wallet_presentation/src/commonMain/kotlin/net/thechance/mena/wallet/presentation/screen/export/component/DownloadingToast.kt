@@ -23,33 +23,22 @@ import mena.wallet_presentation.generated.resources.downloading_started
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.model.CustomToastState
+import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private const val ANIMATION_DURATION = 500
 
 @Composable
-fun CustomToast(
-    toastState: CustomToastState,
-    modifier: Modifier = Modifier
+fun DownloadingToast(
+    toastState: ExportTransactionsState.ToastState,
+    modifier: Modifier = Modifier,
+    toastBackgroundColor: Color = Color(0xB2121212)
 ) {
-    val toastBackgroundColor = Color(0xB2121212)
-
     AnimatedVisibility(
         visible = toastState.isVisible,
-        enter =
-            fadeIn(tween(ANIMATION_DURATION)) +
-                    slideInVertically(
-                        animationSpec = tween(ANIMATION_DURATION),
-                        initialOffsetY = { -it / 2 },
-                    ),
-        exit =
-            fadeOut(tween(ANIMATION_DURATION)) +
-                    slideOutVertically(
-                        animationSpec = tween(ANIMATION_DURATION),
-                        targetOffsetY = { -it / 2 },
-                    ),
+        enter = ENTER_ANIMATION,
+        exit = EXIT_ANIMATION,
         modifier = modifier
             .wrapContentSize(Alignment.Center)
     ) {
@@ -62,11 +51,22 @@ fun CustomToast(
                     color = toastBackgroundColor,
                     shape = RoundedCornerShape(Theme.radius.md)
                 )
-                .padding(vertical = 12.dp, horizontal = 16.dp)
-            ,
+                .padding(vertical = 12.dp, horizontal = 16.dp),
         )
     }
 }
+
+private val ENTER_ANIMATION = fadeIn(tween(ANIMATION_DURATION)) +
+        slideInVertically(
+            animationSpec = tween(ANIMATION_DURATION),
+            initialOffsetY = { -it / 2 },
+        )
+
+private val EXIT_ANIMATION = fadeOut(tween(ANIMATION_DURATION)) +
+        slideOutVertically(
+            animationSpec = tween(ANIMATION_DURATION),
+            targetOffsetY = { -it / 2 },
+        )
 
 
 @Preview
@@ -80,14 +80,12 @@ private fun CustomToastPreview() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            CustomToast(
-                toastState = CustomToastState(
+            DownloadingToast(
+                toastState = ExportTransactionsState.ToastState(
                     messageRes = Res.string.downloading_started,
                     isVisible = true
                 )
             )
         }
-
     }
-
 }

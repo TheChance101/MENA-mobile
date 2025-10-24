@@ -4,6 +4,6 @@ open class WalletException(message: String = "Wallet Exception") : Exception(mes
 
 class NoInternetException(message: String = "No Internet") : WalletException(message)
 
-class UnknownException(message: String = "Unknown") : WalletException(message)
+class UnknownNetworkException(message: String = "Unknown") : WalletException(message)
 
 class NoDataFoundException(message: String = "No Data Found") : WalletException(message)

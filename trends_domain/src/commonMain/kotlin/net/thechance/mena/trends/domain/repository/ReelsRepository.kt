@@ -1,15 +1,16 @@
 package net.thechance.mena.trends.domain.repository
 
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.model.UploadReelStatus
+import net.thechance.mena.trends.domain.model.UploadReelProgress
 
 interface ReelsRepository {
     suspend fun deleteReelById(id: String)
     suspend fun getAllCurrentUserReels(pageNumber: Int): List<Reel>
     suspend fun updateReelById(id: String, description: String, categoryIds: List<String>)
     suspend fun getFeedReels(page: Int, reelId: String? = null): List<Reel>
-    fun uploadReel(filePath: String, size: Long): Flow<UploadReelStatus>
+    suspend fun uploadReel(filePath: String, size: Long): String
+    fun observeUploadReelProgress(): SharedFlow<UploadReelProgress>
     suspend fun uploadReelThumbnail(reelId: String, thumbnail: ByteArray)
     suspend fun getReelDuration(filePath: String): Long?
     suspend fun extractReelThumbnail(filePath: String, timeInMillis: Long = 0L): ByteArray?

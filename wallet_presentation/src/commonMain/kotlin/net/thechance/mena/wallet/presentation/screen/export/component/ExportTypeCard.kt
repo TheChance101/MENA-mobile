@@ -28,14 +28,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ExportTypeCard(
-    cardText: String,
+    cardTitle: String,
     onCardSelected: () -> Unit,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
 ) {
-    val targetColor =
-        if (isSelected) Theme.colorScheme.brand.brandVariant
-        else Theme.colorScheme.background.surfaceLow
+    val targetColor by animateColorAsState(
+        targetValue = if (isSelected) Theme.colorScheme.brand.brandVariant else Theme.colorScheme.background.surface,
+    )
 
     val backgroundColor by animateColorAsState(
         targetValue = targetColor,
@@ -64,7 +64,7 @@ fun ExportTypeCard(
             onClick = onCardSelected,
         )
         Text(
-            text = cardText,
+            text = cardTitle,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.body.small,
             modifier = Modifier.weight(1f)
@@ -77,7 +77,7 @@ fun ExportTypeCard(
 private fun SelectCardPreview() {
     MenaTheme {
         ExportTypeCard(
-            cardText = stringResource(Res.string.all_transactions),
+            cardTitle = stringResource(Res.string.all_transactions),
             isSelected = true,
             onCardSelected = {}
         )
@@ -89,7 +89,7 @@ private fun SelectCardPreview() {
 private fun SelectCardFalsePreview() {
     MenaTheme {
         ExportTypeCard(
-            cardText = stringResource(Res.string.custom_filtering),
+            cardTitle = stringResource(Res.string.custom_filtering),
             isSelected = false,
             onCardSelected = {}
         )

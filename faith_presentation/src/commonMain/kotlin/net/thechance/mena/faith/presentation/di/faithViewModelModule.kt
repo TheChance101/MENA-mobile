@@ -23,7 +23,7 @@ import org.koin.dsl.module
 
 internal val faithViewModelModule = module {
     factory<CoroutineDispatcher> { Dispatchers.IO }
-    single<SnackbarHandler> { DefaultSnackbarHandlerImpl() }
+    factory<SnackbarHandler> { DefaultSnackbarHandlerImpl() }
 
     factoryOf(::SurahArgsImpl) bind SurahArgs::class
     factoryOf(::SearchArgsImpl) bind SearchArgs::class

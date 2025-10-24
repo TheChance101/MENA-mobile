@@ -26,6 +26,7 @@ import net.thechance.mena.wallet.presentation.screen.transaction_details.Transac
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
 @Composable
 internal fun DetailsSection(
     transactionDetailsUiState: TransactionDetailsUiState,
@@ -35,13 +36,13 @@ internal fun DetailsSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16)
-            .clip(shape = RoundedCornerShape(Theme.spacing._16))
+            .padding(horizontal = 16.dp)
+            .clip(shape = RoundedCornerShape(16.dp))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.spacing._16)
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(Theme.spacing._16)
+            .padding(16.dp)
     ) {
         HeaderSection(transactionDetailsUiState)
 
@@ -68,7 +69,7 @@ internal fun DetailsSection(
 private fun ColumnScope.HeaderSection(transactionDetailsUiState: TransactionDetailsUiState) {
     TextWithIcon(
         modifier = Modifier
-            .padding(top = Theme.spacing._8)
+            .padding(top = 8.dp)
             .align(Alignment.CenterHorizontally),
         text = stringResource(transactionDetailsUiState.transactionType.titleRes),
         textStyle = Theme.typography.label.small,
@@ -77,20 +78,20 @@ private fun ColumnScope.HeaderSection(transactionDetailsUiState: TransactionDeta
         iconContentDescription = stringResource(transactionDetailsUiState.transactionType.iconContentDescriptionRes),
         iconTint = Theme.colorScheme.shadeSecondary,
         iconSize = 16.dp,
-        gap = Theme.spacing._4,
+        gap = 4.dp,
     )
 
     TextWithIcon(
         modifier = Modifier
-            .padding(vertical = Theme.spacing._8)
+            .padding(vertical = 8.dp)
             .align(Alignment.CenterHorizontally),
         text = transactionDetailsUiState.amount,
         textStyle = Theme.typography.headline.medium,
         textColor = Theme.colorScheme.shadePrimary,
         icon = painterResource(Res.drawable.img_silver),
         iconContentDescription = stringResource(Res.string.silver_coin),
-        iconSize = Theme.spacing._24,
-        gap = Theme.spacing._8,
+        iconSize = 24.dp,
+        gap = 8.dp,
     )
 }
 

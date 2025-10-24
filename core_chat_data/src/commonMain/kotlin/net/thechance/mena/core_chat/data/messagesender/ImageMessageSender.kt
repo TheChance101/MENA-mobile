@@ -10,7 +10,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
 import net.thechance.mena.core_chat.data.utils.tryNetworkCall
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -29,7 +29,7 @@ class ImageMessageSender(
 
         val source = content.source
 
-        val byteArrays = if (source is ImagesSource.Local) {
+        val byteArrays = if (source is ImageData.ImageByteArray) {
             source.byteArrays
         } else {
             throw SendMessageFailedException("Failed to send message: Corrupted images")

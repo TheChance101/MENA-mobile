@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +12,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,14 +27,16 @@ import mena.trends_presentation.generated.resources.tags_updated_success
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
@@ -66,6 +66,7 @@ internal fun UpdateCategoriesScreen(
                     )
                 )
             }
+
             is UpdateCategoriesScreenEffect.SaveSuccess -> {
                 snackBarController.showSnackBar(
                     SnackBarData(
@@ -74,7 +75,7 @@ internal fun UpdateCategoriesScreen(
                     )
                 )
 
-                navController.navigate(Route.ReelHome)
+                navController.navigate(Route.Home)
             }
         }
     }
@@ -94,50 +95,89 @@ private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
-    if (state.isLoading.not()) {
+    AnimatedVisibility(
+        visible = !state.isLoading,
+        enter = androidx.compose.animation.fadeIn(),
+        exit = androidx.compose.animation.fadeOut()
+    ) {
         Scaffold(
             topBar = { ChangeTagsAppBar(onBackClick = listener::onClickBack) },
             bottomBar = {
-                SaveChangeButton(
-                    onSaveClick = listener::onClickSave,
-                    isButtonEnabled = state.saveButtonEnabled(),
-                    isButtonLoading = state.isSaveButtonLoading,
-                    modifier = Modifier
-                        .padding(
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            bottom = Theme.spacing._24
-                        )
-                )
-            }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(state = rememberScrollState())
-                    .padding(horizontal = Theme.spacing._16)
-            ) {
-                ChooseInterestsMessage()
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onClickCategory(categoryId = id) },
-                            modifier = Modifier.padding(
-                                bottom = Theme.spacing._12,
-                                end = Theme.spacing._8
-                            )
+                AnimatedVisibility(
+                    visible = state.errorState == null && state.isLoading.not(),
+                    content = {
+                        SaveChangeButton(
+                            onSaveClick = listener::onClickSave,
+                            isButtonEnabled = state.saveButtonEnabled(),
+                            isButtonLoading = state.isSaveButtonLoading,
+                            modifier = Modifier
+                                .padding(
+                                    start = Theme.spacing._16,
+                                    end = Theme.spacing._16,
+                                    bottom = Theme.spacing._24
+                                )
                         )
                     }
-                }
+                )
+            },
+            content = {
+                AnimatedVisibility(
+                    visible = state.isLoading,
+                    content = { LoadingProgressBar() })
+
+                AnimatedVisibility(
+                    visible = state.errorState == null && state.isLoading.not(),
+                    content = { UpdateCategoryScreenBody(listener, state) }
+                )
+
+                AnimatedVisibility(
+                    visible = state.errorState == ErrorState.NoInternet,
+                    content = { NoConnection { listener.onClickRetry() } }
+                )
+            }
+        )
+    }
+}
+
+@Composable
+private fun UpdateCategoryScreenBody(
+    listener: UpdateCategoriesInteractionListener,
+    state: UpdateCategoriesScreenState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(state = rememberScrollState())
+            .padding(horizontal = Theme.spacing._16)
+    ) {
+
+        ChooseInterestsMessage()
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._24)
+        ) {
+            state.categories.forEach { category ->
+                CategoryItem(
+                    category = category,
+                    onClick = { id -> listener.onClickCategory(categoryId = id) },
+                    modifier = Modifier.padding(
+                        bottom = Theme.spacing._12,
+                        end = Theme.spacing._8
+                    )
+                )
             }
         }
-    } else {
+    }
+
+    AnimatedVisibility(
+        visible = state.isLoading,
+        enter = androidx.compose.animation.fadeIn(),
+        exit = androidx.compose.animation.fadeOut()
+    ) {
         LoadingProgressBar()
     }
 }
+
 
 @Composable
 private fun SaveChangeButton(
@@ -187,18 +227,6 @@ private fun ChooseInterestsMessage() {
     )
 }
 
-@Composable
-private fun LoadingProgressBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Theme.colorScheme.background.surface),
-        contentAlignment = Alignment.Center
-    ) {
-        DotsProgressIndicator()
-    }
-}
-
 @Preview
 @Composable
 private fun UpdateCategoriesScreenPreview() {
@@ -207,6 +235,7 @@ private fun UpdateCategoriesScreenPreview() {
             state = UpdateCategoriesScreenState(),
             listener = object : UpdateCategoriesInteractionListener {
                 override fun onClickBack() {}
+                override fun onClickRetry() {}
                 override fun onClickCategory(categoryId: String) {}
                 override fun onClickSave() {}
             }

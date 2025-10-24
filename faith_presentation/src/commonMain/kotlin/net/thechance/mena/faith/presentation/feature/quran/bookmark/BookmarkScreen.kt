@@ -33,6 +33,7 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.Bo
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.BookmarkItems
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.extentions.paging.isEmpty
 import net.thechance.mena.faith.presentation.utils.extentions.paging.isNotEmpty
 import org.jetbrains.compose.resources.painterResource
@@ -49,6 +50,7 @@ fun BookmarkScreen(viewModel: BookmarkViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is BookmarkEffect.NavigateBack -> navController.navigateUp()
+            is BookmarkEffect.NavigateToSur -> navController.navigate(Route.SurRoute)
         }
     }
 
@@ -88,7 +90,7 @@ private fun Content(
                 enter = fadeIn(tween()),
                 exit = fadeOut(tween()),
             ) {
-                EmptyBookmarkState()
+                EmptyBookmarkState(listener::onBackClick)
             }
 
             AnimatedVisibility(
@@ -107,7 +109,7 @@ private fun Content(
 }
 
 @Composable
-private fun EmptyBookmarkState() {
+private fun EmptyBookmarkState(onStartTilawahClick: () -> Unit) {
     EmptyBookmarkState(
         title = stringResource(Res.string.empty_state_bookmark_title),
         icon = painterResource(Res.drawable.ic_not_saved_book_mark),
@@ -118,6 +120,7 @@ private fun EmptyBookmarkState() {
             .padding(bottom = 80.dp)
             .verticalScroll(rememberScrollState())
             .padding(bottom = Theme.spacing._16),
+        onClickButton = onStartTilawahClick
     )
 }
 
