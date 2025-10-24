@@ -6,11 +6,11 @@ import net.thechance.mena.wallet.data.dto.remote.PagedTransactionResponseDto
 import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
 import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
-import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.mapper.toTransactionEntityList
 import net.thechance.mena.wallet.data.network_client.NetworkClient
+import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -30,7 +30,8 @@ class TransactionRepositoryImpl(
     ) = safeApiCall<PagedTransactionResponseDto> {
         networkClient.get(
             urlString = TRANSACTION_PATH,
-            block = transactionFilterParams?.toRequest(page = page, pageSize = pageSize) ?: {}
+            requestBuilder = transactionFilterParams?.toRequest(page = page, pageSize = pageSize)
+                ?: {}
         )
     }.transactions.toTransactionEntityList()
 
@@ -77,6 +78,7 @@ class TransactionRepositoryImpl(
         fun getTransactionByIdPath(transactionId: Uuid) = "$TRANSACTION_PATH/$transactionId"
         fun getTransactionReceiverPath(transactionId: Uuid) =
             "$TRANSACTION_PATH/$transactionId$RECEIVER_DETAILS"
+
         fun getSubmitTransactionPath(transactionId: Uuid) =
             "$PAYMENT_PATH/$transactionId/submit"
     }

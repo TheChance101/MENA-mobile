@@ -299,7 +299,7 @@ class TransactionHistoryViewModel(
     }
 
     private fun onPaginationError(throwable: Throwable?) {
-        updateState { it.copy(errorState = ErrorState.Unknown) }
+        updateState { it.copy(errorState = ErrorState.UnknownError) }
     }
 
     private fun showInvalidDatesSnackBar() {

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class CategoryDto(
     @SerialName("id")
-    val id: String? = null,
+    val id: String,
     @SerialName("name")
     val name: String? = null,
     @SerialName("emoji")

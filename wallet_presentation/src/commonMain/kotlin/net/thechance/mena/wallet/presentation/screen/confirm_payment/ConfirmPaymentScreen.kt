@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
@@ -58,10 +59,7 @@ private fun ConfirmPaymentScreenContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.confirm_payment_header),
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._8
-                ),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -83,8 +81,8 @@ private fun ConfirmPaymentScreenContent(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._24)
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp)
                 ) {
                     PaymentDetailsSection(
                         modifier = Modifier.fillMaxWidth().weight(1f),

@@ -45,4 +45,5 @@
     <string name="no_chats_history_desc">Start chatting with your friends by click on start chat button.</string>
     <string name="you">You</string>
     <string name="could_not_get_sync_contacts_status">Could not get sync contacts status, please try again</string>
+    <string name="could_not_load_chats">Could not get chats</string>
 </resources>

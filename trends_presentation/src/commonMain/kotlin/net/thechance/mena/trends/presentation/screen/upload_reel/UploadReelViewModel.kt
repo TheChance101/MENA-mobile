@@ -1,19 +1,14 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
-import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
-import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import net.thechance.mena.trends.presentation.shared.base.UploadReelErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.formatBytes
 import org.koin.android.annotation.KoinViewModel
@@ -30,16 +25,43 @@ internal class UploadReelViewModel(
 
     private var uploadingTrendJob: Job? = null
 
+    init {
+        observeUploadReelProgress()
+    }
+
+    private fun observeUploadReelProgress() {
+        tryToCollectFlow(
+            block = { reelsRepository.observeUploadReelProgress() },
+            onNewValue = ::onCollectUploadProgress,
+            onError = ::onUploadError,
+            dispatcher = defaultDispatcher
+        )
+    }
+
+    private fun onCollectUploadProgress(progress: UploadReelProgress) {
+        val uploadingProgress = progress.numberOfUploadedBytes / progress.totalBytes.toFloat()
+        updateState {
+            copy(
+                uploadingProgress = uploadingProgress,
+                sizeUploaded = formatBytes(
+                    bytes = progress.numberOfUploadedBytes,
+                    withUnit = false
+                )
+            )
+        }
+    }
+
     override fun onRetrieveVideo(file: FileUiState) {
         updateState {
             UploadReelScreenState(
                 selectedFile = file.copy(sizeText = formatBytes(file.size)),
+                errorState = null
             )
         }
         tryToExecute(
             block = { validateFile() },
             onError = ::onValidationError,
-            onSuccess = { onValidationSuccess() },
+            onSuccess = { uploadTrend() },
             dispatcher = defaultDispatcher
         )
     }
@@ -53,18 +75,13 @@ internal class UploadReelViewModel(
         }
     }
 
-    private fun onValidationSuccess() {
-        updateState { copy(errorState = null) }
-        uploadTrend()
-    }
-
     private fun onValidationError(errorState: ErrorState) {
         val uploadReelError = mapToUploadReelError(errorState)
         updateState { copy(errorState = uploadReelError) }
     }
 
     private fun uploadTrend() {
-        uploadingTrendJob = tryToCollectFlow(
+        uploadingTrendJob = tryToExecute(
             block = {
                 reelsRepository.uploadReel(
                     filePath = state.value.selectedFile.filePath,
@@ -72,9 +89,8 @@ internal class UploadReelViewModel(
                 )
             },
             onStart = ::onUploadStarted,
-            onNewValue = ::onCollectUploadProgress,
+            onSuccess = ::onUploadReelSuccess,
             onError = ::onUploadError,
-            onEnd = ::onUploadCompleted,
             dispatcher = defaultDispatcher
         )
     }
@@ -83,35 +99,14 @@ internal class UploadReelViewModel(
         updateState { copy(uploadingState = UploadReelScreenState.UploadingReelState.UPLOADING) }
     }
 
-    private fun onCollectUploadProgress(progress: UploadReelStatus) {
-        when (progress) {
-            is UploadReelStatus.UploadReelProgress ->
-                onUploadReelProgress(uploadReelProgress = progress)
-
-            is UploadReelStatus.UploadReelSuccess -> onUploadReelSuccess(uploadReelSuccess = progress)
-        }
-    }
-
-    private fun onUploadReelProgress(uploadReelProgress: UploadReelStatus.UploadReelProgress) {
-        val uploadingProgress =
-            uploadReelProgress.numberOfUploadedBytes / uploadReelProgress.totalBytes.toFloat()
+    private fun onUploadReelSuccess(reelId: String) {
         updateState {
             copy(
-                uploadingProgress = uploadingProgress,
-                sizeUploaded = formatBytes(
-                    bytes = uploadReelProgress.numberOfUploadedBytes,
-                    withUnit = false
-                )
+                reelId = reelId,
+                uploadingState = UploadReelScreenState.UploadingReelState.SUCCESS
             )
         }
-    }
-
-    private fun onUploadReelSuccess(uploadReelSuccess: UploadReelStatus.UploadReelSuccess) {
-        updateState {
-            copy(
-                reelId = uploadReelSuccess.reelId,
-            )
-        }
+        extractFrame()
     }
 
     private fun onUploadError(errorState: ErrorState) {
@@ -124,29 +119,16 @@ internal class UploadReelViewModel(
         }
     }
 
-
-    private fun onUploadCompleted() {
-        updateState {
-            copy(
-                uploadingState = UploadReelScreenState.UploadingReelState.SUCCESS,
-            )
-        }
-        extractFrame()
-    }
-
     private fun extractFrame() {
         tryToExecute(
             block = {
-                reelsRepository.extractReelThumbnail(
-                    filePath = state.value.selectedFile.filePath,
-                    timeInMillis = 1L
-                )
+                reelsRepository.extractReelThumbnail(state.value.selectedFile.filePath)
             },
             onSuccess = ::onExtractFrameSuccess,
             onError = ::onExtractFrameError,
             onStart = { updateState { copy(isThumbnailLoading = true) } },
             onEnd = { updateState { copy(isThumbnailLoading = false) } },
-            dispatcher = defaultDispatcher,
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -164,7 +146,7 @@ internal class UploadReelViewModel(
         updateState { copy(errorState = uploadReelError) }
     }
 
-    override fun onNextClick() {
+    override fun onClickNext() {
         uploadThumbnail()
     }
 
@@ -182,7 +164,7 @@ internal class UploadReelViewModel(
             onEnd = ::onUploadThumbnailFinished,
             onSuccess = { onUploadThumbnailSuccess() },
             onError = ::onUploadThumbnailError,
-            dispatcher = defaultDispatcher,
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -205,25 +187,25 @@ internal class UploadReelViewModel(
         updateState { copy(errorState = uploadReelError) }
     }
 
-    override fun onBackClick() {
+    override fun onClickBack() {
         sendEffect(UploadReelScreenEffect.NavigateBack)
     }
 
-    override fun onCancelUploadClick() {
+    override fun onClickCancelUpload() {
         uploadingTrendJob?.cancel()
         updateState { UploadReelScreenState() }
     }
 
-    override fun onDeleteVideoClick() {
+    override fun onClickDeleteVideo() {
         tryToExecute(
             block = { state.value.reelId?.let { reelsRepository.deleteReelById(id = it) } },
             onSuccess = { updateState { UploadReelScreenState() } },
-            onError = { errorState -> onDeleteVideoClickError(errorState) },
+            onError = { errorState -> onClickDeleteVideoError(errorState) },
             dispatcher = defaultDispatcher
         )
     }
 
-    private fun onDeleteVideoClickError(errorState: ErrorState) {
+    private fun onClickDeleteVideoError(errorState: ErrorState) {
         val uploadReelError = mapToUploadReelError(errorState)
         updateState { copy(errorState = uploadReelError) }
     }

@@ -81,7 +81,8 @@ private fun PaymentResultScreenContent(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 24.dp)
             ) {
                 when (currentPaymentStatus) {
                     SubmissionStatus.CONNECTION_LOST -> {

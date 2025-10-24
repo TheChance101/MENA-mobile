@@ -84,7 +84,7 @@ private fun VideoDescriptionContent(
     )
 
     Scaffold(
-        topBar = { DescriptionAppBar(onBackClick = listener::onBackClick) }
+        topBar = { DescriptionAppBar(onBackClick = listener::onClickBack) }
     ) {
         Column(
             modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
@@ -122,7 +122,7 @@ private fun VideoDescriptionContent(
                 modifier = Modifier.padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._24),
                 isButtonLoading = false,
                 isButtonEnabled = state.isButtonEnabled,
-                onNextClick = listener::onNextClick
+                onNextClick = listener::onClickNext
             )
         }
     }
@@ -186,8 +186,8 @@ private fun VideoDescriptionScreenPreview() {
         VideoDescriptionContent(
             state = VideoDescriptionScreenState(),
             listener = object : VideoDescriptionInteractionListener {
-                override fun onBackClick() {}
-                override fun onNextClick() {}
+                override fun onClickBack() {}
+                override fun onClickNext() {}
                 override fun onDescriptionChanged(newValue: String) {}
             }
         )

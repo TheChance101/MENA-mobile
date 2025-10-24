@@ -8,6 +8,6 @@ interface ContactsRepository {
     @OptIn(ExperimentalUuidApi::class)
     suspend fun getUserContacts(pageNumber: Int): PagedData<Contact>
     suspend fun syncContacts()
-    suspend fun getSyncStatus(): Boolean
-    suspend fun setSyncStatus(state: Boolean)
+    suspend fun getHasUserSyncedContactsStatus(): Boolean
+    suspend fun setHasUserSyncedContactsStatus(isSynced: Boolean)
 }

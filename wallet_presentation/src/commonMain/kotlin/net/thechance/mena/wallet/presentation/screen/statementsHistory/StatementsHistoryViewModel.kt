@@ -185,7 +185,7 @@ class StatementsHistoryViewModel(
     private fun onPaginationError(throwable: Throwable?) {
         when (throwable) {
             is NoInternetException -> updateState { it.copy(errorState = ErrorState.NoInternet) }
-            else -> updateState { it.copy(errorState = ErrorState.Unknown) }
+            else -> updateState { it.copy(errorState = ErrorState.UnknownError) }
         }
     }
 

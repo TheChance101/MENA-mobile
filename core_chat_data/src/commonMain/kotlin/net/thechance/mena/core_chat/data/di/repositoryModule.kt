@@ -26,18 +26,19 @@ internal val repositoryModule = module {
         ChatRepositoryImpl(
             client = get(named(CHAT_CLIENT)),
             webSocketManager = get(),
-            imageDownloader = get()
         )
     }
-   single<MessageRepository>{
-       MessageRepositoryImpl(
-           client = get(named(CHAT_CLIENT)),
-           webSocketManager = get(),
-           messageDao = get(),
-           json = get(named(CHAT_JSON))
-       )
 
-   }
+    single<MessageRepository> {
+        MessageRepositoryImpl(
+            client = get(named(CHAT_CLIENT)),
+            webSocketManager = get(),
+            messageDao = get(),
+            messageSenderFactory = get(),
+            json = get(named(CHAT_JSON))
+        )
+    }
+
     single<UserRepository> {
         UserRepositoryImpl(
             client = get(named(CHAT_CLIENT)),

@@ -14,7 +14,7 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import java.lang.Exception
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
-import net.thechance.mena.identity.presentation.bottomSheet.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -38,7 +38,7 @@ class LoginViewModelTest {
 
 
     private fun setupValidCountry() {
-        viewModel.onSelectCountryItem(selectedCountry)
+        viewModel.onConfirmCountryItem(selectedCountry)
     }
 
     @Test
@@ -149,7 +149,7 @@ class LoginViewModelTest {
     fun `should login button is disabled when password is empty`() = runTest {
         val phoneNumber = "1100661617"
 
-        viewModel.onSelectCountryItem(selectedCountry)
+        viewModel.onConfirmCountryItem(selectedCountry)
         viewModel.onPhoneChanged(phoneNumber)
 
         testDispatcher.scheduler.advanceUntilIdle()
