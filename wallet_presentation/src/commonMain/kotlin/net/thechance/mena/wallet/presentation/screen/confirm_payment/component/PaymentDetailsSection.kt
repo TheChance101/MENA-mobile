@@ -31,7 +31,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.PaymentUiState
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreenState.ReceiverUiState
-import net.thechance.mena.wallet.presentation.screen.confirm_payment.GetUserMessage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -40,6 +39,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 internal fun PaymentDetailsSection(
     payment: PaymentUiState,
     receiver: ReceiverUiState,
+    userMessage: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -56,12 +56,9 @@ internal fun PaymentDetailsSection(
 
         Text(
             modifier = Modifier
-                .padding(top = Theme.spacing._16)
+                .padding(top = 16.dp)
                 .fillMaxWidth(),
-            text = GetUserMessage(
-                paymentStatus = payment.status,
-                balance = payment.balance
-            ),
+            text = userMessage,
             style = Theme.typography.body.small,
             color = if (payment.status) Theme.colorScheme.shadeSecondary else Theme.colorScheme.error,
             textAlign = TextAlign.Center
@@ -79,12 +76,12 @@ private fun PaymentInfoSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(Theme.spacing._16))
+            .clip(shape = RoundedCornerShape(16.dp))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.spacing._16)
+                shape = RoundedCornerShape(16.dp)
             )
-            .padding(Theme.spacing._24)
+            .padding(24.dp)
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -107,7 +104,7 @@ private fun PaymentAmount(
 ) {
     Row(
         modifier = modifier
-            .padding(top = Theme.spacing._8)
+            .padding(top = 8.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -119,8 +116,8 @@ private fun PaymentAmount(
         )
         Icon(
             modifier = Modifier
-                .padding(start = Theme.spacing._8)
-                .size(Theme.spacing._24),
+                .padding(start = 8.dp)
+                .size(24.dp),
             painter = painterResource(Res.drawable.img_silver),
             contentDescription = stringResource(Res.string.silver_coin),
         )
@@ -135,7 +132,7 @@ private fun ReceiverInfo(
 ) {
     Row(
         modifier = modifier
-            .padding(top = Theme.spacing._24)
+            .padding(top = 24.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -148,10 +145,10 @@ private fun ReceiverInfo(
         if (receiverImage == null) {
             Icon(
                 modifier = Modifier
-                    .padding(start = Theme.spacing._8)
+                    .padding(start = 8.dp)
                     .size(20.dp)
                     .background(color = Theme.colorScheme.stroke, shape = CircleShape)
-                    .padding(Theme.spacing._2)
+                    .padding(2.dp)
                     .clip(CircleShape),
                 painter = painterResource(Res.drawable.ic_user),
                 contentDescription = stringResource(Res.string.user_img),
@@ -160,7 +157,7 @@ private fun ReceiverInfo(
         } else {
             AsyncImage(
                 modifier = Modifier
-                    .padding(start = Theme.spacing._8)
+                    .padding(start = 8.dp)
                     .clip(CircleShape)
                     .size(20.dp),
                 model = receiverImage,
@@ -169,7 +166,7 @@ private fun ReceiverInfo(
             )
         }
         Text(
-            modifier = Modifier.padding(start = Theme.spacing._4),
+            modifier = Modifier.padding(start = 4.dp),
             text = receiverName,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
@@ -182,7 +179,11 @@ private fun ReceiverInfo(
 private fun PaymentDetailsSectionPreview() {
     MenaTheme {
         Scaffold {
-            PaymentDetailsSection(payment = PaymentUiState(), receiver = ReceiverUiState())
+            PaymentDetailsSection(
+                payment = PaymentUiState(),
+                userMessage = "",
+                receiver = ReceiverUiState()
+            )
         }
     }
 }

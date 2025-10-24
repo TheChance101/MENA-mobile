@@ -19,22 +19,29 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageDukanIconButton
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageDukanImageAndTitle
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.SmallImageProductContent
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanIconButton
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelves
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanStoreImage
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakePagerShelvesDukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SmallImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pager: Pager<Int, DukanDetailsUiState.ShelfUiState>
+    pagerShelf: Pager<Int, ShelfUiState>
 ) {
     OnSystemBackPressed(listener::onBackClicked)
 
@@ -44,8 +51,8 @@ fun SmallImageDukanDetails(
         }
     ) {
         Column {
-            SmallImageDukanImageAndTitle(
-                state.dukanInfo,
+            SmallImageDukanStoreImage(
+                dukanInfoState = state.dukanInfo,
                 modifier = Modifier.padding(
                     start = Theme.spacing._16,
                     end = Theme.spacing._16,
@@ -73,10 +80,10 @@ fun SmallImageDukanDetails(
                     modifier = Modifier.weight(1f)
                 )
             }
-            SmallImageProductContent(
+            SmallImageDukanShelves(
                 state = state,
                 listener = listener,
-                shelvesPager = pager,
+                shelvesPager = pagerShelf,
                 modifier = Modifier.padding(top = Theme.spacing._16)
             )
         }
@@ -97,10 +104,7 @@ private fun SmallImageAppBar(
         },
         onLeadingClick = listener::onBackClicked,
         trailingContent = {
-            AppBarOptionContainer(
-                onClick = {},
-                isBadgeVisible = false
-            ) {
+            AppBarOptionContainer {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
                     contentDescription = stringResource(Res.string.shopping_basket_icon)
@@ -108,4 +112,28 @@ private fun SmallImageAppBar(
             }
         }
     )
+}
+
+@Preview
+@Composable
+private fun SmallImageDukanDetailsPreview() {
+    MenaTheme {
+        SmallImageDukanDetails(
+            state = fakeDukanDetails,
+            listener = PreviewDukanDetailsInteractionListener,
+            pagerShelf = fakePagerShelvesDukanDetails
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SmallImageDukanDetailsLoadingPreview() {
+    MenaTheme {
+        SmallImageDukanDetails(
+            state = fakeDukanDetails.copy(shelvesState = ShelvesState.LOADING),
+            listener = PreviewDukanDetailsInteractionListener,
+            pagerShelf = fakePagerShelvesDukanDetails
+        )
+    }
 }

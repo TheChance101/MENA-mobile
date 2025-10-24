@@ -9,9 +9,8 @@ import kotlinx.coroutines.launch
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.ErrorState
+import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-
 
 class OtpScreenViewModel(
     private val resetPasswordRepository: ResetPasswordRepository,
@@ -32,20 +31,26 @@ class OtpScreenViewModel(
 
     override fun onClickVerify() {
         tryToExecute(
-            function = {
-                resetPasswordRepository.verifyOTPCode(
-                    otpCode = state.value.otpValue,
-                )
-            },
-            onSuccess = ::verifySuccess,
-            onError = ::onError,
+            function = ::verifyOTPCode,
+            onSuccess = ::onOTPVerificationSuccess,
+            onError = ::onOTPVerificationError,
             dispatcher = dispatcher
         )
     }
 
-    private fun verifySuccess() {
+    private suspend fun verifyOTPCode() {
+        resetPasswordRepository.verifyOTPCode(
+            otpCode = state.value.otpValue,
+        )
+    }
+
+    private fun onOTPVerificationSuccess() {
         sendNewEffect(OtpScreenUIEffect.NavigateToResetPassword)
         updateState { copy(otpValue = "") }
+    }
+
+    private fun onOTPVerificationError(errorState: ErrorState) {
+        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
     }
 
     override fun onChangeOtp(otp: String) {
@@ -61,19 +66,29 @@ class OtpScreenViewModel(
 
     override fun onClickResend() {
         tryToExecute(
-            function = {
-                resetPasswordRepository.requestOTP(
-                    phoneNumber = PhoneNumber(
-                        countryCode = callingCode,
-                        localNumber = phoneNumber
-                    ),
-                    countryCodeName = countryCode
-                )
-            },
-            onSuccess = ::startTimer,
-            onError = ::onError,
+            function = ::requestNewOTP,
+            onSuccess = ::onResendOTPSuccess,
+            onError = ::onResendOTPError,
             dispatcher = dispatcher
         )
+    }
+
+    private suspend fun requestNewOTP() {
+        resetPasswordRepository.requestOTP(
+            phoneNumber = PhoneNumber(
+                countryCode = callingCode,
+                localNumber = phoneNumber
+            ),
+            countryCodeName = countryCode
+        )
+    }
+
+    private fun onResendOTPSuccess() {
+        startTimer()
+    }
+
+    private fun onResendOTPError(errorState: ErrorState) {
+        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
     }
 
     private fun startTimer() {
@@ -84,12 +99,6 @@ class OtpScreenViewModel(
                 delay(1000)
             }
             updateState { copy(isResendEnabled = true) }
-        }
-    }
-
-    private fun onError(errorState: ErrorState) {
-        updateState {
-            copy(isLoading = false, errorMessage = mapErrorToMessage(errorState))
         }
     }
 

@@ -51,8 +51,8 @@ fun StatementHistoryCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = Theme.spacing._16)
-            .clip(RoundedCornerShape(Theme.spacing._12))
+            .padding(vertical = 16.dp)
+            .clip(RoundedCornerShape(12.dp))
             .then(
                 if (isEditMode) {
                     Modifier
@@ -61,7 +61,7 @@ fun StatementHistoryCard(
                 }
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         StatementHistoryIcon(
             modifier = Modifier.offset { IntOffset(historyIconOffsetX, 0) }
@@ -86,7 +86,7 @@ private fun StatementHistoryIcon(modifier: Modifier = Modifier) {
             .size(48.dp)
             .clip(CircleShape)
             .background(Theme.colorScheme.primary.onPrimary)
-            .padding(Theme.spacing._12)
+            .padding(12.dp)
     )
 }
 
@@ -100,7 +100,7 @@ private fun StatementHistoryContent(
 ) {
     Column(
         modifier = Modifier.padding(start = if (isEditMode) 4.dp else 0.dp),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = stringResource(Res.string.date_range, startDate, endDate),
@@ -121,7 +121,7 @@ private fun StatementInOutflowRow(totalInflow: String, totalOutflow: String) {
         )
         Box(
             modifier = Modifier
-                .padding(horizontal = Theme.spacing._8)
+                .padding(horizontal = 8.dp)
                 .height(16.dp)
                 .width(1.dp)
                 .background(Theme.colorScheme.stroke)
@@ -149,7 +149,7 @@ private fun FlowItem(
             ),
             style = Theme.typography.label.extraSmall,
             color = color,
-            modifier = Modifier.padding(end = Theme.spacing._4)
+            modifier = Modifier.padding(end = 4.dp)
         )
         Text(
             text = label,

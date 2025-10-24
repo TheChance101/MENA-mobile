@@ -17,10 +17,10 @@ data class Message(
 
 sealed interface MessageContent {
     data class Text(val text: String) : MessageContent
-    data class Images(val source: ImagesSource) : MessageContent
+    data class Images(val source: ImageData) : MessageContent
 }
 
-sealed interface ImagesSource {
-    data class Remote(val urls: List<String>) : ImagesSource
-    data class Local(val byteArrays: List<ByteArray>) : ImagesSource
+sealed interface ImageData {
+    data class ImageUrl(val urls: List<String>) : ImageData
+    data class ImageByteArray(val byteArrays: List<ByteArray>) : ImageData
 }

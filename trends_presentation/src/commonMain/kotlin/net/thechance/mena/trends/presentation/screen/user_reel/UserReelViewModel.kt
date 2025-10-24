@@ -47,13 +47,13 @@ internal class UserReelViewModel(
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
-    override fun onDescriptionClick(isCollapsed: Boolean) {
+    override fun onClickDescription(isCollapsed: Boolean) {
         updateState {
             copy(isDescriptionExpanded = !isCollapsed)
         }
     }
 
-    override fun onPublisherInfoClick() {
+    override fun onClickPublisherInfo() {
         sendEffect(UserReelEffect.NavigateToPublisherProfile)
     }
 
@@ -65,7 +65,7 @@ internal class UserReelViewModel(
         )
     }
 
-    override fun onLikeClick(reelId: String) {
+    override fun onClickLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
             block = { reelsRepository.toggleReelLike(reelId) },
@@ -111,17 +111,17 @@ internal class UserReelViewModel(
         }
     }
 
-    override fun onBackClick() {
+    override fun onClickBack() {
         sendEffect(UserReelEffect.NavigateBack)
     }
 
-    override fun onDeleteClick() {
+    override fun onClickDelete() {
         updateState {
             copy(isConfirmationDialogVisible = true)
         }
     }
 
-    override fun onConfirmDeleteClick() {
+    override fun onClickConfirmDelete() {
         tryToExecute(
             block = { reelsRepository.deleteReelById(userReelArgs.realId) },
             onSuccess = { onDeleteReelSuccess() },

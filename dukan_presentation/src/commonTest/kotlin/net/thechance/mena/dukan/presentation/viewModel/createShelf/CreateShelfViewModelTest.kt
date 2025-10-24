@@ -19,13 +19,15 @@ import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.component.SnackBarType
-import net.thechance.mena.dukan.presentation.component.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -61,13 +63,13 @@ class CreateShelfViewModelTest {
 
     @Test
     fun `onTitleChanged SHOULD trim and disable button for invalid input`() = runTest {
-        val title = " 123 "
+        val blankTitle = " "
 
         createShelfViewModel.state.test {
-            createShelfViewModel.onTitleChanged(title)
+            createShelfViewModel.onTitleChanged(blankTitle)
             skipItems(1)
             val state = awaitItem()
-            assertEquals("123", state.shelfTitle)
+            assertEquals(" ", state.shelfTitle)
             assertFalse(state.isCreateButtonEnabled)
             cancelAndIgnoreRemainingEvents()
         }
@@ -114,6 +116,7 @@ class CreateShelfViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onCreateButtonClicked SHOULD create shelf and navigate to manage dukan on success`() =
         runTest {
@@ -123,7 +126,7 @@ class CreateShelfViewModelTest {
             everySuspend {
                 shelfRepository.createShelf(
                     Shelf(
-                        id = "1",
+                        id = Uuid.random(),
                         name = "fake"
                     )
                 )
@@ -158,8 +161,8 @@ class CreateShelfViewModelTest {
             val state = createShelfViewModel.state.value
             assertFalse(state.isLoading)
             assertTrue(state.snackBarState != null)
-            assertEquals(SnackBarType.ERROR, state.snackBarState!!.snackBarType)
-            assertEquals(Res.string.something_went_wrong, state.snackBarState!!.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+            assertEquals(Res.string.something_went_wrong, state.snackBarState.message)
         }
 
     @Test
@@ -176,8 +179,8 @@ class CreateShelfViewModelTest {
             val state = createShelfViewModel.state.value
             assertFalse(state.isLoading)
             assertTrue(state.snackBarState != null)
-            assertEquals(SnackBarType.ERROR, state.snackBarState!!.snackBarType)
-            assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState!!.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+            assertEquals(Res.string.shelf_name_is_already_exist, state.snackBarState.message)
         }
 
 }

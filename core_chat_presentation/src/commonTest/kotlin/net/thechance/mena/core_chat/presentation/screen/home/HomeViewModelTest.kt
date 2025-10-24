@@ -30,6 +30,7 @@ import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -197,7 +198,7 @@ class HomeViewModelTest {
     fun `onNewChatClicked should navigate to ContactsRoute when contacts are synced`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { contactsRepository.getSyncStatus() } returns true
+        everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns true
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
 
         val viewModel = createViewModel()
@@ -219,7 +220,7 @@ class HomeViewModelTest {
     fun `onNewChatClicked should navigate to SyncContactsRoute when contacts are not synced`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { contactsRepository.getSyncStatus() } returns false
+        everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns false
         everySuspend { effector.navigate(any(), any(), any()) } returns Unit
 
         val viewModel = createViewModel()
@@ -445,7 +446,7 @@ class HomeViewModelTest {
                 imageUrl = null,
                 lastMessage = ChatUiState.MessageUiState(
                     text = "Hello",
-                    time = "10:00 AM",
+                    time = UiText.DynamicString("12:00"),
                     isMine = true
                 ),
                 status = ChatUiState.Status.Read

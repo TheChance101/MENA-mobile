@@ -10,7 +10,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.entity.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -82,7 +82,7 @@ class HomeViewModel(
 
     private fun listenToIncomingMessages() {
         tryToCollect(
-            collect = {messageRepository.getMessages() },
+            collect = {messageRepository.observeMessagesForChatOrAll() },
             onCollect = ::onCollectMessage,
             onError = { },
         )
@@ -174,7 +174,7 @@ class HomeViewModel(
     override fun onNewChatClicked() {
         tryToExecute(
             onStart = { updateState { it.copy(isLoading = false) } },
-            execute = { contactsRepository.getSyncStatus() },
+            execute = { contactsRepository.getHasUserSyncedContactsStatus() },
             onSuccess = { isSynced ->
                 updateState { it.copy(isSynced = isSynced, isLoading = false) }
                 if (isSynced) {

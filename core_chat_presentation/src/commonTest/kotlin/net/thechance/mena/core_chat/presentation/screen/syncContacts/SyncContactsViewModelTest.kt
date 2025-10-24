@@ -68,7 +68,7 @@ class SyncContactsViewModelTest {
     fun `init should set isFirstSync to false and call syncContacts when forceSync is true`() =
         runTest {
             everySuspend { contactsRepository.syncContacts() } returns Unit
-            everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
+            everySuspend { contactsRepository.setHasUserSyncedContactsStatus(true) } returns Unit
 
             val viewModel = createSyncContactsViewModel(true)
             advanceUntilIdle()
@@ -95,7 +95,7 @@ class SyncContactsViewModelTest {
         runTest {
             everySuspend { permissionsController.providePermission(Permission.CONTACTS) } returns Unit
             everySuspend { contactsRepository.syncContacts() } returns Unit
-            everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
+            everySuspend { contactsRepository.setHasUserSyncedContactsStatus(true) } returns Unit
 
             val viewModel = createSyncContactsViewModel(true)
             viewModel.state.test {
@@ -163,8 +163,7 @@ class SyncContactsViewModelTest {
     @Test
     fun `onBackClicked should pop back stack when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
-        everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
-
+        everySuspend { contactsRepository.setHasUserSyncedContactsStatus(true) } returns Unit
         everySuspend { effector.popBackStack(*anyVarargs()) } returns Unit
 
         val viewModel = createSyncContactsViewModel(true)
@@ -199,7 +198,7 @@ class SyncContactsViewModelTest {
     @Test
     fun `onGoToSettingsClicked should call openSettings when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
-        everySuspend { contactsRepository.setSyncStatus(true) } returns Unit
+        everySuspend { contactsRepository.setHasUserSyncedContactsStatus(true) } returns Unit
         everySuspend { settingsOpener.openSettings() } returns Unit
 
         val viewModel = createSyncContactsViewModel(false)

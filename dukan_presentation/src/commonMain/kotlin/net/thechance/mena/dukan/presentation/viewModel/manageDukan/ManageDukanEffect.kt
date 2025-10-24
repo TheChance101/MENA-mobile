@@ -1,11 +1,11 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
-sealed interface ManageDukanEffect {
-    object NavigateBack : ManageDukanEffect
-    object NavigateToAddShelf : ManageDukanEffect
+sealed interface ManageDukanUiEffect {
+    object NavigateBack : ManageDukanUiEffect
+    object NavigateToAddShelf : ManageDukanUiEffect
     data class NavigateToManageShelf(val shelfId: String, val shelfTitle: String) :
-        ManageDukanEffect
+        ManageDukanUiEffect
 
-    object NavigateToAddProduct : ManageDukanEffect
-    object NavigateToProductDetails : ManageDukanEffect
+    object NavigateToAddProduct : ManageDukanUiEffect
+    object NavigateToProductDetails : ManageDukanUiEffect
 }

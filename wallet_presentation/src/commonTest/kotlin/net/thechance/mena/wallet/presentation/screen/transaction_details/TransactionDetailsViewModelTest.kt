@@ -23,12 +23,12 @@ import mena.wallet_presentation.generated.resources.from
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transfer
 import net.thechance.mena.wallet.domain.entity.Transaction
-import net.thechance.mena.wallet.domain.model.TransactionStatus
-import net.thechance.mena.wallet.domain.model.TransactionType
+import net.thechance.mena.wallet.domain.entity.TransactionStatus
+import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.ErrorState
-import net.thechance.mena.wallet.presentation.screen.helper.FakeStringProvider
 import net.thechance.mena.wallet.presentation.screen.transaction_details.args.TransactionDetailsArgs
+import net.thechance.mena.wallet.presentation.utils.StringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -39,9 +39,13 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TransactionDetailsViewModelTest {
-    private val stringProvider = FakeStringProvider()
+    private val stringProvider = mock<StringProvider>(mode = MockMode.autofill)
     private val transactionRepository = mock<TransactionRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
+    private val transactionDetailsArgs: TransactionDetailsArgs = object : TransactionDetailsArgs {
+        override val id: String
+            get() = transaction1Id.toString()
+    }
 
     @BeforeTest
     fun setup() {
@@ -58,12 +62,7 @@ class TransactionDetailsViewModelTest {
         runTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
-                stringProvider = stringProvider
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(1)
@@ -78,12 +77,7 @@ class TransactionDetailsViewModelTest {
         runTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
-                stringProvider = stringProvider
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(2)
@@ -114,17 +108,12 @@ class TransactionDetailsViewModelTest {
             val expectedError = Exception()
             everySuspend { transactionRepository.getTransactionById(any()) } throws expectedError
 
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
-                stringProvider = stringProvider
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(2)
                 val errorState = awaitItem()
-                assertEquals(ErrorState.Unknown, errorState.errorState)
+                assertEquals(ErrorState.UnknownError, errorState.errorState)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -133,12 +122,7 @@ class TransactionDetailsViewModelTest {
     fun `onBackButtonClicked should send NavigateBack effect`() = runTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-        val viewModel = TransactionDetailsViewModel(
-            transactionRepository = transactionRepository,
-            transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
-            stringProvider = stringProvider
-        )
+        val viewModel = viewmodelSetup()
 
         viewModel.uiEffect.test {
             viewModel.onBackButtonClicked()
@@ -151,12 +135,8 @@ class TransactionDetailsViewModelTest {
         runTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
-                stringProvider = stringProvider
-            )
+            val viewModel = viewmodelSetup()
+
             viewModel.state.test {
                 skipItems(1)
                 viewModel.onShareReceiptButtonClicked()
@@ -170,12 +150,8 @@ class TransactionDetailsViewModelTest {
         runTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
-                stringProvider = stringProvider
-            )
+            val viewModel = viewmodelSetup()
+
             viewModel.uiEffect.test {
                 viewModel.onShareReceiptButtonClicked()
                 assertEquals(TransactionDetailsEffect.CaptureImage, awaitItem())
@@ -188,12 +164,7 @@ class TransactionDetailsViewModelTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
             val byteArray = byteArrayOf()
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
-                stringProvider = stringProvider
-            )
+            val viewModel = viewmodelSetup()
 
             viewModel.state.test {
                 skipItems(2)
@@ -211,12 +182,8 @@ class TransactionDetailsViewModelTest {
             everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
             val byteArray = byteArrayOf()
-            val viewModel = TransactionDetailsViewModel(
-                transactionRepository = transactionRepository,
-                transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-                ioDispatcher = testDispatcher,
-                stringProvider = stringProvider
-            )
+            val viewModel = viewmodelSetup()
+
             viewModel.uiEffect.test {
                 viewModel.onScreenShotCaptured(byteArray, "test_file")
                 assertEquals(
@@ -235,12 +202,7 @@ class TransactionDetailsViewModelTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val byteArray = byteArrayOf()
-        val viewModel = TransactionDetailsViewModel(
-            transactionRepository = transactionRepository,
-            transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
-            stringProvider = stringProvider
-        )
+        val viewModel = viewmodelSetup()
 
         viewModel.state.test {
             skipItems(1)
@@ -258,12 +220,7 @@ class TransactionDetailsViewModelTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
         val byteArray = byteArrayOf()
-        val viewModel = TransactionDetailsViewModel(
-            transactionRepository = transactionRepository,
-            transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
-            stringProvider = stringProvider
-        )
+        val viewModel = viewmodelSetup()
 
         viewModel.state.test {
             skipItems(2)
@@ -278,12 +235,7 @@ class TransactionDetailsViewModelTest {
     fun `onCaptureError should show error snackbar`() = runTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-        val viewModel = TransactionDetailsViewModel(
-            transactionRepository = transactionRepository,
-            transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
-            stringProvider = stringProvider
-        )
+        val viewModel = viewmodelSetup()
 
         viewModel.state.test {
             skipItems(2)
@@ -300,12 +252,7 @@ class TransactionDetailsViewModelTest {
     fun `onRefresh should set transaction with loading when initially called`() = runTest {
         everySuspend { transactionRepository.getTransactionById(any()) } returns transaction1
 
-        val viewModel = TransactionDetailsViewModel(
-            transactionRepository = transactionRepository,
-            transactionDetailsArgs = TransactionDetailsArgs(transaction1Id.toString()),
-            ioDispatcher = testDispatcher,
-            stringProvider = stringProvider
-        )
+        val viewModel = viewmodelSetup()
 
         viewModel.state.test {
             skipItems(3)
@@ -315,6 +262,13 @@ class TransactionDetailsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    private fun viewmodelSetup() = TransactionDetailsViewModel(
+        transactionRepository = transactionRepository,
+        transactionDetailsArgs = transactionDetailsArgs,
+        dispatcher = testDispatcher,
+        stringProvider = stringProvider
+    )
 
     private companion object {
         val transaction1Id = Uuid.random()

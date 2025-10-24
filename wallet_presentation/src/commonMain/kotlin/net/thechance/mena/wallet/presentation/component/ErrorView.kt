@@ -19,7 +19,6 @@ import mena.wallet_presentation.generated.resources.unknown_error_description
 import mena.wallet_presentation.generated.resources.unknown_error_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -34,7 +33,7 @@ internal fun ErrorView(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = Theme.spacing._24),
+            .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -45,14 +44,14 @@ internal fun ErrorView(
         )
         PrimaryButton(
             modifier = Modifier
-                .padding(top = Theme.spacing._12)
+                .padding(top = 12.dp)
                 .heightIn(min = 48.dp)
                 .fillMaxWidth(),
             text = stringResource(Res.string.retry),
             onClick = { onRetry() },
             contentPadding = PaddingValues(
-                vertical = Theme.spacing._8,
-                horizontal = Theme.spacing._16
+                vertical = 8.dp,
+                horizontal = 16.dp
             )
         )
     }

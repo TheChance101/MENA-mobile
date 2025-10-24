@@ -26,6 +26,7 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -107,12 +110,16 @@ private fun DatePickerBottomSheetContent(
     selectedDate: LocalDate?,
     onDismiss: () -> Unit,
 ) {
+    if (selectedDate == null)
+        return
+
     val monthPagerState = rememberPagerState(
-        initialPage = (selectedDate?.month?.number ?: 1) - 1,
+        initialPage = (selectedDate.month.number) - 1,
         pageCount = { 12 }
     )
+
     val yearPagerState = rememberPagerState(
-        initialPage = (selectedDate?.year ?: minYear) - minYear,
+        initialPage = (selectedDate.year) - minYear,
         pageCount = { maxYear - minYear + 1 }
     )
 
@@ -123,16 +130,34 @@ private fun DatePickerBottomSheetContent(
     }
 
     val dayPagerState = rememberPagerState(
-        initialPage = (selectedDate?.day ?: 1) - 1,
+        initialPage = (selectedDate.day) - 1,
         pageCount = { daysInMonth }
     )
+
+    LaunchedEffect(selectedDate) {
+        val targetYearPage = selectedDate.year - minYear
+        val targetMonthPage = selectedDate.month.number - 1
+        val targetDayPage = selectedDate.day - 1
+
+        coroutineScope {
+            if (yearPagerState.currentPage != targetYearPage) {
+                launch { yearPagerState.scrollToPage(targetYearPage) }
+            }
+            if (monthPagerState.currentPage != targetMonthPage) {
+                launch { monthPagerState.scrollToPage(targetMonthPage) }
+            }
+            if (dayPagerState.currentPage != targetDayPage) {
+                launch { dayPagerState.scrollToPage(targetDayPage) }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
             .navigationBarsPadding()
             .background(Theme.colorScheme.background.surface)
             .fillMaxWidth()
-            .padding(Theme.spacing._16)
+            .padding(16.dp)
     ) {
 
         BottomSheetTopBar(
@@ -148,13 +173,13 @@ private fun DatePickerBottomSheetContent(
             maxYear = maxYear,
             daysInMonth = daysInMonth,
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = Theme.spacing._16)
+                .padding(vertical = 16.dp)
                 .align(Alignment.CenterHorizontally)
         )
 
         PrimaryButton(
             text = stringResource(Res.string.pick),
-            contentPadding = PaddingValues(horizontal = Theme.spacing._24, vertical = 13.dp),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 13.dp),
             onClick = {
                 val day = dayPagerState.currentPage + 1
                 val month = monthPagerState.currentPage + 1
@@ -162,7 +187,7 @@ private fun DatePickerBottomSheetContent(
                 onPickClick(day, month, year)
             },
             modifier = Modifier
-                .padding(bottom = Theme.spacing._8)
+                .padding(bottom = 8.dp)
                 .fillMaxWidth()
         )
     }
@@ -176,7 +201,7 @@ private fun BottomSheetTopBar(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
             .fillMaxWidth()
             .padding(PaddingValues(horizontal = 0.dp, vertical = 0.dp))

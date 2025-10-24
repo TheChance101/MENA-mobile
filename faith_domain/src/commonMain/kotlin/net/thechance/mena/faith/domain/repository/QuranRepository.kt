@@ -5,7 +5,7 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 
 interface QuranRepository {
-    suspend fun getAllSur(): List<Surah>
+    suspend fun getSur(): List<Surah>
     suspend fun getAyatOfSurah(surahId: Int): List<Ayah>
     suspend fun getLastAyahForTilawah(): LastAyahForTilawah
     suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah)

@@ -2,7 +2,6 @@
 
 package net.thechance.mena.wallet.presentation.screen.confirm_payment
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,9 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.confirm_payment_header
@@ -23,44 +23,26 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
-import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.navigation.LocalNavController
+import net.thechance.mena.wallet.presentation.navigation.PaymentResultScreenRoute
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PayButton
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.component.PaymentDetailsSection
-import net.thechance.mena.wallet.presentation.screen.wallet.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Composable
-fun ConfirmPaymentScreen(
-    onNavigateBackClicked: () -> Unit,
-    transactionId: String,
-    amount: Double,
-    navigateToPaymentResultScreen: (
-        receiverId: String,
-        amount: Double,
-        transactionId: Uuid,
-        submissionStatus: SubmissionStatus
-    ) -> Unit,
-    viewModel: ConfirmPaymentViewModel = koinViewModel(
-        parameters = { parametersOf(ConfirmPaymentArgs(transactionId, amount)) }
-    )
-) {
+fun ConfirmPaymentScreen(viewModel: ConfirmPaymentViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onConfirmPaymentEffect(
-                effect = effect,
-                onNavigateBackClicked = onNavigateBackClicked,
-                navigateToPaymentResultScreen = navigateToPaymentResultScreen
-            )
+            onConfirmPaymentEffect(effect = effect, navController = navController)
         }
     )
 
@@ -77,10 +59,7 @@ private fun ConfirmPaymentScreenContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.confirm_payment_header),
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._8
-                ),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
@@ -91,27 +70,23 @@ private fun ConfirmPaymentScreenContent(
                 onLeadingClick = interactionListener::onBackButtonClicked,
             )
         },
+        isLoading = state.isLoading,
         errorState = state.errorState,
         onRetry = { interactionListener.onRefresh() }
     ) {
         when {
-            state.isLoading -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
-
             state.errorState != null -> ErrorView(onRetry = { interactionListener.onRefresh() })
 
             else -> {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._24)
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp)
                 ) {
                     PaymentDetailsSection(
                         modifier = Modifier.fillMaxWidth().weight(1f),
+                        userMessage = state.userMessage,
                         payment = state.paymentUiState,
                         receiver = state.receiverUiState
                     )
@@ -129,24 +104,20 @@ private fun ConfirmPaymentScreenContent(
 
 }
 
-private fun onConfirmPaymentEffect(
-    effect: ConfirmPaymentEffect,
-    onNavigateBackClicked: () -> Unit,
-    navigateToPaymentResultScreen: (
-        receiverName: String,
-        amount: Double,
-        transactionId: Uuid,
-        submissionStatus: SubmissionStatus
-    ) -> Unit
-) {
+private fun onConfirmPaymentEffect(effect: ConfirmPaymentEffect, navController: NavController) {
     when (effect) {
-        ConfirmPaymentEffect.NavigateBack -> onNavigateBackClicked()
+        ConfirmPaymentEffect.NavigateBack -> {
+            navController.popBackStack()
+        }
+
         is ConfirmPaymentEffect.NavigateToPaymentResultScreen -> {
-            navigateToPaymentResultScreen(
-                effect.receiverName,
-                effect.amount,
-                effect.transactionId,
-                effect.submissionStatus
+            navController.navigate(
+                PaymentResultScreenRoute(
+                    transactionId = effect.transactionId.toString(),
+                    submitTransactionResultStatus = effect.submissionStatus.name,
+                    amount = effect.amount,
+                    receiverName = effect.receiverName
+                )
             )
         }
     }

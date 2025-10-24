@@ -14,8 +14,8 @@ interface StatementDao {
     suspend fun getAllStatement(limit: Int, offset: Int): List<LocalStatement>
 
     @Query("DELETE FROM statement WHERE id = :id")
-    suspend fun deleteStatementById(id: Long)
+    suspend fun deleteStatementById(id: String)
 
     @Query("SELECT * FROM statement WHERE id = :id")
-    suspend fun getStatementById(id: Long): LocalStatement
+    suspend fun getStatementById(id: String): LocalStatement
 }

@@ -56,7 +56,7 @@ internal class MockAyahDao : AyahDao {
         return ayahBySurah[surahNumber]?.toList() ?: emptyList()
     }
 
-    override suspend fun getAllSur(): List<SurahDto> {
+    override suspend fun getSur(): List<SurahDto> {
         return ayahBySurah.entries.map { (surahNo, ayat) ->
             val surahName = ayat.firstOrNull()?.surahNameEn ?: "Surah $surahNo"
             SurahDto(number = surahNo, name = surahName, ayahCount = ayat.size)

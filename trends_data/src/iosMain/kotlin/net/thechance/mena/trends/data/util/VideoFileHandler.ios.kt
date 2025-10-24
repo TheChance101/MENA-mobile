@@ -3,9 +3,6 @@ package net.thechance.mena.trends.data.util
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.withContext
 import kotlinx.io.RawSource
 import kotlinx.io.asSource
 import platform.AVFoundation.AVAssetImageGenerator
@@ -18,6 +15,7 @@ import platform.Foundation.NSInputStream
 import platform.Foundation.NSURL
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
+import platform.UniformTypeIdentifiers.UTType
 import platform.posix.memcpy
 
 actual fun getPlatformFileReader(): VideoFileHandler = VideoFileHandlerImpl()
@@ -38,6 +36,15 @@ class VideoFileHandlerImpl : VideoFileHandler {
             (CMTimeGetSeconds(duration) * ONE_SECOND).toLong()
                 .takeIf { duration -> duration > 0 }
         }.getOrNull()
+    }
+
+    override suspend fun getMimeType(filePath: String): String {
+        return runCatching {
+            val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
+            fileUrl.pathExtension?.let { extension ->
+                UTType.typeWithFilenameExtension(extension)?.preferredMIMEType
+            } ?: DEFAULT_MIME_TYPE
+        }.getOrDefault(DEFAULT_MIME_TYPE)
     }
 
     override suspend fun extractVideoFrame(filePath: String, timeMs: Long): ByteArray? {
@@ -83,5 +90,6 @@ class VideoFileHandlerImpl : VideoFileHandler {
         const val ONE_SECOND = 1000.0
         const val TIME_SCALE = 600
         const val COMPRESS_QUALITY = 1.0
+        const val DEFAULT_MIME_TYPE = "application/octet-stream"
     }
 }

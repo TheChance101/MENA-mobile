@@ -44,7 +44,8 @@ class CreateHttpClientTest {
     private val mockEngine = mock<HttpClientEngine>()
     private lateinit var mockFactory: HttpClientEngineFactory<HttpClientEngineConfig>
     private val authenticationRepository: AuthenticationRepository = mock(MockMode.autofill)
-    private val authorizationService: AuthorizationService = AuthorizationService(authenticationRepository)
+    private val authorizationService: AuthorizationService =
+        AuthorizationService(authenticationRepository)
     private val json: Json = Json {
         ignoreUnknownKeys = true
         prettyPrint = true

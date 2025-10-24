@@ -22,7 +22,6 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
-import net.thechance.mena.identity.presentation.screen.addresses.AddressesScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.component.AddressCard
 import net.thechance.mena.identity.presentation.screen.addresses.component.MyAddressesAppBar
 import org.jetbrains.compose.resources.stringResource
@@ -93,8 +92,8 @@ class AddressesScreen :
                         onEditClick = { listener.onEditAddressClicked(it) },
                         isMainAddress = it.isMainAddress,
                         addressDetails = it.addressDetails,
-                        onDeleteClick = { listener.onDeleteAddressClicked(it.id!!) },
-                        onClickAddress = { listener.onClickAddress(it.id!!) },
+                        onDeleteClick = { it.id?.let { id -> listener.onDeleteAddressClicked(id) } },
+                        onClickAddress = { it.id?.let { id -> listener.onClickAddress(id) } },
                         animateToCurrentLocation = state.animateToCurrentLocation,
                         longitude = it.coordinates.longitude,
                         latitude = it.coordinates.latitude,

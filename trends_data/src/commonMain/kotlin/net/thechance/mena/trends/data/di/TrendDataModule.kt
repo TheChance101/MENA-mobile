@@ -6,6 +6,7 @@ import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.getPlatformFileReader
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
+import org.koin.core.annotation.Named
 import org.koin.core.annotation.Single
 
 @Module
@@ -16,7 +17,15 @@ class TrendDataModule {
     fun provideFileReader(): VideoFileHandler = getPlatformFileReader()
 
     @Single
-    fun provideHttpClient(): HttpClient {
-        return NetworkClient().provideHttpClient()
+    @Named(DEFAULT_CLIENT_NAME)
+    fun provideDefaultHttpClient(): HttpClient = NetworkClient().provideDefaultHttpClient()
+
+    @Single
+    @Named(UPLOAD_CLIENT_NAME)
+    fun provideUploadHttpClient(): HttpClient = NetworkClient().provideUploadHttpClient()
+
+    companion object {
+        const val DEFAULT_CLIENT_NAME = "defaultClient"
+        const val UPLOAD_CLIENT_NAME = "uploadClient"
     }
 }

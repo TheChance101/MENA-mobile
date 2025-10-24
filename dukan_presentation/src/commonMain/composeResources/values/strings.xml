@@ -74,7 +74,7 @@
     <string name="dismiss_title">Unable to Delete Shelf</string>
     <string name="dismiss_description">This shelf has a products inside it, you can’t delete it until remove products.</string>
     <string name="error_for_delete_shelf">Error deleting shelf</string>
-    <string name="shelf_name_is_invalid">Shelf name is invalid</string>
+    <string name="shelf_name_is_invalid">Shelf name is invalid.Only letters, spaces, and hyphens are allowed.</string>
     <string name="shelf_name_already_exists">Shelf name already exists</string>
     <string name="products_count">%1$d products</string>
     <string name="something_went_wrong">Something went wrong</string>
