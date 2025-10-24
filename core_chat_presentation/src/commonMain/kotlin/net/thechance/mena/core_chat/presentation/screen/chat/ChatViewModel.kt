@@ -164,9 +164,10 @@ class ChatViewModel(
             return
         }
 
-        val content = MessageContent.Image(ImageData.ImageByteArray(imageByteArrays))
-
-        sendImageMessage(chatId, senderId, content)
+        imageByteArrays.forEach { byteArray ->
+            val content = MessageContent.Image(ImageData.ImageByteArray(byteArray))
+            sendImageMessage(chatId, senderId, content)
+        }
     }
 
     private fun sendImageMessage(chatId: Uuid, senderId: Uuid, content: MessageContent) {
