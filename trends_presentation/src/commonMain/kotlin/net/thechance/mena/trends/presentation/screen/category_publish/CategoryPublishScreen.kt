@@ -1,8 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -79,7 +77,9 @@ private fun CategoryPublishContent(
             content = { CategoryPublishScreenBody(state = state, listener = listener) },
             bottomBar = {
                 PrimaryButton(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Theme.spacing._16),
                     text = stringResource(resource = Res.string.upload_video),
                     onClick = listener::onClickPublish,
                     isEnabled = state.isPublishButtonEnabled,
@@ -88,7 +88,11 @@ private fun CategoryPublishContent(
                 )
             }
         )
-    } else { LoadingProgressBar() }
+    }
+
+    AnimatedVisibility(visible = state.isLoading) {
+        LoadingProgressBar()
+    }
 }
 
 @Composable

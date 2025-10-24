@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_pick
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,6 @@ import mena.trends_presentation.generated.resources.choose_interests
 import mena.trends_presentation.generated.resources.help_text
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -30,7 +28,6 @@ import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -70,22 +67,22 @@ private fun CategoryPickScreenContent(
                     modifier = Modifier.padding(horizontal = Theme.spacing._16)
                 )
             }
+        ) {
+            AnimatedVisibility(
+                visible = state.error is ErrorState.NoInternet,
+                content = { NoConnection { listener.onClickRetry() } }
+            )
+
+            AnimatedVisibility(
+                visible = state.isLoading,
+                content = { LoadingProgressBar() }
+            )
+
+            AnimatedVisibility(
+                visible = state.error == null && state.isLoading.not(),
+                content = { CategoryPickScreenBody(state, listener) }
+            )
         }
-    ) {
-        AnimatedVisibility(
-            visible = state.error is ErrorState.NoInternet,
-            content = { NoConnection { listener.onClickRetry() } }
-        )
-
-        AnimatedVisibility(
-            visible = state.isLoading,
-            content = { LoadingProgressBar() }
-        )
-
-        AnimatedVisibility(
-            visible = state.error == null && state.isLoading.not(),
-            content = { CategoryPickScreenBody(state, listener) }
-        )
     }
 }
 
@@ -139,19 +136,4 @@ private fun ChooseInterestsMessage() {
         color = Theme.colorScheme.shadeSecondary,
         modifier = Modifier.padding(bottom = Theme.spacing._24)
     )
-}
-@Preview
-@Composable
-private fun CategoryPickScreenPreview() {
-    MenaTheme {
-        CategoryPickScreenBody(
-            state = CategoryPickScreenState(),
-            listener = object : CategoryPickInteractionListener {
-                override fun onClickBack() {}
-                override fun onClickRetry() {}
-                override fun onClickCategory(categoryId: String) {}
-                override fun onClickNext() {}
-            }
-        )
-    }
 }
