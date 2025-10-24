@@ -10,6 +10,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.bookmark_added_successfully
 import mena.faith_presentation.generated.resources.copied_ayah_failed
 import mena.faith_presentation.generated.resources.copied_ayah_successfully
+import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
@@ -41,16 +42,7 @@ class SurahViewModel(
         tryToExecute(
             execute = { quranRepository.getAyatOfSurah(surahId) },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { ayat ->
-                handleBasmalaVisibility(surahId = surahId)
-                updateState {
-                    it.copy(
-                        ayatOfSurah = ayat,
-                        initialAyahToScroll = surahArgs.ayahNumber,
-                        selectedAyahNumber = surahArgs.ayahNumber
-                    )
-                }
-            },
+            onSuccess = { ayat -> handleLoadSurahSuccess(ayat) },
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -85,7 +77,6 @@ class SurahViewModel(
             delay(2000L)
             updateState { it.copy(selectedAyahNumber = null, initialAyahToScroll = null) }
         }
-
     }
 
     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
@@ -93,7 +84,7 @@ class SurahViewModel(
             it.copy(
                 isAyahActionButtonsVisible = true,
                 selectedAyah = ayahContent,
-                selectedAyahNumber = ayahIndex,
+                selectedAyahNumber = ayahIndex
             )
         }
     }
@@ -105,7 +96,7 @@ class SurahViewModel(
     override fun onCopyClick(ayahContent: String) {
         tryToExecute(
             execute = { clipboardManager.copy(ayahContent) },
-            onSuccess = { onCopySuccess(ayahContent) },
+            onSuccess = { handleCopySuccess(ayahContent) },
             onError = { showErrorSnackBar() },
             dispatcher = dispatcher
         )
@@ -131,7 +122,7 @@ class SurahViewModel(
                     ayahNumber = ayahNumber
                 )
             },
-            onSuccess = { onAddBookmarkSuccess() },
+            onSuccess = { handleAddBookmarkSuccess() },
             onError = { showErrorBookMarkSnackBar(it) },
             dispatcher = dispatcher
         )
@@ -141,14 +132,6 @@ class SurahViewModel(
                 selectedAyahNumber = null
             )
         }
-    }
-
-    private fun onAddBookmarkSuccess() {
-        snackbarHandler.showSnackBar(
-            message = Res.string.bookmark_added_successfully,
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
     }
 
     override fun onShareClick(ayahContent: String) {
@@ -162,8 +145,19 @@ class SurahViewModel(
         sendEffect(SurahScreenEffect.ShareAyah(ayahContent))
     }
 
-    private fun onCopySuccess(ayahContent: String) {
-        showSuccessSnackBar()
+    private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
+        handleBasmalaVisibility(surahArgs.surahId)
+        updateState {
+            it.copy(
+                ayatOfSurah = ayat,
+                initialAyahToScroll = surahArgs.ayahNumber,
+                selectedAyahNumber = surahArgs.ayahNumber
+            )
+        }
+    }
+
+    private fun handleCopySuccess(ayahContent: String) {
+        showCopySuccessSnackBar()
         updateState {
             it.copy(
                 isAyahActionButtonsVisible = false,
@@ -173,7 +167,15 @@ class SurahViewModel(
         }
     }
 
-    private fun showSuccessSnackBar() {
+    private fun handleAddBookmarkSuccess() {
+        snackbarHandler.showSnackBar(
+            message = Res.string.bookmark_added_successfully,
+            status = SnackBarState.Status.Success,
+            scope = viewModelScope
+        )
+    }
+
+    private fun showCopySuccessSnackBar() {
         snackbarHandler.showSnackBar(
             message = Res.string.copied_ayah_successfully,
             status = SnackBarState.Status.Success,
@@ -196,14 +198,11 @@ class SurahViewModel(
             scope = viewModelScope
         )
     }
+
     private fun handleBasmalaVisibility(surahId: Int) {
         val isTawbah = surahId == Surah.SurahOrder.AtTawbah.order
         val isFatiha = surahId == Surah.SurahOrder.AlFatihah.order
-
         val shouldShowBasmala = !(isTawbah || isFatiha)
-
-        updateState {
-            it.copy(isBasmalaVisible = shouldShowBasmala)
-        }
+        updateState { it.copy(isBasmalaVisible = shouldShowBasmala) }
     }
 }

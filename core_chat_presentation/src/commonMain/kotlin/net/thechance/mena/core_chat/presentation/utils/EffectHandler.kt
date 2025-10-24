@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.presentation.navigation
+package net.thechance.mena.core_chat.presentation.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

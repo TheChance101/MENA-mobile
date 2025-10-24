@@ -23,19 +23,22 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import kotlinx.coroutines.flow.SharedFlow
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_arrow_left
 import mena.core_chat_presentation.generated.resources.sync_contacts
+import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
+import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.components.ContactsSyncingView
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.components.GoToSettingsView
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.components.NoContactsSyncView
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -49,6 +52,9 @@ fun SyncContactsScreen() {
     BindEffect(controller)
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val effects = viewModel.effect
+
+    EffectsHandler(effects = effects, isFirstSync = state.isFirstSync)
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         if (!state.isOpenSettingsCalled) return@LifecycleEventEffect
@@ -127,17 +133,34 @@ private fun SyncContactsContent(
 }
 
 @Composable
-@Preview()
-private fun SyncContactsScreenPreview() {
-    MenaTheme {
-        SyncContactsContent(
-            state = SyncContactsScreenState(showSyncView = true, isLoading = false),
-            interactionListener = object :
-                SyncContactsInteractionListener {
-                override fun onBackClicked() {}
-                override fun onSyncClicked() {}
-                override fun onGoToSettingsClicked() {}
+private fun EffectsHandler(
+    effects: SharedFlow<SyncContactsScreenEffect>,
+    isFirstSync: Boolean
+) {
+    val snackBarHostController = LocalSnackBarHostController.current
+    val navController = LocalNavController.current
+
+    EffectHandler(effects) { effect ->
+        when (effect) {
+            is SyncContactsScreenEffect.NavigateBack -> {
+                navController.popBackStack()
             }
-        )
+
+            SyncContactsScreenEffect.NavigateToContactsAfterSyncSuccess -> {
+                if (isFirstSync) {
+                    navController.popBackStack()
+                    navController.navigate(ContactsRoute)
+                } else {
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(IS_SYNC_SUCCESS, true)
+                    navController.popBackStack()
+                }
+            }
+
+            is SyncContactsScreenEffect.ShowSnackBar -> {
+                snackBarHostController.showSnackBar(effect.snackBarData)
+            }
+        }
     }
 }
