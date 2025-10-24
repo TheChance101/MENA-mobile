@@ -42,8 +42,8 @@ internal fun PayButton(
         disabledContentColor = Theme.colorScheme.textDisabled,
         onClick = onClick,
         contentPadding = PaddingValues(
-            horizontal = Theme.spacing._16,
-            vertical = Theme.spacing._8
+            horizontal = 16.dp,
+            vertical = 8.dp
         ),
         shape = RoundedCornerShape(Theme.radius.md),
         loadingColors = listOf(
@@ -64,7 +64,7 @@ internal fun PayButton(
             painter = painterResource(Res.drawable.img_silver),
             contentDescription = stringResource(Res.string.silver_coin),
             modifier = Modifier
-                .padding(start = Theme.spacing._8)
+                .padding(start = 8.dp)
                 .size(20.dp),
         )
     }
@@ -72,7 +72,7 @@ internal fun PayButton(
 
 @Preview
 @Composable
-private fun PayButtonPreview(){
+private fun PayButtonPreview() {
     MenaTheme {
         PayButton(
             isLoading = false,

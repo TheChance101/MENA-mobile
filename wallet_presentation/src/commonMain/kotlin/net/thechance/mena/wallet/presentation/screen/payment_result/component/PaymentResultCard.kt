@@ -1,6 +1,7 @@
 package net.thechance.mena.wallet.presentation.screen.payment_result.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,13 +41,13 @@ internal fun PaymentResultCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 150.dp)
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.lg)
             )
             .padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Icon(
             painter = image,

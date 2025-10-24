@@ -74,6 +74,7 @@
     <string name="views">مشاهدات</string>
     <string name="likes_suffix">%1$d إعجاب</string>
     <string name="views_suffix">%1$d مشاهدة</string>
+    <string name="play_now">تشغيل الآن</string>
 
     <string name="just_now">الآن</string>
     <string name="minutes_ago">منذ %1$d دقيقة</string>

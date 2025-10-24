@@ -73,6 +73,7 @@
     <string name="views">Views</string>
     <string name="likes_suffix">%1$d Likes</string>
     <string name="views_suffix">%1$d Views</string>
+    <string name="play_now">Play Now</string>
 
     <string name="just_now">Just now</string>
     <string name="minutes_ago">%1$d minutes ago</string>

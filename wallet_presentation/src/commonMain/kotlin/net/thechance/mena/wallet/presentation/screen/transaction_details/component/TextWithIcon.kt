@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.img_silver
 import mena.wallet_presentation.generated.resources.silver_coin
@@ -31,7 +32,7 @@ internal fun TextWithIcon(
     iconSize: Dp,
     modifier: Modifier = Modifier,
     iconTint: Color = Color.Unspecified,
-    gap: Dp = Theme.spacing._4,
+    gap: Dp = 4.dp,
 ) {
     Row(
         modifier = modifier,
@@ -63,8 +64,8 @@ private fun TextWithIconPreview() {
             textColor = Theme.colorScheme.shadePrimary,
             icon = painterResource(Res.drawable.img_silver),
             iconContentDescription = stringResource(Res.string.silver_coin),
-            iconSize = Theme.spacing._24,
-            gap = Theme.spacing._8,
+            iconSize = 24.dp,
+            gap = 8.dp,
         )
     }
 }

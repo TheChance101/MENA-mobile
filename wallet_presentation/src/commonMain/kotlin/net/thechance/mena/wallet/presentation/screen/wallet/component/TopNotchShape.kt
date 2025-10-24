@@ -2,10 +2,8 @@ package net.thechance.mena.wallet.presentation.screen.wallet.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -149,13 +147,14 @@ private fun ShapePreview() {
     val parentWidthPx = with(LocalDensity.current) { 328.dp.toPx() }
     Box(
         modifier = Modifier
-            .size(328.dp,128.dp)
-            .background(color = Color.White, shape = TopNotchShape(
-                offset = parentWidthPx / 2,
-                cutoutDepth = 26.dp,
-                cutoutWidth = 100.dp,
-                cornerRadius = 24.dp,
-            )
+            .size(328.dp, 128.dp)
+            .background(
+                color = Color.White, shape = TopNotchShape(
+                    offset = parentWidthPx / 2,
+                    cutoutDepth = 26.dp,
+                    cutoutWidth = 100.dp,
+                    cornerRadius = 24.dp,
+                )
             )
     )
 }

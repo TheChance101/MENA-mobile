@@ -157,7 +157,7 @@ private fun DatePickerBottomSheetContent(
             .navigationBarsPadding()
             .background(Theme.colorScheme.background.surface)
             .fillMaxWidth()
-            .padding(Theme.spacing._16)
+            .padding(16.dp)
     ) {
 
         BottomSheetTopBar(
@@ -173,13 +173,13 @@ private fun DatePickerBottomSheetContent(
             maxYear = maxYear,
             daysInMonth = daysInMonth,
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = Theme.spacing._16)
+                .padding(vertical = 16.dp)
                 .align(Alignment.CenterHorizontally)
         )
 
         PrimaryButton(
             text = stringResource(Res.string.pick),
-            contentPadding = PaddingValues(horizontal = Theme.spacing._24, vertical = 13.dp),
+            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 13.dp),
             onClick = {
                 val day = dayPagerState.currentPage + 1
                 val month = monthPagerState.currentPage + 1
@@ -187,7 +187,7 @@ private fun DatePickerBottomSheetContent(
                 onPickClick(day, month, year)
             },
             modifier = Modifier
-                .padding(bottom = Theme.spacing._8)
+                .padding(bottom = 8.dp)
                 .fillMaxWidth()
         )
     }
@@ -201,7 +201,7 @@ private fun BottomSheetTopBar(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
             .fillMaxWidth()
             .padding(PaddingValues(horizontal = 0.dp, vertical = 0.dp))

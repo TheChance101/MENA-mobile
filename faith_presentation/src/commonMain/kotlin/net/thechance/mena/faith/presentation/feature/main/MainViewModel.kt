@@ -43,15 +43,14 @@ class MainViewModel(
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { prayerTimes -> onGetPrayerTimesSuccess(prayerTimes) },
+            onSuccess = ::onGetPrayerTimesSuccess,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
     }
 
     @OptIn(ExperimentalTime::class)
-    private fun
-            onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
+    private fun onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
         updateState { currentState ->
             currentState.copy(
                 prayerTimes = prayerTimes,
@@ -65,24 +64,17 @@ class MainViewModel(
     private fun loadLastAyahForTilawah() {
         tryToExecute(
             execute = { quranRepository.getLastAyahForTilawah() },
-            onSuccess = { ayah -> onGetLastAyahForTilawahSuccess(ayah) },
+            onSuccess = ::onGetLastAyahForTilawahSuccess,
             dispatcher = dispatcher
         )
     }
 
-    private fun onGetLastAyahForTilawahSuccess(ayah: LastAyahForTilawah) {
-        tryToExecute(
-            execute = { ayah.toTilawahUiState() },
-            onSuccess = { tilawahState ->
-                updateState { currentState ->
-                    currentState.copy(tilawahUiState = tilawahState)
-                }
-            },
-            dispatcher = dispatcher
-        )
+    private suspend fun onGetLastAyahForTilawahSuccess(ayah: LastAyahForTilawah) {
+        val tilawahState = ayah.toTilawahUiState()
+        updateState { it.copy(tilawahUiState = tilawahState) }
     }
 
-    override fun onContinueTilawahClick(surahId: Int, surahName: String, ayahNumber: Int) =
+    override fun onContinueTilawahClick(surahId: Int, surahName: String, ayahNumber: Int) {
         sendEffect(
             MainScreenEffect.NavigateToSurah(
                 surahId = surahId,
@@ -90,12 +82,14 @@ class MainViewModel(
                 ayahNumber = ayahNumber
             )
         )
+    }
 
     override fun onQuranClick() = sendEffect(MainScreenEffect.NavigateToQuran)
 
     override fun onQiblahClick() = sendEffect(MainScreenEffect.NavigateToQiblah)
 
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
+
     fun refreshTilawah() {
         loadLastAyahForTilawah()
     }

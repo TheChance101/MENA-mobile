@@ -38,7 +38,7 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
@@ -67,11 +67,11 @@ fun FullImagePagerView(
         initialPage = initialPage,
         pageCount = {
             when (imagesSource) {
-                is ImagesSource.Remote -> {
+                is ImageData.ImageUrl -> {
                     imagesSource.urls.size
                 }
 
-                is ImagesSource.Local -> {
+                is ImageData.ImageByteArray -> {
                     imagesSource.byteArrays.size
                 }
             }
@@ -99,9 +99,9 @@ fun FullImagePagerView(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
             time = message.sendTime,
-            isDownloadButtonVisible = imagesSource is ImagesSource.Remote,
+            isDownloadButtonVisible = imagesSource is ImageData.ImageUrl,
             onDownloadClicked = {
-                if (imagesSource is ImagesSource.Remote)
+                if (imagesSource is ImageData.ImageUrl)
                     onDownloadClick(imagesSource.urls[pagerState.currentPage])
             },
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -235,10 +235,10 @@ private fun PagerOverlay(
 @Composable
 private fun ImagePager(
     state: PagerState,
-    imagesSource: ImagesSource
+    imagesSource: ImageData
 ) {
     when (imagesSource) {
-        is ImagesSource.Remote -> HorizontalImagePager(state, imagesSource.urls)
-        is ImagesSource.Local -> HorizontalImagePager(state, imagesSource.byteArrays)
+        is ImageData.ImageUrl -> HorizontalImagePager(state, imagesSource.urls)
+        is ImageData.ImageByteArray -> HorizontalImagePager(state, imagesSource.byteArrays)
     }
 }

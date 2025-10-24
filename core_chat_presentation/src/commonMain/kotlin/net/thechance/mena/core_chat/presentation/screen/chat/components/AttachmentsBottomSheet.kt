@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
@@ -129,7 +130,7 @@ private fun PreviewAddPhotoBottomSheet() {
                     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
                     override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
-                    override fun onCameraClosed() {}
+                    override fun onCameraResult(image: ImageBitmap?) {}
                     override fun onCloseAttachmentClicked() {}
                 }
             )

@@ -53,7 +53,7 @@ class BookmarkViewModel(
 
     override fun onBackClick() = sendEffect(BookmarkEffect.NavigateBack)
 
-    override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateBack)
+    override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateToSur)
 
     override fun onDeleteBookmarkClick(bookmarkId: Int) {
         tryToExecute(
