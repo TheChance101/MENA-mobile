@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -73,7 +74,11 @@ private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
-    if (state.isLoading.not()) {
+    AnimatedVisibility(
+        visible = !state.isLoading,
+        enter = androidx.compose.animation.fadeIn(),
+        exit = androidx.compose.animation.fadeOut()
+    ) {
         Scaffold(
             topBar = { ChangeTagsAppBar(onBackClick = listener::onBackClick) },
             bottomBar = {
@@ -121,7 +126,13 @@ private fun UpdateCategoriesScreenContent(
                 }
             }
         }
-    } else {
+    }
+
+  AnimatedVisibility(
+        visible = state.isLoading,
+        enter = androidx.compose.animation.fadeIn(),
+        exit = androidx.compose.animation.fadeOut()
+    ) {
         LoadingProgressBar()
     }
 }

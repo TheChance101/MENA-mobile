@@ -1,8 +1,11 @@
 package net.thechance.mena.trends.presentation.screen.home.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -139,7 +142,11 @@ private fun ReelFooterSection(
         animationSpec = tween(durationMillis = 500)
     )
 
-    if (reel.description.isNotBlank()) {
+   AnimatedVisibility(
+        visible = reel.description.isNotBlank(),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Text(
             text = reel.description,
             style = Theme.typography.body.small,
@@ -147,7 +154,13 @@ private fun ReelFooterSection(
             modifier = Modifier
                 .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
         )
-    } else {
+    }
+
+    AnimatedVisibility(
+        visible = reel.description.isBlank(),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Spacer(modifier = Modifier.height(Theme.spacing._12))
     }
 

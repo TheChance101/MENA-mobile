@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,7 +72,7 @@ private fun CategoryPublishContent(
     state: CategoryPublishState,
     listener: CategoryPublishInteractionListener,
 ) {
-    if (state.isLoading.not()) {
+    AnimatedVisibility(visible = !state.isLoading) {
         Scaffold(
             topBar = { CategoryPublishAppBar(listener::onBackClick) },
             bottomBar = {
@@ -114,7 +115,7 @@ private fun CategoryPublishContent(
                     Icon(
                         painter = painterResource(Res.drawable.ic_hint),
                         contentDescription = stringResource(Res.string.publish_hint),
-                        tint  = Theme.colorScheme.shadeSecondary,
+                        tint = Theme.colorScheme.shadeSecondary,
                         modifier = Modifier.padding(end = Theme.spacing._2)
                     )
 
@@ -142,7 +143,9 @@ private fun CategoryPublishContent(
                 }
             }
         }
-    } else {
+    }
+
+   AnimatedVisibility(visible = state.isLoading) {
         LoadingProgressBar()
     }
 }

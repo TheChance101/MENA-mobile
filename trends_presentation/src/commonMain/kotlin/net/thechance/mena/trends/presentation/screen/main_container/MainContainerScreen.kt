@@ -1,5 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.main_container
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,7 +46,11 @@ internal fun MainContainerScreen(
 
 @Composable
 private fun MainContainerScreenContent(state: MainContainerState) {
-    if (state.isCategoriesAlreadySelectedByUser == null) {
+    AnimatedVisibility(
+        visible = state.isCategoriesAlreadySelectedByUser == null,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

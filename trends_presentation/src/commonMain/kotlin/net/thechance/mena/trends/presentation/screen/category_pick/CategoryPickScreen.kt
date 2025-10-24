@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_pick
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +60,7 @@ private fun CategoryPickScreenContent(
     state: CategoryPickScreenState,
     listener: CategoryPickInteractionListener
 ) {
-    if (state.isLoading.not()) {
+    AnimatedVisibility(visible = !state.isLoading) {
         Scaffold(
             bottomBar = {
                 NextButton(
@@ -90,7 +91,9 @@ private fun CategoryPickScreenContent(
                 }
             }
         }
-    } else {
+    }
+
+    AnimatedVisibility(visible = state.isLoading) {
         LoadingProgressBar()
     }
 }
