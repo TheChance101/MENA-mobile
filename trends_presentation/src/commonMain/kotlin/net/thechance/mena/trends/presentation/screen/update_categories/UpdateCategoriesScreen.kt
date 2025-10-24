@@ -24,7 +24,8 @@ import mena.trends_presentation.generated.resources.choose_interests
 import mena.trends_presentation.generated.resources.help_text
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.save_change
-import mena.trends_presentation.generated.resources.tags_updated
+import mena.trends_presentation.generated.resources.tags_updated_failure
+import mena.trends_presentation.generated.resources.tags_updated_success
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -57,10 +58,18 @@ internal fun UpdateCategoriesScreen(
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             is UpdateCategoriesScreenEffect.NavigateBack -> navController.popBackStack()
+            is UpdateCategoriesScreenEffect.SaveFailure -> {
+                snackBarController.showSnackBar(
+                    SnackBarData(
+                        message = getString(Res.string.tags_updated_failure),
+                        snackBarType = SnackBarStatus.Error,
+                    )
+                )
+            }
             is UpdateCategoriesScreenEffect.SaveSuccess -> {
                 snackBarController.showSnackBar(
                     SnackBarData(
-                        message = getString(Res.string.tags_updated),
+                        message = getString(Res.string.tags_updated_success),
                         snackBarType = SnackBarStatus.Success,
                     )
                 )
