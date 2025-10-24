@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -143,7 +142,7 @@ private fun HomeScreenContent(
 }
 
 @Composable
-private fun BoxScope.AddTrendFAB(
+private fun AddTrendFAB(
     modifier: Modifier = Modifier,
     onClickFab: () -> Unit
 ) {
@@ -151,7 +150,6 @@ private fun BoxScope.AddTrendFAB(
         painter = painterResource(Res.drawable.ic_add_real),
         contentDescription = stringResource(Res.string.add_reel),
         modifier = modifier
-            .align(Alignment.BottomEnd)
             .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
             .size(56.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
