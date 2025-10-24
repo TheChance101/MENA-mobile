@@ -97,48 +97,47 @@ private fun HomeScreenContent(
                     )
                 }
             )
-        },
-        content = {
-            val reels = state.reels.collectAsLazyPagingItems()
-            val shouldShowEmptyState  = reels.itemSnapshotList.isEmpty() &&
-                    !state.isLoading &&
-                    reels.loadState.refresh.toErrorState() == null
-
-            Box(modifier = Modifier.fillMaxSize()) {
-                AnimatedVisibility(
-                    visible = state.isLoading,
-                    content = { LoadingProgressBar() }
-                )
-
-                AnimatedVisibility(
-                    visible = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet,
-                    content = { NoConnection { listener.onClickRetry() } }
-                )
-
-                AnimatedVisibility(
-                    visible = shouldShowEmptyState,
-                    content = { EmptyTrends() }
-                )
-
-                AnimatedVisibility(
-                    visible = reels.itemSnapshotList.isNotEmpty() && state.isLoading.not(),
-                    content = {
-                        ReelsListSection(
-                            reels = reels,
-                            onClickLike = listener::onClickLike,
-                            onClickReel = listener::onClickReel
-                        )
-                    }
-                )
-
-                AnimatedVisibility(
-                    modifier = Modifier.align(Alignment.BottomEnd),
-                    visible = state.isLoading.not(),
-                    content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
-                )
-            }
         }
-    )
+    ) {
+        val reels = state.reels.collectAsLazyPagingItems()
+        val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
+                !state.isLoading &&
+                reels.loadState.refresh.toErrorState() == null
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            AnimatedVisibility(
+                visible = state.isLoading,
+                content = { LoadingProgressBar() }
+            )
+
+            AnimatedVisibility(
+                visible = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet,
+                content = { NoConnection { listener.onClickRetry() } }
+            )
+
+            AnimatedVisibility(
+                visible = shouldShowEmptyState,
+                content = { EmptyTrends() }
+            )
+
+            AnimatedVisibility(
+                visible = reels.itemSnapshotList.isNotEmpty() && state.isLoading.not(),
+                content = {
+                    ReelsListSection(
+                        reels = reels,
+                        onClickLike = listener::onClickLike,
+                        onClickReel = listener::onClickReel
+                    )
+                }
+            )
+
+            AnimatedVisibility(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                visible = state.isLoading.not(),
+                content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
+            )
+        }
+    }
 }
 
 @Composable
