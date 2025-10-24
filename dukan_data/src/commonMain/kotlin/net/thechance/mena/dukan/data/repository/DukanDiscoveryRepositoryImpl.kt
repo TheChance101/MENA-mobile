@@ -32,7 +32,7 @@ class DukanDiscoveryRepositoryImpl(
         page: Int,
         size: Int
     ): List<Dukan> {
-//        val location = locationService.getActiveAddress()
+        val location = locationService.getActiveAddress()
         //TODO handle in backend
         val range = 30000
         return safeApiCall<PageResponseDto<DukanResponseDto>> {
