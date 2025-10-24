@@ -22,12 +22,34 @@ fun formatInstantToTimeString(instant: Instant): String {
     return "$hour:$minute"
 }
 
-fun getHijriDate(prayerTimes: List<PrayerTime>): String =
-    prayerTimes.firstOrNull()?.hijriDate ?: ""
-
+fun getHijriReadableDate(prayerTimes: List<PrayerTime>): String = runCatching {
+    val hijriDate = prayerTimes.firstOrNull()?.hijriDate ?: return ""
+    val parts = hijriDate.split("-")
+    if (parts.size != 3) return hijriDate
+    val day = parts[0].toIntOrNull() ?: return hijriDate
+    val month = parts[1].toIntOrNull() ?: return hijriDate
+    val year = parts[2].toIntOrNull() ?: return hijriDate
+    val monthName = hijriMonths[month] ?: return hijriDate
+    "$day $monthName $year"
+}.getOrDefault("")
 
 @OptIn(ExperimentalTime::class)
 fun getSunriseTime(prayerTimes: List<PrayerTime>): String =
     prayerTimes
         .firstOrNull { it.name == PrayerName.SUNRISE }
         ?.let { formatInstantToTimeString(it.time) } ?: ""
+
+private val hijriMonths: Map<Int, String> = mapOf(
+    1 to "Muharram",
+    2 to "Safar",
+    3 to "Rabi Al-Awwal",
+    4 to "Rabi Al-Akhar",
+    5 to "Jumada Al-Awwal",
+    6 to "Jumada Al-Akhirah",
+    7 to "Rajab",
+    8 to "Shaban",
+    9 to "Ramadan",
+    10 to "Shawwal",
+    11 to "Dhul Qadah",
+    12 to "Dhul Hijjah"
+)

@@ -28,7 +28,7 @@ class PrayerTimeRepositoryImpl(
             latitude = location.latitude,
             longitude = location.longitude
         )
-    }.toDomain(timeZone = timeZone)
+    }.toDomain()
 
     private fun Instant.toDateString(timeZone: TimeZone): String {
         val dateTime = this.toLocalDateTime(timeZone = timeZone)

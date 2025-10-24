@@ -17,7 +17,7 @@ class PrayerTimesDtoToDomainTest {
     @Test
     fun `toDomain should return list of PrayerTime when PrayerTimesDto is valid`() = runTest {
         //When
-        val result = fakePrayerTimesDto.toDomain(timeZone)
+        val result = fakePrayerTimesDto.toDomain()
         //Then
         assertThat(result).isEqualTo(fakePrayerTimes)
     }
@@ -25,7 +25,7 @@ class PrayerTimesDtoToDomainTest {
     @Test
     fun `toDomain should return data with defaults when data has nulls`() = runTest {
         //When
-        val result = fakePrayerTimesDtoWithNulls.toDomain(timeZone)
+        val result = fakePrayerTimesDtoWithNulls.toDomain()
         //Then
         assertThat(result).isEqualTo(fakePrayerTimesWithDefaults)
 
@@ -43,24 +43,6 @@ class PrayerTimesDtoToDomainTest {
             maghrib = null,
             isha = null,
             hijriDate = null,
-            hijriDateFormat = null,
-            hijriReadableDate = null,
-            hijriDay = null,
-            hijriDayName = null,
-            hijriDayArabicName = null,
-            hijriMonth = null,
-            hijriMonthName = null,
-            hijriMonthArabicName = null,
-            hijriYear = null,
-            gregorianDate = null,
-            gregorianDateFormat = null,
-            timestamp = null,
-            gregorianReadableDate = null,
-            gregorianDay = null,
-            gregorianDayName = null,
-            gregorianMonth = null,
-            gregorianMonthName = null,
-            gregorianYear = null
         )
         val startOfDayInstant: Instant = Instant.fromEpochMilliseconds(0)
         val fakePrayerTimesWithDefaults: List<PrayerTime> = getPrayerTimesFakeData(
