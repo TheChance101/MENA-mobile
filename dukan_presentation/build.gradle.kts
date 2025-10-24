@@ -26,6 +26,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "DukanPresentation"
             isStatic = true
+            freeCompilerArgs += listOf("-Xbinary=bundleId=net.thechance.mena.dukan.presentation")
         }
     }
 
