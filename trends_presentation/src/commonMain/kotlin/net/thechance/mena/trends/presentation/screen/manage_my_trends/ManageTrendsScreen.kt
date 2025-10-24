@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -199,7 +200,7 @@ private fun TrendItem(
 ) {
     Box(
         modifier = modifier
-            .size(width = 106.dp, height = 164.dp)
+            .aspectRatio(106f / 164f)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onTrendClick(item.id) }
             .background(color = Theme.colorScheme.background.surfaceLow)
