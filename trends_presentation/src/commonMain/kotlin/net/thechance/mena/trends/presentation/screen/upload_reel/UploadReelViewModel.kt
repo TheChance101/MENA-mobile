@@ -59,10 +59,7 @@ internal class UploadReelViewModel(
     }
 
     private fun onValidationError(errorState: ErrorState) {
-        val uploadReelError = when (errorState) {
-            is UploadReelErrorState -> errorState
-            else -> UploadReelErrorState.RequestTimeout
-        }
+        val uploadReelError = mapToUploadReelError(errorState)
         updateState { copy(errorState = uploadReelError) }
     }
 
@@ -118,11 +115,7 @@ internal class UploadReelViewModel(
     }
 
     private fun onUploadError(errorState: ErrorState) {
-        val uploadReelError = when (errorState) {
-            is UploadReelErrorState -> errorState
-            else -> UploadReelErrorState.RequestTimeout
-        }
-
+        val uploadReelError = mapToUploadReelError(errorState)
         updateState {
             copy(
                 uploadingState = UploadReelScreenState.UploadingReelState.FAILED,
@@ -167,10 +160,7 @@ internal class UploadReelViewModel(
     }
 
     private fun onExtractFrameError(errorState: ErrorState) {
-        val uploadReelError = when (errorState) {
-            is UploadReelErrorState -> errorState
-            else -> UploadReelErrorState.RequestTimeout
-        }
+        val uploadReelError = mapToUploadReelError(errorState)
         updateState { copy(errorState = uploadReelError) }
     }
 
@@ -211,10 +201,7 @@ internal class UploadReelViewModel(
     }
 
     private fun onUploadThumbnailError(errorState: ErrorState) {
-        val uploadReelError = when (errorState) {
-            is UploadReelErrorState -> errorState
-            else -> UploadReelErrorState.RequestTimeout
-        }
+        val uploadReelError = mapToUploadReelError(errorState)
         updateState { copy(errorState = uploadReelError) }
     }
 
@@ -237,11 +224,7 @@ internal class UploadReelViewModel(
     }
 
     private fun onDeleteVideoClickError(errorState: ErrorState) {
-        val uploadReelError = when (errorState) {
-            is UploadReelErrorState -> errorState
-            else -> UploadReelErrorState.RequestTimeout
-        }
-
+        val uploadReelError = mapToUploadReelError(errorState)
         updateState { copy(errorState = uploadReelError) }
     }
 
@@ -264,5 +247,12 @@ internal class UploadReelViewModel(
 
     private companion object {
         const val TAG = "UploadReelErrorState"
+    }
+
+    private fun mapToUploadReelError(errorState: ErrorState): UploadReelErrorState {
+        return when (errorState) {
+            is UploadReelErrorState -> errorState
+            else -> UploadReelErrorState.RequestTimeout
+        }
     }
 }
