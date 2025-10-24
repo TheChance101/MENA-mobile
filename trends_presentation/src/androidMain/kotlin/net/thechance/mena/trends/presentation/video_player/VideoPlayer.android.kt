@@ -163,7 +163,10 @@ actual fun VideoPlayer(
         }
 
         if (isLoading && !isPause) {
-            Box(Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand)) {
+            Box(
+                Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand),
+                contentAlignment = Alignment.Center
+            ){
                 DotsProgressIndicator(
                     colors = listOf(
                         Theme.colorScheme.stroke,
