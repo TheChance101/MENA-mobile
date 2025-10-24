@@ -33,9 +33,8 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
-import net.thechance.mena.core_chat.presentation.components.SnackBarData
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -52,10 +51,9 @@ class ChatViewModel(
     private val userRepository: UserRepository,
     private val imageDownloaderService: ImageDownloaderService,
     chatArgs: ChatArgs,
-    effector: ChatEffector,
     private val permissionsController: PermissionsController,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ChatScreenState>(ChatScreenState(), effector, dispatcher),
+) : BaseViewModel<ChatScreenState, ChatScreenEffect>(ChatScreenState(), dispatcher),
     ChatInteractionListener {
 
     private val _uiMessages = MutableStateFlow<List<MessageUiState>>(emptyList())
@@ -149,11 +147,11 @@ class ChatViewModel(
             messageStringResource = Res.string.error_cant_get_messages,
             isError = true
         )
-        popBackStack()
+        emitEffect(ChatScreenEffect.NavigateBack)
     }
 
     override fun onBackClicked() {
-        popBackStack()
+        emitEffect(ChatScreenEffect.NavigateBack)
     }
 
     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
@@ -423,11 +421,13 @@ class ChatViewModel(
         messageStringResource: StringResource,
         isError: Boolean = false
     ) {
-        showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(titleStringResource),
-                message = UiText.StringRes(messageStringResource),
-                isError = isError
+        emitEffect(
+            ChatScreenEffect.ShowSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(titleStringResource),
+                    message = UiText.StringRes(messageStringResource),
+                    isError = isError
+                )
             )
         )
     }

@@ -13,8 +13,8 @@ import mena.faith_presentation.generated.resources.aya
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.components.DotSeparator
+import net.thechance.mena.faith.presentation.components.getAyahTextStyle
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.quran.surah.component.getAyahTextStyle
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

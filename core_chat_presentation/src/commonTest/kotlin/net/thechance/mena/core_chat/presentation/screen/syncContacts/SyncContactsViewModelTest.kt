@@ -12,25 +12,29 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
-import dev.mokkery.matcher.any
-import dev.mokkery.matcher.varargs.anyVarargs
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.contacts_permission_required_message
+import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
+import mena.core_chat_presentation.generated.resources.permission_denied_title
+import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.utils.SettingsOpener
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SyncContactsViewModelTest {
@@ -38,7 +42,6 @@ class SyncContactsViewModelTest {
     private val contactsRepository = mock<ContactsRepository>()
     private val permissionsController = mock<PermissionsController>()
     private val settingsOpener = mock<SettingsOpener>()
-    private val effector = mock<ChatEffector>()
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -51,11 +54,6 @@ class SyncContactsViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        val fakeFlow = MutableSharedFlow<Map<String, Any>>()
-        every { effector.popBackStackArgsFlow } returns fakeFlow
-        everySuspend { effector.showSnackBar(any()) } returns Unit
-        everySuspend { effector.popBackStack(any()) } returns Unit
-        everySuspend { effector.navigate(any(), any(), any()) } returns Unit
     }
 
     @AfterTest
@@ -110,19 +108,28 @@ class SyncContactsViewModelTest {
         }
 
     @Test
-    fun `onSyncClicked should show SnackBar when permission is denied`() = runTest {
+    fun `onSyncClicked should emit SnackBar effect when permission is denied`() = runTest {
         everySuspend { permissionsController.providePermission(Permission.CONTACTS) } throws DeniedException(
             Permission.CONTACTS
         )
-
-
         val viewModel = createSyncContactsViewModel(false)
         advanceUntilIdle()
 
-        viewModel.onSyncClicked()
-        advanceUntilIdle()
+        viewModel.effect.test {
+            viewModel.onSyncClicked()
+            advanceUntilIdle()
 
-        verifySuspend { effector.showSnackBar(any()) }
+            assertEquals(
+                SyncContactsScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.permission_denied_title),
+                        message = UiText.StringRes(Res.string.contacts_permission_required_message),
+                        isError = true
+                    )
+                ), awaitItem()
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -146,34 +153,42 @@ class SyncContactsViewModelTest {
         }
 
     @Test
-    fun `init should handle sync error when syncContacts throw exception`() = runTest {
+    fun `init should emit snackBar effect when syncContacts throw exception`() = runTest {
         everySuspend { contactsRepository.syncContacts() } throws Exception()
 
         val viewModel = createSyncContactsViewModel(true)
-        advanceUntilIdle()
 
+        viewModel.effect.test {
+            advanceUntilIdle()
 
-        viewModel.state.test {
-            verifySuspend { effector.showSnackBar(any()) }
+            assertEquals(
+                SyncContactsScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.something_went_wrong),
+                        message = UiText.StringRes(Res.string.could_not_sync_contacts_message),
+                        isError = true
+                    )
+                ), awaitItem()
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
 
 
     @Test
-    fun `onBackClicked should pop back stack when called`() = runTest {
+    fun `onBackClicked should emit NavigateBack effect when called`() = runTest {
         everySuspend { contactsRepository.syncContacts() } returns Unit
         everySuspend { contactsRepository.setHasUserSyncedContactsStatus(true) } returns Unit
-        everySuspend { effector.popBackStack(*anyVarargs()) } returns Unit
-
         val viewModel = createSyncContactsViewModel(true)
-
         advanceUntilIdle()
 
-        viewModel.onBackClicked()
-        advanceUntilIdle()
+        viewModel.effect.test {
+            viewModel.onBackClicked()
+            advanceUntilIdle()
 
-        verifySuspend { effector.popBackStack() }
+            assertEquals(SyncContactsScreenEffect.NavigateBack, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -216,7 +231,6 @@ class SyncContactsViewModelTest {
             permissionsController,
             createSyncContactsScreenArgs(forceSyncParam),
             settingsOpener,
-            effector,
             testDispatcher
         )
     }

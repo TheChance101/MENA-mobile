@@ -62,40 +62,31 @@ class SurahViewModelTest {
 
     @Test
     fun `onAyahLongPress should show action buttons when it called`() = runTest {
-        // Given & When
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        // Then
         assertTrue(testViewModel.uiState.value.isAyahActionButtonsVisible)
     }
 
     @Test
     fun `onAyahLongPress should return ayah content for selectedAyah when called`() = runTest {
-        // Given & When
         testViewModel.onAyahLongPress(SELECTED_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        // Then
         assertEquals(SELECTED_AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
     }
 
     @Test
     fun `onAyahLongPress should return ayah index for selectedAyahIndex when called`() = runTest {
-        // Given & When
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        // Then
         assertEquals(TEST_AYAH_INDEX, testViewModel.uiState.value.selectedAyahNumber)
     }
 
     @Test
     fun `onAyahLongPress should return new content when different ayah is selected`() = runTest {
-        // Given
         testViewModel.onAyahLongPress(FIRST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        // When
         testViewModel.onAyahLongPress(SECOND_AYAH_CONTENT, SECOND_AYAH_INDEX)
 
-        // Then
         assertEquals(SECOND_AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
         assertEquals(SECOND_AYAH_INDEX, testViewModel.uiState.value.selectedAyahNumber)
     }
@@ -103,93 +94,72 @@ class SurahViewModelTest {
     @Test
     fun `onAyahLongPress should set selectedAyahIndex to zero value when called with negative index`() =
         runTest {
-            // Given
             everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
-            // When
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, NEGATIVE_AYAH_INDEX)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // Then
             assertEquals(0, testViewModel.uiState.value.selectedAyahNumber)
         }
 
     @Test
     fun `onDismissActionButtons should hide action buttons when it called`() =
         runTest {
-            // Given
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-            // When
             testViewModel.onDismissActionButtons()
 
-            // Then
             assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
         }
 
     @Test
     fun `onDismissActionButtons should clear selectedAyah when called`() =
         runTest {
-            // Given
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-            // When
             testViewModel.onDismissActionButtons()
 
-            // Then
             assertEquals(EMPTY_STRING, testViewModel.uiState.value.selectedAyah)
         }
 
     @Test
     fun `onBookmarkClick should hide action buttons after bookmark click`() = runTest {
-        // Given
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        // When
         testViewModel.onBookmarkClick(TEST_AYAH_NUMBER)
 
-        // Then
         assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
     }
 
     @Test
     fun `onBookmarkClick should hide action buttons when ayah number is negative`() = runTest {
-        // Given
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        // When
         testViewModel.onBookmarkClick(ZERO_AYAH_NUMBER)
 
-        // Then
         assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
     }
 
     @Test
     fun `onShareClick should hide action buttons after share click`() = runTest {
-        // Given
         everySuspend { quranRepository.getAyatOfSurah(DEFAULT_SURAH_ID) } returns dummyAyat
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        // When
         testViewModel.onShareClick(TEST_AYAH_CONTENT)
         advanceUntilIdle()
 
-        // Then
         assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
     }
 
     @Test
     fun `onShareClick should update selectedAyah with ayah content when called`() = runTest {
-        // Given & When
         testViewModel.onShareClick(AYAH_TO_SHARE)
 
-        // Then
         assertEquals(AYAH_TO_SHARE, testViewModel.uiState.value.selectedAyah)
     }
 
     @Test
     fun `onShareClick should navigate to ShareAyah when onShareClick is invoked`() = runTest {
-        // Given & When & Then
         testViewModel.uiEffect.test {
             testViewModel.onShareClick(AYAH_TO_SHARE)
             assertEquals(SurahScreenEffect.ShareAyah(AYAH_TO_SHARE), awaitItem())
@@ -199,35 +169,28 @@ class SurahViewModelTest {
     @Test
     fun `onAyahLongPress should keep previous selectedAyah when called with same content`() =
         runTest {
-            // Given
             everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-            // When
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // Then
             assertEquals(TEST_AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
         }
 
     @Test
     fun `onAyahLongPress should update selectedAyahIndex when called with different index`() =
         runTest {
-            // Given
             everySuspend { quranRepository.getAyatOfSurah(any()) } returns emptyList()
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-            // When
             testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, SECOND_AYAH_INDEX)
 
-            // Then
             assertEquals(SECOND_AYAH_INDEX, testViewModel.uiState.value.selectedAyahNumber)
         }
 
     @Test
     fun `showSuccessSnackBar should display success status when called`() = runTest {
-        // Given & When & Then
         testViewModel.snackBarState.test {
             testViewModel.onCopyClick(AYAH_TO_COPY)
             val snackBarState = awaitItem()
@@ -237,20 +200,16 @@ class SurahViewModelTest {
 
     @Test
     fun `onCopyClick should update state correctly when copy operation succeeds`() = runTest {
-        // Given
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
-        // When
         testViewModel.onCopyClick(AYAH_CONTENT)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
         assertEquals(AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
     }
 
     @Test
     fun `onBookmarkClick should add bookmark successfully`() = runTest(testDispatcher) {
-        // Given
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
         testViewModel = SurahViewModel(
@@ -263,18 +222,15 @@ class SurahViewModelTest {
         )
         advanceUntilIdle()
 
-        // When
         testViewModel.onBookmarkClick(TEST_AYAH_NUMBER)
         advanceUntilIdle()
 
-        // Then - Verify bookmark was added
         assertEquals(false, testViewModel.uiState.value.isAyahActionButtonsVisible)
     }
 
     @Test
     fun `onBookmarkClick should show success snackbar after adding bookmark`() =
         runTest(testDispatcher) {
-            // Given
             everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
             testViewModel = SurahViewModel(
@@ -287,18 +243,15 @@ class SurahViewModelTest {
             )
             advanceUntilIdle()
 
-            // When
             testViewModel.onBookmarkClick(TEST_AYAH_NUMBER)
             advanceUntilIdle()
 
-            // Then
             assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
         }
 
 
     @Test
     fun `onFirstVisibleAyahChanged should save last ayah for tilawah`() = runTest(testDispatcher) {
-        // Given
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
         testViewModel = SurahViewModel(
@@ -311,7 +264,6 @@ class SurahViewModelTest {
         )
         advanceUntilIdle()
 
-        // When
         testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
         advanceUntilIdle()
     }
@@ -319,7 +271,6 @@ class SurahViewModelTest {
     @Test
     fun `onFirstVisibleAyahChanged should track ayah with correct surah id`() =
         runTest(testDispatcher) {
-            // Given
             everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
             testViewModel = SurahViewModel(
@@ -332,7 +283,6 @@ class SurahViewModelTest {
             )
             advanceUntilIdle()
 
-            // When
             testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
             advanceUntilIdle()
         }
@@ -341,7 +291,6 @@ class SurahViewModelTest {
     @Test
     fun `updateContinueTilawah should include surah name in saved data`() =
         runTest(testDispatcher) {
-            // Given
             everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
             testViewModel = SurahViewModel(
@@ -354,7 +303,6 @@ class SurahViewModelTest {
             )
             advanceUntilIdle()
 
-            // When
             testViewModel.updateContinueTilawah(TRACKED_AYAH_NUMBER)
             advanceUntilIdle()
 
@@ -362,7 +310,6 @@ class SurahViewModelTest {
 
     @Test
     fun `onCopyClick should hide action buttons after successful copy`() = runTest(testDispatcher) {
-        // Given
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
         testViewModel = SurahViewModel(
@@ -375,17 +322,14 @@ class SurahViewModelTest {
         )
         advanceUntilIdle()
 
-        // When
         testViewModel.onCopyClick(AYAH_CONTENT)
         advanceUntilIdle()
 
-        // Then
         assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
     }
 
     @Test
     fun `onCopyClick should store copied ayah content in state`() = runTest(testDispatcher) {
-        // Given
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
 
         testViewModel = SurahViewModel(
@@ -398,26 +342,21 @@ class SurahViewModelTest {
         )
         advanceUntilIdle()
 
-        // When
         testViewModel.onCopyClick(AYAH_CONTENT)
         advanceUntilIdle()
 
-        // Then
         assertEquals(AYAH_CONTENT, testViewModel.uiState.value.selectedAyah)
     }
 
     @Test
     fun `updateContinueTilawah should save last ayah for tilawah correctly`() = runTest {
-        // Given
         every { surahArgs.surahId } returns SURAH_BAQARAH_ID
         every { surahArgs.surahName } returns SURAH_BAQARAH
         everySuspend { quranRepository.saveLastAyahForTilawah(any()) } returns Unit
 
-        // When
         testViewModel.updateContinueTilawah(5)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        // Then
         assertEquals(SURAH_BAQARAH_ID, surahArgs.surahId)
         assertEquals(SURAH_BAQARAH, surahArgs.surahName)
     }
