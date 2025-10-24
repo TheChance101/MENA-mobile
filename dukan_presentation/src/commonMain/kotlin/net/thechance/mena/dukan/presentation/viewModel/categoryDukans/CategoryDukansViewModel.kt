@@ -47,24 +47,8 @@ class CategoryDukansViewModel(
     }
 
     private fun updateFavoriteState(dukan: DukanUiState) {
-//        updateState {
-//            copy(
-//                dukans = dukans.copy(
-//                    items = dukans.items.toggleFavoriteBest(dukan.id)
-//                )
-//            )
-//        }
+        // ToDo update favorite state in ui
     }
-
-//    private fun List<DukanUiState>.toggleFavoriteBest(dukanId: String): List<DukanUiState> {
-//        return map { item ->
-//            if (item.id == dukanId) {
-//                item.copy(isFavorite = !item.isFavorite)
-//            } else {
-//                item
-//            }
-//        }
-//    }
 
     private fun collectDukans(categoryId: String) {
         tryToCollect(

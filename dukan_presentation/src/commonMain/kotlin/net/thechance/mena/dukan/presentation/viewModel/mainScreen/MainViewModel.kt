@@ -19,6 +19,7 @@ import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
+
 import org.jetbrains.compose.resources.StringResource
 
 class MainViewModel(
@@ -43,21 +44,20 @@ class MainViewModel(
 
     private fun loadEditorPicksDukans() {
         tryToCollect(
-            block = {
-                createPagingSourceFlow(
-                    mapper = { it.toEditorPickUiState() }
-                ) { currentPage, pageSize ->
-                    dukanDiscoveryRepository.getEditorPicksDukans(
-                        page = currentPage,
-                        size = pageSize
-                    )
-                }
-            },
+            block = ::createLoadEditorPagingSource,
             onCollect = ::onLoadedEditorPicksDukan,
             onError = ::handleNetworkError
         )
     }
 
+    private fun createLoadEditorPagingSource(): Flow<PagingData<MainScreenUiState.EditorPickDukanUiState>> {
+        return createPagingSourceFlow(mapper = { it.toEditorPickUiState() }) { currentPage, pageSize ->
+            dukanDiscoveryRepository.getEditorPicksDukans(
+                page = currentPage,
+                size = pageSize
+            )
+        }
+    }
     private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
         updateState {
             copy(
@@ -69,13 +69,13 @@ class MainViewModel(
 
     private fun loadBestNearestDukans() {
         tryToCollect(
-            block = ::createPagingSource,
+            block = ::createLoadBestDukanPagingSource,
             onCollect = ::onLoadedBestNearestDukans,
             onError = ::handleNetworkError
         )
     }
 
-    private fun createPagingSource(): Flow<PagingData<MainScreenUiState.BestNearestDukanUiState>> {
+    private fun createLoadBestDukanPagingSource(): Flow<PagingData<MainScreenUiState.BestNearestDukanUiState>> {
         return createPagingSourceFlow(mapper = { it.toBestNearestUiState() }) { currentPage, pageSize ->
             dukanDiscoveryRepository.getBestAroundDukans(
                 page = currentPage,
