@@ -7,7 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.empty_shelf
 import mena.dukan_presentation.generated.resources.shelf_empty_body

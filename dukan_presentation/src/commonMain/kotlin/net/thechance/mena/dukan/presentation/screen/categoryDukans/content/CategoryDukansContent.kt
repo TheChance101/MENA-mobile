@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.categoryDukans.content
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.runtime.Composable
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.dukan_pending

@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme

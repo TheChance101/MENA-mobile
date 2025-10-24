@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList

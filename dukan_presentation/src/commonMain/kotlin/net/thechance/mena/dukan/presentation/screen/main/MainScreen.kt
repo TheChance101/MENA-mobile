@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.best_dukans_around_you

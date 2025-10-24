@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.LazyPagingItems
+import app.cash.paging.compose.LazyPagingItems
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
