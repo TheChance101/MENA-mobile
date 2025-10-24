@@ -47,7 +47,10 @@ internal class UpdateCategoriesViewModel(
             onSuccess = { sendEffect(UpdateCategoriesScreenEffect.SaveSuccess) },
             onStart = { updateState { copy(isSaveButtonLoading = true) } },
             onEnd = { updateState { copy(isSaveButtonLoading = false) } },
-            onError = { errorState -> updateState { copy(errorState = errorState) } },
+            onError = { errorState ->
+                updateState { copy(errorState = errorState) }
+                sendEffect(UpdateCategoriesScreenEffect.SaveFailure)
+            },
             dispatcher = defaultDispatcher
         )
     }
