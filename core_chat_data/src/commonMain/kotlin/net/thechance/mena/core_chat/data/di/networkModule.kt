@@ -4,12 +4,12 @@ import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
-import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloader
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
 import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.httpClientEngineFactory
+import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -36,7 +36,7 @@ internal val networkModule = module {
         )
     }
 
-    single<ImageDownloader> { ImageDownloaderImp() }
+    single<ImageDownloaderService> { ImageDownloaderImp() }
 
     single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT)), get()) }
     single(named(TEXT_MESSAGE_SENDER)) { TextMessageSender(get(), get(named(CHAT_JSON))) }

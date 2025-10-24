@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,50 +23,53 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.am_label
+import mena.faith_presentation.generated.resources.asr
+import mena.faith_presentation.generated.resources.dhuhr
+import mena.faith_presentation.generated.resources.fajr
 import mena.faith_presentation.generated.resources.ic_column_mosque
 import mena.faith_presentation.generated.resources.ic_mosque_bg
 import mena.faith_presentation.generated.resources.ic_triangle_down
+import mena.faith_presentation.generated.resources.isha
 import mena.faith_presentation.generated.resources.mosque_image_description
 import mena.faith_presentation.generated.resources.pm_label
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.domain.entity.PrayerName
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.PrayerTimesUiState
 import net.thechance.mena.faith.presentation.feature.main.PrayerUiModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PrayerTimesCard(prayerTimesUiState: PrayerTimesUiState?) {
+fun PrayerTimesCard(
+    prayerTimesUiState: PrayerTimesUiState?,
+    modifier: Modifier = Modifier
+) {
     if (prayerTimesUiState == null) return
 
     Box(
-        modifier = Modifier
-            .aspectRatio(2.65f)
-            .clip(RoundedCornerShape(Theme.radius.lg))
-            .background(Theme.colorScheme.background.surfaceLow),
+        modifier = modifier.aspectRatio(2.65f),
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.BottomCenter)
+                .padding(top = Theme.spacing._16)
+                .clip(RoundedCornerShape(Theme.radius.lg))
+                .background(Theme.colorScheme.background.surfaceLow)
+        )
         Image(
             painter = painterResource(Res.drawable.ic_mosque_bg),
             contentDescription = stringResource(Res.string.mosque_image_description),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .fillMaxWidth(0.35f)
-                .aspectRatio(1f)
-                .offset(y = (-38).dp, x = (-8).dp),
+                .aspectRatio(1.52f),
             contentScale = ContentScale.Fit,
         )
-
-        Image(
-            painter = painterResource(Res.drawable.ic_column_mosque),
-            contentDescription = stringResource(Res.string.mosque_image_description),
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .fillMaxHeight()
-                .padding(start = 22.dp),
-            contentScale = ContentScale.Crop,
-        )
-
         LazyRow(
             modifier = Modifier
                 .fillMaxSize()
@@ -83,8 +85,20 @@ fun PrayerTimesCard(prayerTimesUiState: PrayerTimesUiState?) {
                 )
             }
         }
+
+
+        Image(
+            painter = painterResource(Res.drawable.ic_column_mosque),
+            contentDescription = stringResource(Res.string.mosque_image_description),
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .fillMaxHeight()
+                .padding(start = 22.dp),
+            contentScale = ContentScale.Crop,
+        )
     }
 }
+
 
 @Composable
 private fun PrayerItem(
@@ -131,5 +145,64 @@ private fun PrayerItem(
                     .size(Theme.spacing._16),
             )
         }
+    }
+}
+
+
+@Preview
+@Composable
+private fun PrayerTimesCardPreview() {
+    val samplePrayerTimesUiState = PrayerTimesUiState(
+        prayers = listOf(
+            PrayerUiModel(
+                name = PrayerName.FAJR,
+                displayName = Res.string.fajr,
+                time = "06:00",
+                isAM = true
+            ),
+            PrayerUiModel(
+                name = PrayerName.DHUHR,
+                displayName = Res.string.dhuhr,
+                time = "12:00",
+                isAM = false
+            ),
+            PrayerUiModel(
+                name = PrayerName.ASR,
+                displayName = Res.string.asr,
+                time = "04:00",
+                isAM = false
+            ),
+            PrayerUiModel(
+                name = PrayerName.MAGHRIB,
+                displayName = Res.string.fajr,
+                time = "06:00",
+                isAM = false
+            ),
+            PrayerUiModel(
+                name = PrayerName.ISHA,
+                displayName = Res.string.isha,
+                time = "08:00",
+                isAM = false
+            )
+        ),
+        nextPrayerIndex = 0
+    )
+    QuranTheme {
+        PrayerTimesCard(prayerTimesUiState = samplePrayerTimesUiState)
+    }
+}
+
+
+@Preview
+@Composable
+private fun PrayerItemPreview() {
+    val samplePrayer = PrayerUiModel(
+        name = PrayerName.FAJR,
+        displayName = Res.string.fajr,
+        time = "06:00",
+        isAM = true
+    )
+    QuranTheme {
+        PrayerItem(prayer = samplePrayer, isNextPrayer = true)
     }
 }

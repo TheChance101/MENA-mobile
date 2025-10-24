@@ -52,7 +52,7 @@ fun FilterButton(
 
 @Composable
 @Preview
-private fun FilterButtonPreview(){
+private fun FilterButtonPreview() {
     FilterButton(
         activeFilterCount = 1,
         hasActiveFilters = true,

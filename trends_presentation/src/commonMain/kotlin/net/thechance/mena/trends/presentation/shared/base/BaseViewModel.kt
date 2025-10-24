@@ -68,11 +68,9 @@ internal abstract class BaseViewModel<State, Effect>(
 
             runCatching { block() }
                 .onSuccess { onSuccess(it) }
-                .onFailure {
-                    mapExceptionToErrorState(
-                        throwable = it,
-                        onError = onError
-                    )
+                .onFailure { throwable ->
+                    if(throwable is CancellationException) return@onFailure
+                    mapExceptionToErrorState(throwable, onError)
                 }
             onEnd()
         }
@@ -88,7 +86,6 @@ internal abstract class BaseViewModel<State, Effect>(
         scope: CoroutineScope = viewModelScope
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-            if(exception is kotlinx.coroutines.CancellationException) return@CoroutineExceptionHandler
             onError(ErrorState.RequestFailed(exception.message))
         }
 
@@ -99,7 +96,6 @@ internal abstract class BaseViewModel<State, Effect>(
                 .onEach { onNewValue(it) }
                 .onCompletion { throwable ->
                     throwable?.let {
-                        if(throwable is CancellationException) return@onCompletion
                         mapExceptionToErrorState(throwable, onError)
                     } ?: onEnd()
                 }

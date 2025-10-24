@@ -59,8 +59,8 @@ fun WalletChip(
             )
             .background(if (isEnabled) containerColor else Theme.colorScheme.disabled)
             .padding(
-                vertical = Theme.spacing._8,
-                horizontal = Theme.spacing._16
+                vertical = 8.dp,
+                horizontal = 16.dp
             )
     ) {
 

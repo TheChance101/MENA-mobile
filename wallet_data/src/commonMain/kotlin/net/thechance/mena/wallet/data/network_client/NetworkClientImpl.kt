@@ -41,30 +41,30 @@ class NetworkClientImpl(
 
     override suspend fun get(
         urlString: String,
-        block: HttpRequestBuilder.() -> Unit
+        requestBuilder: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
-        return client.get(urlString, block)
+        return client.get(urlString, requestBuilder)
     }
 
     override suspend fun post(
         urlString: String,
-        block: HttpRequestBuilder.() -> Unit
+        requestBuilder: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
-        return client.post(urlString, block)
+        return client.post(urlString, requestBuilder)
     }
 
     override suspend fun put(
         urlString: String,
-        block: HttpRequestBuilder.() -> Unit
+        requestBuilder: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
-        return client.put(urlString, block)
+        return client.put(urlString, requestBuilder)
     }
 
     override suspend fun delete(
         urlString: String,
-        block: HttpRequestBuilder.() -> Unit
+        requestBuilder: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
-        return client.delete(urlString, block)
+        return client.delete(urlString, requestBuilder)
     }
 
     private fun buildClient(): HttpClient {
