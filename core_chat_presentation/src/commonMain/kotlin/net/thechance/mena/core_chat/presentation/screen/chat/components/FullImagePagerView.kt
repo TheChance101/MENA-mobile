@@ -60,19 +60,19 @@ fun FullImagePagerView(
     onCloseClick: () -> Unit,
     onDownloadClick: (url: String) -> Unit,
 ) {
-    if (message == null || message.content !is MessageContent.Images) return
-    val imagesSource = message.content.source
+    if (message == null || message.content !is MessageContent.Image) return
+    val imagesSource = message.content.data
 
     val pagerState = rememberPagerState(
         initialPage = initialPage,
         pageCount = {
             when (imagesSource) {
                 is ImageData.ImageUrl -> {
-                    imagesSource.urls.size
+                    imagesSource.url.size
                 }
 
                 is ImageData.ImageByteArray -> {
-                    imagesSource.byteArrays.size
+                    imagesSource.byteArray.size
                 }
             }
         }
@@ -102,7 +102,7 @@ fun FullImagePagerView(
             isDownloadButtonVisible = imagesSource is ImageData.ImageUrl,
             onDownloadClicked = {
                 if (imagesSource is ImageData.ImageUrl)
-                    onDownloadClick(imagesSource.urls[pagerState.currentPage])
+                    onDownloadClick(imagesSource.url[pagerState.currentPage])
             },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
@@ -238,7 +238,7 @@ private fun ImagePager(
     imagesSource: ImageData
 ) {
     when (imagesSource) {
-        is ImageData.ImageUrl -> HorizontalImagePager(state, imagesSource.urls)
-        is ImageData.ImageByteArray -> HorizontalImagePager(state, imagesSource.byteArrays)
+        is ImageData.ImageUrl -> HorizontalImagePager(state, imagesSource.url)
+        is ImageData.ImageByteArray -> HorizontalImagePager(state, imagesSource.byteArray)
     }
 }

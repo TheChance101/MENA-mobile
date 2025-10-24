@@ -12,7 +12,7 @@ data class MessageLocalDto(
     @ColumnInfo(name = "message_text")
     val text: String? = null,
     @ColumnInfo(name = "images")
-    val images: List<ByteArray>? = null,
+    val image: ByteArray? = null,
     @ColumnInfo(name = "timestamp")
     val timestamp: Long,
     @ColumnInfo(name = "chat_id")

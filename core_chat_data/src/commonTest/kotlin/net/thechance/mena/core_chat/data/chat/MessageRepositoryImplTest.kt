@@ -246,7 +246,7 @@ class MessageRepositoryImplTest {
             val message = createMessage(
                 senderId = userId,
                 chatId = chatId,
-                content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
+                content = MessageContent.Image(ImageData.ImageByteArray(byteArrays))
             )
 
             repository.sendMessage(message)
@@ -277,7 +277,7 @@ class MessageRepositoryImplTest {
         val message = createMessage(
             senderId = userId,
             chatId = chatId,
-            content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
+            content = MessageContent.Image(ImageData.ImageByteArray(byteArrays))
         )
 
         assertFailsWith<SendMessageFailedException> {

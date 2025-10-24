@@ -24,14 +24,14 @@ fun MessageContent(
             color = Theme.colorScheme.shadeSecondary
         )
 
-        is MessageContent.Images -> {
-            val source = messageContent.source
-            val images = when (source) {
-                is ImageData.ImageByteArray -> source.byteArrays
-                is ImageData.ImageUrl -> source.urls
+        is MessageContent.Image -> {
+            val source = messageContent.data
+            val image = when (source) {
+                is ImageData.ImageByteArray -> source.byteArray
+                is ImageData.ImageUrl -> source.url
             }
             ImageMessageContent(
-                images = images,
+                images = image,
                 modifier = Modifier.size(156.dp, 162.dp).clip(shape),
                 onImageClick = onImageClick
             )

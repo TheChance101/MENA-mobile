@@ -23,14 +23,14 @@ class ImageMessageSender(
     override suspend fun send(message: Message) {
         val content = message.content
 
-        if (content !is MessageContent.Images) {
+        if (content !is MessageContent.Image) {
             throw SendMessageFailedException("Failed to send message: Message content is not images")
         }
 
-        val source = content.source
+        val source = content.data
 
         val byteArrays = if (source is ImageData.ImageByteArray) {
-            source.byteArrays
+            source.byteArray
         } else {
             throw SendMessageFailedException("Failed to send message: Corrupted images")
         }
