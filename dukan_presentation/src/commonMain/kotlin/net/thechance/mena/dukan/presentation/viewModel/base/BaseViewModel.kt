@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagationSource
-import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagationSource.Companion.PAGING_PAGE_SIZE
+import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagationSource.Companion.PAGE_SIZE
 
 abstract class BaseViewModel<S, E>(
     initialState: S,
@@ -94,8 +94,8 @@ abstract class BaseViewModel<S, E>(
     ): Flow<PagingData<R>> {
         return Pager(
             config = PagingConfig(
-                pageSize = PAGING_PAGE_SIZE,
-                initialLoadSize = PAGING_PAGE_SIZE,
+                pageSize = PAGE_SIZE,
+                initialLoadSize = PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {

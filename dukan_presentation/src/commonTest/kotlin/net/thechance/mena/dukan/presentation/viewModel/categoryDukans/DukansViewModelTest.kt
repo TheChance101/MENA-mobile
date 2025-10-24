@@ -118,63 +118,6 @@ class DukansViewModelTest {
         }
     }
 
-//    @Test
-//    fun `onFavoriteClick SHOULD toggle favorite status successfully`() = runTest {
-//        // Given
-//        assertFalse(dummyDukansUiState().first().isFavorite)
-//
-//        // When
-//        dukansViewModel.onFavoriteClick(dummyDukansUiState().first())
-//        advanceUntilIdle()
-//
-//        // Then
-//        val state = dukansViewModel.state.value
-//        val updatedDukan =
-//            state.dukans.asSnapshot().find { it.id == dummyDukansUiState().first().id }
-//        assertNotNull(updatedDukan)
-//        assertTrue(updatedDukan.isFavorite)
-//    }
-//
-//    @Test
-//    fun `onFavoriteClick SHOULD toggle favorite from false to true`() = runTest {
-//        dukansViewModel.state.test {
-//            val initialState = awaitItem()
-//
-//            val dukan = initialState.dukans.asSnapshot().firstOrNull()
-//            assertNotNull(dukan, "No dukans loaded, cannot test favorite toggle")
-//            assertFalse(dukan.isFavorite)
-//
-//            dukansViewModel.onFavoriteClick(dukan)
-//            advanceUntilIdle()
-//
-//            val updatedDukan =
-//                dukansViewModel.state.value.dukans.asSnapshot().find { it.id == dukan.id }
-//            assertNotNull(updatedDukan)
-//            assertTrue(updatedDukan.isFavorite)
-//            cancelAndIgnoreRemainingEvents()
-//        }
-//    }
-//
-//    @Test
-//    fun `onFavoriteClick SHOULD toggle favorite from true to false`() = runTest {
-//        // Given
-//        dukansViewModel.onFavoriteClick(dummyDukansUiState().first())
-//        advanceUntilIdle()
-//
-//        val favoriteDukan =
-//            dukansViewModel.state.value.dukans.asSnapshot().find { it.id == dummyDukansUiState().first().id }!!
-//        assertTrue(favoriteDukan.isFavorite)
-//
-//        // When
-//        dukansViewModel.onFavoriteClick(favoriteDukan)
-//        advanceUntilIdle()
-//
-//        // Then
-//        val updatedDukan =
-//            dukansViewModel.state.value.dukans.asSnapshot().find { it.id == dummyDukansUiState().first().id }!!
-//        assertFalse(updatedDukan.isFavorite)
-//    }
-
     @Test
     fun `init SHOULD handle empty category gracefully`() = runTest {
         // Given

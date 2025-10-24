@@ -12,19 +12,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.chip.ShelfChip
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 
 @Composable
 fun NoImageDukanShelvesChips(
-    state: DukanDetailsUiState,
+    shelfs: LazyPagingItems<DukanDetailsUiState.ShelfUiState>,
+    selectedShelfId: String?,
+    dukanColor: Long,
     onClick: (String, Int) -> Unit,
     alpha: Float = 1f
 ) {
 
-    val shelfs = state.shelves.collectAsLazyPagingItems()
     if (alpha == 0f) {
         return
     }
@@ -46,9 +47,9 @@ fun NoImageDukanShelvesChips(
                 val shelf = shelfs[it] ?: return@items
                 ShelfChip(
                     text = shelf.name,
-                    isSelected = (shelf.id == state.shelfIdSelected),
+                    isSelected = (shelf.id == selectedShelfId),
                     onClick = { onClick(shelf.id, it) },
-                    selectedBackgroundColor = Color(state.dukanInfo.color)
+                    selectedBackgroundColor = Color(dukanColor)
                 )
             }
         }

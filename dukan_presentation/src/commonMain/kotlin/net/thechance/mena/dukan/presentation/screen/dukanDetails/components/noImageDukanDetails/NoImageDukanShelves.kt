@@ -66,14 +66,16 @@ fun NoImageDukanShelves(
         }
         stickyHeader(key = "ShelvesChips") {
             NoImageDukanShelvesChips(
-                state = state,
+                shelfs = shelves,
                 onClick = { shelfId, index ->
                     listener.onShelfClicked(shelfId)
                     coroutineScope.launch {
                         lazyColumnListState.animateScrollToItem(index + SHELVES_OFFSET)
                     }
                 },
-                alpha = chipsAlpha
+                alpha = chipsAlpha,
+                selectedShelfId = state.shelfIdSelected,
+                dukanColor = state.dukanInfo.color
             )
         }
 

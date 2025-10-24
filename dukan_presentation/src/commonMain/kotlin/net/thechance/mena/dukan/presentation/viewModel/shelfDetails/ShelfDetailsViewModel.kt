@@ -5,6 +5,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_COLOR
@@ -40,19 +41,21 @@ class ShelfDetailsViewModel(
 
     private fun loadProductsFromRepository() {
         tryToCollect(
-            block = {
-                createPagingSourceFlow(
-                    mapper = { it.toUiState() }
-                ) { pageNumber, pageSize ->
-                    productRepository.getProductsByShelfId(
-                        shelfId = shelfId,
-                        page = pageNumber,
-                        size = pageSize
-                    ).items
-                }
-            },
+            block = ::createPagingSource,
             onCollect = ::onProductsLoaded
         )
+    }
+
+    private fun createPagingSource(): Flow<PagingData<ShelfDetailsUiState.ProductUiState>> {
+        return createPagingSourceFlow(
+            mapper = { it.toUiState() }
+        ) { pageNumber, pageSize ->
+            productRepository.getProductsByShelfId(
+                shelfId = shelfId,
+                page = pageNumber,
+                size = pageSize
+            ).items
+        }
     }
 
     private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) =
@@ -65,11 +68,6 @@ class ShelfDetailsViewModel(
     }
 
     override fun onAddToCartClick(productId: String) {
-//        updateState {
-//            val updatedItems = productsShelf.items.map {
-//                if (it.id == productId) it.copy(inCartQuantity = 1) else it
-//            }
-//            copy(productsShelf = productsShelf.copy(items = updatedItems))
-//        }
+        // ToDO("Not yet implemented")
     }
 }

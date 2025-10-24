@@ -63,8 +63,8 @@ kotlin {
             implementation(libs.krop.extensions.filekit)
             implementation(libs.krop.core)
             implementation(libs.navigation.compose)
-            implementation("androidx.paging:paging-common:3.4.0-alpha03")
-            implementation("androidx.paging:paging-compose:3.4.0-alpha03")
+            implementation("androidx.paging:paging-common:3.2.2")
+            implementation("androidx.paging:paging-compose:3.2.2")
 
             // maps
             implementation(libs.maplibre.compose)
@@ -78,7 +78,7 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.mokkery.core)
-            implementation("androidx.paging:paging-testing:3.4.0-alpha03")
+            implementation("androidx.paging:paging-testing:3.2.2")
         }
     }
 }

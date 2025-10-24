@@ -13,9 +13,9 @@ internal class BasePagationSource<T : Any>(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
         return try {
             val page = params.key ?: 0
-            val fetchResponse = onFetchPage(page, PAGING_PAGE_SIZE)
+            val fetchResponse = onFetchPage(page, PAGE_SIZE)
             val isFirstPage = page == 0
-            val isLastPage = fetchResponse.size < PAGING_PAGE_SIZE
+            val isLastPage = fetchResponse.size < PAGE_SIZE
 
             LoadResult.Page(
                 data = fetchResponse,
@@ -29,6 +29,6 @@ internal class BasePagationSource<T : Any>(
     }
 
     companion object {
-        const val PAGING_PAGE_SIZE = 10
+        const val PAGE_SIZE = 10
     }
 }

@@ -221,21 +221,4 @@ class ShelfDetailsViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-
-//    @OptIn(ExperimentalUuidApi::class)
-//    @Test
-//    fun `onAddToCartClick SHOULD set inCartQuantity to 1 for specific product`() = runTest {
-//        // Given
-//        advanceUntilIdle()
-//        val productId =Uuid.parse("013e0bb1-6177-4430-ae08-f3a1a24f6f7d")
-//
-//
-//        // When
-//        shelfDetailsViewModel.onAddToCartClick(productId.toString())
-//        val state = shelfDetailsViewModel.state.value
-//
-//        // Then
-//        val product = state.productsShelf.asSnapshot().find { it.id == productId.toString() }
-//        assertEquals(1, product?.inCartQuantity)
-//    }
 }

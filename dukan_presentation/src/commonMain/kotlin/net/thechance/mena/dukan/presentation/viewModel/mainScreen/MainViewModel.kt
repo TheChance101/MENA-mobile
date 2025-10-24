@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_general
@@ -68,19 +69,20 @@ class MainViewModel(
 
     private fun loadBestNearestDukans() {
         tryToCollect(
-            block = {
-                createPagingSourceFlow(mapper = { it.toBestNearestUiState() }) { currentPage, pageSize ->
-                    dukanDiscoveryRepository.getBestAroundDukans(
-                        page = currentPage,
-                        size = pageSize
-                    )
-                }
-            },
+            block = ::createPagingSource,
             onCollect = ::onLoadedBestNearestDukans,
             onError = ::handleNetworkError
         )
     }
 
+    private fun createPagingSource(): Flow<PagingData<MainScreenUiState.BestNearestDukanUiState>> {
+        return createPagingSourceFlow(mapper = { it.toBestNearestUiState() }) { currentPage, pageSize ->
+            dukanDiscoveryRepository.getBestAroundDukans(
+                page = currentPage,
+                size = pageSize
+            )
+        }
+    }
     private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
         updateState {
             copy(
