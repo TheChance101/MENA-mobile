@@ -22,6 +22,7 @@ import net.thechance.mena.trends.domain.model.UploadReelStatus
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingReelState
+import net.thechance.mena.trends.presentation.shared.base.UploadReelErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.formatBytes
 import net.thechance.mena.trends.presentation.utils.TestExtensions
@@ -126,7 +127,7 @@ class UploadReelViewModelTest : TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestFailed(""))
+            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestTimeout)
         }
     }
 
@@ -198,7 +199,7 @@ class UploadReelViewModelTest : TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestFailed("Failed"))
+            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestTimeout)
         }
     }
 
@@ -329,7 +330,7 @@ class UploadReelViewModelTest : TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestFailed("Delete failed"))
+            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestTimeout)
         }
     }
 
