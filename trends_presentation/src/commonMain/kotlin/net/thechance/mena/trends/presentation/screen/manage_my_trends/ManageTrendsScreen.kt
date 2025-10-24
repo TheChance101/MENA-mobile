@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,6 +36,7 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
 import mena.trends_presentation.generated.resources.ic_arrow_left
+import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
@@ -240,14 +240,16 @@ private fun TrendItem(
             .clickable { onTrendClick(item.id) }
             .background(color = Theme.colorScheme.background.surfaceLow)
     ) {
-        if (item.thumbnailUrl.isNotEmpty()) {
+        AnimatedVisibility (visible = item.thumbnailUrl.isNotEmpty()) {
             AsyncImage(
                 model = item.thumbnailUrl,
                 contentDescription = stringResource(resource = Res.string.trend_image_desc),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
-        } else {
+        }
+
+        AnimatedVisibility(visible = item.thumbnailUrl.isEmpty()){
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),
                 contentDescription = stringResource(Res.string.play_now),
