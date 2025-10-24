@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.categoryDukans.component
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.paging.compose.LazyPagingItems
+import app.cash.paging.compose.LazyPagingItems
 import net.thechance.mena.dukan.presentation.component.shared.DukanCard
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState
