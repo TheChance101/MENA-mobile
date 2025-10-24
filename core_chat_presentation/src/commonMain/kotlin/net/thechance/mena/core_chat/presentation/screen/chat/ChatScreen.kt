@@ -19,8 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import kotlinx.coroutines.flow.SharedFlow
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
+import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
@@ -46,6 +50,9 @@ fun ChatScreen() {
     BindEffect(controller)
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val effects = viewModel.effect
+
+    EffectsHandler(effects = effects)
 
     ChatScreenContent(
         state = state,
@@ -135,7 +142,7 @@ fun ChatScreenContent(
         AnimatedVisibility(
             visible = state.isAttachmentsOverlayVisible,
             enter = slideInVertically(initialOffsetY = { it }),
-            exit= slideOutVertically(targetOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it }),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             AttachmentsBottomSheet(
@@ -150,4 +157,24 @@ fun ChatScreenContent(
         remainingItemsToLoadNextPage = 15,
         loadNextItems = interactions::onMessagesScrolled
     )
+}
+
+@Composable
+private fun EffectsHandler(
+    effects: SharedFlow<ChatScreenEffect>,
+) {
+    val snackBarHostController = LocalSnackBarHostController.current
+    val navController = LocalNavController.current
+
+    EffectHandler(effects) { effect ->
+        when (effect) {
+            is ChatScreenEffect.NavigateBack -> {
+                navController.popBackStack()
+            }
+
+            is ChatScreenEffect.ShowSnackBar -> {
+                snackBarHostController.showSnackBar(effect.snackBarData)
+            }
+        }
+    }
 }

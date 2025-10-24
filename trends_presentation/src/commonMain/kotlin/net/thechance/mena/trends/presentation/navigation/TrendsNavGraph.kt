@@ -65,7 +65,7 @@ fun TrendsNavHost() {
                 CategoryPublishScreen()
             }
 
-            composable<Route.ReelHome> {
+            composable<Route.Home> {
                 HomeScreen()
             }
         }

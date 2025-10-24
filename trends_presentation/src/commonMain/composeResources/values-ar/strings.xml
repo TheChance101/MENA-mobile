@@ -74,6 +74,7 @@
     <string name="views">مشاهدات</string>
     <string name="likes_suffix">%1$d إعجاب</string>
     <string name="views_suffix">%1$d مشاهدة</string>
+    <string name="play_now">تشغيل الآن</string>
 
     <string name="just_now">الآن</string>
     <string name="minutes_ago">منذ %1$d دقيقة</string>
@@ -86,4 +87,13 @@
     <string name="pause_icon">ايقونه توقف</string>
     <string name="avatar_image">صورة الشخص</string>
 
+    <string name="empty_trends_icon">أيقونة التريند الفارغ</string>
+    <string name="empty_trends_title">لا توجد تريندات حتى الآن</string>
+    <string name="empty_trends_description">
+    يمكنك البدء بإضافة المنتجات التي تحتوي على العلامة إلى الرف بالضغط على زر الإضافة في الأعلى.</string>
+
+    <string name="no_connection_icon">أيقونة عدم الاتصال</string>
+    <string name="no_connection_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
+    <string name="no_connection_description">تحقق من اتصالك وحاول مرة أخرى</string>
+    <string name="re_try">إعادة المحاولة</string>
 </resources>

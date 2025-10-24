@@ -2,6 +2,7 @@ package net.thechance.mena.trends.presentation.video_player
 
 import android.view.View
 import androidx.annotation.OptIn
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -162,13 +163,18 @@ actual fun VideoPlayer(
         }
 
         if (isLoading && !isPause) {
-            DotsProgressIndicator(
-                colors = listOf(
-                    Theme.colorScheme.stroke,
-                    Theme.colorScheme.shadeTertiary,
-                    Theme.colorScheme.primary.primary
+            Box(
+                Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand),
+                contentAlignment = Alignment.Center
+            ){
+                DotsProgressIndicator(
+                    colors = listOf(
+                        Theme.colorScheme.stroke,
+                        Theme.colorScheme.shadeTertiary,
+                        Theme.colorScheme.primary.primary
+                    )
                 )
-            )
+            }
         }
 
         ProgressBar(

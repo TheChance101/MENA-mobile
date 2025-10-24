@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
@@ -31,14 +33,21 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.toErrorState
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -66,54 +75,107 @@ internal fun HomeScreen(
 
     LaunchedEffect(Unit) { viewModel.getFeedReels() }
 
-    ReelScreenContent(
+    HomeScreenContent(
         state = state,
         listener = viewModel,
     )
 }
 
 @Composable
-private fun ReelScreenContent(
+private fun HomeScreenContent(
     state: HomeScreenState,
     listener: HomeInteractionListener,
 ) {
     Scaffold(
         topBar = {
-            TrendsAppBar(
-                onManageMyTrendsClick = listener::onClickManageMyTrends,
-                onEditTagsClick = listener::onClickEditTags
+            AnimatedVisibility(
+                visible = state.isLoading.not(),
+                content = {
+                    TrendsAppBar(
+                        onManageMyTrendsClick = listener::onClickManageMyTrends,
+                        onEditTagsClick = listener::onClickEditTags
+                    )
+                }
             )
         }
     ) {
+        val reels = state.reels.collectAsLazyPagingItems()
+        val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
+                !state.isLoading &&
+                reels.loadState.refresh.toErrorState() == null
+
         Box(modifier = Modifier.fillMaxSize()) {
-            val reels = state.reels.collectAsLazyPagingItems()
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16),
-                contentPadding = PaddingValues(vertical = Theme.spacing._8),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-            ) {
-                items(reels.itemSnapshotList.items) { reel ->
-                    FeedReelCard(
-                        reel = reel,
-                        onLikeClick = { listener.onClickLike(reel.id) },
-                        onReelClick = { listener.onClickReel(reel.id) }
+            AnimatedVisibility(
+                visible = state.isLoading,
+                content = { LoadingProgressBar() }
+            )
+
+            AnimatedVisibility(
+                visible = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet,
+                content = { NoConnection { listener.onClickRetry() } }
+            )
+
+            AnimatedVisibility(
+                visible = shouldShowEmptyState,
+                content = { EmptyTrends() }
+            )
+
+            AnimatedVisibility(
+                visible = reels.itemSnapshotList.isNotEmpty() && state.isLoading.not(),
+                content = {
+                    ReelsListSection(
+                        reels = reels,
+                        onClickLike = listener::onClickLike,
+                        onClickReel = listener::onClickReel
                     )
                 }
-            }
+            )
 
-            Icon(
-                painter = painterResource(Res.drawable.ic_add_real),
-                contentDescription = stringResource(Res.string.add_reel),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(Theme.radius.lg))
-                    .background(Theme.colorScheme.primary.primary)
-                    .noRippleClickable { listener.onClickAddReel() }
-                    .padding(Theme.spacing._16),
+            AnimatedVisibility(
+                modifier = Modifier.align(Alignment.BottomEnd),
+                visible = state.isLoading.not(),
+                content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun AddTrendFAB(
+    modifier: Modifier = Modifier,
+    onClickFab: () -> Unit
+) {
+    Icon(
+        painter = painterResource(Res.drawable.ic_add_real),
+        contentDescription = stringResource(Res.string.add_reel),
+        modifier = modifier
+            .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
+            .size(56.dp)
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .background(Theme.colorScheme.primary.primary)
+            .noRippleClickable { onClickFab() }
+            .padding(Theme.spacing._16),
+    )
+}
+
+@Composable
+private fun ReelsListSection(
+    reels: LazyPagingItems<ReelUiState>,
+    onClickLike: (reelId: String) -> Unit,
+    onClickReel: (reelId: String) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = Theme.spacing._16),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+    ) {
+        items(reels.itemSnapshotList.items) { reel ->
+            FeedReelCard(
+                reel = reel,
+                onLikeClick = { onClickLike(reel.id) },
+                onReelClick = { onClickReel(reel.id) }
             )
         }
     }
@@ -137,6 +199,7 @@ private fun TrendsAppBar(
                     tint = Theme.colorScheme.shadePrimary
                 )
             }
+
             AppBarOptionContainer(
                 isBadgeVisible = false,
                 onClick = onEditTagsClick
@@ -149,4 +212,24 @@ private fun TrendsAppBar(
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeScreenPreview() {
+    MenaTheme {
+        Box(modifier = Modifier.fillMaxSize()) {
+            HomeScreenContent(
+                state = HomeScreenState(),
+                listener = object : HomeInteractionListener {
+                    override fun onClickLike(reelId: String) {}
+                    override fun onClickAddReel() {}
+                    override fun onClickEditTags() {}
+                    override fun onClickManageMyTrends() {}
+                    override fun onClickReel(reelId: String) {}
+                    override fun onClickRetry() {}
+                }
+            )
+        }
+    }
 }

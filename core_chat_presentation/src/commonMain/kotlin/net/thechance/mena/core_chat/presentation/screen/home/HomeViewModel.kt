@@ -7,28 +7,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
-import net.thechance.mena.core_chat.presentation.components.SnackBarData
-import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
-import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
-import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
-import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -37,9 +34,9 @@ class HomeViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
-    effector: ChatEffector,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<HomeScreenState>(HomeScreenState(), effector, dispatcher), HomeScreenInteractionListener {
+) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
+    HomeScreenInteractionListener {
 
     private val paginator by lazy {
         Paginator(
@@ -47,7 +44,7 @@ class HomeViewModel(
             onLoadUpdated = ::changeLoadingState,
             onRequest = ::getChatsSummary,
             getNextKey = { currentPage, _ -> currentPage + 1 },
-            onError = ::onLoadChatsSummaryError,
+            onError = { onLoadChatsSummaryError() },
             onSuccess = { result, _ -> onLoadChatsSummarySuccess(result) },
             endReached = { _, result -> result.isLastPage }
         )
@@ -64,7 +61,6 @@ class HomeViewModel(
         tryToCollect(
             collect = { messageRepository.observeReadMessages() },
             onCollect = ::onCollectMarkAsReadEvent,
-            onError = { },
         )
     }
 
@@ -74,15 +70,15 @@ class HomeViewModel(
 
         val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
         updateState {
-            it.copy(chats =
-                listOf(newChatSummary) + it.chats.filter { it.id != newChatSummary.id }
+            it.copy(
+                chats = listOf(newChatSummary) + it.chats.filter { it.id != newChatSummary.id }
             )
         }
     }
 
     private fun listenToIncomingMessages() {
         tryToCollect(
-            collect = {messageRepository.observeMessagesForChatOrAll() },
+            collect = { messageRepository.observeMessagesForChatOrAll() },
             onCollect = ::onCollectMessage,
             onError = { },
         )
@@ -97,8 +93,8 @@ class HomeViewModel(
         if (chatSummary == null) {
             val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
             updateState {
-                it.copy(chats =
-                    listOf(newChatSummary) + it.chats
+                it.copy(
+                    chats = listOf(newChatSummary) + it.chats
                 )
             }
             return
@@ -154,12 +150,11 @@ class HomeViewModel(
         )
     }
 
-    private fun onLoadChatsSummaryError(throwable: Throwable?) {
+    private fun onLoadChatsSummaryError() {
         showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.something_went_wrong),
-                message = UiText.DynamicString(value = throwable?.message.toString()),
-            )
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_load_chats,
+            isError = true
         )
     }
 
@@ -173,32 +168,32 @@ class HomeViewModel(
 
     override fun onNewChatClicked() {
         tryToExecute(
-            onStart = { updateState { it.copy(isLoading = false) } },
             execute = { contactsRepository.getHasUserSyncedContactsStatus() },
-            onSuccess = { isSynced ->
-                updateState { it.copy(isSynced = isSynced, isLoading = false) }
-                if (isSynced) {
-                    navigate(ContactsRoute)
-                } else {
-                    navigate(SyncContactsRoute(forceSync = false))
-                }
-            },
-            onError = ::onGetSyncStatusError
+            onSuccess = ::onGetSyncStatusSuccess,
+            onError = { onGetSyncStatusError() }
         )
     }
 
-    private fun onGetSyncStatusError(throwable: Throwable?) {
+    private fun onGetSyncStatusSuccess(isSynced: Boolean) {
+        updateState { it.copy(isSynced = isSynced) }
+        if (isSynced) {
+            emitEffect(HomeScreenEffect.NavigateToContacts)
+        } else {
+            emitEffect(HomeScreenEffect.NavigateToSyncContacts)
+        }
+    }
+
+    private fun onGetSyncStatusError() {
         showSnackBar(
-            SnackBarData(
-                title = UiText.StringRes(Res.string.something_went_wrong),
-                message = UiText.StringRes(Res.string.could_not_sync_contacts_message),
-            )
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_sync_contacts_message,
+            isError = true
         )
     }
 
     override fun onChatClicked(chat: ChatUiState) {
-        navigate(
-            ChatDetailsRoute(
+        emitEffect(
+            HomeScreenEffect.NavigateToChat(
                 chatId = chat.id.toString(),
                 chatName = chat.name,
             )
@@ -214,7 +209,23 @@ class HomeViewModel(
     }
 
     override fun onWalletClicked() {
-        navigate(WalletRoute)
+        emitEffect(HomeScreenEffect.NavigateToWallet)
+    }
+
+    private fun showSnackBar(
+        titleStringResource: StringResource,
+        messageStringResource: StringResource,
+        isError: Boolean = false
+    ) {
+        emitEffect(
+            HomeScreenEffect.ShowSnackBar(
+                SnackBarData(
+                    title = UiText.StringRes(titleStringResource),
+                    message = UiText.StringRes(messageStringResource),
+                    isError = isError
+                )
+            )
+        )
     }
 
     companion object {

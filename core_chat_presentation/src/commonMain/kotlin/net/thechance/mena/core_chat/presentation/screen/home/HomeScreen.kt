@@ -21,11 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.SharedFlow
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.chats
 import mena.core_chat_presentation.generated.resources.ic_coin
 import mena.core_chat_presentation.generated.resources.ic_plus
 import mena.core_chat_presentation.generated.resources.mena
+import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
+import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
+import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
+import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
+import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.screen.home.components.ChatItem
 import net.thechance.mena.core_chat.presentation.screen.home.components.NoChatsHistoryView
@@ -47,6 +55,9 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel<HomeViewModel>()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val effects = viewModel.effect
+
+    EffectsHandler(effects = effects)
 
     HomeContent(
         state = state,
@@ -191,6 +202,44 @@ private fun ChatsSummaryList(
         if (state.isLoading) {
             item {
                 LoadingView(Modifier.padding(vertical = Theme.spacing._16))
+            }
+        }
+    }
+}
+
+@Composable
+private fun EffectsHandler(
+    effects: SharedFlow<HomeScreenEffect>,
+) {
+    val snackBarHostController = LocalSnackBarHostController.current
+    val navController = LocalNavController.current
+
+    EffectHandler(effects = effects) { effect ->
+        when (effect) {
+
+            is HomeScreenEffect.NavigateToChat -> {
+                navController.navigate(
+                    ChatDetailsRoute(
+                        chatId = effect.chatId,
+                        chatName = effect.chatName
+                    )
+                )
+            }
+
+            HomeScreenEffect.NavigateToSyncContacts -> {
+                navController.navigate(SyncContactsRoute(forceSync = false))
+            }
+
+            HomeScreenEffect.NavigateToContacts -> {
+                navController.navigate(ContactsRoute)
+            }
+
+            HomeScreenEffect.NavigateToWallet -> {
+                navController.navigate(WalletRoute)
+            }
+
+            is HomeScreenEffect.ShowSnackBar -> {
+                snackBarHostController.showSnackBar(effect.snackBarData)
             }
         }
     }
