@@ -73,7 +73,7 @@ private fun ShelvesContent(
     ) {
         items(
             count = shelves.itemCount,
-            key = { shelves.itemKey { it } }
+            key = shelves.itemKey { it.id }
         ) { index ->
             shelves[index]?.let { shelf ->
                 ProductsHeader(

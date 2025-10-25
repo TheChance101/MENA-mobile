@@ -46,7 +46,7 @@ fun NoImageDukanShelvesChips(
         ) {
             items(
                 count = shelfs.itemCount,
-                key = { shelfs.itemKey { it.id } }
+                key = shelfs.itemKey { it.id }
             ) { index ->
                 shelfs[index]?.let { shelf ->
                     ShelfChip(

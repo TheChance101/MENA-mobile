@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.products
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
@@ -97,7 +98,10 @@ private fun LoadedShelves(
         modifier = Modifier.fillWidthOfParent(Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        items(shelves.itemCount) { index ->
+        items(
+            shelves.itemCount,
+            key = shelves.itemKey { it.id }
+        ) { index ->
             val shelf = shelves[index] ?: return@items
             ShelfChip(
                 text = shelf.name,

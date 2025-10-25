@@ -42,7 +42,7 @@ fun ShelfProducts(
             is LoadState.NotLoading -> LazyColumn {
                 items(
                     products.itemCount,
-                    key = { products.itemKey { it.id } }
+                    key = products.itemKey { it.id }
                 ) { index ->
                     products[index]?.let { product ->
                         ProductCard(
