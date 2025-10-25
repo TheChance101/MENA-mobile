@@ -44,7 +44,7 @@ internal class UpdateCategoriesViewModel(
     override fun onClickSave() {
         tryToExecute(
             block = { saveSelectedCategories() },
-            onSuccess = { sendEffect(UpdateCategoriesScreenEffect.SaveSuccess) },
+            onSuccess = { sendEffect(UpdateCategoriesScreenEffect.NavigateToTrendsAndShowSuccess) },
             onStart = { updateState { copy(isSaveButtonLoading = true) } },
             onEnd = { updateState { copy(isSaveButtonLoading = false) } },
             onError = { errorState ->

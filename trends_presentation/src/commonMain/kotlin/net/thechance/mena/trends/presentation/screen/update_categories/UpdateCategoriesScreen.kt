@@ -67,7 +67,7 @@ internal fun UpdateCategoriesScreen(
                 )
             }
 
-            is UpdateCategoriesScreenEffect.SaveSuccess -> {
+            is UpdateCategoriesScreenEffect.NavigateToTrendsAndShowSuccess -> {
                 snackBarController.showSnackBar(
                     SnackBarData(
                         message = getString(Res.string.tags_updated_success),
