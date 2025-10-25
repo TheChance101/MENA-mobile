@@ -6,10 +6,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
@@ -40,28 +40,30 @@ fun ShelfProducts(
         when (target) {
             LoadState.Loading -> LoadingVerticalList { LoadingProductCard() }
             is LoadState.NotLoading -> LazyColumn {
-                items(products.itemCount) { index ->
-                    val product = products[index] ?: return@items
-                    ProductCard(
-                        modifier = Modifier,
-                        productName = product.name,
-                        productImageUrl = product.imageUrl,
-                        productDescription = product.description,
-                        productCardBackground = productCardBackground,
-                        productPrice = product.price,
-                        productAction = {
-                            CartProductAction(
-                                isVisible = isAddToCartVisible,
-                                style = state.dukanStyle,
-                                state = state,
-                                listener = listener,
-                                product = product
-                            )
-                        },
-                    )
+                items(
+                    products.itemCount,
+                    key = { products.itemKey { it.id } }
+                ) { index ->
+                    products[index]?.let { product ->
+                        ProductCard(
+                            productName = product.name,
+                            productImageUrl = product.imageUrl,
+                            productDescription = product.description,
+                            productCardBackground = productCardBackground,
+                            productPrice = product.price,
+                            productAction = {
+                                CartProductAction(
+                                    isVisible = isAddToCartVisible,
+                                    style = state.dukanStyle,
+                                    state = state,
+                                    listener = listener,
+                                    product = product
+                                )
+                            },
+                        )
+                    }
                 }
             }
-
             is LoadState.Error -> {}
         }
     }

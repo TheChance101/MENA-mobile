@@ -157,7 +157,6 @@ private fun MainContent(
                     BestNearestDukanSection(
                         state = state,
                         onDukanClick = listener::onNearestDukanClick,
-                        modifier = Modifier
                     )
                 }
 

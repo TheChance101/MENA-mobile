@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
 internal class BasePagationSource<T : Any>(
-    private val onError: (Throwable) -> Unit = {},
+    private val onError: (Exception) -> Unit = {},
     private val onFetchPage: suspend (pageNumber: Int, pageSize: Int) -> List<T>
 ) : PagingSource<Int, T>() {
 
@@ -22,7 +22,7 @@ internal class BasePagationSource<T : Any>(
                 prevKey = if (isFirstPage) null else page.minus(1),
                 nextKey = if (isLastPage) null else page.plus(1),
             )
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             onError(e)
             LoadResult.Error(e)
         }

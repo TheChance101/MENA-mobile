@@ -63,7 +63,6 @@ kotlin {
             implementation(libs.krop.extensions.filekit)
             implementation(libs.krop.core)
             implementation(libs.navigation.compose)
-            implementation(libs.androidx.paging.runtime)
             implementation(libs.androidx.paging.compose)
 
             // maps

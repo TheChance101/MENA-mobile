@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.chip.ShelfChip
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
@@ -43,14 +44,18 @@ fun NoImageDukanShelvesChips(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
             contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         ) {
-            items(count = shelfs.itemCount, key = { shelfs[it]?.id.orEmpty() }) {
-                val shelf = shelfs[it] ?: return@items
-                ShelfChip(
-                    text = shelf.name,
-                    isSelected = (shelf.id == selectedShelfId),
-                    onClick = { onClick(shelf.id, it) },
-                    selectedBackgroundColor = Color(dukanColor)
-                )
+            items(
+                count = shelfs.itemCount,
+                key = { shelfs.itemKey { it.id } }
+            ) { index ->
+                shelfs[index]?.let { shelf ->
+                    ShelfChip(
+                        text = shelf.name,
+                        isSelected = (shelf.id == selectedShelfId),
+                        onClick = { onClick(shelf.id, index) },
+                        selectedBackgroundColor = Color(dukanColor)
+                    )
+                }
             }
         }
     }

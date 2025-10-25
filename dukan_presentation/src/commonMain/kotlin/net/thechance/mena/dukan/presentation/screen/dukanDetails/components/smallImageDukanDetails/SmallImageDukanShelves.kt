@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
@@ -72,29 +73,30 @@ private fun ShelvesContent(
     ) {
         items(
             count = shelves.itemCount,
-            key = { shelves[it]?.id.orEmpty() }
+            key = { shelves.itemKey { it } }
         ) { index ->
-            val shelf = shelves[index] ?: return@items
-            ProductsHeader(
-                viewAllColor = Color(dukanInfo.color),
-                shelfName = shelf.name,
-                onClick = {
-                    listener.onViewAllProductsShelfClicked(
-                        shelf.id,
-                        shelf.name
+            shelves[index]?.let { shelf ->
+                ProductsHeader(
+                    viewAllColor = Color(dukanInfo.color),
+                    shelfName = shelf.name,
+                    onClick = {
+                        listener.onViewAllProductsShelfClicked(
+                            shelf.id,
+                            shelf.name
+                        )
+                    },
+                    modifier = Modifier.padding(
+                        start = Theme.spacing._16,
+                        end = Theme.spacing._16,
+                        bottom = Theme.spacing._8
                     )
-                },
-                modifier = Modifier.padding(
-                    start = Theme.spacing._16,
-                    end = Theme.spacing._16,
-                    bottom = Theme.spacing._8
                 )
-            )
-            ShelfProducts(
-                shelf = shelf,
-                listener = listener,
-                cartColor = Color(dukanInfo.color)
-            )
+                ShelfProducts(
+                    shelf = shelf,
+                    listener = listener,
+                    cartColor = Color(dukanInfo.color)
+                )
+            }
         }
     }
 }

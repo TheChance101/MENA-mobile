@@ -88,15 +88,16 @@ abstract class BaseViewModel<S, E>(
         }
 
     protected fun <T : Any, R : Any> createPagingSourceFlow(
-        onError: (Throwable) -> Unit = {},
+        onError: (Exception) -> Unit = {},
         mapper: (T) -> R,
+        enablePlaceholders: Boolean = false,
         block: suspend (pageNumber: Int, pageSize: Int) -> List<T>
     ): Flow<PagingData<R>> {
         return Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
                 initialLoadSize = PAGE_SIZE,
-                enablePlaceholders = false
+                enablePlaceholders = enablePlaceholders
             ),
             pagingSourceFactory = {
                 BasePagationSource(onError = onError, onFetchPage = block)

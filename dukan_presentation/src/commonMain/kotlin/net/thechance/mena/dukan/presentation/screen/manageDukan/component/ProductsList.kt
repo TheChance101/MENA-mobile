@@ -26,16 +26,17 @@ fun ManageDukanProductsList(
         items(
             products.itemCount
         ) { index ->
-            val product = products[index] ?: return@items
-            ProductCard(
-                modifier = Modifier.animateItem(),
-                productName = product.name,
-                productImageUrl = product.imageUrl,
-                productDescription = product.description.orEmpty(),
-                productPrice = product.price,
-                productCardBackground = Theme.colorScheme.background.surfaceLow,
-                productAction = { EditProductIcon(onClick = { onProductClick(product) }) }
-            )
+            products[index]?.let { product ->
+                ProductCard(
+                    modifier = Modifier.animateItem(),
+                    productName = product.name,
+                    productImageUrl = product.imageUrl,
+                    productDescription = product.description.orEmpty(),
+                    productPrice = product.price,
+                    productCardBackground = Theme.colorScheme.background.surfaceLow,
+                    productAction = { EditProductIcon(onClick = { onProductClick(product) }) }
+                )
+            }
         }
     }
 }
