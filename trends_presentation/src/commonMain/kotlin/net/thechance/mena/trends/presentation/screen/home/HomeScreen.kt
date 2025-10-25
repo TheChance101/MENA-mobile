@@ -138,7 +138,7 @@ private fun HomeScreenContent(
 
             AnimatedVisibility(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                visible = shouldShowEmptyState && !hasNetworkError,
+                visible = !hasNetworkError && reels.loadState.refresh !is LoadState.Loading,
                 content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
             )
         }
