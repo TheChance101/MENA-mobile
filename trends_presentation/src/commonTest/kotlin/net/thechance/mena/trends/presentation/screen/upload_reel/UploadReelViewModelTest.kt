@@ -126,7 +126,7 @@ class UploadReelViewModelTest : TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestTimeout)
+            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.FileTooLarge)
         }
     }
 
@@ -185,7 +185,7 @@ class UploadReelViewModelTest : TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestTimeout)
+            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.FileTooLarge)
         }
     }
 
@@ -312,7 +312,7 @@ class UploadReelViewModelTest : TestExtensions() {
         advanceUntilIdle()
 
         viewModel.state.test {
-            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.RequestTimeout)
+            assertThat(awaitItem().errorState).isEqualTo(UploadReelErrorState.FileTooLarge)
         }
     }
 

@@ -230,7 +230,7 @@ internal class UploadReelViewModel(
     private fun mapToUploadReelError(errorState: ErrorState): UploadReelErrorState {
         return when (errorState) {
             is UploadReelErrorState -> errorState
-            else -> UploadReelErrorState.RequestTimeout
+            else -> UploadReelErrorState.FileTooLarge
         }
     }
 
