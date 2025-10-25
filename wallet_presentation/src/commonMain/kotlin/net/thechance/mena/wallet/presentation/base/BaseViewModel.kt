@@ -47,10 +47,9 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
         inScope: CoroutineScope = viewModelScope
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-            inScope.launch {
-                onError(mapError(throwable))
-            }
+            inScope.launch { onError(mapError(throwable)) }
         }
+
         return inScope.launch(dispatcher + exceptionHandler) {
             try {
                 onStart?.invoke()
