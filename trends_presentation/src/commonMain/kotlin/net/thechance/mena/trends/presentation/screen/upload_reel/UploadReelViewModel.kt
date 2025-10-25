@@ -201,13 +201,9 @@ internal class UploadReelViewModel(
         tryToExecute(
             block = { state.value.reelId?.let { reelsRepository.deleteReelById(id = it) } },
             onSuccess = { updateState { UploadReelScreenState() } },
-            onError = { errorState -> onClickDeleteVideoError(errorState) },
+            onError = { errorState -> updateState { copy(errorState = mapToUploadReelError(errorState)) }},
             dispatcher = defaultDispatcher
         )
-    }
-
-    private fun onClickDeleteVideoError(errorState: ErrorState) {
-        updateState { copy(errorState = mapToUploadReelError(errorState)) }
     }
 
     override fun onClickRetryUpload() {
