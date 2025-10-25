@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.data.repository
 
-import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -38,16 +38,20 @@ import kotlin.uuid.Uuid
 class
 UserRepositoryImplTest {
 
-    private val client = mockk<HttpClient>()
     private val userDao = mockk<UserDao>(relaxed = true)
+
     private val testDispatcher = StandardTestDispatcher()
 
-    private var userRepositoryImpl = UserRepositoryImpl(
-        client, userDao, testDispatcher
-    )
+    private val userRepositoryImpl by lazy {
+        UserRepositoryImpl(
+            mockHttpClient(fakeProfileResponse), userDao, TestScope()
+        )
+    }
+
 
     @Before
     fun setup() {
+        userRepositoryImpl
         Dispatchers.setMain(testDispatcher)
     }
 
@@ -57,11 +61,7 @@ UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUser() should return user stored in local database`() = runTest {
-
-        val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
-
+    fun `observeUser() should return user stored in local database`() = runTest {
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
@@ -71,11 +71,7 @@ UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUser() should return null when there is no user stored`() = runTest {
-
-        val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
-
+    fun `observeUser() should return null when there is no user stored`() = runTest {
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.observeUser() } returns flowOf(null)
 
@@ -85,40 +81,36 @@ UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUser() should return user from local database when remote throws exception`() =
+    fun `observeUser() should return user from local database when remote throws exception`() =
         runTest {
 
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-            userRepositoryImpl = UserRepositoryImpl(client, userDao)
+            val newUserRepositoryImpl = UserRepositoryImpl(client, userDao, TestScope())
 
             every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-            val result = userRepositoryImpl.observeUser()
+            val result = newUserRepositoryImpl.observeUser()
 
             assertEquals(fakeProfileResponse.toDomain(), result.first())
 
         }
 
     @Test
-    fun `getUser() should not call saveUserInfo when remote throws exception`() =
+    fun `observeUser() should not call saveUserInfo when remote throws exception`() =
         runTest {
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-            userRepositoryImpl = UserRepositoryImpl(client, userDao)
+            val newUserRepositoryImpl = UserRepositoryImpl(client, userDao, TestScope())
 
             every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-            userRepositoryImpl.observeUser().first()
+            newUserRepositoryImpl.observeUser().first()
 
             coVerify(exactly = 0) { userDao.upsert(any()) }
 
         }
 
     @Test
-    fun `getUser() should return empty flow when local database is empty`() = runTest {
-
-        val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
-
+    fun `observeUser() should return empty flow when local database is empty`() = runTest {
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.observeUser() } returns emptyFlow()
 
@@ -128,11 +120,7 @@ UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUser() should return object from User`() = runTest {
-
-        val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
-
+    fun `observeUser() should return object from User`() = runTest {
         coEvery { userDao.upsert(any()) } returns Unit
         every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
@@ -147,8 +135,6 @@ UserRepositoryImplTest {
 
     @Test
     fun `updateUser() should call upsert user when try to update user`() = runTest {
-        val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
         userRepositoryImpl.updateUser(fakeUser, false, null)
         coVerify { userDao.upsert(any()) }
     }
