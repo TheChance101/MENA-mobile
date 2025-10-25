@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +28,6 @@ import mena.trends_presentation.generated.resources.upload_video
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -37,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -54,7 +53,7 @@ internal fun CategoryPublishScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is CategoryPublishEffect.NavigateBack -> navController.popBackStack()
-            is CategoryPublishEffect.NavigateToHome -> navController.navigate(Route.ReelHome) {
+            is CategoryPublishEffect.NavigateToHome -> navController.navigate(Route.Home) {
                 popUpTo(Route.MainContainer)
             }
         }
@@ -71,78 +70,93 @@ private fun CategoryPublishContent(
     state: CategoryPublishState,
     listener: CategoryPublishInteractionListener,
 ) {
-    if (state.isLoading.not()) {
+    AnimatedVisibility(visible = !state.isLoading) {
         Scaffold(
+            modifier = Modifier.padding(bottom = Theme.spacing._24),
             topBar = { CategoryPublishAppBar(listener::onClickBack) },
+            content = { CategoryPublishScreenBody(state = state, listener = listener) },
             bottomBar = {
                 PrimaryButton(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Theme.spacing._16),
                     text = stringResource(resource = Res.string.upload_video),
                     onClick = listener::onClickPublish,
                     isEnabled = state.isPublishButtonEnabled,
                     isLoading = state.isPublishButtonLoadingVisible,
                     contentPadding = PaddingValues(vertical = 13.dp)
                 )
-            },
-            modifier = Modifier.padding(bottom = Theme.spacing._24)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(
-                    text = stringResource(Res.string.add_categories_to_video),
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier
-                        .padding(
-                            bottom = Theme.spacing._4,
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            top = Theme.spacing._16
-                        )
+            }
+        )
+    }
+
+    AnimatedVisibility(visible = state.isLoading) {
+        LoadingProgressBar()
+    }
+}
+
+@Composable
+private fun CategoryPublishScreenBody(
+    listener: CategoryPublishInteractionListener,
+    state: CategoryPublishState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            text = stringResource(Res.string.add_categories_to_video),
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .padding(
+                    bottom = Theme.spacing._4,
+                    start = Theme.spacing._16,
+                    end = Theme.spacing._16,
+                    top = Theme.spacing._16
                 )
+        )
 
-                Row(
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Theme.spacing._16)
+                .padding(bottom = Theme.spacing._24),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_hint),
+                contentDescription = stringResource(Res.string.publish_hint),
+                tint = Theme.colorScheme.shadeSecondary,
+                modifier = Modifier.padding(end = Theme.spacing._2)
+            )
+
+            Text(
+                text = stringResource(Res.string.choose_categories),
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.shadeSecondary,
+                modifier = Modifier.padding(end = Theme.spacing._16)
+            )
+        }
+
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Theme.spacing._16)
+        ) {
+            state.categories.forEach { category ->
+                CategoryItem(
+                    category = category,
+                    onClick = { id -> listener.onClickCategory(id) },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._24),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_hint),
-                        contentDescription = stringResource(Res.string.publish_hint),
-                        tint  = Theme.colorScheme.shadeSecondary,
-                        modifier = Modifier.padding(end = Theme.spacing._2)
-                    )
-
-                    Text(
-                        text = stringResource(Res.string.choose_categories),
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.shadeSecondary,
-                        modifier = Modifier.padding(end = Theme.spacing._16)
-                    )
-                }
-
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                ) {
-                    state.categories.forEach { category ->
-                        CategoryItem(
-                            category = category,
-                            onClick = { id -> listener.onClickCategory(id) },
-                            modifier = Modifier
-                                .padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
-                        )
-                    }
-                }
+                        .padding(bottom = Theme.spacing._12, end = Theme.spacing._8)
+                )
             }
         }
-    } else {
+    }
+
+   AnimatedVisibility(visible = state.isLoading) {
         LoadingProgressBar()
     }
 }
@@ -164,23 +178,11 @@ private fun CategoryPublishAppBar(
     )
 }
 
-@Composable
-private fun LoadingProgressBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Theme.colorScheme.background.surface),
-        contentAlignment = Alignment.Center
-    ) {
-        DotsProgressIndicator()
-    }
-}
-
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun CategoryPublishScreenPreview() {
     MenaTheme {
-        CategoryPublishContent(
+        CategoryPublishScreenBody(
             state = CategoryPublishState(),
             listener = object : CategoryPublishInteractionListener {
                 override fun onClickBack() {}

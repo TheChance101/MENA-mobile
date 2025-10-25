@@ -60,17 +60,13 @@ class AddressesRepositoryImpl(
     override suspend fun getUserAddresses(): List<Address> {
         return safeWrapper<List<AddressResponseDto>> {
             client.getJson(ADDRESS_ENDPOINT)
-        }.map { responseDto ->
-            val address = responseDto.toEntity()
-            if (responseDto.isActive) {
-                activeAddress = address
-            }
-            address
-        }
+        }.map { it.toEntity() }
     }
 
     override suspend fun getActiveAddress(): Address? {
-        return activeAddress
+        return safeWrapper<AddressResponseDto> {
+            client.getJson(ACTIVE_ADDRESS_ENDPOINT)
+        }.toEntity()
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -118,6 +114,7 @@ class AddressesRepositoryImpl(
 
     companion object {
         const val ADDRESS_ENDPOINT = "identity/addresses"
+        const val ACTIVE_ADDRESS_ENDPOINT = "identity/addresses/active"
         const val DELETE_LOCATION_ENDPOINT = "identity/addresses"
         const val ADDRESS_ID = "id"
     }

@@ -115,6 +115,7 @@ internal class UploadReelViewModel(
                 errorState = errorState
             )
         }
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     private fun extractFrame() {
@@ -141,6 +142,7 @@ internal class UploadReelViewModel(
 
     private fun onExtractFrameError(errorState: ErrorState) {
         updateState { copy(errorState = errorState) }
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     override fun onClickNext() {
@@ -181,6 +183,7 @@ internal class UploadReelViewModel(
 
     private fun onUploadThumbnailError(errorState: ErrorState) {
         updateState { copy(errorState = errorState) }
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     override fun onClickBack() {
@@ -196,7 +199,10 @@ internal class UploadReelViewModel(
         tryToExecute(
             block = { state.value.reelId?.let { reelsRepository.deleteReelById(id = it) } },
             onSuccess = { updateState { UploadReelScreenState() } },
-            onError = { errorState -> updateState { copy(errorState = errorState) } },
+            onError = { errorState ->
+                updateState { copy(errorState = errorState) }
+                sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
+            },
             dispatcher = defaultDispatcher
         )
     }
