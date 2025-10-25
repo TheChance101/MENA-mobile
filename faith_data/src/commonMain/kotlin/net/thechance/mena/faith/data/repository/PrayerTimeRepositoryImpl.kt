@@ -7,7 +7,6 @@ import net.thechance.mena.faith.data.remote.mapper.prayertime.toDomain
 import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import kotlin.time.ExperimentalTime

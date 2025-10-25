@@ -13,6 +13,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.datetime)
             implementation(libs.koin.core)
+            implementation(projects.identityDomain)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

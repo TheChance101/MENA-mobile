@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.qiblah.compass
 
-import net.thechance.mena.faith.domain.entity.Location
+import net.thechance.mena.identity.domain.entity.Address
+import kotlin.uuid.ExperimentalUuidApi
 
 data class CompassUiState(
     val continuousAzimuth: Float = 0f,
@@ -15,7 +16,11 @@ data class LocationUi(
     val longitude: Double = 31.1760627,
 )
 
-fun LocationUi.toLocation() = Location(
+@OptIn(ExperimentalUuidApi::class)
+fun LocationUi.toLocation() = Address(
+    id = TODO(),
+    addressLine = TODO(),
+    addressType = TODO(),
     longitude = longitude,
-    latitude = latitude
-)
+    latitude = latitude,
+    )

@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.usecase.QiblahBearingCalculatorUseCase
 import net.thechance.mena.faith.presentation.utils.AzimuthProvider
 import kotlin.test.AfterTest

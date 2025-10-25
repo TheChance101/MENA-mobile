@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.exception.FaithException
 import kotlin.test.Test

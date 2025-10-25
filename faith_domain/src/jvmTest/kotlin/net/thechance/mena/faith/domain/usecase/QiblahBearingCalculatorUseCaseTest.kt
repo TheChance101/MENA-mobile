@@ -1,6 +1,5 @@
 package net.thechance.mena.faith.domain.usecase
 
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.exception.FaithException
 import kotlin.math.round
 import kotlin.test.Test

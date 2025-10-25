@@ -1,7 +1,6 @@
 package net.thechance.mena.faith.domain.repository
 
 import kotlinx.datetime.TimeZone
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
