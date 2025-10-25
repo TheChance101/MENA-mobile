@@ -220,8 +220,8 @@ internal class UploadReelViewModel(
         onError: suspend (ErrorState) -> Unit
     ) {
         when (throwable) {
-            is MaxFileSizeExceededException -> onError(UploadReelErrorState.FileTooLarge)
-            is MaxFileDurationExceededException -> onError(UploadReelErrorState.DurationTooLarge)
+           is MaxFileSizeExceededException -> UploadReelErrorState.FileTooLarge
+            is MaxFileDurationExceededException -> UploadReelErrorState.DurationTooLarge
             else -> {
                 super.mapExceptionToErrorState(throwable, onError)
             }
