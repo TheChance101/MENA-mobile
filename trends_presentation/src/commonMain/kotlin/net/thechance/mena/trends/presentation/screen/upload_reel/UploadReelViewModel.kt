@@ -120,7 +120,7 @@ internal class UploadReelViewModel(
                 errorState = mapToUploadReelError(errorState)
             )
         }
-        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
     }
 
     private fun extractFrame() {
@@ -147,7 +147,7 @@ internal class UploadReelViewModel(
 
     private fun onExtractFrameError(errorState: ErrorState) {
         updateState { copy(errorState = mapToUploadReelError(errorState)) }
-        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
     }
 
     override fun onClickNext() {
@@ -188,7 +188,7 @@ internal class UploadReelViewModel(
 
     private fun onUploadThumbnailError(errorState: ErrorState) {
         updateState { copy(errorState = mapToUploadReelError(errorState)) }
-        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
     }
 
     override fun onClickBack() {
@@ -206,7 +206,7 @@ internal class UploadReelViewModel(
             onSuccess = { updateState { UploadReelScreenState() } },
             onError = { errorState ->
                 updateState { copy(errorState = mapToUploadReelError(errorState)) }
-                sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
+                sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
             },
             dispatcher = defaultDispatcher
         )
