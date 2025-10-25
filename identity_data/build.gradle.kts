@@ -63,6 +63,7 @@ kover.reports {
 
     filters.excludes {
         packages("*.di", "*.dto", "*.utils", "*.database")
+        classes("*Wrapper*")
     }
 }
 
