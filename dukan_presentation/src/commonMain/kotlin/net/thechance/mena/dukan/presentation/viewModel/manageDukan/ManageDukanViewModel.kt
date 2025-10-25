@@ -94,9 +94,10 @@ class ManageDukanViewModel(
         if (state.value.selectedShelf != shelf) {
             updateState {
                 copy(
-                    selectedShelf = shelf,
+                    selectedShelf = shelf
                 )
             }
+            collectProducts()
         }
     }
 
