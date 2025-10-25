@@ -261,7 +261,7 @@ class ShelfRepositoryImplTest {
         // When
         val result = repository.getShelvesByDukanId("dukan123", 0, 2)
         // Then
-        assertEquals(2, result.size)
+        assertEquals(2, result.pageSize)
     }
 
     @Test
@@ -273,7 +273,7 @@ class ShelfRepositoryImplTest {
         val result = repository.getShelvesByDukanId("dukan123", 0, 10)
 
         // Then
-        assertTrue(result.isEmpty())
+        assertTrue(result.items.isEmpty())
     }
 
     @Test
