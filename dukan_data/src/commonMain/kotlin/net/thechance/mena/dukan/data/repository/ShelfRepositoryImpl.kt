@@ -11,11 +11,13 @@ import io.ktor.http.contentType
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.data.mapper.toCreateShelfRequest
+import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toShelf
 import net.thechance.mena.dukan.data.util.constants.EndPoints.SHELF_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 
 class ShelfRepositoryImpl(
     private val client: HttpClient
@@ -48,12 +50,12 @@ class ShelfRepositoryImpl(
         dukanId: String,
         pageNumber: Int,
         pageSize: Int
-    ): List<Shelf> {
+    ): PagedResult<Shelf> {
         return safeApiCall<PageResponseDto<ShelfDto>> {
             client.get("$SHELF_BASE_PATH/$dukanId") {
                 parameter("page", pageNumber)
                 parameter("size", pageSize)
             }
-        }.content.map { it.toShelf() }
+        }.toDomain(mapper = ShelfDto::toShelf)
     }
 }

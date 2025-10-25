@@ -75,7 +75,7 @@ class DukanDetailsViewModel(
                 dukanId = dukanId,
                 pageNumber = pageNumber,
                 pageSize = pageSize
-            )
+            ).items
         }
     }
 

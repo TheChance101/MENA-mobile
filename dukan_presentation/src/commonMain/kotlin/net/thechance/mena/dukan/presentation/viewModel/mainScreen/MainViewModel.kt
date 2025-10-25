@@ -55,7 +55,7 @@ class MainViewModel(
             dukanDiscoveryRepository.getEditorPicksDukans(
                 page = currentPage,
                 size = pageSize
-            )
+            ).items
         }
     }
     private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
@@ -80,7 +80,7 @@ class MainViewModel(
             dukanDiscoveryRepository.getBestAroundDukans(
                 page = currentPage,
                 size = pageSize
-            )
+            ).items
         }
     }
     private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {

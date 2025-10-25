@@ -5,11 +5,13 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanResponseDto
+import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toEntity
 import net.thechance.mena.dukan.data.util.constants.EndPoints.DUKAN_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.identity.domain.service.LocationService
 
 class DukanDiscoveryRepositoryImpl(
@@ -19,19 +21,19 @@ class DukanDiscoveryRepositoryImpl(
     override suspend fun getEditorPicksDukans(
         page: Int,
         size: Int
-    ): List<Dukan> {
+    ): PagedResult<Dukan> {
         return safeApiCall<PageResponseDto<DukanResponseDto>> {
             client.get("$DUKAN_BASE_PATH/editor_picks") {
                 parameter("page", page)
                 parameter("size", size)
             }
-        }.content.map { it.toEntity() }
+        }.toDomain { it.toEntity() }
     }
 
     override suspend fun getBestAroundDukans(
         page: Int,
         size: Int
-    ): List<Dukan> {
+    ): PagedResult<Dukan> {
         val location = locationService.getActiveAddress()
         //TODO handle in backend
         val range = 30000
@@ -43,19 +45,19 @@ class DukanDiscoveryRepositoryImpl(
                 parameter("lng", location?.longitude)
                 parameter("range", range)
             }
-        }.content.map { it.toEntity() }
+        }.toDomain { it.toEntity() }
     }
 
     override suspend fun getDukansByCategory(
         categoryId: String,
         page: Int,
         size: Int
-    ): List<Dukan> {
+    ): PagedResult<Dukan> {
         return safeApiCall<PageResponseDto<DukanResponseDto>> {
             client.get("$DUKAN_BASE_PATH/categories/$categoryId") {
                 parameter("page", page)
                 parameter("size", size)
             }
-        }.content.map { it.toEntity() }
+        }.toDomain(mapper = DukanResponseDto::toEntity)
     }
 }
