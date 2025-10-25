@@ -7,7 +7,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
 import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
-import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
@@ -220,13 +219,13 @@ internal class UploadReelViewModel(
         throwable: Throwable,
         onError: suspend (ErrorState) -> Unit
     ) {
-        val errorState = when (throwable) {
-            is NoInternetException -> ErrorState.NoInternet
-            is MaxFileSizeExceededException -> UploadReelErrorState.FileTooLarge
-            is MaxFileDurationExceededException -> UploadReelErrorState.DurationTooLarge
-            else -> ErrorState.RequestFailed(throwable.message)
+        when (throwable) {
+            is MaxFileSizeExceededException -> onError(UploadReelErrorState.FileTooLarge)
+            is MaxFileDurationExceededException -> onError(UploadReelErrorState.DurationTooLarge)
+            else -> {
+                super.mapExceptionToErrorState(throwable, onError)
+            }
         }.also { errorState -> Logger.e(TAG) { errorState.toString() } }
-        onError(errorState)
     }
 
     private fun mapToUploadReelError(errorState: ErrorState): UploadReelErrorState {
