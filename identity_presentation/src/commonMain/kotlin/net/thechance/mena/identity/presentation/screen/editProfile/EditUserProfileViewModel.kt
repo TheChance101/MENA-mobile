@@ -184,6 +184,7 @@ class EditUserProfileViewModel(
             copy(
                 profileImageUrl = "",
                 profileImageBitmap = null,
+                shouldUpdateImage = true,
             )
         }
     }
