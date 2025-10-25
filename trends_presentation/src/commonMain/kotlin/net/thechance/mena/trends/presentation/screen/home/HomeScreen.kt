@@ -107,7 +107,7 @@ private fun HomeScreenContent(
 
         val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
                 reels.loadState.refresh is LoadState.NotLoading &&
-                reels.loadState.refresh !is LoadState.Error
+                reels.loadState.refresh.toErrorState() == null
 
         Box(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(
@@ -138,7 +138,7 @@ private fun HomeScreenContent(
 
             AnimatedVisibility(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                visible = state.isLoading.not(),
+                visible = reels.itemSnapshotList.isNotEmpty() && reels.loadState.refresh !is LoadState.Loading,
                 content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
             )
         }
