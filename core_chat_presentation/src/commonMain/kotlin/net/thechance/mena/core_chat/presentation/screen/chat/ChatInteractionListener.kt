@@ -35,6 +35,6 @@ interface AttachmentsInteractionListener {
 }
 
 interface FullImageViewInteractionListener {
-    fun onDownloadImageClicked(url: String)
+    fun onDownloadImageClicked(message: MessageUiState)
     fun onCloseImageViewClicked()
 }

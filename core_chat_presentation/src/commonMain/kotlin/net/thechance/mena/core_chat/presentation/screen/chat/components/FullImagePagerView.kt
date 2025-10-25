@@ -39,7 +39,6 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
 import net.thechance.mena.core_chat.domain.entity.ImageData
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
@@ -48,39 +47,30 @@ import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
-import kotlin.jvm.JvmName
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FullImagePagerView(
-    message: MessageUiState?,
+    messages: List<MessageUiState>,
     senderName: String,
     senderImageUrl: String,
     initialPage: Int,
     onCloseClick: () -> Unit,
-    onDownloadClick: (url: String) -> Unit,
+    onDownloadClick: (MessageUiState) -> Unit,
 ) {
-    if (message == null || message.content !is MessageContent.Image) return
-    val imagesSource = message.content.data
+    if (messages.isEmpty() || messages.first().content !is ImageData) return onCloseClick()
 
     val pagerState = rememberPagerState(
         initialPage = initialPage,
-        pageCount = {
-            when (imagesSource) {
-                is ImageData.ImageUrl -> {
-                    imagesSource.url.size
-                }
-
-                is ImageData.ImageByteArray -> {
-                    imagesSource.byteArray.size
-                }
-            }
-        }
+        pageCount = { messages.size }
     )
     Box(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
     ) {
-        ImagePager(state = pagerState, imagesSource = imagesSource)
+        if (messages[pagerState.currentPage].content !is ImageData) return onCloseClick()
+
+        val images = messages.map { it.content as ImageData }
+        HorizontalImagePager(state = pagerState, images = images)
         FabButton(
             painter = painterResource(Res.drawable.ic_cancel),
             shape = RoundedCornerShape(Theme.spacing._12),
@@ -94,16 +84,16 @@ fun FullImagePagerView(
                 horizontal = Theme.spacing._16
             ).statusBarsPadding(),
         )
+        val message = messages[pagerState.currentPage]
+        val isUrlImage =
+            message.content is ImageData && message.content as ImageData is ImageData.ImageUrl
 
         PagerOverlay(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
             time = message.sendTime,
-            isDownloadButtonVisible = imagesSource is ImageData.ImageUrl,
-            onDownloadClicked = {
-                if (imagesSource is ImageData.ImageUrl)
-                    onDownloadClick(imagesSource.url[pagerState.currentPage])
-            },
+            isDownloadButtonVisible = isUrlImage,
+            onDownloadClicked = { if (isUrlImage) onDownloadClick(message) },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
@@ -115,10 +105,9 @@ fun FullImagePagerView(
 }
 
 @Composable
-@JvmName("HorizontalImagePagerFromUrls")
 fun HorizontalImagePager(
     state: PagerState,
-    urls: List<String>,
+    images: List<ImageData>,
 ) {
     HorizontalPager(
         state = state,
@@ -130,42 +119,31 @@ fun HorizontalImagePager(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = urls[page],
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                onState = { state ->
-                    showLoadingIndicator = (state is AsyncImagePainter.State.Loading)
+            if (images[page] is ImageData.ImageByteArray) {
+                val byteArray = (images[page] as ImageData.ImageByteArray).byteArray
+                val imageBitmap = byteArray.toImageBitmap()
+                Image(
+                    bitmap = imageBitmap,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+                showLoadingIndicator = false
+
+            } else if (images[page] is ImageData.ImageUrl) {
+
+                AsyncImage(
+                    model = (images[page] as ImageData.ImageUrl).url,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    onState = { state ->
+                        showLoadingIndicator = (state is AsyncImagePainter.State.Loading)
+                    }
+                )
+                if (showLoadingIndicator) {
+                    CustomInfiniteCircularLoader()
                 }
-            )
-            if (showLoadingIndicator) {
-                CustomInfiniteCircularLoader()
             }
-        }
-    }
-}
-
-@Composable
-@JvmName("HorizontalImagePagerFromByteArrays")
-fun HorizontalImagePager(
-    state: PagerState,
-    byteArrays: List<ByteArray>,
-) {
-    HorizontalPager(
-        state = state,
-        modifier = Modifier.fillMaxSize(),
-    ) { page ->
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                bitmap = byteArrays[page].toImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize(),
-            )
         }
     }
 }
@@ -230,15 +208,5 @@ private fun PagerOverlay(
                 contentPadding = PaddingValues(0.dp)
             )
         }
-    }
-}
-@Composable
-private fun ImagePager(
-    state: PagerState,
-    imagesSource: ImageData
-) {
-    when (imagesSource) {
-        is ImageData.ImageUrl -> HorizontalImagePager(state, imagesSource.url)
-        is ImageData.ImageByteArray -> HorizontalImagePager(state, imagesSource.byteArray)
     }
 }

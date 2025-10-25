@@ -107,7 +107,7 @@ class ChatViewModelTest {
         assertThat(
             viewModel.state.value.chatListItems.currentUiMessages()
                 .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
+        ).isEqualTo(messages.map { it.toUi() }.reversed())
     }
 
     @Test
@@ -125,7 +125,7 @@ class ChatViewModelTest {
         assertThat(
             viewModel.state.value.chatListItems.currentUiMessages()
                 .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map{ it.toUi(chatRequesterId) }.reversed())
+        ).isEqualTo(messages.map{ it.toUi() }.reversed())
     }
 
     @Test
@@ -206,7 +206,7 @@ class ChatViewModelTest {
     @Test
     fun `onFailedMessageClicked should update the failedMessageToResend to the failedMessage when its call`() =
         runTest {
-            val failedMessage = messages.first().toUi(chatRequesterId)
+            val failedMessage = messages.first().toUi()
 
             viewModel.onFailedMessageClicked(failedMessage)
 
@@ -217,7 +217,7 @@ class ChatViewModelTest {
     fun `onFailedMessageClicked should update the isResendMessageDialogVisible to true when its call`() =
         runTest {
             advanceUntilIdle()
-            val failedMessage = messages.first().toUi(chatRequesterId)
+            val failedMessage = messages.first().toUi()
 
             viewModel.onFailedMessageClicked(failedMessage)
 
@@ -229,7 +229,7 @@ class ChatViewModelTest {
         runTest {
             everySuspend { messageRepository.deleteMessage(any()) } returns Unit
             advanceUntilIdle()
-            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi()
             viewModel.onFailedMessageClicked(msgUi)
 
             viewModel.onDeleteFailedMessageClicked()
@@ -244,7 +244,7 @@ class ChatViewModelTest {
             everySuspend { messageRepository.sendMessage(any()) } returns Unit
             advanceUntilIdle()
             val failedMessage =
-                messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+                messages.first().copy(status = MessageStatus.FAILED).toUi()
             viewModel.onFailedMessageClicked(failedMessage)
 
             viewModel.onResendMessageClicked()
@@ -258,7 +258,7 @@ class ChatViewModelTest {
     @Test
     fun `onMessageImageClicked should update state to show image pager with correct message and index`() =
         runTest {
-            val message = messages.first().toUi(chatRequesterId)
+            val message = messages.first().toUi()
             val index = 2
             advanceUntilIdle()
 

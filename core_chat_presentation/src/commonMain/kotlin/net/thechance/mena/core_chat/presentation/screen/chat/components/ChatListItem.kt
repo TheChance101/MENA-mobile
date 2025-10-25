@@ -32,28 +32,43 @@ fun ChatListItem(
                 text = item.label.asString(),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeTertiary,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = Theme.spacing._8),
-                textAlign = TextAlign.Center
             )
         }
 
-        is ChatListItem.Message -> {
+        is ChatListItem.TextMessage -> {
             val markedMessage = item.data
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = if (markedMessage.isMine) Arrangement.End else Arrangement.Start
             ) {
-                MessageLayout(
+                TextMessageLayout(
                     message = markedMessage,
                     chatAvatarUrl = chatAvatarUrl,
                     showMessageInfo = markedMessage.isVisibleMessageInfo,
                     isMarkedLastInSeries = markedMessage.isLastInSeries,
                     onMessageClick = { onMessageClick(markedMessage.id) },
-                    onMessageImageClick = onMessageImageClick,
                     onFailClick = { onFailedMessageClick(markedMessage) },
-                    modifier = Modifier
+                )
+            }
+        }
+
+        is ChatListItem.ImageMessages -> {
+            val markedMessage = item.data
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = if (markedMessage.last().isMine) Arrangement.End else Arrangement.Start
+            ) {
+                ImageMessagesLayout(
+                    messages = markedMessage,
+                    chatAvatarUrl = chatAvatarUrl,
+                    showMessageInfo = markedMessage.last().isVisibleMessageInfo,
+                    isMarkedLastInSeries = markedMessage.last().isLastInSeries,
+                    onMessageImageClick = onMessageImageClick,
+                    onFailClick = onFailedMessageClick,
                 )
             }
         }

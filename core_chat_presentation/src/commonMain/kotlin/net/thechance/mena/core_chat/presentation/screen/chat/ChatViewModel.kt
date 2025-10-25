@@ -33,8 +33,8 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
-import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -162,8 +162,8 @@ class ChatViewModel(
             return
         }
 
-        imageByteArrays.forEach { byteArray ->
-            val content = MessageContent.Image(ImageData.ImageByteArray(byteArray))
+        imageByteArrays.forEach { image ->
+            val content = MessageContent.Image(ImageData.ImageByteArray(image))
             sendImageMessage(chatId, senderId, content)
         }
     }
@@ -299,14 +299,11 @@ class ChatViewModel(
     private fun onCollectPendingMessages(messages: List<Message>?) {
         pendingMessagesCache = messages ?: emptyList()
 
-        val senderId = state.value.chatRequesterId
-            ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
-
         if (!hasResentPendingMessages) {
             hasResentPendingMessages = true
             pendingMessagesCache
                 .filter { it.status == MessageStatus.LOADING }
-                .forEach { sendMessage(it.toUi(senderId)) }
+                .forEach { sendMessage(it.toUi()) }
         }
         rebuildUiMessages()
     }
@@ -356,11 +353,8 @@ class ChatViewModel(
     }
 
     private fun rebuildUiMessages() {
-        val senderId = state.value.chatRequesterId
-            ?: return showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
-
         val messageList = (messagesHistoryCache + pendingMessagesCache + newMessages)
-            .map { it.toUi(senderId) }
+            .map { it.toUi() }
 
         _uiMessages.value = messageList
         updateChatListItems(uiMessages.value)
@@ -387,7 +381,11 @@ class ChatViewModel(
         }
     }
 
-    override fun onDownloadImageClicked(url: String) {
+    override fun onDownloadImageClicked(message: MessageUiState) {
+
+        if (message.content !is ImageData || message.content as ImageData !is ImageData.ImageUrl) return
+
+        val url = (message.content as ImageData.ImageUrl).url
         tryToExecute(
             execute = { imageDownloaderService.downloadImageToGallery(url) },
             onSuccess = ::onDownloadImageSuccess,
