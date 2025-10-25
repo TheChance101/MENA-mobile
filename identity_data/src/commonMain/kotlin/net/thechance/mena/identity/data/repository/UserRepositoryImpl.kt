@@ -1,10 +1,7 @@
 package net.thechance.mena.identity.data.repository
 
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -27,21 +24,17 @@ import kotlin.uuid.ExperimentalUuidApi
 class UserRepositoryImpl(
     private val client: HttpClient,
     private val userDao: UserDao,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val scope: CoroutineScope
 ) : UserRepository {
     override suspend fun observeUser(): Flow<User?> {
-        CoroutineScope(dispatcher).launch {
-            try {
+        scope.launch {
+            runCatching {
                 val user: ProfileResponseDto = client.getJson(path = PROFILE)
                 userDao.upsert(user.toEntity())
-            } catch (_: Exception) {
             }
         }
 
-        return userDao.observeUser()
-            .map { userEntity ->
-                userEntity?.toDomain()
-            }
+        return userDao.observeUser().map { userEntity -> userEntity?.toDomain() }
     }
 
     @OptIn(ExperimentalUuidApi::class)

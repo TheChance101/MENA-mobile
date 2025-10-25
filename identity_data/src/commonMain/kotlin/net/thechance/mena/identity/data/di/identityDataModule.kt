@@ -4,6 +4,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.russhwolf.settings.Settings
 import io.ktor.client.engine.cio.CIO
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.data.dataSource.local.database.IdentityDatabase
@@ -34,7 +35,11 @@ val identityDataModule = module {
     singleOf(::Settings)
 
     single<UserRepository> {
-        UserRepositoryImpl(client = get(named(IDENTITY_CLIENT)), userDao = get())
+        UserRepositoryImpl(
+            client = get(named(IDENTITY_CLIENT)),
+            userDao = get(),
+            scope = CoroutineScope(Dispatchers.IO)
+        )
     }
 
     single<AuthenticationRepository> {
@@ -46,7 +51,12 @@ val identityDataModule = module {
     }
 
     singleOf(::MobileGeocoderWrapper) bind GeocoderWrapper::class
-    single<AddressesRepository> { AddressesRepositoryImpl(client = get(named(IDENTITY_CLIENT)), get()) }
+    single<AddressesRepository> {
+        AddressesRepositoryImpl(
+            client = get(named(IDENTITY_CLIENT)),
+            get()
+        )
+    }
 
     singleOf(::AuthorizationService)
     single(named(IDENTITY_CLIENT)) {
