@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -50,7 +51,13 @@ class DukansViewModelTest {
                 page = any(),
                 size = any()
             )
-        } returns dummyDukanPreviews
+        } returns PagedResult(
+            items = dummyDukanPreviews,
+            currentPage = 1,
+            totalPages = 1,
+            totalItems = dummyDukanPreviews.size.toLong(),
+            pageSize = 10
+        )
 
         dukansViewModel = CategoryDukansViewModel(
             dukanDiscoveryRepository = dukanDiscoveryRepository,

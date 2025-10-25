@@ -55,7 +55,13 @@ class DukanDetailsViewModelTest {
         everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
         everySuspend {
             shelfRepository.getShelvesByDukanId(any(), any(), any())
-        } returns dummyShelves()
+        } returns PagedResult(
+            items = dummyShelves(),
+            currentPage = 1,
+            totalItems = 3L,
+            totalPages = 1,
+            pageSize = 1
+        )
 
         everySuspend {
             productRepository.getProductsByShelfId(any(), any(), any())
@@ -63,6 +69,8 @@ class DukanDetailsViewModelTest {
             items = emptyList(),
             currentPage = 1,
             totalItems = 0L,
+            pageSize = 10,
+            totalPages = 1
         )
 
         dukanDetailsViewModel = createViewModel()
@@ -85,6 +93,8 @@ class DukanDetailsViewModelTest {
             items = fakeProducts(),
             currentPage = 1,
             totalItems = 1L,
+            pageSize = 10,
+            totalPages = 1,
         )
 
         val viewModel = createViewModel()
@@ -127,7 +137,13 @@ class DukanDetailsViewModelTest {
         // Given
         everySuspend {
             shelfRepository.getShelvesByDukanId(any(), any(), any())
-        } returns emptyList()
+        } returns PagedResult(
+            items = emptyList(),
+            currentPage = 1,
+            totalItems = 0L,
+            totalPages = 1,
+            pageSize = 10
+        )
 
         // When
         val viewModel = createViewModel()
@@ -291,6 +307,8 @@ class DukanDetailsViewModelTest {
             items = fakeProducts(),
             currentPage = 1,
             totalItems = 1L,
+            pageSize = 10,
+            totalPages = 1
         )
     }
 }

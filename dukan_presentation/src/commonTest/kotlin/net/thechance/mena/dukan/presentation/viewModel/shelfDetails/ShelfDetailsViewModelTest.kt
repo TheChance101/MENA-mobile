@@ -91,6 +91,8 @@ class ShelfDetailsViewModelTest {
             items = dummyProducts,
             currentPage = 1,
             totalItems = 3L,
+            pageSize = 10,
+            totalPages = 1,
         )
 
         shelfDetailsViewModel = createViewModel()

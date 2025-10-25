@@ -65,7 +65,9 @@ class ManageDukanViewModelTest {
         } returns PagedResult(
             items = emptyList(),
             currentPage = 1,
-            totalItems = 0
+            totalItems = 0,
+            pageSize = 10,
+            totalPages = 1
         )
 
         manageDukanViewModel = ManageDukanViewModel(
@@ -429,7 +431,9 @@ class ManageDukanViewModelTest {
         } returns PagedResult(
             items = emptyList(),
             currentPage = 1,
-            totalItems = 0
+            totalItems = 0,
+            pageSize = 10,
+            totalPages = 1
         )
 
         manageDukanViewModel.onShelfSelected(shelf)
