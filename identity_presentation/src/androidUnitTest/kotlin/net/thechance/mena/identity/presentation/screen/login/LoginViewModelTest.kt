@@ -14,7 +14,7 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import java.lang.Exception
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
-import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.menaCountries.MenaCountry
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

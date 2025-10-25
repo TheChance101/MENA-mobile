@@ -28,7 +28,7 @@ import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
+import net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.CountryPickerBottomSheet
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
@@ -64,7 +64,7 @@ class LoginScreen : BaseScreen<
         Scaffold(
             overlays = {
                 bottomSheet(state.showCountryBottomSheet) { showBottomSheet ->
-                    CountryPicker(
+                    CountryPickerBottomSheet(
                         isVisible = showBottomSheet,
                         currentCountry = state.currentCountry,
                         onClickConfirm = listener::onConfirmCountryItem,

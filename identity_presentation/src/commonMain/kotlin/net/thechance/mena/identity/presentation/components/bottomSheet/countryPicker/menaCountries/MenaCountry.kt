@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries
+package net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.menaCountries
 
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ae_flag

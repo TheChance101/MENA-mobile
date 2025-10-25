@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.countryPicker
+package net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,13 +31,13 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.components.CountrySelectableRowItem
+import net.thechance.mena.identity.presentation.components.bottomSheet.countryPicker.menaCountries.MenaCountry
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ScaffoldScope.CountryPicker(
+fun ScaffoldScope.CountryPickerBottomSheet(
     isVisible: Boolean,
     currentCountry: MenaCountry,
     onDismiss: () -> Unit,
@@ -113,7 +113,7 @@ private fun CountryPickerPreview() {
         Scaffold(
             overlays = {
                 bottomSheet(true) {
-                    CountryPicker(
+                    CountryPickerBottomSheet(
                         isVisible = it,
                         onDismiss = {},
                         onClickConfirm = {},
