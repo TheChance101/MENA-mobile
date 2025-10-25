@@ -44,10 +44,13 @@ internal class UpdateCategoriesViewModel(
     override fun onClickSave() {
         tryToExecute(
             block = { saveSelectedCategories() },
-            onSuccess = { sendEffect(UpdateCategoriesScreenEffect.NavigateToTrends) },
+            onSuccess = { sendEffect(UpdateCategoriesScreenEffect.NavigateToTrendsAndShowSuccess) },
             onStart = { updateState { copy(isSaveButtonLoading = true) } },
             onEnd = { updateState { copy(isSaveButtonLoading = false) } },
-            onError = { errorState -> updateState { copy(errorState = errorState) } },
+            onError = { errorState ->
+                updateState { copy(errorState = errorState) }
+                sendEffect(UpdateCategoriesScreenEffect.SaveFailure)
+            },
             dispatcher = defaultDispatcher
         )
     }
@@ -69,5 +72,10 @@ internal class UpdateCategoriesViewModel(
                 categories = categories.toUserCategoryUiState()
             )
         }
+    }
+
+    override fun onClickRetry() {
+        updateState{ copy(errorState = null) }
+        getCategories()
     }
 }

@@ -3,12 +3,14 @@ package net.thechance.mena.trends.presentation.screen.update_categories
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.utils.TestExtensions
@@ -115,7 +117,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
 
             viewModel.effect.test {
                 val effect = awaitItem()
-                assertTrue(effect is UpdateCategoriesScreenEffect.NavigateToTrends)
+                assertTrue(effect is UpdateCategoriesScreenEffect.NavigateToTrendsAndShowSuccess)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -136,4 +138,17 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `onRetryClick should reset error and call getCategories`() = runTest {
+        viewModel.onClickRetry()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.errorState).isNull()
+            verifySuspend { viewModel.getCategories() }
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }
