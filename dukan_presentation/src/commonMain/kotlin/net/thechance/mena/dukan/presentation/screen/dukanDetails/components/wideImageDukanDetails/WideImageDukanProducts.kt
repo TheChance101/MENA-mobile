@@ -24,7 +24,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
@@ -108,7 +107,6 @@ fun LazyGridScope.wideImageProductsGrid(
 ) {
     items(
         count = productsShelf.itemCount,
-        key = { productsShelf.itemKey { it.id } }
     ) { index ->
         productsShelf[index]?.let { product ->
             ProductCard(

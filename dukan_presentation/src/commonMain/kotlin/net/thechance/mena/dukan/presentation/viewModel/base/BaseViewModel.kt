@@ -51,8 +51,12 @@ abstract class BaseViewModel<S, E>(
         onStart()
         val handler = createExceptionHandler(onError)
         viewModelScope.launch(dispatcher + handler) {
-            val result = block()
-            onSuccess(result)
+            try {
+                val result = block()
+                onSuccess(result)
+            } catch (e: Exception) {
+                onError(e)
+            }
         }
     }
 
@@ -74,11 +78,15 @@ abstract class BaseViewModel<S, E>(
         onStart()
         val handler = createExceptionHandler(onError)
         viewModelScope.launch(dispatcher + handler) {
-            block()
-                .catch { onError(it) }
-                .collectLatest { result ->
-                    onCollect(result)
-                }
+            try {
+                block()
+                    .catch { onError(it) }
+                    .collectLatest { result ->
+                        onCollect(result)
+                    }
+            } catch (e: Exception) {
+                onError(e)
+            }
         }
     }
 
