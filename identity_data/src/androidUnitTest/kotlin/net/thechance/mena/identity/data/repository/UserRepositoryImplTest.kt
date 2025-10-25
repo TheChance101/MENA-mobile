@@ -63,9 +63,9 @@ UserRepositoryImplTest {
         userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
-        every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
+        every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertEquals(result.first(), fakeProfileResponse.toDomain())
     }
@@ -77,9 +77,9 @@ UserRepositoryImplTest {
         userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
-        every { userDao.getUser() } returns flowOf(null)
+        every { userDao.observeUser() } returns flowOf(null)
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertEquals(result.first(), null)
     }
@@ -91,9 +91,9 @@ UserRepositoryImplTest {
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
             userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
-            every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
+            every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-            val result = userRepositoryImpl.getUser()
+            val result = userRepositoryImpl.observeUser()
 
             assertEquals(fakeProfileResponse.toDomain(), result.first())
 
@@ -105,9 +105,9 @@ UserRepositoryImplTest {
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
             userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
-            every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
+            every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-            userRepositoryImpl.getUser().first()
+            userRepositoryImpl.observeUser().first()
 
             coVerify(exactly = 0) { userDao.upsert(any()) }
 
@@ -120,9 +120,9 @@ UserRepositoryImplTest {
         userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
-        every { userDao.getUser() } returns emptyFlow()
+        every { userDao.observeUser() } returns emptyFlow()
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertTrue(result.toList().isEmpty())
     }
@@ -134,9 +134,9 @@ UserRepositoryImplTest {
         userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
         coEvery { userDao.upsert(any()) } returns Unit
-        every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
+        every { userDao.observeUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
-        val result = userRepositoryImpl.getUser()
+        val result = userRepositoryImpl.observeUser()
 
         assertEquals(fakeProfileResponse.firstName, result.first()?.firstName)
         assertEquals(fakeProfileResponse.username, result.first()?.username)

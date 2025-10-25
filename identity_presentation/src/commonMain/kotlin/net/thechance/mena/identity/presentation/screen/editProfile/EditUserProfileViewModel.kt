@@ -37,7 +37,7 @@ class EditUserProfileViewModel(
 
     private fun getUserInfo() {
         tryToCollect(
-            function = { userRepository.getUser() },
+            function = { userRepository.observeUser() },
             onNewValue = ::updateUserInfo,
             onError = ::onErrorOccurred,
             dispatcher = dispatcher

@@ -12,5 +12,5 @@ interface UserDao {
     suspend fun upsert(item: UserEntity)
 
     @Query("SELECT * FROM User")
-    fun getUser(): Flow<UserEntity?>
+    fun observeUser(): Flow<UserEntity?>
 }

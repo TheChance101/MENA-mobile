@@ -11,8 +11,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
-import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error_unknown
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.UnknownException
@@ -39,7 +37,7 @@ class ProfileViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        coEvery { userRepository.getUser() } returns flowOf(fakeUser)
+        coEvery { userRepository.observeUser() } returns flowOf(fakeUser)
         viewModel = ProfileScreenViewModel(
             userRepository,
             "",
@@ -67,7 +65,7 @@ class ProfileViewModelTest {
     @Test
     fun `should update state with error when repository throws`() = runTest {
 
-        coEvery { userRepository.getUser() } throws UnknownException()
+        coEvery { userRepository.observeUser() } throws UnknownException()
 
         viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
