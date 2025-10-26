@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.data.repository
 
-import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -8,7 +7,6 @@ import net.thechance.mena.identity.data.dataSource.local.database.ImageCacheMana
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 
 class CachedImageRepositoryImplTest {
