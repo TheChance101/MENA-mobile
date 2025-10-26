@@ -100,19 +100,6 @@ internal class UserReelViewModel(
         } else {
             addReelLike(reelId)
         }
-//        tryToExecute(
-//            onStart = { updateLikesOnUi(reelId) },
-//            block = { reelsRepository.addReelLike(reelId) },
-//            onError = { error ->
-//                onLikeClickFailed(reelId)
-//                updateState { copy(error = error) }
-//            },
-//            dispatcher = defaultDispatcher,
-//            scope = viewModelScope,
-//            onSuccess = { updatedReel ->
-//                updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() }
-//            }
-//        )
     }
 
     private fun onLikeClickFailed(reelId: String) {
