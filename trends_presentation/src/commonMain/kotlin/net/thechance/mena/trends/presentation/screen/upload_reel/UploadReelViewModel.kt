@@ -81,6 +81,7 @@ internal class UploadReelViewModel(
 
     private fun onValidationError(errorState: ErrorState) {
         updateState { copy(errorState = errorState) }
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     private fun uploadTrend() {
