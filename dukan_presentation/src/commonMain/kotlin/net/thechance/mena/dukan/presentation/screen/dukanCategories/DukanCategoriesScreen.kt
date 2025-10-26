@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanCategories
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.component.shared.CategoryCard
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -81,10 +83,15 @@ private fun DukanCategoriesContent(
         topBar = { CategoriesTopAppBar(onBackClick = interactionListener::onBackClicked) },
         snakeBar = { DukanCategoriesSnackBar(state, interactionListener::onDismissSnackBar) }
     ) {
-        CategoriesList(
-            categories = state.categories,
-            onCategoryClick = interactionListener::onCategoryClicked
-        )
+        AnimatedContent(state.isLoading) { isLoading ->
+            when {
+                isLoading -> LoadingDots(modifier = Modifier.fillMaxSize())
+                else -> CategoriesList(
+                    categories = state.categories,
+                    onCategoryClick = interactionListener::onCategoryClicked
+                )
+            }
+        }
     }
 }
 

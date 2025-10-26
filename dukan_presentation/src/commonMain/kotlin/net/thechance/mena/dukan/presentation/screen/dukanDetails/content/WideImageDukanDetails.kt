@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -14,6 +15,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.DukanHeader
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanShelves
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductCardSkeletonGrid
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductsGrid
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
@@ -45,7 +47,7 @@ fun WideImageDukanDetails(
                 top = Theme.spacing._4,
                 bottom = Theme.spacing._16
             ),
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._16),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -57,7 +59,11 @@ fun WideImageDukanDetails(
                     listener = listener,
                 )
             }
-            wideImageProductsGrid(productShelf)
+            if (productShelf.loadState.refresh == LoadState.Loading) {
+                wideImageProductCardSkeletonGrid(productCount = 6)
+            } else {
+                wideImageProductsGrid(productShelf)
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ import org.koin.core.annotation.Provided
 internal class UserReelViewModel(
     @Provided private val userReelArgs: UserReelArgs,
     @Provided private val reelsRepository: ReelsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
@@ -36,7 +36,7 @@ internal class UserReelViewModel(
             },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -61,7 +61,7 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.addReelView(reelId) },
             onError = { error -> updateState { copy(error = error) } },
-            dispatcher = ioDispatcher,
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -73,7 +73,7 @@ internal class UserReelViewModel(
                 onLikeClickFailed(reelId)
                 updateState { copy(error = error) }
             },
-            dispatcher = ioDispatcher,
+            dispatcher = defaultDispatcher,
             scope = viewModelScope,
             onSuccess = { updatedReel ->
                 updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() }
@@ -126,7 +126,7 @@ internal class UserReelViewModel(
             block = { reelsRepository.deleteReelById(userReelArgs.realId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 

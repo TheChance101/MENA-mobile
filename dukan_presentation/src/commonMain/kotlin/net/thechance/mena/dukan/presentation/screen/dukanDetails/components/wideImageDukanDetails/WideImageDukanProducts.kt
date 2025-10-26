@@ -120,7 +120,7 @@ fun LazyGridScope.wideImageProductsGrid(
 }
 
 
-private fun LazyGridScope.wideImageProductCardSkeletonGrid(productCount: Int) {
+fun LazyGridScope.wideImageProductCardSkeletonGrid(productCount: Int) {
     items(count = productCount) {
         ProductCardSkeleton()
     }

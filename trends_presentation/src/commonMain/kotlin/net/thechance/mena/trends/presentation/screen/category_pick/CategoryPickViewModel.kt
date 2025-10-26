@@ -73,4 +73,5 @@ internal class CategoryPickViewModel(
     private fun startSaving() = updateState { copy(isNextButtonLoading = true) }
 
     private fun endSaving() = updateState { copy(isNextButtonLoading = false) }
+
 }
