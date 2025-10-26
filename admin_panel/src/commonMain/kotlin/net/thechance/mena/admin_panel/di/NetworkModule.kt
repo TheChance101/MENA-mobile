@@ -4,7 +4,7 @@ import net.thechance.mena.admin_panel.AppEnvironment
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-const val BASE_URL = "baseUrl"
+private const val BASE_URL = "baseUrl"
 
 val networkModule = module {
     single(named(BASE_URL)) { AppEnvironment.baseUrl }
