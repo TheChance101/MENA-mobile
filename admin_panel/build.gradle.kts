@@ -1,0 +1,143 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type
+import java.util.Properties
+
+plugins {
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.kover)
+    alias(libs.plugins.buildkonfig)
+}
+
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
+kotlin {
+    jvm("desktop")
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+
+                implementation(libs.androidx.lifecycle.runtimeCompose)
+                implementation(libs.androidx.lifecycle.viewmodelCompose)
+                implementation(libs.androidx.collection)
+
+                implementation(projects.designSystem)
+
+                // datetime
+                implementation(libs.kotlinx.datetime)
+
+                // Koin
+                implementation(libs.bundles.koin)
+                api(libs.koin.annotations)
+
+                // Serialization
+                implementation(libs.kotlinx.serialization.json)
+
+                // Ktor
+                implementation(libs.bundles.ktor)
+
+                // Coil
+                implementation(libs.coil.compose)
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.kotlin.test)
+                implementation(libs.turbine)
+                implementation(libs.ktor.client.mock)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.mokkery.core)
+            }
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.cio)
+                implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.coroutines.swing)
+            }
+        }
+    }
+
+}
+
+buildkonfig {
+    packageName = "net.thechance.mena.admin_panel"
+
+    defaultConfigs {
+        val baseUrl = localProperties.getProperty("BASE_URL", "http://localhost:8080/")
+        buildConfigField(
+            Type.STRING,
+            "BASE_URL",
+            baseUrl
+        )
+    }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+    add("kspDesktop", libs.koin.ksp.compiler)
+}
+
+compose.desktop {
+    application {
+        mainClass = "net.thechance.mena.admin_panel.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "net.thechance.mena.admin_panel"
+            packageVersion = "1.0.0"
+
+            windows {
+                iconFile.set(project.file("src/desktopMain/resources/mena_logo.ico"))
+            }
+            macOS {
+                iconFile.set(project.file("src/desktopMain/resources/mena_logo.icns"))
+            }
+            linux {
+                iconFile.set(project.file("src/desktopMain/resources/mena_logo.png"))
+            }
+
+        }
+    }
+}
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "net.thechance.mena.admin_panel.resources"
+    generateResClass = always
+}
+
+
+kover.reports {
+    verify {
+        rule {
+            minBound(80)
+        }
+    }
+    filters {
+        includes {
+            classes("net.thechance.mena.admin_panel.presentation..*.*ViewModel")
+            classes("net.thechance.mena.admin_panel.data.repository.*")
+        }
+        excludes {
+            classes("**org.koin.ksp.generated**")
+        }
+    }
+}
