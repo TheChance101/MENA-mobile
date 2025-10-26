@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 
 data class DukanDetailsUiState(
