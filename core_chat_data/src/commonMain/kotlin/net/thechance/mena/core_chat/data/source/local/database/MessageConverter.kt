@@ -15,14 +15,13 @@ class MessageConverter {
     }
 
     @TypeConverter
-    fun fromByteArrayList(value: List<ByteArray>?): String? {
-        return value?.map { Base64.encode(it) }
-            ?.let { Json.encodeToString(it) }
+    fun fromByteArray(value: ByteArray?): String? {
+        return value?.let { Base64.encode(it) }
     }
 
     @TypeConverter
-    fun toByteArrayList(value: String?): List<ByteArray>? {
-        return value?.let { Json.decodeFromString<List<String>>(it) }
-            ?.map { Base64.decode(it) }
+    fun toByteArray(value: String?): ByteArray? {
+        return value?.let { Base64.decode(it) }
     }
+
 }
