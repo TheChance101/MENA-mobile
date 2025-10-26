@@ -46,7 +46,7 @@ val identityScreensModule = module {
     factory { (imageKey: String) ->
         ImageCropperViewModel(
             imageKey = imageKey,
-            imageCachedController = get()
+            cachedImageRepository = get()
         )
     }
     factoryOf(::LoginScreenViewModel)
