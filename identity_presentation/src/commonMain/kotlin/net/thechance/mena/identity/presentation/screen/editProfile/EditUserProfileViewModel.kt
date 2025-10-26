@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.editProfile
 
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.decodeToImageBitmap
+import coil3.BitmapImage
 import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -19,14 +21,14 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.PermissionManager
-import net.thechance.mena.identity.presentation.utils.ImageCacheManager
+import net.thechance.mena.identity.domain.repository.CachedImageRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class EditUserProfileViewModel(
     private val userRepository: UserRepository,
     private val permissionManager: PermissionManager,
-    private val imageCacheController: ImageCacheManager,
+    private val cachedImageRepository: CachedImageRepository,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
@@ -191,20 +193,35 @@ class EditUserProfileViewModel(
     }
 
     override fun onRequireCropImage(imageBitmap: ImageBitmap) {
-        imageCacheController.cacheImage(PROFILE_IMAGE,imageBitmap)
+        cacheRequiredCropImage(imageBitmap)
+    }
+    private fun cacheRequiredCropImage(image: ImageBitmap){
+        tryToExecute(
+            function = {
+                cachedImageRepository.cacheImage(PROFILE_IMAGE, image.encodeToByteArray())
+            },
+            onError = ::onErrorOccurred,
+            onSuccess = ::handleCacheImageSuccess,
+            dispatcher = dispatcher
+        )
+    }
+    private fun handleCacheImageSuccess(){
         sendNewEffect(
             EditUserProfileUIEffect.NavigateToCropScreen(
                 imageKey = PROFILE_IMAGE,
                 onResult = { croppedImageKey ->
                     updateState {
                         copy(
-                            profileImageBitmap = imageCacheController.getCachedImage(croppedImageKey),
+                            profileImageBitmap = cachedImageRepository.getCachedImage(
+                                croppedImageKey
+                            )?.decodeToImageBitmap(),
                             shouldUpdateImage = true
                         )
                     }
                 }
             )
         )
+
     }
 
     override fun onTakeImageFromCamera() {
@@ -214,6 +231,9 @@ class EditUserProfileViewModel(
             dispatcher = dispatcher
         )
     }
+
+
+
 
     private suspend fun requestCameraPermission() {
         permissionManager.requestCameraPermission(
@@ -229,7 +249,8 @@ class EditUserProfileViewModel(
     override fun onOpenCamera() {
         updateState { copy(showCamera = false) }
     }
-    companion object{
+
+    companion object {
         const val PROFILE_IMAGE = "profile_image"
     }
 }
