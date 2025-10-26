@@ -3,13 +3,14 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 
 data class DukanDetailsUiState(
     val dukanInfo: DukanInfo = DukanInfo(),
     val isDukanInfoLoading: Boolean = true,
-    val bestSellingProducts: Flow<PagingData<ProductUiState>> = emptyFlow(),
-    val shelves: Flow<PagingData<ShelfUiState>> = emptyFlow(),
-    val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
+    val bestSellingProducts: Flow<PagingData<ProductUiState>> = flowOf(),
+    val shelves: Flow<PagingData<ShelfUiState>> = flowOf(),
+    val productsShelf: Flow<PagingData<ProductUiState>> = flowOf(),
     val shelfIdSelected: String? = null
 ) {
     data class DukanInfo(

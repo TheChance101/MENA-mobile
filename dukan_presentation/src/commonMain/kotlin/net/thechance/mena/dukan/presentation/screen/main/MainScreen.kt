@@ -106,7 +106,7 @@ private fun MainContent(
     ) { isConnected ->
         if (!isConnected) {
             NoInternetContent(
-                onRetry = listener::onRetryButtonClicked,
+                onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
             )
             return@AnimatedContent
@@ -138,8 +138,8 @@ private fun MainContent(
 
                     CategorySection(
                         categories = state.categories,
-                        onCategoryClick = listener::onCategorySelectedClick,
-                        onViewMoreClick = listener::onViewMoreButtonClick,
+                        onCategoryClick = listener::onCategorySelectedClicked,
+                        onViewMoreClick = listener::onViewMoreClicked,
                     )
                 }
 
@@ -156,7 +156,7 @@ private fun MainContent(
 
                     BestNearestDukanSection(
                         state = state,
-                        onDukanClick = listener::onNearestDukanClick,
+                        onDukanClick = listener::onNearestDukanClicked,
                     )
                 }
 
@@ -174,7 +174,7 @@ private fun MainContent(
                 }
                 editorPickDukanItems(
                     dukans = dukans,
-                    onDukanClick = listener::onEditorPickDukanClick
+                    onDukanClick = listener::onEditorPickDukanClicked
                 )
             }
         }

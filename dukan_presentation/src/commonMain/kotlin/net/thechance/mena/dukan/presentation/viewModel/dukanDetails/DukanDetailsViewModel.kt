@@ -180,7 +180,7 @@ class DukanDetailsViewModel(
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
     }
 
-    override fun onAddToCartClick(productId: String) {
+    override fun onAddToCartClicked(productId: String) {
         tryToExecute(
             block = {
                 state.value.shelves.collectLatest {

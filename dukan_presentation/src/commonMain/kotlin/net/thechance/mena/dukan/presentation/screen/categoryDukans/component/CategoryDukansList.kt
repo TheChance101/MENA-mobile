@@ -32,8 +32,8 @@ fun CategoryDukansList(
             DukanCard(
                 dukan = dukan,
                 isFavorite = dukan.isFavorite,
-                onClick = { listener.onDukanClick(dukan) },
-                onFavoriteClick = { listener.onFavoriteClick(dukan) },
+                onClick = { listener.onDukanClicked(dukan) },
+                onFavoriteClick = { listener.onFavoriteClicked(dukan) },
                 isLoading = isLoading
             )
         }

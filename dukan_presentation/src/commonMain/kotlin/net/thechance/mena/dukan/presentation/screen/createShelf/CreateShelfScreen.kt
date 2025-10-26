@@ -67,12 +67,12 @@ private fun CreateShelfContent(
     state: CreateShelfUiState,
     interactionListener: CreateShelfInteractionListener
 ) {
-    OnSystemBackPressed(interactionListener::onBackButtonClicked)
+    OnSystemBackPressed(interactionListener::onBackClicked)
     Scaffold(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.create_shelf),
-                onLeadingClick = interactionListener::onBackButtonClicked,
+                onLeadingClick = interactionListener::onBackClicked,
                 contentPadding = PaddingValues(
                     horizontal = Theme.spacing._12,
                     vertical = Theme.spacing._8
@@ -91,7 +91,7 @@ private fun CreateShelfContent(
                     .fillMaxWidth()
                     .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._16),
                 text = stringResource(Res.string.create),
-                onClick = interactionListener::onCreateButtonClicked,
+                onClick = interactionListener::onCreateClicked,
                 isEnabled = state.isCreateButtonEnabled,
                 isLoading = state.isLoading,
                 contentPadding = PaddingValues(vertical = Theme.spacing._12)

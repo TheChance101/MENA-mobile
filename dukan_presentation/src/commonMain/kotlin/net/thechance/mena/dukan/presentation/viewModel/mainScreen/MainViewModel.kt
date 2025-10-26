@@ -196,11 +196,11 @@ class MainViewModel(
         }
     }
 
-    override fun onViewMoreButtonClick() {
+    override fun onViewMoreClicked() {
         emitEffect(MainScreenEffect.NavigateCategoryToScreen)
     }
 
-    override fun onRetryButtonClicked() {
+    override fun onRetryClicked() {
         fetchData()
     }
 
@@ -210,15 +210,15 @@ class MainViewModel(
         }
     }
 
-    override fun onCategorySelectedClick(categoryId: String, categoryName: String) {
+    override fun onCategorySelectedClicked(categoryId: String, categoryName: String) {
         emitEffect(MainScreenEffect.NavigateToDukansScreenByCategory(categoryId, categoryName))
     }
 
-    override fun onNearestDukanClick(dukanId: String) {
+    override fun onNearestDukanClicked(dukanId: String) {
         emitEffect(MainScreenEffect.NavigateSelectedDukan(dukanId))
     }
 
-    override fun onEditorPickDukanClick(dukanId: String) {
+    override fun onEditorPickDukanClicked(dukanId: String) {
         emitEffect(MainScreenEffect.NavigateSelectedDukan(dukanId))
     }
 

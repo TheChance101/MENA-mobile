@@ -43,7 +43,7 @@ class ManageDukanViewModel(
         loadShelves()
     }
 
-    override fun onBackButtonClicked() {
+    override fun onBackClicked() {
         emitEffect(ManageDukanUiEffect.NavigateBack)
     }
 
@@ -82,7 +82,7 @@ class ManageDukanViewModel(
         emitEffect(ManageDukanUiEffect.NavigateToAddShelf)
     }
 
-    override fun onProductClick(product: ManageDukanUiState.ProductUiState) {
+    override fun onProductClicked(product: ManageDukanUiState.ProductUiState) {
         emitEffect(ManageDukanUiEffect.NavigateToProductDetails)
     }
 

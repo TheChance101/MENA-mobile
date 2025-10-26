@@ -155,7 +155,7 @@ private fun ProductItem(
                 ProductActionIconSmallImageDukan(
                     inCartQuantity = product.inCartQuantity,
                     cartColor = cartColor,
-                    onAddClick = { listener.onAddToCartClick(product.id) },
+                    onAddClick = { listener.onAddToCartClicked(product.id) },
                     onPlusClick = {},
                     onMinusClick = {}
                 )

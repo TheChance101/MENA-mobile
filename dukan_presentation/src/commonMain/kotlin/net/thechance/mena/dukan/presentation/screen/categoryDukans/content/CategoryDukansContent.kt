@@ -75,7 +75,7 @@ private fun CategoryDukansAppBar(
 ) {
     AppBar(
         title = state.categoryTitle,
-        onLeadingClick = listener::onBackClick,
+        onLeadingClick = listener::onBackClicked,
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),

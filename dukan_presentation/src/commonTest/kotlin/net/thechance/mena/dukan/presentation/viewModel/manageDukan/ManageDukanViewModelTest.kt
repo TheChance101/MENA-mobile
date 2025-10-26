@@ -178,7 +178,7 @@ class ManageDukanViewModelTest {
 
     @Test
     fun `onBackButtonClicked SHOULD emit NavigateBack effect`() = runTest {
-        manageDukanViewModel.onBackButtonClicked()
+        manageDukanViewModel.onBackClicked()
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateBack, awaitItem())
@@ -228,7 +228,7 @@ class ManageDukanViewModelTest {
     fun `onProductClick SHOULD emit NavigateToProductDetails effect`() = runTest {
         val product = fakeProducts().first().toUiState()
 
-        manageDukanViewModel.onProductClick(product)
+        manageDukanViewModel.onProductClicked(product)
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateToProductDetails, awaitItem())

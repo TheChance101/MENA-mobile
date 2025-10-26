@@ -101,7 +101,7 @@ class DukansViewModelTest {
     @Test
     fun `onBackClick SHOULD emit NavigateBack effect`() = runTest {
         // When
-        dukansViewModel.onBackClick()
+        dukansViewModel.onBackClicked()
 
         // Then
         dukansViewModel.effect.test {
@@ -116,7 +116,7 @@ class DukansViewModelTest {
         val dukan = dummyDukansUiState().first()
 
         // When
-        dukansViewModel.onDukanClick(dukan)
+        dukansViewModel.onDukanClicked(dukan)
 
         // Then
         dukansViewModel.effect.test {

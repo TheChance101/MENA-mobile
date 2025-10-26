@@ -10,7 +10,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUi
 import org.maplibre.compose.camera.CameraPosition
 
 object PreviewCreateDukanInteractionListener : CreateDukanInteractionListener {
-    override fun onButtonClicked() {}
+    override fun onNextOrCreateClicked() {}
     override fun onBackClicked() {}
     override fun onColorClicked(color: ColorUiState) {}
     override fun onStyleClicked(style: CreateDukanUiState.Style) {}
@@ -21,7 +21,7 @@ object PreviewCreateDukanInteractionListener : CreateDukanInteractionListener {
     override fun onCategoryClicked(category: DukanCategoryUiState): Boolean {
         return true
     }
-    override fun onCLickNext() {}
+    override fun onNextClicked() {}
     override fun onImageCrop(image: ImageBitmap) {}
     override fun onCancelCrop() {}
     override fun onMapClicked(
