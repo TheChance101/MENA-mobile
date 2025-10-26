@@ -66,8 +66,12 @@ fun NavigationHost(
             composable<TransactionDetailsScreenRoute> { TransactionDetailsScreen() }
             composable<ExportTransactionsScreenRoute> { ExportTransactionScreen() }
             composable<StatementsHistoryScreenRoute> { StatementHistoryScreen() }
-            composable<ConfirmPaymentScreenRoute> { ConfirmPaymentScreen() }
-            composable<PaymentResultScreenRoute> { PaymentResultScreen() }
+            composable<ConfirmPaymentScreenRoute> {
+                ConfirmPaymentScreen(navigateBack = navigateBack)
+            }
+            composable<PaymentResultScreenRoute> {
+                PaymentResultScreen(navigateBack = navigateBack)
+            }
             composable<StatementDetailsScreenRoute>(
                 typeMap = mapOf(typeOf<StorageLocation>() to StorageLocationNavType)
             ) { backStackEntry ->
