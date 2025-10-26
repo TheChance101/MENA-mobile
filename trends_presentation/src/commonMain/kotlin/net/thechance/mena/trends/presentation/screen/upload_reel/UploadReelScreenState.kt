@@ -1,6 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
-import net.thechance.mena.trends.presentation.shared.base.UploadReelErrorState
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.isFailed
 import net.thechance.mena.trends.presentation.shared.util.isIdle
@@ -15,7 +15,7 @@ data class UploadReelScreenState(
     val isNextButtonEnabled: Boolean = false,
     val isNextButtonLoading: Boolean = false,
     val isThumbnailLoading: Boolean = false,
-    val errorState: UploadReelErrorState? = null
+    val errorState: ErrorState? = null
 ) {
     val isUploadVideoCardEnabled: Boolean
         get() = (uploadingState.isIdle || uploadingState.isFailed) && isThumbnailLoading.not()

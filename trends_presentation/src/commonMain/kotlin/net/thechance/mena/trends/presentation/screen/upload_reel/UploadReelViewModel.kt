@@ -80,7 +80,7 @@ internal class UploadReelViewModel(
     }
 
     private fun onValidationError(errorState: ErrorState) {
-        updateState { copy(errorState = mapToUploadReelError(errorState)) }
+        updateState { copy(errorState = errorState) }
     }
 
     private fun uploadTrend() {
@@ -116,10 +116,10 @@ internal class UploadReelViewModel(
         updateState {
             copy(
                 uploadingState = UploadReelScreenState.UploadingReelState.FAILED,
-                errorState = mapToUploadReelError(errorState)
+                errorState = errorState
             )
         }
-        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     private fun extractFrame() {
@@ -145,8 +145,8 @@ internal class UploadReelViewModel(
     }
 
     private fun onExtractFrameError(errorState: ErrorState) {
-        updateState { copy(errorState = mapToUploadReelError(errorState)) }
-        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
+        updateState { copy(errorState = errorState) }
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     override fun onClickNext() {
@@ -186,8 +186,8 @@ internal class UploadReelViewModel(
     }
 
     private fun onUploadThumbnailError(errorState: ErrorState) {
-        updateState { copy(errorState = mapToUploadReelError(errorState)) }
-        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
+        updateState { copy(errorState = errorState) }
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     override fun onClickBack() {
@@ -204,8 +204,8 @@ internal class UploadReelViewModel(
             block = { state.value.reelId?.let { reelsRepository.deleteReelById(id = it) } },
             onSuccess = { updateState { UploadReelScreenState() } },
             onError = { errorState ->
-                updateState { copy(errorState = mapToUploadReelError(errorState)) }
-                sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = mapToUploadReelError(errorState)))
+                updateState { copy(errorState = errorState) }
+                sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState =errorState))
             },
             dispatcher = defaultDispatcher
         )
@@ -220,18 +220,15 @@ internal class UploadReelViewModel(
         onError: suspend (ErrorState) -> Unit
     ) {
         when (throwable) {
-           is MaxFileSizeExceededException -> UploadReelErrorState.FileTooLarge
+            is MaxFileSizeExceededException -> UploadReelErrorState.FileTooLarge
             is MaxFileDurationExceededException -> UploadReelErrorState.DurationTooLarge
             else -> {
                 super.mapExceptionToErrorState(throwable, onError)
+                return
             }
-        }.also { errorState -> Logger.e(TAG) { errorState.toString() } }
-    }
-
-    private fun mapToUploadReelError(errorState: ErrorState): UploadReelErrorState {
-        return when (errorState) {
-            is UploadReelErrorState -> errorState
-            else -> UploadReelErrorState.FileTooLarge
+        }.let { errorState ->
+            Logger.e(TAG) { errorState.toString() }
+            onError(errorState)
         }
     }
 
