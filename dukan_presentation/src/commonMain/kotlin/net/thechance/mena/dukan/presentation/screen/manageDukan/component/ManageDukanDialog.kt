@@ -19,6 +19,8 @@ fun ScaffoldScope.DeleteShelfConfirmationDialog(
     state: DeleteDialogState,
     listener: ManageDukanInteractionListener
 ) {
+    val deleteShelfConfirmationDialog = if (state.type == DialogType.DELETE) Theme.colorScheme.error
+    else Theme.colorScheme.primary.primary
     Dialog(
         title = stringResource(state.title),
         message = stringResource(state.description),
@@ -30,6 +32,7 @@ fun ScaffoldScope.DeleteShelfConfirmationDialog(
                     .align(Alignment.End)
                     .padding(top = Theme.spacing._24, bottom = Theme.spacing._8),
                 text = stringResource(state.type.text),
+                contentColor = deleteShelfConfirmationDialog,
                 onClick = {
                     if (state.type == DialogType.DISMISS) {
                         listener.onDismissDeleteShelfConfirmationDialog()

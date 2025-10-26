@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
@@ -111,14 +110,13 @@ class ManageDukanViewModel(
         shelfId: String
     ) {
         viewModelScope.launch(defaultDispatcher) {
-            val hasProducts = state.value.products.firstOrNull()
-            val productIsNotEmpty = hasProducts != null
+            val hasProducts = state.value.totalProducts > 0
             updateState {
                 copy(
                     deleteDialog = DeleteDialogState(
-                        title = updateDialogTitle(productIsNotEmpty),
-                        description = updateDialogDescription(productIsNotEmpty),
-                        type = updateDialogType(productIsNotEmpty),
+                        title = updateDialogTitle(hasProducts),
+                        description = updateDialogDescription(hasProducts),
+                        type = updateDialogType(hasProducts),
                         shelfId = shelfId,
                     )
                 )
