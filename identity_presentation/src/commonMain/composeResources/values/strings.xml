@@ -174,7 +174,7 @@
     <string name="error_unknown">Something went wrong. Please try again later.</string>
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
-    
+
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
@@ -191,4 +191,12 @@
     <string name="error_address_not_found">Address not found</string>
     <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
     <string name="error_location_is_turned_off">"Location is turned off"</string>
+
+    <string name="title_pick_profile_picture">Pick Profile Picture</string>
+    <string name="title_complete_your_profile">Complete your profile</string>
+    <string name="desc_upload_profile_image">Upload a profile image so people can recognize you</string>
+    <string name="click_to_upload">Click to Upload</string>
+    <string name="button_upload">Upload</string>
+    <string name="button_skip_for_now">Skip for now</string>
+
 </resources>
