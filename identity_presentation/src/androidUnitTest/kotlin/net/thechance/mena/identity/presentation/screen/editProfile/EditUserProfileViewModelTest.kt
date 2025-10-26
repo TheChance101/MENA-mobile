@@ -36,17 +36,15 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     val permissionManager = mockk<PermissionManager>()
     val testDispatcher = StandardTestDispatcher()
 
-    val viewModel by lazy {
-        EditUserProfileViewModel(
+    lateinit var viewModel: EditUserProfileViewModel
+
+    override fun setUp() {
+        super.setUp()
+        viewModel = EditUserProfileViewModel(
             userRepository = userRepository,
             permissionManager = permissionManager,
             dispatcher = testDispatcher
         )
-    }
-
-    override fun setUp() {
-        super.setUp()
-        viewModel
     }
 
     @Test
