@@ -1,7 +1,6 @@
 package net.thechance.mena.core_chat.data.source.local.database
 
 import androidx.room.TypeConverter
-import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 
 class MessageConverter {

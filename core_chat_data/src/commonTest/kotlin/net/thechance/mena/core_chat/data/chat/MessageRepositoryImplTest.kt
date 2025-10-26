@@ -228,7 +228,6 @@ class MessageRepositoryImplTest {
         runTest {
             every { webSocketManager.isConnected() } returns true
             everySuspend { messageDao.insertMessage(any()) } returns Unit
-            everySuspend { messageDao.updateMessageImages(any(), any()) } returns Unit
             everySuspend { messageDao.deleteMessage(any()) } returns Unit
 
             httpClient = createHttpClient(
@@ -252,7 +251,6 @@ class MessageRepositoryImplTest {
             repository.sendMessage(message)
 
             verifySuspend { messageDao.insertMessage(any()) }
-            verifySuspend { messageDao.updateMessageImages(any(), any()) }
             verifySuspend { messageDao.deleteMessage(any()) }
         }
 

@@ -11,7 +11,7 @@ data class MessageLocalDto(
     val senderId: String,
     @ColumnInfo(name = "message_text")
     val text: String? = null,
-    @ColumnInfo(name = "images")
+    @ColumnInfo(name = "image")
     val image: ByteArray? = null,
     @ColumnInfo(name = "timestamp")
     val timestamp: Long,
@@ -21,4 +21,5 @@ data class MessageLocalDto(
     val status: MessageStatus,
 ) {
     enum class MessageStatus { LOADING, SENT, READ, FAILED }
+
 }
