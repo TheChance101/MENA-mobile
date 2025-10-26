@@ -21,8 +21,7 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ImageCropperViewModelTest {
-    // Mocks remain the same
-    private val imageCacheManager = mockk<CachedImageRepository>(relaxed = true) // Use relaxed mock
+    private val imageCacheManager = mockk<CachedImageRepository>()
     private val imageKey = "profile_image"
 
     private lateinit var imageCropperViewModel: ImageCropperViewModel

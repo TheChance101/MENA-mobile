@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -84,13 +85,15 @@ class EditUserProfileScreen : BaseScreen<
         val galleryPicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
             file?.let { image ->
                 scope.launch {
-                    listener.onRequireCropImage(imageBitmap = image.toImageBitmap())
+                    listener.onRequireCropImage(imageByteArray = image.toImageBitmap().encodeToByteArray())
                 }
             }
         }
 
         val cameraImagePicker = rememberCameraPicker { imageBitmap ->
-            listener.onRequireCropImage(imageBitmap)
+            scope.launch {
+                listener.onRequireCropImage(imageBitmap.encodeToByteArray())
+            }
         }
 
         LaunchedEffect(state.showCamera) {

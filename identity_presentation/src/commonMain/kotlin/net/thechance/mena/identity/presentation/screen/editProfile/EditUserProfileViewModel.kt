@@ -2,7 +2,6 @@ package net.thechance.mena.identity.presentation.screen.editProfile
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.decodeToImageBitmap
-import coil3.BitmapImage
 import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -192,13 +191,13 @@ class EditUserProfileViewModel(
         }
     }
 
-    override fun onRequireCropImage(imageBitmap: ImageBitmap) {
-        cacheRequiredCropImage(imageBitmap)
+    override fun onRequireCropImage(imageByteArray: ByteArray) {
+        cacheRequiredCropImage(imageByteArray)
     }
-    private fun cacheRequiredCropImage(image: ImageBitmap){
+    private fun cacheRequiredCropImage(imageByteArray: ByteArray){
         tryToExecute(
             function = {
-                cachedImageRepository.cacheImage(PROFILE_IMAGE, image.encodeToByteArray())
+                cachedImageRepository.cacheImage(PROFILE_IMAGE, imageByteArray)
             },
             onError = ::onErrorOccurred,
             onSuccess = ::handleCacheImageSuccess,
