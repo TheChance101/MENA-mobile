@@ -90,7 +90,7 @@ class NetworkClientImpl(
                 bearer {
                     loadTokens {
                         BearerTokens(
-                            accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI0NTFlNGQ2Yy0wMzgwLTQxZWQtOTVlNi0yNzU3OTNjNDA0YzYiLCJpYXQiOjE3NjE1MDEwMTMsImV4cCI6MTc2MTUwNDYxM30.hJrZsRkmE-X7AJ3hjS3DyUsD-lHDxm1Bw-hDjJNKZxIQylByS3wGdGvUB3EwouFK", /*TODO() add access token*/
+                            accessToken = "", /*TODO() add access token*/
                             refreshToken = "" /*TODO() add refresh token*/
                         )
                     }
