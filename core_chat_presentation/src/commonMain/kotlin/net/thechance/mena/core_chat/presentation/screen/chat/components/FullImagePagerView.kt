@@ -39,6 +39,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
 import net.thechance.mena.core_chat.domain.entity.ImageData
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
@@ -56,9 +57,9 @@ fun FullImagePagerView(
     senderImageUrl: String,
     initialPage: Int,
     onCloseClick: () -> Unit,
-    onDownloadClick: (MessageUiState) -> Unit,
+    onDownloadClick: (String) -> Unit,
 ) {
-    if (messages.isEmpty() || messages.first().content !is ImageData) return onCloseClick()
+    if (messages.isEmpty() || messages.first().content !is MessageContent.Image) return onCloseClick()
 
     val pagerState = rememberPagerState(
         initialPage = initialPage,
@@ -67,9 +68,9 @@ fun FullImagePagerView(
     Box(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
     ) {
-        if (messages[pagerState.currentPage].content !is ImageData) return onCloseClick()
+        if (messages[pagerState.currentPage].content !is MessageContent.Image) return onCloseClick()
 
-        val images = messages.map { it.content as ImageData }
+        val images = messages.map { (it.content as MessageContent.Image).data }
         HorizontalImagePager(state = pagerState, images = images)
         FabButton(
             painter = painterResource(Res.drawable.ic_cancel),
@@ -86,14 +87,14 @@ fun FullImagePagerView(
         )
         val message = messages[pagerState.currentPage]
         val isUrlImage =
-            message.content is ImageData && message.content as ImageData is ImageData.ImageUrl
+            message.content is MessageContent.Image && message.content.data is ImageData.ImageUrl
 
         PagerOverlay(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
             time = message.sendTime,
             isDownloadButtonVisible = isUrlImage,
-            onDownloadClicked = { if (isUrlImage) onDownloadClick(message) },
+            onDownloadClicked = { if (isUrlImage) onDownloadClick((message.content.data as ImageData.ImageUrl).url) },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

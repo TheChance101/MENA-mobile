@@ -22,7 +22,7 @@ fun ChatListItem(
     item: ChatListItem,
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
-    onMessageImageClick: (MessageUiState, Int) -> Unit,
+    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {

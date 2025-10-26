@@ -24,7 +24,7 @@ fun ChatList(
     chatAvatarUrl: String,
     chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
-    onMessageImageClick: (MessageUiState, Int) -> Unit,
+    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit
 ) {
     if (items.isNotEmpty()) {

@@ -45,7 +45,7 @@ fun ImageMessagesLayout(
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
     onFailClick: (MessageUiState) -> Unit = {},
-    onMessageImageClick: (MessageUiState, Int) -> Unit,
+    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
 ) {
     val messageBackground =
         if (messages.last().isMine) Theme.colorScheme.background.surfaceLow
@@ -142,7 +142,7 @@ fun ImageMessagesLayout(
                 ImageMessageContent(
                     images = imageDataList,
                     modifier = Modifier.size(156.dp, 162.dp).clip(messageShape),
-                    onImageClick = { index -> onMessageImageClick(messages[index], index) }
+                    onImageClick = { index -> onMessageImageClick(messages, index) }
                 )
             }
 

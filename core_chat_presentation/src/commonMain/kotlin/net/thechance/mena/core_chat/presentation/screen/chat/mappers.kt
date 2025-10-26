@@ -9,6 +9,7 @@ import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -70,25 +71,37 @@ fun List<MessageUiState>.toChatList(): List<ChatListItem> {
         .asReversed()
 }
 
+
+
 fun List<MessageUiState>.toGroupedMessagesChatList(): List<ChatListItem> {
-    val groupedMessages = mutableListOf<ChatListItem>()
+    val grouped = mutableListOf<ChatListItem>()
     var tempImages = mutableListOf<MessageUiState>()
 
-    for (msg in this) {
-        if (msg.content is MessageContent.Image) {
-            tempImages.add(msg)
-        } else {
-            if (tempImages.isNotEmpty()) {
-                groupedMessages.add(ChatListItem.ImageMessages(tempImages))
-                tempImages.clear()
-            }
-            groupedMessages.add(ChatListItem.TextMessage(msg))
+    fun groupAndClear() {
+        if (tempImages.isNotEmpty()) {
+            grouped.add(ChatListItem.ImageMessages(tempImages.toList()))
+            tempImages = mutableListOf()
         }
     }
-    if (tempImages.isNotEmpty()) {
-        groupedMessages.add(ChatListItem.ImageMessages(tempImages))
+
+    for (msg in this) {
+        println()
+        if (msg.content is MessageContent.Image) {
+            val last = tempImages.lastOrNull()
+            if (last != null && last.isMine == msg.isMine && last.status == msg.status && msg.status != MessageStatus.FAILED) {
+                tempImages.add(msg)
+            } else {
+                groupAndClear()
+                tempImages.add(msg)
+            }
+        } else {
+            groupAndClear()
+            grouped.add(ChatListItem.TextMessage(msg))
+        }
     }
-    return groupedMessages
+
+    groupAndClear()
+    return grouped
 }
 
 private fun List<MessageUiState>.markLastInGroup(): List<MessageUiState> {
