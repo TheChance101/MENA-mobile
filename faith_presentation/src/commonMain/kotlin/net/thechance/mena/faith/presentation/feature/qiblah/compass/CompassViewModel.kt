@@ -19,24 +19,24 @@ class CompassViewModel(
     CompassInteractionListener {
 
     init {
-        updateCurrentLocation()
+        getCurrentAddress()
         getQiblahAngle()
     }
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
 
-    private fun updateCurrentLocation() {
+    private fun getCurrentAddress() {
         tryToExecute(
             execute = {
                 val address = locationService.getActiveAddress()
-                address?.toLocationUi() ?: LocationUi()
+                address?.toAddressUi() ?: AddressUi()
             },
-            onSuccess = { locationUi ->
-                updateState { state ->
-                    state.copy(currentLocationUi = locationUi)
-                }
-            }
+            onSuccess = ::onGetAddressSuccess
         )
+    }
+
+    private fun onGetAddressSuccess(address: AddressUi) {
+        updateState { state -> state.copy(currentLocationUi = address) }
     }
 
     private fun getQiblahAngle() {

@@ -11,10 +11,10 @@ data class CompassUiState(
     val continuousAzimuth: Float = 0f,
     val qiblahAngleValue: Float = 0f,
     val angleToQiblah: Float = 0f,
-    val currentLocationUi: LocationUi = LocationUi(),
+    val currentLocationUi: AddressUi = AddressUi(),
 )
 
-data class LocationUi(
+data class AddressUi(
     val id: Uuid = Uuid.random(),
     val addressDetails: String = "Cairo, Egypt",
     val addressType: AddressType = AddressType.Home,
@@ -22,7 +22,7 @@ data class LocationUi(
     val longitude: Double = 31.1760627,
 )
 
-fun LocationUi.toAddress() = Address(
+fun AddressUi.toAddress() = Address(
     id = id,
     addressLine = addressDetails,
     addressType = addressType,
@@ -30,7 +30,7 @@ fun LocationUi.toAddress() = Address(
     latitude = latitude,
 )
 
-fun Address.toLocationUi() = LocationUi(
+fun Address.toAddressUi() = AddressUi(
     id = id ?: Uuid.random(),
     addressDetails = addressLine,
     addressType = addressType,

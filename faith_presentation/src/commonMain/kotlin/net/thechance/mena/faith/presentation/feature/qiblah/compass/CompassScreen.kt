@@ -318,7 +318,7 @@ private fun CompassScreenPreview() {
                 continuousAzimuth = 45f,
                 qiblahAngleValue = 120f,
                 angleToQiblah = 75f,
-                currentLocationUi = LocationUi(),
+                currentLocationUi = AddressUi(),
             ),
             listener = object : CompassInteractionListener {
                 override fun onBackClick() {}
