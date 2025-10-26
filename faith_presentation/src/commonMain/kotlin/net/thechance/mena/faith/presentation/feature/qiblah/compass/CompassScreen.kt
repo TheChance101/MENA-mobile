@@ -52,6 +52,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun CompassScreen(
@@ -278,7 +279,7 @@ private fun QiblahTopBar(uiState: CompassUiState) {
         )
 
         Text(
-            text = uiState.currentLocationUi.cityName,
+            text = uiState.currentLocationUi.addressDetails,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)
@@ -307,6 +308,7 @@ enum class CompassDirection(
     WEST("W", Alignment.CenterStart)
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 @Preview
 private fun CompassScreenPreview() {
@@ -316,11 +318,7 @@ private fun CompassScreenPreview() {
                 continuousAzimuth = 45f,
                 qiblahAngleValue = 120f,
                 angleToQiblah = 75f,
-                currentLocationUi = LocationUi(
-                    cityName = "Cairo",
-                    latitude = 30.0444,
-                    longitude = 31.2357
-                ),
+                currentLocationUi = LocationUi(),
             ),
             listener = object : CompassInteractionListener {
                 override fun onBackClick() {}

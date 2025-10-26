@@ -6,24 +6,43 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.faith.domain.usecase.QiblahBearingCalculatorUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.utils.AzimuthProvider
+import net.thechance.mena.identity.domain.service.LocationService
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 class CompassViewModel(
     private val bearingCalculatorUseCase: QiblahBearingCalculatorUseCase,
+    private val locationService: LocationService,
     private val azimuthProvider: AzimuthProvider,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CompassUiState, CompassEffect>(CompassUiState()),
     CompassInteractionListener {
 
     init {
+        updateCurrentLocation()
         getQiblahAngle()
     }
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
 
+    private fun updateCurrentLocation() {
+        tryToExecute(
+            execute = {
+                val address = locationService.getActiveAddress()
+                address?.toLocationUi() ?: LocationUi()
+            },
+            onSuccess = { locationUi ->
+                updateState { state ->
+                    state.copy(currentLocationUi = locationUi)
+                }
+            }
+        )
+    }
+
     private fun getQiblahAngle() {
         tryToExecute(
             dispatcher = dispatcher,
-            execute = { bearingCalculatorUseCase.calculateQiblahAngle(uiState.value.currentLocationUi.toLocation()) },
+            execute = { bearingCalculatorUseCase.calculateQiblahAngle(uiState.value.currentLocationUi.toAddress()) },
             onSuccess = ::onGetQiblahSuccess
         )
     }
