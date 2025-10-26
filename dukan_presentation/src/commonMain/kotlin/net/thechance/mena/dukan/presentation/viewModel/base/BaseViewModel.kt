@@ -2,6 +2,11 @@ package net.thechance.mena.dukan.presentation.viewModel.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +20,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagationSource
+import net.thechance.mena.dukan.presentation.util.pagination.base.BasePagationSource.Companion.PAGE_SIZE
 
 abstract class BaseViewModel<S, E>(
     initialState: S,
@@ -43,8 +51,12 @@ abstract class BaseViewModel<S, E>(
         onStart()
         val handler = createExceptionHandler(onError)
         viewModelScope.launch(dispatcher + handler) {
-            val result = block()
-            onSuccess(result)
+            try {
+                val result = block()
+                onSuccess(result)
+            } catch (e: Exception) {
+                onError(e)
+            }
         }
     }
 
@@ -66,11 +78,15 @@ abstract class BaseViewModel<S, E>(
         onStart()
         val handler = createExceptionHandler(onError)
         viewModelScope.launch(dispatcher + handler) {
-            block()
-                .catch { onError(it) }
-                .collectLatest { result ->
-                    onCollect(result)
-                }
+            try {
+                block()
+                    .catch { onError(it) }
+                    .collectLatest { result ->
+                        onCollect(result)
+                    }
+            } catch (e: Exception) {
+                onError(e)
+            }
         }
     }
 
@@ -78,4 +94,24 @@ abstract class BaseViewModel<S, E>(
         CoroutineExceptionHandler { _, throwable ->
             onError(throwable)
         }
+
+    protected fun <T : Any, R : Any> createPagingSourceFlow(
+        onError: (Exception) -> Unit = {},
+        mapper: (T) -> R,
+        enablePlaceholders: Boolean = false,
+        block: suspend (pageNumber: Int, pageSize: Int) -> List<T>
+    ): Flow<PagingData<R>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = PAGE_SIZE,
+                initialLoadSize = PAGE_SIZE,
+                enablePlaceholders = enablePlaceholders
+            ),
+            pagingSourceFactory = {
+                BasePagationSource(onError = onError, onFetchPage = block)
+            }
+        ).flow.map { pagingData ->
+            pagingData.map(mapper)
+        }.cachedIn(viewModelScope)
+    }
 }

@@ -8,31 +8,15 @@ import org.jetbrains.compose.resources.StringResource
 
 object PreviewManageDukanInteractionListener : ManageDukanInteractionListener {
     override fun onBackButtonClicked() {}
-
     override fun onDismissSnackBar() {}
-
-    override fun onShelfAdded(
-        message: StringResource,
-        type: SnackBarType
-    ) {
-    }
-
+    override fun onShelfAdded(message: StringResource, type: SnackBarType) {}
     override fun onDismissDeleteShelfConfirmationDialog() {}
-
     override fun onShowDeleteShelfDialog(shelfId: String) {}
-
     override fun onDeleteConfirmed(shelfId: String) {}
-
     override fun onAddProductClicked() {}
-
     override fun onProductClick(product: ProductUiState) {}
-
     override fun onEditShelfClicked() {}
-
     override fun onAddShelfClicked() {}
-
     override fun isShelfSelected(shelf: ShelfUiState) = false
-
     override fun onShelfSelected(shelf: ShelfUiState) {}
-
 }

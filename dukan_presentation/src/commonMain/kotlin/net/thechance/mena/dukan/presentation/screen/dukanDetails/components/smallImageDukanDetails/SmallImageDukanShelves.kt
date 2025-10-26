@@ -17,53 +17,50 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.paging.LoadState
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
-import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
-import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
+import net.thechance.mena.dukan.presentation.component.product.ProductCard
+import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 
 @Composable
 fun SmallImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    shelvesPager: Pager<Int, ShelfUiState>,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
-    lazyListState.LoadMoreOnScroll(shelvesPager)
+    val shelves = state.shelves.collectAsLazyPagingItems()
 
     AnimatedContent(
-        targetState = state.shelvesState
-    ) { shelvesState ->
-        when (shelvesState) {
-            ShelvesState.LOADING -> {
-                SmallImageProductSkeleton()
-            }
+        shelves.loadState.refresh
+    ) {
+        when (it) {
+            LoadState.Loading -> SmallImageProductSkeleton()
+            is LoadState.NotLoading -> ShelvesContent(
+                shelves = shelves,
+                dukanInfo = state.dukanInfo,
+                listener = listener,
+                lazyListState = lazyListState,
+                modifier = modifier
+            )
 
-            ShelvesState.LOADED -> {
-                ShelvesContent(
-                    state = state,
-                    listener = listener,
-                    lazyListState = lazyListState,
-                    modifier = modifier
-                )
-            }
-
-            ShelvesState.EMPTY -> {}
+            is LoadState.Error -> {}
         }
     }
 }
 
 @Composable
 private fun ShelvesContent(
-    state: DukanDetailsUiState,
+    shelves: LazyPagingItems<ShelfUiState>,
+    dukanInfo: DukanDetailsUiState.DukanInfo,
     listener: DukanDetailsInteractionListener,
     lazyListState: LazyListState,
     modifier: Modifier,
@@ -74,28 +71,32 @@ private fun ShelvesContent(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(vertical = Theme.spacing._16),
     ) {
-        items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) { index ->
-            val shelf = state.shelves.items[index]
-            ProductsHeader(
-                viewAllColor = Color(state.dukanInfo.color),
-                shelfName = shelf.name,
-                onClick = {
-                    listener.onViewAllShelfProductsClicked(
-                        shelf.id,
-                        shelf.name
+        items(
+            count = shelves.itemCount,
+            key = shelves.itemKey { it.id }
+        ) { index ->
+            shelves[index]?.let { shelf ->
+                ProductsHeader(
+                    viewAllColor = Color(dukanInfo.color),
+                    shelfName = shelf.name,
+                    onClick = {
+                        listener.onViewAllProductsShelfClicked(
+                            shelf.id,
+                            shelf.name
+                        )
+                    },
+                    modifier = Modifier.padding(
+                        start = Theme.spacing._16,
+                        end = Theme.spacing._16,
+                        bottom = Theme.spacing._8
                     )
-                },
-                modifier = Modifier.padding(
-                    start = Theme.spacing._16,
-                    end = Theme.spacing._16,
-                    bottom = Theme.spacing._8
                 )
-            )
-            ShelfProducts(
-                shelf = shelf,
-                listener = listener,
-                cartColor = Color(state.dukanInfo.color)
-            )
+                ShelfProducts(
+                    shelf = shelf,
+                    listener = listener,
+                    cartColor = Color(dukanInfo.color)
+                )
+            }
         }
     }
 }

@@ -13,8 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -64,7 +63,8 @@ class ProfileScreen : BaseScreen<
         state: ProfileScreenUIState,
         listener: ProfileScreenInteractionListener,
     ) {
-        Scaffold(overlays = {
+        Scaffold(overlays =
+            {
             bottomSheet(
                 isVisible = state.showShareBottomSheet
             ) {
@@ -110,62 +110,69 @@ class ProfileScreen : BaseScreen<
                     .fillMaxSize()
                     .systemBarsPadding()
             ) {
-                Column(
-                    Modifier.fillMaxSize()
-                        .background(Theme.colorScheme.background.surface)
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = Theme.spacing._16),
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                        .background(Theme.colorScheme.background.surface),
+                    contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AppBar(
-                        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 14.dp),
-                        title = stringResource(Res.string.profile_title),
-                        trailingContent = { ShareIcon(onClick = listener::onShareClicked) }
-                    )
-                    AnimatedVisibility(
-                        visible = state.isSuccess,
-                        enter = expandVertically(),
-                        exit = shrinkVertically(),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        ProfileInfoContainer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.CenterHorizontally),
-                            profilePicture = state.profileImageUrl,
-                            fullName = state.fullName,
-                            userName = state.userName,
+                    item {
+                        AppBar(
+                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 14.dp),
+                            title = stringResource(Res.string.profile_title),
+                            trailingContent = { ShareIcon(onClick = listener::onShareClicked) }
                         )
                     }
-
-                    InviteFriendsCard(
-                        onCLick = listener::onInviteFriendsClicked
-                    )
-
-                    AccountSettingsSection(
-                        onEditProfileInfoClicked = listener::onEditProfileInfoClicked,
-                        onChangePasswordClicked = listener::onChangePasswordClicked,
-                        onAddressesClicked = listener::onAddressesClicked,
-                        onPrivacySettingsClicked = listener::onPrivacySettingsClicked
-                    )
-
-                    AppSettingsSection(
-                        onLanguageClicked = listener::onLanguageClicked,
-                        onThemeClicked = listener::onThemeClicked
-                    )
-
-                    OtherSettingsSection(
-                        onPrivacyAndPolicyClicked = listener::onPrivacyAndPolicyClicked,
-                        onContactUsClicked = listener::onContactUsClicked
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(vertical = Theme.spacing._16)
-                            .align(Alignment.CenterHorizontally),
-                        text = "${stringResource(Res.string.version)} ${state.versionNumber}",
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.shadeSecondary,
-                    )
+                    item {
+                        AnimatedVisibility(
+                            visible = state.isSuccess,
+                            enter = expandVertically(),
+                            exit = shrinkVertically(),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            ProfileInfoContainer(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                profilePicture = state.profileImageUrl,
+                                fullName = state.fullName,
+                                userName = state.userName,
+                            )
+                        }
+                    }
+                    item {
+                        InviteFriendsCard(
+                            onCLick = listener::onInviteFriendsClicked
+                        )
+                    }
+                    item {
+                        AccountSettingsSection(
+                            onEditProfileInfoClicked = listener::onEditProfileInfoClicked,
+                            onChangePasswordClicked = listener::onChangePasswordClicked,
+                            onAddressesClicked = listener::onAddressesClicked,
+                            onPrivacySettingsClicked = listener::onPrivacySettingsClicked
+                        )
+                    }
+                    item {
+                        AppSettingsSection(
+                            onLanguageClicked = listener::onLanguageClicked,
+                            onThemeClicked = listener::onThemeClicked
+                        )
+                    }
+                    item {
+                        OtherSettingsSection(
+                            onPrivacyAndPolicyClicked = listener::onPrivacyAndPolicyClicked,
+                            onContactUsClicked = listener::onContactUsClicked
+                        )
+                    }
+                    item {
+                        Text(
+                            modifier = Modifier
+                                .padding(vertical = Theme.spacing._16),
+                            text = "${stringResource(Res.string.version)} ${state.versionNumber}",
+                            style = Theme.typography.label.small,
+                            color = Theme.colorScheme.shadeSecondary,
+                        )
+                    }
                 }
 
                 AnimatedVisibility(

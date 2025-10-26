@@ -25,14 +25,10 @@ import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smal
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelves
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanStoreImage
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakePagerShelvesDukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -41,7 +37,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun SmallImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelf: Pager<Int, ShelfUiState>
 ) {
     OnSystemBackPressed(listener::onBackClicked)
 
@@ -83,7 +78,6 @@ fun SmallImageDukanDetails(
             SmallImageDukanShelves(
                 state = state,
                 listener = listener,
-                shelvesPager = pagerShelf,
                 modifier = Modifier.padding(top = Theme.spacing._16)
             )
         }
@@ -121,7 +115,6 @@ private fun SmallImageDukanDetailsPreview() {
         SmallImageDukanDetails(
             state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            pagerShelf = fakePagerShelvesDukanDetails
         )
     }
 }
@@ -131,9 +124,8 @@ private fun SmallImageDukanDetailsPreview() {
 private fun SmallImageDukanDetailsLoadingPreview() {
     MenaTheme {
         SmallImageDukanDetails(
-            state = fakeDukanDetails.copy(shelvesState = ShelvesState.LOADING),
+            state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            pagerShelf = fakePagerShelvesDukanDetails
         )
     }
 }

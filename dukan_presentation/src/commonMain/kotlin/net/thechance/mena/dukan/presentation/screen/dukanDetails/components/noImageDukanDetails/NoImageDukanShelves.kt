@@ -16,11 +16,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
@@ -29,25 +29,23 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 fun NoImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelves: Pager<Int, ShelfUiState>
 ) {
     val lazyRowListState = rememberLazyListState()
-    lazyRowListState.LoadMoreOnScroll(pagerShelves)
 
     val lazyColumnListState = rememberLazyListState()
-    lazyColumnListState.LoadMoreOnScroll(pagerShelves)
 
     val coroutineScope = rememberCoroutineScope()
     var chipsAlpha by rememberSaveable { mutableStateOf(0f) }
     val layoutInfo by remember {
         derivedStateOf { lazyColumnListState.layoutInfo }
     }
+    val shelves = state.shelves.collectAsLazyPagingItems()
 
     LaunchedEffect(layoutInfo) {
         synchronizeScrollsAndAlpha(
             lazyColumnListState.firstVisibleItemIndex,
             layoutInfo,
-            state,
+            shelves,
             listener,
             coroutineScope,
             lazyRowListState
@@ -59,6 +57,7 @@ fun NoImageDukanShelves(
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         state = lazyColumnListState
     ) {
+
         item(key = "BestSelling") {
             BestSellingNoImageDukan(
                 state = state,
@@ -67,19 +66,21 @@ fun NoImageDukanShelves(
         }
         stickyHeader(key = "ShelvesChips") {
             NoImageDukanShelvesChips(
-                state = state,
-                lazyRowState = lazyRowListState,
+                shelfs = shelves,
                 onClick = { shelfId, index ->
                     listener.onShelfClicked(shelfId)
                     coroutineScope.launch {
                         lazyColumnListState.animateScrollToItem(index + SHELVES_OFFSET)
                     }
                 },
-                alpha = chipsAlpha
+                alpha = chipsAlpha,
+                selectedShelfId = state.shelfIdSelected,
+                dukanColor = state.dukanInfo.color
             )
         }
-        items(count = state.shelves.items.size, key = { state.shelves.items[it].id }) {
-            val shelf = state.shelves.items[it]
+
+        items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) {
+            val shelf = shelves[it] ?: return@items
             NoImageDukanShelfWithProducts(
                 shelf = shelf,
                 listener = listener,
@@ -93,15 +94,15 @@ private const val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
 private fun synchronizeScrollsAndAlpha(
     index: Int,
     layoutInfo: LazyListLayoutInfo,
-    state: DukanDetailsUiState,
+    shelfs: LazyPagingItems<ShelfUiState>,
     listener: DukanDetailsInteractionListener,
     coroutineScope: CoroutineScope,
     lazyRowListState: LazyListState,
     chipsAlphaUpdate: (Float) -> Unit
 ) {
     val shelfIndex = index - SHELVES_OFFSET
-    if (shelfIndex >= 0 && shelfIndex < state.shelves.items.size) {
-        val shelfId = state.shelves.items[shelfIndex].id
+    if (shelfIndex >= 0 && shelfIndex < shelfs.itemCount) {
+        val shelfId = shelfs[shelfIndex]?.id.orEmpty()
         listener.onShelfClicked(shelfId)
         coroutineScope.launch {
             lazyRowListState.animateScrollToItem(shelfIndex)

@@ -27,6 +27,7 @@ class DukanCategoriesViewModel(
 
     private fun getCategories() {
         tryToExecute(
+            onStart = { updateState { copy(isLoading = true) } },
             block = ::getCategoriesBlock,
             onSuccess = ::onGetCategoriesSuccess,
             onError = ::onGetCategoriesError
@@ -38,10 +39,11 @@ class DukanCategoriesViewModel(
     }
 
     private fun onGetCategoriesSuccess(categories: List<DukanCategoriesUiState.CategoryUiState>) {
-        updateState { copy(categories = categories) }
+        updateState { copy(categories = categories, isLoading = false) }
     }
 
     private fun onGetCategoriesError(error: Throwable) {
+        updateState { copy(isLoading = false) }
         val messageRes = when (error) {
             is NoInternetException -> Res.string.no_internet_message
             else -> Res.string.something_went_wrong

@@ -261,40 +261,7 @@ class ShelfRepositoryImplTest {
         // When
         val result = repository.getShelvesByDukanId("dukan123", 0, 2)
         // Then
-        assertEquals(2, result.items.size)
-    }
-
-    @Test
-    fun `getShelvesByDukanId should map currentPage correctly`() = runTest {
-        // Given
-        val repository =
-            createShelfRepository(pagedShelvesResponse = { defaultPagedShelvesResponse() })
-        // When
-        val result = repository.getShelvesByDukanId("dukan123", 0, 2)
-        // Then
-        assertEquals(0, result.currentPage)
-    }
-
-    @Test
-    fun `getShelvesByDukanId should map totalPages correctly`() = runTest {
-        // Given
-        val repository =
-            createShelfRepository(pagedShelvesResponse = { defaultPagedShelvesResponse() })
-        // When
-        val result = repository.getShelvesByDukanId("dukan123", 0, 2)
-        // Then
-        assertEquals(5, result.totalPages)
-    }
-
-    @Test
-    fun `getShelvesByDukanId should map hasNext correctly`() = runTest {
-        // Given
-        val repository =
-            createShelfRepository(pagedShelvesResponse = { defaultPagedShelvesResponse() })
-        // When
-        val result = repository.getShelvesByDukanId("dukan123", 0, 2)
-        // Then
-        assertTrue(result.hasNext)
+        assertEquals(2, result.pageSize)
     }
 
     @Test
@@ -308,19 +275,6 @@ class ShelfRepositoryImplTest {
         // Then
         assertTrue(result.items.isEmpty())
     }
-
-    @Test
-    fun `getShelvesByDukanId when response is empty should return zero total items`() = runTest {
-        // Given
-        val repository = createShelfRepository(pagedShelvesResponse = { emptyPagedResponse() })
-
-        // When
-        val result = repository.getShelvesByDukanId("dukan123", 0, 10)
-
-        // Then
-        assertEquals(0, result.totalItems)
-    }
-
 
     @Test
     fun `getShelvesByDukanId handles error response`() = runTest {

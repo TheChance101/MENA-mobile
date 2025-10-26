@@ -4,12 +4,14 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -124,6 +126,19 @@ class ReelViewModelTest {
         assertThat(reverted.isLiked).isEqualTo(initial.isLiked)
 
         assertThat(viewModel.state.value.error != null).isTrue()
+    }
+
+    @Test
+    fun `onRetryClick should reset error and call getFeedReels`() = runTest {
+        viewModel.onClickRetry()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.error).isNull()
+            verifySuspend { viewModel.getFeedReels() }
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     companion object {

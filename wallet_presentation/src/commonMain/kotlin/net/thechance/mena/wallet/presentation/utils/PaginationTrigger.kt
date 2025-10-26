@@ -19,8 +19,10 @@ fun <T> PaginationTrigger(
         }
             .distinctUntilChanged()
             .collect { lastVisibleIndex ->
-                if(lastVisibleIndex == list.lastIndex - buffer) {
-                    loadNextItems()
+                lastVisibleIndex?.let {lastVisibleIndex ->
+                    if (lastVisibleIndex >= list.lastIndex - buffer) {
+                        loadNextItems()
+                    }
                 }
             }
     }

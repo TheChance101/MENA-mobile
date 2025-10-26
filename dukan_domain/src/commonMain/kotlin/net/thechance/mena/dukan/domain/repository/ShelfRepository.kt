@@ -11,5 +11,5 @@ interface ShelfRepository {
         dukanId: String,
         pageNumber: Int,
         pageSize: Int
-    ):PagedResult<Shelf>
+    ): PagedResult<Shelf>
 }

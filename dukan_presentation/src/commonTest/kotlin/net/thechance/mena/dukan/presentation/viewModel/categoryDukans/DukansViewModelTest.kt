@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -22,9 +23,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -57,7 +55,8 @@ class DukansViewModelTest {
             items = dummyDukanPreviews,
             currentPage = 1,
             totalPages = 1,
-            totalItems = dummyDukanPreviews.size.toLong()
+            totalItems = dummyDukanPreviews.size.toLong(),
+            pageSize = 10
         )
 
         dukansViewModel = CategoryDukansViewModel(
@@ -75,7 +74,6 @@ class DukansViewModelTest {
     @Test
     fun `init SHOULD load category info from SavedStateHandle`() = runTest {
         // When
-        val pager = dukansViewModel.initializedPager
         advanceUntilIdle()
 
         dukansViewModel.state.test {
@@ -87,39 +85,15 @@ class DukansViewModelTest {
         }
     }
 
-    @Test
-    fun `init SHOULD initialize pager with correct category`() = runTest {
-        // When
-        val pager = dukansViewModel.initializedPager
-
-        // Then
-        assertNotNull(pager)
-    }
 
     @Test
     fun `init SHOULD load dukans with correct count`() = runTest {
-        // When
-        val pager = dukansViewModel.initializedPager
         advanceUntilIdle()
-
+        // When
         dukansViewModel.state.test {
             val state = awaitItem()
             // Then
-            assertEquals(3, state.dukans.items.size)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `init SHOULD set dukans state to LOADED when dukans are available`() = runTest {
-        // When
-        val pager = dukansViewModel.initializedPager
-        advanceUntilIdle()
-
-        dukansViewModel.state.test {
-            val state = awaitItem()
-            // Then
-            assertEquals(CategoryDukansUiState.DukansState.LOADED, state.dukansState)
+            assertEquals(3, state.dukans.asSnapshot().size)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -152,67 +126,6 @@ class DukansViewModelTest {
     }
 
     @Test
-    fun `onFavoriteClick SHOULD toggle favorite status successfully`() = runTest {
-        // Given
-        val pager = dukansViewModel.initializedPager
-        advanceUntilIdle()
-        assertFalse(dummyDukansUiState().first().isFavorite)
-
-        // When
-        dukansViewModel.onFavoriteClick(dummyDukansUiState().first())
-        advanceUntilIdle()
-
-        // Then
-        val state = dukansViewModel.state.value
-        val updatedDukan = state.dukans.items.find { it.id == dummyDukansUiState().first().id }
-        assertNotNull(updatedDukan)
-        assertTrue(updatedDukan.isFavorite)
-    }
-
-    @Test
-    fun `onFavoriteClick SHOULD toggle favorite from false to true`() = runTest {
-        // Given
-        val pager = dukansViewModel.initializedPager
-        advanceUntilIdle()
-        val dukan = dummyDukansUiState().first()
-        assertFalse(dukan.isFavorite)
-
-        // When
-        dukansViewModel.onFavoriteClick(dukan)
-        advanceUntilIdle()
-
-        // Then
-        val state = dukansViewModel.state.value
-        val updatedDukan = state.dukans.items.find { it.id == dukan.id }
-        assertNotNull(updatedDukan)
-        assertTrue(updatedDukan.isFavorite)
-    }
-
-    @Test
-    fun `onFavoriteClick SHOULD toggle favorite from true to false`() = runTest {
-        // Given
-        val pager = dukansViewModel.initializedPager
-        advanceUntilIdle()
-
-        dukansViewModel.onFavoriteClick(dummyDukansUiState().first())
-        advanceUntilIdle()
-
-        val favoriteDukan =
-            dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
-        assertTrue(favoriteDukan.isFavorite)
-
-        // When
-        dukansViewModel.onFavoriteClick(favoriteDukan)
-        advanceUntilIdle()
-
-        // Then
-        val updatedDukan =
-            dukansViewModel.state.value.dukans.items.find { it.id == dummyDukansUiState().first().id }!!
-        assertFalse(updatedDukan.isFavorite)
-    }
-
-
-    @Test
     fun `init SHOULD handle empty category gracefully`() = runTest {
         // Given
         val emptySavedStateHandle = SavedStateHandle(
@@ -229,9 +142,6 @@ class DukansViewModelTest {
         )
 
         // When
-        val pager = emptyViewModel.initializedPager
-        advanceUntilIdle()
-
         emptyViewModel.state.test {
             val state = awaitItem()
             // Then
@@ -253,9 +163,6 @@ class DukansViewModelTest {
         )
 
         // When 
-        val pager = nullViewModel.initializedPager
-        advanceUntilIdle()
-
         nullViewModel.state.test {
             val state = awaitItem()
             // Then

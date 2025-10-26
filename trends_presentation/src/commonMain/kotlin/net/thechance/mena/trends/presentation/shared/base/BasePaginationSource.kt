@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.shared.base
 
+import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -8,6 +9,7 @@ import androidx.paging.PagingState
 import androidx.paging.cachedIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import net.thechance.mena.trends.domain.exception.NoInternetException
 
 internal class BasePagingSource<T : Any>(
     private val fetch: suspend (Int) -> List<T>
@@ -44,4 +46,16 @@ fun <T : Any> createPager(
         ),
         pagingSourceFactory = { BasePagingSource(loadPage) }
     ).flow.cachedIn(scope)
+}
+
+fun LoadState.toErrorState(): ErrorState? {
+    return when (this) {
+        is LoadState.Error -> {
+            when (val exception = this.error) {
+                is NoInternetException -> ErrorState.NoInternet
+                else -> ErrorState.RequestFailed(exception.message)
+            }
+        }
+        else -> null
+    }
 }

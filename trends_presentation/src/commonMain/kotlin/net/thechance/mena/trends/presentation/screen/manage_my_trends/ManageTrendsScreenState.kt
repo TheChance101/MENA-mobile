@@ -1,4 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
+
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

@@ -1,19 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 data class CategoryDukansUiState(
-    val dukans: PagingData<DukanUiState> = PagingData(),
-    val dukansState: DukansState = DukansState.LOADING,
+    val dukans: Flow<PagingData<DukanUiState>> = flowOf(),
     val categoryId: String = "",
     val categoryTitle: String = ""
 ) {
-    enum class DukansState {
-        LOADING,
-        LOADED,
-        EMPTY
-    }
-
     data class DukanUiState(
         val id: String = "",
         val name: String = "",

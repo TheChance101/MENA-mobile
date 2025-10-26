@@ -1,3 +1,5 @@
+package net.thechance.mena.dukan.presentation.screen.manageDukan.component
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.togetherWith

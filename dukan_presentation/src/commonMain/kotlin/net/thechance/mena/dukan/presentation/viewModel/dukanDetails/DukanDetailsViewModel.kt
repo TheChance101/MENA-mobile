@@ -1,22 +1,24 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.filter
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.Style
 
 class DukanDetailsViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
@@ -30,22 +32,6 @@ class DukanDetailsViewModel(
 ), DukanDetailsInteractionListener {
 
     val dukanId: String = requireNotNull(savedStateHandle[DUKAN_ID])
-
-    val pagerShelf = createPagingSource(mapper = { it.toUiState() }) {
-        shelfRepository.getShelvesByDukanId(
-            dukanId = dukanId,
-            pageNumber = it,
-            pageSize = 20
-        )
-    }
-
-    val pagerProduct = createPagingSource(mapper = { it.toUiState() }) {
-        productRepository.getProductsByShelfId(
-            shelfId = state.value.shelfIdSelected.toString(),
-            page = it,
-            size = 20
-        )
-    }
 
     init {
         loadDukanDetails()
@@ -66,125 +52,103 @@ class DukanDetailsViewModel(
                 isDukanInfoLoading = false
             )
         }
-        loadShelvesFromRepository()
+        loadShelvesPaging()
     }
 
     private fun onLoadDukanDetailsError(throwable: Throwable) {
         updateState { copy(isDukanInfoLoading = false) }
     }
 
-    private fun loadShelvesFromRepository() {
+    private fun isWideImageStyle() =
+        state.value.dukanInfo.style == Style.WIDE_IMAGE
+
+    private fun loadShelvesPaging() {
         tryToCollect(
-            block = { pagerShelf.flow },
+            block = ::getShelvesPagingFlow,
             onCollect = ::onShelvesLoaded
         )
-        viewModelScope.launch { pagerShelf.load() }
     }
 
-    private fun onShelvesLoaded(shelves: PagingData<DukanDetailsUiState.ShelfUiState>) {
-        val shelfState = determineShelvesState(shelves)
-        if (isWideImageStyle()) {
-            handleWideImageShelves(shelves, shelfState)
-        } else {
-            handleNonWideImageShelves(shelves, shelfState)
+    private fun getShelvesPagingFlow(): Flow<PagingData<ShelfUiState>> {
+        return createPagingSourceFlow(mapper = { it.toUiState() }) { pageNumber, pageSize ->
+            shelfRepository.getShelvesByDukanId(
+                dukanId = dukanId,
+                pageNumber = pageNumber,
+                pageSize = pageSize
+            ).items
         }
-        loadProductsFromRepository()
     }
 
-    private fun handleNonWideImageShelves(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>,
-        shelfState: DukanDetailsUiState.ShelvesState
-    ) {
-        viewModelScope.launch {
-            val (updatedShelves, firstShelfId) = updateProductsShelves(shelves)
+    private fun onShelvesLoaded(shelves: PagingData<ShelfUiState>) {
+        if (isWideImageStyle()) {
             updateState {
                 copy(
-                    shelves = shelves.copy(items = updatedShelves),
-                    shelvesState = shelfState,
-                    shelfIdSelected = state.value.shelfIdSelected ?: firstShelfId
+                    shelves = flowOf(shelves)
                 )
             }
+            loadProductsPaging()
+        } else {
+            loadProductsLimited(shelves)
         }
     }
 
-    private fun handleWideImageShelves(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>,
-        shelfState: DukanDetailsUiState.ShelvesState
-    ) {
-        updateState {
-            copy(
-                shelves = shelves,
-                shelvesState = shelfState,
-                shelfIdSelected = shelves.items.firstOrNull()?.id
-            )
-        }
+    private fun loadProductsLimited(shelves: PagingData<ShelfUiState>) {
+        tryToExecute(
+            block = { updateProductsLimited(shelves) },
+            onSuccess = ::onProductsLimitedLoaded
+        )
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE
-
-    private fun determineShelvesState(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>
-    ): DukanDetailsUiState.ShelvesState {
-        return when {
-            shelves.isLoading && shelves.items.isEmpty() -> DukanDetailsUiState.ShelvesState.LOADING
-            shelves.items.isEmpty() -> DukanDetailsUiState.ShelvesState.EMPTY
-            else -> DukanDetailsUiState.ShelvesState.LOADED
-        }
+    private fun updateProductsLimited(
+        shelves: PagingData<ShelfUiState>
+    ): PagingData<ShelfUiState> {
+        return shelves.map { shelf ->
+            val products = getProductsLimitedByShelfId(shelf.id)
+            shelf.copy(products = products)
+        }.filter { it.products.isNotEmpty() }
     }
 
-    private suspend fun updateProductsShelves(
-        shelves: PagingData<DukanDetailsUiState.ShelfUiState>
-    ): Pair<List<DukanDetailsUiState.ShelfUiState>, String?> = coroutineScope {
-        val updatedShelvesWithProducts = shelves.items
-            .map { shelf ->
-                async {
-                    val products = getInitialProductsForShelf(shelf.id)
-                    shelf.copy(products = products)
-                }
-            }
-            .awaitAll()
-            .filter { it.products.isNotEmpty() }
-
-        val firstShelfId = updatedShelvesWithProducts.firstOrNull()?.id
-        updatedShelvesWithProducts to firstShelfId
-    }
-
-    private suspend fun getInitialProductsForShelf(shelfId: String): List<DukanDetailsUiState.ProductUiState> {
+    private suspend fun getProductsLimitedByShelfId(shelfId: String): List<ProductUiState> {
         val maxProducts = 6
         val page = 0
         val product = productRepository.getProductsByShelfId(shelfId, page, maxProducts).items
         return product.map { it.toUiState() }
     }
 
-    private fun loadProductsFromRepository() {
-        tryToCollect(
-            onStart = ::onProductsStart,
-            block = { pagerProduct.flow },
-            onCollect = ::onProductsLoaded
-        )
-        viewModelScope.launch { pagerProduct.load() }
-    }
-
-    private fun onProductsStart() {
+    private fun onProductsLimitedLoaded(updatedShelves: PagingData<ShelfUiState>) {
         updateState {
             copy(
-                productsState = DukanDetailsUiState.ProductsState.LOADING,
-                productsShelf = PagingData()
+                shelves = flowOf(updatedShelves)
             )
         }
     }
 
-    private fun onProductsLoaded(products: PagingData<DukanDetailsUiState.ProductUiState>) {
-        val productsState = when {
-            products.isLoading && products.items.isEmpty() -> DukanDetailsUiState.ProductsState.LOADING
-            products.items.isEmpty() -> DukanDetailsUiState.ProductsState.EMPTY
-            else -> DukanDetailsUiState.ProductsState.LOADED
+    private fun loadProductsPaging() {
+        tryToCollect(
+            block = ::getProductPagingFlow,
+            onCollect = ::onProductsLoaded
+        )
+    }
+
+    private fun getProductPagingFlow(): Flow<PagingData<ProductUiState>> {
+        val shelfId = state.value.shelfIdSelected
+        if (shelfId.isNullOrEmpty()) {
+            return flowOf(PagingData.empty())
         }
+
+        return createPagingSourceFlow(mapper = { it.toUiState() }) { pageNumber, pageSize ->
+            productRepository.getProductsByShelfId(
+                shelfId = shelfId,
+                page = pageNumber,
+                size = pageSize
+            ).items
+        }
+    }
+
+    private fun onProductsLoaded(products: PagingData<ProductUiState>) {
         updateState {
             copy(
-                productsShelf = products,
-                productsState = productsState
+                productsShelf = flowOf(products)
             )
         }
     }
@@ -194,18 +158,14 @@ class DukanDetailsViewModel(
     }
 
     override fun onShelfClicked(id: String) {
-        updateState {
-            copy(
-                shelfIdSelected = id,
-                productsShelf = PagingData()
-            )
-        }
-        if (state.value.dukanInfo.style == DukanDetailsUiState.Style.WIDE_IMAGE) {
-            loadProductsFromRepository()
+        updateState { copy(shelfIdSelected = id) }
+
+        if (isWideImageStyle()) {
+            loadProductsPaging()
         }
     }
 
-    override fun onViewAllShelfProductsClicked(id: String, name: String) {
+    override fun onViewAllProductsShelfClicked(id: String, name: String) {
         emitEffect(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
@@ -214,13 +174,6 @@ class DukanDetailsViewModel(
                 color = state.value.dukanInfo.color
             )
         )
-        updateState {
-            copy(
-                shelfIdSelected = id,
-                productsShelf = PagingData()
-            )
-        }
-        loadProductsFromRepository()
     }
 
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {
@@ -228,31 +181,31 @@ class DukanDetailsViewModel(
     }
 
     override fun onAddToCartClick(productId: String) {
-        updateState {
-            copy(
-                shelves = shelves.copy(
-                    items = updateShelvesWithAddedProduct(
-                        shelves.items,
+        tryToExecute(
+            block = {
+                state.value.shelves.collectLatest {
+                    updateShelvesWithAddedProduct(
+                        it,
                         productId
                     )
-                )
-            )
-        }
+                }
+            }
+        )
     }
 
     private fun updateShelvesWithAddedProduct(
-        shelves: List<DukanDetailsUiState.ShelfUiState>,
+        shelves: PagingData<ShelfUiState>,
         productId: String
-    ): List<DukanDetailsUiState.ShelfUiState> {
+    ): PagingData<ShelfUiState> {
         return shelves.map { shelf ->
             shelf.copy(products = updateProductsWithAddedItem(shelf.products, productId))
         }
     }
 
     private fun updateProductsWithAddedItem(
-        products: List<DukanDetailsUiState.ProductUiState>,
+        products: List<ProductUiState>,
         productId: String
-    ): List<DukanDetailsUiState.ProductUiState> {
+    ): List<ProductUiState> {
         return products.map { product ->
             if (product.id == productId) product.copy(inCartQuantity = 1) else product
         }

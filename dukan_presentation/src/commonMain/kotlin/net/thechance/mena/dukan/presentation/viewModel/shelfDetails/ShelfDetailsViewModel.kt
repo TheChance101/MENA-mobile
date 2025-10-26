@@ -1,18 +1,17 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_COLOR
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_STYLE
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_ID
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_NAME
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class ShelfDetailsViewModel(
@@ -28,15 +27,6 @@ class ShelfDetailsViewModel(
     val dukanStyle: String = requireNotNull(savedStateHandle[DUKAN_STYLE])
     val dukancolor: Long = requireNotNull(savedStateHandle[DUKAN_COLOR])
 
-    val pagerProduct = createPagingSource(
-        mapper = { it.toUiState() }
-    ) {
-        productRepository.getProductsByShelfId(
-            shelfId = shelfId,
-            page = it,
-            size = 20
-        )
-    }
 
     init {
         updateState {
@@ -51,32 +41,26 @@ class ShelfDetailsViewModel(
 
     private fun loadProductsFromRepository() {
         tryToCollect(
-            onStart = ::onProductsStart,
-            block = { pagerProduct.flow },
+            block = ::createPagingSource,
             onCollect = ::onProductsLoaded
         )
-        viewModelScope.launch {
-            pagerProduct.load()
-        }
     }
 
-    private fun onProductsStart() {
-        updateState {
-            copy(
-                productsState = ShelfDetailsUiState.ProductsState.LOADING,
-                productsShelf = PagingData()
-            )
+    private fun createPagingSource(): Flow<PagingData<ShelfDetailsUiState.ProductUiState>> {
+        return createPagingSourceFlow(
+            mapper = { it.toUiState() }
+        ) { pageNumber, pageSize ->
+            productRepository.getProductsByShelfId(
+                shelfId = shelfId,
+                page = pageNumber,
+                size = pageSize
+            ).items
         }
     }
 
     private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) =
         updateState {
-            val state = when {
-                products.isLoading && products.items.isEmpty() -> ShelfDetailsUiState.ProductsState.LOADING
-                products.error != null -> ShelfDetailsUiState.ProductsState.ERROR
-                else -> ShelfDetailsUiState.ProductsState.LOADED
-            }
-            copy(productsShelf = products, productsState = state)
+            copy(productsShelf = flowOf(products))
         }
 
     override fun onBackClicked() {
@@ -84,11 +68,6 @@ class ShelfDetailsViewModel(
     }
 
     override fun onAddToCartClick(productId: String) {
-        updateState {
-            val updatedItems = productsShelf.items.map {
-                if (it.id == productId) it.copy(inCartQuantity = 1) else it
-            }
-            copy(productsShelf = productsShelf.copy(items = updatedItems))
-        }
+        // ToDO("Not yet implemented")
     }
 }

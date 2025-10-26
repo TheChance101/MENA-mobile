@@ -1,8 +1,11 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.no_internet_connection
@@ -12,13 +15,11 @@ import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
+
 import org.jetbrains.compose.resources.StringResource
 
 class MainViewModel(
@@ -29,8 +30,6 @@ class MainViewModel(
     initialState = MainScreenUiState(),
     defaultDispatcher = dispatcher
 ), MainInteractionListener {
-    lateinit var bestNearestDukanPager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>
-    lateinit var editorPickDukanPager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>
 
     init {
         fetchData()
@@ -38,102 +37,67 @@ class MainViewModel(
 
     private fun fetchData() {
         getDukanState()
-        initPagers()
         getCategories()
         loadEditorPicksDukans()
         loadBestNearestDukans()
     }
 
     private fun loadEditorPicksDukans() {
-        tryToExecute(
-            onStart = ::onEditorPickDukanLoading,
-            block = {editorPickDukanPager.load()},
-            onSuccess = { collectEditorPickData() },
+        tryToCollect(
+            block = ::createLoadEditorPagingSource,
+            onCollect = ::onLoadedEditorPicksDukan,
             onError = ::handleNetworkError
         )
     }
 
-    private fun collectEditorPickData() {
-        tryToCollect(
-            block = { editorPickDukanPager.flow },
-            onCollect = ::onLoadedEditorPicksDukan,
-        )
-    }
-
-
-
-    private fun onEditorPickDukanLoading(){
-        updateState {
-            copy(
-                editorPickDukanState = MainScreenUiState.EditorPickDukanStatus.LOADING,
-                editorPickDukans = PagingData()
-            )
+    private fun createLoadEditorPagingSource(): Flow<PagingData<MainScreenUiState.EditorPickDukanUiState>> {
+        return createPagingSourceFlow(mapper = { it.toEditorPickUiState() }) { currentPage, pageSize ->
+            dukanDiscoveryRepository.getEditorPicksDukans(
+                page = currentPage,
+                size = pageSize
+            ).items
         }
     }
-
     private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
-        val loadedBestNearestDukans = when {
-            dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.EditorPickDukanStatus.LOADING
-            else -> MainScreenUiState.EditorPickDukanStatus.LOADED
-        }
         updateState {
             copy(
-                editorPickDukans = dukans,
-                editorPickDukanState = loadedBestNearestDukans,
+                editorPickDukans = flowOf(dukans),
                 snackBarState = null
             )
         }
     }
 
     private fun loadBestNearestDukans() {
-        tryToExecute(
-            onStart = ::onBestNearestDukanLoading,
-            block = { bestNearestDukanPager.load() },
-            onSuccess = {collectBestNearestData()},
+        tryToCollect(
+            block = ::createLoadBestDukanPagingSource,
+            onCollect = ::onLoadedBestNearestDukans,
             onError = ::handleNetworkError
         )
     }
 
-    private fun collectBestNearestData() {
-        tryToCollect(
-            block = { bestNearestDukanPager.flow },
-            onCollect = ::onLoadedBestNearestDukans
-        )
-    }
-
-
-
-
-
-    private fun onBestNearestDukanLoading() {
-        updateState {
-            copy(
-                bestNearestDukans = PagingData(),
-                bestNearestDukanState = MainScreenUiState.BestNearestDukanStatus.LOADING
-            )
+    private fun createLoadBestDukanPagingSource(): Flow<PagingData<MainScreenUiState.BestNearestDukanUiState>> {
+        return createPagingSourceFlow(mapper = { it.toBestNearestUiState() }) { currentPage, pageSize ->
+            dukanDiscoveryRepository.getBestAroundDukans(
+                page = currentPage,
+                size = pageSize
+            ).items
         }
     }
-
     private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
-        val loadedBestNearestDukans = when {
-            dukans.isLoading && dukans.items.isEmpty() -> MainScreenUiState.BestNearestDukanStatus.LOADING
-            else -> MainScreenUiState.BestNearestDukanStatus.LOADED
-        }
         updateState {
             copy(
-                bestNearestDukans = dukans,
-                bestNearestDukanState = loadedBestNearestDukans,
+                bestNearestDukans = flowOf(dukans),
                 snackBarState = null
             )
         }
     }
-
 
     private fun handleNetworkError(error: Throwable) {
         when (error) {
             is NoInternetException -> updateState {
                 updateToNoInternetState()
             }
+
             else -> {
                 showSnackBar(
                     message = Res.string.error_general,
@@ -142,6 +106,7 @@ class MainViewModel(
             }
         }
     }
+
     private fun getCategories() {
         tryToExecute(
             onStart = {
@@ -187,10 +152,12 @@ class MainViewModel(
     private fun onGetDukanStateSuccess(dukanState: MainScreenUiState.DukanState?) {
         if (dukanState == null) {
             updateState {
-                copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None),
+                copy(
+                    dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None),
                     isConnected = true,
                     snackBarState = null
-                ) }
+                )
+            }
         } else {
             updateState { copy(dukanState = dukanState, isConnected = true) }
         }
@@ -203,7 +170,8 @@ class MainViewModel(
                     dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None)
                 )
             }
-            is NoInternetException->{
+
+            is NoInternetException -> {
                 updateState {
                     updateToNoInternetState()
                 }
@@ -254,26 +222,6 @@ class MainViewModel(
         emitEffect(MainScreenEffect.NavigateSelectedDukan(dukanId))
     }
 
-    fun initPagers() {
-        bestNearestDukanPager = createPagingSource(
-            mapper = { it.toBestNearestUiState() }
-        ) { currentPage ->
-            dukanDiscoveryRepository.getBestAroundDukans(
-                page = currentPage,
-                size = 5
-            )
-        }
-
-        editorPickDukanPager = createPagingSource(
-            mapper = { it.toEditorPickUiState() }
-        ) { currentPage ->
-            dukanDiscoveryRepository.getEditorPicksDukans(
-                page = currentPage,
-                size = 5
-            )
-        }
-    }
-
     private fun showSnackBar(message: StringResource, type: SnackBarType) {
         updateState {
             copy(
@@ -284,5 +232,4 @@ class MainViewModel(
             )
         }
     }
-
 }

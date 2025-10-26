@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.manageDukan.content
 
-import ManageDukanSnackbar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,15 +15,12 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanAppBar
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanSnackbar
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.manageDukanDialog
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.stubPreviews.FakeProductPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -32,7 +28,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ManageDukanContent(
     state: ManageDukanUiState,
     listener: ManageDukanInteractionListener,
-    pager: Pager<Int, ProductUiState>
 ) {
     OnSystemBackPressed(listener::onBackButtonClicked)
 
@@ -50,13 +45,12 @@ fun ManageDukanContent(
                     listener = listener
                 )
 
-                if (state.shelves.isEmpty() || state.products.items.isEmpty()) {
+                if (state.shelves.isEmpty()) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
                 ManageDukanProducts(
                     state = state,
                     onProductClick = listener::onProductClick,
-                    pager = pager
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
@@ -78,10 +72,6 @@ private fun ManageDukanContentPreview() {
         ManageDukanContent(
             state = ManageDukanUiState(),
             listener = PreviewManageDukanInteractionListener,
-            pager = Pager(
-                config = PagingConfig(),
-                pagingSourceFactory = { FakeProductPagingSource }
-            )
         )
     }
 }

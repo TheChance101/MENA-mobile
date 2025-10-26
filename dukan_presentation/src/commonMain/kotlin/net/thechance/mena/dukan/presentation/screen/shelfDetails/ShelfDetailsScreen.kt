@@ -20,9 +20,6 @@ import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.components.ShelfProducts
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.pagination.PagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener
@@ -48,7 +45,6 @@ fun ShelfDetailsScreen(
     ShelfDetailsContent(
         state = state,
         listener = viewModel,
-        pager = viewModel.pagerProduct
     )
 
 }
@@ -58,7 +54,6 @@ fun ShelfDetailsScreen(
 private fun ShelfDetailsContent(
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
-    pager: Pager<Int, ShelfDetailsUiState.ProductUiState>
 ) {
     OnSystemBackPressed(listener::onBackClicked)
 
@@ -75,7 +70,6 @@ private fun ShelfDetailsContent(
     ) {
         ShelfProducts(
             state = state,
-            pager = pager,
             listener = listener
         )
     }
@@ -125,16 +119,6 @@ private fun ShelfDetailsPreview() {
         ShelfDetailsContent(
             state = ShelfDetailsUiState(),
             listener = PreviewShelfDetailsInteractionListener,
-            pager = Pager(
-                config = PagingConfig(),
-                pagingSourceFactory = {
-                    object : PagingSource<Int, ShelfDetailsUiState.ProductUiState>() {
-                        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ShelfDetailsUiState.ProductUiState> {
-                            return LoadResult.Page(emptyList(), null, null)
-                        }
-                    }
-                }
-            )
         )
     }
 }

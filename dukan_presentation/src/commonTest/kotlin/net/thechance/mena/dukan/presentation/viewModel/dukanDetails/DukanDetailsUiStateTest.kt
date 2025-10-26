@@ -1,8 +1,8 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -25,7 +25,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(PagingData(), state.bestSellingProducts)
+        assertEquals(emptyFlow(), state.bestSellingProducts)
     }
 
     @Test
@@ -33,23 +33,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(PagingData(), state.shelves)
-    }
-
-    @Test
-    fun `default state SHOULD have LOADING shelvesState`() = runTest {
-        // When
-        val state = DukanDetailsUiState()
-        // Then
-        assertEquals(DukanDetailsUiState.ShelvesState.LOADING, state.shelvesState)
-    }
-
-    @Test
-    fun `default state SHOULD have LOADING productsState`() = runTest {
-        // When
-        val state = DukanDetailsUiState()
-        // Then
-        assertEquals(DukanDetailsUiState.ProductsState.LOADING, state.productsState)
+        assertEquals(emptyFlow(), state.shelves)
     }
 
     @Test
