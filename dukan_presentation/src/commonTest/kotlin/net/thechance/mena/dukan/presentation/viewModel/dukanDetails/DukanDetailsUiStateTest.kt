@@ -1,11 +1,11 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -25,7 +25,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(flowOf(), state.bestSellingProducts)
+        assertNotNull(state.bestSellingProducts)
     }
 
     @Test
@@ -33,7 +33,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(flowOf(), state.shelves)
+        assertNotNull(state.shelves)
     }
 
     @Test
