@@ -10,5 +10,5 @@ internal interface UserReelInteractionListener {
     fun onClickDescription(isCollapsed: Boolean)
     fun onClickPublisherInfo()
     fun increaseReelView(reelId: String)
-    fun onClickLike(reelId: String)
+    fun onClickLike(reelId: String, isLiked: Boolean)
 }
