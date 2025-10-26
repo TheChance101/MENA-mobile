@@ -234,14 +234,14 @@ class UserReelViewModelTest {
     @Test
     fun `onClickLike should optimistically update likes count and isLiked state`() = runTest {
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
-        everySuspend { mockReelsRepository.toggleReelLike("2") } returns reel2.copy(
+        everySuspend { mockReelsRepository.addReelLike("2") } returns reel2.copy(
             isLiked = true,
             likesCount = 51
         )
 
         advanceUntilIdle()
 
-        viewModel.onClickLike("2")
+        viewModel.onClickLike("2", false)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -258,11 +258,11 @@ class UserReelViewModelTest {
     fun `onClickLike should update reel with server response on success`() = runTest {
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
         val updatedReel = reel2.copy(isLiked = true, likesCount = 51)
-        everySuspend { mockReelsRepository.toggleReelLike("2") } returns updatedReel
+        everySuspend { mockReelsRepository.addReelLike("2") } returns updatedReel
 
         advanceUntilIdle()
 
-        viewModel.onClickLike("2")
+        viewModel.onClickLike("2", false)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -278,7 +278,7 @@ class UserReelViewModelTest {
     @Test
     fun `onClickLike should revert optimistic update when repository throws exception`() = runTest {
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
-        everySuspend { mockReelsRepository.toggleReelLike("2") } throws Exception("Like failed")
+        everySuspend { mockReelsRepository.addReelLike("2") } throws Exception("Like failed")
 
         advanceUntilIdle()
 
@@ -286,7 +286,7 @@ class UserReelViewModelTest {
             val state = awaitItem()
             val initialReel = state.reels.asSnapshot().first()
 
-            viewModel.onClickLike("2")
+            viewModel.onClickLike("2", false)
 
             advanceUntilIdle()
 
@@ -304,7 +304,7 @@ class UserReelViewModelTest {
     fun `onClickLike should decrement likes when reel is already liked`() = runTest {
         val likedReel = reel2.copy(isLiked = true, likesCount = 51)
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns listOf(likedReel)
-        everySuspend { mockReelsRepository.toggleReelLike("2") } returns likedReel.copy(
+        everySuspend { mockReelsRepository.addReelLike("2") } returns likedReel.copy(
             isLiked = false,
             likesCount = 50
         )
@@ -312,7 +312,7 @@ class UserReelViewModelTest {
         advanceUntilIdle()
         val initialReel = viewModel.state.value.reels.asSnapshot().first()
 
-        viewModel.onClickLike("2")
+        viewModel.onClickLike("2", true)
         advanceUntilIdle()
 
         val updatedReel = viewModel.state.value.reels.asSnapshot().first()
@@ -324,13 +324,13 @@ class UserReelViewModelTest {
     @Test
     fun `updateReelInPagingData should only update the specific reel by id`() = runTest {
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
-        everySuspend { mockReelsRepository.toggleReelLike("2") } returns reel2.copy(
+        everySuspend { mockReelsRepository.addReelLike("2") } returns reel2.copy(
             isLiked = true,
             likesCount = 51
         )
 
         advanceUntilIdle()
-        viewModel.onClickLike("2")
+        viewModel.onClickLike("2", true)
         advanceUntilIdle()
 
         viewModel.state.test {

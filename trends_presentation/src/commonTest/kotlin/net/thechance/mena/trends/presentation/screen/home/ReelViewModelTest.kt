@@ -82,9 +82,9 @@ class ReelViewModelTest {
     }
 
     @Test
-    fun `onClickLike should increment likes count`() = runTest {
+    fun `onClickLike should increment likes count if reel is not liked`() = runTest {
         everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
-        everySuspend { repository.toggleReelLike("1") } returns testReel.copy(
+        everySuspend { repository.addReelLike("1") } returns testReel.copy(
             isLiked = true,
             likesCount = testReel.likesCount + 1
         )
@@ -96,7 +96,7 @@ class ReelViewModelTest {
 
         viewModel.state.test {
 
-            viewModel.onClickLike("1")
+            viewModel.onClickLike("1", false)
             advanceUntilIdle()
 
             val state = awaitItem()
@@ -110,14 +110,14 @@ class ReelViewModelTest {
     }
 
     @Test
-    fun `onClickLike should revert optimistic update when toggleReelLike fails`() = runTest {
+    fun `onClickLike should decrement likes count if reel is liked`() = runTest {
         everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
-        everySuspend { repository.toggleReelLike("1") } throws Exception("Network error")
+        everySuspend { repository.addReelLike("1") } throws Exception("Network error")
 
         advanceUntilIdle()
         val initial = viewModel.state.value.reels.asSnapshot().first()
 
-        viewModel.onClickLike("1")
+        viewModel.onClickLike("1", true)
         advanceUntilIdle()
 
         val reverted = viewModel.state.value.reels.asSnapshot().first()

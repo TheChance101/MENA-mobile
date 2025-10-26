@@ -15,6 +15,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.repository.CategoryRepository
+import net.thechance.mena.trends.presentation.utils.allCategories
+import net.thechance.mena.trends.presentation.utils.selectedCategories
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -29,7 +31,7 @@ class MainContainerViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        everySuspend { repository.isCategoriesAlreadySelectedByUser() } returns true
+        everySuspend { repository.getAllCategories() } returns selectedCategories
         viewModel = MainContainerViewModel(repository, testDispatcher)
     }
 
@@ -40,14 +42,17 @@ class MainContainerViewModelTest {
 
     @Test
     fun `handleGetIsUserCategorySet should update state with isUserCategorySet`() = runTest {
-        viewModel.onUserCategoryStatusReceived(isUserCategorySet = true)
-        assertThat(viewModel.state.value.isCategoriesAlreadySelectedByUser).isEqualTo(true)
+        viewModel.onUserCategoryStatusReceived(selectedCategories)
+        val isUserCategorySet = selectedCategories.any { it.isSelected }
+        assertThat(viewModel.state.value.isCategoriesAlreadySelectedByUser).isEqualTo(
+            isUserCategorySet
+        )
     }
 
     @Test
     fun `handleGetIsUserCategorySet should navigate to home screen when isUserCategorySet is true`() =
         runTest {
-            viewModel.onUserCategoryStatusReceived(isUserCategorySet = true)
+            viewModel.onUserCategoryStatusReceived(selectedCategories)
             viewModel.effect.test {
                 val effect = awaitItem()
                 assertThat(effect).isEqualTo(MainContainerEffect.NavigateToReelHome)
@@ -61,7 +66,7 @@ class MainContainerViewModelTest {
             val viewModel =
                 MainContainerViewModel(repository = repository, defaultDispatcher = testDispatcher)
             viewModel.effect.test {
-                viewModel.onUserCategoryStatusReceived(false)
+                viewModel.onUserCategoryStatusReceived(allCategories)
                 assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToCategoryPick)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -69,7 +74,7 @@ class MainContainerViewModelTest {
 
     @Test
     fun `loadCategories should update error state when repository throws exception`() = runTest {
-        everySuspend { repository.isCategoriesAlreadySelectedByUser() } throws Exception()
+        everySuspend { repository.getAllCategories() } throws Exception()
 
         val viewModel = MainContainerViewModel(repository, testDispatcher)
 

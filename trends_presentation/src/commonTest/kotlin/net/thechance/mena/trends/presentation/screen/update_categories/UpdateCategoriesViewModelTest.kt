@@ -14,7 +14,7 @@ import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.utils.TestExtensions
-import net.thechance.mena.trends.presentation.utils.categories
+import net.thechance.mena.trends.presentation.utils.selectedCategories
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,7 +32,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
 
     @BeforeTest
     fun setup() {
-        everySuspend { repository.getAllCategories() } returns categories
+        everySuspend { repository.getAllCategories() } returns selectedCategories
     }
 
     @Test
@@ -50,7 +50,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
             viewModel.state.test {
                 skipItems(1)
                 val state = awaitItem()
-                assertEquals(categories.size, state.categories.size)
+                assertEquals(selectedCategories.size, state.categories.size)
                 cancelAndIgnoreRemainingEvents()
             }
         }
