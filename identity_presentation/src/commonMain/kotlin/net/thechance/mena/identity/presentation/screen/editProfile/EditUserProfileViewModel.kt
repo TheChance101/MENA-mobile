@@ -1,8 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.editProfile
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.decodeToImageBitmap
-import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -14,13 +12,14 @@ import mena.identity_presentation.generated.resources.error_last_name_required
 import mena.identity_presentation.generated.resources.error_username_required
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.CachedImageRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.getCurrentDate
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.PermissionManager
-import net.thechance.mena.identity.domain.repository.CachedImageRepository
+import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -28,6 +27,7 @@ class EditUserProfileViewModel(
     private val userRepository: UserRepository,
     private val permissionManager: PermissionManager,
     private val cachedImageRepository: CachedImageRepository,
+    private val imageDecoder: ImageDecoder,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
@@ -136,7 +136,7 @@ class EditUserProfileViewModel(
         userRepository.updateUser(
             user = user,
             shouldUpdateImage = value.shouldUpdateImage,
-            imageByteArray = value.profileImageBitmap?.encodeToByteArray()
+            imageByteArray = value.profileImageBitmap?.let{imageDecoder.encodeImage(it)}
         )
     }
 
@@ -191,13 +191,13 @@ class EditUserProfileViewModel(
         }
     }
 
-    override fun onRequireCropImage(imageByteArray: ByteArray) {
-        cacheRequiredCropImage(imageByteArray)
+    override fun onRequireCropImage(imageBitmap: ImageBitmap) {
+        cacheRequiredCropImage(imageBitmap)
     }
-    private fun cacheRequiredCropImage(imageByteArray: ByteArray){
+    private fun cacheRequiredCropImage(imageBitmap: ImageBitmap){
         tryToExecute(
             function = {
-                cachedImageRepository.cacheImage(PROFILE_IMAGE, imageByteArray)
+                cachedImageRepository.cacheImage(PROFILE_IMAGE, imageDecoder.encodeImage(imageBitmap))
             },
             onError = ::onErrorOccurred,
             onSuccess = ::handleCacheImageSuccess,
@@ -209,11 +209,10 @@ class EditUserProfileViewModel(
             EditUserProfileUIEffect.NavigateToCropScreen(
                 imageKey = PROFILE_IMAGE,
                 onResult = { croppedImageKey ->
+                    val imageByteArray = cachedImageRepository.getCachedImage(croppedImageKey)
                     updateState {
                         copy(
-                            profileImageBitmap = cachedImageRepository.getCachedImage(
-                                croppedImageKey
-                            )?.decodeToImageBitmap(),
+                            profileImageBitmap =imageByteArray?.let { imageDecoder.decodeImage(it)} ,
                             shouldUpdateImage = true
                         )
                     }
