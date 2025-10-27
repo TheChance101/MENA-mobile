@@ -11,15 +11,15 @@ import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 
 internal suspend inline fun <reified T> wrapApiCall(
-    noinline execute: suspend () -> HttpResponse
+    noinline block: suspend () -> HttpResponse
 ): T {
-    val response = executeRequest(execute)
+    val response = executeRequest(block)
     return handleResponse(response)
 }
 
-private suspend fun executeRequest(execute: suspend () -> HttpResponse): HttpResponse {
+private suspend fun executeRequest(block: suspend () -> HttpResponse): HttpResponse {
     return try {
-        execute()
+        block()
     } catch (e: IOException) {
         throw NoInternetException(e.message.orEmpty())
     } catch (e: Exception) {
@@ -68,6 +68,4 @@ suspend fun parseErrorMessage(response: HttpResponse): String {
     }
 }
 
-private fun HttpStatusCode.isServerError(): Boolean {
-    return this.value in 500..599
-}
+private fun HttpStatusCode.isServerError(): Boolean = this.value in 500..599
