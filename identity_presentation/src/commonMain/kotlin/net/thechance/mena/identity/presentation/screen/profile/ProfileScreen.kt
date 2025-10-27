@@ -115,7 +115,7 @@ class ProfileScreen : BaseScreen<
                                 "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
                             ),
                             onDismiss = listener::onDismissShareProfileDialog,
-                            fullName = "Hassan Nabil",
+                            fullName = state.fullName,
                             onShareProfile = {},
                             onClipboardContent = { },
                             onDownload = {},
