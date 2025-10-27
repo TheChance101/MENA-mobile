@@ -1,5 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -115,13 +118,14 @@ private fun UploadReelScreenContent(
                 onCardClick = launcher::launch,
                 onEditClick = launcher::launch
             )
-
-            if (!state.uploadingState.isIdle) {
+            AnimatedVisibility(
+                visible = !state.uploadingState.isIdle,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 VideoLoadingCardItem(
                     modifier = Modifier.padding(
-                        top = state.thumbnail?.let {
-                            Theme.spacing._24
-                        } ?: Theme.spacing._8
+                        top = state.thumbnail?.let { Theme.spacing._24 } ?: Theme.spacing._8
                     ),
                     title = state.selectedFile.name,
                     sizeUploaded = state.sizeUploaded,

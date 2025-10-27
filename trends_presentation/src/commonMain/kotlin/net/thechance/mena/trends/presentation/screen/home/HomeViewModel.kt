@@ -99,4 +99,9 @@ internal class HomeViewModel(
     override fun onClickLike(reelId: String) {
         toggleReelLike(reelId)
     }
+
+    override fun onClickRetry() {
+        updateState { copy(error = null) }
+        getFeedReels()
+    }
 }

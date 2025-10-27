@@ -1,11 +1,13 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,9 +36,11 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
 import mena.trends_presentation.generated.resources.ic_arrow_left
+import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
+import mena.trends_presentation.generated.resources.play_now
 import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -44,12 +48,17 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.segment.Segment
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -84,34 +93,60 @@ private fun ManageTrendsScreenContent(
     listener: ManageTrendsInteractionListener
 ) {
     Scaffold(
-        topBar = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            UserAvatar(
-                profileImageUrl = state.profile.profileImageUrl,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+        topBar = {
+            AnimatedVisibility(
+                visible = state.isLoading.not(),
+                content = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) })
+        },
+        content = {
+            AnimatedVisibility(
+                visible = state.isLoading,
+                content = { LoadingProgressBar() }
             )
 
-            Text(
-                text = state.profile.userName,
-                style = Theme.typography.label.medium,
-                modifier = Modifier
-                    .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
-                    .align(Alignment.CenterHorizontally)
+            AnimatedVisibility(
+                visible = state.error == ErrorState.NoInternet,
+                content = { NoConnection { listener.onClickRetry() } }
             )
 
-            SegmentSection(
-                reels = state.reels.collectAsLazyPagingItems(),
-                onTrendClick = listener::onClickReel,
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                trendsTitle = stringResource(Res.string.my_trends),
-                favoriteTitle = stringResource(Res.string.favorite)
+            AnimatedVisibility(
+                visible = state.error == null && state.isLoading.not(),
+                content = { ManageTrendsScreenBody(listener, state) }
             )
         }
+    )
+}
+
+@Composable
+private fun ManageTrendsScreenBody(
+    listener: ManageTrendsInteractionListener,
+    state: ManageTrendsScreenState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        UserAvatar(
+            profileImageUrl = state.profile.profileImageUrl,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+
+        Text(
+            text = state.profile.userName,
+            style = Theme.typography.label.medium,
+            modifier = Modifier
+                .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        SegmentSection(
+            reels = state.reels.collectAsLazyPagingItems(),
+            onTrendClick = listener::onClickReel,
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            trendsTitle = stringResource(Res.string.my_trends),
+            favoriteTitle = stringResource(Res.string.favorite)
+        )
     }
 }
 
@@ -162,7 +197,10 @@ private fun SegmentSection(
                     state = rememberLazyGridState(),
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
-                    horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._4, Alignment.CenterHorizontally),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = Theme.spacing._4,
+                        Alignment.CenterHorizontally
+                    ),
                     contentPadding = PaddingValues(bottom = Theme.spacing._16)
                 ) {
                     items(key = reels.itemKey(), count = reels.itemCount) { index ->
@@ -197,16 +235,47 @@ private fun TrendItem(
 ) {
     Box(
         modifier = modifier
-            .size(width = 106.dp, height = 164.dp)
+            .aspectRatio(106f / 164f)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onTrendClick(item.id) }
-            .background(color = Theme.colorScheme.background.surfaceHigh)
+            .background(color = Theme.colorScheme.background.surfaceLow)
     ) {
-        AsyncImage(
-            model = item.thumbnailUrl,
-            contentDescription = stringResource(resource = Res.string.trend_image_desc),
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+        AnimatedVisibility (visible = item.thumbnailUrl.isNotEmpty()) {
+            AsyncImage(
+                model = item.thumbnailUrl,
+                contentDescription = stringResource(resource = Res.string.trend_image_desc),
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        AnimatedVisibility(visible = item.thumbnailUrl.isEmpty()){
+            Icon(
+                painter = painterResource(Res.drawable.ic_paly_now),
+                contentDescription = stringResource(Res.string.play_now),
+                tint = Theme.colorScheme.primary.onPrimary,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(color = Theme.colorScheme.shadeTertiary)
+                    .padding(7.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ManageMyTrendsPreview() {
+    MenaTheme {
+        ManageTrendsScreenBody(
+            state = ManageTrendsScreenState(),
+            listener = object : ManageTrendsInteractionListener {
+                override fun onClickReel(reelId: String) {}
+                override fun onClickBack() {}
+                override fun onClickRetry() {}
+            }
         )
     }
 }
