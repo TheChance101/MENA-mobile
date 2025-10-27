@@ -39,6 +39,7 @@ import net.thechance.mena.dukan.presentation.screen.main.components.categorySect
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.editorPickDukanItems
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewMainScreenInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
@@ -102,7 +103,8 @@ private fun MainContent(
 ) {
 
     AnimatedContent(
-        targetState = state.isConnected
+        targetState = state.isConnected,
+        transitionSpec = { fadeTransitionSpec() }
     ) { isConnected ->
         if (!isConnected) {
             NoInternetContent(
