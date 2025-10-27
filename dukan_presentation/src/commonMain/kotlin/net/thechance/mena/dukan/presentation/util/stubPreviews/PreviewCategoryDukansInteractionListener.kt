@@ -7,4 +7,5 @@ object PreviewCategoryDukansInteractionListener : CategoryDukansInteractionListe
     override fun onBackClick() {}
     override fun onDukanClick(dukan: DukanUiState) {}
     override fun onFavoriteClick(dukan: DukanUiState) {}
+    override fun onRetryClicked() {}
 }

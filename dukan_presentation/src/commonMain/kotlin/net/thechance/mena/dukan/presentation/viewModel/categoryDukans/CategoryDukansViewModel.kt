@@ -38,6 +38,10 @@ class CategoryDukansViewModel(
         )
     }
 
+    override fun onRetryClicked() {
+        loadCategory()
+    }
+
     private fun toggleFavoriteStatus(dukan: DukanUiState) {
         if (dukan.isFavorite) {
             // TODO remove dukan from favorites

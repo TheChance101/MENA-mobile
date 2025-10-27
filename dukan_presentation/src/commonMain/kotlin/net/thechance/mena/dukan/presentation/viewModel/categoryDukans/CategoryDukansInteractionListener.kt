@@ -4,4 +4,5 @@ interface CategoryDukansInteractionListener {
     fun onBackClick()
     fun onDukanClick(dukan: CategoryDukansUiState.DukanUiState)
     fun onFavoriteClick(dukan: CategoryDukansUiState.DukanUiState)
+    fun onRetryClicked()
 }
