@@ -40,6 +40,12 @@ internal class CategoryRepositoryImpl(
         }
     }
 
+    override suspend fun isCategoriesAlreadySelectedByUser(): Boolean {
+        return safeApiCall<List<CategoryDto>> {
+            networkClient.get(CATEGORIES_ENDPOINT)
+        }.any { it.isSelected == true }
+    }
+
     override suspend fun updateUserCategories(
         originalSelectedIds: List<String>,
         currentSelectedIds: List<String>

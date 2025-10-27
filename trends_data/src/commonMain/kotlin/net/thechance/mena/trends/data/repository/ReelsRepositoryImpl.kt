@@ -30,12 +30,12 @@ import net.thechance.mena.trends.data.util.NetworkEndpoint.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PROFILE_REELS_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.REELS_FEED_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkEndpoint.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkEndpoint.THUMBNAIL_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkEndpoint.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkEndpoint.TRENDS_PATH
-import net.thechance.mena.trends.data.util.NetworkEndpoint.VIDEO
 import net.thechance.mena.trends.data.util.NetworkEndpoint.VIEW_REEL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL
+import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL_MIME_TYPE
+import net.thechance.mena.trends.data.util.NetworkKeys.VIDEO
 import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
