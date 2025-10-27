@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
-import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
@@ -12,7 +11,6 @@ import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -178,7 +176,7 @@ class ManageDukanViewModelTest {
 
     @Test
     fun `onBackButtonClicked SHOULD emit NavigateBack effect`() = runTest {
-        manageDukanViewModel.onBackButtonClicked()
+        manageDukanViewModel.onBackClicked()
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateBack, awaitItem())
@@ -228,7 +226,7 @@ class ManageDukanViewModelTest {
     fun `onProductClick SHOULD emit NavigateToProductDetails effect`() = runTest {
         val product = fakeProducts().first().toUiState()
 
-        manageDukanViewModel.onProductClick(product)
+        manageDukanViewModel.onProductClicked(product)
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateToProductDetails, awaitItem())
@@ -495,7 +493,7 @@ class ManageDukanViewModelTest {
         runTest {
             manageDukanViewModel.updateState {
                 copy(
-                    products = flowOf(PagingData.from(listOf(fakeProducts().first().toUiState())))
+                    totalProducts = 1
                 )
             }
 

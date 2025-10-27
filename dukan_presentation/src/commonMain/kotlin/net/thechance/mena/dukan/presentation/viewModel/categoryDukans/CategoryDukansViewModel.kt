@@ -23,15 +23,15 @@ class CategoryDukansViewModel(
         loadCategory()
     }
 
-    override fun onBackClick() {
+    override fun onBackClicked() {
         emitEffect(CategoryDukansEffects.NavigateBack)
     }
 
-    override fun onDukanClick(dukan: DukanUiState) {
+    override fun onDukanClicked(dukan: DukanUiState) {
         emitEffect(CategoryDukansEffects.NavigateToDukanDetails(dukan.id))
     }
 
-    override fun onFavoriteClick(dukan: DukanUiState) {
+    override fun onFavoriteClicked(dukan: DukanUiState) {
         tryToExecute(
             block = { toggleFavoriteStatus(dukan) },
             onSuccess = { updateFavoriteState(dukan) }

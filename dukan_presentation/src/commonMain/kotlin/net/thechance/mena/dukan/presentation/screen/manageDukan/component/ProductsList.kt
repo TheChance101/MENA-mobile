@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.manageDukan.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +27,8 @@ fun ManageDukanProductsList(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = Theme.spacing._8),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16)
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(
             count = products.itemCount,

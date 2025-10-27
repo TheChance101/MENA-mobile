@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineScope
@@ -52,40 +54,51 @@ fun NoImageDukanShelves(
         ) { alpha -> chipsAlpha = alpha }
     }
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = Theme.spacing._8),
-        state = lazyColumnListState
+    AnimatedContent(
+        targetState = shelves.loadState.refresh,
+        label = "ShelvesContentAnimation"
     ) {
+        when (it) {
+            LoadState.Loading -> NoImageDukanShelvesSkeleton()
+            is LoadState.NotLoading -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = Theme.spacing._8),
+                    state = lazyColumnListState
+                ) {
 
-        item(key = "BestSelling") {
-            BestSellingNoImageDukan(
-                state = state,
-                listener = listener
-            )
-        }
-        stickyHeader(key = "ShelvesChips") {
-            NoImageDukanShelvesChips(
-                shelfs = shelves,
-                onClick = { shelfId, index ->
-                    listener.onShelfClicked(shelfId)
-                    coroutineScope.launch {
-                        lazyColumnListState.animateScrollToItem(index + SHELVES_OFFSET)
+                    item(key = "BestSelling") {
+                        BestSellingNoImageDukan(
+                            state = state,
+                            listener = listener
+                        )
                     }
-                },
-                alpha = chipsAlpha,
-                selectedShelfId = state.shelfIdSelected,
-                dukanColor = state.dukanInfo.color
-            )
-        }
+                    stickyHeader(key = "ShelvesChips") {
+                        NoImageDukanShelvesChips(
+                            shelfs = shelves,
+                            onClick = { shelfId, index ->
+                                listener.onShelfClicked(shelfId)
+                                coroutineScope.launch {
+                                    lazyColumnListState.animateScrollToItem(index + SHELVES_OFFSET)
+                                }
+                            },
+                            alpha = chipsAlpha,
+                            selectedShelfId = state.shelfIdSelected,
+                            dukanColor = state.dukanInfo.color
+                        )
+                    }
 
-        items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) {
-            val shelf = shelves[it] ?: return@items
-            NoImageDukanShelfWithProducts(
-                shelf = shelf,
-                listener = listener,
-                dukanColor = state.dukanInfo.color
-            )
+                    items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) {
+                        val shelf = shelves[it] ?: return@items
+                        NoImageDukanShelfWithProducts(
+                            shelf = shelf,
+                            listener = listener,
+                            dukanColor = state.dukanInfo.color
+                        )
+                    }
+                }
+            }
+            is LoadState.Error -> {}
         }
     }
 }

@@ -15,7 +15,6 @@ import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
@@ -51,8 +50,7 @@ fun MockRequestHandleScope.defaultCreateResponse() = respond(
 
 fun MockRequestHandleScope.defaultStylesResponse() = respond(
     content = jsonSerialization.encodeToString(
-        ListSerializer(String.serializer()),
-        listOf("WIDE_IMAGE", "NO_IMAGE")
+        mapOf("styles" to listOf("WIDE_IMAGE", "NO_IMAGE"))
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
