@@ -6,17 +6,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PrayerTimesDto(
     @SerialName("hijriDate")
-    val hijriDate: String? = "",
+    val hijriDate: String? = null,
     @SerialName("fajr")
-    val fajr: String? = "",
+    val fajr: String? = null,
     @SerialName("sunrise")
-    val sunrise: String? = "",
+    val sunrise: String? = null,
     @SerialName("dhuhr")
-    val dhuhr: String? = "",
+    val dhuhr: String? = null,
     @SerialName("asr")
-    val asr: String? = "",
+    val asr: String? = null,
     @SerialName("maghrib")
-    val maghrib: String? = "",
+    val maghrib: String? = null,
     @SerialName("isha")
-    val isha: String? = ""
+    val isha: String? = null
 )
