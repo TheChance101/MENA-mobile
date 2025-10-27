@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_edit_shelf
+import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
 import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
@@ -29,7 +30,7 @@ class ManageShelfViewModel(
 
     init {
         val shelfTitle: String = savedStateHandle[ManageShelfArgs.shelfTitle] ?: ""
-        updateState { copy(shelfTitle = shelfTitle) }
+        updateState { copy(oldShelfTitle = shelfTitle) }
     }
 
     override fun onBackClicked() {
@@ -53,6 +54,11 @@ class ManageShelfViewModel(
         val trimmedTitle = state.value.shelfTitle.trim()
         if (!isTitleValid(trimmedTitle)) {
             showErrorSnackBar(Res.string.shelf_name_is_invalid)
+            return
+        }
+
+        if (state.value.oldShelfTitle == state.value.shelfTitle) {
+            showErrorSnackBar(Res.string.error_same_name_of_shelf)
             return
         }
 

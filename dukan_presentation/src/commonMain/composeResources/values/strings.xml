@@ -137,4 +137,5 @@
     <string name="no_dukans_body">It will appear here when it added.</string>
     <string name="error_edit_shelf">Error editing shelf</string>
     <string name="edit_shelf_successfully">Edit shelf successfully.</string>
+    <string name="error_same_name_of_shelf">You cannot use the same name as the current shelf.</string>
 </resources>

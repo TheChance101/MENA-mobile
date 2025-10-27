@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.error_edit_shelf
+import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
@@ -29,6 +30,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -216,4 +218,31 @@ class ManageShelfViewModelTest {
         val state = manageShelfViewModel.state.value
         assertTrue(state.snackBarState == null)
     }
+
+    @Test
+    fun `onSaveClicked SHOULD show error snackbar when shelf name is same as current`() = runTest {
+        val shelfTitle = "My Shelf"
+        val savedStateHandle = SavedStateHandle(
+            mapOf(
+                ManageShelfArgs.shelfId to "shelf-123",
+                ManageShelfArgs.shelfTitle to shelfTitle
+            )
+        )
+        val viewModel = ManageShelfViewModel(
+            shelfRepository = shelfRepository,
+            savedStateHandle = savedStateHandle,
+            defaultDispatcher = StandardTestDispatcher(testScheduler)
+        )
+
+        viewModel.onShelfNameChange(shelfTitle)
+
+        viewModel.onSaveClicked()
+        testScheduler.advanceUntilIdle()
+
+        val snackBarState = viewModel.state.value.snackBarState
+        assertNotNull(snackBarState)
+        assertEquals(Res.string.error_same_name_of_shelf, snackBarState.message)
+        assertEquals(SnackBarType.ERROR, snackBarState.snackBarType)
+    }
+
 }
