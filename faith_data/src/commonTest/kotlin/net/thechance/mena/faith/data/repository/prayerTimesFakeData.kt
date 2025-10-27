@@ -11,7 +11,7 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 fun getPrayerTimesFakeData(
-    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    timeZone: TimeZone = TimeZone.of("Africa/Cairo"),
     sunriseTime: Instant = LocalDateTime(
         year = 2025,
         month = 10,
@@ -58,13 +58,13 @@ fun getPrayerTimesFakeData(
 ): List<PrayerTime> {
     return listOf(
         PrayerTime(
-            name = PrayerName.SUNRISE,
-            time = sunriseTime,
+            name = PrayerName.FAJR,
+            time = fajrTime,
             hijriDate = hijriDate
         ),
         PrayerTime(
-            name = PrayerName.FAJR,
-            time = fajrTime,
+            name = PrayerName.SUNRISE,
+            time = sunriseTime,
             hijriDate = hijriDate
         ),
         PrayerTime(
@@ -93,17 +93,17 @@ fun getPrayerTimesFakeData(
 private val fakePrayerTimesDto = getFakePrayerTimesDto()
 
 fun getFakePrayerTimesDto(
-    sunrise: String? = "06:52",
-    fajr: String? = "05:25",
-    dhuhr: String? = "12:40",
-    asr: String? = "15:59",
-    maghrib: String? = "18:27",
-    isha: String? = "19:45",
+    sunrise: String? = "2025-10-10T03:52:00Z",
+    fajr: String? = "2025-10-10T02:25:00Z",
+    dhuhr: String? = "2025-10-10T09:40:00Z",
+    asr: String? = "2025-10-10T12:59:00Z",
+    maghrib: String? = "2025-10-10T15:27:00Z",
+    isha: String? = "2025-10-10T16:45:00Z",
     hijriDate: String? = "18-04-1447",
 ): PrayerTimesDto = PrayerTimesDto(
     hijriDate = hijriDate,
-    sunrise = sunrise,
     fajr = fajr,
+    sunrise = sunrise,
     dhuhr = dhuhr,
     asr = asr,
     maghrib = maghrib,

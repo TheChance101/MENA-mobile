@@ -46,4 +46,4 @@ fun PrayerTimesDto.toDomain(): List<PrayerTime> {
 @OptIn(ExperimentalTime::class)
 private fun String?.toInstant(): Instant = runCatching {
     Instant.parse(this.orEmpty())
-}.getOrDefault(Instant.DISTANT_FUTURE)////////
+}.getOrDefault(Instant.DISTANT_PAST)

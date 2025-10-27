@@ -1,7 +1,8 @@
 package net.thechance.mena.faith.data.repository
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
+import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import net.thechance.mena.faith.data.remote.mapper.prayertime.toDomain
 import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
@@ -30,10 +31,8 @@ class PrayerTimeRepositoryImpl(
         )
     }.toDomain()
 
-    private fun Instant.toDateString(timeZone: TimeZone): String {
-        val dateTime = this.toLocalDateTime(timeZone = timeZone)
-        val month = dateTime.month.number.toString().padStart(2, '0')
-        val day = dateTime.day.toString().padStart(2, '0')
-        return "$day-$month-${dateTime.year}"
-    }
+    private fun Instant.toDateString(timeZone: TimeZone): String =
+        this.toLocalDateTime(timeZone = timeZone).date.format(
+            format = LocalDate.Formats.ISO
+        )
 }
