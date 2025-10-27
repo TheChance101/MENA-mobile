@@ -221,25 +221,12 @@ class ManageShelfViewModelTest {
 
     @Test
     fun `onSaveClicked SHOULD show error snackbar when shelf name is same as current`() = runTest {
-        val shelfTitle = "My Shelf"
-        val savedStateHandle = SavedStateHandle(
-            mapOf(
-                ManageShelfArgs.shelfId to "shelf-123",
-                ManageShelfArgs.shelfTitle to shelfTitle
-            )
-        )
-        val viewModel = ManageShelfViewModel(
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            defaultDispatcher = StandardTestDispatcher(testScheduler)
-        )
+        manageShelfViewModel.onShelfNameChange(expectedShelfTitle)
 
-        viewModel.onShelfNameChange(shelfTitle)
-
-        viewModel.onSaveClicked()
+        manageShelfViewModel.onSaveClicked()
         testScheduler.advanceUntilIdle()
 
-        val snackBarState = viewModel.state.value.snackBarState
+        val snackBarState = manageShelfViewModel.state.value.snackBarState
         assertNotNull(snackBarState)
         assertEquals(Res.string.error_same_name_of_shelf, snackBarState.message)
         assertEquals(SnackBarType.ERROR, snackBarState.snackBarType)
