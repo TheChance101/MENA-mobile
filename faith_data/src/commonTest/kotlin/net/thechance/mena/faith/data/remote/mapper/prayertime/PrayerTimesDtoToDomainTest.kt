@@ -45,7 +45,7 @@ class PrayerTimesDtoToDomainTest {
             isha = null,
             hijriDate = null,
         )
-        val startOfDayInstant: Instant = Instant.fromEpochMilliseconds(0)
+        val startOfDayInstant: Instant = Instant.DISTANT_PAST
         val fakePrayerTimesWithDefaults: List<PrayerTime> = getPrayerTimesFakeData(
             sunriseTime = startOfDayInstant,
             fajrTime = startOfDayInstant,
