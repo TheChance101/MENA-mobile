@@ -26,11 +26,19 @@ class DukanCategoriesViewModel(
 
     private fun getCategories() {
         tryToExecute(
-            onStart = { updateState { copy(dukanCategoriesState = DukanCategoriesUiState.DukanCategoriesState.LOADING) } },
+            onStart = ::onGetCategoriesStart,
             block = ::getCategoriesBlock,
             onSuccess = ::onGetCategoriesSuccess,
             onError = ::onGetCategoriesError
         )
+    }
+
+    private fun onGetCategoriesStart() {
+        updateState {
+            copy(
+                dukanCategoriesState = DukanCategoriesUiState.DukanCategoriesState.LOADING
+            )
+        }
     }
 
     private suspend fun getCategoriesBlock(): List<DukanCategoriesUiState.CategoryUiState> {
@@ -48,7 +56,7 @@ class DukanCategoriesViewModel(
 
     private fun onGetCategoriesError(error: Throwable) {
         updateState { copy(dukanCategoriesState = DukanCategoriesUiState.DukanCategoriesState.ERROR) }
-        if ( error != NoInternetException() ) {
+        if (error != NoInternetException()) {
             showSnackBar(
                 message = Res.string.something_went_wrong,
                 type = SnackBarType.ERROR

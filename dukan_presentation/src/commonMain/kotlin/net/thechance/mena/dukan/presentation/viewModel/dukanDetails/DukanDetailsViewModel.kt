@@ -39,11 +39,19 @@ class DukanDetailsViewModel(
 
     private fun loadDukanDetails() {
         tryToExecute(
-            onStart = { updateState { copy(dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADING) } },
+            onStart = ::onLoadDukanDetailsStart,
             block = { dukanManagementRepository.getDukanDetailsByDukanId(dukanId) },
             onSuccess = ::onLoadDukanDetailsSuccess,
             onError = ::onLoadDukanDetailsError
         )
+    }
+
+    private fun onLoadDukanDetailsStart() {
+        updateState {
+            copy(
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADING
+            )
+        }
     }
 
     private fun onLoadDukanDetailsSuccess(dukanDetails: Dukan) {
@@ -57,10 +65,12 @@ class DukanDetailsViewModel(
     }
 
     private fun onLoadDukanDetailsError(throwable: Throwable) {
-        updateState { copy(
-            isDukanInfoLoading = false,
-            dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
-        ) }
+        updateState {
+            copy(
+                isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+            )
+        }
     }
 
     private fun isWideImageStyle() =
