@@ -15,7 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class ImageCropperViewModelTest {
+internal class ImageCropperComponentInteractionListenerViewModelTest {
     private val imageBitmap = mockk<ImageBitmap>()
     private lateinit var imageCropperViewModel: ImageCropperViewModel
     private val testDispatcher = StandardTestDispatcher()

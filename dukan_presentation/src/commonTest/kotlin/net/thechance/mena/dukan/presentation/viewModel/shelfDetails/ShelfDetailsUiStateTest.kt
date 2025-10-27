@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -10,15 +10,9 @@ class ShelfDetailsUiStateTest {
     @Test
     fun `default state SHOULD have empty PagingData for products shelf`() = runTest {
         val state = ShelfDetailsUiState()
-        assertEquals(PagingData(), state.productsShelf)
+        val data = state.productsShelf
+        assertEquals(data, emptyFlow())
     }
-
-    @Test
-    fun `default state SHOULD have LOADING productsState`() = runTest {
-        val state = ShelfDetailsUiState()
-        assertEquals(ShelfDetailsUiState.ProductsState.LOADING, state.productsState)
-    }
-
 
     @Test
     fun `ProductUiState SHOULD store its properties correctly`() = runTest {

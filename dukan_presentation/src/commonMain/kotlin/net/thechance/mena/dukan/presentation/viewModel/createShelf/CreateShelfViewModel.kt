@@ -38,13 +38,13 @@ class CreateShelfViewModel(
         }
     }
 
-    override fun onBackButtonClicked() {
+    override fun onBackClicked() {
         emitEffect(CreateShelfEffect.NavigateBack)
     }
 
 
     @OptIn(ExperimentalUuidApi::class)
-    override fun onCreateButtonClicked() {
+    override fun onCreateClicked() {
         val trimmedShelfTitle = state.value.shelfTitle.trim()
         if (!isTitleValid(trimmedShelfTitle)) {
             showErrorSnackBar(message = Res.string.shelf_name_is_invalid)

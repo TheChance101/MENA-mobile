@@ -198,7 +198,7 @@ class MainViewModelTest {
     @Test
     fun `onViewMoreButtonClick SHOULD emit NavigateCategoryToScreen`() = runTest {
 
-        mainViewModel.onViewMoreButtonClick()
+        mainViewModel.onViewMoreClicked()
         val actualEffect = mainViewModel.effect.first()
         val expectedEffect = MainScreenEffect.NavigateCategoryToScreen
 
@@ -212,7 +212,7 @@ class MainViewModelTest {
             val categoryId = "1"
             val categoryName = "Category 1"
 
-            mainViewModel.onCategorySelectedClick(categoryId, categoryName)
+            mainViewModel.onCategorySelectedClicked(categoryId, categoryName)
             val actualEffect = mainViewModel.effect.first()
             val expectedEffect =
                 MainScreenEffect.NavigateToDukansScreenByCategory(categoryId, categoryName)
@@ -224,7 +224,7 @@ class MainViewModelTest {
         runTest {
             val dukanId = "1"
 
-            mainViewModel.onNearestDukanClick(dukanId)
+            mainViewModel.onNearestDukanClicked(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
             val expectedEffect = MainScreenEffect.NavigateSelectedDukan(dukanId)
@@ -236,7 +236,7 @@ class MainViewModelTest {
         runTest {
             val dukanId = "1"
 
-            mainViewModel.onEditorPickDukanClick(dukanId)
+            mainViewModel.onEditorPickDukanClicked(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
             val expectedEffect = MainScreenEffect.NavigateSelectedDukan(dukanId)

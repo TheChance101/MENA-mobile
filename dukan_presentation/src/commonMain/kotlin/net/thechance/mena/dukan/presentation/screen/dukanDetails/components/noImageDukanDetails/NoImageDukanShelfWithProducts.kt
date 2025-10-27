@@ -33,7 +33,7 @@ fun NoImageDukanShelfWithProducts(
         ProductsHeader(
             shelfName = shelf.name,
             onClick = {
-                listener.onViewAllShelfProductsClicked(
+                listener.onViewAllProductsShelfClicked(
                     shelf.id,
                     shelf.name
                 )
@@ -53,7 +53,7 @@ fun NoImageDukanShelfWithProducts(
                         ProductActionNoImageDukan(
                             inCartQuantity = product.inCartQuantity,
                             dukanColor = dukanColor,
-                            onAddClick = { listener.onAddToCartClick(product.id) },
+                            onAddClick = { listener.onAddToCartClicked(product.id) },
                             onPlusClick = { },
                             onMinusClick = { }
                         )

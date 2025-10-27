@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
-import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import net.thechance.mena.trends.domain.exception.NoInternetException
 import net.thechance.mena.trends.presentation.shared.util.throttleFirst
 import kotlin.coroutines.cancellation.CancellationException
@@ -42,9 +40,7 @@ internal abstract class BaseViewModel<State, Effect>(
         _state.update { updater(it) }
     }
 
-    protected fun sendEffect(
-        effect: Effect,
-    ) {
+    protected fun sendEffect(effect: Effect) {
         viewModelScope.launch(Dispatchers.Main) {
             _effect.emit(effect)
         }
@@ -57,7 +53,7 @@ internal abstract class BaseViewModel<State, Effect>(
         onStart: () -> Unit = {},
         onEnd: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
-        scope: CoroutineScope = viewModelScope,
+        scope: CoroutineScope = viewModelScope
     ): Job {
         val exceptionHandler = CoroutineExceptionHandler { _, exception ->
             onError(ErrorState.RequestFailed(exception.message))
@@ -104,7 +100,7 @@ internal abstract class BaseViewModel<State, Effect>(
         }
     }
 
-    private suspend fun mapExceptionToErrorState(
+    protected open suspend fun mapExceptionToErrorState(
         throwable: Throwable,
         onError: suspend (ErrorState) -> Unit,
     ) {
@@ -112,8 +108,6 @@ internal abstract class BaseViewModel<State, Effect>(
         val message = throwable.message
         when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
-            is MaxFileSizeExceededException -> ErrorState.FileTooLarge
-            is MaxFileDurationExceededException -> ErrorState.DurationTooLarge
             else -> ErrorState.RequestFailed(message).also { logError(throwable) }
         }.also { errorState ->
             Logger.e(LOG_TAG){errorState.toString()}

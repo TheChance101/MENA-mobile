@@ -1,10 +1,14 @@
 package net.thechance.mena.trends.presentation.screen.home.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,9 +33,11 @@ import kotlinx.coroutines.launch
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_heart
+import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.just_now
 import mena.trends_presentation.generated.resources.likes
 import mena.trends_presentation.generated.resources.likes_suffix
+import mena.trends_presentation.generated.resources.play_now
 import mena.trends_presentation.generated.resources.profile_image
 import mena.trends_presentation.generated.resources.video_thumbnail
 import mena.trends_presentation.generated.resources.views
@@ -112,17 +118,33 @@ private fun ReelHeaderSection(
             }
         }
 
-        AsyncImage(
-            model = reel.thumbnailUrl,
-            contentDescription = stringResource(Res.string.video_thumbnail),
-            contentScale = ContentScale.Crop,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
-                .background(Theme.colorScheme.background.surfaceHigh)
-                .noRippleClickable { onReelClick() },
-            alignment = Alignment.Center
-        )
+        ) {
+            AsyncImage(
+                model = reel.thumbnailUrl,
+                contentDescription = stringResource(Res.string.video_thumbnail),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(500.dp)
+                    .background(Theme.colorScheme.background.surfaceHigh)
+                    .noRippleClickable { onReelClick() },
+                alignment = Alignment.Center
+            )
+            Icon(
+                painter = painterResource(Res.drawable.ic_paly_now),
+                contentDescription = stringResource(Res.string.play_now),
+                tint = Theme.colorScheme.primary.onPrimary,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(color = Theme.colorScheme.primary.onPrimaryHint)
+                    .padding(14.dp)
+                    .align(Alignment.Center)
+            )
+        }
     }
 }
 
@@ -139,7 +161,11 @@ private fun ReelFooterSection(
         animationSpec = tween(durationMillis = 500)
     )
 
-    if (reel.description.isNotBlank()) {
+   AnimatedVisibility(
+        visible = reel.description.isNotBlank(),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Text(
             text = reel.description,
             style = Theme.typography.body.small,
@@ -147,7 +173,13 @@ private fun ReelFooterSection(
             modifier = Modifier
                 .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
         )
-    } else {
+    }
+
+    AnimatedVisibility(
+        visible = reel.description.isBlank(),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Spacer(modifier = Modifier.height(Theme.spacing._12))
     }
 

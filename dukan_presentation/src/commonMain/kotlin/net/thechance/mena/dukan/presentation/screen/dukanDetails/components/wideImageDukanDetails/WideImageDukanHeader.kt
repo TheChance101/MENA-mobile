@@ -35,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
@@ -68,10 +69,14 @@ fun WideImageDukanAppBar(
 
 @Composable
 fun DukanHeader(state: DukanDetailsUiState.DukanInfo) {
-    Box {
+    Box(
+        modifier = Modifier.fillWidthOfParent(16.dp)
+    ) {
         DukanImageAndTitle(
             state = state,
-            modifier = Modifier.padding(end = Theme.spacing._4 + Theme.spacing._2)
+            modifier = Modifier.padding(
+                end = Theme.spacing._4 + Theme.spacing._2,
+            ).padding(horizontal = Theme.spacing._16)
         )
         DukanActionButtons(
             state = state,

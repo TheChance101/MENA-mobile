@@ -127,7 +127,7 @@ private fun ColumnScope.FeatureContent(activeFeature: Feature) {
                 Feature.TREND -> trendsApi.TabEntry()
                 Feature.FAITH -> faithApi.TabEntry()
                 Feature.PROFILE -> identityApi.ProfileTabEntry()
-                Feature.WALLET -> walletApi.WalletEntry()
+                Feature.WALLET -> walletApi.WalletEntry(navigateBack = {})
             }
         }
     }

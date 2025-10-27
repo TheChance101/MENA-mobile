@@ -1,5 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,13 +39,15 @@ import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
 import net.thechance.mena.trends.presentation.shared.component.VideoLoadingCardItem
-import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import net.thechance.mena.trends.presentation.shared.util.getFilePath
 import net.thechance.mena.trends.presentation.shared.util.isIdle
+import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
+import net.thechance.mena.trends.presentation.snackbar.SnackBarData
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,11 +59,21 @@ internal fun UploadReelScreen(
 
     val screenState by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+    val snackBarController = LocalSnackbarController.current
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is UploadReelScreenEffect.NavigateToAddDescription -> {
                 navController.navigate(Route.VideoDescription(effect.reelId))
+            }
+
+            is UploadReelScreenEffect.ShowErrorSnackbar -> {
+                snackBarController.showSnackBar(
+                    SnackBarData(
+                        message = getString(effect.errorState.toStringResource()),
+                        snackBarType = SnackBarStatus.Error,
+                    )
+                )
             }
 
             UploadReelScreenEffect.NavigateBack -> navController.popBackStack()
@@ -89,15 +104,7 @@ private fun UploadReelScreenContent(
     )
 
     Scaffold(
-        topBar = { UploadReelScreenTopBar(onBackClick = listener::onClickBack) },
-        snakeBar = {
-            state.errorState?.let { errorState ->
-               TrendsSnackBar(
-                   message = stringResource(errorState.toStringResource()),
-                   status = SnackBarStatus.Error
-               )
-            }
-        }
+        topBar = { UploadReelScreenTopBar(onBackClick = listener::onClickBack) }
     ) {
         Column(
             modifier = Modifier
@@ -115,13 +122,14 @@ private fun UploadReelScreenContent(
                 onCardClick = launcher::launch,
                 onEditClick = launcher::launch
             )
-
-            if (!state.uploadingState.isIdle) {
+            AnimatedVisibility(
+                visible = !state.uploadingState.isIdle,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 VideoLoadingCardItem(
                     modifier = Modifier.padding(
-                        top = state.thumbnail?.let {
-                            Theme.spacing._24
-                        } ?: Theme.spacing._8
+                        top = state.thumbnail?.let { Theme.spacing._24 } ?: Theme.spacing._8
                     ),
                     title = state.selectedFile.name,
                     sizeUploaded = state.sizeUploaded,

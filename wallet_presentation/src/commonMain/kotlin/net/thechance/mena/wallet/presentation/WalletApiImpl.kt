@@ -7,9 +7,9 @@ import net.thechance.mena.wallet.presentation.navigation.WalletMainScreenRoute
 import org.koin.core.annotation.Single
 
 @Single([WalletApi::class])
-class WalletApiImpl: WalletApi {
+class WalletApiImpl : WalletApi {
     @Composable
-    override fun WalletEntryCore(navigateBack: () -> Unit) {
+    override fun WalletEntry(navigateBack: () -> Unit) {
         NavigationHost(startDestination = WalletMainScreenRoute, navigateBack = navigateBack)
     }
 }

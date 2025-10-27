@@ -4,14 +4,14 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import org.jetbrains.compose.resources.StringResource
 
 interface ManageDukanInteractionListener {
-    fun onBackButtonClicked()
+    fun onBackClicked()
     fun onDismissSnackBar()
     fun onShelfAdded(message: StringResource, type: SnackBarType)
     fun onDismissDeleteShelfConfirmationDialog()
     fun onShowDeleteShelfDialog(shelfId: String)
     fun onDeleteConfirmed(shelfId: String)
     fun onAddProductClicked()
-    fun onProductClick(product: ManageDukanUiState.ProductUiState)
+    fun onProductClicked(product: ManageDukanUiState.ProductUiState)
     fun onEditShelfClicked()
     fun onAddShelfClicked()
     fun isShelfSelected(shelf: ManageDukanUiState.ShelfUiState): Boolean

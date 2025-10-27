@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,18 +22,15 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanIconButton
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelves
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanStoreImage
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakePagerShelvesDukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -41,7 +39,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun SmallImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    pagerShelf: Pager<Int, ShelfUiState>
 ) {
     OnSystemBackPressed(listener::onBackClicked)
 
@@ -50,6 +47,13 @@ fun SmallImageDukanDetails(
             SmallImageAppBar(listener)
         }
     ) {
+        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+            NoInternetContent(
+                onRetry = listener::onRetryClicked,
+                modifier = Modifier.fillMaxSize()
+            )
+            return@Scaffold
+        }
         Column {
             SmallImageDukanStoreImage(
                 dukanInfoState = state.dukanInfo,
@@ -83,7 +87,6 @@ fun SmallImageDukanDetails(
             SmallImageDukanShelves(
                 state = state,
                 listener = listener,
-                shelvesPager = pagerShelf,
                 modifier = Modifier.padding(top = Theme.spacing._16)
             )
         }
@@ -121,7 +124,6 @@ private fun SmallImageDukanDetailsPreview() {
         SmallImageDukanDetails(
             state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            pagerShelf = fakePagerShelvesDukanDetails
         )
     }
 }
@@ -131,9 +133,8 @@ private fun SmallImageDukanDetailsPreview() {
 private fun SmallImageDukanDetailsLoadingPreview() {
     MenaTheme {
         SmallImageDukanDetails(
-            state = fakeDukanDetails.copy(shelvesState = ShelvesState.LOADING),
+            state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
-            pagerShelf = fakePagerShelvesDukanDetails
         )
     }
 }

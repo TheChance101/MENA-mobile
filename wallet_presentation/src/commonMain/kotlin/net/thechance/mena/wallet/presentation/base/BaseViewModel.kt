@@ -3,6 +3,8 @@ package net.thechance.mena.wallet.presentation.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -14,7 +16,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
-import kotlin.coroutines.cancellation.CancellationException
 
 abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
     private val _state = MutableStateFlow(initialState)
@@ -43,20 +44,19 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
         onStart: (suspend () -> Unit)? = null,
         onFinish: (suspend () -> Unit)? = null,
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        inScope: CoroutineScope = viewModelScope
     ): Job {
-        return viewModelScope.launch(dispatcher) {
-            try {
-                onStart?.invoke()
-                callee().let { result ->
-                    onSuccess(result)
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (t: Throwable) {
-                onError(mapError(t))
-            } finally {
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            inScope.launch {
+                onError(mapError(throwable))
                 onFinish?.invoke()
             }
+        }
+
+        return inScope.launch(dispatcher + exceptionHandler) {
+            onStart?.invoke()
+            onSuccess(callee())
+            onFinish?.invoke()
         }
     }
 

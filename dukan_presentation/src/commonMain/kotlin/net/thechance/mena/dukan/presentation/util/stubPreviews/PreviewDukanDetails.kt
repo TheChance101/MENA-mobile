@@ -1,18 +1,17 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.DukanInfo
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelvesState
 
 val fakeDukanInfo = DukanInfo(
     name = "Calvin Klein store international",
     color = 0xFFFB5B5D,
     imageUrl = "https://dukan.photos/200"
 )
-
 
 val fakeProducts = listOf(
     ProductUiState(
@@ -83,13 +82,8 @@ val fakeShelves = listOf(
 
 val fakeDukanDetails = DukanDetailsUiState(
     dukanInfo = fakeDukanInfo,
-    shelvesState = ShelvesState.LOADED,
     shelfIdSelected = "1",
-    shelves = PagingData(fakeShelves),
-    productsState = DukanDetailsUiState.ProductsState.LOADED,
-    productsShelf = PagingData(items = fakeProducts)
+    shelves = flowOf(PagingData.from(fakeShelves)),
+    productsShelf = flowOf(PagingData.from(fakeProducts)),
+    bestSellingProducts = flowOf(PagingData.from(fakeProducts))
 )
-
-val fakePagerShelvesDukanDetails = createFakePager<Int, ShelfUiState>(fakeShelves)
-
-val fakePagerProductsDukanDetails = createFakePager<Int, ProductUiState>(fakeProducts)

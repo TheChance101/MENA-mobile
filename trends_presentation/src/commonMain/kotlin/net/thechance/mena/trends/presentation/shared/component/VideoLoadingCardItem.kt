@@ -95,8 +95,11 @@ fun VideoLoadingCardItem(
                     onAction = onAction
                 )
             }
-
-            if(uploadingState.isUploading) {
+            AnimatedVisibility(
+                visible = uploadingState.isUploading,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 ProgressBar(
                     modifier = Modifier
                         .padding(top = Theme.spacing._4)

@@ -80,9 +80,9 @@ class WalletViewModelTest {
         everySuspend { balanceRepository.getBalance() } throws expectedException
 
         val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
+        advanceUntilIdle()
 
         viewModel.state.test {
-            skipItems(2)
 
             val errorState = awaitItem().balanceState.errorState
             assertEquals(ErrorState.UnknownError, errorState)
@@ -95,15 +95,16 @@ class WalletViewModelTest {
     fun `getBalance should show snackbar with error when repository throws exception`() = runTest {
         val expectedException = RuntimeException("test error")
         everySuspend { balanceRepository.getBalance() } throws expectedException
+        advanceUntilIdle()
 
         val viewModel = WalletViewModel( stringProvider,balanceRepository, transactionRepository, testDispatcher)
 
         viewModel.state.test {
-            skipItems(3)
-
-            val snackBarState = awaitItem()
-            assertSnackBarState(isVisible = true, isSuccess = false, snackBarState = snackBarState.snackBar)
-
+            var stateItem = awaitItem()
+            while (!stateItem.snackBar.isVisible) {
+                stateItem = awaitItem()
+            }
+            assertSnackBarState(isVisible = true, isSuccess = false, snackBarState = stateItem.snackBar)
             cancelAndIgnoreRemainingEvents()
         }
     }

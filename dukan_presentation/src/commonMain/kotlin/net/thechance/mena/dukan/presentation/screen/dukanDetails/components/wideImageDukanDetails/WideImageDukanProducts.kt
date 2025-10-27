@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -25,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.cash.paging.compose.LazyPagingItems
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
@@ -104,32 +103,24 @@ private fun ProductCard(
 }
 
 fun LazyGridScope.wideImageProductsGrid(
-    state: DukanDetailsUiState,
+    productsShelf: LazyPagingItems<DukanDetailsUiState.ProductUiState>,
 ) {
-    val productCount = 6
-    when (state.productsState) {
-        DukanDetailsUiState.ProductsState.LOADING -> {
-            wideImageProductCardSkeletonGrid(productCount)
-        }
-
-        DukanDetailsUiState.ProductsState.LOADED -> {
-            items(items = state.productsShelf.items, key = { it.id }) { product ->
-                ProductCard(
-                    imageUrl = product.imageUrl,
-                    title = product.name,
-                    price = "$${product.price}",
-                    onClick = {}
-                )
-            }
-        }
-
-        DukanDetailsUiState.ProductsState.EMPTY -> {
-            item(span = { GridItemSpan(maxLineSpan) }) {}
+    items(
+        count = productsShelf.itemCount,
+    ) { index ->
+        productsShelf[index]?.let { product ->
+            ProductCard(
+                imageUrl = product.imageUrl,
+                title = product.name,
+                price = "${product.price}",
+                onClick = {}
+            )
         }
     }
 }
 
-private fun LazyGridScope.wideImageProductCardSkeletonGrid(productCount: Int) {
+
+fun LazyGridScope.wideImageProductCardSkeletonGrid(productCount: Int) {
     items(count = productCount) {
         ProductCardSkeleton()
     }

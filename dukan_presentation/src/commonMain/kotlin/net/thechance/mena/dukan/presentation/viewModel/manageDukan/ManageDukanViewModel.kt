@@ -1,9 +1,12 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.delete_shelf_description
@@ -21,8 +24,6 @@ import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.util.pagination.base.createPagingSource
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.DeleteDialogState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.DialogType
@@ -39,10 +40,9 @@ class ManageDukanViewModel(
 
     init {
         loadShelves()
-        collectProducts()
     }
 
-    override fun onBackButtonClicked() {
+    override fun onBackClicked() {
         emitEffect(ManageDukanUiEffect.NavigateBack)
     }
 
@@ -81,7 +81,7 @@ class ManageDukanViewModel(
         emitEffect(ManageDukanUiEffect.NavigateToAddShelf)
     }
 
-    override fun onProductClick(product: ManageDukanUiState.ProductUiState) {
+    override fun onProductClicked(product: ManageDukanUiState.ProductUiState) {
         emitEffect(ManageDukanUiEffect.NavigateToProductDetails)
     }
 
@@ -93,12 +93,10 @@ class ManageDukanViewModel(
         if (state.value.selectedShelf != shelf) {
             updateState {
                 copy(
-                    selectedShelf = shelf,
-                    productState = ManageDukanUiState.ProductsState.LOADING,
-                    products = PagingData()
+                    selectedShelf = shelf
                 )
             }
-            loadProductsForSelectedShelf()
+            collectProducts()
         }
     }
 
@@ -111,16 +109,18 @@ class ManageDukanViewModel(
     override fun onShowDeleteShelfDialog(
         shelfId: String
     ) {
-        val hasProducts = state.value.products.items.isNotEmpty()
-        updateState {
-            copy(
-                deleteDialog = DeleteDialogState(
-                    title = updateDialogTitle(hasProducts),
-                    description = updateDialogDescription(hasProducts),
-                    type = updateDialogType(hasProducts),
-                    shelfId = shelfId,
+        viewModelScope.launch(defaultDispatcher) {
+            val hasProducts = state.value.totalProducts > 0
+            updateState {
+                copy(
+                    deleteDialog = DeleteDialogState(
+                        title = updateDialogTitle(hasProducts),
+                        description = updateDialogDescription(hasProducts),
+                        type = updateDialogType(hasProducts),
+                        shelfId = shelfId,
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -136,7 +136,7 @@ class ManageDukanViewModel(
         tryToExecute(
             onStart = ::onLoadShelvesStart,
             block = shelfRepository::getMyDukanShelves,
-            onSuccess = ::onLoadShelvesSuccess,
+            onSuccess = ::updateShelvesState,
             onError = ::handleLoadShelvesError
         )
     }
@@ -145,16 +145,7 @@ class ManageDukanViewModel(
         updateState {
             copy(
                 shelvesState = ManageDukanUiState.ShelvesState.LOADING,
-                productState = ManageDukanUiState.ProductsState.LOADING,
-                products = PagingData()
             )
-        }
-    }
-
-    private fun onLoadShelvesSuccess(shelves: List<Shelf>) {
-        val newSelectedShelf = updateShelvesState(shelves)
-        if (newSelectedShelf != null) {
-            loadProductsForSelectedShelf()
         }
     }
 
@@ -173,6 +164,7 @@ class ManageDukanViewModel(
                 shelvesState = shelvesState
             )
         }
+        collectProducts()
         return newSelectedShelf
     }
 
@@ -180,48 +172,40 @@ class ManageDukanViewModel(
         updateState {
             copy(
                 shelvesState = ManageDukanUiState.ShelvesState.EMPTY,
-                productState = ManageDukanUiState.ProductsState.EMPTY,
-                products = PagingData()
             )
         }
     }
 
-    private fun loadProductsForSelectedShelf() {
-        viewModelScope.launch {
-            pager.refresh()
-        }
-    }
 
     private fun collectProducts() {
         tryToCollect(
-            onStart = ::onLoadProducts,
-            block = { pager.flow },
+            block = ::createPagingSourceData,
             onCollect = ::onProductsLoaded,
         )
-        viewModelScope.launch {
-            pager.load()
+    }
+
+    private fun createPagingSourceData(): Flow<PagingData<ManageDukanUiState.ProductUiState>> {
+        return createPagingSourceFlow(
+            mapper = { it.toUiState() },
+        ) { pageNumber, pageSize ->
+            productRepository.getProductsByShelfId(
+                shelfId = state.value.selectedShelf?.id.orEmpty(),
+                page = pageNumber,
+                size = pageSize
+            ).also { result -> setTotalProducts(result.totalItems) }.items
         }
     }
 
-    private fun onLoadProducts() {
+    private fun setTotalProducts(totalItems: Long) {
         updateState {
-            copy(
-                productState = ManageDukanUiState.ProductsState.LOADING,
-                products = PagingData()
-            )
+            copy(totalProducts = totalItems)
         }
     }
 
     private fun onProductsLoaded(products: PagingData<ManageDukanUiState.ProductUiState>) {
-        val productState = when {
-            products.isLoading && products.items.isEmpty() -> ManageDukanUiState.ProductsState.LOADING
-            products.items.isEmpty() -> ManageDukanUiState.ProductsState.EMPTY
-            else -> ManageDukanUiState.ProductsState.LOADED
-        }
         updateState {
             copy(
-                productState = productState,
-                products = products
+                products = flowOf(products)
             )
         }
     }
@@ -265,22 +249,6 @@ class ManageDukanViewModel(
                     message = message
                 )
             )
-        }
-    }
-
-    val pager = createPagingSource(
-        mapper = { it.toUiState() },
-    ) {
-        productRepository.getProductsByShelfId(
-            shelfId = state.value.selectedShelf?.id.orEmpty(),
-            page = it,
-            size = 20
-        ).also { result ->
-            updateState {
-                copy(
-                    totalProducts = result.totalItems
-                )
-            }
         }
     }
 }

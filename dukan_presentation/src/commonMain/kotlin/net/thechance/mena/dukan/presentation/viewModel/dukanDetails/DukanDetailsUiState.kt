@@ -1,16 +1,17 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 data class DukanDetailsUiState(
     val dukanInfo: DukanInfo = DukanInfo(),
     val isDukanInfoLoading: Boolean = true,
-    val bestSellingProducts: PagingData<ProductUiState> = PagingData(),
-    val shelves: PagingData<ShelfUiState> = PagingData(),
-    val shelvesState: ShelvesState = ShelvesState.LOADING,
-    val productsShelf: PagingData<ProductUiState> = PagingData(),
-    val productsState: ProductsState = ProductsState.LOADING,
-    val shelfIdSelected: String? = null
+    val bestSellingProducts: Flow<PagingData<ProductUiState>> = emptyFlow(),
+    val shelves: Flow<PagingData<ShelfUiState>> = emptyFlow(),
+    val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
+    val shelfIdSelected: String? = null,
+    val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING
 ) {
     data class DukanInfo(
         val name: String = "",
@@ -39,11 +40,6 @@ data class DukanDetailsUiState(
         val isProductsLoaded: Boolean = false
     )
 
-    enum class ShelvesState {
-        LOADING,
-        LOADED,
-        EMPTY
-    }
 
     data class ProductUiState(
         val id: String = "",
@@ -54,9 +50,9 @@ data class DukanDetailsUiState(
         val inCartQuantity: Int = 0
     )
 
-    enum class ProductsState {
+    enum class DukanDetailsState {
         LOADING,
         LOADED,
-        EMPTY
+        ERROR
     }
 }
