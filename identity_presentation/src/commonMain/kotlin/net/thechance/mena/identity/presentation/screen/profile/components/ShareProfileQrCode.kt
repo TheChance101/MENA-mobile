@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_icon_content_description
 import mena.identity_presentation.generated.resources.ic_download
