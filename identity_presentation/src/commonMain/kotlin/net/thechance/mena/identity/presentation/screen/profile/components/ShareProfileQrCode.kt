@@ -89,14 +89,12 @@ fun ScaffoldScope.ShareProfileQrCode(
             Text(
                 text = fullName,
                 color = Theme.colorScheme.shadePrimary,
-                style = Theme.typography.label.medium
+                style = Theme.typography.label.medium,
+                modifier = Modifier.padding(vertical = 20.dp)
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(
-                    top = 20.dp,
-                    bottom = 12.dp
-                )
+                modifier = Modifier.padding(bottom = 12.dp)
             ) {
                 ShareProfileButton(
                     icon = painterResource(Res.drawable.ic_share_02),
