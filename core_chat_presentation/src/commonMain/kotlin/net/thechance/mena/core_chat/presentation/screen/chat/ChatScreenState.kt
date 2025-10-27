@@ -19,6 +19,8 @@ data class ChatScreenState(
     val chatListItems: List<ChatListItem> = emptyList(),
     val selectedMessage: MessageUiState? = null,
     val isImagePagerVisible: Boolean = false,
+    val isDeleteChatDialogVisible: Boolean = false,
+    val isConfirmDeleteChatDialogVisible: Boolean = false,
     val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
     val isAttachmentsOverlayVisible: Boolean = false,
