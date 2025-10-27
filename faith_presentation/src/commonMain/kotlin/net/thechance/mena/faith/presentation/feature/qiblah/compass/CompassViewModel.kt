@@ -6,6 +6,7 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.faith.domain.usecase.QiblahBearingCalculatorUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.utils.AzimuthProvider
+import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -19,30 +20,39 @@ class CompassViewModel(
     CompassInteractionListener {
 
     init {
-        getCurrentAddress()
-        getQiblahAngle()
+        loadCompassData()
     }
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
 
-    private fun getCurrentAddress() {
+    fun refreshAddress() {
+        loadCompassData()
+    }
+
+    private fun loadCompassData() {
         tryToExecute(
-            execute = {
-                val address = locationService.getActiveAddress()
-                address?.toAddressUi() ?: AddressUi()
-            },
-            onSuccess = ::onGetAddressSuccess
+            execute = { locationService.getActiveAddress() },
+            onSuccess = ::handleAddressResult
         )
     }
 
-    private fun onGetAddressSuccess(address: AddressUi) {
-        updateState { state -> state.copy(currentLocationUi = address) }
+    private fun handleAddressResult(address: Address?) {
+        if (!isValidAddress(address)) {
+            sendEffect(CompassEffect.NavigateToIdentityScreen)
+            return
+        }
+        updateState { it.copy(currentLocationUi = address) }
+        calculateQiblahDirection(address!!)
     }
 
-    private fun getQiblahAngle() {
+    private fun isValidAddress(address: Address?): Boolean {
+        return address?.id != null
+    }
+
+    private fun calculateQiblahDirection(address: Address) {
         tryToExecute(
             dispatcher = dispatcher,
-            execute = { bearingCalculatorUseCase.calculateQiblahAngle(uiState.value.currentLocationUi.toAddress()) },
+            execute = { bearingCalculatorUseCase.calculateQiblahAngle(address) },
             onSuccess = ::onGetQiblahSuccess
         )
     }

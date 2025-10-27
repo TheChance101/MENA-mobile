@@ -30,6 +30,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.device_angle_to_qiblah
@@ -47,23 +49,38 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.presentation.mapper.toUiState
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun CompassScreen(
     viewModel: CompassViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val navController = LocalNavController.current
+    val navigator = LocalNavigator.currentOrThrow
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
-            is CompassEffect.NavigateBack -> navController.navigateUp()
+            is CompassEffect.NavigateBack -> navigator.pop()
+            CompassEffect.NavigateToIdentityScreen -> {
+                navigator.push(
+                    AddEditLocationScreen(
+                        onSuccess = {
+                            viewModel.refreshAddress()
+                            navigator.pop()
+                        },
+                        addressModel = state.currentLocationUi?.toUiState()
+                    )
+                )
+            }
         }
     }
 
@@ -279,7 +296,7 @@ private fun QiblahTopBar(uiState: CompassUiState) {
         )
 
         Text(
-            text = uiState.currentLocationUi.addressDetails,
+            text = uiState.currentLocationUi?.addressLine ?: "",
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)
@@ -318,7 +335,13 @@ private fun CompassScreenPreview() {
                 continuousAzimuth = 45f,
                 qiblahAngleValue = 120f,
                 angleToQiblah = 75f,
-                currentLocationUi = AddressUi(),
+                currentLocationUi = Address(
+                    id = null,
+                    latitude = 25.2048,
+                    longitude = 55.2708,
+                    addressLine = "Riyadh",
+                    addressType = AddressType.Home
+                ),
             ),
             listener = object : CompassInteractionListener {
                 override fun onBackClick() {}
