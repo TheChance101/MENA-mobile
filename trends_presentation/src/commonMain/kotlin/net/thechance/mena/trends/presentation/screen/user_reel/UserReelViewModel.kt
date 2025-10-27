@@ -48,7 +48,7 @@ internal class UserReelViewModel(
     }
 
 
-    private fun addReelLike(reelId: String) {
+    fun addReelLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
             block = { reelsRepository.addReelLike(reelId) },
@@ -57,22 +57,19 @@ internal class UserReelViewModel(
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
-            scope = viewModelScope,
             onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() } }
         )
     }
 
-    private fun removeReelLike(reelId: String) {
+    fun removeReelLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
-            block = { reelsRepository.addReelLike(reelId) },
+            block = { reelsRepository.removeReelLike(reelId) },
             onError = { error ->
                 onLikeClickFailed(reelId)
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
-            scope = viewModelScope,
-            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() } }
         )
     }
 

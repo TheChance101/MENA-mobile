@@ -34,7 +34,6 @@ internal class HomeViewModel(
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
-            scope = viewModelScope,
             onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUiState() } }
         )
     }
@@ -57,7 +56,6 @@ internal class HomeViewModel(
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
-            scope = viewModelScope,
         )
     }
 
