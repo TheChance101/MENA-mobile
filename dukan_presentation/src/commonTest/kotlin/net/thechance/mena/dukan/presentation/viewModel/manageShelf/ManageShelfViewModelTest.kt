@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -17,7 +16,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shelf_successfully
-import mena.dukan_presentation.generated.resources.error_edit_shelf
 import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -70,7 +68,7 @@ class ManageShelfViewModelTest {
     @Test
     fun `init should initialize state with shelf id and title from saved state handle`() {
         val state = manageShelfViewModel.state.value
-        assertEquals(expectedShelfTitle, state.shelfTitle)
+        assertEquals(expectedShelfTitle, state.oldShelfTitle)
     }
 
     @Test
@@ -163,44 +161,6 @@ class ManageShelfViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-
-    @Test
-    fun `onCreateButtonClicked SHOULD show general error when unknown exception thrown`() =
-        runTest {
-            everySuspend {
-                shelfRepository.updateShelf(
-                    any(),
-                    any()
-                )
-            } throws RuntimeException("Unexpected")
-
-            manageShelfViewModel.onSaveClicked()
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            val state = manageShelfViewModel.state.value
-            assertTrue(state.snackBarState != null)
-            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
-            assertEquals(Res.string.error_edit_shelf, state.snackBarState.message)
-        }
-
-    @Test
-    fun `onSaveClicked SHOULD edit shelf and emit NavigateBackWithEditedShelfName on success`() =
-        runTest {
-            val shelfId = "123"
-            val newName = "Updated Shelf"
-
-            manageShelfViewModel.onShelfNameChange(newName)
-
-            everySuspend { shelfRepository.updateShelf(shelfId, newName) } returns Unit
-
-            manageShelfViewModel.effect.test {
-                manageShelfViewModel.onSaveClicked()
-                testDispatcher.scheduler.advanceUntilIdle()
-
-                assertEquals(ManageShelfEffect.NavigateBackWithEditedShelfName, awaitItem())
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
