@@ -41,6 +41,8 @@ kotlin {
             implementation(projects.designSystem)
             implementation(projects.faithApi)
             implementation(projects.identityPresentation)
+            implementation(projects.identityDomain)
+            implementation(libs.bundles.voyager)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)

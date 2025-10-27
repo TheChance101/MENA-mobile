@@ -51,15 +51,13 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.presentation.mapper.toUiState
-import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
+import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun CompassScreen(
     viewModel: CompassViewModel = koinViewModel()
@@ -71,15 +69,7 @@ fun CompassScreen(
         when (effect) {
             is CompassEffect.NavigateBack -> navigator.pop()
             CompassEffect.NavigateToIdentityScreen -> {
-                navigator.push(
-                    AddEditLocationScreen(
-                        onSuccess = {
-                            viewModel.refreshAddress()
-                            navigator.pop()
-                        },
-                        addressModel = state.currentLocationUi?.toUiState()
-                    )
-                )
+                navigator.push(EnableLocationScreen())
             }
         }
     }

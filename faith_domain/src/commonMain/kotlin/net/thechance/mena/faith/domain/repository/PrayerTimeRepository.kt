@@ -2,6 +2,7 @@ package net.thechance.mena.faith.domain.repository
 
 import kotlinx.datetime.TimeZone
 import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.identity.domain.entity.Address
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -9,7 +10,7 @@ import kotlin.time.Instant
 interface PrayerTimeRepository {
     suspend fun getPrayerTimes(
         date: Instant,
-        location: Location,
+        address: Address,
         timeZone: TimeZone = TimeZone.currentSystemDefault(),
     ): List<PrayerTime>
 }

@@ -10,12 +10,17 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriDate
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getSunriseTime
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 class MainViewModel(
     private val quranRepository: QuranRepository,
     private val prayerTimeRepository: PrayerTimeRepository,
+    private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<MainUiState, MainScreenEffect>(
     initialState = MainUiState(),
@@ -30,15 +35,13 @@ class MainViewModel(
         loadLastAyahForTilawah()
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun loadPrayerTimes() {
         tryToExecute(
             execute = {
-                //TODO: get default location
-                val defaultLocation = Location(latitude = 30.186173, longitude = 31.158446)
+                updateAddress(locationService.getActiveAddress())
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
-                    location = defaultLocation
+                    address = locationService.getActiveAddress()!!
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
@@ -48,7 +51,20 @@ class MainViewModel(
         )
     }
 
-    @OptIn(ExperimentalTime::class)
+    private fun updateAddress(address: Address?) {
+        if (!isValidAddress(address)) {
+            sendEffect(MainScreenEffect.NavigateToIdentityScreen)
+            return
+        }
+        if (address != null) {
+            updateState { it.copy(city = address.addressLine) }
+        }
+    }
+
+    private fun isValidAddress(address: Address?): Boolean {
+        return address?.id != null
+    }
+
     private fun onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
         updateState { currentState ->
             currentState.copy(

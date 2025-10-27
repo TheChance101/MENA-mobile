@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.asr
 import mena.faith_presentation.generated.resources.dhuhr
@@ -38,6 +40,7 @@ import net.thechance.mena.faith.presentation.feature.main.components.SunriseTime
 import net.thechance.mena.faith.presentation.feature.main.components.TilawahSection
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -50,13 +53,13 @@ fun MainScreen(
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val navigator = LocalNavigator.currentOrThrow
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) viewModel.refreshTilawah()
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
@@ -74,6 +77,9 @@ fun MainScreen(
 
             MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
+            MainScreenEffect.NavigateToIdentityScreen -> {
+                navigator.push(EnableLocationScreen())
+            }
             //TODO: Add navigation
             MainScreenEffect.NavigateToMosques -> {}
         }
