@@ -19,8 +19,8 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.category_publish.args.CategoryPublishArgs
+import net.thechance.mena.trends.presentation.utils.categories
 import net.thechance.mena.trends.presentation.utils.category
-import net.thechance.mena.trends.presentation.utils.selectedCategories
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -38,7 +38,7 @@ class CategoryPublishViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        everySuspend { categoryRepository.getAllCategories() } returns selectedCategories
+        everySuspend { categoryRepository.getAllCategories() } returns categories
         every { categoryPublishArgs.trendId } returns TREND_ID
         every { categoryPublishArgs.description } returns DESCRIPTION
         everySuspend {
