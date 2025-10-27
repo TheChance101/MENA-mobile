@@ -77,11 +77,7 @@ buildkonfig {
 
     defaultConfigs {
         val baseUrl = localProperties.getProperty("BASE_URL", "https://mena-dev.the-chance.net/")
-        buildConfigField(
-            type = Type.STRING,
-            name = "BASE_URL",
-            value = baseUrl
-        )
+        buildConfigField(type = Type.STRING, name = "BASE_URL", value = baseUrl)
     }
 }
 
