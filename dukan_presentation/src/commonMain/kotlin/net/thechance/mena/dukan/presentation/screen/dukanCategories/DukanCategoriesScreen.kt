@@ -31,9 +31,11 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.component.shared.CategoryCard
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.animation.fadeWithSlideTransition
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanCategoriesInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.previewCategories
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesEffects
@@ -83,10 +85,19 @@ private fun DukanCategoriesContent(
         topBar = { CategoriesTopAppBar(onBackClick = interactionListener::onBackClicked) },
         snakeBar = { DukanCategoriesSnackBar(state, interactionListener::onDismissSnackBar) }
     ) {
-        AnimatedContent(state.isLoading) { isLoading ->
-            when {
-                isLoading -> LoadingDots(modifier = Modifier.fillMaxSize())
-                else -> CategoriesList(
+        AnimatedContent(
+            targetState = state.dukanCategoriesState ,
+            transitionSpec = { fadeWithSlideTransition() }
+        ) { currentState ->
+            when (currentState){
+                DukanCategoriesUiState.DukanCategoriesState.LOADING -> LoadingDots(modifier = Modifier.fillMaxSize())
+                DukanCategoriesUiState.DukanCategoriesState.ERROR -> {
+                    NoInternetContent(
+                        onRetry = interactionListener::onRetryClicked,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                DukanCategoriesUiState.DukanCategoriesState.LOADED -> CategoriesList(
                     categories = state.categories,
                     onCategoryClick = interactionListener::onCategoryClicked
                 )

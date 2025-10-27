@@ -86,8 +86,8 @@ class DukanCategoriesViewModelTest {
             viewModel.state.test {
                 val firstEmit = awaitItem()
                 assertEquals(
-                    expected = Res.string.no_internet_message,
-                    actual = firstEmit.snackBarUiState!!.message
+                    expected = DukanCategoriesUiState.DukanCategoriesState.ERROR,
+                    actual = firstEmit.dukanCategoriesState
                 )
             }
         }
