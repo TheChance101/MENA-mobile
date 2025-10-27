@@ -11,10 +11,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.something_went_wrong
-import mena.dukan_presentation.generated.resources.something_went_wrong_while_fetching_categories
 import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
@@ -86,8 +83,8 @@ class DukanCategoriesViewModelTest {
             viewModel.state.test {
                 val firstEmit = awaitItem()
                 assertEquals(
-                    expected = Res.string.no_internet_message,
-                    actual = firstEmit.snackBarUiState!!.message
+                    expected = DukanCategoriesUiState.DukanCategoriesState.ERROR,
+                    actual = firstEmit.dukanCategoriesState
                 )
             }
         }

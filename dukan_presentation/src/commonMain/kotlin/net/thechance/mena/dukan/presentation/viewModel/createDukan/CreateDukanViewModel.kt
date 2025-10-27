@@ -44,9 +44,9 @@ class CreateDukanViewModel(
         getDukanColors()
     }
 
-    override fun onButtonClicked() {
+    override fun onNextOrCreateClicked() {
         if (state.value.currentStep != CreateDukanStep.SELECT_STYLE) {
-            onCLickNext()
+            onNextClicked()
         } else {
             onCreateClicked()
         }
@@ -122,7 +122,7 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onCLickNext() {
+    override fun onNextClicked() {
         val current = state.value.currentStep
         if (current == CreateDukanStep.BASIC_INFORMATION) {
             handleBasicInformationNext()

@@ -95,6 +95,7 @@ private fun LoadedShelves(
 ) {
     LazyRow(
         modifier = Modifier
+            .padding(top = Theme.spacing._8)
             .fillMaxWidth()
             .height(32.dp),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),

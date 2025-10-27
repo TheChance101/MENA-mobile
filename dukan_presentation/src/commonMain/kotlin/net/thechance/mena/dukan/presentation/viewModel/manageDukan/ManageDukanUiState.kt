@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.emptyFlow
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.delete
 import mena.dukan_presentation.generated.resources.dismiss
@@ -13,7 +13,7 @@ data class ManageDukanUiState(
     val shelves: List<ShelfUiState> = emptyList(),
     val selectedShelf: ShelfUiState? = null,
     val totalProducts: Long = 0,
-    val products: Flow<PagingData<ProductUiState>> = flowOf(),
+    val products: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val shelvesState: ShelvesState = ShelvesState.LOADING,
     val snackBarState: SnackBarUiState? = null,
     val deleteDialog: DeleteDialogState? = null
