@@ -3,11 +3,14 @@ package net.thechance.mena.dukan.presentation.util.animation
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseInCubic
+import androidx.compose.animation.core.EaseInSine
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.EaseOutSine
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.togetherWith
 
 fun fadeTransitionSpec(): ContentTransform {
@@ -38,3 +41,18 @@ fun fadeCubicTransition(): ContentTransform {
     )
 }
 
+fun fadeWithSlideTransition(): ContentTransform {
+    return fadeIn(
+        animationSpec = tween(
+            easing = EaseInSine
+        )
+    ) + slideInHorizontally(
+        animationSpec = tween(
+            easing = EaseInSine
+        )
+    ) togetherWith fadeOut(
+        animationSpec = tween(
+            easing = EaseOutSine
+        )
+    )
+}
