@@ -17,17 +17,15 @@ class PrayerTimesDtoToDomainTest {
 
     @Test
     fun `toDomain should return list of PrayerTime when PrayerTimesDto is valid`() = runTest {
-        //When
         val result = fakePrayerTimesDto.toDomain()
-        //Then
+
         assertThat(result).isEqualTo(fakePrayerTimes)
     }
 
     @Test
     fun `toDomain should return data with defaults when data has nulls`() = runTest {
-        //When
         val result = fakePrayerTimesDtoWithNulls.toDomain()
-        //Then
+
         assertThat(result).isEqualTo(fakePrayerTimesWithDefaults)
 
     }
