@@ -1,0 +1,350 @@
+package net.thechance.mena.identity.presentation.screen.editProfile
+
+import androidx.compose.ui.graphics.ImageBitmap
+import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEmpty
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_something_went_wrong
+import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.helper.createUser
+import net.thechance.mena.identity.presentation.util.PermissionManager
+import kotlin.test.Test
+import kotlin.uuid.ExperimentalUuidApi
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class EditUserProfileViewModelTest() : BaseCoroutineTest() {
+
+    val userRepository = mockk<UserRepository>()
+    val permissionManager = mockk<PermissionManager>()
+    val testDispatcher = StandardTestDispatcher()
+
+    lateinit var viewModel: EditUserProfileViewModel
+
+    override fun setUp() {
+        super.setUp()
+        viewModel = EditUserProfileViewModel(
+            userRepository = userRepository,
+            permissionManager = permissionManager,
+            dispatcher = testDispatcher
+        )
+    }
+
+    @Test
+    fun `user information should be updated, when init called`() = runTest {
+        coEvery { userRepository.getUser() } returns flowOf(fakeUser)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            assertThat(awaitItem().firstName).isEqualTo("User")
+        }
+        coVerify(exactly = 1) { userRepository.getUser() }
+    }
+
+    @Test
+    fun `errorMessage should be updated, when init throws Exception`() = runTest {
+        coEvery { userRepository.getUser() } throws Exception()
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            assertThat(awaitItem().errorMessage).isEqualTo(Res.string.error_something_went_wrong)
+        }
+
+        coVerify(exactly = 1) { userRepository.getUser() }
+    }
+
+    @Test
+    fun `firstName should be changed, when onChangeFirstName is called`() = runTest {
+        viewModel.onChangeFirstName("new User")
+
+        viewModel.state.test {
+            assertThat(awaitItem().firstName).isEqualTo("new User")
+        }
+    }
+
+    @Test
+    fun `last name should be changed, when onChangeLastName is called`() = runTest {
+        viewModel.onChangeLastName("the chance")
+
+        viewModel.state.test {
+            assertThat(awaitItem().lastName).isEqualTo("the chance")
+        }
+    }
+
+    @Test
+    fun `username should be changed, when onChangeUsername is called`() = runTest {
+        viewModel.onChangeUsername("new-chance")
+
+        viewModel.state.test {
+            assertThat(awaitItem().username).isEqualTo("new-chance")
+        }
+    }
+
+    @Test
+    fun `onClickSaveButton should do nothing, when first name is empty`() = runTest {
+        viewModel.onChangeFirstName(" ")
+        viewModel.onChangeLastName("the chance")
+        viewModel.onChangeUsername("new-chance")
+
+        viewModel.onClickSaveButton()
+
+        assertThat(viewModel.state.value.firstName).isNotEmpty()
+    }
+
+    @Test
+    fun `onClickSaveButton should do nothing, when last name is empty`() = runTest {
+        viewModel.onChangeFirstName("new User")
+        viewModel.onChangeLastName(" ")
+        viewModel.onChangeUsername("new-chance")
+
+        viewModel.onClickSaveButton()
+
+        assertThat(viewModel.state.value.lastName).isNotEmpty()
+    }
+
+    @Test
+    fun `onClickSaveButton should do nothing, when username is empty`() = runTest {
+        viewModel.onChangeFirstName("new User")
+        viewModel.onChangeLastName("the chance")
+        viewModel.onChangeUsername(" ")
+
+        viewModel.onClickSaveButton()
+
+        assertThat(viewModel.state.value.username).isNotEmpty()
+    }
+
+    @Test
+    fun `onClickSaveButton should do nothing, when user name is empty`() = runTest {
+        viewModel.onChangeFirstName(" ")
+        viewModel.onChangeLastName("the chance")
+        viewModel.onChangeUsername("new-chance")
+
+        viewModel.onClickSaveButton()
+        assertThat(viewModel.state.value.firstName).isNotEmpty()
+    }
+
+    @Test
+    fun `isLoading should be true, when on onClickSaveButton is initially called`() = runTest {
+        viewModel.onChangeFirstName("new User")
+        viewModel.onChangeLastName("the chance")
+        viewModel.onChangeUsername("new-chance")
+
+        viewModel.onClickSaveButton()
+
+        assertThat(viewModel.state.value.isLoading).isTrue()
+        assertThat(viewModel.state.value.errorMessage).isNull()
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should navigate back to profile, when on onClickSaveButton is successfully called`() =
+        runTest {
+            viewModel.userId = fakeUser.id
+            coEvery {
+                userRepository.updateUser(
+                    user = any(),
+                    shouldUpdateImage = any(),
+                    imageByteArray = any()
+                )
+            } returns Unit
+
+            viewModel.onChangeFirstName("new User")
+            viewModel.onChangeLastName("the chance")
+            viewModel.onChangeUsername("new-chance")
+
+            viewModel.onClickSaveButton()
+
+            viewModel.effect.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isEqualTo(EditUserProfileUIEffect.NavigateBackToProfile)
+            }
+
+            coVerify(exactly = 1) {
+                userRepository.updateUser(
+                    user = any(),
+                    shouldUpdateImage = any(),
+                    imageByteArray = any()
+                )
+            }
+        }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `errorMessage should be updated, when on onClickSaveButton is failed with Exception`() =
+        runTest {
+            viewModel.userId = fakeUser.id
+
+            coEvery {
+                userRepository.updateUser(
+                    user = any(),
+                    shouldUpdateImage = any(),
+                    imageByteArray = any()
+                )
+            } throws Exception()
+
+            viewModel.onChangeFirstName("new User")
+            viewModel.onChangeLastName("the chance")
+            viewModel.onChangeUsername("new-chance")
+
+            viewModel.onClickSaveButton()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.state.test {
+                assertThat(awaitItem().errorMessage).isEqualTo(Res.string.error_something_went_wrong)
+            }
+
+            coVerify(exactly = 1) {
+                userRepository.updateUser(
+                    user = any(),
+                    shouldUpdateImage = any(),
+                    imageByteArray = any()
+                )
+            }
+        }
+
+    @Test
+    fun `onClickCancelButton should navigate back to profile when called, `() = runTest {
+        viewModel.effect.test {
+            viewModel.onClickCancelButton()
+            assertThat(awaitItem()).isEqualTo(EditUserProfileUIEffect.NavigateBackToProfile)
+        }
+    }
+
+    @Test
+    fun `showLogoutDialog should be true, when onClickShowLogoutOptions is called`() = runTest {
+        viewModel.onClickShowLogoutOptions()
+
+        viewModel.state.test {
+            assertThat(awaitItem().showLogoutDialog).isTrue()
+        }
+    }
+
+    @Test
+    fun `showLogoutDialog should be false, when onDismissLogoutDialog is called`() = runTest {
+        viewModel.onClickShowLogoutOptions()
+        viewModel.onDismissLogoutDialog()
+
+        viewModel.state.test {
+            assertThat(awaitItem().showLogoutDialog).isFalse()
+        }
+    }
+
+    @Test
+    fun `birthDate should be updated, when onChangeDate is called`() = runTest {
+        viewModel.onChangeDate(1, 1, 2001)
+
+        viewModel.state.test {
+            assertThat(awaitItem().birthDate).isEqualTo(LocalDate(2001, 1, 1))
+        }
+    }
+
+    @Test
+    fun `showEditImageDialog should be true, when onClickEditImage is called`() = runTest {
+        viewModel.onClickEditImage()
+
+        viewModel.state.test {
+            assertThat(awaitItem().showEditImageDialog).isTrue()
+        }
+    }
+
+    @Test
+    fun `showEditImageDialog should be false, when onDismissEditImageDialog is called`() = runTest {
+        viewModel.onClickEditImage()
+        viewModel.onDismissEditImageDialog()
+
+        viewModel.state.test {
+            assertThat(awaitItem().showEditImageDialog).isFalse()
+        }
+    }
+
+    @Test
+    fun `profileImageBitmap should be null, when onRemoveProfileImage is called`() = runTest {
+        viewModel.onRemoveProfileImage()
+
+        viewModel.state.test {
+            assertThat(awaitItem().profileImageBitmap).isNull()
+        }
+    }
+
+    @Test
+    fun `profileImageUrl should be empty, when onRemoveProfileImage is called`() = runTest {
+        viewModel.onRemoveProfileImage()
+
+        viewModel.state.test {
+            assertThat(awaitItem().profileImageUrl).isEmpty()
+        }
+    }
+
+    @Test
+    fun `should navigate to CropScreen, when onRequireCropImage is called`() = runTest {
+        viewModel.effect.test {
+            viewModel.onRequireCropImage(mockkImageBitmap)
+            assertThat(awaitItem()).isInstanceOf(EditUserProfileUIEffect.NavigateToCropScreen::class)
+        }
+    }
+
+    @Test
+    fun `permission Manager should be granted, when onTakeImageCamera is called`() = runTest {
+        coEvery {
+            permissionManager.requestCameraPermission(any(), any())
+        } just runs
+
+        viewModel.onTakeImageFromCamera()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 1) {
+            permissionManager.requestCameraPermission(any(), any())
+        }
+    }
+
+    @Test
+    fun `errorMessage should be updated, when onTakeImageCamera is failed with Exception`() =
+        runTest {
+            coEvery {
+                permissionManager.requestCameraPermission(any(), any())
+            } throws Exception()
+
+            viewModel.onTakeImageFromCamera()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.state.test {
+                assertThat(awaitItem().errorMessage).isEqualTo(Res.string.error_something_went_wrong)
+            }
+
+            coVerify(exactly = 1) {
+                permissionManager.requestCameraPermission(any(), any())
+            }
+        }
+
+    @Test
+    fun `showCamera should be true, when onOpenCamera is called`() = runTest {
+        viewModel.onOpenCamera()
+
+        viewModel.state.test {
+            assertThat(awaitItem().showCamera).isFalse()
+        }
+    }
+}
+
+@OptIn(ExperimentalUuidApi::class)
+private val fakeUser = createUser(firstName = "User")
+private val mockkImageBitmap = mockk<ImageBitmap>()

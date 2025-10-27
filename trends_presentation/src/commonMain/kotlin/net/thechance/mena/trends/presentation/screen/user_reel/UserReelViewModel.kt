@@ -19,7 +19,7 @@ import org.koin.core.annotation.Provided
 internal class UserReelViewModel(
     @Provided private val userReelArgs: UserReelArgs,
     @Provided private val reelsRepository: ReelsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
@@ -36,7 +36,7 @@ internal class UserReelViewModel(
             },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -47,13 +47,13 @@ internal class UserReelViewModel(
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
-    override fun onDescriptionClick(isCollapsed: Boolean) {
+    override fun onClickDescription(isCollapsed: Boolean) {
         updateState {
             copy(isDescriptionExpanded = !isCollapsed)
         }
     }
 
-    override fun onPublisherInfoClick() {
+    override fun onClickPublisherInfo() {
         sendEffect(UserReelEffect.NavigateToPublisherProfile)
     }
 
@@ -61,11 +61,11 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.addReelView(reelId) },
             onError = { error -> updateState { copy(error = error) } },
-            dispatcher = ioDispatcher,
+            dispatcher = defaultDispatcher
         )
     }
 
-    override fun onLikeClick(reelId: String) {
+    override fun onClickLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
             block = { reelsRepository.toggleReelLike(reelId) },
@@ -73,7 +73,7 @@ internal class UserReelViewModel(
                 onLikeClickFailed(reelId)
                 updateState { copy(error = error) }
             },
-            dispatcher = ioDispatcher,
+            dispatcher = defaultDispatcher,
             scope = viewModelScope,
             onSuccess = { updatedReel ->
                 updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() }
@@ -111,22 +111,22 @@ internal class UserReelViewModel(
         }
     }
 
-    override fun onBackClick() {
+    override fun onClickBack() {
         sendEffect(UserReelEffect.NavigateBack)
     }
 
-    override fun onDeleteClick() {
+    override fun onClickDelete() {
         updateState {
             copy(isConfirmationDialogVisible = true)
         }
     }
 
-    override fun onConfirmDeleteClick() {
+    override fun onClickConfirmDelete() {
         tryToExecute(
             block = { reelsRepository.deleteReelById(userReelArgs.realId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 

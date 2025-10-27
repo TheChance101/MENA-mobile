@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.core_chat.domain.entity.ImagesSource
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -27,8 +27,8 @@ fun MessageContent(
         is MessageContent.Images -> {
             val source = messageContent.source
             val images = when (source) {
-                is ImagesSource.Local -> source.byteArrays
-                is ImagesSource.Remote -> source.urls
+                is ImageData.ImageByteArray -> source.byteArrays
+                is ImageData.ImageUrl -> source.urls
             }
             ImageMessageContent(
                 images = images,

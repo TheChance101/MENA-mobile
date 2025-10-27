@@ -28,13 +28,13 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
-import net.thechance.mena.core_chat.presentation.navigation.ChatEffector
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -44,7 +44,6 @@ class HomeViewModelTest {
     private val chatRepository = mock<ChatRepository>(MockMode.autofill)
     private val messageRepository = mock<MessageRepository>(MockMode.autofill)
     private val balanceRepository = mock<BalanceRepository>(MockMode.autofill)
-    private val effector = mock<ChatEffector>(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
@@ -195,79 +194,81 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `onNewChatClicked should navigate to ContactsRoute when contacts are synced`() = runTest {
+    fun `onNewChatClicked should emit NavigateToContacts effect when contacts are synced`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { contactsRepository.getSyncStatus() } returns true
-        everySuspend { effector.navigate(any(), any(), any()) } returns Unit
+        everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns true
 
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onNewChatClicked()
-        advanceUntilIdle()
+        viewModel.effect.test {
+            viewModel.onNewChatClicked()
+            advanceUntilIdle()
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.isSynced).isTrue()
-            assertThat(state.isLoading).isFalse()
+            assertEquals(HomeScreenEffect.NavigateToContacts, awaitItem())
+            cancelAndIgnoreRemainingEvents()
         }
-
-        verifySuspend { effector.navigate(any(), any(), any()) }
     }
 
     @Test
-    fun `onNewChatClicked should navigate to SyncContactsRoute when contacts are not synced`() = runTest {
-        everySuspend { balanceRepository.getBalance() } returns 0.0
-        everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { contactsRepository.getSyncStatus() } returns false
-        everySuspend { effector.navigate(any(), any(), any()) } returns Unit
+    fun `onNewChatClicked should emit NavigateToSyncContacts effect when contacts are not synced`() =
+        runTest {
+            everySuspend { balanceRepository.getBalance() } returns 0.0
+            everySuspend {
+                chatRepository.getChatsSummary(any(), any())
+            } returns createEmptyPagedData()
+            everySuspend { contactsRepository.getHasUserSyncedContactsStatus() } returns false
 
-        val viewModel = createViewModel()
-        advanceUntilIdle()
+            val viewModel = createViewModel()
+            advanceUntilIdle()
 
-        viewModel.onNewChatClicked()
-        advanceUntilIdle()
+            viewModel.effect.test {
+                viewModel.onNewChatClicked()
+                advanceUntilIdle()
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertThat(state.isSynced).isFalse()
-            assertThat(state.isLoading).isFalse()
+                assertEquals(HomeScreenEffect.NavigateToSyncContacts, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 
-        verifySuspend { effector.navigate(any(), any(), any()) }
-    }
-
     @Test
-    fun `onChatClicked should navigate to ChatDetailsRoute with correct parameters`() = runTest {
+    fun `onChatClicked should emit NavigateToChat effect with correct parameters`() = runTest {
         val chat = createTestChat()
-
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { effector.navigate(any(), any(), any()) } returns Unit
-
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onChatClicked(chat)
-        advanceUntilIdle()
+        viewModel.effect.test {
+            viewModel.onChatClicked(chat)
+            advanceUntilIdle()
 
-        verifySuspend { effector.navigate(any(), any(), any()) }
+            assertEquals(
+                HomeScreenEffect.NavigateToChat(
+                    chatId = chat.id.toString(),
+                    chatName = chat.name
+                ), awaitItem()
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
-    fun `onWalletClicked should navigate to WalletRoute`() = runTest {
+    fun `onWalletClicked should emit NavigateToWallet effect`() = runTest {
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
-        everySuspend { effector.navigate(any(), any(), any()) } returns Unit
 
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onWalletClicked()
-        advanceUntilIdle()
+        viewModel.effect.test {
+            viewModel.onWalletClicked()
+            advanceUntilIdle()
 
-        verifySuspend { effector.navigate(any(), any(), any()) }
+            assertEquals(HomeScreenEffect.NavigateToWallet, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -276,9 +277,14 @@ class HomeViewModelTest {
         val pageSize = 20
 
         everySuspend { balanceRepository.getBalance() } returns 0.0
-        everySuspend { chatRepository.getChatsSummary(pageNumber, pageSize) } returns createEmptyPagedData()
+        everySuspend {
+            chatRepository.getChatsSummary(
+                pageNumber,
+                pageSize
+            )
+        } returns createEmptyPagedData()
 
-        val viewModel = createViewModel()
+        createViewModel()
         advanceUntilIdle()
 
         verifySuspend(exactly(1)) { chatRepository.getChatsSummary(pageNumber, pageSize) }
@@ -375,25 +381,26 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `chat status should be Received when message is not mine and has no unread count`() = runTest {
-        val chat = createChatSummary(unReadCount = 0, isMine = false)
+    fun `chat status should be Received when message is not mine and has no unread count`() =
+        runTest {
+            val chat = createChatSummary(unReadCount = 0, isMine = false)
 
-        everySuspend { balanceRepository.getBalance() } returns 0.0
-        everySuspend { chatRepository.getChatsSummary(any(), any()) } returns PagedData(
-            data = listOf(chat),
-            totalItems = 1,
-            isLastPage = true
-        )
+            everySuspend { balanceRepository.getBalance() } returns 0.0
+            everySuspend { chatRepository.getChatsSummary(any(), any()) } returns PagedData(
+                data = listOf(chat),
+                totalItems = 1,
+                isLastPage = true
+            )
 
-        val viewModel = createViewModel()
-        advanceUntilIdle()
+            val viewModel = createViewModel()
+            advanceUntilIdle()
 
-        viewModel.state.test {
-            val state = awaitItem()
-            val chatStatus = state.chats.first().status
-            assertThat(chatStatus is ChatUiState.Status.Received).isTrue()
+            viewModel.state.test {
+                val state = awaitItem()
+                val chatStatus = state.chats.first().status
+                assertThat(chatStatus is ChatUiState.Status.Received).isTrue()
+            }
         }
-    }
 
     private fun createViewModel(): HomeViewModel {
         return HomeViewModel(
@@ -401,7 +408,6 @@ class HomeViewModelTest {
             chatRepository = chatRepository,
             messageRepository = messageRepository,
             balanceRepository = balanceRepository,
-            effector = effector,
             dispatcher = testDispatcher
         )
     }

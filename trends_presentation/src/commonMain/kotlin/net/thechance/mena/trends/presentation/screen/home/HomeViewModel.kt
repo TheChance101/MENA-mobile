@@ -17,7 +17,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class HomeViewModel(
     @Provided private val repository: ReelsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<HomeScreenState, HomeUiEffect>(HomeScreenState()),
     HomeInteractionListener {
 
@@ -33,11 +33,9 @@ internal class HomeViewModel(
                 updateLikesOnUi(reelId)
                 updateState { copy(error = error) }
             },
-            dispatcher = ioDispatcher,
+            dispatcher = defaultDispatcher,
             scope = viewModelScope,
-            onSuccess = { updatedReel ->
-                updateReelInPagingData(reelId) { updatedReel.toUiState() }
-            }
+            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUiState() } }
         )
     }
 
@@ -69,7 +67,7 @@ internal class HomeViewModel(
             },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -80,23 +78,28 @@ internal class HomeViewModel(
         ).map { pagingData -> pagingData.map { it.toUiState() } }
     }
 
-    override fun onAddReelClick() {
+    override fun onClickAddReel() {
         sendEffect(HomeUiEffect.NavigateToAddReel)
     }
 
-    override fun onEditTagsClick() {
+    override fun onClickEditTags() {
         sendEffect(HomeUiEffect.NavigateToChangeTags)
     }
 
-    override fun onManageMyTrendsClick() {
+    override fun onClickManageMyTrends() {
         sendEffect(HomeUiEffect.NavigateToManageMyTrends)
     }
 
-    override fun onReelClick(reelId: String) {
+    override fun onClickReel(reelId: String) {
         sendEffect(HomeUiEffect.NavigateToReelDetails(reelId))
     }
 
-    override fun onLikeClick(reelId: String) {
+    override fun onClickLike(reelId: String) {
         toggleReelLike(reelId)
+    }
+
+    override fun onClickRetry() {
+        updateState { copy(error = null) }
+        getFeedReels()
     }
 }

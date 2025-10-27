@@ -1,7 +1,9 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.DukanCategoryUiState
 
 data class MainScreenUiState(
@@ -9,10 +11,8 @@ data class MainScreenUiState(
     val dukanState: DukanState = DukanState(),
     val isConnected: Boolean = true,
     val categories: List<DukanCategoryUiState> = emptyList(),
-    val bestNearestDukans: PagingData<BestNearestDukanUiState> = PagingData(),
-    val bestNearestDukanState: BestNearestDukanStatus = BestNearestDukanStatus.LOADING,
-    val editorPickDukans: PagingData<EditorPickDukanUiState> = PagingData(),
-    val editorPickDukanState: EditorPickDukanStatus = EditorPickDukanStatus.LOADING,
+    val bestNearestDukans: Flow<PagingData<BestNearestDukanUiState>> = flowOf(),
+    val editorPickDukans: Flow<PagingData<EditorPickDukanUiState>> = flowOf(),
 ) {
     data class DukanState(
         val name: String = "",
@@ -35,14 +35,5 @@ data class MainScreenUiState(
         Pending,
         None,
         Approved
-    }
-    enum class BestNearestDukanStatus {
-        LOADING,
-        LOADED,
-    }
-
-    enum class EditorPickDukanStatus {
-        LOADING,
-        LOADED
     }
 }

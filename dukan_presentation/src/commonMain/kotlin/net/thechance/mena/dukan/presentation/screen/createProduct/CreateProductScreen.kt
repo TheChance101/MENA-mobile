@@ -25,12 +25,12 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.TopAppBar
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.descriptionSection
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.imageSection
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.priceSection
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.productNameSection
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.shelfSection
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.DescriptionSection
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.ImageSection
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.PriceSection
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateProductInterfaceListener
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductEffect
@@ -108,37 +108,47 @@ private fun CreateProductContent(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
         ) {
-            productNameSection(
-                productName = state.productName,
-                isTextFieldEnabled = state.isTextFieldEnabled,
-                onProductNameChange = interactionListener::onProductNameChange
-            )
+            item {
+                ProductNameSection(
+                    productName = state.productName,
+                    isTextFieldEnabled = state.isTextFieldEnabled,
+                    onProductNameChange = interactionListener::onProductNameChange
+                )
+            }
 
-            shelfSection(
-                shelves = state.shelves,
-                isShelvesLoading = state.isShelvesLoading,
-                onShelfSelect = interactionListener::onShelfSelect
-            )
+            item {
+                ShelfSection(
+                    shelves = state.shelves,
+                    isShelvesLoading = state.isShelvesLoading,
+                    onShelfSelect = interactionListener::onShelfSelect
+                )
+            }
 
-            priceSection(
-                price = state.price,
-                isTextFieldEnabled = state.isTextFieldEnabled,
-                onPriceChange = interactionListener::onPriceChange
-            )
+            item {
+                PriceSection(
+                    price = state.price,
+                    isTextFieldEnabled = state.isTextFieldEnabled,
+                    onPriceChange = interactionListener::onPriceChange
+                )
+            }
 
-            descriptionSection(
-                description = state.description,
-                isTextFieldEnabled = state.isTextFieldEnabled,
-                onDescriptionChange = interactionListener::onDescriptionChange
-            )
+            item {
+                DescriptionSection(
+                    description = state.description,
+                    isTextFieldEnabled = state.isTextFieldEnabled,
+                    onDescriptionChange = interactionListener::onDescriptionChange
+                )
+            }
 
-            imageSection(
-                images = state.images,
-                isUploadingImageEnabled = state.isUploadingImageEnabled,
-                isCancelImageEnabled = state.isCancelImageEnabled,
-                onUploadImageClick = interactionListener::onUploadImageClicked,
-                onCancelImageClick = interactionListener::onCancelImageClicked,
-            )
+            item {
+                ImageSection(
+                    images = state.images,
+                    isUploadingImageEnabled = state.isUploadingImageEnabled,
+                    isCancelImageEnabled = state.isCancelImageEnabled,
+                    onUploadImageClick = interactionListener::onUploadImageClicked,
+                    onCancelImageClick = interactionListener::onCancelImageClicked,
+                )
+            }
         }
     }
 }

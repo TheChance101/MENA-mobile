@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.ErrorState
+import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
@@ -33,8 +33,8 @@ class EnableLocationScreenViewModel(
     private fun checkIfEnabledPermission() {
         tryToCollect(
             function = { locationForegroundHandler.checkPermissionFlow() },
-            onNewValue = { checkIfEnabledPermissionSuccess(it) },
-            onError = ::onError,
+            onNewValue = ::checkIfEnabledPermissionSuccess,
+            onError = ::onPermissionError,
             dispatcher = dispatcher
         )
     }
@@ -45,7 +45,7 @@ class EnableLocationScreenViewModel(
         }
     }
 
-    private fun onError(errorState: ErrorState) {
+    private fun onPermissionError(errorState: ErrorState) {
         updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
     }
 }

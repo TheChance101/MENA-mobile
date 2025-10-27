@@ -1,9 +1,10 @@
 package net.thechance.mena.trends.presentation.screen.home
 
 interface HomeInteractionListener {
-    fun onLikeClick(reelId: String)
-    fun onAddReelClick()
-    fun onEditTagsClick()
-    fun onManageMyTrendsClick()
-    fun onReelClick(reelId: String)
+    fun onClickLike(reelId: String)
+    fun onClickAddReel()
+    fun onClickEditTags()
+    fun onClickManageMyTrends()
+    fun onClickReel(reelId: String)
+    fun onClickRetry()
 }

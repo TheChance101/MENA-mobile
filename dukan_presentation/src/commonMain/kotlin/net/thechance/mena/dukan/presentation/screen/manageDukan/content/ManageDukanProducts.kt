@@ -6,6 +6,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.paging.LoadState
+import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.empty_shelf
 import mena.dukan_presentation.generated.resources.shelf_empty_body
@@ -14,19 +16,19 @@ import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCar
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanProductsList
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductsState
 
 @Composable
 fun ManageDukanProducts(
     state: ManageDukanUiState,
-    pager: Pager<Int, ProductUiState>,
     onProductClick: (ProductUiState) -> Unit
 ) {
+
+    val product = state.products.collectAsLazyPagingItems()
+
     AnimatedContent(
-        targetState = state.productState,
+        targetState = product.loadState.refresh,
         transitionSpec = {
             fadeIn(animationSpec = tween(300)) togetherWith
                     fadeOut(animationSpec = tween(300))
@@ -34,21 +36,26 @@ fun ManageDukanProducts(
         label = "ContentAnimation"
     ) { target ->
         when (target) {
-            ProductsState.LOADING -> {
+            is LoadState.Loading -> {
                 LoadingVerticalList { LoadingProductCard() }
             }
 
-            ProductsState.LOADED -> ManageDukanProductsList(
-                products = state.products.items,
-                onProductClick = onProductClick,
-                pager = pager
-            )
+            is LoadState.NotLoading -> {
+                if (product.itemCount == 0) {
+                    EmptyStateContent(
+                        image = Res.drawable.empty_shelf,
+                        title = Res.string.shelf_empty_title,
+                        body = Res.string.shelf_empty_body
+                    )
+                } else {
+                    ManageDukanProductsList(
+                        products = product,
+                        onProductClick = onProductClick,
+                    )
+                }
+            }
 
-            ProductsState.EMPTY -> EmptyStateContent(
-                image = Res.drawable.empty_shelf,
-                title = Res.string.shelf_empty_title,
-                body = Res.string.shelf_empty_body
-            )
+            is LoadState.Error -> {}
         }
     }
 }

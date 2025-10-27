@@ -3,12 +3,14 @@ package net.thechance.mena.trends.presentation.screen.update_categories
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.utils.TestExtensions
@@ -78,13 +80,13 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onCategoryClick should toggle category selection state`() = runTest(testDispatcher) {
+    fun `onClickCategory should toggle category selection state`() = runTest(testDispatcher) {
         viewModel.state.test {
             skipItems(2)
             val state = awaitItem()
             val firstCategory = state.categories.first()
             firstCategory.value.id?.let {
-                viewModel.onCategoryClick(it)
+                viewModel.onClickCategory(it)
             }
 
             val updatedState = awaitItem()
@@ -96,8 +98,8 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onBackClick should send NavigateBack effect when called`() = runTest(testDispatcher) {
-        viewModel.onBackClick()
+    fun `onClickBack should send NavigateBack effect when called`() = runTest(testDispatcher) {
+        viewModel.onClickBack()
 
         viewModel.effect.test {
             val effect = awaitItem()
@@ -107,27 +109,27 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `onSaveClick should sendEffect NavigateToTrends when patchUserCategories is successful`() =
+    fun `onClickSave should sendEffect NavigateToTrends when patchUserCategories is successful`() =
         runTest(testDispatcher) {
             everySuspend { repository.updateUserCategories(any(), any()) } returns Unit
 
-            viewModel.onSaveClick()
+            viewModel.onClickSave()
 
             viewModel.effect.test {
                 val effect = awaitItem()
-                assertTrue(effect is UpdateCategoriesScreenEffect.NavigateToTrends)
+                assertTrue(effect is UpdateCategoriesScreenEffect.NavigateToTrendsAndShowSuccess)
                 cancelAndIgnoreRemainingEvents()
             }
         }
 
     @Test
-    fun `onSaveClick should set errorState when patchUserCategories throws exception`() =
+    fun `onClickSave should set errorState when patchUserCategories throws exception`() =
         runTest(testDispatcher) {
             everySuspend {
                 repository.updateUserCategories(any(), any())
             } throws Exception()
 
-            viewModel.onSaveClick()
+            viewModel.onClickSave()
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.state.test {
@@ -136,4 +138,17 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `onRetryClick should reset error and call getCategories`() = runTest {
+        viewModel.onClickRetry()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.errorState).isNull()
+            verifySuspend { viewModel.getCategories() }
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

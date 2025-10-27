@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.wallet.presentation.navigation.navType.StorageLocationNavType
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionScreen
@@ -80,5 +80,5 @@ fun NavigationHost(
 }
 
 val LocalNavController = compositionLocalOf<NavController> {
-    throw UnknownException("nav controller not provided")
+    throw UnknownNetworkException("nav controller not provided")
 }

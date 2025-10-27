@@ -22,7 +22,6 @@ class MainMapperKtTest {
 
     @Test
     fun `getPrayerDisplayNameResource should return correct string resource id for each prayer`() {
-        // Given
         val expectedMap = mapOf(
             PrayerName.FAJR to Res.string.fajr,
             PrayerName.DHUHR to Res.string.dhuhr,
@@ -32,7 +31,6 @@ class MainMapperKtTest {
             PrayerName.SUNRISE to Res.string.sunrise
         )
 
-        // When & Then
         expectedMap.forEach { (prayer, expectedRes) ->
             assertEquals(expectedRes, getPrayerDisplayNameResource(prayer))
         }
@@ -40,30 +38,24 @@ class MainMapperKtTest {
 
     @Test
     fun `isAM should return true for morning times`() {
-        // Given
         val morningInstant = Instant.fromEpochSeconds(MORNING_EIGHT_AM_SECONDS)
-        // When
+
         val result = isAM(morningInstant)
 
-        // Then
         assertEquals(true, result)
     }
 
     @Test
     fun `isAM should return false for afternoon times`() {
-        // Given
         val afternoonInstant = Instant.fromEpochSeconds(15 * 3600)
 
-        // When
         val result = isAM(afternoonInstant)
 
-        // Then
         assertEquals(false, result)
     }
 
     @Test
     fun `toUi should correctly map, filter and order prayers`() {
-        // Given
         val now = Instant.fromEpochSeconds(10_000)
         val prayers = listOf(
             PrayerTime(PrayerName.ISHA, now + 13.hours, DEFAULT_HIJRI_DATE),
@@ -74,10 +66,8 @@ class MainMapperKtTest {
             PrayerTime(PrayerName.MAGHRIB, now + 11.hours, DEFAULT_HIJRI_DATE)
         )
 
-        // When
         val uiState = prayers.toUi(now + 6.hours)
 
-        // Then
         assertEquals(5, uiState.prayers.size)
         val expectedOrder = listOf(
             PrayerName.FAJR, PrayerName.DHUHR, PrayerName.ASR, PrayerName.MAGHRIB, PrayerName.ISHA
@@ -89,7 +79,6 @@ class MainMapperKtTest {
 
     @Test
     fun `getCurrentPrayer should return first prayer when now is before first OR after last prayer`() {
-        // Given
         val base = Instant.fromEpochSeconds(10_000)
         val prayers = listOf(
             PrayerTime(PrayerName.FAJR, base + 1.hours, DEFAULT_HIJRI_DATE),
@@ -99,11 +88,9 @@ class MainMapperKtTest {
             PrayerTime(PrayerName.ISHA, base + 13.hours, DEFAULT_HIJRI_DATE)
         )
 
-        // When
         val beforeUi = prayers.toUi(base - 30.minutes)
         val afterUi = prayers.toUi(base + 15.hours)
 
-        // Then
         assertEquals(0, beforeUi.nextPrayerIndex)
         assertEquals(PrayerName.FAJR, beforeUi.prayers[0].name)
         assertEquals(0, afterUi.nextPrayerIndex)
@@ -112,7 +99,6 @@ class MainMapperKtTest {
 
     @Test
     fun `getCurrentPrayer should move to next when now equals prayer time`() {
-        // Given
         val base = Instant.fromEpochSeconds(10_000)
         val prayers = listOf(
             PrayerTime(PrayerName.FAJR, base, DEFAULT_HIJRI_DATE),
@@ -120,17 +106,14 @@ class MainMapperKtTest {
             PrayerTime(PrayerName.ASR, base + 8.hours, DEFAULT_HIJRI_DATE)
         )
 
-        // When
         val uiState = prayers.toUi(base)
 
-        // Then
         assertEquals(1, uiState.nextPrayerIndex)
         assertEquals(PrayerName.DHUHR, uiState.prayers[uiState.nextPrayerIndex].name)
     }
 
     @Test
     fun `toUi should handle missing prayers gracefully`() {
-        // Given
         val now = Instant.fromEpochSeconds(10_000)
         val prayers = listOf(
             PrayerTime(PrayerName.FAJR, now, DEFAULT_HIJRI_DATE),
@@ -138,10 +121,8 @@ class MainMapperKtTest {
             PrayerTime(PrayerName.ISHA, now + 13.hours, DEFAULT_HIJRI_DATE)
         )
 
-        // When
         val uiState = prayers.toUi(now)
 
-        // Then
         assertEquals(3, uiState.prayers.size)
         assertNotNull(uiState.nextPrayerIndex)
     }

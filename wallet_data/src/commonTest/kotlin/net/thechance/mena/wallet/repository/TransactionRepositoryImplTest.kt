@@ -17,7 +17,7 @@ import net.thechance.mena.wallet.data.repository.transaction.TransactionReposito
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
-import net.thechance.mena.wallet.domain.exceptions.UnknownException
+import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.Test
@@ -53,7 +53,7 @@ class TransactionRepositoryImplTest {
         networkClient = createNetworkClient(getRespond = errorResponse)
         transactionRepository = TransactionRepositoryImpl(networkClient)
 
-        assertFailsWith<UnknownException> {
+        assertFailsWith<UnknownNetworkException> {
             transactionRepository.getTransactionHistory(PAGE, PAGE_SIZE, null)
         }
     }

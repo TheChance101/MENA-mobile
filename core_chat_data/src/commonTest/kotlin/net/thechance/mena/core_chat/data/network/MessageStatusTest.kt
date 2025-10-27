@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class MessageStatusTest {
-    
+
     @Test
     fun `toEntity should convert MessageLocalDto MessageStatus to MessageStatus correctly`() {
         assertEquals(MessageStatus.LOADING, MessageLocalDto.MessageStatus.LOADING.toDomain())

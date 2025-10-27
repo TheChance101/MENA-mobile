@@ -2,14 +2,16 @@ package net.thechance.mena.dukan.presentation.screen.main.components.bestNersetD
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.dukan.presentation.component.shared.LazyRowItems
 import net.thechance.mena.dukan.presentation.component.loading.LoadingHorizontalList
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewBestNearestDukanPagingSource
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -17,51 +19,54 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun BestNearestDukanSection(
     state: MainScreenUiState,
-    pager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>,
     onDukanClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val dukans = state.bestNearestDukans.collectAsLazyPagingItems()
+
     AnimatedContent(
-        targetState = state.bestNearestDukanState,
+        targetState = dukans.loadState.refresh,
     ) {
         when (it) {
-            MainScreenUiState.BestNearestDukanStatus.LOADING -> {
-                LoadingHorizontalList {
-                    LoadingBestNearDukanItem()
-                }
+            LoadState.Loading -> LoadingHorizontalList {
+                LoadingBestNearDukanItem()
             }
 
-            MainScreenUiState.BestNearestDukanStatus.LOADED -> {
+            is LoadState.NotLoading -> {
                 BestNearestDukanList(
-                    dukans = state.bestNearestDukans.items,
-                    pager = pager,
+                    dukans = dukans,
                     onDukanClick = onDukanClick,
                     modifier = modifier
                 )
             }
+
+            is LoadState.Error -> {}
         }
     }
 }
 
 @Composable
 private fun BestNearestDukanList(
-    dukans: List<MainScreenUiState.BestNearestDukanUiState>,
-    pager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>,
+    dukans: LazyPagingItems<MainScreenUiState.BestNearestDukanUiState>,
     onDukanClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRowItems(
-        items = dukans,
-        pager = pager,
-        key = { it.id },
-        contentType = { "BestNearDukanCard" },
+    LazyRow(
         modifier = modifier.fillMaxWidth(),
-    ) { dukan ->
-        BestNearDukanCard(
-            dukanName = dukan.name,
-            imageUrl = dukan.imageUrl,
-            onClick = { onDukanClick(dukan.id) }
-        )
+    ) {
+        items(
+            count = dukans.itemCount,
+            key = { index -> dukans[index]?.id ?: index },
+            contentType = { "BestNearDukanCard" },
+
+            ) {
+            val dukan = dukans[it] ?: return@items
+            BestNearDukanCard(
+                dukanName = dukan.name,
+                imageUrl = dukan.imageUrl,
+                onClick = { onDukanClick(dukan.id) }
+            )
+        }
     }
 }
 
@@ -69,12 +74,10 @@ private fun BestNearestDukanList(
 @Composable
 private fun BestNearestDukanSectionPreview() {
     MenaTheme {
+        val fakePagingItems = flowOf(PagingData.from(fakeBestNearestDuknas()))
+            .collectAsLazyPagingItems()
         BestNearestDukanList(
-            dukans = fakeBestNearestDuknas(),
-            pager = Pager(
-                config = PagingConfig(),
-                pagingSourceFactory = { PreviewBestNearestDukanPagingSource }
-            ),
+            dukans = fakePagingItems,
             onDukanClick = {}
         )
     }

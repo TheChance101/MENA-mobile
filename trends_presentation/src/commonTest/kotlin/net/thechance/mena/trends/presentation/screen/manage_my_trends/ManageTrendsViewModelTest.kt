@@ -4,11 +4,13 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -76,20 +78,34 @@ class ManageTrendsViewModelTest {
         }
 
     @Test
-    fun `onReelItemClick should navigate to trend screen with reel id`() = runTest(testDispatcher) {
+    fun `onClickReel should navigate to trend screen with reel id`() = runTest(testDispatcher) {
         viewModel.effect.test {
-            viewModel.onReelClick(REEL_ID)
+            viewModel.onClickReel(REEL_ID)
             assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateToTrend(REEL_ID))
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onBackClick should navigate back`() = runTest(testDispatcher) {
-        viewModel.onBackClick()
+    fun `onClickBack should navigate back`() = runTest(testDispatcher) {
+        viewModel.onClickBack()
 
         viewModel.effect.test {
             assertThat(awaitItem()).isEqualTo(ManageTrendsUiEffect.NavigateBack)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onRetryClick should reset error and call getReels and getCurrentUserInfo`() = runTest {
+        viewModel.onClickRetry()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.error).isNull()
+            verifySuspend { viewModel.getReels() }
+            verifySuspend { viewModel.getCurrentUserInfo() }
             cancelAndIgnoreRemainingEvents()
         }
     }

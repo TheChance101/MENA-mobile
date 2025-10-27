@@ -102,11 +102,12 @@
     <string name="error_permission_not_granted">لم يتم منح الإذن</string>
 
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
-    <string name="error_cannot_delete_active_address">لا يمكن حذف العنوان الأساسي</string>
-    <string name="error_location_is_turned_off">"الموقع مُغلق"</string>
-    <string name="error_username_required">يرجى إدخال حقل اسم المستخدم</string>
-    <string name="error_firstname_required">يرجى إدخال حقل الاسم الأول</string>
-    <string name="error_lastname_required">يرجى إدخال حقل الاسم الأخير</string>
-    <string name="error_password_mismatch">كلمتا المرور غير متطابقتين.</string>
-    <string name="error_camera_permission_required">مطلوب إذن الوصول إلى الكاميرا</string>
+    <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>
+    
+    <!-- Profile Error Messages -->
+    <string name="error_username_required">اسم المستخدم مطلوب</string>
+    <string name="error_first_name_required">الاسم الأول مطلوب</string>
+    <string name="error_last_name_required">اسم العائلة مطلوب</string>
+    <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
+    <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>
 </resources>

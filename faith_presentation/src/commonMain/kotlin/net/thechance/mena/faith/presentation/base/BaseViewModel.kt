@@ -28,7 +28,6 @@ import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 
-
 @KoverIgnore
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     initialState: UI_STATE,
@@ -54,27 +53,25 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     protected fun <T> tryToExecute(
         execute: suspend () -> T,
         onSuccess: (suspend (T) -> Unit)? = null,
-        onError: suspend (ErrorState) -> Unit = {},
+        onError: (ErrorState) -> Unit = {},
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
         inScope: CoroutineScope = viewModelScope,
         delayMillis: Long = 0L
     ): Job {
-        return inScope.launch(dispatcher) {
-            val handler = CoroutineExceptionHandler { _, throwable ->
-                inScope.launch {
-                    onError(mapExceptionToErrorState(throwable))
-                }
-            }
-            inScope.launch(dispatcher + handler) {
-                onStart()
-                delay(delayMillis)
-                runCatching { execute() }
-                    .onSuccess { result -> onSuccess?.invoke(result) }
-                    .onFailure { throwable -> onError(mapExceptionToErrorState(throwable)) }
-                onFinally()
-            }
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            onError(mapExceptionToErrorState(throwable))
+
+        }
+
+        return inScope.launch(dispatcher + handler) {
+            onStart()
+            delay(delayMillis)
+            runCatching { execute() }
+                .onSuccess { result -> onSuccess?.invoke(result) }
+                .onFailure { throwable -> onError(mapExceptionToErrorState(throwable)) }
+            onFinally()
         }
     }
 

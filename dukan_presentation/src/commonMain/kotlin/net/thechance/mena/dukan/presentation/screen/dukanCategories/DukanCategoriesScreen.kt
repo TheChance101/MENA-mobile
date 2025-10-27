@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanCategories
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,8 +28,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.component.shared.CategoryCard
-import net.thechance.mena.dukan.presentation.component.shared.LazyVerticalGridItems
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -80,10 +83,15 @@ private fun DukanCategoriesContent(
         topBar = { CategoriesTopAppBar(onBackClick = interactionListener::onBackClicked) },
         snakeBar = { DukanCategoriesSnackBar(state, interactionListener::onDismissSnackBar) }
     ) {
-        CategoriesList(
-            categories = state.categories,
-            onCategoryClick = interactionListener::onCategoryClicked
-        )
+        AnimatedContent(state.isLoading) { isLoading ->
+            when {
+                isLoading -> LoadingDots(modifier = Modifier.fillMaxSize())
+                else -> CategoriesList(
+                    categories = state.categories,
+                    onCategoryClick = interactionListener::onCategoryClicked
+                )
+            }
+        }
     }
 }
 
@@ -135,9 +143,9 @@ private fun CategoriesList(
     categories: List<CategoryUiState>,
     onCategoryClick: (categoryName: String, categoryId: String) -> Unit
 ) {
-    LazyVerticalGridItems(
+    LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
-        grid = GridCells.Adaptive(minSize = 76.dp),
+        columns = GridCells.Adaptive(minSize = 76.dp),
         contentPadding = PaddingValues(
             start = Theme.spacing._16,
             end = Theme.spacing._16,
@@ -145,15 +153,18 @@ private fun CategoriesList(
             bottom = Theme.spacing._16
         ),
         horizontalArrangement = Arrangement.Start,
-        items = categories,
-        key = { it.id },
-        contentType = { "CategoryCard" }
-    ) { category ->
-        CategoryCard(
-            title = category.name,
-            imageUrl = category.imageUrl,
-            onClick = { onCategoryClick(category.name, category.id) },
-        )
+    ) {
+        items(
+            items = categories,
+            key = { it.id },
+            contentType = { "CategoryCard" }
+        ) { category ->
+            CategoryCard(
+                title = category.name,
+                imageUrl = category.imageUrl,
+                onClick = { onCategoryClick(category.name, category.id) },
+            )
+        }
     }
 }
 

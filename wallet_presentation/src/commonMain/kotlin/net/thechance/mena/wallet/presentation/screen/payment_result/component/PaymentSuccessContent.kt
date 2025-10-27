@@ -27,7 +27,6 @@ internal fun PaymentSuccessContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
         PaymentResultCard(
             image = painterResource(Res.drawable.transaction_success),

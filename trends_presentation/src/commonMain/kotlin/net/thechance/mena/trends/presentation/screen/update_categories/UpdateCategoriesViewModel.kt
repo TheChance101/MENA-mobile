@@ -35,19 +35,22 @@ internal class UpdateCategoriesViewModel(
         )
     }
 
-    override fun onCategoryClick(categoryId: String) = updateState {
+    override fun onClickCategory(categoryId: String) = updateState {
         copy(categories = categories.toggleCategory(categoryId))
     }
 
-    override fun onBackClick() = sendEffect(UpdateCategoriesScreenEffect.NavigateBack)
+    override fun onClickBack() = sendEffect(UpdateCategoriesScreenEffect.NavigateBack)
 
-    override fun onSaveClick() {
+    override fun onClickSave() {
         tryToExecute(
             block = { saveSelectedCategories() },
-            onSuccess = { sendEffect(UpdateCategoriesScreenEffect.NavigateToTrends) },
+            onSuccess = { sendEffect(UpdateCategoriesScreenEffect.NavigateToTrendsAndShowSuccess) },
             onStart = { updateState { copy(isSaveButtonLoading = true) } },
             onEnd = { updateState { copy(isSaveButtonLoading = false) } },
-            onError = { errorState -> updateState { copy(errorState = errorState) } },
+            onError = { errorState ->
+                updateState { copy(errorState = errorState) }
+                sendEffect(UpdateCategoriesScreenEffect.SaveFailure)
+            },
             dispatcher = defaultDispatcher
         )
     }
@@ -69,5 +72,10 @@ internal class UpdateCategoriesViewModel(
                 categories = categories.toUserCategoryUiState()
             )
         }
+    }
+
+    override fun onClickRetry() {
+        updateState{ copy(errorState = null) }
+        getCategories()
     }
 }

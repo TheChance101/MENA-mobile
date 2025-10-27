@@ -1,19 +1,20 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.delete
 import mena.dukan_presentation.generated.resources.dismiss
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import org.jetbrains.compose.resources.StringResource
 
 data class ManageDukanUiState(
-    val shelves: List<ManageDukanUiState.ShelfUiState> = emptyList(),
-    val selectedShelf: ManageDukanUiState.ShelfUiState? = null,
+    val shelves: List<ShelfUiState> = emptyList(),
+    val selectedShelf: ShelfUiState? = null,
     val totalProducts: Long = 0,
-    val products: PagingData<ManageDukanUiState.ProductUiState> = PagingData(),
+    val products: Flow<PagingData<ProductUiState>> = flowOf(),
     val shelvesState: ShelvesState = ShelvesState.LOADING,
-    val productState: ProductsState = ProductsState.LOADING,
     val snackBarState: SnackBarUiState? = null,
     val deleteDialog: DeleteDialogState? = null
 ) {
@@ -43,12 +44,6 @@ data class ManageDukanUiState(
     }
 
     enum class ShelvesState {
-        LOADING,
-        LOADED,
-        EMPTY
-    }
-
-    enum class ProductsState {
         LOADING,
         LOADED,
         EMPTY

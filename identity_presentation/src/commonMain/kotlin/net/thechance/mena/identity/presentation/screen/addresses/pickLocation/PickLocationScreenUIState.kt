@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
 import androidx.compose.ui.unit.DpOffset
-import net.thechance.mena.identity.domain.util.Coordinates
+import net.thechance.mena.identity.domain.model.Coordinates
 import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 

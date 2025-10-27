@@ -1,7 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.category_pick
 
 internal interface CategoryPickInteractionListener {
-    fun onCategoryClick(categoryId: String)
-    fun onNextClick()
-    fun onBackClick()
+    fun onClickCategory(categoryId: String)
+    fun onClickNext()
+    fun onClickBack()
+    fun onClickRetry()
 }

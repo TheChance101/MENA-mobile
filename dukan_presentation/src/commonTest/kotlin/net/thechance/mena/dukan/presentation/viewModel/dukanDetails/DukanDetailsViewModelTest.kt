@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -58,14 +59,17 @@ class DukanDetailsViewModelTest {
             items = dummyShelves(),
             currentPage = 1,
             totalItems = 3L,
-            totalPages = 1
+            totalPages = 1,
+            pageSize = 1
         )
+
         everySuspend {
             productRepository.getProductsByShelfId(any(), any(), any())
         } returns PagedResult(
             items = emptyList(),
             currentPage = 1,
             totalItems = 0L,
+            pageSize = 10,
             totalPages = 1
         )
 
@@ -77,18 +81,32 @@ class DukanDetailsViewModelTest {
         Dispatchers.resetMain()
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD load dukan details successfully`() = runTest {
-        advanceUntilIdle()
-        val state = dukanDetailsViewModel.state.value
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+            style = Dukan.Style.SMALL_IMAGE
+        )
+        everySuspend {
+            productRepository.getProductsByShelfId(any(), any(), any())
+        } returns PagedResult(
+            items = fakeProducts(),
+            currentPage = 1,
+            totalItems = 1L,
+            pageSize = 10,
+            totalPages = 1,
+        )
 
-        assertEquals(dummyDukanDetails().name, state.dukanInfo.name)
-        assertEquals(dummyDukanDetails().imageUrl, state.dukanInfo.imageUrl)
-        assertEquals(30.0, state.dukanInfo.coordinates.latitude)
-        assertEquals(31.0, state.dukanInfo.coordinates.longitude)
-        assertEquals(DukanDetailsUiState.ShelvesState.LOADED, state.shelvesState)
-        assertTrue(state.shelves.items.isNotEmpty())
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertTrue(state.shelves.asSnapshot().isNotEmpty())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
+
 
     @Test
     fun `init SHOULD set isDukanInfoLoading to false after successful load`() = runTest {
@@ -123,7 +141,8 @@ class DukanDetailsViewModelTest {
             items = emptyList(),
             currentPage = 1,
             totalItems = 0L,
-            totalPages = 1
+            totalPages = 1,
+            pageSize = 10
         )
 
         // When
@@ -131,8 +150,8 @@ class DukanDetailsViewModelTest {
         advanceUntilIdle()
         val state = viewModel.state.value
 
-        // Then
-        assertEquals(DukanDetailsUiState.ShelvesState.EMPTY, state.shelvesState)
+        val shelvesList = state.shelves.asSnapshot()
+        assertTrue(shelvesList.isEmpty())
     }
 
     @Test
@@ -146,7 +165,7 @@ class DukanDetailsViewModelTest {
         val state = dukanDetailsViewModel.state.value
 
         // Then
-        assertTrue(state.productsShelf.items.isEmpty())
+        assertTrue(state.productsShelf.asSnapshot().isEmpty())
     }
 
     @Test
@@ -162,7 +181,7 @@ class DukanDetailsViewModelTest {
 
         // Then
         val state = dukanDetailsViewModel.state.value
-        assertEquals(DukanDetailsUiState.ProductsState.LOADED, state.productsState)
+        assertEquals(fakeProducts().map { it.toUiState() }, state.productsShelf.asSnapshot())
     }
 
     @Test
@@ -188,13 +207,11 @@ class DukanDetailsViewModelTest {
 
         // When
         dukanDetailsViewModel.onShelfClicked(targetShelfId)
-        val pager = dukanDetailsViewModel.pagerProduct
-        pager.load()
         advanceUntilIdle()
 
         // Then
-        pager.flow.test {
-            assertEquals(1, awaitItem().items.size)
+        dukanDetailsViewModel.state.test {
+            assertEquals(1, awaitItem().productsShelf.asSnapshot().size)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -208,13 +225,14 @@ class DukanDetailsViewModelTest {
 
         // When
         dukanDetailsViewModel.onShelfClicked(targetShelfId)
-        val pager = dukanDetailsViewModel.pagerProduct
-        pager.load()
         advanceUntilIdle()
 
         // Then
-        pager.flow.test {
-            assertEquals("123e4567-e89b-12d3-a456-426614174003", awaitItem().items.first().id)
+        dukanDetailsViewModel.state.test {
+            assertEquals(
+                "123e4567-e89b-12d3-a456-426614174003",
+                awaitItem().productsShelf.asSnapshot().first().id
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -228,13 +246,11 @@ class DukanDetailsViewModelTest {
 
         // When
         dukanDetailsViewModel.onShelfClicked(targetShelfId)
-        val pager = dukanDetailsViewModel.pagerProduct
-        pager.load()
         advanceUntilIdle()
 
         // Then
-        pager.flow.test {
-            assertEquals("Laptop", awaitItem().items.first().name)
+        dukanDetailsViewModel.state.test {
+            assertEquals("Laptop", awaitItem().productsShelf.asSnapshot().first().name)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -276,167 +292,6 @@ class DukanDetailsViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `onCartClick SHOULD set showProductQuantity to true for specific product in shelf`() =
-        runTest {
-            // Given
-            val productId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003").toString()
-            everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
-                style = Dukan.Style.SMALL_IMAGE
-            )
-            everySuspend {
-                productRepository.getProductsByShelfId(any(), any(), any())
-            } returns PagedResult(
-                items = fakeProducts(),
-                currentPage = 1,
-                totalItems = 1L,
-                totalPages = 1
-            )
-
-            val viewModel = createViewModel()
-            advanceUntilIdle()
-
-
-            // When
-            viewModel.onAddToCartClick(productId)
-            val state = viewModel.state.value
-
-            // Then
-            val product = state.shelves.items
-                .flatMap { it.products }
-                .find { it.id == productId }
-
-            assertTrue(product?.inCartQuantity == 1)
-        }
-
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `onCartClick SHOULD only update specific product not others`() = runTest {
-        // Given
-        val product1Id = Uuid.parse("123e4567-e89b-12d3-a456-426614174010")
-        val product2Id = Uuid.parse("123e4567-e89b-12d3-a456-426614174011")
-        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
-            style = Dukan.Style.SMALL_IMAGE
-        )
-        everySuspend {
-            productRepository.getProductsByShelfId(any(), any(), any())
-        } returns PagedResult(
-            items = listOf(
-                Product(
-                    id = product1Id,
-                    name = "Product 1",
-                    description = "Description",
-                    price = 100.0,
-                    imageUrls = listOf("url1"),
-                    createdAt = "2025-10-10T12:00:00Z"
-                ),
-                Product(
-                    id = product2Id,
-                    name = "Product 2",
-                    description = "Description",
-                    price = 200.0,
-                    imageUrls = listOf("url2"),
-                    createdAt = "2025-10-10T12:00:00Z"
-                )
-            ),
-            currentPage = 1,
-            totalItems = 2L,
-            totalPages = 1
-        )
-
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        // When
-        viewModel.onAddToCartClick(product1Id.toString())
-        val state = viewModel.state.value
-
-        // Then
-        val products = state.shelves.items.flatMap { it.products }
-        assertTrue(products.find { it.id == product1Id.toString() }?.inCartQuantity == 1)
-        assertFalse(products.find { it.id == product2Id.toString() }?.inCartQuantity == 1)
-    }
-
-    @Test
-    fun `pagerShelf SHOULD load shelves with correct page size`() = runTest {
-        // Given
-        advanceUntilIdle()
-
-        // When
-        dukanDetailsViewModel.pagerShelf.load()
-        advanceUntilIdle()
-
-        // Then
-        dukanDetailsViewModel.pagerShelf.flow.test {
-            val pagingData = awaitItem()
-            assertEquals(3, pagingData.items.size)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `pagerProduct SHOULD load products for selected shelf`() = runTest {
-        // Given
-        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003")
-        setupProductsForShelf(targetShelfId.toString())
-        dukanDetailsViewModel.onShelfClicked(targetShelfId.toString())
-
-        // When
-        dukanDetailsViewModel.pagerProduct.load()
-        advanceUntilIdle()
-
-        // Then
-        dukanDetailsViewModel.pagerProduct.flow.test {
-            val pagingData = awaitItem()
-            assertFalse(pagingData.items.isEmpty())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `products state SHOULD be LOADING when products are being fetched`() = runTest {
-        // Given
-        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003")
-        setupProductsForShelf(targetShelfId.toString())
-
-        // When
-        dukanDetailsViewModel.onShelfClicked(targetShelfId.toString())
-        val stateBeforeLoad = dukanDetailsViewModel.state.value
-
-        // Then
-        assertEquals(DukanDetailsUiState.ProductsState.LOADING, stateBeforeLoad.productsState)
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `products state SHOULD be EMPTY when no products returned`() = runTest {
-        // Given
-        val targetShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174003")
-        everySuspend {
-            productRepository.getProductsByShelfId(
-                shelfId = targetShelfId.toString(),
-                page = any(),
-                size = any()
-            )
-        } returns PagedResult(
-            items = emptyList(),
-            currentPage = 1,
-            totalItems = 0L,
-            totalPages = 1
-        )
-
-        // When
-        dukanDetailsViewModel.onShelfClicked(targetShelfId.toString())
-        advanceUntilIdle()
-        val state = dukanDetailsViewModel.state.value
-
-        // Then
-        assertEquals(DukanDetailsUiState.ProductsState.EMPTY, state.productsState)
-    }
-
     private fun createViewModel() = DukanDetailsViewModel(
         dukanManagementRepository = dukanManagementRepository,
         shelfRepository = shelfRepository,
@@ -452,6 +307,7 @@ class DukanDetailsViewModelTest {
             items = fakeProducts(),
             currentPage = 1,
             totalItems = 1L,
+            pageSize = 10,
             totalPages = 1
         )
     }

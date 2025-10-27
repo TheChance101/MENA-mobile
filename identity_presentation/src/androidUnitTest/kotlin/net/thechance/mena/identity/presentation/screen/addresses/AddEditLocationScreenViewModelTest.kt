@@ -10,14 +10,18 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.domain.exception.UnAuthorizedException
+import java.lang.Exception
+import net.thechance.mena.identity.domain.model.AddressInput
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -30,10 +34,10 @@ class AddEditLocationScreenViewModelTest {
     private val addressLine = "Cairo"
     private val addressID = Uuid.random()
 
-    private val addressUIState = AddressUIState (
+    private val addressUIState = AddressUIState(
         id = addressID,
         addressType = addressType,
-        coordinates = CoordinatesUiState(latitude ,longitude),
+        coordinates = CoordinatesUiState(latitude, longitude),
         addressDetails = addressLine
     )
     private lateinit var viewModel: AddEditLocationScreenViewModel
@@ -127,7 +131,7 @@ class AddEditLocationScreenViewModelTest {
 
             viewModel.onClickAddressType(addressType)
 
-            coEvery { addressesRepository.createAddress(any()) } returns Unit
+            coEvery { addressesRepository.createAddress(any<AddressInput>()) } returns Unit
 
             viewModel.effect.test {
 
@@ -146,24 +150,42 @@ class AddEditLocationScreenViewModelTest {
     fun `onClickSave() should call createAddress and handle error when addressID is null`() =
         runTest {
 
+            val testAddress = AddressUIState(
+                id = null,
+                addressType = addressType,
+                coordinates = CoordinatesUiState(latitude, longitude),
+                addressDetails = "Test Address"
+            )
+            viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher, testAddress)
+            
+            testDispatcher.scheduler.advanceUntilIdle()
+            
             viewModel.onClickAddressType(addressType)
-
-            coEvery { addressesRepository.createAddress(any()) } throws UnAuthorizedException()
-
-            viewModel.onClickSave()
-
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertTrue { viewModel.state.value.errorMessage != null }
+            coEvery { addressesRepository.createAddress(any<AddressInput>()) } throws Exception("Test error")
+
+            viewModel.effect.test(timeout = 1000.milliseconds) {
+                viewModel.onClickSave()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val effect = awaitItem()
+
+                assertTrue(effect is AddEditLocationScreenUIEffect.NavigateBack)
+                assertTrue(effect.snackBarUiState != null)
+
+                cancelAndConsumeRemainingEvents()
+            }
         }
 
     @Test
-    fun `onClickSave() should call editAddress and handle success when addressID is not null`() =
+    fun `onClickSave() should call updateAddress and handle success when addressID is not null`() =
         runTest {
 
+            viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
             viewModel.onClickAddressType(addressType)
 
-            coEvery { addressesRepository.editAddress(any()) } returns Unit
+            coEvery { addressesRepository.updateAddress(any(), any<AddressInput>()) } returns Unit
 
             viewModel.effect.test {
 
@@ -172,6 +194,7 @@ class AddEditLocationScreenViewModelTest {
                 val effect = awaitItem()
 
                 assertTrue(effect is AddEditLocationScreenUIEffect.NavigateBack)
+                assertTrue(effect.snackBarUiState != null)
 
                 cancelAndConsumeRemainingEvents()
 
@@ -179,18 +202,28 @@ class AddEditLocationScreenViewModelTest {
         }
 
     @Test
-    fun `onClickSave() should call editAddress and handle error when addressID is not null`() =
+    fun `onClickSave() should call updateAddress and handle error when addressID is not null`() =
         runTest {
 
+            viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+            testDispatcher.scheduler.advanceUntilIdle()
+            
             viewModel.onClickAddressType(addressType)
-
-            coEvery { addressesRepository.editAddress(any()) } throws UnAuthorizedException()
-
-            viewModel.onClickSave()
-
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertTrue { viewModel.state.value.errorMessage != null }
+            coEvery { addressesRepository.updateAddress(any(), any<AddressInput>()) } throws Exception("Test error")
+
+            viewModel.effect.test(timeout = 1000.milliseconds) {
+                viewModel.onClickSave()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val effect = awaitItem()
+
+                assertTrue(effect is AddEditLocationScreenUIEffect.NavigateBack)
+                assertTrue(effect.snackBarUiState != null)
+
+                cancelAndConsumeRemainingEvents()
+            }
         }
 
     @Test

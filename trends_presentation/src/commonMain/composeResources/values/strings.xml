@@ -2,6 +2,8 @@
     <string name="change_tags">Change tags</string>
     <string name="choose_interests">Choose your interests</string>
     <string name="help_text">Help us understand your interests so we can show you trends that match your taste.</string>
+    <string name="tags_updated_success">Your tags have been updated.</string>
+    <string name="tags_updated_failure">Failed to update interests. Try again.</string>
     <string name="save_change">Save change</string>
     <string name="next">Next</string>
     <string name="app_name">MENA</string>
@@ -73,6 +75,7 @@
     <string name="views">Views</string>
     <string name="likes_suffix">%1$d Likes</string>
     <string name="views_suffix">%1$d Views</string>
+    <string name="play_now">Play Now</string>
 
     <string name="just_now">Just now</string>
     <string name="minutes_ago">%1$d minutes ago</string>
@@ -84,4 +87,14 @@
 
     <string name="pause_icon">Pause Icon</string>
     <string name="avatar_image">avatar image</string>
+
+    <string name="empty_trends_icon">Empty Trends Icon</string>
+    <string name="empty_trends_title">No trends yet!</string>
+    <string name="empty_trends_description">
+        Start adding your tagged products to the shelf by clicking the Add button above.</string>
+
+    <string name="no_connection_icon">No Connection Icon</string>
+    <string name="no_connection_title">Oops! It looks like you’re offline.</string>
+    <string name="no_connection_description">Check your connection and try again</string>
+    <string name="re_try">Re-try</string>
 </resources>

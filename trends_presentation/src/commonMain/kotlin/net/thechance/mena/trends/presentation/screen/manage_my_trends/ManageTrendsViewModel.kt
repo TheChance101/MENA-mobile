@@ -21,9 +21,8 @@ import org.koin.core.annotation.Provided
 internal class ManageTrendsViewModel(
     @Provided private val repository: ReelsRepository,
     @Provided private val userRepository: UserRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ManageTrendsScreenState,
-        ManageTrendsUiEffect>(ManageTrendsScreenState()),
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<ManageTrendsScreenState, ManageTrendsUiEffect>(ManageTrendsScreenState()),
     ManageTrendsInteractionListener {
 
     init {
@@ -43,7 +42,7 @@ internal class ManageTrendsViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -54,7 +53,7 @@ internal class ManageTrendsViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -65,11 +64,17 @@ internal class ManageTrendsViewModel(
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
-    override fun onReelClick(reelId: String) {
+    override fun onClickReel(reelId: String) {
         sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId))
     }
 
-    override fun onBackClick() {
+    override fun onClickBack() {
         sendEffect(ManageTrendsUiEffect.NavigateBack)
+    }
+
+    override fun onClickRetry() {
+        updateState { copy(error = null) }
+        getReels()
+        getCurrentUserInfo()
     }
 }
