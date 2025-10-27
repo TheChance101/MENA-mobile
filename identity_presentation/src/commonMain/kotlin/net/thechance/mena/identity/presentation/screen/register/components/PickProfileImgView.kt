@@ -2,14 +2,10 @@ package net.thechance.mena.identity.presentation.screen.register.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -25,7 +21,6 @@ import mena.identity_presentation.generated.resources.title_complete_your_profil
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
@@ -58,18 +53,18 @@ fun PickProfileImgView(
             )
 
             UploadImageContainer(
-                onClick = {onEditClick()},
+                onClick = { onEditClick() },
                 image = imageBitmap,
                 modifier = Modifier
                     .width(328.dp)
-                    .align (Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally)
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             PrimaryButton(
                 text = stringResource(Res.string.button_upload),
-                onClick = {onUploadClick()},
+                onClick = { onUploadClick() },
                 isEnabled = isImageLoaded,
                 contentPadding = PaddingValues(vertical = 13.dp),
                 modifier = Modifier
@@ -79,7 +74,7 @@ fun PickProfileImgView(
 
             TextButton(
                 text = stringResource(Res.string.button_skip_for_now),
-                onClick = {onSkipClick()},
+                onClick = { onSkipClick() },
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -91,9 +86,11 @@ fun PickProfileImgView(
 @Composable
 private fun PickProfileImgViewPreview() {
     MenaTheme {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Theme.colorScheme.background.surface)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Theme.colorScheme.background.surface)
+        ) {
 
             PickProfileImgView(
                 imageBitmap = null,
@@ -106,9 +103,11 @@ private fun PickProfileImgViewPreview() {
 @Composable
 private fun PickProfileImgViewPreview2() {
     MenaTheme {
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(Theme.colorScheme.background.surface)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Theme.colorScheme.background.surface)
+        ) {
 
             PickProfileImgView(
                 imageBitmap = ImageBitmap(1, 1),
