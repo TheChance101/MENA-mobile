@@ -45,8 +45,9 @@ kotlin {
             // Serialization
             implementation(libs.kotlinx.serialization.json)
 
-            // Ktor
+            // Network
             implementation(libs.bundles.ktor)
+            implementation(libs.bundles.ktorfit)
 
             // Coil
             implementation(libs.coil.compose)

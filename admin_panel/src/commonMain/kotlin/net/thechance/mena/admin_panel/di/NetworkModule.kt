@@ -1,11 +1,30 @@
 package net.thechance.mena.admin_panel.di
 
+import de.jensklingenberg.ktorfit.Ktorfit
+import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
+import io.ktor.client.HttpClient
 import net.thechance.mena.admin_panel.AppEnvironment
+import net.thechance.mena.admin_panel.data.remote.NetworkClient
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-private const val BASE_URL = "baseUrl"
 
 val networkModule = module {
-    single(named(BASE_URL)) { AppEnvironment.baseUrl }
+    single(named(BASE_URL_KEY)) { AppEnvironment.baseUrl }
+
+    single<HttpClient>(named(ADMIN_PANEL_HTTP_CLIENT_KEY)) {
+        get<NetworkClient>().provideHttpClient()
+    }
+
+    single<Ktorfit>(named(ADMIN_PANEL_KTORFIT_KEY)) {
+        Ktorfit.Builder()
+            .httpClient(get<HttpClient>(named(ADMIN_PANEL_HTTP_CLIENT_KEY)))
+            .baseUrl(get<String>(named(BASE_URL_KEY)) + "/")
+            .converterFactories(ResponseConverterFactory())
+            .build()
+    }
 }
+
+private const val BASE_URL_KEY = "baseUrl"
+private const val ADMIN_PANEL_HTTP_CLIENT_KEY = "adminPanelHttpClient"
+private const val ADMIN_PANEL_KTORFIT_KEY = "adminPanelKtorfit"

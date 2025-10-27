@@ -6,7 +6,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
-import net.thechance.mena.admin_panel.data.dto.ErrorDto
+import net.thechance.mena.admin_panel.data.remote.dto.ErrorDto
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 

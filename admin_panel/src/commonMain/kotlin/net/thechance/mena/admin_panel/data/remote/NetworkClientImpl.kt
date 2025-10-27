@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.data.network_client
+package net.thechance.mena.admin_panel.data.remote
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -28,33 +28,13 @@ import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 @Single
-class NetworkClientImpl(
+class NetworkClient(
     @Provided
     @Named("baseUrl")
     private val baseUrl: String
-) : NetworkClient {
+){
 
-    private val client: HttpClient = buildClient()
-
-    override suspend fun get(
-        urlString: String,
-        requestBuilder: HttpRequestBuilder.() -> Unit
-    ):  HttpResponse = client.get(urlString = urlString, block = requestBuilder)
-
-    override suspend fun post(
-        urlString: String,
-        requestBuilder: HttpRequestBuilder.() -> Unit
-    ): HttpResponse = client.post(urlString = urlString, block = requestBuilder)
-
-    override suspend fun put(
-        urlString: String,
-        requestBuilder: HttpRequestBuilder.() -> Unit
-    ): HttpResponse = client.put(urlString = urlString, block = requestBuilder)
-
-    override suspend fun delete(
-        urlString: String,
-        requestBuilder: HttpRequestBuilder.() -> Unit
-    ): HttpResponse = client.delete(urlString = urlString, block = requestBuilder)
+    fun provideHttpClient(): HttpClient = buildClient()
 
     private fun buildClient(): HttpClient {
         return HttpClient(CIO) {
@@ -108,5 +88,4 @@ class NetworkClientImpl(
     private companion object {
         const val TIME_OUT_INTERVAL_MILLI = 15_000L
     }
-
 }
