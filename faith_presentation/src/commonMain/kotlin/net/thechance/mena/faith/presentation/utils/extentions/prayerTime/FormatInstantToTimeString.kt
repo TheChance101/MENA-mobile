@@ -26,9 +26,9 @@ fun getHijriReadableDate(prayerTimes: List<PrayerTime>): String = runCatching {
     val hijriDate = prayerTimes.firstOrNull()?.hijriDate ?: return ""
     val parts = hijriDate.split("-")
     if (parts.size != 3) return hijriDate
-    val day = parts[0].toInt()
-    val month = parts[1].toInt()
-    val year = parts[2].toInt()
+    val day = parts[DAY_INDEX].toInt()
+    val month = parts[MONTH_INDEX].toInt()
+    val year = parts[YEAR_INDEX].toInt()
     val monthName = hijriMonths[month]
     "$day $monthName $year"
 }.getOrDefault("")
@@ -53,3 +53,7 @@ private val hijriMonths: Map<Int, String> = mapOf(
     11 to "Dhul Qadah",
     12 to "Dhul Hijjah"
 )
+
+private const val DAY_INDEX = 0
+private const val MONTH_INDEX = 1
+private const val YEAR_INDEX = 2
