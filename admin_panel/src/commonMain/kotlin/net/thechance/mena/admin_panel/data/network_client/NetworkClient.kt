@@ -3,7 +3,6 @@ package net.thechance.mena.admin_panel.data.network_client
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 
-
 interface NetworkClient {
     suspend fun get(
         urlString: String,

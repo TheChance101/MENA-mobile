@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 
-
 abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
     private val _state = MutableStateFlow(initialState)
     val state = _state.asStateFlow()

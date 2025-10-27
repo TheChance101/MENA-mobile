@@ -105,8 +105,8 @@ class NetworkClientImpl(
         }
     }
 
-    companion object {
-        private const val TIME_OUT_INTERVAL_MILLI = 15_000L
+    private companion object {
+        const val TIME_OUT_INTERVAL_MILLI = 15_000L
     }
 
 }
