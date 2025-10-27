@@ -5,8 +5,10 @@ import androidx.compose.ui.window.application
 import net.thechance.mena.admin_panel.di.AppModule
 import net.thechance.mena.admin_panel.di.networkModule
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.app_name
 import net.thechance.mena.admin_panel.resources.mena_logo
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.core.context.startKoin
 import org.koin.ksp.generated.module
 
@@ -19,7 +21,7 @@ fun main() = application {
     }
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Mena Admin Panel",
+        title = stringResource(Res.string.app_name),
         icon = painterResource(Res.drawable.mena_logo)
     ) {
         App()
