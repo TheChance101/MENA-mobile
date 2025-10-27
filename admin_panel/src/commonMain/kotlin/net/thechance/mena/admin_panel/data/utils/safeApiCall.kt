@@ -2,8 +2,6 @@ package net.thechance.mena.admin_panel.data.utils
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlinx.io.IOException
@@ -12,7 +10,7 @@ import net.thechance.mena.admin_panel.data.dto.ErrorDto
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 
-internal suspend inline fun <reified T> safeApiCall(
+internal suspend inline fun <reified T> wrapApiCall(
     noinline execute: suspend () -> HttpResponse
 ): T {
     val response = executeRequest(execute)
@@ -34,21 +32,21 @@ private suspend inline fun <reified T> handleResponse(response: HttpResponse): T
         return parseBody<T>(response)
     }
 
-    when (response.status) {
-        HttpStatusCode.Unauthorized ->
-            throw UnknownNetworkException("Unauthorized: " + parseErrorMessage(response))
+    throw when {
+        response.status == HttpStatusCode.Unauthorized ->
+            UnknownNetworkException("Unauthorized: " + parseErrorMessage(response))
 
-        HttpStatusCode.RequestTimeout ->
-            throw UnknownNetworkException("Request timeout: " + parseErrorMessage(response))
+        response.status == HttpStatusCode.RequestTimeout ->
+            UnknownNetworkException("Request timeout: " + parseErrorMessage(response))
 
-        HttpStatusCode.TooManyRequests ->
-            throw UnknownNetworkException("Too many requests: " + parseErrorMessage(response))
+        response.status == HttpStatusCode.TooManyRequests ->
+            UnknownNetworkException("Too many requests: " + parseErrorMessage(response))
 
-        in getServerErrorRange() ->
-            throw UnknownNetworkException("Server error: " + parseErrorMessage(response))
+        response.status.isServerError() ->
+            UnknownNetworkException("Server error: " + parseErrorMessage(response))
 
         else ->
-            throw UnknownNetworkException(parseErrorMessage(response))
+            UnknownNetworkException(parseErrorMessage(response))
     }
 }
 
@@ -70,5 +68,6 @@ suspend fun parseErrorMessage(response: HttpResponse): String {
     }
 }
 
-fun getServerErrorRange() =
-    HttpStatusCode.InternalServerError..HttpStatusCode.InsufficientStorage
+private fun HttpStatusCode.isServerError(): Boolean {
+    return this.value in 500..599
+}

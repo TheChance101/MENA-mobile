@@ -29,7 +29,9 @@ import org.koin.core.annotation.Single
 
 @Single
 class NetworkClientImpl(
-    @Provided @Named("baseUrl") private val baseUrl: String
+    @Provided
+    @Named("baseUrl")
+    private val baseUrl: String
 ) : NetworkClient {
 
     private val client: HttpClient = buildClient()
@@ -37,30 +39,22 @@ class NetworkClientImpl(
     override suspend fun get(
         urlString: String,
         requestBuilder: HttpRequestBuilder.() -> Unit
-    ): HttpResponse {
-        return client.get(urlString, requestBuilder)
-    }
+    ):  HttpResponse = client.get(urlString = urlString, block = requestBuilder)
 
     override suspend fun post(
         urlString: String,
         requestBuilder: HttpRequestBuilder.() -> Unit
-    ): HttpResponse {
-        return client.post(urlString, requestBuilder)
-    }
+    ): HttpResponse = client.post(urlString = urlString, block = requestBuilder)
 
     override suspend fun put(
         urlString: String,
         requestBuilder: HttpRequestBuilder.() -> Unit
-    ): HttpResponse {
-        return client.put(urlString, requestBuilder)
-    }
+    ): HttpResponse = client.put(urlString = urlString, block = requestBuilder)
 
     override suspend fun delete(
         urlString: String,
         requestBuilder: HttpRequestBuilder.() -> Unit
-    ): HttpResponse {
-        return client.delete(urlString, requestBuilder)
-    }
+    ): HttpResponse = client.delete(urlString = urlString, block = requestBuilder)
 
     private fun buildClient(): HttpClient {
         return HttpClient(CIO) {
