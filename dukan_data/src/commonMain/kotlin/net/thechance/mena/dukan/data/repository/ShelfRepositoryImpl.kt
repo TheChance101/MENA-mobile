@@ -46,7 +46,7 @@ class ShelfRepositoryImpl(
         }
     }
 
-    override suspend fun editShelfName(shelfId: String, shelfName: String) {
+    override suspend fun updateShelf(shelfId: String, newShelfName: String) {
         // TODO edit shelf name
     }
 

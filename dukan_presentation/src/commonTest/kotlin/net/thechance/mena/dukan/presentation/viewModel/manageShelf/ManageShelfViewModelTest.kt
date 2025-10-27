@@ -48,7 +48,7 @@ class ManageShelfViewModelTest {
         savedStateHandle[ManageShelfArgs.shelfTitle] = expectedShelfTitle
         shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
         everySuspend {
-            shelfRepository.editShelfName(
+            shelfRepository.updateShelf(
                 any(),
                 any()
             )
@@ -166,7 +166,7 @@ class ManageShelfViewModelTest {
     fun `onCreateButtonClicked SHOULD show general error when unknown exception thrown`() =
         runTest {
             everySuspend {
-                shelfRepository.editShelfName(
+                shelfRepository.updateShelf(
                     any(),
                     any()
                 )
@@ -189,7 +189,7 @@ class ManageShelfViewModelTest {
 
             manageShelfViewModel.onShelfNameChange(newName)
 
-            everySuspend { shelfRepository.editShelfName(shelfId, newName) } returns Unit
+            everySuspend { shelfRepository.updateShelf(shelfId, newName) } returns Unit
 
             manageShelfViewModel.effect.test {
                 manageShelfViewModel.onSaveClicked()
