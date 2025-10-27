@@ -8,7 +8,7 @@ import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriDate
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getSunriseTime
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
@@ -70,7 +70,7 @@ class MainViewModel(
             currentState.copy(
                 prayerTimes = prayerTimes,
                 prayerTimesUiState = prayerTimes.toUi(Clock.System.now()),
-                hijriDate = getHijriDate(prayerTimes),
+                hijriDate = getHijriReadableDate(prayerTimes),
                 sunriseTime = getSunriseTime(prayerTimes)
             )
         }

@@ -20,7 +20,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ManageDukanAppBar(listener: ManageDukanInteractionListener) {
     AppBar(
         title = stringResource(Res.string.my_dukan),
-        onLeadingClick = listener::onBackButtonClicked,
+        onLeadingClick = listener::onBackClicked,
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._16,
             vertical = Theme.spacing._8

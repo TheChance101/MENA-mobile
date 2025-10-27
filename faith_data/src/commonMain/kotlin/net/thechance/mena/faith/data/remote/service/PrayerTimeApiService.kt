@@ -8,7 +8,7 @@ import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
 
 interface PrayerTimeApiService {
 
-    @GET("faith/DayPrayerTimes/{date}")
+    @GET("faith/prayer/times/{date}")
     suspend fun getPrayerTimes(
         @Path("date") date: String,
         @Query("latitude") latitude: Double,

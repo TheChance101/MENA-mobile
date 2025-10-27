@@ -19,7 +19,6 @@ import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanIn
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
 fun ManageDukanNoShelvesContent() {
     ImageWithTextContainer(

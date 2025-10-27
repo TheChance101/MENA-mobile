@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.trends_presentation.generated.resources.Res
@@ -100,18 +101,22 @@ private fun HomeScreenContent(
         }
     ) {
         val reels = state.reels.collectAsLazyPagingItems()
+
+        val hasNetworkError = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet
+                && reels.itemSnapshotList.isEmpty()
+
         val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
-                !state.isLoading &&
+                reels.loadState.refresh is LoadState.NotLoading &&
                 reels.loadState.refresh.toErrorState() == null
 
         Box(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(
-                visible = state.isLoading,
+                visible = reels.loadState.refresh is LoadState.Loading,
                 content = { LoadingProgressBar() }
             )
 
             AnimatedVisibility(
-                visible = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet,
+                visible = hasNetworkError,
                 content = { NoConnection { listener.onClickRetry() } }
             )
 
@@ -121,7 +126,7 @@ private fun HomeScreenContent(
             )
 
             AnimatedVisibility(
-                visible = reels.itemSnapshotList.isNotEmpty() && state.isLoading.not(),
+                visible = reels.itemSnapshotList.isNotEmpty() && reels.loadState.refresh !is LoadState.Loading,
                 content = {
                     ReelsListSection(
                         reels = reels,
@@ -133,7 +138,7 @@ private fun HomeScreenContent(
 
             AnimatedVisibility(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                visible = state.isLoading.not(),
+                visible = !hasNetworkError && reels.loadState.refresh !is LoadState.Loading,
                 content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
             )
         }

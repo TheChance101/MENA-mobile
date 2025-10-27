@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -90,7 +91,8 @@ class ShelfDetailsViewModelTest {
             items = dummyProducts,
             currentPage = 1,
             totalItems = 3L,
-            totalPages = 1
+            pageSize = 10,
+            totalPages = 1,
         )
 
         shelfDetailsViewModel = createViewModel()
@@ -129,23 +131,13 @@ class ShelfDetailsViewModelTest {
     }
 
     @Test
-    fun `init SHOULD set productsState to LOADING initially`() = runTest {
-        // When
-        val state = shelfDetailsViewModel.state.value
-
-        // Then
-        assertEquals(ShelfDetailsUiState.ProductsState.LOADING, state.productsState)
-    }
-
-    @Test
     fun `init SHOULD load products from repository`() = runTest {
         // When
         advanceUntilIdle()
         val state = shelfDetailsViewModel.state.value
 
         // Then
-        assertEquals(ShelfDetailsUiState.ProductsState.LOADED, state.productsState)
-        assertTrue(state.productsShelf.items.isNotEmpty())
+        assertTrue(state.productsShelf.asSnapshot().isNotEmpty())
     }
 
     @Test
@@ -155,7 +147,7 @@ class ShelfDetailsViewModelTest {
         val state = shelfDetailsViewModel.state.value
 
         // Then
-        assertEquals(3, state.productsShelf.items.size)
+        assertEquals(3, state.productsShelf.asSnapshot().size)
     }
 
 
@@ -166,7 +158,7 @@ class ShelfDetailsViewModelTest {
         val state = shelfDetailsViewModel.state.value
 
         // Then
-        val productIds = state.productsShelf.items.map { it.id }
+        val productIds = state.productsShelf.asSnapshot().map { it.id }
         assertTrue(productIds.contains("013e0bb1-6177-4430-ae08-f3a1a24f6f7d"))
         assertTrue(productIds.contains("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"))
         assertTrue(productIds.contains("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"))
@@ -179,7 +171,7 @@ class ShelfDetailsViewModelTest {
         val state = shelfDetailsViewModel.state.value
 
         // Then
-        val productNames = state.productsShelf.items.map { it.name }
+        val productNames = state.productsShelf.asSnapshot().map { it.name }
         assertTrue(productNames.contains("Laptop"))
         assertTrue(productNames.contains("Mouse"))
         assertTrue(productNames.contains("Keyboard"))
@@ -189,24 +181,24 @@ class ShelfDetailsViewModelTest {
     fun `products SHOULD have correct prices`() = runTest {
         // When
         advanceUntilIdle()
-        val state = shelfDetailsViewModel.state.value
+        val productsShelfs = shelfDetailsViewModel.state.value.productsShelf.asSnapshot()
 
         // Then
-        assertEquals(1200.0, state.productsShelf.items[0].price)
-        assertEquals(25.0, state.productsShelf.items[1].price)
-        assertEquals(75.0, state.productsShelf.items[2].price)
+        assertEquals(1200.0, productsShelfs[0].price)
+        assertEquals(25.0, productsShelfs[1].price)
+        assertEquals(75.0, productsShelfs[2].price)
     }
 
     @Test
     fun `products SHOULD have correct descriptions`() = runTest {
         // When
         advanceUntilIdle()
-        val state = shelfDetailsViewModel.state.value
+        val productsShelfs = shelfDetailsViewModel.state.value.productsShelf.asSnapshot()
 
         // Then
-        assertEquals("High-end laptop", state.productsShelf.items[0].description)
-        assertEquals("Wireless mouse", state.productsShelf.items[1].description)
-        assertEquals("Mechanical keyboard", state.productsShelf.items[2].description)
+        assertEquals("High-end laptop", productsShelfs[0].description)
+        assertEquals("Wireless mouse", productsShelfs[1].description)
+        assertEquals("Mechanical keyboard", productsShelfs[2].description)
     }
 
     @Test
@@ -216,7 +208,7 @@ class ShelfDetailsViewModelTest {
         val state = shelfDetailsViewModel.state.value
 
         // Then
-        state.productsShelf.items.forEach { product ->
+        state.productsShelf.asSnapshot().forEach { product ->
             assertEquals(0, product.inCartQuantity)
         }
     }
@@ -230,22 +222,5 @@ class ShelfDetailsViewModelTest {
             assertEquals(ShelfDetailsEffects.NavigateBack, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    @Test
-    fun `onAddToCartClick SHOULD set inCartQuantity to 1 for specific product`() = runTest {
-        // Given
-        advanceUntilIdle()
-        val productId =Uuid.parse("013e0bb1-6177-4430-ae08-f3a1a24f6f7d")
-
-
-        // When
-        shelfDetailsViewModel.onAddToCartClick(productId.toString())
-        val state = shelfDetailsViewModel.state.value
-
-        // Then
-        val product = state.productsShelf.items.find { it.id == productId.toString() }
-        assertEquals(1, product?.inCartQuantity)
     }
 }

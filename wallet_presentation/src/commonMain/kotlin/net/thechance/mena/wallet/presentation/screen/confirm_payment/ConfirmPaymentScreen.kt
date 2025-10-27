@@ -35,14 +35,21 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun ConfirmPaymentScreen(viewModel: ConfirmPaymentViewModel = koinViewModel()) {
+fun ConfirmPaymentScreen(
+    navigateBack: () -> Unit,
+    viewModel: ConfirmPaymentViewModel = koinViewModel()
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onConfirmPaymentEffect(effect = effect, navController = navController)
+            onConfirmPaymentEffect(
+                effect = effect,
+                navController = navController,
+                navigateBack = navigateBack
+            )
         }
     )
 
@@ -104,11 +111,13 @@ private fun ConfirmPaymentScreenContent(
 
 }
 
-private fun onConfirmPaymentEffect(effect: ConfirmPaymentEffect, navController: NavController) {
+private fun onConfirmPaymentEffect(
+    effect: ConfirmPaymentEffect,
+    navController: NavController,
+    navigateBack: () -> Unit,
+) {
     when (effect) {
-        ConfirmPaymentEffect.NavigateBack -> {
-            navController.popBackStack()
-        }
+        ConfirmPaymentEffect.NavigateBack -> { navigateBack() }
 
         is ConfirmPaymentEffect.NavigateToPaymentResultScreen -> {
             navController.navigate(

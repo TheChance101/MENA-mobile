@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +22,8 @@ import mena.trends_presentation.generated.resources.choose_interests
 import mena.trends_presentation.generated.resources.help_text
 import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.save_change
+import mena.trends_presentation.generated.resources.tags_updated_failure
+import mena.trends_presentation.generated.resources.tags_updated_success
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -33,13 +34,14 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
-import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
+import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
+import net.thechance.mena.trends.presentation.snackbar.SnackBarData
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -51,11 +53,30 @@ internal fun UpdateCategoriesScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+    val snackBarController = LocalSnackbarController.current
 
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
             is UpdateCategoriesScreenEffect.NavigateBack -> navController.popBackStack()
-            is UpdateCategoriesScreenEffect.NavigateToTrends -> navController.navigate(Route.Home)
+            is UpdateCategoriesScreenEffect.SaveFailure -> {
+                snackBarController.showSnackBar(
+                    SnackBarData(
+                        message = getString(Res.string.tags_updated_failure),
+                        snackBarType = SnackBarStatus.Error,
+                    )
+                )
+            }
+
+            is UpdateCategoriesScreenEffect.NavigateToTrendsAndShowSuccess -> {
+                snackBarController.showSnackBar(
+                    SnackBarData(
+                        message = getString(Res.string.tags_updated_success),
+                        snackBarType = SnackBarStatus.Success,
+                    )
+                )
+
+                navController.navigate(Route.Home)
+            }
         }
     }
 
@@ -98,14 +119,6 @@ private fun UpdateCategoriesScreenContent(
                         )
                     }
                 )
-            },
-            snakeBar = {
-                state.errorState?.let { errorState ->
-                    TrendsSnackBar(
-                        message = stringResource(errorState.toStringResource()),
-                        status = SnackBarStatus.Error
-                    )
-                }
             },
             content = {
                 AnimatedVisibility(

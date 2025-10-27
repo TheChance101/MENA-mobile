@@ -1,6 +1,9 @@
 <resources>
     <string name="change_tags">تغيير الاهتمامات</string>
     <string name="choose_interests">اختر اهتماماتك</string>
+    <string name="tags_updated_success">تم تجديد اهتماماتك.</string>
+    <string name="tags_updated_failure">فشل تجديد الاهتمامات. حاول مجددًا.</string>
+
     <string name="help_text">ساعدنا نفهم اهتماماتك علشان نعرضلك تريندات تناسب ذوقك.</string>
     <string name="save_change">حفظ التغييرات</string>
     <string name="next">التالي</string>

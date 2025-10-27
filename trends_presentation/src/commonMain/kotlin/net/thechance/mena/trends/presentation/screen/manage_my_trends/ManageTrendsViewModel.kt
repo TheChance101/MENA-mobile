@@ -21,9 +21,8 @@ import org.koin.core.annotation.Provided
 internal class ManageTrendsViewModel(
     @Provided private val repository: ReelsRepository,
     @Provided private val userRepository: UserRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<ManageTrendsScreenState,
-        ManageTrendsUiEffect>(ManageTrendsScreenState()),
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<ManageTrendsScreenState, ManageTrendsUiEffect>(ManageTrendsScreenState()),
     ManageTrendsInteractionListener {
 
     init {
@@ -43,7 +42,7 @@ internal class ManageTrendsViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -54,7 +53,7 @@ internal class ManageTrendsViewModel(
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 

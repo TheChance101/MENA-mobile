@@ -2,6 +2,8 @@
     <string name="change_tags">Change tags</string>
     <string name="choose_interests">Choose your interests</string>
     <string name="help_text">Help us understand your interests so we can show you trends that match your taste.</string>
+    <string name="tags_updated_success">Your tags have been updated.</string>
+    <string name="tags_updated_failure">Failed to update interests. Try again.</string>
     <string name="save_change">Save change</string>
     <string name="next">Next</string>
     <string name="app_name">MENA</string>

@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.toIntSize
 
 @Composable
@@ -39,16 +40,24 @@ fun ImageCropperSection(
             with(density) { maxWidth.roundToPx() / image.intrinsicSize.width }
         }
 
+        val componentSize = remember {
+            with(density) {
+                IntSize(maxWidth.roundToPx(), maxHeight.roundToPx())
+            }
+        }
+
         val imageSize = remember(image) {
-            with(density) { image.intrinsicSize.toDpSize() * widthScale }
+            with(density) {
+                val size = image.intrinsicSize.toDpSize() * widthScale
+                size.copy(
+                    width = size.width,
+                    height = max(size.height, componentSize.height.toDp())
+                )
+            }
         }
 
         LaunchedEffect(Unit) {
-            with(density) {
-                updateComponentSize(
-                    IntSize(maxWidth.roundToPx(), maxHeight.roundToPx())
-                )
-            }
+            updateComponentSize(componentSize)
         }
 
         LaunchedEffect(image) {
