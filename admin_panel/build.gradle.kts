@@ -12,7 +12,6 @@ plugins {
     alias(libs.plugins.buildkonfig)
 }
 
-
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
@@ -23,48 +22,44 @@ kotlin {
     jvm("desktop")
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.ui)
-                implementation(compose.components.resources)
-                implementation(compose.components.uiToolingPreview)
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
 
-                implementation(libs.androidx.lifecycle.runtimeCompose)
-                implementation(libs.androidx.lifecycle.viewmodelCompose)
-                implementation(libs.androidx.collection)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.collection)
 
-                implementation(projects.designSystem)
+            implementation(projects.designSystem)
 
-                // datetime
-                implementation(libs.kotlinx.datetime)
+            // datetime
+            implementation(libs.kotlinx.datetime)
 
-                // Koin
-                implementation(libs.bundles.koin)
-                api(libs.koin.annotations)
+            // Koin
+            implementation(libs.bundles.koin)
+            api(libs.koin.annotations)
 
-                // Serialization
-                implementation(libs.kotlinx.serialization.json)
+            // Serialization
+            implementation(libs.kotlinx.serialization.json)
 
-                // Ktor
-                implementation(libs.bundles.ktor)
+            // Ktor
+            implementation(libs.bundles.ktor)
 
-                // Coil
-                implementation(libs.coil.compose)
-            }
+            // Coil
+            implementation(libs.coil.compose)
         }
 
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlin.test)
-                implementation(libs.turbine)
-                implementation(libs.ktor.client.mock)
-                implementation(libs.kotlinx.coroutines.test)
-                implementation(libs.mokkery.core)
-            }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.turbine)
+            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.mokkery.core)
         }
+
 
         val desktopMain by getting {
             dependencies {
@@ -81,11 +76,11 @@ buildkonfig {
     packageName = "net.thechance.mena.admin_panel"
 
     defaultConfigs {
-        val baseUrl = localProperties.getProperty("BASE_URL", "http://localhost:8080/")
+        val baseUrl = localProperties.getProperty("BASE_URL", "https://mena-dev.the-chance.net/")
         buildConfigField(
-            Type.STRING,
-            "BASE_URL",
-            baseUrl
+            type = Type.STRING,
+            name = "BASE_URL",
+            value = baseUrl
         )
     }
 }
@@ -113,7 +108,6 @@ compose.desktop {
             linux {
                 iconFile.set(project.file("src/desktopMain/resources/mena_logo.png"))
             }
-
         }
     }
 }
