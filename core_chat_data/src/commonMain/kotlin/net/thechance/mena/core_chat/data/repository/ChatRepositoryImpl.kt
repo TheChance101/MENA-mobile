@@ -1,11 +1,13 @@
 package net.thechance.mena.core_chat.data.repository
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.reflect.typeInfo
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
+import net.thechance.mena.core_chat.data.source.remote.dto.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
@@ -14,6 +16,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import kotlin.uuid.ExperimentalUuidApi
@@ -55,6 +58,16 @@ class ChatRepositoryImpl(
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
+    override suspend fun deleteChatById(chatId: Uuid) {
+//        val response = tryNetworkCall<DeleteChatDto>(bodyType = typeInfo<DeleteChatDto>()) {
+//            client.delete(DELETE_CHAT_ENDPOINT) {
+//                parameter(key = CHAT_ID_PARAMETER, value = chatId)
+//            }
+//        }
+//        if (response == null  || response.success.not())
+//            throw OperationFailedException("Failed to delete message")
+    }
+
     override suspend fun getChatById(chatId: Uuid): Chat {
         return tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
             client.get("$CHAT_ENDPOINT/$chatId")
@@ -71,6 +84,9 @@ class ChatRepositoryImpl(
         const val PAGE_SIZE_PARAMETER = "size"
         const val RECEIVER_ID_PARAMETER = "receiverId"
         const val CHAT_ENDPOINT = "/chat"
+        const val CHAT_ID_PARAMETER = "chatId"
+
         const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
+        const val DELETE_CHAT_ENDPOINT = "/chat/delete"
     }
 }
