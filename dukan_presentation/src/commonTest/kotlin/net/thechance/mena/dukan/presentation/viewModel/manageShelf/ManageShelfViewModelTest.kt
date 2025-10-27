@@ -192,4 +192,22 @@ class ManageShelfViewModelTest {
         assertEquals(SnackBarType.ERROR, snackBarState.snackBarType)
     }
 
+    @Test
+    fun `onSaveClicked SHOULD edit shelf and emit NavigateBackWithEditedShelfName on success`() =
+        runTest {
+            val shelfId = "123"
+            val newName = "Updated Shelf"
+
+            manageShelfViewModel.onShelfNameChange(newName)
+
+            everySuspend { shelfRepository.updateShelf(shelfId, newName) } returns Unit
+
+            manageShelfViewModel.effect.test {
+                manageShelfViewModel.onSaveClicked()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                assertEquals(ManageShelfEffect.NavigateBackWithEditedShelfName, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 }
