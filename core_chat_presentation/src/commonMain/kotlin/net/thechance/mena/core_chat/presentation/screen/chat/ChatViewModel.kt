@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.chat_deleted_successfully
+import mena.core_chat_presentation.generated.resources.could_not_delete_chat
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
@@ -384,6 +386,54 @@ class ChatViewModel(
                 currentImageIndexForPreview = initialImageIndex
             )
         }
+    }
+
+    override fun onMenuClicked() {
+        updateState { it.copy(isDeleteChatDialogVisible = true) }
+    }
+
+    override fun onDismissDeleteChatDialog() {
+        updateState {
+            it.copy(
+                isDeleteChatDialogVisible = false,
+                isConfirmDeleteChatDialogVisible = false
+            )
+        }
+    }
+
+    override fun onDeleteChatClicked() {
+        updateState {
+            it.copy(
+                isDeleteChatDialogVisible = false,
+                isConfirmDeleteChatDialogVisible = true
+            )
+        }
+    }
+
+    override fun onConfirmDeleteChatClicked() {
+        tryToExecute(
+            execute = { chatRepository.deleteChatById(state.value.chatId!!) },
+            onSuccess = { onDeleteChatSuccess() },
+            onError = { onDeleteChatFailure() }
+        )
+        updateState { it.copy(isConfirmDeleteChatDialogVisible = false) }
+    }
+
+    private fun onDeleteChatSuccess() {
+        showSnackBar(
+            titleStringResource = Res.string.success,
+            messageStringResource = Res.string.chat_deleted_successfully,
+            isError = false
+        )
+        emitEffect(ChatScreenEffect.NavigateBack)
+    }
+
+    private fun onDeleteChatFailure() {
+        showSnackBar(
+            titleStringResource = Res.string.error,
+            messageStringResource = Res.string.could_not_delete_chat,
+            isError = true
+        )
     }
 
     override fun onDownloadImageClicked(url: String) {
