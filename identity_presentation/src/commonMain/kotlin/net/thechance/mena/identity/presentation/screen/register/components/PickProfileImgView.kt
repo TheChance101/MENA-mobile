@@ -9,10 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
+import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.button_skip_for_now
 import mena.identity_presentation.generated.resources.button_upload
@@ -33,9 +39,15 @@ fun PickProfileImgView(
     imageBitmap: ImageBitmap?,
     onUploadClick: () -> Unit = {},
     onSkipClick: () -> Unit = {},
-    onEditClick: () -> Unit = {}
+    onEditClick: (imageBitmap: ImageBitmap) -> Unit = {}
 ) {
     val isImageLoaded = imageBitmap != null
+    val scope = rememberCoroutineScope()
+    val galleryPicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        file?.let { image ->
+            scope.launch { onEditClick(image.toImageBitmap()) }
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -53,7 +65,7 @@ fun PickProfileImgView(
             )
 
             UploadImageContainer(
-                onClick = { onEditClick() },
+                onClick = { galleryPicker.launch() },
                 image = imageBitmap,
                 modifier = Modifier
                     .width(328.dp)
@@ -85,6 +97,7 @@ fun PickProfileImgView(
 @Preview
 @Composable
 private fun PickProfileImgViewPreview() {
+    val imageBitmap = mutableStateOf<ImageBitmap?>(null)
     MenaTheme {
         Box(
             modifier = Modifier
@@ -93,7 +106,8 @@ private fun PickProfileImgViewPreview() {
         ) {
 
             PickProfileImgView(
-                imageBitmap = null,
+                imageBitmap = imageBitmap.value,
+                onEditClick = { imageBitmap.value = it },
             )
         }
     }
