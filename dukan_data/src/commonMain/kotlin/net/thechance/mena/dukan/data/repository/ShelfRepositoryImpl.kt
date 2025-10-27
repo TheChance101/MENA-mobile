@@ -46,6 +46,10 @@ class ShelfRepositoryImpl(
         }
     }
 
+    override suspend fun editShelfName(shelfId: String, shelfName: String) {
+        // TODO edit shelf name
+    }
+
     override suspend fun getShelvesByDukanId(
         dukanId: String,
         pageNumber: Int,

@@ -26,6 +26,12 @@ fun ManageShelfScreen(
                     ?.set(ManageShelfArgs.deletedShelfId, effect.shelfId)
                 navController.popBackStack()
             }
+
+            ManageShelfEffect.NavigateBackWithEditedShelfName -> {
+                val backStack = navController.previousBackStackEntry
+                backStack?.savedStateHandle[ManageShelfArgs.isShelfNameEdited] = true
+                navController.popBackStack()
+            }
         }
     }
 
