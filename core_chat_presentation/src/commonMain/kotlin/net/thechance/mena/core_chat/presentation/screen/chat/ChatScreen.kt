@@ -22,15 +22,16 @@ import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import kotlinx.coroutines.flow.SharedFlow
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
-import net.thechance.mena.core_chat.presentation.utils.EffectHandler
-import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
+import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
+import net.thechance.mena.core_chat.presentation.screen.chat.components.deleteChatOverlay
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -85,7 +86,7 @@ fun ChatScreenContent(
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,
-                    onMenuClick = {},
+                    onMenuClick = interactions::onMenuClicked,
                     onBackClick = interactions::onBackClicked,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -108,6 +109,14 @@ fun ChatScreenContent(
                     onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
                     onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
                     onResendFailedMessageClick = interactions::onResendMessageClicked,
+                )
+
+                deleteChatOverlay(
+                    showDeleteChatDialog = state.isDeleteChatDialogVisible,
+                    onDeleteChatClicked = interactions::onDeleteChatClicked,
+                    onConfirmDeleteChatClicked = interactions::onConfirmDeleteChatClicked,
+                    onDismissDeleteChatDialog = interactions::onDismissDeleteChatDialog,
+                    showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                 )
             }
         ) {
