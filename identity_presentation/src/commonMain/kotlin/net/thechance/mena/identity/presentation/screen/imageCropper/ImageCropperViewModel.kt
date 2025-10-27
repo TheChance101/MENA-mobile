@@ -3,18 +3,19 @@ package net.thechance.mena.identity.presentation.screen.imageCropper
 import androidx.compose.ui.graphics.ImageBitmap
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.domain.repository.CachedImageRepository
-import org.jetbrains.compose.resources.decodeToImageBitmap
+import net.thechance.mena.identity.presentation.utils.ImageDecoder
 
 class ImageCropperViewModel(
     private val imageKey: String,
-    private val cachedImageRepository: CachedImageRepository
+    private val cachedImageRepository: CachedImageRepository,
+    private val imageDecoder: ImageDecoder
 ) : BaseScreenModel<ImageCropperScreenState, ImageCropperScreenEffect>(
     initialState = ImageCropperScreenState()
 ), ImageCropperInteractionListener {
 
     init {
-        val imageBitmap = cachedImageRepository.getCachedImage(imageKey)
-        updateState { copy(imageBitmap = imageBitmap?.decodeToImageBitmap()) }
+        val imageByteArray = cachedImageRepository.getCachedImage(imageKey)
+        updateState { copy(imageBitmap = imageByteArray?.let{ imageDecoder.decodeImage(it)}) }
     }
     override fun onCropImage(imageBitmap: ImageBitmap) {
         sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfileWithImage(imageKey))
