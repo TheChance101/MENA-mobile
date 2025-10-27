@@ -3,7 +3,6 @@ package net.thechance.mena.trends.presentation.screen.main_container
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import org.koin.android.annotation.KoinViewModel
@@ -21,7 +20,7 @@ internal class MainContainerViewModel(
 
     private fun checkIfUserSelectedCategories() {
         tryToExecute(
-            block = { repository.getAllCategories() },
+            block = { repository.isCategoriesAlreadySelectedByUser() },
             onSuccess = ::onUserCategoryStatusReceived,
             onError = { errorState ->
                 updateState { copy(error = errorState, isCategoriesAlreadySelectedByUser = false) }
@@ -30,8 +29,7 @@ internal class MainContainerViewModel(
         )
     }
 
-    fun onUserCategoryStatusReceived(categories: List<Category>) {
-        val isUserCategorySet = categories.any { it.isSelected }
+    fun onUserCategoryStatusReceived(isUserCategorySet: Boolean) {
         updateState { copy(isCategoriesAlreadySelectedByUser = isUserCategorySet) }
         navigateBasedOnCategoryState(isUserCategorySet)
     }

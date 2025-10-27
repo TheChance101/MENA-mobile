@@ -25,7 +25,7 @@ internal class HomeViewModel(
         getFeedReels()
     }
 
-    private fun addReelLike(reelId: String) {
+    fun addReelLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
             block = { repository.addReelLike(reelId) },
@@ -48,17 +48,16 @@ internal class HomeViewModel(
         }
     }
 
-    private fun removeReelLike(reelId: String) {
+    fun removeReelLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
-            block = { repository.addReelLike(reelId) },
+            block = { repository.removeReelLike(reelId) },
             onError = { error ->
                 updateLikesOnUi(reelId)
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
             scope = viewModelScope,
-            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUiState() } }
         )
     }
 
