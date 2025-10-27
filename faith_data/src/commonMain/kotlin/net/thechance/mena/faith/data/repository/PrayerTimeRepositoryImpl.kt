@@ -4,7 +4,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
-import net.thechance.mena.faith.data.remote.mapper.prayertime.toDomain
+import net.thechance.mena.faith.data.mapper.prayertime.toDomain
 import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely

@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.data.remote.mapper.prayertime
+package net.thechance.mena.faith.data.mapper.prayertime
 
 import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
 import net.thechance.mena.faith.domain.entity.PrayerName

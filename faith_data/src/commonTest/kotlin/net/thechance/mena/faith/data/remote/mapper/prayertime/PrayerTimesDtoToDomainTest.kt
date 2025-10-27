@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
+import net.thechance.mena.faith.data.mapper.prayertime.toDomain
 import net.thechance.mena.faith.data.repository.getFakePrayerTimesDto
 import net.thechance.mena.faith.data.repository.getPrayerTimesFakeData
 import net.thechance.mena.faith.domain.entity.PrayerTime
