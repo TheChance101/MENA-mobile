@@ -54,7 +54,7 @@ class NetworkClient(
                 bearer {
                     loadTokens {
                         BearerTokens(
-                            accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI5ZmNhOTFjZS1lOGZmLTQ3MGYtYTFlYy03Njc4MWYwMjYyZWQiLCJpYXQiOjE3NjE2ODIzNTIsImV4cCI6MTc2MTY4NTk1Mn0.xMFAIaYdDD1dfGivriD8OqY5zzrGva_XILiOKOiKpGPg2JoN6K7o7LmDNgtMdLcH", /*TODO() add access token*/
+                            accessToken = "", /*TODO() add access token*/
                             refreshToken = "" /*TODO() add refresh token*/
                         )
                     }
