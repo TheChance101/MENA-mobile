@@ -6,4 +6,5 @@ object PreviewDukanCategoriesInteractionListener: DukanCategoriesInteractionList
     override fun onBackClicked() {}
     override fun onCategoryClicked(categoryName: String, categoryId: String) {}
     override fun onDismissSnackBar() {}
+    override fun onRetryClicked() {}
 }

@@ -2,14 +2,15 @@ package net.thechance.mena.faith.data.remote.model.prayertime
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.thechance.mena.faith.data.remote.mapper.prayertime.StringHoursAndMinutesToInstantMapper
 
 @Serializable
 data class PrayerTimesDto(
-    @SerialName("sunrise")
-    val sunrise: String? = null,
+    @SerialName("hijriDate")
+    val hijriDate: String? = null,
     @SerialName("fajr")
     val fajr: String? = null,
+    @SerialName("sunrise")
+    val sunrise: String? = null,
     @SerialName("dhuhr")
     val dhuhr: String? = null,
     @SerialName("asr")
@@ -17,7 +18,5 @@ data class PrayerTimesDto(
     @SerialName("maghrib")
     val maghrib: String? = null,
     @SerialName("isha")
-    val isha: String? = null,
-    @SerialName("date")
-    val date: PrayerDateDto? = null
-) : StringHoursAndMinutesToInstantMapper
+    val isha: String? = null
+)

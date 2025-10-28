@@ -115,7 +115,11 @@ private fun UserReelScreenContent(
                             style = Theme.typography.label.medium,
                             modifier = Modifier
                                 .align(Alignment.End)
-                                .padding(top = 24.dp, bottom = Theme.spacing._12, end = Theme.spacing._8)
+                                .padding(
+                                    top = 24.dp,
+                                    bottom = Theme.spacing._12,
+                                    end = Theme.spacing._8
+                                )
                                 .clickable(
                                     onClick = { listener.onClickConfirmDelete() },
                                     role = Role.Button,
@@ -190,7 +194,7 @@ private fun UserReelScreenContent(
                     onDescriptionClick = listener::onClickDescription,
                     onPublisherInfoClick = listener::onClickPublisherInfo,
                     incrementViewsCount = { listener.increaseReelView(reel.id) },
-                    onLikeClick = { listener.onClickLike(reel.id) }
+                    onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) }
                 )
             }
         }

@@ -35,14 +35,17 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun PaymentResultScreen(viewModel: PaymentResultViewModel = koinViewModel()) {
+fun PaymentResultScreen(
+    navigateBack: () -> Unit,
+    viewModel: PaymentResultViewModel = koinViewModel()
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onPaymentResultEffect(effect, navController = navController)
+            onPaymentResultEffect(effect, navController = navController, navigateBack = navigateBack)
         }
     )
     PaymentResultScreenContent(
@@ -102,17 +105,17 @@ private fun PaymentResultScreenContent(
     }
 }
 
-private fun onPaymentResultEffect(effect: PaymentResultEffect, navController: NavController) {
+private fun onPaymentResultEffect(
+    effect: PaymentResultEffect,
+    navController: NavController,
+    navigateBack: () -> Unit
+    ) {
     when (effect) {
         is PaymentResultEffect.NavigateBack -> navController.popBackStack()
         is PaymentResultEffect.NavigateToTransactionDetails -> {
             navController.navigate(TransactionDetailsScreenRoute(effect.transactionId.toString()))
         }
 
-        is PaymentResultEffect.NavigateToPrePaymentScreen -> {
-            navController.navigate(WalletMainScreenRoute) {
-                popUpTo(WalletMainScreenRoute) { inclusive = true }
-            }
-        }
+        is PaymentResultEffect.NavigateToPrePaymentScreen -> { navigateBack() }
     }
 }

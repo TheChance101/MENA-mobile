@@ -7,4 +7,5 @@ interface DukanDetailsInteractionListener {
     fun onViewAllProductsShelfClicked(id: String, name: String)
     fun onViewDukanOnMapClicked(latitude: Double, longitude: Double)
     fun onAddToCartClicked(productId: String)
+    fun onRetryClicked()
 }

@@ -39,24 +39,38 @@ class DukanDetailsViewModel(
 
     private fun loadDukanDetails() {
         tryToExecute(
+            onStart = ::onLoadDukanDetailsStart,
             block = { dukanManagementRepository.getDukanDetailsByDukanId(dukanId) },
             onSuccess = ::onLoadDukanDetailsSuccess,
             onError = ::onLoadDukanDetailsError
         )
     }
 
+    private fun onLoadDukanDetailsStart() {
+        updateState {
+            copy(
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADING
+            )
+        }
+    }
+
     private fun onLoadDukanDetailsSuccess(dukanDetails: Dukan) {
         updateState {
             copy(
                 dukanInfo = dukanDetails.toUiState(),
-                isDukanInfoLoading = false
+                isDukanInfoLoading = false,
             )
         }
         loadShelvesPaging()
     }
 
     private fun onLoadDukanDetailsError(throwable: Throwable) {
-        updateState { copy(isDukanInfoLoading = false) }
+        updateState {
+            copy(
+                isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+            )
+        }
     }
 
     private fun isWideImageStyle() =
@@ -118,7 +132,8 @@ class DukanDetailsViewModel(
     private fun onProductsLimitedLoaded(updatedShelves: PagingData<ShelfUiState>) {
         updateState {
             copy(
-                shelves = flowOf(updatedShelves)
+                shelves = flowOf(updatedShelves),
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
             )
         }
     }
@@ -148,7 +163,8 @@ class DukanDetailsViewModel(
     private fun onProductsLoaded(products: PagingData<ProductUiState>) {
         updateState {
             copy(
-                productsShelf = flowOf(products)
+                productsShelf = flowOf(products),
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
             )
         }
     }
@@ -191,6 +207,10 @@ class DukanDetailsViewModel(
                 }
             }
         )
+    }
+
+    override fun onRetryClicked() {
+        loadDukanDetails()
     }
 
     private fun updateShelvesWithAddedProduct(

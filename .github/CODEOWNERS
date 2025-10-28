@@ -1,32 +1,32 @@
 # Compose app owned by @ibareq
 /composeApp/ @ibareq
 
-# Chat core modules owned by @mosayed01, @AzizaHelmy, @Joseph-Sameh-0, @ZainabAlnajjar
-/core_chat_api/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
-/core_chat_data/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
-/core_chat_domain/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
-/core_chat_presentation/ @mosayed01 @AzizaHelmy @Al-Qassim @ZainabAlnajjar
+# Chat core modules owned by @AzizaHelmy, @ZainabAlnajjar
+/core_chat_api/ @AzizaHelmy @Al-Qassim @ZainabAlnajjar
+/core_chat_data/ @AzizaHelmy @Al-Qassim @ZainabAlnajjar
+/core_chat_domain/ @AzizaHelmy @Al-Qassim @ZainabAlnajjar
+/core_chat_presentation/ @AzizaHelmy @Al-Qassim @ZainabAlnajjar
 
 # Design system owned by @ibareq
 /design_system/ @ibareq
 
-# Dukan modules owned by @TarekIdrees, @devfalah, @haideraljawasim, @mostafa-n3ma, @YoussefmSaber
-/dukan_api/ @TarekIdrees @devfalah @haideraljawasim @mostafa-n3ma @YoussefmSaber
-/dukan_data/ @TarekIdrees @devfalah @haideraljawasim @mostafa-n3ma @YoussefmSaber
-/dukan_domain/ @TarekIdrees @devfalah @haideraljawasim @mostafa-n3ma @YoussefmSaber
-/dukan_presentation/ @TarekIdrees @devfalah @haideraljawasim @mostafa-n3ma @YoussefmSaber
+# Dukan modules owned by @TarekIdrees, @haideraljawasim, @mostafa-n3ma, @YoussefmSaber
+/dukan_api/ @TarekIdrees @haideraljawasim @mostafa-n3ma @YoussefmSaber
+/dukan_data/ @TarekIdrees @haideraljawasim @mostafa-n3ma @YoussefmSaber
+/dukan_domain/ @TarekIdrees @haideraljawasim @mostafa-n3ma @YoussefmSaber
+/dukan_presentation/ @TarekIdrees @haideraljawasim @mostafa-n3ma @YoussefmSaber
 
-# Faith modules owned by @Asiasama710, @BassantM, @FaresM0hamed
-/faith_api/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
-/faith_data/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
-/faith_domain/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
-/faith_presentation/ @Asiasama710 @BassantM @mohannadahmed00 @Al-Taie
+# Faith modules owned by @Asiasama710, @BassantM, @amnah44
+/faith_api/ @Asiasama710 @BassantM @mohannadahmed00 @amnah44
+/faith_data/ @Asiasama710 @BassantM @mohannadahmed00 @amnah44
+/faith_domain/ @Asiasama710 @BassantM @mohannadahmed00 @amnah44
+/faith_presentation/ @Asiasama710 @BassantM @mohannadahmed00 @amnah44
 
-# Identity modules owned by @ibareq, @AimanYosofiUlt, @AhmadKharfan, @amnah44
-/identity_api/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
-/identity_data/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
-/identity_domain/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
-/identity_presentation/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99
+# Identity modules owned by @ibareq, @AimanYosofiUlt, @AhmadKharfan, @devfalah
+/identity_api/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99 @devfalah
+/identity_data/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99 @devfalah
+/identity_domain/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99 @devfalah
+/identity_presentation/ @ibareq @AimanYosofiUlt @AhmadKharfan @amnah44 @eslam-99 @devfalah
 
 # iOS app owned by @ibareq
 /iosApp/ @ibareq
@@ -37,10 +37,10 @@
 /trends_domain/ @ahmednasserzaza @kamelkiko @ahmeddsamii @iZyadNasser
 /trends_presentation/ @ahmednasserzaza @kamelkiko @ahmeddsamii @iZyadNasser
 
-# Wallet modules owned by @Karrar-Mohammed, @abdallahFc, @Ahmed7osny1, @Al-Qassim, @EL-MANCY
-/wallet_api/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
-/wallet_data/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
-/wallet_domain/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
-/wallet_presentation/ @Karrar-Mohammed @abdallahFc @Ahmed7osny1 @EL-MANCY
+# Wallet modules owned by @Karrar-Mohammed, @abdallahFc, @Ahmed7osny1, @Al-Qassim, @EL-MANCY @Al-Taie
+/wallet_api/ @Ahmed7osny1 @EL-MANCY @Al-Taie @mosayed01
+/wallet_data/  @Ahmed7osny1 @EL-MANCY @Al-Taie @mosayed01
+/wallet_domain/  @Ahmed7osny1 @EL-MANCY @Al-Taie @mosayed01
+/wallet_presentation/ @Ahmed7osny1 @EL-MANCY @Al-Taie @mosayed01
 
 /.github/CODEOWNERS @iBareq

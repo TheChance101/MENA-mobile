@@ -4,12 +4,13 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ReelViewModelTest {
+class HomeViewModelTest {
 
     private val repository: ReelsRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
@@ -33,6 +34,7 @@ class ReelViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
+        everySuspend { repository.getFeedReels(any()) } returns reels
         viewModel = HomeViewModel(repository, testDispatcher)
     }
 
@@ -74,31 +76,27 @@ class ReelViewModelTest {
 
     @Test
     fun `getTrends should update state when success`() = runTest {
-        everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
         viewModel = HomeViewModel(repository, testDispatcher)
         advanceUntilIdle()
-        val items = viewModel.state.value.reels?.asSnapshot()
-        assertThat(items?.first()?.id).isEqualTo(testReel.id)
+        val items = viewModel.state.value.reels.asSnapshot()
+        assertThat(items.first().id).isEqualTo(reels[0].id)
     }
 
     @Test
-    fun `onClickLike should increment likes count`() = runTest {
-        everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
-        everySuspend { repository.toggleReelLike("1") } returns testReel.copy(
+    fun `onAddReelLike method should add like to Reel when called`() = runTest {
+        everySuspend { repository.addReelLike("1") } returns reels[0].copy(
             isLiked = true,
-            likesCount = testReel.likesCount + 1
+            likesCount = reels[0].likesCount + 1
         )
 
         viewModel = HomeViewModel(repository, testDispatcher)
         advanceUntilIdle()
 
         val initial = viewModel.state.value.reels.asSnapshot().first()
+        viewModel.addReelLike("1")
+        advanceUntilIdle()
 
         viewModel.state.test {
-
-            viewModel.onClickLike("1")
-            advanceUntilIdle()
-
             val state = awaitItem()
             val updated = state.reels.asSnapshot().first()
 
@@ -110,22 +108,40 @@ class ReelViewModelTest {
     }
 
     @Test
-    fun `onClickLike should revert optimistic update when toggleReelLike fails`() = runTest {
-        everySuspend { repository.getFeedReels(1) } returns listOf(testReel)
-        everySuspend { repository.toggleReelLike("1") } throws Exception("Network error")
-
-        advanceUntilIdle()
-        val initial = viewModel.state.value.reels.asSnapshot().first()
-
-        viewModel.onClickLike("1")
+    fun `onRemoveReelLike method should remove like from Reel when called`() = runTest {
+        everySuspend { repository.removeReelLike("2") } returns Unit
         advanceUntilIdle()
 
-        val reverted = viewModel.state.value.reels.asSnapshot().first()
+        val initial = viewModel.state.value.reels.asSnapshot().first { it.id == "2" }
+        viewModel.removeReelLike("2")
+        advanceUntilIdle()
 
-        assertThat(reverted.likesCount).isEqualTo(initial.likesCount)
-        assertThat(reverted.isLiked).isEqualTo(initial.isLiked)
+        viewModel.state.test {
+            val state = awaitItem()
+            val updated = state.reels.asSnapshot().first { it.id == "2" }
 
-        assertThat(viewModel.state.value.error != null).isTrue()
+            assertThat(updated.likesCount).isEqualTo(initial.likesCount - 1)
+            assertThat(updated.isLiked).isFalse()
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+
+    @Test
+    fun `onClickLike should call addReelLike method when isLiked is false`() = runTest {
+        viewModel.onClickLike("1", false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verifySuspend { repository.addReelLike("1") }
+    }
+
+    @Test
+    fun `onClickLike should call removeReelLike method when isLiked is true`() = runTest {
+        viewModel.onClickLike("1", true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verifySuspend { repository.removeReelLike("1") }
     }
 
     @Test
@@ -142,18 +158,34 @@ class ReelViewModelTest {
     }
 
     companion object {
-        private val testReel = Reel(
-            id = "1",
-            thumbnailUrl = "thumb.jpg",
-            videoUrl = "video.mp4",
-            description = "description",
-            likesCount = 5,
-            viewsCount = 50,
-            createdAt = null,
-            userName = "Test User",
-            profileImageUrl = "https://example.com/profile.jpg",
-            isCurrentUserOwner = false,
-            isLiked = false
+
+        private val reels = listOf(
+            Reel(
+                id = "1",
+                thumbnailUrl = "thumb.jpg",
+                videoUrl = "video.mp4",
+                description = "description",
+                likesCount = 5,
+                viewsCount = 50,
+                createdAt = null,
+                userName = "Test User",
+                profileImageUrl = "https://example.com/profile.jpg",
+                isCurrentUserOwner = false,
+                isLiked = false
+            ),
+            Reel(
+                id = "2",
+                thumbnailUrl = "thumb.jpg",
+                videoUrl = "video.mp4",
+                description = "description",
+                likesCount = 5,
+                viewsCount = 50,
+                createdAt = null,
+                userName = "Test User",
+                profileImageUrl = "https://example.com/profile.jpg",
+                isCurrentUserOwner = false,
+                isLiked = true
+            )
         )
     }
 }

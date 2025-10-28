@@ -1,7 +1,9 @@
 package net.thechance.mena.dukan.presentation.screen.categoryDukans.content
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
@@ -15,6 +17,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.CategoryDukansList
 import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCategoryDukansInteractionListener
@@ -62,7 +65,12 @@ fun CategoryDukans(
                     }
                 }
 
-                is LoadState.Error -> {}
+                is LoadState.Error -> {
+                    NoInternetContent(
+                        onRetry = listener::onRetryClicked,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }
