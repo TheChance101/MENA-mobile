@@ -7,8 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute.*
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetailsContent
