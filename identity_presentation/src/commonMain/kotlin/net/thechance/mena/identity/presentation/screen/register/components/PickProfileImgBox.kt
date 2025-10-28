@@ -32,6 +32,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.utils.dashedBorder
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -58,14 +59,7 @@ fun UploadImageContainer(
                 .align(Alignment.TopCenter)
                 .clip(RoundedCornerShape(radius))
                 .background(Theme.colorScheme.background.surfaceLow)
-                .drawWithContent {
-                    drawContent()
-                    drawRoundRect(
-                        color = borderColor,
-                        style = Stroke(width = 2.dp.toPx(), pathEffect = dashEffect),
-                        cornerRadius = CornerRadius(radius.toPx())
-                    )
-                }
+                .dashedBorder(color = borderColor, shape = RoundedCornerShape(radius))
                 .clickable { onClick() },
             contentAlignment = Alignment.Center
         ) {
