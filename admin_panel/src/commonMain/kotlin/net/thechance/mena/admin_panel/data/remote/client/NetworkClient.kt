@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.data.remote
+package net.thechance.mena.admin_panel.data.remote.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -6,28 +6,17 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
-import io.ktor.client.request.delete
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.put
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
-import org.koin.core.annotation.Single
 
-@Single
 class NetworkClient(
     @Provided
     @Named("baseUrl")
@@ -45,19 +34,8 @@ class NetworkClient(
             }
 
             install(Logging) {
-                logger = Logger.SIMPLE
+                logger = Logger.Companion.SIMPLE
                 level = LogLevel.ALL
-            }
-
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                        encodeDefaults = true
-                    }
-                )
             }
 
             install(plugin = Auth) {

@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.kover)
     alias(libs.plugins.buildkonfig)
+    alias(libs.plugins.ktorfit)
 }
 
 val localProperties = Properties()
@@ -61,7 +62,6 @@ kotlin {
             implementation(libs.mokkery.core)
         }
 
-
         val desktopMain by getting {
             dependencies {
                 implementation(libs.ktor.client.cio)
@@ -70,7 +70,6 @@ kotlin {
             }
         }
     }
-
 }
 
 buildkonfig {
@@ -83,8 +82,8 @@ buildkonfig {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
-    add("kspDesktop", libs.koin.ksp.compiler)
+    addKsp(libs.koin.ksp.compiler)
+    addKsp(libs.ktorfit.ksp)
 }
 
 compose.desktop {
@@ -129,6 +128,22 @@ kover.reports {
         }
         excludes {
             classes("**org.koin.ksp.generated**")
+        }
+    }
+}
+
+fun DependencyHandlerScope.addKsp(dependencyNotation: Any) {
+    val targets = listOf(
+        "CommonMainMetadata",
+        "Desktop",
+    )
+
+    targets.forEach { target ->
+        runCatching {
+            add(
+                configurationName = "ksp$target",
+                dependencyNotation = dependencyNotation
+            )
         }
     }
 }

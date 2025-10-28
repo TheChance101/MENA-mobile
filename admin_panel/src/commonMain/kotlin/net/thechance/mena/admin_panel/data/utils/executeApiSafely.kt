@@ -1,23 +1,22 @@
 package net.thechance.mena.admin_panel.data.utils
 
-import io.ktor.client.call.body
-import io.ktor.client.statement.HttpResponse
+import de.jensklingenberg.ktorfit.Response
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.isSuccess
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 import net.thechance.mena.admin_panel.data.remote.dto.ErrorDto
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 
-internal suspend inline fun <reified T> wrapApiCall(
-    noinline block: suspend () -> HttpResponse
+internal suspend inline fun <reified T> executeApiSafely(
+    noinline block: suspend () -> Response<T>
 ): T {
     val response = executeRequest(block)
     return handleResponse(response)
 }
 
-private suspend fun executeRequest(block: suspend () -> HttpResponse): HttpResponse {
+private suspend fun <T> executeRequest(block: suspend () -> Response<T>): Response<T> {
     return try {
         block()
     } catch (e: IOException) {
@@ -27,8 +26,8 @@ private suspend fun executeRequest(block: suspend () -> HttpResponse): HttpRespo
     }
 }
 
-private suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
-    if (response.status.isSuccess()) {
+private inline fun <reified T> handleResponse(response: Response<T>): T {
+    if (response.isSuccessful) {
         return parseBody<T>(response)
     }
 
@@ -50,9 +49,10 @@ private suspend inline fun <reified T> handleResponse(response: HttpResponse): T
     }
 }
 
-suspend inline fun <reified T> parseBody(response: HttpResponse): T {
+private inline fun <reified T> parseBody(response: Response<T>): T {
     return try {
         response.body()
+            ?: throw UnknownNetworkException("Empty response body")
     } catch (_: SerializationException) {
         throw UnknownNetworkException("Error parsing response")
     } catch (_: Exception) {
@@ -60,9 +60,11 @@ suspend inline fun <reified T> parseBody(response: HttpResponse): T {
     }
 }
 
-suspend fun parseErrorMessage(response: HttpResponse): String {
+private fun <T> parseErrorMessage(response: Response<T>): String {
     return try {
-        response.body<ErrorDto>().message ?: "Unexpected error"
+        (response.errorBody() as? String)?.let { errorBody ->
+            Json.decodeFromString<ErrorDto>(errorBody).message
+        } ?: "Unexpected error"
     } catch (_: Exception) {
         "Unexpected error"
     }
