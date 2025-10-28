@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_empty_search
 import mena.faith_presentation.generated.resources.ic_search_warning
@@ -45,7 +43,6 @@ internal fun SearchEmptyState(
     ) {
         EmptyStateIcon(
             isStartState = isStartState,
-            modifier = modifier
         )
 
         Text(
@@ -67,10 +64,9 @@ internal fun SearchEmptyState(
 @Composable
 private fun EmptyStateIcon(
     isStartState: Boolean,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.size(128.dp),
         contentAlignment = Alignment.Center
     ) {
         Image(
