@@ -11,7 +11,6 @@ import net.thechance.mena.wallet.data.mapper.toEntityList
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.utils.safeApiCall
-import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
 import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
@@ -28,16 +27,13 @@ class TransactionRepositoryImpl(
         page: Int,
         pageSize: Int,
         transactionFilterParams: TransactionFilterParams?
-    ) : List<Transaction>{
-        val result = safeApiCall<PagedResponse<TransactionDto>> {
-            networkClient.get(
-                urlString = TRANSACTION_PATH,
-                requestBuilder = transactionFilterParams?.toRequest(page = page, pageSize = pageSize)
-                    ?: {}
-            )
-        }.toEntityList(TransactionDto::toEntity)
-        return result
-    }
+    ) = safeApiCall<PagedResponse<TransactionDto>> {
+        networkClient.get(
+            urlString = TRANSACTION_PATH,
+            requestBuilder = transactionFilterParams?.toRequest(page = page, pageSize = pageSize)
+                ?: {}
+        )
+    }.toEntityList(TransactionDto::toEntity)
 
     override suspend fun getTransactionById(transactionId: Uuid) = safeApiCall<TransactionDto> {
         networkClient.get(getTransactionByIdPath(transactionId))
