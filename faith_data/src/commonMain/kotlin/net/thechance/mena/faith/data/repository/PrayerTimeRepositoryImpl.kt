@@ -21,13 +21,13 @@ class PrayerTimeRepositoryImpl(
 
     override suspend fun getPrayerTimes(
         date: Instant,
-        address: Address,
+        address: Address?,
         timeZone: TimeZone,
     ): List<PrayerTime> = executeApiSafely<PrayerTimesDto> {
         prayerTimeApiService.getPrayerTimes(
             date = date.toDateString(timeZone = timeZone),
-            latitude = address.latitude,
-            longitude = address.longitude
+            latitude = address?.latitude ?: 29.2,
+            longitude = address?.longitude ?: 30.3
         )
     }.toDomain()
 

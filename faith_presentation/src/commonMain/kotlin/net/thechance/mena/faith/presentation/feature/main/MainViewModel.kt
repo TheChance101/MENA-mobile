@@ -41,7 +41,7 @@ class MainViewModel(
                 updateAddress(locationService.getActiveAddress())
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
-                    address = locationService.getActiveAddress()!!
+                    address = locationService.getActiveAddress()
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
@@ -53,7 +53,7 @@ class MainViewModel(
 
     private fun updateAddress(address: Address?) {
         if (!isValidAddress(address)) {
-            sendEffect(MainScreenEffect.NavigateToIdentityScreen)
+            sendEffect(MainScreenEffect.NavigateToEnableLocation)
             return
         }
         if (address != null) {
@@ -61,9 +61,7 @@ class MainViewModel(
         }
     }
 
-    private fun isValidAddress(address: Address?): Boolean {
-        return address?.id != null
-    }
+    private fun isValidAddress(address: Address?): Boolean = address?.id != null
 
     private fun onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
         updateState { currentState ->
@@ -104,7 +102,7 @@ class MainViewModel(
     override fun onQiblahClick() = sendEffect(MainScreenEffect.NavigateToQiblah)
 
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
-    override fun onChangeLocation() = sendEffect(MainScreenEffect.NavigateToIdentityScreen)
+    override fun onChangeLocation() = sendEffect(MainScreenEffect.NavigateToMyLocation)
 
     fun refreshTilawah() {
         loadLastAyahForTilawah()

@@ -16,6 +16,7 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScre
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 
 @Composable
@@ -52,6 +53,9 @@ fun FaithNavigation() {
                 }
                 composable<Route.EnableLocation> {
                     Navigator(screen = EnableLocationScreen())
+                }
+                composable<Route.MyLocation> {
+                    Navigator(screen = AddressesScreen())
                 }
             }
         }

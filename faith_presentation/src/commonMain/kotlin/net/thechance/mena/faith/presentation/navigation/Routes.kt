@@ -30,6 +30,9 @@ internal sealed interface Route {
     data object EnableLocation : Route
 
     @Serializable
+    data object MyLocation : Route
+
+    @Serializable
     data class SearchRoute(
         val surahId: Int? = null,
         val surahName: String? = null

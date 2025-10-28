@@ -38,6 +38,7 @@ import net.thechance.mena.faith.presentation.feature.main.components.SunriseTime
 import net.thechance.mena.faith.presentation.feature.main.components.TilawahSection
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -63,7 +64,7 @@ fun MainScreen(
         when (effect) {
             is MainScreenEffect.NavigateToSurah -> {
                 navController.navigate(
-                    Route.SurahDetailsRoute(
+                    SurahDetailsRoute(
                         surahId = effect.surahId,
                         surahName = effect.surahName,
                         ayahNumber = effect.ayahNumber
@@ -73,8 +74,11 @@ fun MainScreen(
 
             MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
-            MainScreenEffect.NavigateToIdentityScreen -> {
+            MainScreenEffect.NavigateToEnableLocation -> {
                 navController.navigate(Route.EnableLocation)
+            }
+            MainScreenEffect.NavigateToMyLocation -> {
+                navController.navigate(Route.MyLocation)
             }
             //TODO: Add navigation
             MainScreenEffect.NavigateToMosques -> {}
@@ -95,7 +99,7 @@ private fun Content(
     Scaffold(
         topBar = {
             MainTopBar(
-                locationName = uiState.city ?: "",
+                locationName = uiState.city,
                 onLocationChange = listener::onChangeLocation
             )
         }

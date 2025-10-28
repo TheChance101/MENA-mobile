@@ -10,7 +10,7 @@ import kotlin.time.Instant
 interface PrayerTimeRepository {
     suspend fun getPrayerTimes(
         date: Instant,
-        address: Address,
+        address: Address?,
         timeZone: TimeZone = TimeZone.currentSystemDefault(),
     ): List<PrayerTime>
 }
