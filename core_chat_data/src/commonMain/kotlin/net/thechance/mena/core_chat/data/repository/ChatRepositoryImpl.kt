@@ -59,13 +59,13 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun deleteChatById(chatId: Uuid) {
-//        val response = tryNetworkCall<DeleteChatDto>(bodyType = typeInfo<DeleteChatDto>()) {
-//            client.delete(DELETE_CHAT_ENDPOINT) {
-//                parameter(key = CHAT_ID_PARAMETER, value = chatId)
-//            }
-//        }
-//        if (response == null  || response.success.not())
-//            throw OperationFailedException("Failed to delete message")
+        val response = tryNetworkCall<DeleteChatDto>(bodyType = typeInfo<DeleteChatDto>()) {
+            client.delete(DELETE_CHAT_ENDPOINT) {
+                parameter(key = CHAT_ID_PARAMETER, value = chatId)
+            }
+        }
+        if (response == null  || response.success.not())
+            throw OperationFailedException("Failed to delete message")
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
