@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -99,7 +101,7 @@ private fun Content(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Theme.colorScheme.background.surface)
+                .background(color = Theme.colorScheme.background.surface),
         ) {
             Image(
                 painter = painterResource(Res.drawable.ic_islamic_pattern),
@@ -112,7 +114,8 @@ private fun Content(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16),
+                    .padding(horizontal = Theme.spacing._16)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
