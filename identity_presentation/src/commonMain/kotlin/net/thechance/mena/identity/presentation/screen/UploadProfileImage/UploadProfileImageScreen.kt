@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.register.components
+package net.thechance.mena.identity.presentation.screen.UploadProfileImage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,11 +31,12 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.screen.register.components.UploadImageContainer
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun PickProfileImgView(
+fun UploadProfileImageScreen(
     imageBitmap: ImageBitmap?,
     onUploadClick: () -> Unit = {},
     onSkipClick: () -> Unit = {},
@@ -96,7 +97,7 @@ fun PickProfileImgView(
 
 @Preview
 @Composable
-private fun PickProfileImgViewPreview() {
+private fun Preview1() {
     val imageBitmap = mutableStateOf<ImageBitmap?>(null)
     MenaTheme {
         Box(
@@ -105,7 +106,7 @@ private fun PickProfileImgViewPreview() {
                 .background(Theme.colorScheme.background.surface)
         ) {
 
-            PickProfileImgView(
+            UploadProfileImageScreen(
                 imageBitmap = imageBitmap.value,
                 onEditClick = { imageBitmap.value = it },
             )
@@ -115,7 +116,7 @@ private fun PickProfileImgViewPreview() {
 
 @Preview
 @Composable
-private fun PickProfileImgViewPreview2() {
+private fun Preview2() {
     MenaTheme {
         Box(
             modifier = Modifier
@@ -123,7 +124,7 @@ private fun PickProfileImgViewPreview2() {
                 .background(Theme.colorScheme.background.surface)
         ) {
 
-            PickProfileImgView(
+            UploadProfileImageScreen(
                 imageBitmap = ImageBitmap(1, 1),
             )
         }

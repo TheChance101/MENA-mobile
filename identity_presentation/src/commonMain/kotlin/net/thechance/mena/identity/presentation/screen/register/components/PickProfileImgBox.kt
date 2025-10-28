@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.click_to_upload
@@ -59,28 +61,13 @@ fun UploadImageContainer(
             contentAlignment = Alignment.Center
         ) {
 
-            if (image != null) {
-                Image(
-                    bitmap = image,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+            if (image == null) {
+                UploadPlaceholder()
             } else {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_add_image),
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(Res.string.click_to_upload),
-                        color = Theme.colorScheme.primary.primary,
-                        style = Theme.typography.label.medium
-                    )
-                }
+                UploadedImage(image = image, radius = radius, onClick = onClick)
             }
         }
-        if (image != null) {
+        if (image != null)
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -103,8 +90,36 @@ fun UploadImageContainer(
                     modifier = Modifier.size(20.dp)
                 )
             }
-        }
     }
+}
+
+@Composable
+private fun UploadPlaceholder() {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Image(
+            painter = painterResource(Res.drawable.ic_add_image),
+            contentDescription = null
+        )
+        Text(
+            text = stringResource(Res.string.click_to_upload),
+            color = Theme.colorScheme.primary.primary,
+            style = Theme.typography.label.medium
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.UploadedImage(
+    image: ImageBitmap,
+    radius: Dp,
+    onClick: () -> Unit
+) {
+    Image(
+        bitmap = image,
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop
+    )
 }
 
 @Preview
