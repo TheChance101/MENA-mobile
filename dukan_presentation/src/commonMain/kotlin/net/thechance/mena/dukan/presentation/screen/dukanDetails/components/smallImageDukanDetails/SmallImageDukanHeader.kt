@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SmallImageDukanStoreImage(
+fun SmallImageDukanImageAndTitle(
     dukanInfoState: DukanInfo,
     modifier: Modifier = Modifier
 ) {
@@ -84,7 +84,7 @@ fun SmallImageDukanIconButton(
 @Composable
 private fun DukanImageAndTitlePreview() {
     MenaTheme {
-        SmallImageDukanStoreImage(
+        SmallImageDukanImageAndTitle(
             dukanInfoState = fakeDukanInfo,
             modifier = Modifier.padding(Theme.spacing._16)
         )

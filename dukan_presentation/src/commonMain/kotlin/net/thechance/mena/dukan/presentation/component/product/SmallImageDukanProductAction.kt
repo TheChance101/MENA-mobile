@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.component.product
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -32,9 +33,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ProductActionIconSmallImageDukan(
+fun SmallImageDukanProductAction(
     inCartQuantity: Int,
-    onAddClick: () -> Unit,
+    onAddToCartClick: () -> Unit,
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     cartColor: Color? = null
@@ -47,14 +48,14 @@ fun ProductActionIconSmallImageDukan(
     ) {
         if (it) {
             SetProductQuantity(
-                onAddProductClick = onPlusClick,
-                onRemoveProductClick = onMinusClick,
+                onPlusClick = onPlusClick,
+                onMinusClick = onMinusClick,
                 cartColor = cartColor
             )
         } else {
             ProductCart(
                 cartColor = cartColor,
-                onClick = onAddClick
+                onClick = onAddToCartClick
             )
         }
     }
@@ -73,9 +74,7 @@ private fun ProductCart(
             .background(
                 color = cartColor ?: Theme.colorScheme.primary.primary,
             )
-            .clickable {
-                onClick()
-            },
+            .clickable(onClick = onClick,indication = null, interactionSource = MutableInteractionSource()),
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -89,8 +88,8 @@ private fun ProductCart(
 
 @Composable
 private fun SetProductQuantity(
-    onAddProductClick: () -> Unit,
-    onRemoveProductClick: () -> Unit,
+    onPlusClick: () -> Unit,
+    onMinusClick: () -> Unit,
     modifier: Modifier = Modifier,
     cartColor: Color? = null
 ) {
@@ -108,10 +107,8 @@ private fun SetProductQuantity(
             tint = cartColor ?: Theme.colorScheme.primary.primary,
             modifier = modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
-                .background(
-                    color = Theme.colorScheme.background.surfaceLow,
-                )
-                .clickable { onRemoveProductClick() }
+                .background(color = Theme.colorScheme.background.surfaceLow)
+                .clickable(onClick = onMinusClick,indication = null, interactionSource = MutableInteractionSource())
                 .padding(Theme.spacing._4 + Theme.spacing._2)
         )
         Text(
@@ -125,10 +122,8 @@ private fun SetProductQuantity(
             tint = cartColor ?: Theme.colorScheme.primary.primary,
             modifier = modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
-                .background(
-                    color = Theme.colorScheme.background.surfaceLow,
-                )
-                .clickable { onAddProductClick() }
+                .background(color = Theme.colorScheme.background.surfaceLow)
+                .clickable(onClick = onPlusClick,indication = null, interactionSource = MutableInteractionSource())
                 .padding(Theme.spacing._4 + Theme.spacing._2)
         )
 
@@ -139,10 +134,10 @@ private fun SetProductQuantity(
 @Composable
 private fun ProductActionIconSmallImageDukanPreview() {
     MenaTheme {
-        ProductActionIconSmallImageDukan(
+        SmallImageDukanProductAction(
             inCartQuantity = 0,
             cartColor = Color(0xFFFB5B5D),
-            onAddClick = {},
+            onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}
         )
@@ -153,10 +148,10 @@ private fun ProductActionIconSmallImageDukanPreview() {
 @Composable
 private fun ProductActionHasQuantitySmallImageDukanPreview() {
     MenaTheme {
-        ProductActionIconSmallImageDukan(
+        SmallImageDukanProductAction(
             inCartQuantity = 1,
             cartColor = Color(0xFFFB5B5D),
-            onAddClick = {},
+            onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}
         )

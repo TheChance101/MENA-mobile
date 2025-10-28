@@ -41,6 +41,22 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+fun LazyGridScope.wideImageProductsGrid(
+    productsShelf: LazyPagingItems<DukanDetailsUiState.ProductUiState>,
+) {
+    items(
+        count = productsShelf.itemCount,
+    ) { index ->
+        productsShelf[index]?.let { product ->
+            ProductCard(
+                imageUrl = product.imageUrl,
+                title = product.name,
+                price = "${product.price}",
+                onClick = {}
+            )
+        }
+    }
+}
 @Composable
 private fun ProductCard(
     imageUrl: String,
@@ -102,86 +118,6 @@ private fun ProductCard(
     }
 }
 
-fun LazyGridScope.wideImageProductsGrid(
-    productsShelf: LazyPagingItems<DukanDetailsUiState.ProductUiState>,
-) {
-    items(
-        count = productsShelf.itemCount,
-    ) { index ->
-        productsShelf[index]?.let { product ->
-            ProductCard(
-                imageUrl = product.imageUrl,
-                title = product.name,
-                price = "${product.price}",
-                onClick = {}
-            )
-        }
-    }
-}
-
-
-fun LazyGridScope.wideImageProductCardSkeletonGrid(productCount: Int) {
-    items(count = productCount) {
-        ProductCardSkeleton()
-    }
-}
-
-@Composable
-private fun ProductCardSkeleton(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .size(width = 160.dp, height = 240.dp)
-            .clip(RoundedCornerShape(Theme.radius.sm))
-            .background(Theme.colorScheme.background.surfaceLow)
-    ) {
-        SkeletonOverlayShape(
-            modifier = Modifier
-                .padding(4.dp)
-                .fillMaxWidth()
-                .height(176.dp)
-                .clip(RoundedCornerShape(Theme.radius.sm))
-        )
-        ProductCardDetailsSkeleton()
-    }
-
-
-}
-
-@Composable
-private fun ProductCardDetailsSkeleton(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .padding(top = Theme.spacing._12)
-            .fillMaxWidth()
-            .height(40.dp)
-            .padding(horizontal = Theme.spacing._4)
-    ) {
-        SkeletonOverlayShape(
-            modifier = Modifier
-                .size(height = Theme.spacing._16, width = 144.dp)
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SkeletonOverlayShape(
-                modifier = Modifier
-                    .height(Theme.spacing._24)
-                    .width(84.dp)
-                    .padding(top = 2.dp)
-            )
-            SkeletonOverlayShape(
-                modifier = Modifier
-                    .padding(start = Theme.spacing._4)
-                    .clip(CircleShape)
-                    .size(20.dp)
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true, name = "Product Card")
 @Composable
 private fun ProductCardPreview() {
@@ -193,22 +129,5 @@ private fun ProductCardPreview() {
             onClick = {},
             modifier = Modifier.padding(8.dp)
         )
-    }
-}
-
-@Preview(showBackground = true, name = "Product Card Loading")
-@Composable
-private fun ProductCardSkeletonGridPreview() {
-    MenaTheme {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            wideImageProductCardSkeletonGrid(productCount = 6)
-        }
     }
 }

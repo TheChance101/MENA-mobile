@@ -22,7 +22,7 @@ import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
+import net.thechance.mena.dukan.presentation.component.product.SmallImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
@@ -31,7 +31,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 
 @Composable
-fun SmallImageDukanShelves(
+fun SmallImageDukanShelvesContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
     modifier: Modifier = Modifier,
@@ -44,12 +44,23 @@ fun SmallImageDukanShelves(
     ) {
         when (it) {
             LoadState.Loading -> SmallImageProductSkeleton()
-            is LoadState.NotLoading -> ShelvesContent(
+            is LoadState.NotLoading -> ShelfContent(
                 shelves = shelves,
-                dukanInfo = state.dukanInfo,
-                listener = listener,
+                dukanColor = Color(state.dukanInfo.color),
                 lazyListState = lazyListState,
-                modifier = modifier
+                modifier = modifier,
+                onViewAllClick = { shelfId, shelfName ->
+                    listener.onViewAllProductsShelfClicked(shelfId, shelfName)
+                },
+                onAddToCartClick = { productId ->
+                    listener.onAddToCartClicked(productId)
+                },
+                onPlusClick = {productId->
+                    listener.onPlusClicked(productId)
+                },
+                onMinusClick = {productId->
+                    listener.onMinusClicked(productId)
+                }
             )
 
             is LoadState.Error -> {}
@@ -58,10 +69,13 @@ fun SmallImageDukanShelves(
 }
 
 @Composable
-private fun ShelvesContent(
+private fun ShelfContent(
     shelves: LazyPagingItems<ShelfUiState>,
-    dukanInfo: DukanDetailsUiState.DukanInfo,
-    listener: DukanDetailsInteractionListener,
+    dukanColor: Color,
+    onAddToCartClick: (productId: String) -> Unit,
+    onPlusClick: (productId: String) -> Unit,
+    onMinusClick: (productId: String) -> Unit,
+    onViewAllClick: (shelfId: String, shelfName: String) -> Unit,
     lazyListState: LazyListState,
     modifier: Modifier,
 ) {
@@ -77,14 +91,9 @@ private fun ShelvesContent(
         ) { index ->
             shelves[index]?.let { shelf ->
                 ProductsHeader(
-                    viewAllColor = Color(dukanInfo.color),
+                    viewAllColor = dukanColor,
                     shelfName = shelf.name,
-                    onClick = {
-                        listener.onViewAllProductsShelfClicked(
-                            shelf.id,
-                            shelf.name
-                        )
-                    },
+                    onClick = { onViewAllClick(shelf.id, shelf.name) },
                     modifier = Modifier.padding(
                         start = Theme.spacing._16,
                         end = Theme.spacing._16,
@@ -93,8 +102,10 @@ private fun ShelvesContent(
                 )
                 ShelfProducts(
                     shelf = shelf,
-                    listener = listener,
-                    cartColor = Color(dukanInfo.color)
+                    onAddToCartClick = { productId -> onAddToCartClick(productId) },
+                    onPlusClick = { productId -> onPlusClick(productId) },
+                    onMinusClick = { productId -> onMinusClick(productId) },
+                    cartColor = dukanColor
                 )
             }
         }
@@ -104,7 +115,9 @@ private fun ShelvesContent(
 @Composable
 private fun ShelfProducts(
     shelf: ShelfUiState,
-    listener: DukanDetailsInteractionListener,
+    onAddToCartClick: (productId: String) -> Unit,
+    onPlusClick: (productId: String) -> Unit,
+    onMinusClick: (productId: String) -> Unit,
     cartColor: Color? = null
 ) {
     val productPairs = remember(shelf.products) { shelf.products.chunked(2) }
@@ -121,14 +134,19 @@ private fun ShelfProducts(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         flingBehavior = flingBehavior
     ) {
-        itemsIndexed(productPairs) { _, pair ->
+        itemsIndexed(productPairs) { index, pair ->
             Column(
-                modifier = Modifier.fillParentMaxWidth(0.95f),
+                modifier = Modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 pair.forEach { product ->
                     key(product.id) {
-                        ProductItem(product = product, listener = listener, cartColor = cartColor)
+                        ProductItem(
+                            product = product, cartColor = cartColor,
+                            onAddToCartClick = { onAddToCartClick(product.id) },
+                            onPlusClick = { onPlusClick(product.id) },
+                            onMinusClick = { onMinusClick(product.id) }
+                        )
                     }
                 }
             }
@@ -140,7 +158,9 @@ private fun ShelfProducts(
 @Composable
 private fun ProductItem(
     product: ProductUiState,
-    listener: DukanDetailsInteractionListener,
+    onAddToCartClick: (productId: String) -> Unit,
+    onPlusClick: (productId: String) -> Unit,
+    onMinusClick: (productId: String) -> Unit,
     cartColor: Color?
 ) {
     val isCartButtonVisible = false  // TODO: Remove when implement Cart
@@ -152,12 +172,12 @@ private fun ProductItem(
         productCardBackground = Theme.colorScheme.background.surfaceLow,
         productAction = {
             if (isCartButtonVisible) {
-                ProductActionIconSmallImageDukan(
+                SmallImageDukanProductAction(
                     inCartQuantity = product.inCartQuantity,
                     cartColor = cartColor,
-                    onAddClick = { listener.onAddToCartClicked(product.id) },
-                    onPlusClick = {},
-                    onMinusClick = {}
+                    onAddToCartClick = { onAddToCartClick(product.id) },
+                    onPlusClick = { onPlusClick(product.id) },
+                    onMinusClick = { onMinusClick(product.id) }
                 )
             }
         }

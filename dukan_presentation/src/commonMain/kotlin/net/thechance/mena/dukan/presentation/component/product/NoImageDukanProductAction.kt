@@ -31,10 +31,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ProductActionNoImageDukan(
+fun NoImageDukanProductAction(
     inCartQuantity: Int,
     dukanColor: Long,
-    onAddClick: () -> Unit,
+    onAddToCartClick: () -> Unit,
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -53,7 +53,11 @@ fun ProductActionNoImageDukan(
                     modifier = modifier.size(24.dp)
                         .clip(RoundedCornerShape(Theme.radius.full))
                         .background(Theme.colorScheme.background.surfaceLow)
-                        .clickable(onClick = onMinusClick)
+                        .clickable(
+                            onClick = onMinusClick,
+                            indication = null,
+                            interactionSource = null
+                        )
                         .padding(Theme.spacing._4 + Theme.spacing._2)
                 )
 
@@ -75,7 +79,11 @@ fun ProductActionNoImageDukan(
                     modifier = modifier.size(24.dp)
                         .clip(RoundedCornerShape(Theme.radius.full))
                         .background(Theme.colorScheme.background.surfaceLow)
-                        .clickable(onClick = onPlusClick)
+                        .clickable(
+                            onClick = onPlusClick,
+                            indication = null,
+                            interactionSource = null
+                        )
                         .padding(Theme.spacing._4 + Theme.spacing._2)
                 )
             }
@@ -91,7 +99,11 @@ fun ProductActionNoImageDukan(
                         Theme.colorScheme.stroke,
                         RoundedCornerShape(Theme.radius.md)
                     )
-                    .clickable(onClick = onAddClick, indication = null, interactionSource = null)
+                    .clickable(
+                        onClick = onAddToCartClick,
+                        indication = null,
+                        interactionSource = null
+                    )
                     .padding(Theme.spacing._8)
             )
         }
@@ -102,10 +114,10 @@ fun ProductActionNoImageDukan(
 @Composable
 private fun ProductActionNoImageDukanPreview() {
     MenaTheme {
-        ProductActionNoImageDukan(
+        NoImageDukanProductAction(
             inCartQuantity = 0,
             dukanColor = 0xFFFB5B5D,
-            onAddClick = {},
+            onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}
         )
@@ -116,10 +128,10 @@ private fun ProductActionNoImageDukanPreview() {
 @Composable
 private fun ProductActionHasQuantityNoImageDukanPreview() {
     MenaTheme {
-        ProductActionNoImageDukan(
+        NoImageDukanProductAction(
             inCartQuantity = 1,
             dukanColor = 0xFFFB5B5D,
-            onAddClick = {},
+            onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}
         )

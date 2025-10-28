@@ -73,7 +73,9 @@ fun NoImageDukanAppBar(
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_shopping_basket),
                 contentDescription = stringResource(Res.string.shopping_basket_icon),
-                onClick = {}
+                // when cart contains products
+                isBadgeVisible = true,
+                onClick = {listener.onCartClicked()}
             )
         }
     }
@@ -83,10 +85,12 @@ fun NoImageDukanAppBar(
 private fun AppBarIcon(
     painter: Painter,
     contentDescription: String,
+    isBadgeVisible: Boolean = false,
     onClick: () -> Unit
 ) {
     AppBarOptionContainer(
-        onClick = onClick
+        onClick = onClick,
+        isBadgeVisible = isBadgeVisible
     ) {
         Icon(
             painter = painter,

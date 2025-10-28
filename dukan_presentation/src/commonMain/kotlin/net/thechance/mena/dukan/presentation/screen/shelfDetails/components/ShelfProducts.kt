@@ -16,8 +16,8 @@ import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
-import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
-import net.thechance.mena.dukan.presentation.component.product.ProductActionNoImageDukan
+import net.thechance.mena.dukan.presentation.component.product.SmallImageDukanProductAction
+import net.thechance.mena.dukan.presentation.component.product.NoImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
@@ -127,9 +127,9 @@ private fun GetProductIconAction(
 
     when (style) {
         Style.SMALL_IMAGE -> {
-            ProductActionIconSmallImageDukan(
+            SmallImageDukanProductAction(
                 inCartQuantity = inCartQuantity,
-                onAddClick = { listener.onAddToCartClicked(product.id) },
+                onAddToCartClick = { listener.onAddToCartClicked(product.id) },
                 onPlusClick = { },
                 onMinusClick = { },
                 cartColor = Color(state.dukancolor)
@@ -137,9 +137,9 @@ private fun GetProductIconAction(
         }
 
         else -> {
-            ProductActionNoImageDukan(
+            NoImageDukanProductAction(
                 inCartQuantity = inCartQuantity,
-                onAddClick = { listener.onAddToCartClicked(product.id) },
+                onAddToCartClick = { listener.onAddToCartClicked(product.id) },
                 onPlusClick = { },
                 onMinusClick = { },
                 dukanColor = state.dukancolor,

@@ -15,7 +15,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.DukanHeader
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanHeader
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanShelves
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductCardSkeletonGrid
@@ -28,16 +28,18 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun WideImageDukanDetails(
+fun WideImageDukanDetailsContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
 ) {
+    val productShelf = state.productsShelf.collectAsLazyPagingItems()
+
     OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
         topBar = {
             WideImageDukanAppBar(
                 onBackClicked = listener::onBackClicked,
-                onCartClicked = {}
+                onCartClicked = listener::onCartClicked
             )
         }
     ) {
@@ -48,7 +50,6 @@ fun WideImageDukanDetails(
             )
             return@Scaffold
         }
-        val productShelf = state.productsShelf.collectAsLazyPagingItems()
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 160.dp),
             contentPadding = PaddingValues(
@@ -61,7 +62,7 @@ fun WideImageDukanDetails(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                DukanHeader(state = state.dukanInfo)
+                WideImageDukanHeader(state = state.dukanInfo)
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 WideImageDukanShelves(
@@ -69,10 +70,10 @@ fun WideImageDukanDetails(
                     listener = listener,
                 )
             }
-            if (productShelf.loadState.refresh == LoadState.Loading) {
-                wideImageProductCardSkeletonGrid(productCount = 6)
-            } else {
-                wideImageProductsGrid(productShelf)
+            when(productShelf.loadState.refresh){
+                is LoadState.Loading -> { wideImageProductCardSkeletonGrid(productCount = 6) }
+                is LoadState.NotLoading -> { wideImageProductsGrid(productShelf) }
+                is LoadState.Error -> {}
             }
         }
     }
@@ -82,7 +83,7 @@ fun WideImageDukanDetails(
 @Composable
 private fun WideImageDukanDetailsPreview() {
     MenaTheme {
-        WideImageDukanDetails(
+        WideImageDukanDetailsContent(
             state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
         )
