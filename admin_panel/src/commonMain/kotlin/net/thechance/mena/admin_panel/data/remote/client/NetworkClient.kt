@@ -6,6 +6,7 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -14,6 +15,8 @@ import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 
@@ -33,6 +36,15 @@ class NetworkClient(
                 accept(ContentType.Application.Json)
             }
 
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                        explicitNulls = false
+                    })
+            }
+
             install(Logging) {
                 logger = Logger.Companion.SIMPLE
                 level = LogLevel.ALL
@@ -42,7 +54,7 @@ class NetworkClient(
                 bearer {
                     loadTokens {
                         BearerTokens(
-                            accessToken = "", /*TODO() add access token*/
+                            accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI5ZmNhOTFjZS1lOGZmLTQ3MGYtYTFlYy03Njc4MWYwMjYyZWQiLCJpYXQiOjE3NjE2ODIzNTIsImV4cCI6MTc2MTY4NTk1Mn0.xMFAIaYdDD1dfGivriD8OqY5zzrGva_XILiOKOiKpGPg2JoN6K7o7LmDNgtMdLcH", /*TODO() add access token*/
                             refreshToken = "" /*TODO() add refresh token*/
                         )
                     }
