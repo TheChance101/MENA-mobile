@@ -64,7 +64,7 @@ class ChatRepositoryImpl(
                 parameter(key = CHAT_ID_PARAMETER, value = chatId)
             }
         }
-        if (response == null  || response.success.not())
+        if (response != null && response.success.not())
             throw OperationFailedException("Failed to delete message")
     }
 

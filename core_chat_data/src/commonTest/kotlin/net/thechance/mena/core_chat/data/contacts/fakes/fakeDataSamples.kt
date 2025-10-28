@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
+import net.thechance.mena.core_chat.data.source.remote.dto.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
@@ -13,6 +14,7 @@ import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import kotlin.String
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import com.bilalazzam.contacts_provider.Contact as DeviceContact
@@ -133,4 +135,14 @@ fun createChatSummaryDto(
     lastMessage = lastMessage,
     name = name,
     unReadMessagesCount = unReadMessagesCount
+)
+
+fun createDeleteChatDto(
+    id: String = Uuid.random().toString(),
+    success: Boolean = true,
+    message: String =  "The Chat deleted successfully"
+) = DeleteChatDto(
+    chatId = id,
+    success = success,
+    message = message
 )
