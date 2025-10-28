@@ -22,6 +22,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = stringResource(Res.string.app_name),
+        alwaysOnTop = true,
         icon = painterResource(Res.drawable.mena_logo)
     ) {
         App()

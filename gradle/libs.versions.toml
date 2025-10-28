@@ -16,6 +16,7 @@ buildkonfig = "0.15.2"
 coil = "3.3.0"
 collection = "1.5.0"
 composeMultiplatform = "1.9.0"
+composeHotReload="1.0.0-rc02"
 junit = "4.13.2"
 kermit = "2.0.8"
 kmpCapturableCompose = "0.1.1"
@@ -195,6 +196,7 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload"}
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "koverVersion" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
