@@ -32,4 +32,4 @@ val networkModule = module {
 
 private const val BASE_URL_KEY = "baseUrl"
 private const val ADMIN_PANEL_HTTP_CLIENT_KEY = "adminPanelHttpClient"
-private const val ADMIN_PANEL_KTORFIT_KEY = "adminPanelKtorfit"
+const val ADMIN_PANEL_KTORFIT_KEY = "adminPanelKtorfit"
