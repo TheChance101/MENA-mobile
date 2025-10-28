@@ -17,11 +17,11 @@ internal class BasePagingSource<T : Any>(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
         return try {
-            val nextPage = params.key ?: 1
+            val nextPage = params.key ?: 0
             val result = fetch(nextPage)
             LoadResult.Page(
                 data = result,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
+                prevKey = if (nextPage == 0) null else nextPage - 1,
                 nextKey = if (result.size < 10) null else nextPage + 1
             )
         } catch (e: Exception) {

@@ -5,7 +5,7 @@ import io.ktor.client.request.get
 import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIENT_NAME
 import net.thechance.mena.trends.data.dto.UserDto
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.data.util.NetworkConstants.USER_INFO_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.USER_INFO_ENDPOINT
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.UserRepository

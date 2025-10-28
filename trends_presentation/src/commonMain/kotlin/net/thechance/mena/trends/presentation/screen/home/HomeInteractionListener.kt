@@ -1,7 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.home
 
 interface HomeInteractionListener {
-    fun onClickLike(reelId: String)
+    fun onClickLike(reelId: String, isLiked: Boolean)
     fun onClickAddReel()
     fun onClickEditTags()
     fun onClickManageMyTrends()

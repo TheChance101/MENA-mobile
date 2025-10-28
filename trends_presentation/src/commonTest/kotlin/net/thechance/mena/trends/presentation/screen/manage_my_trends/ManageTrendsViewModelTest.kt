@@ -9,6 +9,7 @@ import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,7 @@ class ManageTrendsViewModelTest {
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =
         runTest(testDispatcher) {
-            everySuspend { repository.getAllCurrentUserReels(1) } returns reels
+            everySuspend { repository.getAllCurrentUserReels(any()) } returns reels
 
             viewModel.state.test {
                 val currentState = awaitItem()

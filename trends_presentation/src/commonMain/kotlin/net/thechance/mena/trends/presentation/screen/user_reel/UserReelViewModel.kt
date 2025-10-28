@@ -47,6 +47,32 @@ internal class UserReelViewModel(
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
+
+    fun addReelLike(reelId: String) {
+        tryToExecute(
+            onStart = { updateLikesOnUi(reelId) },
+            block = { reelsRepository.addReelLike(reelId) },
+            onError = { error ->
+                onLikeClickFailed(reelId)
+                updateState { copy(error = error) }
+            },
+            dispatcher = defaultDispatcher,
+            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() } }
+        )
+    }
+
+    fun removeReelLike(reelId: String) {
+        tryToExecute(
+            onStart = { updateLikesOnUi(reelId) },
+            block = { reelsRepository.removeReelLike(reelId) },
+            onError = { error ->
+                onLikeClickFailed(reelId)
+                updateState { copy(error = error) }
+            },
+            dispatcher = defaultDispatcher,
+        )
+    }
+
     override fun onClickDescription(isCollapsed: Boolean) {
         updateState {
             copy(isDescriptionExpanded = !isCollapsed)
@@ -65,20 +91,12 @@ internal class UserReelViewModel(
         )
     }
 
-    override fun onClickLike(reelId: String) {
-        tryToExecute(
-            onStart = { updateLikesOnUi(reelId) },
-            block = { reelsRepository.toggleReelLike(reelId) },
-            onError = { error ->
-                onLikeClickFailed(reelId)
-                updateState { copy(error = error) }
-            },
-            dispatcher = defaultDispatcher,
-            scope = viewModelScope,
-            onSuccess = { updatedReel ->
-                updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() }
-            }
-        )
+    override fun onClickLike(reelId: String, isLiked: Boolean) {
+        if (isLiked) {
+            removeReelLike(reelId)
+        } else {
+            addReelLike(reelId)
+        }
     }
 
     private fun onLikeClickFailed(reelId: String) {
