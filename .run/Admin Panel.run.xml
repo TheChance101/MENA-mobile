@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="run" />
+          <option value=":admin_panel:hotRunDesktop" />
         </list>
       </option>
       <option name="vmOptions" />
