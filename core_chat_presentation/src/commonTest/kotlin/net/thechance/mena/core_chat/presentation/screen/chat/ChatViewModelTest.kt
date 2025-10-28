@@ -28,6 +28,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.chat_deleted_successfully
+import mena.core_chat_presentation.generated.resources.could_not_delete_chat
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
@@ -125,7 +127,7 @@ class ChatViewModelTest {
         assertThat(
             viewModel.state.value.chatListItems.currentUiMessages()
                 .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map{ it.toUi(chatRequesterId) }.reversed())
+        ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
     }
 
     @Test
@@ -282,26 +284,27 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery fails and return false`() = runTest {
-        everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns false
-        advanceUntilIdle()
-
-        viewModel.effect.test {
-            viewModel.onDownloadImageClicked(imageUrl)
+    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery fails and return false`() =
+        runTest {
+            everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns false
             advanceUntilIdle()
 
-            assertEquals(
-                ChatScreenEffect.ShowSnackBar(
-                    SnackBarData(
-                        title = UiText.StringRes(Res.string.error),
-                        message = UiText.StringRes(Res.string.error_failed_to_download_image),
-                        isError = true
-                    )
-                ), awaitItem()
-            )
-            cancelAndIgnoreRemainingEvents()
+            viewModel.effect.test {
+                viewModel.onDownloadImageClicked(imageUrl)
+                advanceUntilIdle()
+
+                assertEquals(
+                    ChatScreenEffect.ShowSnackBar(
+                        SnackBarData(
+                            title = UiText.StringRes(Res.string.error),
+                            message = UiText.StringRes(Res.string.error_failed_to_download_image),
+                            isError = true
+                        )
+                    ), awaitItem()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `onDownloadImageClicked should emit success snackBar effect on success`() = runTest {
@@ -412,6 +415,102 @@ class ChatViewModelTest {
 
         verifySuspend { messageRepository.sendMessage(any()) }
     }
+
+    @Test
+    fun `onChatActionsMenuClicked should show chat actions dialog`() = runTest {
+        advanceUntilIdle()
+
+        viewModel.onChatActionsMenuClicked()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isChatActionsDialogVisible).isTrue()
+    }
+
+    @Test
+    fun `onChatActionsMenuDialogDismissed should hide chat actions and confirm delete dialogs`() =
+        runTest {
+            advanceUntilIdle()
+            viewModel.onChatActionsMenuClicked()
+            advanceUntilIdle()
+
+            viewModel.onChatActionsMenuDialogDismissed()
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value.isChatActionsDialogVisible).isFalse()
+            assertThat(viewModel.state.value.isConfirmDeleteChatDialogVisible).isFalse()
+        }
+
+    @Test
+    fun `onConfirmDeleteChatDialogDismissed should hide confirm delete chat dialog`() = runTest {
+        advanceUntilIdle()
+        viewModel.onDeleteChatClicked()
+        advanceUntilIdle()
+
+        viewModel.onConfirmDeleteChatDialogDismissed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isConfirmDeleteChatDialogVisible).isFalse()
+    }
+
+    @Test
+    fun `onDeleteChatClicked should show confirm delete dialog and hide chat actions dialog`() =
+        runTest {
+            advanceUntilIdle()
+            viewModel.onChatActionsMenuClicked()
+            advanceUntilIdle()
+
+            viewModel.onDeleteChatClicked()
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value.isChatActionsDialogVisible).isFalse()
+            assertThat(viewModel.state.value.isConfirmDeleteChatDialogVisible).isTrue()
+        }
+
+    @Test
+    fun `onConfirmDeleteChatClicked should call repository deleteChatById and emit success snackbar`() =
+        runTest {
+            everySuspend { chatRepository.deleteChatById(chatId) } returns Unit
+            advanceUntilIdle()
+
+            viewModel.effect.test {
+                viewModel.onConfirmDeleteChatClicked()
+                advanceUntilIdle()
+
+                val expected = ChatScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.success),
+                        message = UiText.StringRes(Res.string.chat_deleted_successfully),
+                        isError = false
+                    )
+                )
+                val item = awaitItem()
+                assertThat(item).isEqualTo(expected)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `onConfirmDeleteChatClicked should show error snackbar when deleteChatById fails`() =
+        runTest {
+            everySuspend { chatRepository.deleteChatById(chatId) } throws Exception("delete failed")
+            advanceUntilIdle()
+
+            viewModel.effect.test {
+                viewModel.onConfirmDeleteChatClicked()
+                advanceUntilIdle()
+
+                val expected = ChatScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.error),
+                        message = UiText.StringRes(Res.string.could_not_delete_chat),
+                        isError = true
+                    )
+                )
+                val item = awaitItem()
+                assertThat(item).isEqualTo(expected)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.Message>()
