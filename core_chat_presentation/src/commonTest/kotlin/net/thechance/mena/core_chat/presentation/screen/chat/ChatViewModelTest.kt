@@ -258,15 +258,15 @@ class ChatViewModelTest {
     @Test
     fun `onMessageImageClicked should update state to show image pager with correct message and index`() =
         runTest {
-            val message = messages.first().toUi()
+            val messages = messages.map(Message::toUi)
             val index = 2
             advanceUntilIdle()
 
-            viewModel.onMessageImageClicked(message, index)
+            viewModel.onMessageImageClicked(messages, index)
             advanceUntilIdle()
 
             assertThat(viewModel.state.value.isImagePagerVisible).isTrue()
-            assertThat(viewModel.state.value.selectedMessage).isEqualTo(message)
+            assertThat(viewModel.state.value.selectedImageMessages).isEqualTo(messages)
             assertThat(viewModel.state.value.currentImageIndexForPreview).isEqualTo(index)
         }
 
@@ -414,8 +414,8 @@ class ChatViewModelTest {
     }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
-        filterIsInstance<ChatListItem.Message>()
-            .map { it.data }
+        filterIsInstance<ChatListItem.ImageMessages>()
+            .flatMap { it.data }
             .sortedByDescending { it.sendTime }
 
 
