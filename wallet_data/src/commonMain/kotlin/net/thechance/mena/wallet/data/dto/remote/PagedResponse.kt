@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PagedTransactionResponseDto(
+data class PagedResponse<T>(
     @SerialName("totalElements")
     val totalElements: Long? = null,
     @SerialName("page")
@@ -13,6 +13,6 @@ data class PagedTransactionResponseDto(
     val pageSize: Long? = null,
     @SerialName("totalPages")
     val totalPages: Long? = null,
-    @SerialName("transactions")
-    val transactions: List<TransactionDto>? = null
+    @SerialName("items")
+    val items: List<T>? = null
 )
