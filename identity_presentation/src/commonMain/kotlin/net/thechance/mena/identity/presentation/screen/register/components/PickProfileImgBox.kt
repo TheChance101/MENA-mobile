@@ -17,11 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
@@ -43,7 +39,6 @@ fun UploadImageContainer(
     image: ImageBitmap?,
     modifier: Modifier = Modifier,
 ) {
-    val dashEffect = PathEffect.dashPathEffect(floatArrayOf(16f, 12f), 0f)
     val borderColor = Theme.colorScheme.brand.brand
     val radius = Theme.radius.xl
 
