@@ -2,14 +2,33 @@ package net.thechance.mena.wallet.presentation
 
 import androidx.compose.runtime.Composable
 import net.thechance.mena.wallet.api.WalletApi
+import net.thechance.mena.wallet.presentation.navigation.ConfirmPaymentScreenRoute
 import net.thechance.mena.wallet.presentation.navigation.NavigationHost
 import net.thechance.mena.wallet.presentation.navigation.WalletMainScreenRoute
 import org.koin.core.annotation.Single
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Single([WalletApi::class])
 class WalletApiImpl : WalletApi {
     @Composable
     override fun WalletEntry(navigateBack: () -> Unit) {
         NavigationHost(startDestination = WalletMainScreenRoute, navigateBack = navigateBack)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Composable
+    override fun ConfirmPaymentEntry(
+        transactionId: Uuid,
+        totalAmount: Double,
+        navigateBack: () -> Unit
+    ) {
+        NavigationHost(
+            startDestination = ConfirmPaymentScreenRoute(
+                amount = totalAmount,
+                transactionId = transactionId.toString()
+            ),
+            navigateBack = navigateBack
+        )
     }
 }

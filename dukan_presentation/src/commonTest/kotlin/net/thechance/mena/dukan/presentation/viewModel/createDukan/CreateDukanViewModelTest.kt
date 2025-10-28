@@ -700,7 +700,7 @@ class CreateDukanViewModelTest {
         createDukanViewModel.onNameChanged("Test")
         createDukanViewModel.onCategoryEnabled(fakeCategories()[0].toUiState())
 
-        createDukanViewModel.onButtonClicked()
+        createDukanViewModel.onNextOrCreateClicked()
 
         createDukanViewModel.state.test {
             val state = awaitItem()

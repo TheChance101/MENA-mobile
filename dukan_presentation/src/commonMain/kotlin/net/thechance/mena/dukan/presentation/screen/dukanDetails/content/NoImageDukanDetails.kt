@@ -1,9 +1,12 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import kotlinx.coroutines.FlowPreview
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanShelves
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
@@ -27,6 +30,13 @@ fun NoImageDukanDetails(
             )
         }
     ) {
+        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+            NoInternetContent(
+                onRetry = listener::onRetryClicked,
+                modifier = Modifier.fillMaxSize()
+            )
+            return@Scaffold
+        }
         NoImageDukanContent(
             state = state,
             listener = listener,

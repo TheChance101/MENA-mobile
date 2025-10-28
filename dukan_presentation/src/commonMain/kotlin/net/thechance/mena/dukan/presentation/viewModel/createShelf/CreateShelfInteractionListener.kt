@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.createShelf
 
 interface CreateShelfInteractionListener {
     fun onTitleChanged(shelfTitle: String)
-    fun onBackButtonClicked()
-    fun onCreateButtonClicked()
+    fun onBackClicked()
+    fun onCreateClicked()
     fun onDismissSnackBar()
 }

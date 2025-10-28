@@ -67,7 +67,7 @@ class ShelfDetailsViewModel(
         emitEffect(ShelfDetailsEffects.NavigateBack)
     }
 
-    override fun onAddToCartClick(productId: String) {
+    override fun onAddToCartClicked(productId: String) {
         // ToDO("Not yet implemented")
     }
 }

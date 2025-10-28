@@ -2,7 +2,6 @@ package net.thechance.mena.trends.data.repository
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isTrue
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.toByteArray
@@ -11,7 +10,6 @@ import net.thechance.mena.trends.data.dto.UpdateUserCategoriesRequest
 import net.thechance.mena.trends.data.mapper.toEntityList
 import net.thechance.mena.trends.data.repository.util.createCategoryHttpClient
 import net.thechance.mena.trends.data.repository.util.getAllCategoriesResponse
-import net.thechance.mena.trends.data.repository.util.isCategoriesAlreadySelectedByUser
 import net.thechance.mena.trends.data.repository.util.jsonSerialization
 import net.thechance.mena.trends.data.repository.util.mockCategories
 import net.thechance.mena.trends.data.repository.util.patchUserInterestsResponse
@@ -34,18 +32,6 @@ internal class CategoryRepositoryImplTest {
 
         assertThat(result).isEqualTo(mockCategories.toEntityList())
     }
-
-    @Test
-    fun `isCategoriesAlreadySelectedByUser should returns true if API returns non-empty list`() =
-        runTest {
-
-            networkClient = createCategoryHttpClient { isCategoriesAlreadySelectedByUser() }
-            repository = CategoryRepositoryImpl(networkClient)
-
-            val result = repository.isCategoriesAlreadySelectedByUser()
-
-            assertThat(result).isTrue()
-        }
 
     @Test
     fun `updateUserInterests should succeed when API call is successful`() = runTest {

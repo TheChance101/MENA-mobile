@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.data.util.network
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import io.ktor.util.logging.KtorSimpleLogger
-import kotlinx.io.IOException
+import io.ktor.util.network.UnresolvedAddressException
 import net.thechance.mena.dukan.data.dto.ErrorResponse
 import net.thechance.mena.dukan.data.util.constants.DukanErrorCodes
 import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
@@ -12,6 +12,7 @@ import net.thechance.mena.dukan.domain.exceptions.DukanException
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
 import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.identity.domain.exception.NoNetworkException as IdentityNoInternetConnection
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.exceptions.UnAuthorizedException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
@@ -24,7 +25,8 @@ internal suspend inline fun <reified T> safeApiCall(
         .getOrElse { e ->
             logger.error("Network error: ${e.message}")
             when (e) {
-                is IOException -> throw NoInternetException(e.message.orEmpty())
+                is IdentityNoInternetConnection -> throw NoInternetException(e.message.orEmpty())
+                is UnresolvedAddressException -> throw NoInternetException(e.message.orEmpty())
                 else -> throw DukanException(e.message.orEmpty())
             }
         }

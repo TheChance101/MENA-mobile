@@ -2,8 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.main.components.categorySec
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -38,15 +37,10 @@ fun CategorySection(
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(gridLayout.columnsCount),
-        contentPadding = PaddingValues(
-            start = Theme.spacing._16,
-            end = Theme.spacing._16,
-            top = Theme.spacing._12,
-            bottom = Theme.spacing._16
-        ),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        modifier = modifier.height(200.dp),
+        modifier = modifier.heightIn(max = 200.dp),
     ) {
         items(gridLayout.itemsToShow) { category ->
             CategoryCard(
@@ -75,7 +69,6 @@ private fun CategorySectionPreview() {
             fakeCategories(),
             onCategoryClick = { _, _ -> },
             onViewMoreClick = {},
-            modifier = Modifier.padding(horizontal = Theme.spacing._16)
         )
     }
 }

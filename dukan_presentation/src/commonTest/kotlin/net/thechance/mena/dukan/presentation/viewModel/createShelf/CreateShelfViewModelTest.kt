@@ -77,7 +77,7 @@ class CreateShelfViewModelTest {
 
     @Test
     fun `onCreateButtonClicked SHOULD show snack bar when title is blank`() = runTest {
-        createShelfViewModel.onCreateButtonClicked()
+        createShelfViewModel.onCreateClicked()
 
         createShelfViewModel.state.test {
             val state = awaitItem()
@@ -110,7 +110,7 @@ class CreateShelfViewModelTest {
     @Test
     fun `onBackButtonClicked SHOULD emit NavigateBack effect`() = runTest {
         createShelfViewModel.effect.test {
-            createShelfViewModel.onBackButtonClicked()
+            createShelfViewModel.onBackClicked()
             assertEquals(CreateShelfEffect.NavigateBack, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
@@ -133,7 +133,7 @@ class CreateShelfViewModelTest {
             } returns Unit
 
             createShelfViewModel.effect.test {
-                createShelfViewModel.onCreateButtonClicked()
+                createShelfViewModel.onCreateClicked()
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // Check state isLoading reset
@@ -155,7 +155,7 @@ class CreateShelfViewModelTest {
 
             everySuspend { shelfRepository.createShelf(any()) } throws RuntimeException("Unexpected")
 
-            createShelfViewModel.onCreateButtonClicked()
+            createShelfViewModel.onCreateClicked()
             testDispatcher.scheduler.advanceUntilIdle()
 
             val state = createShelfViewModel.state.value
@@ -173,7 +173,7 @@ class CreateShelfViewModelTest {
 
             everySuspend { shelfRepository.createShelf(any()) } throws DuplicateNameException()
 
-            createShelfViewModel.onCreateButtonClicked()
+            createShelfViewModel.onCreateClicked()
             testDispatcher.scheduler.advanceUntilIdle()
 
             val state = createShelfViewModel.state.value

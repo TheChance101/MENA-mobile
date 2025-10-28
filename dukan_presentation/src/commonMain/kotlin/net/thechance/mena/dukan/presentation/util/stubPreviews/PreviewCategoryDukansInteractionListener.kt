@@ -4,7 +4,8 @@ import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDu
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
 
 object PreviewCategoryDukansInteractionListener : CategoryDukansInteractionListener {
-    override fun onBackClick() {}
-    override fun onDukanClick(dukan: DukanUiState) {}
-    override fun onFavoriteClick(dukan: DukanUiState) {}
+    override fun onBackClicked() {}
+    override fun onDukanClicked(dukan: DukanUiState) {}
+    override fun onFavoriteClicked(dukan: DukanUiState) {}
+    override fun onRetryClicked() {}
 }

@@ -4,10 +4,13 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
+import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -39,39 +42,57 @@ fun ShelfProducts(
     ) { target ->
         when (target) {
             LoadState.Loading -> LoadingVerticalList { LoadingProductCard() }
-            is LoadState.NotLoading -> LazyColumn {
-                items(
-                    products.itemCount,
-                    key = products.itemKey { it.id }
-                ) { index ->
-                    products[index]?.let { product ->
-                        ProductCard(
-                            productName = product.name,
-                            productImageUrl = product.imageUrl,
-                            productDescription = product.description,
-                            productCardBackground = productCardBackground,
-                            productPrice = product.price,
-                            productAction = {
-                                CartProductAction(
-                                    isVisible = isAddToCartVisible,
-                                    style = state.dukanStyle,
-                                    state = state,
-                                    listener = listener,
-                                    product = product
-                                )
-                            },
-                        )
-                    }
-                }
-            }
+            is LoadState.NotLoading -> ProductCardLoaded(
+                productCardBackground = productCardBackground,
+                isAddToCartVisible = isAddToCartVisible,
+                products = products,
+                listener = listener,
+                state = state
+            )
             is LoadState.Error -> {}
+        }
+    }
+}
+
+@Composable
+private fun ProductCardLoaded(
+    productCardBackground : Color?,
+    isAddToCartVisible: Boolean,
+    products: LazyPagingItems<ShelfDetailsUiState.ProductUiState>,
+    listener: ShelfDetailsInteractionListener,
+    state : ShelfDetailsUiState
+){
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+    ) {
+        items(
+            products.itemCount,
+            key = products.itemKey { it.id }
+        ) { index ->
+            products[index]?.let { product ->
+                ProductCard(
+                    productName = product.name,
+                    productImageUrl = product.imageUrl,
+                    productDescription = product.description,
+                    productCardBackground = productCardBackground,
+                    productPrice = product.price,
+                    productAction = {
+                        CartProductAction(
+                            isVisible = isAddToCartVisible,
+                            state = state,
+                            listener = listener,
+                            product = product
+                        )
+                    },
+                )
+            }
         }
     }
 }
 @Composable
 private fun CartProductAction(
     isVisible: Boolean,
-    style: Style,
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
@@ -79,7 +100,7 @@ private fun CartProductAction(
     if (isVisible.not()) return
 
     AnimatedContent(
-        targetState = style,
+        targetState = state.dukanStyle,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         label = "CartProductIconAnimation"
     ) { currentStyle ->
@@ -108,7 +129,7 @@ private fun GetProductIconAction(
         Style.SMALL_IMAGE -> {
             ProductActionIconSmallImageDukan(
                 inCartQuantity = inCartQuantity,
-                onAddClick = { listener.onAddToCartClick(product.id) },
+                onAddClick = { listener.onAddToCartClicked(product.id) },
                 onPlusClick = { },
                 onMinusClick = { },
                 cartColor = Color(state.dukancolor)
@@ -118,7 +139,7 @@ private fun GetProductIconAction(
         else -> {
             ProductActionNoImageDukan(
                 inCartQuantity = inCartQuantity,
-                onAddClick = { listener.onAddToCartClick(product.id) },
+                onAddClick = { listener.onAddToCartClicked(product.id) },
                 onPlusClick = { },
                 onMinusClick = { },
                 dukanColor = state.dukancolor,

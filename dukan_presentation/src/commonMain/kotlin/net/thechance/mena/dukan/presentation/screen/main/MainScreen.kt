@@ -39,6 +39,7 @@ import net.thechance.mena.dukan.presentation.screen.main.components.categorySect
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.editorPickDukanItems
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewMainScreenInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
@@ -102,11 +103,12 @@ private fun MainContent(
 ) {
 
     AnimatedContent(
-        targetState = state.isConnected
+        targetState = state.isConnected,
+        transitionSpec = { fadeTransitionSpec() }
     ) { isConnected ->
         if (!isConnected) {
             NoInternetContent(
-                onRetry = listener::onRetryButtonClicked,
+                onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
             )
             return@AnimatedContent
@@ -138,8 +140,8 @@ private fun MainContent(
 
                     CategorySection(
                         categories = state.categories,
-                        onCategoryClick = listener::onCategorySelectedClick,
-                        onViewMoreClick = listener::onViewMoreButtonClick,
+                        onCategoryClick = listener::onCategorySelectedClicked,
+                        onViewMoreClick = listener::onViewMoreClicked,
                     )
                 }
 
@@ -156,7 +158,7 @@ private fun MainContent(
 
                     BestNearestDukanSection(
                         state = state,
-                        onDukanClick = listener::onNearestDukanClick,
+                        onDukanClick = listener::onNearestDukanClicked,
                     )
                 }
 
@@ -174,7 +176,7 @@ private fun MainContent(
                 }
                 editorPickDukanItems(
                     dukans = dukans,
-                    onDukanClick = listener::onEditorPickDukanClick
+                    onDukanClick = listener::onEditorPickDukanClicked
                 )
             }
         }

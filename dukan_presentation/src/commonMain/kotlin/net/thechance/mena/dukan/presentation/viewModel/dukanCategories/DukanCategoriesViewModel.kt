@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
@@ -27,11 +26,19 @@ class DukanCategoriesViewModel(
 
     private fun getCategories() {
         tryToExecute(
-            onStart = { updateState { copy(isLoading = true) } },
+            onStart = ::onGetCategoriesStart,
             block = ::getCategoriesBlock,
             onSuccess = ::onGetCategoriesSuccess,
             onError = ::onGetCategoriesError
         )
+    }
+
+    private fun onGetCategoriesStart() {
+        updateState {
+            copy(
+                dukanCategoriesState = DukanCategoriesUiState.DukanCategoriesState.LOADING
+            )
+        }
     }
 
     private suspend fun getCategoriesBlock(): List<DukanCategoriesUiState.CategoryUiState> {
@@ -39,16 +46,22 @@ class DukanCategoriesViewModel(
     }
 
     private fun onGetCategoriesSuccess(categories: List<DukanCategoriesUiState.CategoryUiState>) {
-        updateState { copy(categories = categories, isLoading = false) }
+        updateState {
+            copy(
+                categories = categories,
+                dukanCategoriesState = DukanCategoriesUiState.DukanCategoriesState.LOADED
+            )
+        }
     }
 
     private fun onGetCategoriesError(error: Throwable) {
-        updateState { copy(isLoading = false) }
-        val messageRes = when (error) {
-            is NoInternetException -> Res.string.no_internet_message
-            else -> Res.string.something_went_wrong
+        updateState { copy(dukanCategoriesState = DukanCategoriesUiState.DukanCategoriesState.ERROR) }
+        if (error != NoInternetException()) {
+            showSnackBar(
+                message = Res.string.something_went_wrong,
+                type = SnackBarType.ERROR
+            )
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
 
@@ -70,6 +83,10 @@ class DukanCategoriesViewModel(
 
     override fun onDismissSnackBar() {
         updateState { copy(snackBarUiState = null) }
+    }
+
+    override fun onRetryClicked() {
+        getCategories()
     }
 
     private fun showSnackBar(message: StringResource, type: SnackBarType) {

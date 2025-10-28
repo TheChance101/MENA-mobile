@@ -12,11 +12,8 @@ import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.dto.UpdateUserCategoriesRequest
 import net.thechance.mena.trends.data.dto.UpdateUserCategoriesResponse
-import net.thechance.mena.trends.data.dto.UserStatusResponse
 import net.thechance.mena.trends.data.mapper.toEntityList
-import net.thechance.mena.trends.data.util.NetworkConstants.CATEGORIES_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.USER_STATUS_ENDPOINT
-import net.thechance.mena.trends.data.util.orFalse
+import net.thechance.mena.trends.data.util.NetworkEndpoint.CATEGORIES_ENDPOINT
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
@@ -34,12 +31,6 @@ internal class CategoryRepositoryImpl(
         }.toEntityList()
     }
 
-    override suspend fun isCategoriesAlreadySelectedByUser(): Boolean {
-        return safeApiCall<UserStatusResponse> {
-            networkClient.get(USER_STATUS_ENDPOINT)
-        }.hasCategory.orFalse()
-    }
-
     override suspend fun initializeUserCategories(categoriesIds: List<String>) {
         safeApiCall<Unit> {
             networkClient.post(CATEGORIES_ENDPOINT) {
@@ -47,6 +38,12 @@ internal class CategoryRepositoryImpl(
                 setBody(SubmitCategoriesRequestDto(categoriesIds))
             }
         }
+    }
+
+    override suspend fun isCategoriesAlreadySelectedByUser(): Boolean {
+        return safeApiCall<List<CategoryDto>> {
+            networkClient.get(CATEGORIES_ENDPOINT)
+        }.any { it.isSelected == true }
     }
 
     override suspend fun updateUserCategories(
