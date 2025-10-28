@@ -149,7 +149,7 @@ class TransactionRepositoryImplTest {
                       "page": 0,
                       "pageSize": 10,
                       "totalPages": 1,
-                      "transactions": [
+                      "items": [
                         {
                           "id": "$EXPECTED_ID",
                           "senderName": "$EXPECTED_SENDER",
