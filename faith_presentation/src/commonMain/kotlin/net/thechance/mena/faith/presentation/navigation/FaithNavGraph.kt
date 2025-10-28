@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import cafe.adriel.voyager.navigator.Navigator
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceScreen
@@ -15,6 +16,7 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScre
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
+import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 
 @Composable
 fun FaithNavigation() {
@@ -47,6 +49,9 @@ fun FaithNavigation() {
                 }
                 composable<Route.CompassRoute> {
                     CompassScreen()
+                }
+                composable<Route.EnableLocation> {
+                    Navigator(screen = EnableLocationScreen())
                 }
             }
         }
