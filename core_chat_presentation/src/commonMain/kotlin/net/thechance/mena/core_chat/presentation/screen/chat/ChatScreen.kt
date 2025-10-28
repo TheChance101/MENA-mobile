@@ -30,7 +30,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInpu
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
-import net.thechance.mena.core_chat.presentation.screen.chat.components.deleteChatOverlay
+import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
@@ -86,7 +86,7 @@ fun ChatScreenContent(
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,
-                    onMenuClick = interactions::onMenuClicked,
+                    onMenuClick = interactions::onChatActionsMenuClicked,
                     onBackClick = interactions::onBackClicked,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,12 +111,10 @@ fun ChatScreenContent(
                     onResendFailedMessageClick = interactions::onResendMessageClicked,
                 )
 
-                deleteChatOverlay(
-                    showDeleteChatDialog = state.isDeleteChatDialogVisible,
-                    onDeleteChatClicked = interactions::onDeleteChatClicked,
-                    onConfirmDeleteChatClicked = interactions::onConfirmDeleteChatClicked,
-                    onDismissDeleteChatDialog = interactions::onDismissDeleteChatDialog,
+                chatActionsMenuOverlay(
+                    showChatActionsDialog = state.isChatActionsDialogVisible,
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
+                    actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
             }
         ) {
