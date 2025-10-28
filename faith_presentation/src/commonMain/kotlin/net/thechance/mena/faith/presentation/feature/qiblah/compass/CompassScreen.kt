@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
@@ -209,12 +210,25 @@ private fun TextAngleToQiblah(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "$qiblahDirection °N",
-            style = Theme.typography.title.medium,
-            color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = qiblahDirection,
+                style = Theme.typography.title.medium,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.End,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = " °N",
+                style = Theme.typography.title.medium,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.weight(1f)
+            )
+        }
         Text(
             text = stringResource(Res.string.device_angle_to_qiblah),
             style = Theme.typography.label.medium,
@@ -228,7 +242,7 @@ private fun TextAngleToQiblah(
 private fun QiblahImage(qiblahDirection: Float, compassBearing: Float) {
     Box(
         modifier = Modifier
-            .size(270.dp)
+            .size(264.dp)
             .graphicsLayer {
                 rotationZ = compassBearing + qiblahDirection
             },
