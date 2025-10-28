@@ -388,23 +388,27 @@ class ChatViewModel(
         }
     }
 
-    override fun onMenuClicked() {
-        updateState { it.copy(isDeleteChatDialogVisible = true) }
+    override fun onChatActionsMenuClicked() {
+        updateState { it.copy(isChatActionsDialogVisible = true) }
     }
 
-    override fun onDismissDeleteChatDialog() {
+    override fun onChatActionsMenuDialogDismissed() {
         updateState {
             it.copy(
-                isDeleteChatDialogVisible = false,
+                isChatActionsDialogVisible = false,
                 isConfirmDeleteChatDialogVisible = false
             )
         }
     }
 
+    override fun onConfirmDeleteChatDialogDismissed() {
+        updateState { it.copy(isConfirmDeleteChatDialogVisible = false) }
+    }
+
     override fun onDeleteChatClicked() {
         updateState {
             it.copy(
-                isDeleteChatDialogVisible = false,
+                isChatActionsDialogVisible = false,
                 isConfirmDeleteChatDialogVisible = true
             )
         }
