@@ -9,7 +9,6 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -18,6 +17,9 @@ import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,28 +28,36 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
 
     private var testDispatcher: TestDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: MainViewModel
     private lateinit var quranRepository: QuranRepository
     private lateinit var prayerTimeRepository: PrayerTimeRepository
+    private lateinit var locationService: LocationService
 
     @OptIn(ExperimentalTime::class)
     @BeforeTest
     fun setup() {
         quranRepository = mock(MockMode.autofill)
         prayerTimeRepository = mock(MockMode.autofill)
+        locationService = mock(MockMode.autofill)
 
         everySuspend { quranRepository.getLastAyahForTilawah() } returns fakeAyah
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
+        everySuspend { locationService.getActiveAddress() } returns fakeAddress
 
-        viewModel = MainViewModel(quranRepository, prayerTimeRepository, testDispatcher)
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `viewModel should load prayer times`() = runTest(testDispatcher) {
         testDispatcher.scheduler.advanceUntilIdle()
@@ -68,7 +78,13 @@ class MainViewModelTest {
             )
         } throws Exception("Network error")
 
-        val failingViewModel = MainViewModel(quranRepository, prayerTimeRepository, testDispatcher)
+        val failingViewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
         testDispatcher.scheduler.advanceUntilIdle()
         val state = failingViewModel.uiState.value
 
@@ -76,7 +92,6 @@ class MainViewModelTest {
         assertTrue(state.prayerTimes.isEmpty())
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onContinueTilawahClick should emit NavigateToSurah effect`() = runTest {
         testDispatcher.scheduler.advanceUntilIdle()
@@ -103,7 +118,6 @@ class MainViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onQiblahClick should emit NavigateToQiblah effect`() = runTest {
         testDispatcher.scheduler.advanceUntilIdle()
@@ -115,7 +129,6 @@ class MainViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onMosquesClick should emit NavigateToMosques effect`() = runTest {
         testDispatcher.scheduler.advanceUntilIdle()
@@ -152,6 +165,15 @@ class MainViewModelTest {
             PrayerTime(PrayerName.ASR, now + 9.hours, "1446-04-10"),
             PrayerTime(PrayerName.MAGHRIB, now + 12.hours, "1446-04-10"),
             PrayerTime(PrayerName.ISHA, now + 13.hours, "1446-04-10")
+        )
+
+        @OptIn(ExperimentalUuidApi::class)
+        val fakeAddress = Address(
+            id = Uuid.random(),
+            latitude = 33.3152,
+            longitude = 44.3661,
+            addressLine = "Baghdad, Iraq",
+            addressType = AddressType.Home
         )
 
         val fakeAyah = LastAyahForTilawah(

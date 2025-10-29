@@ -8,9 +8,7 @@ import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.utils.AzimuthProvider
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
-import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class)
 class CompassViewModel(
     private val bearingCalculatorUseCase: QiblahBearingCalculatorUseCase,
     private val locationService: LocationService,
@@ -31,6 +29,7 @@ class CompassViewModel(
         }
         sendEffect(CompassEffect.NavigateToMyLocation)
     }
+
     fun refreshAddress() {
         loadCompassData()
     }
