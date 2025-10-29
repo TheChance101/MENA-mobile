@@ -82,10 +82,11 @@ actual class FileManagerImpl : FileManager {
         fileName: String
     ): String {
         val uniqueFileName = "${fileName}_${Clock.System.now().epochSeconds}"
-
+        println("ios : ${fileName}")
         val fileManager = NSFileManager.defaultManager
         val documentsPath = getDocumentsDirectory()
         val appFolderPath = "$documentsPath/$APP_DOWNLOADS_FOLDER"
+        println("path : ${appFolderPath}")
 
         if (!fileManager.fileExistsAtPath(appFolderPath)) {
             val created = fileManager.createDirectoryAtPath(
