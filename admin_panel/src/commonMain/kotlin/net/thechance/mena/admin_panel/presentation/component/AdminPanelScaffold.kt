@@ -3,19 +3,17 @@ package net.thechance.mena.admin_panel.presentation.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.resources.img_no_internet
 import net.thechance.mena.admin_panel.resources.no_internet_content
 import net.thechance.mena.admin_panel.resources.no_internet_title
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -24,9 +22,6 @@ import org.jetbrains.compose.resources.stringResource
 fun AdminPanelScaffold(
     modifier: Modifier = Modifier,
     topBar: (@Composable () -> Unit)? = null,
-    snackBar: (@Composable () -> Unit)? = null,
-    overlays: (ScaffoldScope.() -> Unit)? = null,
-    bottomContent: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     errorState: ErrorState? = null,
     isLoading: Boolean = false,
@@ -36,12 +31,12 @@ fun AdminPanelScaffold(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .systemBarsPadding()
             .background(backgroundColor)
             .then(modifier)
     ) {
         Scaffold(
             topBar = { topBar?.invoke() },
-            overlays = overlays ?: {},
             content = {
                 when {
                     errorState is ErrorState.NoInternet -> {
@@ -63,19 +58,5 @@ fun AdminPanelScaffold(
                 }
             }
         )
-
-        snackBar?.let { snackBarContent ->
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(start = 16.dp, end = 16.dp, top = 68.dp)
-            ) { snackBarContent() }
-        }
-
-        bottomContent?.let {
-            Box(
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) { it() }
-        }
     }
 }

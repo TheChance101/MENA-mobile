@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.component.AdminPanelScaffold
+import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginHeader
 import net.thechance.mena.admin_panel.presentation.screen.login.component.PasswordInputField
 import net.thechance.mena.admin_panel.presentation.screen.login.component.UsernameInputField
 import net.thechance.mena.admin_panel.resources.Res
@@ -31,10 +32,10 @@ fun LoginScreen() {
         var isPasswordVisible by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column {
+            LoginHeader(modifier = Modifier.padding(top = 64.dp))
+            Column(modifier = Modifier.padding(top = 40.dp)) {
                 UsernameInputField(
                     username = username,
                     onChangeValue = { username = it }

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MENA Admin Panel</string>
+    <string name="mena">MENA</string>
     <string name="no_internet_title">عفواً! يبدو أنك غير متصل بالإنترنت.</string>
     <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
     <string name="unknown_error_title">خطأ غير معروف</string>
@@ -8,4 +9,6 @@
     <string name="username">اسم المستخدم</string>
     <string name="password">كلمة السر</string>
     <string name="login">تسجيل الدخول</string>
+    <string name="login_header">مرحبًا بكم مرة أخرى في MENA</string>
+    <string name="login_sub_title">أدخل بيانات الخاصة بك لتسجيل الدخول</string>
 </resources>
