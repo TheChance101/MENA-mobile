@@ -24,8 +24,13 @@ class CompassViewModel(
     }
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
-    override fun onChangeLocation() = sendEffect(CompassEffect.NavigateToMyLocation)
-
+    override fun onChangeLocation() {
+        if (isValidAddress(uiState.value.city)) {
+            sendEffect(CompassEffect.NavigateToEnableLocation)
+            return
+        }
+        sendEffect(CompassEffect.NavigateToMyLocation)
+    }
     fun refreshAddress() {
         loadCompassData()
     }

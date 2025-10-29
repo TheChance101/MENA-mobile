@@ -102,7 +102,13 @@ class MainViewModel(
     override fun onQiblahClick() = sendEffect(MainScreenEffect.NavigateToQiblah)
 
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
-    override fun onChangeLocation() = sendEffect(MainScreenEffect.NavigateToMyLocation)
+    override fun onChangeLocation() {
+        if (isValidAddress(uiState.value.city)) {
+            sendEffect(MainScreenEffect.NavigateToEnableLocation)
+            return
+        }
+        sendEffect(MainScreenEffect.NavigateToMyLocation)
+    }
 
     fun refreshTilawah() {
         loadLastAyahForTilawah()

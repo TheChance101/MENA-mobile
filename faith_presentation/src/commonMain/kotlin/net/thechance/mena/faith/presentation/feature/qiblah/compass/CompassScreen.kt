@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -96,7 +97,7 @@ private fun Content(
                 },
                 onLeadingClick = listener::onBackClick,
                 trailingContent = {
-                    QiblahTopBar(uiState)
+                    QiblahTopBar(uiState, onChangeLocation = listener::onChangeLocation)
                 }
             )
         },
@@ -262,12 +263,13 @@ private fun QiblahImage(qiblahDirection: Float, compassBearing: Float) {
 }
 
 @Composable
-private fun QiblahTopBar(uiState: CompassUiState) {
+private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) {
     Row(
         modifier = Modifier.background(
             shape = RoundedCornerShape(Theme.radius.full),
             color = Theme.colorScheme.background.surfaceLow
-        ).height(Theme.spacing._24),
+        ).height(Theme.spacing._24)
+            .clickable(onClick = onChangeLocation),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         verticalAlignment = Alignment.CenterVertically
     ) {
