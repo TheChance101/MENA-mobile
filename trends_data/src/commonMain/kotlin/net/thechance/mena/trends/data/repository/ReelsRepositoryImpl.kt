@@ -103,10 +103,10 @@ internal class ReelsRepositoryImpl(
                     createRequestBody(
                         key = VIDEO,
                         mimeType = videoFileHandler.getMimeType(filePath),
-                        input = InputProvider(size) { fileSource.buffered() }
+                        input = InputProvider { fileSource.buffered() }
                     )
                 )
-                observeUploading(observableUploadingFlow::emit)
+                observeUploading(observableUploadingFlow::emit, size)
             }
         }.reelId.orEmpty()
     }
