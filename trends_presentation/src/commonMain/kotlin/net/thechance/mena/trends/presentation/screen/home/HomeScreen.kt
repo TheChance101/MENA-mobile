@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -176,12 +177,17 @@ private fun ReelsListSection(
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
-        items(reels.itemSnapshotList.items) { reel ->
-            FeedReelCard(
-                reel = reel,
-                onLikeClick = { onClickLike(reel.id, reel.isLiked) },
-                onReelClick = { onClickReel(reel.id) }
-            )
+        items(
+            count = reels.itemCount,
+            key = reels.itemKey { it.id }
+        ) { index ->
+            reels[index]?.let { reel ->
+                FeedReelCard(
+                    reel = reel,
+                    onLikeClick = { onClickLike(reel.id, reel.isLiked) },
+                    onReelClick = { onClickReel(reel.id) }
+                )
+            }
         }
     }
 }
