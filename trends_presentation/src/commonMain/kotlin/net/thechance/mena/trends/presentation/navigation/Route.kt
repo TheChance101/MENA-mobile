@@ -10,7 +10,7 @@ internal sealed interface Route {
     data object UpdateCategories : Route
 
     @Serializable
-    data class ReelDetails(val reelId: String) : Route
+    data class ReelDetails(val reelId: String, val isFromFeed: Boolean) : Route
 
     @Serializable
     data object ManageReels : Route

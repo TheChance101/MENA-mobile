@@ -10,4 +10,5 @@ class UserReelArgsImpl(
     savedStateHandle: SavedStateHandle
 ) : UserReelArgs {
     override val realId: String = savedStateHandle.toRoute<Route.ReelDetails>().reelId
+    override val isFromFeed: Boolean = savedStateHandle.toRoute<Route.ReelDetails>().isFromFeed
 }

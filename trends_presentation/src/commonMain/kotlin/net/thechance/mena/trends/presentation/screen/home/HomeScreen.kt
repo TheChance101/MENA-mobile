@@ -61,7 +61,7 @@ internal fun HomeScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is HomeUiEffect.NavigateToReelDetails ->
-                navController.navigate(Route.ReelDetails(effect.trendId))
+                navController.navigate(Route.ReelDetails(effect.trendId, true))
 
             is HomeUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)

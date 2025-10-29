@@ -43,7 +43,7 @@ internal class UserReelViewModel(
     private fun createPager(): Flow<PagingData<UserReelUiState>> {
         return createPager(
             scope = viewModelScope,
-            loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
+            loadPage = { page -> if (userReelArgs.isFromFeed) reelsRepository.getFeedReels(page, userReelArgs.realId) else reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId) }
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 

@@ -61,9 +61,13 @@ internal class ReelsRepositoryImpl(
         }
     }
 
-    override suspend fun getAllCurrentUserReels(pageNumber: Int): List<Reel> {
+    override suspend fun getAllCurrentUserReels(pageNumber: Int, reelId: String?): List<Reel> {
+        val endpoint = reelId?.let {
+            "$PROFILE_REELS_ENDPOINT/$it"
+        } ?: PROFILE_REELS_ENDPOINT
+
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
-            networkClient.get(PROFILE_REELS_ENDPOINT) {
+            networkClient.get(endpoint) {
                 parameter(PAGE_PARAMETER, pageNumber)
             }
         }.results?.map { it.toEntity() }.orEmpty()
