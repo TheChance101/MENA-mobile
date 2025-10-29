@@ -22,7 +22,7 @@ data class MainUiState(
     val prayerTimesUiState: PrayerTimesUiState? = null,
     val hijriDate: String = "",
     val sunriseTime: String = "",
-    val city: String = ""
+    val address: String = ""
 )
 
 data class PrayerTimesUiState(

@@ -52,12 +52,12 @@ class MainViewModel(
     }
 
     private fun updateAddress(address: Address?) {
-        if (!isValidAddress(uiState.value.city)) {
+        if (!isValidAddress(uiState.value.address)) {
             sendEffect(MainScreenEffect.NavigateToEnableLocation)
             return
         }
         if (address != null) {
-            updateState { it.copy(city = address.addressLine) }
+            updateState { it.copy(address = address.addressLine) }
         }
     }
 
@@ -103,7 +103,7 @@ class MainViewModel(
 
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
     override fun onChangeLocation() {
-        if (isValidAddress(uiState.value.city)) {
+        if (isValidAddress(uiState.value.address)) {
             sendEffect(MainScreenEffect.NavigateToEnableLocation)
             return
         }
