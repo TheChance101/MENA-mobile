@@ -16,12 +16,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
@@ -61,6 +64,7 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
 import sv.lib.squircleshape.SquircleShape
 
 class EditUserProfileScreen : BaseScreen<
@@ -70,7 +74,10 @@ class EditUserProfileScreen : BaseScreen<
         EditUserProfileInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        val factory = rememberPermissionsControllerFactory()
+        val controller = remember(factory) { factory.createPermissionsController() }
+        InitScreen(getScreenModel(parameters = { parametersOf(controller) }))
+        BindEffect(controller)
     }
 
     @Composable
@@ -126,10 +133,10 @@ class EditUserProfileScreen : BaseScreen<
                 dialog(state.showEditImageDialog) {
                     GetImageDialog(
                         isVisible = it,
-                        onDismiss = { listener.onDismissEditImageDialog() },
-                        onUploadImage = { galleryPicker.launch() },
-                        onTakeImageFromCamera = { listener.onTakeImageFromCamera() },
-                        onRemoveImage = { listener.onRemoveProfileImage() },
+                        onDismiss =  listener::onDismissEditImageDialog,
+                        onUploadImage = galleryPicker::launch,
+                        onTakeImageFromCamera = listener::onTakeImageFromCamera,
+                        onRemoveImage =  listener::onRemoveProfileImage,
                     )
                 }
 
@@ -162,7 +169,7 @@ class EditUserProfileScreen : BaseScreen<
                             contentDescription = stringResource(Res.string.back),
                         )
                     },
-                    onLeadingClick = { listener.onClickCancelButton() },
+                    onLeadingClick = listener::onClickCancelButton,
                     trailingContent = {
                         Icon(
                             modifier = Modifier
@@ -180,22 +187,20 @@ class EditUserProfileScreen : BaseScreen<
                 ProfileImage(
                     profileImageUrl = state.profileImageUrl,
                     profileImageBitmap = state.profileImageBitmap,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally),
-                    onEditClicked = { listener.onClickEditImage() },
+                    modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+                    onEditClicked = listener::onClickEditImage,
                 )
 
                 ProfileEditText(
                     title = stringResource(Res.string.first_name),
                     value = state.firstName,
-                    onValueChange = { listener.onChangeFirstName(it) },
+                    onValueChange = listener::onChangeFirstName,
                 )
 
                 ProfileEditText(
                     title = stringResource(Res.string.last_name),
                     value = state.lastName,
-                    onValueChange = { listener.onChangeLastName(it) },
+                    onValueChange = listener::onChangeLastName,
                 )
 
                 ProfileEditText(
@@ -218,27 +223,25 @@ class EditUserProfileScreen : BaseScreen<
                 WheelDatePicker(
                     modifier = Modifier.padding(top = Theme.spacing._16),
                     selectedDate = state.birthDate,
-                    onDateChange = { day, month, year ->
-                        listener.onChangeDate(day, month, year)
-                    },
+                    onDateChange = listener::onChangeDate,
                 )
 
                 GenderToggle(
                     gender = state.gender,
-                    onGenderChange = { listener.onChangeGender(it) }
+                    onGenderChange = listener::onChangeGender
                 )
 
                 PrimaryButton(
                     isLoading = state.isLoading,
                     modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._24),
                     text = stringResource(Res.string.save_changes),
-                    onClick = { listener.onClickSaveButton() },
+                    onClick = listener::onClickSaveButton,
                 )
 
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._8),
                     text = stringResource(Res.string.cancel),
-                    onClick = { listener.onClickCancelButton() }
+                    onClick = listener::onClickCancelButton
                 )
             }
         }

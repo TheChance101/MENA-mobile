@@ -17,6 +17,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.screen.manageShelf.component.ManageShelfAppBar
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewManageShelfInteractionListener
@@ -45,10 +46,18 @@ fun ManageShelfContent(
                     .fillMaxWidth()
                     .padding(Theme.spacing._16),
                 text = stringResource(Res.string.save),
-                onClick = {},
-                isEnabled = state.isButtonEnabled,
+                onClick = listener::onSaveClicked,
+                isEnabled = state.isSaveButtonEnabled,
                 contentPadding = PaddingValues(vertical = Theme.spacing._12)
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
         Column(
@@ -65,13 +74,12 @@ fun ManageShelfContent(
             )
             TextField(
                 value = state.shelfTitle,
-                onValueChanged = {},
+                onValueChanged = listener::onShelfNameChange,
                 hint = "",
                 modifier = Modifier.padding(
                     horizontal = Theme.spacing._16,
                     vertical = Theme.spacing._4
                 ),
-                readOnly = true //Todo change to enable,  after implement update shelf name feature
             )
         }
     }

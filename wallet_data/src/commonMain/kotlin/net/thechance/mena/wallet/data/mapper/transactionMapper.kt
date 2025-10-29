@@ -7,10 +7,6 @@ import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import kotlin.uuid.ExperimentalUuidApi
 
-fun List<TransactionDto>?.toTransactionEntityList(): List<Transaction> {
-    return this?.map { it.toEntity() }.orEmpty()
-}
-
 @OptIn(ExperimentalUuidApi::class)
 fun TransactionDto.toEntity(): Transaction {
     return Transaction(

@@ -6,9 +6,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.util.reflect.typeInfo
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.utils.buildImageMultiPartFormData
+import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.data.utils.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -17,54 +18,37 @@ import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import kotlin.uuid.ExperimentalUuidApi
 
 class ImageMessageSender(
-    private val client: HttpClient,
-    private val messageDao: MessageDao
+    private val client: HttpClient
 ) : MessageSender {
     override suspend fun send(message: Message) {
         val content = message.content
 
-        if (content !is MessageContent.Images) {
+        if (content !is MessageContent.Image) {
             throw SendMessageFailedException("Failed to send message: Message content is not images")
         }
 
-        val source = content.source
+        val data = content.data
 
-        val byteArrays = if (source is ImageData.ImageByteArray) {
-            source.byteArrays
+        val bytes = if (data is ImageData.ImageByteArray) {
+            data.byteArray
         } else {
             throw SendMessageFailedException("Failed to send message: Corrupted images")
         }
 
-        val imageFiles = byteArrays.mapIndexed { index, bytes -> "image_$index" to bytes }
-        var messageId: String? = null
-        val remainingImages = byteArrays.toMutableList()
+        val imageFile = ("image_${LocalDateTime.now()}" to bytes)
+        val multipartImage = imageFile.buildImageMultiPartFormData(
+            fieldName = IMAGES_FILES_PARAM,
+            chatId = message.chatId.toString()
+        )
 
-        for ((imageName, imageBytes) in imageFiles) {
-            val multipart = (imageName to imageBytes).buildImageMultiPartFormData(
-                fieldName = IMAGES_FILES_PARAM,
-                chatId = message.chatId.toString(),
-                messageId = messageId
-            )
-
-            val messageResponse = tryNetworkCall<MessageDto>(
-                bodyType = typeInfo<MessageDto>()
-            ) {
-                client.post(IMAGES_ENDPOINT) {
-                    setBody(multipart)
-                }
-            }
-
-            if (messageResponse != null) {
-                remainingImages.remove(imageBytes)
-                messageDao.updateMessageImages(
-                    id = message.id.toString(),
-                    images = remainingImages
-                )
-                if (messageId == null) {
-                    messageId = messageResponse.id
-                }
+        tryNetworkCall<MessageDto>(
+            bodyType = typeInfo<MessageDto>()
+        ) {
+            client.post(IMAGES_ENDPOINT) {
+                setBody(multipartImage)
             }
         }
+
     }
 
     companion object {

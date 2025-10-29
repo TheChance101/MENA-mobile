@@ -8,10 +8,16 @@ import mena.identity_presentation.generated.resources.address_activated_successf
 import mena.identity_presentation.generated.resources.address_deleted_successfully
 import mena.identity_presentation.generated.resources.error_address_not_found
 import mena.identity_presentation.generated.resources.is_main_address_error
+import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.error.handleLocationException
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -51,7 +57,7 @@ class AddressesScreenViewModel(
         if (address?.isMainAddress == false) {
             tryToExecute(
                 function = { addressesRepository.setActiveAddress(addressId) },
-                onSuccess = ::onAddressActivationSuccess,
+                onSuccess = { onAddressActivationSuccess() },
                 onError = ::onAddressOperationError,
                 dispatcher = dispatcher
             )
@@ -133,9 +139,9 @@ class AddressesScreenViewModel(
         showSuccessSnackBar(Res.string.address_deleted_successfully)
     }
 
-    private fun onAddressOperationError(errorState: ErrorState) {
+    private fun onAddressOperationError(throwable: Throwable) {
         dismissDeleteDialog()
-        showErrorSnackBar(mapErrorToMessage(errorState))
+        showErrorSnackBar(mapErrorMessage(throwable))
     }
 
     private fun onAddressNotFoundError() {
@@ -183,9 +189,17 @@ class AddressesScreenViewModel(
     private fun executeAddressDeletion(addressId: Uuid) {
         tryToExecute(
             function = { addressesRepository.deleteAddress(addressId) },
-            onSuccess = ::onAddressDeletionSuccess,
+            onSuccess = { onAddressDeletionSuccess() },
             onError = ::onAddressOperationError,
             dispatcher = dispatcher
         )
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
+        }
     }
 }

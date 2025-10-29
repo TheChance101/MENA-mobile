@@ -5,12 +5,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_password_mismatch
+import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.utils.validatePasswordConfirmation
+import net.thechance.mena.identity.presentation.util.validatePasswordConfirmation
+import org.jetbrains.compose.resources.StringResource
 
 class ResetPasswordScreenViewModel(
     private val passwordValidator: PasswordValidator,
@@ -64,8 +68,8 @@ class ResetPasswordScreenViewModel(
 
         updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
-            function = ::onResetPassword,
-            onSuccess = ::onResetPasswordSuccess,
+            function = { onResetPassword() },
+            onSuccess = { onResetPasswordSuccess() },
             onError = ::onResetPasswordError,
             dispatcher = dispatcher
         )
@@ -82,13 +86,8 @@ class ResetPasswordScreenViewModel(
         updateState { copy(isLoading = false, isDialogVisible = true) }
     }
 
-    private fun onResetPasswordError(errorState: ErrorState) {
-        updateState {
-            copy(
-                isLoading = false,
-                errorMessage = mapErrorToMessage(errorState)
-            )
-        }
+    private fun onResetPasswordError(throwable: Throwable) {
+        updateState { copy(isLoading = false,errorMessage = mapErrorMessage(throwable)) }
     }
 
     private fun checkResetButtonEnabled() {
@@ -102,6 +101,13 @@ class ResetPasswordScreenViewModel(
                 else null,
                 isResetEnabled = isPasswordsMatch && isPasswordSecure
             )
+        }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource{
+        return when(throwable){
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
 }

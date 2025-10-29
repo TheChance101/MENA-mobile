@@ -11,17 +11,24 @@ import mena.identity_presentation.generated.resources.edit_location_successfully
 import mena.identity_presentation.generated.resources.error
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
+import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.error.handleLocationException
 import net.thechance.mena.identity.presentation.mapper.createNavigateToMapEffect
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toAddressInput
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
-import net.thechance.mena.identity.presentation.utils.isSaveEnabled
+import net.thechance.mena.identity.presentation.util.isSaveEnabled
+import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -48,11 +55,23 @@ class AddEditLocationScreenViewModel(
         if (addressType == state.value.addressUIState.addressType) return
 
         if (addressType !is AddressType.Other) {
-            updateState { copy(addressUIState.copy(addressType = addressType, otherAddressType = "" ))}
-        }
-        else{
-            updateState { copy(addressUIState.copy(addressType = AddressType.Other(addressUIState.otherAddressType?:""),
-                otherAddressType = addressUIState.otherAddressType ))}
+            updateState {
+                copy(
+                    addressUIState.copy(
+                        addressType = addressType,
+                        otherAddressType = ""
+                    )
+                )
+            }
+        } else {
+            updateState {
+                copy(
+                    addressUIState.copy(
+                        addressType = AddressType.Other(addressUIState.otherAddressType ?: ""),
+                        otherAddressType = addressUIState.otherAddressType
+                    )
+                )
+            }
         }
         changeIsSaveEnabled()
 
@@ -62,7 +81,7 @@ class AddEditLocationScreenViewModel(
         updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
             function = ::saveAddress,
-            onSuccess = ::onSaveAddressSuccess,
+            onSuccess = { onSaveAddressSuccess() },
             onError = ::onSaveAddressError,
             dispatcher = dispatcher
         )
@@ -118,7 +137,8 @@ class AddEditLocationScreenViewModel(
     private fun onSaveAddressSuccess() {
         updateState { copy(isLoading = false) }
         val isEditMode = state.value.addressUIState.addressID != null
-        val successMessage = if (isEditMode) Res.string.edit_location_successfully else Res.string.add_location_successfully
+        val successMessage =
+            if (isEditMode) Res.string.edit_location_successfully else Res.string.add_location_successfully
         val snackBarState = SnackBarUiState(
             isVisible = true,
             snackBarType = SnackBarType.SUCCESS,
@@ -131,17 +151,11 @@ class AddEditLocationScreenViewModel(
         updateAddressState(newAddress, false)
     }
 
-    private fun onSaveAddressError(errorState: ErrorState) {
-        updateState {
-            copy(
-                isLoading = false,
-                errorMessage = mapErrorToMessage(errorState)
-            )
-        }
+    private fun onSaveAddressError(throwable: Throwable) {
         val snackBarState = SnackBarUiState(
             isVisible = true,
             snackBarType = SnackBarType.ERROR,
-            message = Res.string.error
+            message = mapErrorMessage(throwable)
         )
         sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack(snackBarState))
     }
@@ -212,5 +226,13 @@ class AddEditLocationScreenViewModel(
     private fun changeIsSaveEnabled() {
         val isEnabled = state.value.isSaveEnabled()
         updateState { copy(isSaveEnabled = isEnabled) }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
+        }
     }
 }

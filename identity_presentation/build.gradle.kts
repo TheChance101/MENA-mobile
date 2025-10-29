@@ -72,6 +72,11 @@ kotlin {
             // maps
             implementation(libs.maplibre.compose)
             implementation(libs.kotlinx.datetime)
+
+            //permission
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.compose)
+
         }
     }
 }

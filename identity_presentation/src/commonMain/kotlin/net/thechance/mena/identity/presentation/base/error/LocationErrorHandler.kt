@@ -8,13 +8,12 @@ import net.thechance.mena.identity.domain.exception.UnableToFindLocationExceptio
 
 fun handleLocationException(
     exception: LocationException,
-    onError: (LocationErrorState) -> Unit,
-) {
-    when (exception) {
-        is UnableToFindLocationException -> onError(LocationErrorState.UnableToFindLocation)
-        is CannotOpenSettingsException -> onError(LocationErrorState.FailedToOpenSettings)
-        is FailedToRequestPermissionException -> onError(LocationErrorState.FailedToRequestPermission)
-        is AddressNotFoundException -> onError(LocationErrorState.AddressNotFound)
-        else -> onError(LocationErrorState.SomethingWentWrong(exception.message))
+): LocationErrorState {
+    return when (exception) {
+        is UnableToFindLocationException -> LocationErrorState.UnableToFindLocation
+        is CannotOpenSettingsException -> LocationErrorState.FailedToOpenSettings
+        is FailedToRequestPermissionException -> LocationErrorState.FailedToRequestPermission
+        is AddressNotFoundException -> LocationErrorState.AddressNotFound
+        else -> LocationErrorState.SomethingWentWrong(exception.message)
     }
 }

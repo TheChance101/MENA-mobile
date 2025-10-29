@@ -24,10 +24,10 @@ import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
-import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -38,36 +38,35 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Composable
-fun MessageLayout(
-    message: MessageUiState,
+fun ImageMessagesLayout(
+    messages: List<MessageUiState>,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
-    onFailClick: () -> Unit = {},
-    onMessageClick: () -> Unit = {},
-    onMessageImageClick: (MessageUiState, Int) -> Unit,
+    onFailClick: (MessageUiState) -> Unit = {},
+    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
 ) {
     val messageBackground =
-        if (message.isMine) Theme.colorScheme.background.surfaceLow
+        if (messages.last().isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
-    val messagePaddingStart = if (message.isMine)
+    val messagePaddingStart = if (messages.last().isMine)
         Theme.spacing._24
     else
         Theme.spacing._8
 
-    val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
-    val maxRadius = if (message.content is MessageContent.Text) Theme.radius.md else Theme.radius.lg
+    val messagePaddingEnd = if (messages.last().isMine) 0.dp else Theme.spacing._8
+    val maxRadius = Theme.radius.lg
 
-    val messageShape = if (message.isMine && isMarkedLastInSeries)
+    val messageShape = if (messages.last().isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
             bottomStart = maxRadius,
             bottomEnd = Theme.radius.xxs
         )
-    else if (!message.isMine && isMarkedLastInSeries)
+    else if (!messages.last().isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
@@ -75,16 +74,15 @@ fun MessageLayout(
             bottomEnd = maxRadius
         )
     else
-        RoundedCornerShape(size = Theme.radius.md)
+        RoundedCornerShape(size = maxRadius)
 
-    val messageInfoAlignment = if (message.isMine)
+    val messageInfoAlignment = if (messages.last().isMine)
         Alignment.Start
     else
         Alignment.End
-    val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
+    val messageAlignment = if (messages.last().isMine) Alignment.End else Alignment.Start
 
-    val verticalPadding =
-        if (message.content is MessageContent.Text) Theme.spacing._8 else Theme.spacing._4
+    val verticalPadding = Theme.spacing._4
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
@@ -94,7 +92,7 @@ fun MessageLayout(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
-            if (!message.isMine) {
+            if (!messages.last().isMine) {
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
@@ -117,7 +115,6 @@ fun MessageLayout(
                 modifier = Modifier
                     .padding(start = messagePaddingStart, end = messagePaddingEnd)
                     .clip(messageShape)
-                    .noHoverClickable(onClick = onMessageClick)
                     .background(
                         color = messageBackground,
                         shape = messageShape
@@ -127,25 +124,38 @@ fun MessageLayout(
                         vertical = Theme.spacing._4
                     )
             ) {
-                MessageContent(
-                    messageContent = message.content,
-                    shape = messageShape,
-                    onImageClick = { index ->
-                        onMessageImageClick(message, index)
+
+                val imageDataList = messages.map { imageData ->
+                    when (imageData.content) {
+                        is MessageContent.Image -> {
+                            val images = imageData.content.data
+                                when (images) {
+                                    is ImageData.ImageUrl -> images.url
+                                    is ImageData.ImageByteArray -> images.byteArray
+                                }
+
+                        }
+                        is MessageContent.Text -> return@Column
                     }
+                }
+
+                ImageMessageContent(
+                    images = imageDataList,
+                    modifier = Modifier.size(156.dp, 162.dp).clip(messageShape),
+                    onImageClick = { index -> onMessageImageClick(messages, index) }
                 )
             }
 
         }
         AnimatedVisibility(
-            visible = showMessageInfo || isMarkedLastInSeries,
+            visible = showMessageInfo,
             modifier = Modifier.align(messageInfoAlignment)
         ) {
             MessageInfo(
-                messageTime = message.sendTime,
-                messageStatus = message.status,
-                messageIsMine = message.isMine,
-                onFailClick = onFailClick,
+                messageTime = messages.last().sendTime,
+                messageStatus = messages.last().status,
+                messageIsMine = messages.last().isMine,
+                onFailClick = { onFailClick(messages.last()) },
                 modifier = Modifier
                     .align(messageInfoAlignment)
                     .padding(start = messagePaddingStart, end = messagePaddingEnd)
@@ -161,15 +171,15 @@ private fun PreviewBaseMessageLayout() {
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            MessageLayout(
-                message = MessageUiState(
+            ImageMessagesLayout(
+                messages = listOf(MessageUiState(
                     Uuid.random(),
                     Uuid.random(),
                     sendTime = LocalDateTime.now(),
                     status = MessageStatus.READ,
                     isMine = false,
                     content = MessageContent.Text("Good Morning!")
-                ),
+                )),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true,
                 onMessageImageClick = { message,index -> }
