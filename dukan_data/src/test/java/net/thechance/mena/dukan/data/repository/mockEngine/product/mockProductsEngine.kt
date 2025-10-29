@@ -70,7 +70,7 @@ fun createProductHttpClient(
             "/dukan/product/create" -> createResponse?.invoke(this)
                 ?: defaultCreateProductResponse()
 
-            "/dukan/product/shelf-123" -> paginatedResponse?.invoke(this)
+            "/dukan/product" -> paginatedResponse?.invoke(this)
                 ?: defaultPaginatedProductResponse()
 
             "/dukan/product/images/$createdProductResponseId" -> uploadImagesResponse?.invoke(this)
