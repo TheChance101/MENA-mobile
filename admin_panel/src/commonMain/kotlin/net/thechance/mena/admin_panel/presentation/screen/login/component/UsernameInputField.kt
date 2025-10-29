@@ -20,8 +20,9 @@ import org.jetbrains.compose.resources.stringResource
 fun UsernameInputField(
     username: String,
     onChangeValue: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column{
+    Column(modifier = modifier) {
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._4),
             text = stringResource(Res.string.username),

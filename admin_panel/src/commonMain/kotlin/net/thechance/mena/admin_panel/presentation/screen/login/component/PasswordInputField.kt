@@ -28,8 +28,9 @@ fun PasswordInputField(
     isPasswordVisible: Boolean,
     onVisiblePasswordBtnClicked: () -> Unit,
     onChangeValue: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column{
+    Column(modifier = modifier) {
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._4),
             text = stringResource(Res.string.password),
