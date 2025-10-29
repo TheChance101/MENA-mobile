@@ -25,8 +25,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -366,7 +368,7 @@ private fun UsersReact(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._24)
     ) {
@@ -422,7 +424,7 @@ private fun ReActIcon(
             modifier = Modifier
                 .padding(bottom = Theme.spacing._8)
                 .scale(scale.value)
-                .noRippleClickable (enabled = isClickEnabled){
+                .noRippleClickable(enabled = isClickEnabled) {
                     onClick()
                     scope.launch {
                         scale.animateTo(1.4f, tween(200))
