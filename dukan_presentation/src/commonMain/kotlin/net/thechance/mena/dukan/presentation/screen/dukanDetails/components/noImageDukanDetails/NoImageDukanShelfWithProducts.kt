@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
-import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.product.NoImageDukanProductAction
+import net.thechance.mena.dukan.presentation.component.product.ProductCard
+import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
@@ -25,7 +25,6 @@ fun NoImageDukanShelfWithProducts(
     listener: DukanDetailsInteractionListener,
     dukanColor: Long,
 ) {
-    val isAddToCartVisible = false // TODO: Remove when implement Cart
     Column(
         Modifier.padding(horizontal = Theme.spacing._16)
             .padding(top = Theme.spacing._16)
@@ -49,15 +48,14 @@ fun NoImageDukanShelfWithProducts(
                 productDescription = product.description,
                 productPrice = product.price,
                 productAction = {
-                    if (isAddToCartVisible) {
-                        NoImageDukanProductAction(
-                            inCartQuantity = product.inCartQuantity,
-                            dukanColor = dukanColor,
-                            onAddToCartClick = { listener.onAddToCartClicked(product.id) },
-                            onPlusClick = { listener.onPlusClicked(product.id)},
-                            onMinusClick = { listener.onMinusClicked(product.id)}
-                        )
-                    }
+                    NoImageDukanProductAction(
+                        inCartQuantity = product.inCartQuantity,
+                        showProductQuantity = product.showProductQuantity,
+                        dukanColor = dukanColor,
+                        onAddToCartClick = { listener.onAddToCartClicked(product.id) },
+                        onPlusClick = { listener.onPlusClicked(product.id) },
+                        onMinusClick = { listener.onMinusClicked(product.id) }
+                    )
                 },
                 modifier = Modifier.padding(top = topPadding)
             )

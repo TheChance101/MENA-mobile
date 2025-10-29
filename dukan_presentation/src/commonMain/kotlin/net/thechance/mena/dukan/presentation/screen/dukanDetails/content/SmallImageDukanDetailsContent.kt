@@ -24,8 +24,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanIconButton
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelvesContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanImageAndTitle
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelvesContent
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
@@ -44,10 +44,13 @@ fun SmallImageDukanDetailsContent(
 
     Scaffold(
         topBar = {
-            SmallImageDukanAppBar(listener)
+            SmallImageDukanAppBar(
+                isBadgeVisible = true,
+                listener = listener
+            )
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
@@ -95,6 +98,7 @@ fun SmallImageDukanDetailsContent(
 
 @Composable
 private fun SmallImageDukanAppBar(
+    isBadgeVisible: Boolean,
     listener: DukanDetailsInteractionListener
 ) {
     AppBar(
@@ -109,7 +113,7 @@ private fun SmallImageDukanAppBar(
         trailingContent = {
             AppBarOptionContainer(
                 // when cart contains products
-                isBadgeVisible = true,
+                isBadgeVisible = isBadgeVisible,
                 onClick = listener::onCartClicked
             ) {
                 Icon(

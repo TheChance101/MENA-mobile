@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_icon
@@ -23,6 +24,7 @@ import mena.dukan_presentation.generated.resources.add_shopping_basket
 import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import mena.dukan_presentation.generated.resources.remove_01
 import mena.dukan_presentation.generated.resources.remove_product
+import mena.dukan_presentation.generated.resources.wide_image_shoppingcart
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -33,28 +35,31 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SmallImageDukanProductAction(
+fun SmallAndWideImageDukanProductAction(
+    showProductQuantity: Boolean,
     inCartQuantity: Int,
     onAddToCartClick: () -> Unit,
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
+    cartIcon: Painter,
     cartColor: Color? = null
 ) {
 
     AnimatedContent(
-        targetState = inCartQuantity > 0,
+        targetState = showProductQuantity,
         transitionSpec = { fadeTransitionSpec() },
         label = "CartToQuantity"
     ) {
         if (it) {
             SetProductQuantity(
+                inCartQuantity = inCartQuantity,
                 onPlusClick = onPlusClick,
                 onMinusClick = onMinusClick,
-                cartColor = cartColor
             )
         } else {
             ProductCart(
                 cartColor = cartColor,
+                cartIcon = cartIcon,
                 onClick = onAddToCartClick
             )
         }
@@ -64,11 +69,11 @@ fun SmallImageDukanProductAction(
 @Composable
 private fun ProductCart(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    cartIcon : Painter,
     cartColor: Color? = null
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .size(32.dp)
             .clip(RoundedCornerShape(size = Theme.radius.full))
             .background(
@@ -78,9 +83,9 @@ private fun ProductCart(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            painter = painterResource(Res.drawable.ic_add_shopping_basket),
+            painter = cartIcon,
             contentDescription = stringResource(Res.string.add_shopping_basket),
-            modifier = modifier
+            modifier = Modifier
                 .size(16.dp)
         )
     }
@@ -90,11 +95,10 @@ private fun ProductCart(
 private fun SetProductQuantity(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    cartColor: Color? = null
+    inCartQuantity: Int,
 ) {
     Row(
-        modifier = modifier.background(
+        modifier = Modifier.background(
             color = Theme.colorScheme.background.surface,
             shape = RoundedCornerShape(size = Theme.radius.full)
         ).padding(vertical = Theme.spacing._2, horizontal = Theme.spacing._2),
@@ -104,23 +108,23 @@ private fun SetProductQuantity(
         Icon(
             painter = painterResource(Res.drawable.remove_01),
             contentDescription = stringResource(Res.string.remove_product),
-            tint = cartColor ?: Theme.colorScheme.primary.primary,
-            modifier = modifier
+            tint =Theme.colorScheme.primary.primary,
+            modifier = Modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(color = Theme.colorScheme.background.surfaceLow)
                 .clickable(onClick = onMinusClick,indication = null, interactionSource = MutableInteractionSource())
                 .padding(Theme.spacing._4 + Theme.spacing._2)
         )
         Text(
-            text = "01",
+            text = "$inCartQuantity",
             style = Theme.typography.label.small,
-            color = cartColor ?: Theme.colorScheme.primary.primary,
+            color = Theme.colorScheme.primary.primary,
         )
         Icon(
             painter = painterResource(Res.drawable.add_icon),
             contentDescription = stringResource(Res.string.add_product),
-            tint = cartColor ?: Theme.colorScheme.primary.primary,
-            modifier = modifier
+            tint = Theme.colorScheme.primary.primary,
+            modifier = Modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(color = Theme.colorScheme.background.surfaceLow)
                 .clickable(onClick = onPlusClick,indication = null, interactionSource = MutableInteractionSource())
@@ -134,9 +138,27 @@ private fun SetProductQuantity(
 @Composable
 private fun ProductActionIconSmallImageDukanPreview() {
     MenaTheme {
-        SmallImageDukanProductAction(
+        SmallAndWideImageDukanProductAction(
+            showProductQuantity = false,
             inCartQuantity = 0,
             cartColor = Color(0xFFFB5B5D),
+            cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
+            onAddToCartClick = {},
+            onPlusClick = {},
+            onMinusClick = {}
+        )
+    }
+}
+
+@Preview()
+@Composable
+private fun ProductActionIconWideImageDukanPreview() {
+    MenaTheme {
+        SmallAndWideImageDukanProductAction(
+            showProductQuantity = false,
+            inCartQuantity = 0,
+            cartColor = Color(0xFFFB5B5D),
+            cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
             onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}
@@ -148,9 +170,11 @@ private fun ProductActionIconSmallImageDukanPreview() {
 @Composable
 private fun ProductActionHasQuantitySmallImageDukanPreview() {
     MenaTheme {
-        SmallImageDukanProductAction(
+        SmallAndWideImageDukanProductAction(
+            showProductQuantity = true,
             inCartQuantity = 1,
             cartColor = Color(0xFFFB5B5D),
+            cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
             onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}

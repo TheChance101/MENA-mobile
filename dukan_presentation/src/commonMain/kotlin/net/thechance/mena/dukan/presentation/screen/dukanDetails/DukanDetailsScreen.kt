@@ -37,7 +37,9 @@ fun DukanDetailsScreen(
 
             }
 
-            is DukanDetailsEffects.NavigateToCartScreen -> {}
+            is DukanDetailsEffects.NavigateToCartScreen -> {
+                // navigate to cart screen
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.FlowPreview
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
@@ -26,34 +25,23 @@ fun NoImageDukanDetailsContent(
         topBar = {
             NoImageDukanAppBar(
                 state = state.dukanInfo,
+                isBadgeVisible = true,
                 listener = listener
             )
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
             )
             return@Scaffold
         }
-        NoImageDukanContent(
+        NoImageDukanShelvesContent(
             state = state,
             listener = listener,
         )
     }
-}
-
-@OptIn(FlowPreview::class)
-@Composable
-private fun NoImageDukanContent(
-    state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener,
-) {
-    NoImageDukanShelvesContent(
-        state,
-        listener,
-    )
 }
 
 @Preview

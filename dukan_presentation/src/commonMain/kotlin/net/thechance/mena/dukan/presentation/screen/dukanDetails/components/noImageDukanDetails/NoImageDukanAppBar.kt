@@ -35,6 +35,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun NoImageDukanAppBar(
     state: DukanInfo,
+    isBadgeVisible: Boolean,
     listener: DukanDetailsInteractionListener
 ) {
     Row(
@@ -74,7 +75,7 @@ fun NoImageDukanAppBar(
                 painter = painterResource(Res.drawable.ic_shopping_basket),
                 contentDescription = stringResource(Res.string.shopping_basket_icon),
                 // when cart contains products
-                isBadgeVisible = true,
+                isBadgeVisible = isBadgeVisible ,
                 onClick = {listener.onCartClicked()}
             )
         }
@@ -107,6 +108,7 @@ private fun AppBarNoImageDukanPreview() {
     MenaTheme {
         NoImageDukanAppBar(
             state = fakeDukanInfo,
+            isBadgeVisible = true,
             listener = PreviewDukanDetailsInteractionListener
         )
     }

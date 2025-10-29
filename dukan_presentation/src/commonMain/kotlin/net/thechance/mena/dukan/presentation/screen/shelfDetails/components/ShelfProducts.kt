@@ -13,15 +13,18 @@ import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
-import net.thechance.mena.dukan.presentation.component.product.SmallImageDukanProductAction
+import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.product.NoImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState.Style
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ShelfProducts(
@@ -32,7 +35,6 @@ fun ShelfProducts(
     val productCardBackground = if (dukanStyle == Style.NO_IMAGE) null
     else Theme.colorScheme.background.surfaceLow
 
-    val isAddToCartVisible = false // TODO: Remove when implement the Cart
 
     val products = state.productsShelf.collectAsLazyPagingItems()
     AnimatedContent(
@@ -44,7 +46,6 @@ fun ShelfProducts(
             LoadState.Loading -> LoadingVerticalList { LoadingProductCard() }
             is LoadState.NotLoading -> ProductCardLoaded(
                 productCardBackground = productCardBackground,
-                isAddToCartVisible = isAddToCartVisible,
                 products = products,
                 listener = listener,
                 state = state
@@ -57,7 +58,6 @@ fun ShelfProducts(
 @Composable
 private fun ProductCardLoaded(
     productCardBackground : Color?,
-    isAddToCartVisible: Boolean,
     products: LazyPagingItems<ShelfDetailsUiState.ProductUiState>,
     listener: ShelfDetailsInteractionListener,
     state : ShelfDetailsUiState
@@ -79,7 +79,6 @@ private fun ProductCardLoaded(
                     productPrice = product.price,
                     productAction = {
                         CartProductAction(
-                            isVisible = isAddToCartVisible,
                             state = state,
                             listener = listener,
                             product = product
@@ -92,12 +91,10 @@ private fun ProductCardLoaded(
 }
 @Composable
 private fun CartProductAction(
-    isVisible: Boolean,
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    if (isVisible.not()) return
 
     AnimatedContent(
         targetState = state.dukanStyle,
@@ -120,28 +117,26 @@ private fun GetProductIconAction(
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    val lazyItems = state.productsShelf.collectAsLazyPagingItems()
-    val inCartQuantity = lazyItems.itemSnapshotList.items
-        .firstOrNull { it.id == product.id }
-        ?.inCartQuantity ?: 0
 
     when (style) {
         Style.SMALL_IMAGE -> {
-            SmallImageDukanProductAction(
-                inCartQuantity = inCartQuantity,
+            SmallAndWideImageDukanProductAction(
+                showProductQuantity = product.showProductQuantity,
+                inCartQuantity = product.inCartQuantity,
+                cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
                 onAddToCartClick = { listener.onAddToCartClicked(product.id) },
-                onPlusClick = { },
-                onMinusClick = { },
-                cartColor = Color(state.dukancolor)
+                onPlusClick = { listener.onPlusClicked(product.id)},
+                onMinusClick = { listener.onMinusClicked(product.id)},
             )
         }
 
         else -> {
             NoImageDukanProductAction(
-                inCartQuantity = inCartQuantity,
+                showProductQuantity = product.showProductQuantity,
+                inCartQuantity = product.inCartQuantity,
                 onAddToCartClick = { listener.onAddToCartClicked(product.id) },
-                onPlusClick = { },
-                onMinusClick = { },
+                onPlusClick = { listener.onPlusClicked(product.id)},
+                onMinusClick = { listener.onMinusClicked(product.id)},
                 dukanColor = state.dukancolor,
             )
         }

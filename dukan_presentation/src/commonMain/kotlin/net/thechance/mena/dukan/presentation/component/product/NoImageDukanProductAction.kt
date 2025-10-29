@@ -32,7 +32,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NoImageDukanProductAction(
-    inCartQuantity: Int,
+    showProductQuantity : Boolean,
+    inCartQuantity : Int,
     dukanColor: Long,
     onAddToCartClick: () -> Unit,
     onPlusClick: () -> Unit,
@@ -40,7 +41,7 @@ fun NoImageDukanProductAction(
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
-        targetState = inCartQuantity > 0,
+        targetState = showProductQuantity,
         transitionSpec = { fadeTransitionSpec() },
         label = "CartToQuantity"
     ) {
@@ -116,6 +117,7 @@ private fun ProductActionNoImageDukanPreview() {
     MenaTheme {
         NoImageDukanProductAction(
             inCartQuantity = 0,
+            showProductQuantity = false,
             dukanColor = 0xFFFB5B5D,
             onAddToCartClick = {},
             onPlusClick = {},
@@ -129,7 +131,8 @@ private fun ProductActionNoImageDukanPreview() {
 private fun ProductActionHasQuantityNoImageDukanPreview() {
     MenaTheme {
         NoImageDukanProductAction(
-            inCartQuantity = 1,
+            inCartQuantity = 20,
+            showProductQuantity = true,
             dukanColor = 0xFFFB5B5D,
             onAddToCartClick = {},
             onPlusClick = {},

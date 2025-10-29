@@ -72,7 +72,7 @@ fun WideImageDukanDetailsContent(
             }
             when(productShelf.loadState.refresh){
                 is LoadState.Loading -> { wideImageProductCardSkeletonGrid(productCount = 6) }
-                is LoadState.NotLoading -> { wideImageProductsGrid(productShelf) }
+                is LoadState.NotLoading -> { wideImageProductsGrid(listener, productShelf) }
                 is LoadState.Error -> {}
             }
         }

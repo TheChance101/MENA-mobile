@@ -40,6 +40,9 @@ fun ShelfDetailsScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
+            is ShelfDetailsEffects.NavigateToCart -> {
+                // navigate to cart screen
+            }
         }
     }
     ShelfDetailsContent(
@@ -97,10 +100,7 @@ private fun ShelfDetailsAppBar(
             AppBarOptionContainer(
                 // when the cart contains products
                 isBadgeVisible = false,
-                onClick = {
-                    //navigate to addToCartScreen
-                },
-                badgeColor = Theme.colorScheme.primary.primary
+                onClick = listener::onCartClicked
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
