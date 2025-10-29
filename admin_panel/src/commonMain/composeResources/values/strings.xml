@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="app_name">MENA Admin Panel</string>
+    <string name="mena">MENA</string>
+
+    <!-- Error Messages -->
+    <string name="unknown_error_title">Unknown error</string>
+    <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
+    <string name="retry">Re-try</string>
+    <string name="no_internet_title">Oops! It looks like you're offline.</string>
+    <string name="no_internet_content">Check your connection and try again</string>
+
+    <!-- Navigation -->
+    <string name="dukan_management">Dukan Management</string>
+    <string name="dukan_requests">Dukan Requests</string>
+    <string name="deposit">Deposit</string>
+    <string name="user_management">User Management</string>
+    <string name="log_out">Log Out</string>
+
+    <!-- Users Management -->
+    <string name="users_management">Users management</string>
+    <string name="search_hint">Search by user name, phone number,...</string>
+
+    <!-- Table Headers -->
+    <string name="user_name">User name</string>
+    <string name="phone_number">Phone number</string>
+    <string name="last_login_date">Last login date</string>
+    <string name="last_visit_date">Last visit date</string>
+    <string name="status">Status</string>
+
+    <!-- User Status -->
+    <string name="active">Active</string>
+    <string name="blocked">Blocked</string>
+    <string name="block">Block</string>
+    <string name="activate">Activate</string>
+
+    <!-- Search -->
+    <string name="no_search_result">No search result!</string>
+    <string name="no_search_result_description">please try with another keyword.</string>
+
+    <!-- Dialogs -->
+    <string name="block_user">Block user</string>
+    <string name="block_user_confirmation_message">Are you sure you want to continue with blocking?</string>
+    <string name="cancel">Cancel</string>
 </resources>
