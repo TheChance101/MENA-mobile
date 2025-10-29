@@ -5,4 +5,5 @@
     <string name="unknown_error_title">خطأ غير معروف</string>
     <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
     <string name="retry">أعد المحاولة</string>
+    <string name="username">اسم المستخدم</string>
 </resources>
