@@ -19,6 +19,7 @@ import net.thechance.mena.faith.domain.usecase.QiblahBearingCalculatorUseCase
 import net.thechance.mena.faith.presentation.utils.AzimuthProvider
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -36,13 +37,17 @@ class CompassViewModelTest {
     private lateinit var useCase: QiblahBearingCalculatorUseCase
     private lateinit var azimuthProvider: AzimuthProvider
     private lateinit var locationService: LocationService
+    private lateinit var addressesRepository: AddressesRepository
+
 
     @BeforeTest
     fun setUp() {
         testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
+
         useCase = QiblahBearingCalculatorUseCase()
         azimuthProvider = mock(mode = MockMode.autofill)
+        addressesRepository = mock(mode = MockMode.autofill)
         locationService = mock(mode = MockMode.autofill)
     }
 

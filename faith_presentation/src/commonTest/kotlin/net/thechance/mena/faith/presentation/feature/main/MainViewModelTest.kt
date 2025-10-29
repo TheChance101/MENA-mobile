@@ -19,6 +19,7 @@ import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,6 +38,8 @@ class MainViewModelTest {
     private lateinit var viewModel: MainViewModel
     private lateinit var quranRepository: QuranRepository
     private lateinit var prayerTimeRepository: PrayerTimeRepository
+
+    private lateinit var addressesRepository: AddressesRepository
     private lateinit var locationService: LocationService
 
     @OptIn(ExperimentalTime::class)
@@ -44,11 +47,13 @@ class MainViewModelTest {
     fun setup() {
         quranRepository = mock(MockMode.autofill)
         prayerTimeRepository = mock(MockMode.autofill)
-        locationService = mock(MockMode.autofill)
+        addressesRepository = mock(MockMode.autofill)
 
         everySuspend { quranRepository.getLastAyahForTilawah() } returns fakeAyah
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
-        everySuspend { locationService.getActiveAddress() } returns fakeAddress
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        locationService = LocationService(addressesRepository)
 
         viewModel = MainViewModel(
             quranRepository = quranRepository,
