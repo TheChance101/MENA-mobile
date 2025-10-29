@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
@@ -48,7 +49,7 @@ fun ChatListItem(
                 TextMessageLayout(
                     message = markedMessage,
                     chatAvatarUrl = chatAvatarUrl,
-                    showMessageInfo = markedMessage.isVisibleMessageInfo,
+                    showMessageInfo = (markedMessage.isVisibleMessageInfo || markedMessage.isLastInSeries || markedMessage.status == MessageStatus.FAILED),
                     isMarkedLastInSeries = markedMessage.isLastInSeries,
                     onMessageClick = { onMessageClick(markedMessage.id) },
                     onFailClick = { onFailedMessageClick(markedMessage) },
@@ -65,7 +66,7 @@ fun ChatListItem(
                 ImageMessagesLayout(
                     messages = markedMessage,
                     chatAvatarUrl = chatAvatarUrl,
-                    showMessageInfo = markedMessage.last().isVisibleMessageInfo,
+                    showMessageInfo = (markedMessage.last().isVisibleMessageInfo || markedMessage.last().isLastInSeries || markedMessage.last().status == MessageStatus.FAILED),
                     isMarkedLastInSeries = markedMessage.last().isLastInSeries,
                     onMessageImageClick = onMessageImageClick,
                     onFailClick = onFailedMessageClick,

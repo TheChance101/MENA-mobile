@@ -85,10 +85,9 @@ fun List<MessageUiState>.toGroupedMessagesChatList(): List<ChatListItem> {
     }
 
     for (msg in this) {
-        println()
         if (msg.content is MessageContent.Image) {
             val last = tempImages.lastOrNull()
-            if (last != null && last.isMine == msg.isMine && last.status == msg.status && msg.status != MessageStatus.FAILED) {
+            if (last != null && last.isMine == msg.isMine && last.status == msg.status && msg.status != MessageStatus.FAILED && msg.status != MessageStatus.LOADING) {
                 tempImages.add(msg)
             } else {
                 groupAndClear()

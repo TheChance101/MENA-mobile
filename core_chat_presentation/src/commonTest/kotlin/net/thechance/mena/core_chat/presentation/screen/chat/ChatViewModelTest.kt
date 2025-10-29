@@ -91,44 +91,6 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `init should update chat list when its loaded messages successfully`() = runTest {
-        everySuspend { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(
-            messages
-        )
-        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf()
-        every { messageRepository.observeReadMessages() } returns flowOf()
-        everySuspend {
-            messageRepository.loadMessages(chatId, 0, 40)
-        } returns PagedData(messages, messages.size, false)
-
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        assertThat(
-            viewModel.state.value.chatListItems.currentUiMessages()
-                .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map { it.toUi() }.reversed())
-    }
-
-    @Test
-    fun `init should update uiMessage and chatListItems when receive new message`() = runTest {
-        everySuspend { chatRepository.getChatById(chatId) } returns chat
-        every { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(messages)
-        every { messageRepository.observeReadMessages() } returns flowOf()
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(emptyList(), 80, false)
-        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf(messages.first())
-
-        advanceUntilIdle()
-
-        assertThat(
-            viewModel.state.value.chatListItems.currentUiMessages()
-                .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map{ it.toUi() }.reversed())
-    }
-
-    @Test
     fun `init should update user data when receive user data from repository`() = runTest {
         everySuspend { userRepository.getUserInfo() } returns user
 

@@ -74,7 +74,7 @@ fun ImageMessagesLayout(
             bottomEnd = maxRadius
         )
     else
-        RoundedCornerShape(size = Theme.radius.md)
+        RoundedCornerShape(size = maxRadius)
 
     val messageInfoAlignment = if (messages.last().isMine)
         Alignment.Start
@@ -148,7 +148,7 @@ fun ImageMessagesLayout(
 
         }
         AnimatedVisibility(
-            visible = showMessageInfo || isMarkedLastInSeries,
+            visible = showMessageInfo,
             modifier = Modifier.align(messageInfoAlignment)
         ) {
             MessageInfo(

@@ -77,7 +77,7 @@ fun TextMessageLayout(
             bottomEnd = maxRadius
         )
     else
-        RoundedCornerShape(size = Theme.radius.md)
+        RoundedCornerShape(size = maxRadius)
 
     val messageInfoAlignment = if (message.isMine)
         Alignment.Start
@@ -134,7 +134,7 @@ fun TextMessageLayout(
 
         }
         AnimatedVisibility(
-            visible = showMessageInfo || isMarkedLastInSeries,
+            visible = showMessageInfo,
             modifier = Modifier.align(messageInfoAlignment)
         ) {
             MessageInfo(
