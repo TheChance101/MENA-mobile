@@ -251,4 +251,9 @@ class ManageDukanViewModel(
             )
         }
     }
+
+    fun onEditShelfName(message: StringResource, snackBarType: SnackBarType) {
+        showSnackBar(message, snackBarType)
+        loadShelves()
+    }
 }

@@ -71,7 +71,10 @@ class HomeViewModel(
         val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
         updateState {
             it.copy(
-                chats = listOf(newChatSummary) + it.chats.filter { it.id != newChatSummary.id }
+                chats = it.chats.map { chatSummary ->
+                    if (chatSummary.id == newChatSummary.id) newChatSummary
+                    else chatSummary
+                }
             )
         }
     }

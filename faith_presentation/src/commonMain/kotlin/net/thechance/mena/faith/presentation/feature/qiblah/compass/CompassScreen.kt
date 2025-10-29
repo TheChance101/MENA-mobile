@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -98,7 +100,7 @@ private fun Content(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Theme.colorScheme.background.surface)
+                .background(color = Theme.colorScheme.background.surface),
         ) {
 
             IslamicPattern(
@@ -108,7 +110,8 @@ private fun Content(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16),
+                    .padding(horizontal = Theme.spacing._16)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -209,21 +212,21 @@ private fun TextAngleToQiblah(
         ) {
             Text(
                 text = qiblahDirection,
-                style = Theme.typography.title.small,
+                style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.End,
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = "°N",
-                style = Theme.typography.title.small,
+                text = " °N",
+                style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier.weight(1f)
             )
         }
         Text(
             text = stringResource(Res.string.device_angle_to_qiblah),
-            style = Theme.typography.title.small,
+            style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -234,7 +237,7 @@ private fun TextAngleToQiblah(
 private fun QiblahImage(qiblahDirection: Float, compassBearing: Float) {
     Box(
         modifier = Modifier
-            .size(270.dp)
+            .size(264.dp)
             .graphicsLayer {
                 rotationZ = compassBearing + qiblahDirection
             },

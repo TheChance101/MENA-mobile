@@ -132,17 +132,23 @@ private fun PrayerSection(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         PrayerTimesCard(prayerTimesUiState = uiState.prayerTimesUiState)
-        Text(
-            text = uiState.hijriDate,
-            color = Theme.colorScheme.shadeSecondary,
-            style = Theme.typography.label.extraSmall
-        )
-        SunriseTimeRow(
-            icon = painterResource(Res.drawable.ic_sunrise),
-            title = stringResource(Res.string.sunrise_time_label),
-            time = uiState.sunriseTime,
-            modifier = Modifier.padding(vertical = Theme.spacing._12)
-        )
+        if (uiState.hijriDate.isNotBlank()) {
+            Text(
+                text = uiState.hijriDate,
+                color = Theme.colorScheme.shadeSecondary,
+                style = Theme.typography.label.extraSmall
+            )
+        }
+
+        if (uiState.sunriseTime.isNotBlank()) {
+            SunriseTimeRow(
+                icon = painterResource(Res.drawable.ic_sunrise),
+                title = stringResource(Res.string.sunrise_time_label),
+                time = uiState.sunriseTime,
+                modifier = Modifier.padding(vertical = Theme.spacing._12)
+            )
+        }
+
         TilawahSection(
             tilawahUiState = uiState.tilawahUiState,
             onContinueTilawahClick = onContinueTilawahClick(uiState, listener),
