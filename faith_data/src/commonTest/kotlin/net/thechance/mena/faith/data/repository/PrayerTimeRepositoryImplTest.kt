@@ -31,7 +31,6 @@ class PrayerTimeRepositoryImplTest {
     @Test
     fun `getPrayerTimes should return list of PrayerTime when api service return valid data`() =
         runTest {
-            //Given
             everySuspend {
                 prayerTimeApiService.getPrayerTimes(
                     date = DATE,
@@ -42,20 +41,19 @@ class PrayerTimeRepositoryImplTest {
                 body = fakePrayerTimesDto,
                 successStatus = HttpStatusCode.OK
             )
-            //When
+
             val result = prayerTimeRepository.getPrayerTimes(
                 date = dateInstant,
                 location = Location(latitude = LAT, longitude = LONG),
                 timeZone = timeZone
             )
-            //Then
+
             assertThat(result).isEqualTo(fakePrayerTimes)
         }
 
     @Test
     fun `getPrayerTimes should throw NetworkException when error occur in parsing response body is null`() =
         runTest {
-            //Given
             everySuspend {
                 prayerTimeApiService.getPrayerTimes(
                     date = DATE,
@@ -66,7 +64,7 @@ class PrayerTimeRepositoryImplTest {
                 body = null,
                 successStatus = HttpStatusCode.OK
             )
-            //When & Then
+
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
@@ -79,7 +77,6 @@ class PrayerTimeRepositoryImplTest {
     @Test
     fun `getPrayerTimes should throw UnauthorizedException when status code is Unauthorized`() =
         runTest {
-            //Given
             everySuspend {
                 prayerTimeApiService.getPrayerTimes(
                     date = DATE,
@@ -87,7 +84,7 @@ class PrayerTimeRepositoryImplTest {
                     longitude = LONG
                 )
             } returns makeFailFakeResponse(errorStatus = HttpStatusCode.Unauthorized)
-            //When & Then
+
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
@@ -100,7 +97,6 @@ class PrayerTimeRepositoryImplTest {
     @Test
     fun `getPrayerTimes should throw NetworkException when status code is InternalServerError`() =
         runTest {
-            //Given
             everySuspend {
                 prayerTimeApiService.getPrayerTimes(
                     date = DATE,
@@ -108,7 +104,7 @@ class PrayerTimeRepositoryImplTest {
                     longitude = LONG
                 )
             } returns makeFailFakeResponse(errorStatus = HttpStatusCode.InternalServerError)
-            //When & Then
+
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
@@ -121,7 +117,6 @@ class PrayerTimeRepositoryImplTest {
     @Test
     fun `getPrayerTimes should throw UnknownException when status code is not valuable`() =
         runTest {
-            //Given
             everySuspend {
                 prayerTimeApiService.getPrayerTimes(
                     date = DATE,
@@ -129,7 +124,7 @@ class PrayerTimeRepositoryImplTest {
                     longitude = LONG
                 )
             } returns makeFailFakeResponse(errorStatus = HttpStatusCode.Forbidden)
-            //When & Then
+
             assertFailure {
                 prayerTimeRepository.getPrayerTimes(
                     date = dateInstant,
@@ -170,7 +165,7 @@ class PrayerTimeRepositoryImplTest {
         val timeZone = TimeZone.of("Africa/Cairo")
         const val LAT = 30.033333
         const val LONG = 31.233334
-        const val DATE = "10-10-2025"
+        const val DATE = "2025-10-10"
         val dateInstant = Instant.parse("2025-10-10T00:00:00Z") //10-10-2025 00:00
         val fakePrayerTimesDto = getFakePrayerTimesDto()
         val fakePrayerTimes: List<PrayerTime> = getPrayerTimesFakeData(timeZone = timeZone)

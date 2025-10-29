@@ -7,8 +7,8 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
-import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
@@ -26,16 +26,16 @@ import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
-import net.thechance.mena.trends.data.util.NetworkConstants.LIKE_REEL_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.PAGE_PARAMETER
-import net.thechance.mena.trends.data.util.NetworkConstants.PROFILE_REELS_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.REELS_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.REELS_FEED_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL
-import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_ENDPOINT
-import net.thechance.mena.trends.data.util.NetworkConstants.THUMBNAIL_MIME_TYPE
-import net.thechance.mena.trends.data.util.NetworkConstants.VIDEO
-import net.thechance.mena.trends.data.util.NetworkConstants.VIEW_REEL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.LIKE_REEL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.PAGE_PARAMETER
+import net.thechance.mena.trends.data.util.NetworkEndpoint.PROFILE_REELS_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.REELS_FEED_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.THUMBNAIL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.TRENDS_PATH
+import net.thechance.mena.trends.data.util.NetworkEndpoint.VIEW_REEL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL
+import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL_MIME_TYPE
+import net.thechance.mena.trends.data.util.NetworkKeys.VIDEO
 import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
@@ -57,7 +57,7 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun deleteReelById(id: String) {
         safeApiCall<Unit> {
-            networkClient.delete("$REELS_ENDPOINT/$id")
+            networkClient.delete("$TRENDS_PATH/$id")
         }
     }
 
@@ -88,7 +88,7 @@ internal class ReelsRepositoryImpl(
     ) {
         val request = UpdateReelRequestDTO(description, categoryIds)
         safeApiCall<Unit> {
-            networkClient.put("$REELS_ENDPOINT/$id") {
+            networkClient.patch("$TRENDS_PATH/$id") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
@@ -98,7 +98,7 @@ internal class ReelsRepositoryImpl(
     override suspend fun uploadReel(filePath: String, size: Long): String {
         return safeApiCall<UploadReelResponse> {
             val fileSource = videoFileHandler.readFile(filePath)
-            uploadClient.post(urlString = REELS_ENDPOINT) {
+            uploadClient.post(urlString = TRENDS_PATH) {
                 setBody(
                     createRequestBody(
                         key = VIDEO,
@@ -117,7 +117,7 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun uploadReelThumbnail(reelId: String, thumbnail: ByteArray) {
         safeApiCall<Unit> {
-            uploadClient.put(urlString = "$THUMBNAIL_ENDPOINT/${reelId}") {
+            uploadClient.patch(urlString = "$TRENDS_PATH/$reelId/$THUMBNAIL_ENDPOINT") {
                 setBody(
                     createRequestBody(
                         key = THUMBNAIL,
@@ -137,15 +137,21 @@ internal class ReelsRepositoryImpl(
         return videoFileHandler.extractVideoFrame(filePath, timeInMillis)
     }
 
-    override suspend fun toggleReelLike(reelId: String): Reel {
+    override suspend fun addReelLike(reelId: String): Reel {
         return safeApiCall<ReelDto> {
-            networkClient.post(urlString = "$LIKE_REEL_ENDPOINT/$reelId")
+            networkClient.post(urlString = "$TRENDS_PATH/$reelId/$LIKE_REEL_ENDPOINT")
         }.toEntity()
+    }
+
+    override suspend fun removeReelLike(reelId: String) {
+        return safeApiCall {
+            networkClient.delete(urlString = "$TRENDS_PATH/$reelId/$LIKE_REEL_ENDPOINT")
+        }
     }
 
     override suspend fun addReelView(reelId: String) {
         safeApiCall<Unit> {
-            networkClient.post(urlString = "$VIEW_REEL_ENDPOINT/$reelId")
+            networkClient.post(urlString = "$TRENDS_PATH/$reelId/$VIEW_REEL_ENDPOINT")
         }
     }
 

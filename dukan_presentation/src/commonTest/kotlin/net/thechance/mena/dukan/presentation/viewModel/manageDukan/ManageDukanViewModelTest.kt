@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
-import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
@@ -12,7 +11,6 @@ import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -23,6 +21,7 @@ import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
+import mena.dukan_presentation.generated.resources.edit_shelf_successfully
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
@@ -178,7 +177,7 @@ class ManageDukanViewModelTest {
 
     @Test
     fun `onBackButtonClicked SHOULD emit NavigateBack effect`() = runTest {
-        manageDukanViewModel.onBackButtonClicked()
+        manageDukanViewModel.onBackClicked()
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateBack, awaitItem())
@@ -228,7 +227,7 @@ class ManageDukanViewModelTest {
     fun `onProductClick SHOULD emit NavigateToProductDetails effect`() = runTest {
         val product = fakeProducts().first().toUiState()
 
-        manageDukanViewModel.onProductClick(product)
+        manageDukanViewModel.onProductClicked(product)
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateToProductDetails, awaitItem())
@@ -418,6 +417,16 @@ class ManageDukanViewModelTest {
             assertEquals(0, state.totalProducts)
         }
 
+    @Test
+    fun `onEditShelfName SHOULD update shelf name`() = runTest {
+        manageDukanViewModel.onEditShelfName(
+            Res.string.edit_shelf_successfully,
+            SnackBarType.SUCCESS
+        )
+
+        val state = manageDukanViewModel.state.value
+        assertNotNull(state.snackBarState)
+    }
 
     @Test
     fun `onShelfSelected SHOULD handle empty products gracefully`() = runTest {
@@ -495,7 +504,7 @@ class ManageDukanViewModelTest {
         runTest {
             manageDukanViewModel.updateState {
                 copy(
-                    products = flowOf(PagingData.from(listOf(fakeProducts().first().toUiState())))
+                    totalProducts = 1
                 )
             }
 

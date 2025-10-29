@@ -6,7 +6,6 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
 
 class ProfileScreenViewModel(
@@ -47,13 +46,8 @@ class ProfileScreenViewModel(
         }
     }
 
-    private fun onUserInfoError(errorState: ErrorState) {
-        updateState {
-            copy(
-                isLoading = false,
-                errorMessage = null
-            )
-        }
+    private fun onUserInfoError(throwable: Throwable) {
+        updateState { copy(isLoading = false, errorMessage = null) }
     }
 
     override fun onEditProfileInfoClicked() =

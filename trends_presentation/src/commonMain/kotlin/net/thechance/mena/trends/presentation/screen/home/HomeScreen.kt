@@ -166,7 +166,7 @@ private fun AddTrendFAB(
 @Composable
 private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
-    onClickLike: (reelId: String) -> Unit,
+    onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
 ) {
     LazyColumn(
@@ -179,7 +179,7 @@ private fun ReelsListSection(
         items(reels.itemSnapshotList.items) { reel ->
             FeedReelCard(
                 reel = reel,
-                onLikeClick = { onClickLike(reel.id) },
+                onLikeClick = { onClickLike(reel.id, reel.isLiked) },
                 onReelClick = { onClickReel(reel.id) }
             )
         }
@@ -227,7 +227,7 @@ private fun HomeScreenPreview() {
             HomeScreenContent(
                 state = HomeScreenState(),
                 listener = object : HomeInteractionListener {
-                    override fun onClickLike(reelId: String) {}
+                    override fun onClickLike(reelId: String, isLiked: Boolean) {}
                     override fun onClickAddReel() {}
                     override fun onClickEditTags() {}
                     override fun onClickManageMyTrends() {}

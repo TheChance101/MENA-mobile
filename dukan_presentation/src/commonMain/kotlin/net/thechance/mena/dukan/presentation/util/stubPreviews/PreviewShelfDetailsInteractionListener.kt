@@ -4,5 +4,5 @@ import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetails
 
 object PreviewShelfDetailsInteractionListener : ShelfDetailsInteractionListener {
     override fun onBackClicked() {}
-    override fun onAddToCartClick(productId: String) {}
+    override fun onAddToCartClicked(productId: String) {}
 }

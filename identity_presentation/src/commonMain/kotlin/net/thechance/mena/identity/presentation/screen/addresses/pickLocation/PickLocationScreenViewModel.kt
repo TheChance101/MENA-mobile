@@ -7,15 +7,19 @@ import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_location_is_turned_off
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.base.error.handleLocationException
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -81,14 +85,8 @@ class PickLocationScreenViewModel(
         changeIsConfirmEnabled()
     }
 
-    private fun onLocationNameError(errorState: ErrorState) {
-        updateState {
-            copy(
-                errorMessage = mapErrorToMessage(errorState),
-                isGpsButtonLoading = false,
-                address = ""
-            )
-        }
+    private fun onLocationNameError(throwable: Throwable) {
+        updateState { copy(isGpsButtonLoading = false, address = "", errorMessage = mapErrorMessage(throwable)) }
         changeIsConfirmEnabled()
     }
 
@@ -139,7 +137,7 @@ class PickLocationScreenViewModel(
         }
     }
 
-    private fun onCurrentLocationError(errorState: ErrorState) {
+    private fun onCurrentLocationError(throwable: Throwable) {
         checkLocationEnable()
     }
 
@@ -170,17 +168,15 @@ class PickLocationScreenViewModel(
             PermissionState.NOT_DETERMINED -> {
                 navigateToEnableLocation()
             }
+
+            PermissionState.DENIED_PERMANENTLY -> {
+                navigateToEnableLocation()
+            }
         }
     }
 
-    private fun onPermissionCheckError(errorState: ErrorState) {
-        updateState {
-            copy(
-                errorMessage = mapErrorToMessage(errorState),
-                isGpsButtonLoading = false,
-                address = ""
-            )
-        }
+    private fun onPermissionCheckError(throwable: Throwable) {
+        updateState { copy(isGpsButtonLoading = false, address = "" , errorMessage = mapErrorMessage(throwable)) }
         changeIsConfirmEnabled()
     }
 
@@ -200,7 +196,7 @@ class PickLocationScreenViewModel(
                         state.value.currentLocation.latitude,
                         state.value.currentLocation.longitude
                     ),
-                    addressType = addressModel?.addressType ?: AddressType.Home ,
+                    addressType = addressModel?.addressType ?: AddressType.Home,
                     addressDetails = state.value.address,
                     isMainAddress = state.value.isMainAddress
                 )
@@ -225,6 +221,13 @@ class PickLocationScreenViewModel(
             updateState { copy(isConfirmEnabled = true) }
         } else {
             updateState { copy(isConfirmEnabled = false) }
+        }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
+            else ->  mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
 }

@@ -25,16 +25,15 @@ internal class HomeViewModel(
         getFeedReels()
     }
 
-    fun toggleReelLike(reelId: String) {
+    fun addReelLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
-            block = { repository.toggleReelLike(reelId) },
+            block = { repository.addReelLike(reelId) },
             onError = { error ->
                 updateLikesOnUi(reelId)
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
-            scope = viewModelScope,
             onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUiState() } }
         )
     }
@@ -46,6 +45,18 @@ internal class HomeViewModel(
                 likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
             )
         }
+    }
+
+    fun removeReelLike(reelId: String) {
+        tryToExecute(
+            onStart = { updateLikesOnUi(reelId) },
+            block = { repository.removeReelLike(reelId) },
+            onError = { error ->
+                updateLikesOnUi(reelId)
+                updateState { copy(error = error) }
+            },
+            dispatcher = defaultDispatcher,
+        )
     }
 
     private fun updateReelInPagingData(reelId: String, transform: (ReelUiState) -> ReelUiState) {
@@ -94,8 +105,12 @@ internal class HomeViewModel(
         sendEffect(HomeUiEffect.NavigateToReelDetails(reelId))
     }
 
-    override fun onClickLike(reelId: String) {
-        toggleReelLike(reelId)
+    override fun onClickLike(reelId: String, isLiked: Boolean) {
+        if (isLiked) {
+            removeReelLike(reelId)
+        } else {
+            addReelLike(reelId)
+        }
     }
 
     override fun onClickRetry() {

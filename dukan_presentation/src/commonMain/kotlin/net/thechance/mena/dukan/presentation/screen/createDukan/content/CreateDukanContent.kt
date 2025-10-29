@@ -86,7 +86,7 @@ private fun CreateDukanScaffold(
                         stringResource(Res.string.create)
                     else
                         stringResource(Res.string.next),
-                    onClick = listener::onButtonClicked,
+                    onClick = listener::onNextOrCreateClicked,
                     isEnabled = state.isButtonEnabled,
                     isLoading = state.isButtonLoading,
                     contentPadding = PaddingValues(vertical = Theme.spacing._12)

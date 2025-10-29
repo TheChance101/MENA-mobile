@@ -10,7 +10,8 @@ data class DukanDetailsUiState(
     val bestSellingProducts: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val shelves: Flow<PagingData<ShelfUiState>> = emptyFlow(),
     val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
-    val shelfIdSelected: String? = null
+    val shelfIdSelected: String? = null,
+    val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING
 ) {
     data class DukanInfo(
         val name: String = "",
@@ -48,4 +49,10 @@ data class DukanDetailsUiState(
         val description: String = "",
         val inCartQuantity: Int = 0
     )
+
+    enum class DukanDetailsState {
+        LOADING,
+        LOADED,
+        ERROR
+    }
 }
