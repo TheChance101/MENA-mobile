@@ -1,0 +1,28 @@
+package net.thechance.mena.admin_panel.presentation.screen.users_management.component
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.img_search_empty
+import net.thechance.mena.admin_panel.resources.no_search_result
+import net.thechance.mena.admin_panel.resources.no_search_result_description
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun UserListSearchEmpty(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        StatePlaceholder(
+            image = painterResource(Res.drawable.img_search_empty),
+            title = stringResource(Res.string.no_search_result),
+            description = stringResource(Res.string.no_search_result_description),
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
