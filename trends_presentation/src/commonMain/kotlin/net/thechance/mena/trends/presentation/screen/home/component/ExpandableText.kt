@@ -51,7 +51,7 @@ fun ExpandableText(
             }
         ) { expanded ->
             Text(
-                text = text,
+                text = text.trim(),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = if (expanded) Int.MAX_VALUE else maxLines,
