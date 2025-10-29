@@ -34,6 +34,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.qiblah.component.IslamicPattern
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.resources.painterResource
@@ -74,11 +75,10 @@ private fun Content(listener: CalibrateDeviceInteractionListener) {
         },
         bottomBar = {
             ContinueButton(listener = listener)
-        },
-        content = {
-            ConfigurationMessage()
         }
-    )
+    ) {
+        ConfigurationMessage()
+    }
 }
 
 @Composable
@@ -108,36 +108,47 @@ private fun ContinueButton(
 
 @Composable
 private fun ConfigurationMessage() {
-    Column(
-        verticalArrangement = Arrangement.Center,
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = Theme.spacing._16)
     ) {
-        Box(
+
+        IslamicPattern(
+            modifier = Modifier.align(Alignment.BottomStart)
+        )
+
+        Column(
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 120.dp)
-                .background(
-                    color = Theme.colorScheme.background.surfaceLow,
-                    shape = RoundedCornerShape(Theme.radius.xl)
-                )
+                .padding(horizontal = Theme.spacing._16)
+                .align(Alignment.Center)
         ) {
-            AsyncImage(
-                model = Res.getUri("drawable/loading_qiblah.gif"),
-                contentDescription = stringResource(Res.string.calibrate_device_animation),
+            Box(
                 modifier = Modifier
-                    .size(64.dp)
-                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .heightIn(min = 120.dp)
+                    .background(
+                        color = Theme.colorScheme.background.surfaceLow,
+                        shape = RoundedCornerShape(Theme.radius.xl)
+                    )
+            ) {
+                AsyncImage(
+                    model = Res.getUri("drawable/loading_qiblah.gif"),
+                    contentDescription = stringResource(Res.string.calibrate_device_animation),
+                    modifier = Modifier
+                        .size(64.dp)
+                        .align(Alignment.Center)
+                )
+            }
+            Text(
+                text = stringResource(Res.string.motion_configuration),
+                style = Theme.typography.label.medium,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(vertical = Theme.spacing._16)
             )
         }
-        Text(
-            text = stringResource(Res.string.motion_configuration),
-            style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(vertical = Theme.spacing._16)
-        )
     }
 }
 

@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UploadReelResponse(
-    @SerialName("reelId")
+    @SerialName("trendId")
     val reelId: String? = null
 )
