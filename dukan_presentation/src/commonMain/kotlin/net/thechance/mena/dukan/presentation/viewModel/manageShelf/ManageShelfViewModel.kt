@@ -51,21 +51,36 @@ class ManageShelfViewModel(
     }
 
     override fun onSaveClicked() {
-        val trimmedTitle = state.value.shelfTitle.trim()
-        if (!isTitleValid(trimmedTitle)) {
-            showErrorSnackBar(Res.string.shelf_name_is_invalid)
-            return
-        }
-
-        if (state.value.oldShelfTitle == state.value.shelfTitle) {
-            showErrorSnackBar(Res.string.error_same_name_of_shelf)
-            return
-        }
-
+        val trimmedTitle = validateShelfTitle() ?: return
         tryToExecute(
-            block = { shelfRepository.updateShelf(shelfId = shelfId, newShelfName = trimmedTitle) },
+            block = { updateShelfName(shelfId, trimmedTitle) },
             onSuccess = { onEditShelfSuccess() },
             onError = ::onEditShelfError
+        )
+    }
+
+    private fun validateShelfTitle(): String? {
+        val trimmedTitle = state.value.shelfTitle.trim()
+
+        return when {
+            !isTitleValid(trimmedTitle) -> {
+                showErrorSnackBar(Res.string.shelf_name_is_invalid)
+                null
+            }
+
+            state.value.oldShelfTitle == state.value.shelfTitle -> {
+                showErrorSnackBar(Res.string.error_same_name_of_shelf)
+                null
+            }
+
+            else -> trimmedTitle
+        }
+    }
+
+    private suspend fun updateShelfName(shelfId: String, trimmedTitle: String) {
+        shelfRepository.updateShelf(
+            shelfId = shelfId,
+            newShelfName = trimmedTitle
         )
     }
 
