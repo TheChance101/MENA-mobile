@@ -116,7 +116,7 @@ private fun SetProductQuantity(
                 .padding(Theme.spacing._4 + Theme.spacing._2)
         )
         Text(
-            text = "$inCartQuantity",
+            text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.primary,
         )

@@ -32,8 +32,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NoImageDukanProductAction(
-    showProductQuantity : Boolean,
-    inCartQuantity : Int,
+    showProductQuantity: Boolean,
+    inCartQuantity: Int,
     dukanColor: Long,
     onAddToCartClick: () -> Unit,
     onPlusClick: () -> Unit,
@@ -63,7 +63,7 @@ fun NoImageDukanProductAction(
                 )
 
                 Text(
-                    text = inCartQuantity.toString(),
+                    text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
                     style = Theme.typography.label.small,
                     color = Theme.colorScheme.primary.onPrimary,
                     textAlign = TextAlign.Center,
