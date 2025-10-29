@@ -27,7 +27,7 @@ internal fun PaymentConnectionLostContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(vertical = 16.dp)
     ) {
         PaymentResultCard(
             image = painterResource(Res.drawable.transaction_failed),
@@ -37,10 +37,12 @@ internal fun PaymentConnectionLostContent(
             modifier = Modifier.align(Alignment.Center)
         )
         PaymentActionButtons(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.BottomCenter),
             primaryButtonText = stringResource(Res.string.try_again),
             onPrimaryButtonClick = interactionListener::onTryAgainClicked,
             onCancelClicked = interactionListener::onCloseClicked,
-            modifier = Modifier.align(Alignment.BottomCenter),
             isLoading = state.isLoading,
             isCloseEnabled = state.isCloseButtonEnabled,
             isTryAgainEnabled = state.isTryAgainButtonEnabled

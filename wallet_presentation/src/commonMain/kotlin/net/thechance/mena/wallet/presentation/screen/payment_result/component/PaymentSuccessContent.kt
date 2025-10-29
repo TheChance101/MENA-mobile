@@ -37,10 +37,12 @@ internal fun PaymentSuccessContent(
             modifier = Modifier.align(Alignment.Center)
         )
         PaymentActionButtons(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.BottomCenter),
             primaryButtonText = stringResource(Res.string.show_transaction_details),
             onPrimaryButtonClick = interactionListener::onShowTransactionDetailsClicked,
             onCancelClicked = interactionListener::onCloseClicked,
-            modifier = Modifier.align(Alignment.BottomCenter),
             isLoading = state.isLoading,
             isCloseEnabled = state.isCloseButtonEnabled
         )
