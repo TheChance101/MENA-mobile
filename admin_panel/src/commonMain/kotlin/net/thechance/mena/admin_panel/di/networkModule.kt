@@ -15,13 +15,13 @@ val networkModule = module {
     single(named(BASE_URL_KEY)) { AppEnvironment.baseUrl }
     single { NetworkClient( get(named(BASE_URL_KEY))) }
 
-    single<HttpClient>(named(ADMIN_PANEL_HTTP_CLIENT_KEY)) {
+    single<HttpClient>(named(ADMIN_PANEL_KEY)) {
         get<NetworkClient>().provideHttpClient()
     }
 
-    single<Ktorfit>(named(ADMIN_PANEL_KTORFIT_KEY)) {
+    single<Ktorfit>(named(ADMIN_PANEL_KEY)) {
         Ktorfit.Builder()
-            .httpClient(get<HttpClient>(named(ADMIN_PANEL_HTTP_CLIENT_KEY)))
+            .httpClient(get<HttpClient>(named(ADMIN_PANEL_KEY)))
             .baseUrl(get<String>(named(BASE_URL_KEY)))
             .converterFactories(ResponseConverterFactory())
             .build()
@@ -31,5 +31,4 @@ val networkModule = module {
 }
 
 private const val BASE_URL_KEY = "baseUrl"
-private const val ADMIN_PANEL_HTTP_CLIENT_KEY = "adminPanelHttpClient"
-const val ADMIN_PANEL_KTORFIT_KEY = "adminPanelKtorfit"
+internal const val ADMIN_PANEL_KEY = "adminPanel"

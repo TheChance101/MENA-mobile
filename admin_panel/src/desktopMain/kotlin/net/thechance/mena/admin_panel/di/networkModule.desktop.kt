@@ -9,6 +9,6 @@ import org.koin.core.qualifier.named
 
 actual val platformNetworkModule: Module = module {
     single<ApiService> {
-        get<Ktorfit>(named(ADMIN_PANEL_KTORFIT_KEY)).createApiService()
+        get<Ktorfit>(named(ADMIN_PANEL_KEY)).createApiService()
     }
 }
