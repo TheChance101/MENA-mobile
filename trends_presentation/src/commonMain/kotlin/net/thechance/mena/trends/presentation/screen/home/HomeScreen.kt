@@ -85,7 +85,7 @@ internal fun HomeScreen(
 @Composable
 private fun HomeScreenContent(
     state: HomeScreenState,
-    listener: HomeInteractionListener,
+    listener: HomeInteractionListener
 ) {
     Scaffold(
         topBar = {
@@ -93,8 +93,8 @@ private fun HomeScreenContent(
                 visible = state.isLoading.not(),
                 content = {
                     TrendsAppBar(
-                        onManageMyTrendsClick = listener::onClickManageMyTrends,
-                        onEditTagsClick = listener::onClickEditTags
+                        onClickManageMyTrends = listener::onClickManageMyTrends,
+                        onClickEditTags = listener::onClickEditTags
                     )
                 }
             )
@@ -131,7 +131,8 @@ private fun HomeScreenContent(
                     ReelsListSection(
                         reels = reels,
                         onClickLike = listener::onClickLike,
-                        onClickReel = listener::onClickReel
+                        onClickReel = listener::onClickReel,
+                        onExpandDescription = listener::onClickExpandDescription
                     )
                 }
             )
@@ -168,6 +169,7 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onExpandDescription: (reelId: String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -179,8 +181,9 @@ private fun ReelsListSection(
         items(reels.itemSnapshotList.items) { reel ->
             FeedReelCard(
                 reel = reel,
-                onLikeClick = { onClickLike(reel.id, reel.isLiked) },
-                onReelClick = { onClickReel(reel.id) }
+                onClickLike = { onClickLike(reel.id, reel.isLiked) },
+                onClickReel = { onClickReel(reel.id) },
+                onExpandDescription = {onExpandDescription(reel.id)}
             )
         }
     }
@@ -188,15 +191,15 @@ private fun ReelsListSection(
 
 @Composable
 private fun TrendsAppBar(
-    onManageMyTrendsClick: () -> Unit,
-    onEditTagsClick: () -> Unit
+    onClickManageMyTrends: () -> Unit,
+    onClickEditTags: () -> Unit
 ) {
     AppBar(
         title = stringResource(Res.string.trends_title),
         trailingContent = {
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onManageMyTrendsClick
+                onClick = onClickManageMyTrends
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_account_setting),
@@ -207,7 +210,7 @@ private fun TrendsAppBar(
 
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onEditTagsClick
+                onClick = onClickEditTags
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pencil_edit),
@@ -233,6 +236,7 @@ private fun HomeScreenPreview() {
                     override fun onClickManageMyTrends() {}
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
+                    override fun onClickExpandDescription(reelId: String) {}
                 }
             )
         }

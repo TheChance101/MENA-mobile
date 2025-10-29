@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -116,5 +117,17 @@ internal class HomeViewModel(
     override fun onClickRetry() {
         updateState { copy(error = null) }
         getFeedReels()
+    }
+
+    override fun onClickExpandDescription(reelId: String) {
+        val currentData = state.value.reelsStateFlow.value
+        val updatedData = currentData.map { reel ->
+            if (reel.id == reelId) {
+                reel.copy(isDescriptionExpanded = !reel.isDescriptionExpanded)
+            } else {
+                reel
+            }
+        }
+        state.value.reelsStateFlow.value = updatedData
     }
 }
