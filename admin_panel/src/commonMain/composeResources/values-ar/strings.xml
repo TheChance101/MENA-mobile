@@ -6,4 +6,5 @@
     <string name="login">تسجيل الدخول</string>
     <string name="login_header">مرحبًا بكم مرة أخرى في MENA</string>
     <string name="login_sub_title">أدخل بيانات الخاصة بك لتسجيل الدخول</string>
+    <string name="login_background_img">صورة خلفية لتسجيل الدخول</string>
 </resources>

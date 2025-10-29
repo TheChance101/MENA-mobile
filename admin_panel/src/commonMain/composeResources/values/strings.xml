@@ -7,4 +7,5 @@
     <string name="login">login</string>
     <string name="login_header">Welcome Back to MENA</string>
     <string name="login_sub_title">Enter your credentials to log in</string>
+    <string name="login_background_img">login background image</string>
 </resources>

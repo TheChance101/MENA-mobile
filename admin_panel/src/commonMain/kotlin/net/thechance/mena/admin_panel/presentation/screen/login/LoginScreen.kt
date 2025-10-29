@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +23,7 @@ import net.thechance.mena.admin_panel.presentation.screen.login.component.Userna
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.login
 import net.thechance.mena.admin_panel.resources.login_background
+import net.thechance.mena.admin_panel.resources.login_background_img
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import org.jetbrains.compose.resources.painterResource
@@ -35,12 +38,14 @@ fun LoginScreen() {
         Box {
             Image(
                 painter = painterResource(Res.drawable.login_background),
-                contentDescription = null,
+                contentDescription = stringResource(Res.string.login_background_img),
                 modifier = Modifier.fillMaxSize().align(Alignment.BottomCenter),
                 contentScale = ContentScale.FillBounds
             )
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LoginHeader(modifier = Modifier.padding(top = 64.dp))
