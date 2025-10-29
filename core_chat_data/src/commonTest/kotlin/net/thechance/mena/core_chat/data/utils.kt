@@ -22,7 +22,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
-import net.thechance.mena.core_chat.data.contacts.fakes.createDeleteChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessageDto
 import net.thechance.mena.core_chat.data.contacts.fakes.sampleContactDto
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
@@ -33,12 +32,10 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
-import net.thechance.mena.core_chat.data.source.remote.dto.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -157,14 +154,10 @@ fun MockRequestHandleScope.defaultUploadImagesResponse() = respond(
 )
 
 fun MockRequestHandleScope.defaultDeleteChatResponse() = respond(
-    content = jsonSerialization.encodeToString(
-        serializer = DeleteChatDto.serializer(),
-        value = createDeleteChatDto(),
-    ),
+    content = "",
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
-
 
 fun createRepository(
     contactsProvider: ContactsProvider,
