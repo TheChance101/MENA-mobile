@@ -248,7 +248,6 @@ class EditUserProfileViewModel(
     }
 
     private fun handleCameraPermissionError(throwable: Throwable) {
-        throwable.printStackTrace()
         when (throwable) {
             is DeniedAlwaysException -> {
                 permissionsController.openAppSettings()
