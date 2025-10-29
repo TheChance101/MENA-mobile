@@ -48,7 +48,8 @@ class CompassViewModelTest {
         useCase = QiblahBearingCalculatorUseCase()
         azimuthProvider = mock(mode = MockMode.autofill)
         addressesRepository = mock(mode = MockMode.autofill)
-        locationService = mock(mode = MockMode.autofill)
+
+        locationService = LocationService(addressesRepository)
     }
 
     @AfterTest
@@ -60,22 +61,22 @@ class CompassViewModelTest {
     fun `init should calculate qiblah angle and start listening to azimuth when address is valid`() =
         runTest {
             val validAddress = createValidAddress()
-        val azimuthFlow = flowOf(45f, 90f, 135f)
-            everySuspend { locationService.getActiveAddress() } returns validAddress
-        everySuspend { azimuthProvider.startListening() } returns azimuthFlow
+            val azimuthFlow = flowOf(45f, 90f, 135f)
+            everySuspend { addressesRepository.getActiveAddress() } returns validAddress
+            everySuspend { azimuthProvider.startListening() } returns azimuthFlow
 
-        createViewModel()
-        advanceUntilIdle()
+            createViewModel()
+            advanceUntilIdle()
 
-        val state = viewModel.uiState.value
-        assertTrue(state.qiblahAngleValue > 0f, "Qiblah angle should be calculated")
+            val state = viewModel.uiState.value
+            assertTrue(state.qiblahAngleValue > 0f, "Qiblah angle should be calculated")
             assertEquals("Cairo, Egypt", state.city)
-        verify { azimuthProvider.startListening() }
-    }
+            verify { azimuthProvider.startListening() }
+        }
 
     @Test
     fun `init should navigate to identity screen when address is null`() = runTest {
-        everySuspend { locationService.getActiveAddress() } returns null
+        everySuspend { addressesRepository.getActiveAddress() } returns null
 
         viewModel.uiEffect.test {
             createViewModel()
@@ -94,7 +95,7 @@ class CompassViewModelTest {
             addressLine = "Cairo",
             addressType = AddressType.Home
         )
-        everySuspend { locationService.getActiveAddress() } returns addressWithoutId
+        everySuspend { addressesRepository.getActiveAddress() } returns addressWithoutId
 
         viewModel.uiEffect.test {
             createViewModel()
@@ -108,7 +109,7 @@ class CompassViewModelTest {
     fun `qiblah angle should be calculated correctly for valid address`() = runTest {
         val validAddress = createValidAddress()
         val azimuthFlow = flowOf(0f)
-        everySuspend { locationService.getActiveAddress() } returns validAddress
+        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
         everySuspend { azimuthProvider.startListening() } returns azimuthFlow
 
         createViewModel()
@@ -122,7 +123,7 @@ class CompassViewModelTest {
     fun `angle to qiblah should be calculated as shortest path`() = runTest {
         val validAddress = createValidAddress()
         val azimuthFlow = flowOf(0f, 45f, 90f)
-        everySuspend { locationService.getActiveAddress() } returns validAddress
+        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
         everySuspend { azimuthProvider.startListening() } returns azimuthFlow
 
         createViewModel()
@@ -138,7 +139,7 @@ class CompassViewModelTest {
     @Test
     fun `initial state should have zero values`() = runTest {
         val validAddress = createValidAddress()
-        everySuspend { locationService.getActiveAddress() } returns validAddress
+        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
         everySuspend { azimuthProvider.startListening() } returns flowOf()
 
         createViewModel()
@@ -152,7 +153,7 @@ class CompassViewModelTest {
     @Test
     fun `onBackClick should emit NavigateBack effect`() = runTest {
         val validAddress = createValidAddress()
-        everySuspend { locationService.getActiveAddress() } returns validAddress
+        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
         everySuspend { azimuthProvider.startListening() } returns flowOf()
 
         createViewModel()
@@ -174,7 +175,7 @@ class CompassViewModelTest {
             longitude = 39.8262,
             addressLine = "Makkah"
         )
-        everySuspend { locationService.getActiveAddress() } returns updatedAddress
+        everySuspend { addressesRepository.getActiveAddress() } returns updatedAddress
         everySuspend { azimuthProvider.startListening() } returns flowOf(0f)
 
         createViewModel()
@@ -194,7 +195,7 @@ class CompassViewModelTest {
     fun `azimuth changes should update continuous azimuth and angle to qiblah`() = runTest {
         val validAddress = createValidAddress()
         val azimuthFlow = flowOf(0f, 45f, 90f, 180f)
-        everySuspend { locationService.getActiveAddress() } returns validAddress
+        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
         everySuspend { azimuthProvider.startListening() } returns azimuthFlow
 
         createViewModel()
