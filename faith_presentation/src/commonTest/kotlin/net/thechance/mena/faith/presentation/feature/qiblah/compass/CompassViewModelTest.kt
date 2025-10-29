@@ -64,7 +64,7 @@ class CompassViewModelTest {
 
         val state = viewModel.uiState.value
         assertTrue(state.qiblahAngleValue > 0f, "Qiblah angle should be calculated")
-            assertEquals(validAddress, state.currentLocationUi)
+            assertEquals("Cairo, Egypt", state.city)
         verify { azimuthProvider.startListening() }
     }
 
@@ -75,7 +75,7 @@ class CompassViewModelTest {
         viewModel.uiEffect.test {
             createViewModel()
             advanceUntilIdle()
-            assertEquals(CompassEffect.NavigateToIdentityScreen, awaitItem())
+            assertEquals(CompassEffect.NavigateToMyLocation, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -94,7 +94,7 @@ class CompassViewModelTest {
         viewModel.uiEffect.test {
             createViewModel()
             advanceUntilIdle()
-            assertEquals(CompassEffect.NavigateToIdentityScreen, awaitItem())
+            assertEquals(CompassEffect.NavigateToMyLocation, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -182,7 +182,7 @@ class CompassViewModelTest {
 
         val updatedQiblah = viewModel.uiState.value.qiblahAngleValue
         assertNotEquals(initialQiblah, updatedQiblah, "Qiblah angle should be recalculated")
-        assertEquals(updatedAddress, viewModel.uiState.value.currentLocationUi)
+        assertEquals("Makkah", viewModel.uiState.value.city)
     }
 
     @Test

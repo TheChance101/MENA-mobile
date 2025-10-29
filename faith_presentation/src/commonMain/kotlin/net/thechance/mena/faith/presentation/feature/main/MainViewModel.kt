@@ -52,7 +52,7 @@ class MainViewModel(
     }
 
     private fun updateAddress(address: Address?) {
-        if (!isValidAddress(address)) {
+        if (!isValidAddress(uiState.value.city)) {
             sendEffect(MainScreenEffect.NavigateToEnableLocation)
             return
         }
@@ -61,7 +61,7 @@ class MainViewModel(
         }
     }
 
-    private fun isValidAddress(address: Address?): Boolean = address?.id != null
+    private fun isValidAddress(address: String): Boolean = address.isEmpty()
 
     private fun onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
         updateState { currentState ->

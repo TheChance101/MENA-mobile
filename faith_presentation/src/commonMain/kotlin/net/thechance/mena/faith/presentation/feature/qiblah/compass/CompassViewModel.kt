@@ -24,6 +24,7 @@ class CompassViewModel(
     }
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
+    override fun onChangeLocation() = sendEffect(CompassEffect.NavigateToMyLocation)
 
     fun refreshAddress() {
         loadCompassData()
@@ -37,17 +38,15 @@ class CompassViewModel(
     }
 
     private fun handleAddressResult(address: Address?) {
-        if (!isValidAddress(address)) {
-            sendEffect(CompassEffect.NavigateToIdentityScreen)
+        if (!isValidAddress(uiState.value.city)) {
+            sendEffect(CompassEffect.NavigateToEnableLocation)
             return
         }
-        updateState { it.copy(currentLocationUi = address) }
+        updateState { it.copy(city = address?.addressLine ?: "") }
         calculateQiblahDirection(address!!)
     }
 
-    private fun isValidAddress(address: Address?): Boolean {
-        return address?.id != null
-    }
+    private fun isValidAddress(address: String): Boolean = address.isEmpty()
 
     private fun calculateQiblahDirection(address: Address) {
         tryToExecute(

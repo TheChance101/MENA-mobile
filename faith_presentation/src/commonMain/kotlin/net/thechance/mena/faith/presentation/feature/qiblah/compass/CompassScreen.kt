@@ -48,10 +48,12 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.qiblah.component.IslamicPattern
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun CompassScreen(
@@ -63,6 +65,8 @@ fun CompassScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is CompassEffect.NavigateBack -> navController.navigateUp()
+            CompassEffect.NavigateToMyLocation -> navController.navigate(Route.MyLocation)
+            CompassEffect.NavigateToEnableLocation -> navController.navigate(Route.EnableLocation)
         }
     }
 
@@ -276,7 +280,7 @@ private fun QiblahTopBar(uiState: CompassUiState) {
         )
 
         Text(
-            text = uiState.currentLocationUi.cityName,
+            text = uiState.city,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)
@@ -305,6 +309,7 @@ enum class CompassDirection(
     WEST("W", Alignment.CenterStart)
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 @Preview
 private fun CompassScreenPreview() {
@@ -314,14 +319,11 @@ private fun CompassScreenPreview() {
                 continuousAzimuth = 45f,
                 qiblahAngleValue = 120f,
                 angleToQiblah = 75f,
-                currentLocationUi = LocationUi(
-                    cityName = "Cairo",
-                    latitude = 30.0444,
-                    longitude = 31.2357
-                ),
+                city = "Cairo, Egypt",
             ),
             listener = object : CompassInteractionListener {
                 override fun onBackClick() {}
+                override fun onChangeLocation() {}
             }
         )
     }
