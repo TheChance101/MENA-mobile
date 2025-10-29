@@ -29,7 +29,7 @@ fun LoginHeader(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(Res.drawable.mena_logo),
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.mena),
             modifier = Modifier.size(88.dp)
         )
         Text(
