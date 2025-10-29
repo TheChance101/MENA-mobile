@@ -8,7 +8,7 @@ fun HttpRequestBuilder.observeUploading(
     totalSize: Long,
     onProgress: suspend (UploadReelProgress) -> Unit
 ) {
-    onUpload { bytesSentTotal, contentLength ->
+    onUpload { bytesSentTotal, _ ->
         onProgress(
             UploadReelProgress(
                 numberOfUploadedBytes = bytesSentTotal,
