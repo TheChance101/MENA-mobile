@@ -37,7 +37,7 @@ fun StatusManager(
     val isActive = userStates == UserStates.ACTIVE
 
     OutlinedButton(
-        modifier = modifier,
+        modifier = modifier.wrapContentWidth(),
         text = if (isActive) stringResource(Res.string.block) else stringResource(Res.string.activate),
         trailingIcon = painterResource(
             if (isActive) Res.drawable.ic_block else Res.drawable.ic_activate
@@ -81,7 +81,7 @@ fun UserStatus(
         StatusDot(color = dotColor)
         Text(
             text = statusText,
-            style = Theme.typography.body.medium,
+            style = Theme.typography.label.medium,
             color = textColor
         )
     }

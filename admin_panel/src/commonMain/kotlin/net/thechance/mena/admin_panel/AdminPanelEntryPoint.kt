@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import net.thechance.mena.admin_panel.presentation.component.navigation_bar.VerticalNavigationBar
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreen
 import net.thechance.mena.admin_panel.resources.Res
@@ -35,11 +36,11 @@ import net.thechance.mena.admin_panel.resources.ic_dukan_requests
 import net.thechance.mena.admin_panel.resources.ic_dukan_requests_selected
 import net.thechance.mena.admin_panel.resources.ic_dukan_selected
 import net.thechance.mena.admin_panel.resources.ic_log_out
+import net.thechance.mena.admin_panel.resources.ic_mena
 import net.thechance.mena.admin_panel.resources.ic_user_selected
 import net.thechance.mena.admin_panel.resources.ic_users_mange
 import net.thechance.mena.admin_panel.resources.log_out
 import net.thechance.mena.admin_panel.resources.mena
-import net.thechance.mena.admin_panel.resources.mena_logo
 import net.thechance.mena.admin_panel.resources.users_management
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -53,9 +54,9 @@ fun AdminPanelEntryPoint() {
     Row(
         Modifier
             .fillMaxSize()
-            .background(Theme.colorScheme.background.surfaceLow)
+            .background(Theme.colorScheme.background.surface)
             .systemBarsPadding()
-            .padding(bottom = 32.dp)
+            .padding(bottom = 34.dp)
     ) {
         Column(
             modifier = Modifier
@@ -155,7 +156,7 @@ private fun MenaLogo() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(Res.drawable.mena_logo),
+            painter = painterResource(Res.drawable.ic_mena),
             contentDescription = stringResource(Res.string.app_name),
             modifier = Modifier.size(40.dp)
         )
@@ -163,6 +164,7 @@ private fun MenaLogo() {
             text = stringResource(Res.string.mena),
             textAlign = TextAlign.Center,
             style = Theme.typography.appName,
+            fontSize = 14.sp,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(top = 8.dp)
         )
