@@ -37,20 +37,25 @@ class AddressesScreenViewModel(
 
     override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
 
-    override fun onAddButtonClicked() = sendNewEffect(
-        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
-            addressUIState = null,
-            onSuccess = ::onAddEditSuccess
+    override fun onAddButtonClicked() {
+        sendNewEffect(
+            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
+                addressUIState = null,
+                onSuccess = ::onAddEditSuccess
+            )
         )
-    )
+        onDismissSnackBar()
+    }
 
-    override fun onEditAddressClicked(addressUIState: AddressUIState) =
+    override fun onEditAddressClicked(addressUIState: AddressUIState) {
         sendNewEffect(
             AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
                 addressUIState = addressUIState,
                 onSuccess = ::onAddEditSuccess
             )
         )
+        onDismissSnackBar()
+    }
 
     override fun onClickAddress(addressId: Uuid) {
         val address = findAddressById(addressId)
