@@ -57,8 +57,7 @@ internal fun FeedReelCard(
     onClickLike: () -> Unit,
     onClickReel: () -> Unit,
     onExpandDescription: (String) -> Unit,
-
-    ) {
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,7 +167,6 @@ private fun ReelFooterSection(
     if (reel.description.isNotBlank()) {
         ExpandableText(
             text = reel.description,
-            maxLines = 3,
             isExpanded = reel.isDescriptionExpanded,
             modifier = Modifier.padding(12.dp),
             onExpandedChange = { onExpandDescription(reel.id) }

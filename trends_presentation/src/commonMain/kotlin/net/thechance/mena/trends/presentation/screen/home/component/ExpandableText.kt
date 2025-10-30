@@ -27,41 +27,35 @@ import net.thechance.mena.trends.presentation.shared.component.modifier.noRipple
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ExpandableText(
+internal fun ExpandableText(
     text: String,
-    maxLines: Int = 2,
     isExpanded: Boolean,
     modifier: Modifier = Modifier,
-    onExpandedChange: (Boolean) -> Unit,
+    maxLines: Int = 3,
+    onExpandedChange: () -> Unit,
     moreText: String = stringResource(Res.string.show_more),
-    lessText: String = stringResource(Res.string.show_less)
+    lessText: String = stringResource(Res.string.show_less),
 ) {
     var isTextTruncated by remember { mutableStateOf(false) }
-
+    val shortTextAnimation =
+        fadeIn(animationSpec = tween(500, easing = LinearOutSlowInEasing)) togetherWith
+                fadeOut(animationSpec = tween(500, easing = LinearOutSlowInEasing))
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.noRippleClickable { onExpandedChange() }
     ) {
 
         AnimatedContent(
             targetState = isExpanded,
-            transitionSpec = {
-                fadeIn(animationSpec = tween(500, easing = LinearOutSlowInEasing)) togetherWith
-                        fadeOut(animationSpec = tween(500, easing = LinearOutSlowInEasing))
-            }
+            transitionSpec = { shortTextAnimation }
         ) { expanded ->
             Text(
                 text = text.trim(),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = if (expanded) Int.MAX_VALUE else maxLines,
-                overflow = TextOverflow.Clip,
-                onTextLayout = { result ->
-                    if (!expanded) isTextTruncated = result.hasVisualOverflow
-                },
-                modifier = Modifier.noRippleClickable {
-                    if (isTextTruncated) onExpandedChange(!expanded)
-                }
+                overflow = TextOverflow.Ellipsis,
+                onTextLayout = { if (expanded.not()) isTextTruncated = it.hasVisualOverflow },
             )
         }
 
@@ -75,9 +69,7 @@ fun ExpandableText(
                     text = if (isExpanded) lessText else moreText,
                     style = Theme.typography.body.small,
                     color = Theme.colorScheme.shadeTertiary,
-                    modifier = Modifier
-                        .padding(vertical = 2.dp)
-                        .noRippleClickable { onExpandedChange(!isExpanded) }
+                    modifier = Modifier.padding(vertical = 2.dp)
                 )
             }
         }

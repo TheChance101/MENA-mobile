@@ -169,6 +169,7 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
