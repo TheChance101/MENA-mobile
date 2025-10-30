@@ -11,6 +11,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +39,9 @@ abstract class BaseViewModel<S, E>(
     private val _effect = MutableSharedFlow<E>()
     val effect: SharedFlow<E> = _effect.asSharedFlow()
 
+    private var debounceJob: Job? = null
+
+
     internal fun updateState(updater: S.() -> S) {
         _state.update(updater)
     }
@@ -51,6 +56,29 @@ abstract class BaseViewModel<S, E>(
         onStart()
         val handler = createExceptionHandler(onError)
         viewModelScope.launch(dispatcher + handler) {
+            try {
+                val result = block()
+                onSuccess(result)
+            } catch (e: Exception) {
+                onError(e)
+            }
+        }
+    }
+
+    protected fun <S> tryToExecuteWithDebounce(
+        debounceTime: Long = 300L,
+        onStart: () -> Unit = {},
+        block: suspend () -> S,
+        onSuccess: (S) -> Unit = {},
+        onError: (exception: Throwable) -> Unit = {},
+        dispatcher: CoroutineDispatcher = defaultDispatcher,
+    ) {
+        onStart()
+        debounceJob?.cancel()
+
+        val handler = createExceptionHandler(onError)
+        debounceJob = viewModelScope.launch(dispatcher + handler) {
+            delay(debounceTime)
             try {
                 val result = block()
                 onSuccess(result)
