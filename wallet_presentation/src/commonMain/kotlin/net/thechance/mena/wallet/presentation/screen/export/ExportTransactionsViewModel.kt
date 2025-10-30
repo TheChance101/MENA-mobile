@@ -57,6 +57,10 @@ class ExportTransactionsViewModel(
     ExportTransactionsState()
 ), ExportTransactionsListener {
 
+    init {
+        fetchFirstTransactionDate()
+    }
+
     override fun onBackClicked() {
         sendEffect(ExportTransactionsEffect.NavigateBack)
     }
@@ -101,9 +105,15 @@ class ExportTransactionsViewModel(
     override fun onStartDateClicked() {
         val currentStartDate = currentState.filterState.startDate
         if (currentStartDate != null) {
-            openStartDatePickerWithExistingDate(currentStartDate)
-        } else {
-            fetchFirstTransactionDate()
+            updateState { it.copy(dateState = it.dateState.copy(defaultStartDate = currentStartDate)) }
+        }
+        updateState {
+            it.copy(
+                dateState = it.dateState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
+                )
+            )
         }
     }
 
@@ -206,44 +216,29 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun openStartDatePickerWithExistingDate(currentStartDate: LocalDate) {
-        updateState { oldState ->
-            oldState.copy(
-                dateState = oldState.dateState.copy(
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
-                    defaultStartDate = currentStartDate
-                )
-            )
-        }
-    }
-
     private fun fetchFirstTransactionDate() {
         tryToExecute(
             callee = { transactionRepository.getFirstTransactionDate() },
-            onSuccess = ::onGetFirstTransactionDateSuccess,
-            onError = {},
-            onFinish = ::onGetFirstTransactionDateFinish,
-            dispatcher = Dispatchers.IO
+            onSuccess = ::onFetchFirstTransactionDateSuccess,
+            onError = ::onFetchFirstTransactionDateError,
+            dispatcher = dispatcher
         )
     }
 
-    private fun onGetFirstTransactionDateFinish() {
-        updateState {
-            it.copy(
-                dateState = it.dateState.copy(
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
-                )
-            )
-        }
-    }
-
-    private fun onGetFirstTransactionDateSuccess(date: LocalDate?) {
+    private fun onFetchFirstTransactionDateSuccess(date: LocalDate?) {
         updateState { oldState ->
             val currentStartDate = oldState.filterState.startDate ?: date
             oldState.copy(dateState = oldState.dateState.copy(defaultStartDate = currentStartDate))
         }
+    }
+
+    private suspend fun onFetchFirstTransactionDateError(error: ErrorState) {
+        handleError(
+            error = error,
+            title = stringProvider.getString(Res.string.error),
+            message = stringProvider.getString(Res.string.failed_to_load_date_picker),
+            isSuccess = false
+        )
     }
 
     private suspend fun onViewAndShareStart() {
