@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.home
 
 import androidx.compose.animation.AnimatedVisibility
+import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -85,7 +85,7 @@ internal fun HomeScreen(
 @Composable
 private fun HomeScreenContent(
     state: HomeScreenState,
-    listener: HomeInteractionListener
+    listener: HomeInteractionListener,
 ) {
     Scaffold(
         topBar = {
@@ -169,7 +169,6 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
-    onExpandDescription: (reelId: String) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -178,13 +177,18 @@ private fun ReelsListSection(
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
-        items(reels.itemSnapshotList.items) { reel ->
-            FeedReelCard(
-                reel = reel,
-                onClickLike = { onClickLike(reel.id, reel.isLiked) },
-                onClickReel = { onClickReel(reel.id) },
-                onExpandDescription = {onExpandDescription(reel.id)}
-            )
+        items(
+            count = reels.itemCount,
+            key = reels.itemKey { it.id }
+        ) { index ->
+            reels[index]?.let { reel ->
+                FeedReelCard(
+                    reel = reel,
+                    onClickLike = { onClickLike(reel.id, reel.isLiked) },
+                    onClickReel = { onClickReel(reel.id) },
+                    onExpandDescription = { onExpandDescription(reel.id) }
+                )
+            }
         }
     }
 }

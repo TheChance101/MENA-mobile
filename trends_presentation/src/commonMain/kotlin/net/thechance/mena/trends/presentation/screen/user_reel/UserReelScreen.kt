@@ -1,15 +1,20 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,14 +25,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -38,8 +47,10 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cash.paging.compose.collectAsLazyPagingItems
 import coil3.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.launch
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.avatar_image
+import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.confirmation_message
 import mena.trends_presentation.generated.resources.delete
 import mena.trends_presentation.generated.resources.delete_reel
@@ -49,19 +60,21 @@ import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_delete
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_like
+import mena.trends_presentation.generated.resources.just_now
 import mena.trends_presentation.generated.resources.react
 import mena.trends_presentation.generated.resources.success_delete_message
 import mena.trends_presentation.generated.resources.success_delete_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
+import net.thechance.mena.trends.presentation.shared.util.asString
 import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import net.thechance.mena.trends.presentation.video_player.VideoPlayer
 import org.jetbrains.compose.resources.painterResource
@@ -116,7 +129,7 @@ private fun UserReelScreenContent(
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .padding(
-                                    top = 24.dp,
+                                    top = Theme.spacing._24,
                                     bottom = Theme.spacing._12,
                                     end = Theme.spacing._8
                                 )
@@ -217,7 +230,7 @@ private fun TopAppBar(
         leadingContent = {
             Icon(
                 painter = painterResource(resource = Res.drawable.ic_arrow_left),
-                contentDescription = "Back Icon",
+                contentDescription = stringResource(resource = Res.string.back_arrow),
             )
         },
         onLeadingClick = { onBackClick() }
@@ -241,7 +254,12 @@ private fun ReelContent(
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount
     ) {
-        Box(Modifier.fillMaxSize()) {
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            val isLandscape = maxWidth > maxHeight
+
             UsersReact(
                 viewCount = reel.viewsCount.toString(),
                 likeCount = reel.likesCount.toString(),
@@ -249,13 +267,17 @@ private fun ReelContent(
                 onDeleteClick = onDeleteClick,
                 onLikeClick = onLikeClick,
                 isLiked = reel.isLiked,
-                modifier = Modifier.align(Alignment.BottomEnd)
-                    .padding(end = Theme.spacing._16, bottom = 140.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        end = Theme.spacing._16,
+                        bottom = if (isLandscape) 60.dp else 140.dp
+                    )
             )
 
             PublisherInfo(
                 userName = reel.username,
-                timeOfPublish = reel.createdAt.toString(),
+                timeOfPublish = reel.createdAt?.asString() ?: stringResource(resource = Res.string.just_now),
                 description = reel.description,
                 avatar = reel.profileImageUrl,
                 modifier = Modifier.align(Alignment.BottomCenter),
@@ -346,13 +368,20 @@ private fun UsersReact(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._24)
     ) {
+
+        val likeIconColor by animateColorAsState(
+            targetValue = if (isLiked) Color.White else Theme.colorScheme.shadeTertiary,
+            animationSpec = tween(durationMillis = 500)
+        )
+
         ReActIcon(
             icon = painterResource(resource = Res.drawable.ic_like),
             onClick = onLikeClick,
-            tint = if (isLiked) Color.White else Theme.colorScheme.shadeTertiary,
+            tint = likeIconColor,
             label = likeCount
         )
 
@@ -385,13 +414,23 @@ private fun ReActIcon(
     tint: Color = Theme.colorScheme.shadeTertiary,
     onClick: () -> Unit = {}
 ) {
+    val scale = remember { Animatable(1f) }
+    val scope = rememberCoroutineScope()
+
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(
             painter = icon,
             contentDescription = stringResource(Res.string.react),
             modifier = Modifier
                 .padding(bottom = Theme.spacing._8)
-                .clickable(enabled = isClickEnabled) { onClick() },
+                .scale(scale.value)
+                .noRippleClickable(enabled = isClickEnabled) {
+                    onClick()
+                    scope.launch {
+                        scale.animateTo(1.4f, tween(200))
+                        scale.animateTo(1f, tween(200))
+                    }
+                },
             tint = tint
         )
         Text(

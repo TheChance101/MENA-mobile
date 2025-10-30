@@ -76,7 +76,7 @@ buildkonfig {
     packageName = "net.thechance.mena.admin_panel"
 
     defaultConfigs {
-        val baseUrl = localProperties.getProperty("BASE_URL", "https://mena-dev.the-chance.net/")
+        val baseUrl = localProperties.getProperty("BASE_URL", "")
         buildConfigField(type = Type.STRING, name = "BASE_URL", value = baseUrl)
     }
 }
