@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.mosque
 
-internal interface MosqueMapInteractionListener {
+internal interface NearbyMosquesMapInteractionListener {
     fun onBackClick()
     fun onAddMosqueClick()
     fun onCurrentUserLocationClick()
