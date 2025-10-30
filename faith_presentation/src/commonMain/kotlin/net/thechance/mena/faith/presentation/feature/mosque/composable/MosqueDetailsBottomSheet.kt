@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -71,7 +73,8 @@ private fun MosqueDetailsContent(
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._12),
             text = stringResource(Res.string.mosque_details),
-            style = Theme.typography.title.small
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary
         )
         AsyncImage(
             model = imageUrl,
@@ -82,27 +85,33 @@ private fun MosqueDetailsContent(
         )
         Text(
             modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._4),
-            text = name, style = Theme.typography.title.large
+            text = name,
+            style = Theme.typography.title.large,
+            color = Theme.colorScheme.shadePrimary
         )
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._4),
             text = distance,
-            style = Theme.typography.label.medium
+            style = Theme.typography.label.medium,
+            color = Theme.colorScheme.shadeSecondary
         )
         Row(
-            modifier = Modifier.clip(RoundedCornerShape(4.dp))
+            modifier = Modifier
+                .clip(RoundedCornerShape(4.dp))
                 .clickable(onClick = onNavigationClick),
-
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
         ) {
             Text(
                 text = stringResource(Res.string.view_on_map),
-                style = Theme.typography.label.medium
+                style = Theme.typography.label.medium,
+                color = Theme.colorScheme.primary.primary
             )
             Image(
+                modifier = Modifier.size(16.dp),
                 painter = painterResource(Res.drawable.ic_arrow_right),
-                contentDescription = stringResource(Res.string.view_on_map)
+                contentDescription = stringResource(Res.string.view_on_map),
+                colorFilter = ColorFilter.tint(color = Theme.colorScheme.primary.primary)
             )
         }
     }
