@@ -22,8 +22,9 @@ class CompassViewModel(
     }
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
+
     override fun onChangeLocation() {
-        if (isValidAddress(uiState.value.city)) {
+        if (uiState.value.city.isNotEmpty()) {
             sendEffect(CompassEffect.NavigateToEnableLocation)
             return
         }
@@ -36,21 +37,36 @@ class CompassViewModel(
 
     private fun loadCompassData() {
         tryToExecute(
+            dispatcher = dispatcher,  // Add dispatcher here
             execute = { locationService.getActiveAddress() },
             onSuccess = ::handleAddressResult
         )
     }
 
     private fun handleAddressResult(address: Address?) {
-        if (!isValidAddress(uiState.value.city)) {
-            sendEffect(CompassEffect.NavigateToEnableLocation)
-            return
+        when {
+            address == null -> navigateToMyLocation()
+            address.hasEmptyAddressLine() -> navigateToEnableLocation(address)
+            else -> processValidAddress(address)
         }
-        updateState { it.copy(city = address?.addressLine ?: "") }
-        calculateQiblahDirection(address!!)
     }
 
-    private fun isValidAddress(address: String): Boolean = address.isEmpty()
+    private fun navigateToMyLocation() {
+        sendEffect(CompassEffect.NavigateToMyLocation)
+    }
+
+    private fun navigateToEnableLocation(address: Address) {
+        updateState { it.copy(city = address.addressLine) }
+        sendEffect(CompassEffect.NavigateToEnableLocation)
+    }
+
+    private fun processValidAddress(address: Address) {
+        updateState { it.copy(city = address.addressLine) }
+        calculateQiblahDirection(address)
+    }
+
+    private fun Address.hasEmptyAddressLine(): Boolean = addressLine.isEmpty()
+
 
     private fun calculateQiblahDirection(address: Address) {
         tryToExecute(

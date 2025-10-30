@@ -8,6 +8,7 @@ import dev.mokkery.mock
 import dev.mokkery.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
@@ -39,7 +40,6 @@ class CompassViewModelTest {
     private lateinit var locationService: LocationService
     private lateinit var addressesRepository: AddressesRepository
 
-
     @BeforeTest
     fun setUp() {
         testDispatcher = StandardTestDispatcher()
@@ -58,28 +58,12 @@ class CompassViewModelTest {
     }
 
     @Test
-    fun `init should calculate qiblah angle and start listening to azimuth when address is valid`() =
-        runTest {
-            val validAddress = createValidAddress()
-            val azimuthFlow = flowOf(45f, 90f, 135f)
-            everySuspend { addressesRepository.getActiveAddress() } returns validAddress
-            everySuspend { azimuthProvider.startListening() } returns azimuthFlow
-
-            createViewModel()
-            advanceUntilIdle()
-
-            val state = viewModel.uiState.value
-            assertTrue(state.qiblahAngleValue > 0f, "Qiblah angle should be calculated")
-            assertEquals("Cairo, Egypt", state.city)
-            verify { azimuthProvider.startListening() }
-        }
-
-    @Test
     fun `init should navigate to identity screen when address is null`() = runTest {
         everySuspend { addressesRepository.getActiveAddress() } returns null
 
+        createViewModel()
+
         viewModel.uiEffect.test {
-            createViewModel()
             advanceUntilIdle()
             assertEquals(CompassEffect.NavigateToMyLocation, awaitItem())
             cancelAndIgnoreRemainingEvents()
@@ -87,74 +71,66 @@ class CompassViewModelTest {
     }
 
     @Test
-    fun `init should navigate to identity screen when address id is null`() = runTest {
-        val addressWithoutId = Address(
-            id = null,
-            latitude = 30.0594628,
-            longitude = 31.1760627,
-            addressLine = "Cairo",
-            addressType = AddressType.Home
-        )
-        everySuspend { addressesRepository.getActiveAddress() } returns addressWithoutId
+    fun `init should not navigate when address has all required data even if id is null`() =
+        runTest {
+            everySuspend { addressesRepository.getActiveAddress() } returns cairoAddressWithoutId
+            everySuspend { azimuthProvider.startListening() } returns singleAzimuthFlow
 
-        viewModel.uiEffect.test {
             createViewModel()
             advanceUntilIdle()
-            assertEquals(CompassEffect.NavigateToMyLocation, awaitItem())
-            cancelAndIgnoreRemainingEvents()
+
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertEquals(CAIRO_CITY, state.city)
+                assertTrue(state.qiblahAngleValue != 0f)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `qiblah angle should be calculated correctly for valid address`() = runTest {
-        val validAddress = createValidAddress()
-        val azimuthFlow = flowOf(0f)
-        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
-        everySuspend { azimuthProvider.startListening() } returns azimuthFlow
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns singleAzimuthFlow
 
         createViewModel()
         advanceUntilIdle()
 
-        val expectedAngle = useCase.calculateQiblahAngle(validAddress)
+        val expectedAngle = useCase.calculateQiblahAngle(cairoAddress)
         assertEquals(expectedAngle.toFloat(), viewModel.uiState.value.qiblahAngleValue)
     }
 
     @Test
     fun `angle to qiblah should be calculated as shortest path`() = runTest {
-        val validAddress = createValidAddress()
-        val azimuthFlow = flowOf(0f, 45f, 90f)
-        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
-        everySuspend { azimuthProvider.startListening() } returns azimuthFlow
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns multipleAzimuthFlow
 
         createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
         assertTrue(
-            state.angleToQiblah in -180f..180f,
-            "Angle to Qiblah should be in range -180 to 180"
+            state.angleToQiblah in ANGLE_RANGE,
+            ANGLE_RANGE_MESSAGE
         )
     }
 
     @Test
     fun `initial state should have zero values`() = runTest {
-        val validAddress = createValidAddress()
-        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
-        everySuspend { azimuthProvider.startListening() } returns flowOf()
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns emptyAzimuthFlow
 
         createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertEquals(0f, state.continuousAzimuth)
-        assertEquals(0f, state.angleToQiblah)
+        assertEquals(INITIAL_AZIMUTH, state.continuousAzimuth)
+        assertEquals(INITIAL_ANGLE_TO_QIBLAH, state.angleToQiblah)
     }
 
     @Test
     fun `onBackClick should emit NavigateBack effect`() = runTest {
-        val validAddress = createValidAddress()
-        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
-        everySuspend { azimuthProvider.startListening() } returns flowOf()
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns emptyAzimuthFlow
 
         createViewModel()
         advanceUntilIdle()
@@ -162,6 +138,7 @@ class CompassViewModelTest {
         viewModel.uiEffect.test {
             viewModel.onBackClick()
             advanceUntilIdle()
+
             assertEquals(CompassEffect.NavigateBack, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
@@ -169,40 +146,39 @@ class CompassViewModelTest {
 
     @Test
     fun `refreshAddress should reload compass data and recalculate qiblah`() = runTest {
-        // Given
-        val updatedAddress = createValidAddress(
-            latitude = 21.4225,
-            longitude = 39.8262,
-            addressLine = "Makkah"
-        )
-        everySuspend { addressesRepository.getActiveAddress() } returns updatedAddress
-        everySuspend { azimuthProvider.startListening() } returns flowOf(0f)
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns singleAzimuthFlow
 
         createViewModel()
         advanceUntilIdle()
 
         val initialQiblah = viewModel.uiState.value.qiblahAngleValue
+        val initialCity = viewModel.uiState.value.city
+        assertEquals(CAIRO_FULL_NAME, initialCity)
+        assertTrue(initialQiblah != 0f, INITIAL_QIBLAH_MESSAGE)
+
+        everySuspend { addressesRepository.getActiveAddress() } returns makkahAddress
 
         viewModel.refreshAddress()
         advanceUntilIdle()
 
         val updatedQiblah = viewModel.uiState.value.qiblahAngleValue
-        assertNotEquals(initialQiblah, updatedQiblah, "Qiblah angle should be recalculated")
-        assertEquals("Makkah", viewModel.uiState.value.city)
+        val updatedCity = viewModel.uiState.value.city
+
+        assertNotEquals(initialQiblah, updatedQiblah, QIBLAH_RECALCULATED_MESSAGE)
+        assertEquals(MAKKAH_FULL_NAME, updatedCity)
     }
 
     @Test
     fun `azimuth changes should update continuous azimuth and angle to qiblah`() = runTest {
-        val validAddress = createValidAddress()
-        val azimuthFlow = flowOf(0f, 45f, 90f, 180f)
-        everySuspend { addressesRepository.getActiveAddress() } returns validAddress
-        everySuspend { azimuthProvider.startListening() } returns azimuthFlow
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns variableAzimuthFlow
 
         createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertTrue(state.continuousAzimuth != 0f, "Continuous azimuth should be updated")
+        assertTrue(state.continuousAzimuth != 0f, AZIMUTH_UPDATED_MESSAGE)
         verify { azimuthProvider.startListening() }
     }
 
@@ -215,17 +191,54 @@ class CompassViewModelTest {
         )
     }
 
-    private fun createValidAddress(
-        latitude: Double = 30.0594628,
-        longitude: Double = 31.1760627,
-        addressLine: String = "Cairo, Egypt"
-    ): Address {
-        return Address(
+    companion object TestData {
+
+        private const val CAIRO_LATITUDE = 30.0594628
+        private const val CAIRO_LONGITUDE = 31.1760627
+        const val CAIRO_CITY = "Cairo"
+        const val CAIRO_FULL_NAME = "Cairo, Egypt"
+
+        private const val MAKKAH_LATITUDE = 21.4225
+        private const val MAKKAH_LONGITUDE = 39.8262
+        const val MAKKAH_FULL_NAME = "Makkah, Saudi Arabia"
+
+        val cairoAddress = Address(
             id = Uuid.random(),
-            latitude = latitude,
-            longitude = longitude,
-            addressLine = addressLine,
+            latitude = CAIRO_LATITUDE,
+            longitude = CAIRO_LONGITUDE,
+            addressLine = CAIRO_FULL_NAME,
             addressType = AddressType.Home
         )
+
+        val cairoAddressWithoutId = Address(
+            id = null,
+            latitude = CAIRO_LATITUDE,
+            longitude = CAIRO_LONGITUDE,
+            addressLine = CAIRO_CITY,
+            addressType = AddressType.Home
+        )
+
+        val makkahAddress = Address(
+            id = Uuid.random(),
+            latitude = MAKKAH_LATITUDE,
+            longitude = MAKKAH_LONGITUDE,
+            addressLine = MAKKAH_FULL_NAME,
+            addressType = AddressType.Home
+        )
+
+        val emptyAzimuthFlow: Flow<Float> = flowOf()
+        val singleAzimuthFlow: Flow<Float> = flowOf(0f)
+        val multipleAzimuthFlow: Flow<Float> = flowOf(0f, 45f, 90f)
+        val variableAzimuthFlow: Flow<Float> = flowOf(0f, 45f, 90f, 180f)
+
+        // Expected values
+        const val INITIAL_AZIMUTH = 0f
+        const val INITIAL_ANGLE_TO_QIBLAH = 0f
+        val ANGLE_RANGE = -180f..180f
+
+        const val ANGLE_RANGE_MESSAGE = "Angle to Qiblah should be in range -180 to 180"
+        const val INITIAL_QIBLAH_MESSAGE = "Initial qiblah should be calculated"
+        const val QIBLAH_RECALCULATED_MESSAGE = "Qiblah angle should be recalculated"
+        const val AZIMUTH_UPDATED_MESSAGE = "Continuous azimuth should be updated"
     }
 }
