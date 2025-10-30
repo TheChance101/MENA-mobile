@@ -81,7 +81,8 @@ actual class FileManagerImpl : FileManager {
         pdfData: ByteArray,
         fileName: String
     ): String {
-        val uniqueFileName = "${fileName}_${Clock.System.now().epochSeconds}.pdf"
+        val uniqueFileName = fileName
+
         val fileManager = NSFileManager.defaultManager
         val documentsPath = getDocumentsDirectory()
         val appFolderPath = "$documentsPath/$APP_DOWNLOADS_FOLDER"
