@@ -103,7 +103,7 @@ private fun ShelfContent(
 private fun ShelfProducts(
     shelf: ShelfUiState,
     listener: DukanDetailsInteractionListener,
-    cartColor: Color? = null
+    cartColor: Color
 ) {
     val productPairs = remember(shelf.products) { shelf.products.chunked(2) }
     val lazyListState = rememberLazyListState()
@@ -147,7 +147,7 @@ private fun ProductItem(
     onAddToCartClick: (productId: String) -> Unit,
     onPlusClick: (productId: String) -> Unit,
     onMinusClick: (productId: String) -> Unit,
-    cartColor: Color?
+    cartColor: Color
 ) {
     ProductCard(
         productName = product.name,

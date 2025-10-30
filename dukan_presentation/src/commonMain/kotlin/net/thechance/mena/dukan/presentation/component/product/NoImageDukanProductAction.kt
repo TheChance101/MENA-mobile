@@ -34,7 +34,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun NoImageDukanProductAction(
     showProductQuantity: Boolean,
     inCartQuantity: Int,
-    dukanColor: Long,
+    dukanColor: Color,
     onAddToCartClick: () -> Unit,
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
@@ -49,7 +49,7 @@ fun NoImageDukanProductAction(
             Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)) {
                 Icon(
                     painter = painterResource(Res.drawable.remove_01),
-                    tint = Color(dukanColor),
+                    tint = dukanColor,
                     contentDescription = stringResource(Res.string.remove_product),
                     modifier = modifier.size(24.dp)
                         .clip(RoundedCornerShape(Theme.radius.full))
@@ -69,13 +69,13 @@ fun NoImageDukanProductAction(
                     textAlign = TextAlign.Center,
                     modifier = modifier.size(24.dp)
                         .clip(RoundedCornerShape(Theme.radius.full))
-                        .background(Color(dukanColor))
+                        .background(dukanColor)
                         .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._2)
                 )
 
                 Icon(
                     painter = painterResource(Res.drawable.add_icon),
-                    tint = Color(dukanColor),
+                    tint = dukanColor,
                     contentDescription = stringResource(Res.string.add_product),
                     modifier = modifier.size(24.dp)
                         .clip(RoundedCornerShape(Theme.radius.full))
@@ -91,7 +91,7 @@ fun NoImageDukanProductAction(
         } else {
             Icon(
                 painter = painterResource(Res.drawable.ic_shopping_bag_add),
-                tint = Color(dukanColor),
+                tint = dukanColor,
                 contentDescription = stringResource(Res.string.add_product),
                 modifier = modifier.size(36.dp)
                     .clip(RoundedCornerShape(Theme.radius.md))
@@ -118,7 +118,7 @@ private fun ProductActionNoImageDukanPreview() {
         NoImageDukanProductAction(
             inCartQuantity = 0,
             showProductQuantity = false,
-            dukanColor = 0xFFFB5B5D,
+            dukanColor = Color(0xFFFB5B5D),
             onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}
@@ -133,7 +133,7 @@ private fun ProductActionHasQuantityNoImageDukanPreview() {
         NoImageDukanProductAction(
             inCartQuantity = 20,
             showProductQuantity = true,
-            dukanColor = 0xFFFB5B5D,
+            dukanColor = Color(0xFFFB5B5D),
             onAddToCartClick = {},
             onPlusClick = {},
             onMinusClick = {}

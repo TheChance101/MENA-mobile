@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,7 +41,7 @@ fun SmallAndWideImageDukanProductAction(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     cartIcon: Painter,
-    cartColor: Color? = null
+    cartColor: Color
 ) {
 
     AnimatedContent(
@@ -70,25 +69,23 @@ fun SmallAndWideImageDukanProductAction(
 private fun ProductCart(
     onClick: () -> Unit,
     cartIcon : Painter,
-    cartColor: Color? = null
+    cartColor: Color
 ) {
-    Box(
+    Icon(
+        painter = cartIcon,
+        contentDescription = stringResource(Res.string.add_shopping_basket),
         modifier = Modifier
             .size(32.dp)
-            .clip(RoundedCornerShape(size = Theme.radius.full))
-            .background(
-                color = cartColor ?: Theme.colorScheme.primary.primary,
+            .clip(RoundedCornerShape(Theme.radius.full))
+            .background(cartColor)
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource =  MutableInteractionSource()
             )
-            .clickable(onClick = onClick,indication = null, interactionSource = MutableInteractionSource()),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = cartIcon,
-            contentDescription = stringResource(Res.string.add_shopping_basket),
-            modifier = Modifier
-                .size(16.dp)
-        )
-    }
+            .padding(Theme.spacing._8)
+    )
+
 }
 
 @Composable

@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -15,8 +16,8 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanHeader
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanAppBar
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanHeader
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanShelves
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductCardSkeletonGrid
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.wideImageProductsGrid
@@ -43,7 +44,7 @@ fun WideImageDukanDetailsContent(
             )
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
@@ -70,9 +71,15 @@ fun WideImageDukanDetailsContent(
                     listener = listener,
                 )
             }
-            when(productShelf.loadState.refresh){
-                is LoadState.Loading -> { wideImageProductCardSkeletonGrid(productCount = 6) }
-                is LoadState.NotLoading -> { wideImageProductsGrid(listener, productShelf) }
+            when (productShelf.loadState.refresh) {
+                is LoadState.Loading -> wideImageProductCardSkeletonGrid(productCount = 6)
+                is LoadState.NotLoading -> {
+                    wideImageProductsGrid(
+                        listener = listener,
+                        cartColor = Color(state.dukanInfo.color),
+                        productsShelf = productShelf
+                    )
+                }
                 is LoadState.Error -> {}
             }
         }

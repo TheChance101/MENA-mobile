@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
@@ -40,6 +41,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun LazyGridScope.wideImageProductsGrid(
     listener: DukanDetailsInteractionListener,
+    cartColor : Color,
     productsShelf: LazyPagingItems<DukanDetailsUiState.ProductUiState>,
 ) {
     items(
@@ -54,7 +56,7 @@ fun LazyGridScope.wideImageProductsGrid(
                     SmallAndWideImageDukanProductAction(
                         showProductQuantity = product.showProductQuantity,
                         inCartQuantity = product.inCartQuantity,
-                        cartColor = Theme.colorScheme.primary.primary,
+                        cartColor = cartColor,
                         onAddToCartClick = { listener.onAddToCartClicked(product.id) },
                         onPlusClick = { listener.onPlusClicked(product.id) },
                         onMinusClick = { listener.onMinusClicked(product.id) },
