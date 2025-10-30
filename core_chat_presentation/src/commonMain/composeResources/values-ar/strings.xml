@@ -46,4 +46,5 @@
     <string name="you">أنت</string>
     <string name="could_not_get_sync_contacts_status">لم نتمكن من الحصول على حالة مزامنة جهات الاتصال، يرجى المحاولة مرة أخرى.</string>
     <string name="could_not_load_chats">فشل تحميل المحادثات</string>
+    <string name="could_not_get_balance">فشل جلب الرصيد الحالي</string>
 </resources>
