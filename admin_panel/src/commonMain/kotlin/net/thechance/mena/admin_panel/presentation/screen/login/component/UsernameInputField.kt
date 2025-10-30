@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_user
@@ -21,6 +22,7 @@ internal fun UsernameInputField(
     username: String,
     onChangeValue: (String) -> Unit,
     modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -37,7 +39,8 @@ internal fun UsernameInputField(
             hint = "",
             onValueChanged = { onChangeValue(it) },
             leadingIcon = painterResource(Res.drawable.ic_user),
-            showTrailingDivider = false
+            showTrailingDivider = false,
+            visualTransformation = visualTransformation
         )
     }
 }

@@ -21,6 +21,7 @@ import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.login_background
 import net.thechance.mena.admin_panel.resources.login_background_img
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -56,6 +57,7 @@ private fun LoginScreenContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(bottom = Theme.spacing._16)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
