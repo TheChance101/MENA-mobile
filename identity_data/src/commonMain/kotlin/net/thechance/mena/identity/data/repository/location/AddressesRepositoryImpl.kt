@@ -43,10 +43,10 @@ class AddressesRepositoryImpl(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    override suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput) {
+    override suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput, isActive: Boolean) {
         return safeWrapper {
             client.putJson(
-                requestDto = addressInput.toDto(id = addressId.toString()),
+                requestDto = addressInput.toDto(id = addressId.toString() , isActive),
                 path = "$ADDRESS_ENDPOINT/$addressId"
             )
         }
@@ -77,7 +77,7 @@ class AddressesRepositoryImpl(
         safeWrapper {
             val response: List<AddressResponseDto> = client.getJson(ADDRESS_ENDPOINT)
             val addressToActivate = response.find { it.id == addressId.toString() }?.toEntity()
-            
+
             if (addressToActivate != null) {
                 client.putJson<AddressRequestDto, Unit>(
                     requestDto = addressToActivate.toDto(id = addressId.toString(), isActive = true),
