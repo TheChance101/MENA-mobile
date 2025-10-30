@@ -101,4 +101,7 @@
     <string name="re_try">إعادة المحاولة</string>
 
     <string name="no_favorites_yet">لا يوجد مفضلات بعد</string>
+
+    <string name="show_more">اعرض المزيد</string>
+    <string name="show_less">عرض أقل</string>
 </resources>
