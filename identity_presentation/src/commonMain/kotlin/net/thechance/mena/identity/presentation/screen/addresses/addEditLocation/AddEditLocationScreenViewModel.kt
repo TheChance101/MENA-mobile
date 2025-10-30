@@ -8,7 +8,6 @@ import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.add_location_successfully
 import mena.identity_presentation.generated.resources.edit_location_successfully
-import mena.identity_presentation.generated.resources.error
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import net.thechance.mena.identity.domain.exception.AuthenticationException
@@ -127,8 +126,9 @@ class AddEditLocationScreenViewModel(
     private suspend fun saveAddress() {
         val addressInput = state.value.addressUIState.toAddressInput()
         val addressId = state.value.addressUIState.addressID
+        val isMainAddress = state.value.addressUIState.isMainAddress
         if (addressId != null) {
-            addressesRepository.updateAddress(addressId, addressInput)
+            addressesRepository.updateAddress(addressId, addressInput,isMainAddress)
         } else {
             addressesRepository.createAddress(addressInput)
         }
