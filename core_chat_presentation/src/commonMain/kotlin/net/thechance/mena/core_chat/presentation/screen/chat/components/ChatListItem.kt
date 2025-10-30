@@ -2,8 +2,6 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -42,36 +40,28 @@ fun ChatListItem(
 
         is ChatListItem.TextMessage -> {
             val markedMessage = item.data
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = if (markedMessage.isMine) Arrangement.End else Arrangement.Start
-            ) {
-                TextMessageLayout(
-                    message = markedMessage,
-                    chatAvatarUrl = chatAvatarUrl,
-                    showMessageInfo = (markedMessage.isVisibleMessageInfo || markedMessage.isLastInSeries || markedMessage.status == MessageStatus.FAILED),
-                    isMarkedLastInSeries = markedMessage.isLastInSeries,
-                    onMessageClick = { onMessageClick(markedMessage.id) },
-                    onFailClick = { onFailedMessageClick(markedMessage) },
-                )
-            }
+            TextMessageLayout(
+                modifier = modifier,
+                message = markedMessage,
+                chatAvatarUrl = chatAvatarUrl,
+                showMessageInfo = (markedMessage.isVisibleMessageInfo || markedMessage.isLastInSeries || markedMessage.status == MessageStatus.FAILED),
+                isMarkedLastInSeries = markedMessage.isLastInSeries,
+                onMessageClick = { onMessageClick(markedMessage.id) },
+                onFailClick = { onFailedMessageClick(markedMessage) },
+            )
         }
 
         is ChatListItem.ImageMessages -> {
             val markedMessage = item.data
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = if (markedMessage.last().isMine) Arrangement.End else Arrangement.Start
-            ) {
-                ImageMessagesLayout(
-                    messages = markedMessage,
-                    chatAvatarUrl = chatAvatarUrl,
-                    showMessageInfo = (markedMessage.last().isVisibleMessageInfo || markedMessage.last().isLastInSeries || markedMessage.last().status == MessageStatus.FAILED),
-                    isMarkedLastInSeries = markedMessage.last().isLastInSeries,
-                    onMessageImageClick = onMessageImageClick,
-                    onFailClick = onFailedMessageClick,
-                )
-            }
+            ImageMessagesLayout(
+                modifier = modifier,
+                messages = markedMessage,
+                chatAvatarUrl = chatAvatarUrl,
+                showMessageInfo = (markedMessage.last().isVisibleMessageInfo || markedMessage.last().isLastInSeries || markedMessage.last().status == MessageStatus.FAILED),
+                isMarkedLastInSeries = markedMessage.last().isLastInSeries,
+                onMessageImageClick = onMessageImageClick,
+                onFailClick = onFailedMessageClick,
+            )
         }
     }
 }

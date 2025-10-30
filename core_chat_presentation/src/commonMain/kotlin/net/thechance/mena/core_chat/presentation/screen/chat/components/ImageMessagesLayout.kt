@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -46,16 +47,11 @@ fun ImageMessagesLayout(
     onFailClick: (MessageUiState) -> Unit = {},
     onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
 ) {
+
     val messageBackground =
         if (messages.last().isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
-    val messagePaddingStart = if (messages.last().isMine)
-        Theme.spacing._24
-    else
-        Theme.spacing._8
-
-    val messagePaddingEnd = if (messages.last().isMine) 0.dp else Theme.spacing._8
     val maxRadius = Theme.radius.lg
 
     val messageShape = if (messages.last().isMine && isMarkedLastInSeries)
@@ -75,99 +71,93 @@ fun ImageMessagesLayout(
     else
         RoundedCornerShape(size = maxRadius)
 
-    val messageInfoAlignment = if (messages.last().isMine)
-        Alignment.Start
-    else
-        Alignment.End
+    val messageInfoAlignment = if (messages.last().isMine) Alignment.Start else Alignment.End
     val messageAlignment = if (messages.last().isMine) Alignment.End else Alignment.Start
 
-    val verticalPadding = Theme.spacing._4
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
-        horizontalAlignment = messageAlignment
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = if (messages.last().isMine) Alignment.CenterEnd else Alignment.CenterStart
     ) {
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+            horizontalAlignment = messageAlignment
         ) {
-            if (!messages.last().isMine) {
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            ) {
+                if (!messages.last().isMine) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isMarkedLastInSeries) {
+                            AsyncImage(
+                                modifier = Modifier.fillMaxSize(),
+                                model = chatAvatarUrl,
+                                placeholder = painterResource(Res.drawable.ic_profile_placeholder),
+                                error = painterResource(Res.drawable.ic_profile_placeholder),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "Contact photo",
+                            )
+                        }
+                    }
+                }
+
                 Box(
                     modifier = Modifier
-                        .clip(CircleShape)
-                        .size(24.dp),
-                    contentAlignment = Alignment.Center
+                        .clip(messageShape)
+                        .background(color = messageBackground, shape = messageShape)
+                        .padding(Theme.spacing._4)
                 ) {
-                    if (isMarkedLastInSeries) {
-                        AsyncImage(
-                            modifier = Modifier.fillMaxSize(),
-                            model = chatAvatarUrl,
-                            placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-                            error = painterResource(Res.drawable.ic_profile_placeholder),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "Contact photo",
-                        )
-                    }
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .padding(start = messagePaddingStart, end = messagePaddingEnd)
-                    .clip(messageShape)
-                    .background(
-                        color = messageBackground,
-                        shape = messageShape
-                    )
-                    .padding(
-                        horizontal = verticalPadding,
-                        vertical = Theme.spacing._4
-                    )
-            ) {
+                    val imageDataList = messages.map { imageData ->
+                        when (imageData.content) {
+                            is MessageContent.Image -> {
+                                val images = imageData.content.data
+                                when (images) {
+                                    is ImageData.ImageUrl -> images.url
+                                    is ImageData.ImageByteArray -> images.byteArray
+                                }
 
-                val imageDataList = messages.map { imageData ->
-                    when (imageData.content) {
-                        is MessageContent.Image -> {
-                            val images = imageData.content.data
-                            when (images) {
-                                is ImageData.ImageUrl -> images.url
-                                is ImageData.ImageByteArray -> images.byteArray
                             }
 
+                            is MessageContent.Text -> return@Column
                         }
-
-                        is MessageContent.Text -> return@Column
                     }
-                }
 
-                ImageMessageContent(
-                    images = imageDataList,
-                    modifier = Modifier.size(156.dp, 162.dp).clip(messageShape),
-                    onImageClick = { index -> onMessageImageClick(messages, index) }
-                )
+                    ImageMessageContent(
+                        images = imageDataList,
+                        modifier = Modifier.size(156.dp, 162.dp).clip(messageShape),
+                        onImageClick = { index -> onMessageImageClick(messages, index) }
+                    )
+                }
             }
 
-        }
-        AnimatedVisibility(
-            visible = showMessageInfo,
-            modifier = Modifier
-                .align(messageInfoAlignment)
-                .padding(start = messagePaddingStart, end = messagePaddingEnd)
-        ) {
-            MessageInfo(
-                messageTime = messages.last().sendTime,
-                messageStatus = messages.last().status,
-                messageIsMine = messages.last().isMine,
-                onFailClick = { onFailClick(messages.last()) },
-            )
+            AnimatedVisibility(
+                visible = showMessageInfo,
+                modifier = Modifier.align(messageInfoAlignment)
+            ) {
+                MessageInfo(
+                    messageTime = messages.last().sendTime,
+                    messageStatus = messages.last().status,
+                    messageIsMine = messages.last().isMine,
+                    onFailClick = { onFailClick(messages.last()) },
+                )
+            }
         }
     }
 }
 
+@Preview
 @Composable
-@Preview()
-private fun PreviewBaseMessageLayout() {
+private fun Preview() {
     MenaTheme {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             ImageMessagesLayout(
                 messages = listOf(
                     MessageUiState(

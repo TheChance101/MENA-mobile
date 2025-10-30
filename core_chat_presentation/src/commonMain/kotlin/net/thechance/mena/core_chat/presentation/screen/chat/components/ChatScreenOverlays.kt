@@ -2,7 +2,6 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import mena.core_chat_presentation.generated.resources.Res
@@ -18,7 +17,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-@Composable
 fun ScaffoldScope.ChatScreenOverlays(
     showResendMessageDialog: Boolean,
     onDeleteFailedMessageClick: () -> Unit = { },
