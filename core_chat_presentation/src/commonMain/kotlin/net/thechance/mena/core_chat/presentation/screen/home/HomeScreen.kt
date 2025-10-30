@@ -1,7 +1,6 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,17 +26,18 @@ import mena.core_chat_presentation.generated.resources.chats
 import mena.core_chat_presentation.generated.resources.ic_coin
 import mena.core_chat_presentation.generated.resources.ic_plus
 import mena.core_chat_presentation.generated.resources.mena
+import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
-import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
-import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.SyncContactsRoute
 import net.thechance.mena.core_chat.presentation.navigation.WalletRoute
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.screen.home.components.ChatItem
 import net.thechance.mena.core_chat.presentation.screen.home.components.NoChatsHistoryView
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
+import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
@@ -78,7 +78,7 @@ private fun HomeContent(
         topBar = {
             HomeScreenAppBar(
                 balanceAmount = state.balanceAmount.toString(),
-                interactionListener::onWalletClicked
+                onWalletClicked = interactionListener::onWalletClicked
             )
         }
     ) {
@@ -128,7 +128,8 @@ private fun HomeScreenAppBar(
         trailingContent = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.noHoverClickable { onWalletClicked() }
             ) {
                 Text(
                     text = balanceAmount,
@@ -139,7 +140,6 @@ private fun HomeScreenAppBar(
                     painter = painterResource(Res.drawable.ic_coin),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
-                        .clickable { onWalletClicked() }
                 )
             }
         }
