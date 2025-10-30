@@ -1,8 +1,6 @@
 package net.thechance.mena.wallet.presentation.screen.payment_result.component
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -35,13 +33,13 @@ internal fun PaymentConnectionLostContent(
             .padding(vertical = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .heightIn(min = 500.dp),
-            verticalArrangement = Arrangement.Center,
-        ){
+                .heightIn(min = 500.dp)
+        ) {
             PaymentResultCard(
+                modifier = Modifier.align(Alignment.Center),
                 image = painterResource(Res.drawable.transaction_failed),
                 title = stringResource(Res.string.transaction_failed),
                 description = stringResource(Res.string.connection_lost_try_again),
