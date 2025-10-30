@@ -11,9 +11,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
-import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
@@ -164,23 +164,22 @@ class TransactionHistoryViewModel(
         tryToExecute(
             callee = { transactionRepository.getFirstTransactionDate() },
             onSuccess = ::onGetFirstTransactionDateSuccess,
-            onError = ::onGetFirstTransactionDateError,
+            onError = {},
+            onFinish = ::onGetFirstTransactionDateFinish,
             dispatcher = dispatcher
         )
     }
 
-    private suspend fun onGetFirstTransactionDateError(throwable: ErrorState) {
+
+    private fun onGetFirstTransactionDateFinish() {
         updateState {
             it.copy(
-                filterState = it.filterState.copy(errorState = throwable)
+                filterState = it.filterState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
+                )
             )
         }
-
-        showSnackBar(
-            title = stringProvider.getString(Res.string.error),
-            message = stringProvider.getString(Res.string.failed_to_load_date_picker),
-            isSuccess = false
-        )
     }
 
     private fun onGetFirstTransactionDateSuccess(date: LocalDate?) {
@@ -189,8 +188,6 @@ class TransactionHistoryViewModel(
             it.copy(
                 filterState = it.filterState.copy(
                     defaultStartDate = currentStartDate,
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
                     errorState = null
                 )
             )
@@ -227,22 +224,11 @@ class TransactionHistoryViewModel(
                 (if (state.startDate != null || state.endDate != null) 1 else 0)
     }
 
-
     private fun resetPaginator() {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    isLoading = true
-                ),
-                history = emptyList(),
-                isLoading = true
-            )
-        }
-
+        updateState { it.copy(history = emptyList()) }
         paginator.reset()
         loadNextTransactions()
     }
-
 
     private fun areDatesValid(): Boolean {
         val startDate = currentState.filterState.startDate
@@ -299,7 +285,16 @@ class TransactionHistoryViewModel(
     }
 
     private fun onPaginationError(throwable: Throwable?) {
-        updateState { it.copy(errorState = ErrorState.UnknownError) }
+        updateState {
+            it.copy(
+                errorState = when (throwable) {
+                    is NoInternetException ->ErrorState.NoInternet
+                    else -> ErrorState.UnknownError
+                },
+                isLoading = false,
+                filterState =  it.filterState.copy(isLoading = false)
+            )
+        }
     }
 
     private fun showInvalidDatesSnackBar() {
@@ -350,7 +345,7 @@ class TransactionHistoryViewModel(
         )
     }
 
-   private companion object {
+    private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
     }

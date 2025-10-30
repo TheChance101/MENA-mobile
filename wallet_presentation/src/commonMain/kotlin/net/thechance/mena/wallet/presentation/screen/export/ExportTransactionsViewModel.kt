@@ -33,6 +33,7 @@ import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
 import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
@@ -221,30 +222,27 @@ class ExportTransactionsViewModel(
         tryToExecute(
             callee = { transactionRepository.getFirstTransactionDate() },
             onSuccess = ::onGetFirstTransactionDateSuccess,
-            onError = ::onGetFirstTransactionDateError,
+            onError = {},
+            onFinish = ::onGetFirstTransactionDateFinish,
             dispatcher = Dispatchers.IO
         )
     }
 
-    private suspend fun onGetFirstTransactionDateError(error: ErrorState) {
-        handleError(
-            error = error,
-            title = stringProvider.getString(Res.string.error),
-            message = stringProvider.getString(Res.string.failed_to_load_date_picker),
-            isSuccess = false
-        )
+    private fun onGetFirstTransactionDateFinish() {
+        updateState {
+            it.copy(
+                dateState = it.dateState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
+                )
+            )
+        }
     }
 
     private fun onGetFirstTransactionDateSuccess(date: LocalDate?) {
         updateState { oldState ->
             val currentStartDate = oldState.filterState.startDate ?: date
-            oldState.copy(
-                dateState = oldState.dateState.copy(
-                    defaultStartDate = currentStartDate,
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
-                )
-            )
+            oldState.copy(dateState = oldState.dateState.copy(defaultStartDate = currentStartDate))
         }
     }
 
@@ -327,8 +325,10 @@ class ExportTransactionsViewModel(
             year(); char('-'); monthNumber(); char('-')
             day(padding = Padding.ZERO)
         }
-        val startDateTime = currentState.filterState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
-        val endDateTime = currentState.filterState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
+        val startDateTime =
+            currentState.filterState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
+        val endDateTime =
+            currentState.filterState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
 
         return TransactionFilterParams(
             types = currentState.filterState.selectedTransactionsTypes.map { it.toDomain() },
