@@ -36,10 +36,11 @@ internal fun ExpandableText(
     moreText: String = stringResource(Res.string.show_more),
     lessText: String = stringResource(Res.string.show_less),
 ) {
+    val animationDuration by remember {mutableStateOf(500)}
     var isTextTruncated by remember { mutableStateOf(false) }
     val shortTextAnimation =
-        fadeIn(animationSpec = tween(500, easing = LinearOutSlowInEasing)) togetherWith
-                fadeOut(animationSpec = tween(500, easing = LinearOutSlowInEasing))
+        fadeIn(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing)) togetherWith
+                fadeOut(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing))
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.noRippleClickable { onExpandedChange() }
@@ -62,8 +63,8 @@ internal fun ExpandableText(
         if (isTextTruncated) {
             AnimatedVisibility(
                 visible = true,
-                enter = fadeIn(animationSpec = tween(500)),
-                exit = fadeOut(animationSpec = tween(500))
+                enter = fadeIn(animationSpec = tween(animationDuration)),
+                exit = fadeOut(animationSpec = tween(animationDuration))
             ) {
                 Text(
                     text = if (isExpanded) lessText else moreText,
