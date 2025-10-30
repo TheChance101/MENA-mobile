@@ -5,15 +5,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -25,9 +28,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
@@ -43,7 +46,6 @@ import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.segment.Segment
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -120,23 +122,21 @@ private fun ManageTrendsScreenBody(
     state: ManageTrendsScreenState
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
+
         item {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Theme.spacing._16),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                UserAvatar(
-                    profileImageUrl = state.profile.profileImageUrl,
-                )
-
+                UserAvatar(profileImageUrl = state.profile.profileImageUrl)
                 Text(
                     text = state.profile.userName,
                     style = Theme.typography.label.medium,
-                    modifier = Modifier
-                        .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
+                    modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
                 )
             }
         }
@@ -150,7 +150,6 @@ private fun ManageTrendsScreenBody(
                 favoriteTitle = stringResource(Res.string.favorite)
             )
         }
-
     }
 }
 
@@ -187,83 +186,53 @@ private fun SegmentSection(
     onTrendClick: (id: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val totalWidth = maxWidth
-        val itemMinWidth = 106.dp
-        val columnsCount = (totalWidth / (itemMinWidth + Theme.spacing._4)).toInt().coerceAtLeast(1)
-        val rowsCount = (reels.itemCount + columnsCount - 1) / columnsCount
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Theme.spacing._16)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = Theme.spacing._16)
+    ) {
+        Segment(
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            Segment(modifier = Modifier.fillMaxWidth()) {
-
-                item(trendsTitle) {
-                    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)) {
-                        repeat(rowsCount) { rowIndex ->
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                for (colIndex in 0 until columnsCount) {
-                                    val index = rowIndex * columnsCount + colIndex
-                                    if (index < reels.itemCount) {
-                                        reels[index]?.let { reel ->
-                                            TrendItem(
-                                                item = reel,
-                                                onTrendClick = onTrendClick,
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                                    .fillMaxWidth()
-                                            )
-                                        } ?: PlaceholderBox(modifier = Modifier.weight(1f))
-                                    } else {
-                                        PlaceholderBox(modifier = Modifier.weight(1f))
-                                    }
-                                }
-                            }
-                        }
-
-                        if (reels.loadState.append is LoadState.Loading) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                DotsProgressIndicator()
-                            }
+            item(title = trendsTitle) {
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 106.dp),
+                    userScrollEnabled = false,
+                    state = rememberLazyGridState(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((reels.itemCount / 3 * 164).dp),
+                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        Theme.spacing._4,
+                        Alignment.CenterHorizontally
+                    ),
+                    contentPadding = PaddingValues(bottom = Theme.spacing._16)
+                ) {
+                    items(key = reels.itemKey(), count = reels.itemCount) { index ->
+                        reels[index]?.let { reel ->
+                            TrendItem(
+                                item = reel,
+                                onTrendClick = onTrendClick
+                            )
                         }
                     }
                 }
+            }
 
-                item(favoriteTitle) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = Theme.spacing._16),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.no_favorites_yet),
-                            style = Theme.typography.body.small
-                        )
-                    }
+            item(favoriteTitle) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(Res.string.no_favorites_yet),
+                        style = Theme.typography.body.small
+                    )
                 }
             }
         }
     }
-}
-
-
-@Composable
-private fun PlaceholderBox(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .aspectRatio(106f / 164f)
-    )
 }
 
 @Composable
