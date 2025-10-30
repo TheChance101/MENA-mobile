@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.component.chip
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.getScreenWidth
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 
 @Composable
@@ -23,7 +25,8 @@ fun SelectionRow(
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        modifier = Modifier.requiredWidth(getScreenWidth())
     ) {
         items(availableItems) { item ->
             Chip(

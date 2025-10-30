@@ -10,6 +10,7 @@ import mena.identity_presentation.generated.resources.error_address_not_found
 import mena.identity_presentation.generated.resources.is_main_address_error
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.LocationException
+import net.thechance.mena.identity.domain.exception.NoActiveAddressException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
@@ -36,20 +37,25 @@ class AddressesScreenViewModel(
 
     override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
 
-    override fun onAddButtonClicked() = sendNewEffect(
-        AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
-            addressUIState = null,
-            onSuccess = ::onAddEditSuccess
+    override fun onAddButtonClicked() {
+        sendNewEffect(
+            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
+                addressUIState = null,
+                onSuccess = ::onAddEditSuccess
+            )
         )
-    )
+        onDismissSnackBar()
+    }
 
-    override fun onEditAddressClicked(addressUIState: AddressUIState) =
+    override fun onEditAddressClicked(addressUIState: AddressUIState) {
         sendNewEffect(
             AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
                 addressUIState = addressUIState,
                 onSuccess = ::onAddEditSuccess
             )
         )
+        onDismissSnackBar()
+    }
 
     override fun onClickAddress(addressId: Uuid) {
         val address = findAddressById(addressId)
@@ -140,8 +146,10 @@ class AddressesScreenViewModel(
     }
 
     private fun onAddressOperationError(throwable: Throwable) {
-        dismissDeleteDialog()
-        showErrorSnackBar(mapErrorMessage(throwable))
+        when(throwable) {
+            is NoActiveAddressException -> updateState { copy(isLoading = false) }
+            else -> showErrorSnackBar(mapErrorMessage(throwable))
+        }
     }
 
     private fun onAddressNotFoundError() {
@@ -176,10 +184,6 @@ class AddressesScreenViewModel(
                 deleteDialogUIState = DeleteDialogUIState(isVisible = false)
             )
         }
-    }
-
-    private fun dismissDeleteDialog() = updateState {
-        copy(deleteDialogUIState = DeleteDialogUIState(isVisible = false))
     }
 
     private fun findAddressById(addressId: Uuid?): AddressUIState? {
