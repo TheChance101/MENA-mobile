@@ -5,16 +5,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.service.LocalizationService
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
+import net.thechance.mena.identity.presentation.util.AppLocalizer
+import org.koin.core.KoinApplication.Companion.init
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
     val appVersion: String,
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    val localizationService: LocalizationService
 ) :
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
-        (ProfileScreenUIState()),
+        (ProfileScreenUIState(
+            languageDialogUiState = LanguageDialogUiState(
+                selectedLanguage = Language.entries.find { it.iso == localizationService.getCurrentLanguage() }?: Language.English,
+                options = Language.entries
+            ),
+        )),
     ProfileScreenInteractionListener {
 
     init {
@@ -69,7 +78,7 @@ class ProfileScreenViewModel(
         sendNewEffect(ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen)
 
     override fun onLanguageClicked() =
-        updateState { copy(showLanguageDialog = true) }
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = true)) }
 
     override fun onThemeClicked() =
         updateState { copy(showThemeDialog = true) }
@@ -80,8 +89,25 @@ class ProfileScreenViewModel(
     override fun onContactUsClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateContactUsScreen)
 
+    override fun onConfirmLanguageSelection(language: Language) {
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedLanguage = language)) }
+        tryToExecute(
+            function = { localizationService.applyLanguage(language.iso) },
+            onSuccess = {
+                updateState {
+                    copy(
+                        languageDialogUiState = languageDialogUiState.copy(
+                            isVisible = false
+                        )
+                    )
+                }
+            },
+            onError = ::onUserInfoError,
+        )
+    }
+
     override fun onDismissLanguageDialog() =
-        updateState { copy(showLanguageDialog = false) }
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = false)) }
 
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }

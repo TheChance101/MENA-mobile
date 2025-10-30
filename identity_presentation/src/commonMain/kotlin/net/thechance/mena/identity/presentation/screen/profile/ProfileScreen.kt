@@ -41,6 +41,7 @@ import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfi
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
+import net.thechance.mena.identity.presentation.screen.profile.components.LanguageDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
@@ -86,13 +87,13 @@ class ProfileScreen : BaseScreen<
                     }
                 }
             }
-            dialog(state.showLanguageDialog) {
-                Dialog(
+            dialog(state.languageDialogUiState.isVisible) {
+                LanguageDialog(
                     isVisible = it,
-                    title = "HI",
-                    message = "Not Yet Implemented",
-                    onDismiss = listener::onDismissLanguageDialog,
-                    actionButtons = {}
+                    onDismissRequest = listener::onDismissLanguageDialog,
+                    languages = state.languageDialogUiState.options,
+                    onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
+                    currentLanguage = state.languageDialogUiState.selectedLanguage
                 )
             }
             dialog(state.showThemeDialog) {
@@ -155,7 +156,8 @@ class ProfileScreen : BaseScreen<
                     item {
                         AppSettingsSection(
                             onLanguageClicked = listener::onLanguageClicked,
-                            onThemeClicked = listener::onThemeClicked
+                            onThemeClicked = listener::onThemeClicked,
+                            currentLanguage = state.languageDialogUiState.selectedLanguage.iso
                         )
                     }
                     item {
