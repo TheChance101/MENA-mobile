@@ -38,6 +38,7 @@ import net.thechance.mena.wallet.presentation.screen.transaction_history.compone
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import net.thechance.mena.wallet.presentation.utils.orToday
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -111,10 +112,10 @@ fun TransactionHistoryContent(
                     isVisible = isVisible,
                     defaultSelectedDate = when (state.filterState.datePickerMode) {
                         TransactionFilterState.DatePickerMode.START_DATE ->
-                            state.filterState.defaultStartDate
+                            state.filterState.defaultStartDate.orToday()
 
                         TransactionFilterState.DatePickerMode.END_DATE ->
-                            state.filterState.defaultEndDate
+                            state.filterState.defaultEndDate.orToday()
                     },
                     title = when (state.filterState.datePickerMode) {
                         TransactionFilterState.DatePickerMode.START_DATE ->
@@ -137,9 +138,6 @@ fun TransactionHistoryContent(
         onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
     {
         when {
-            state.errorState != null ->
-                ErrorView(onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
-
             state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
                 TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
             }

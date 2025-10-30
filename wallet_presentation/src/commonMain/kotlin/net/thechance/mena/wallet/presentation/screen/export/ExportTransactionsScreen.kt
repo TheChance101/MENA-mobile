@@ -30,6 +30,7 @@ import net.thechance.mena.wallet.presentation.navigation.StatementDetailsScreenR
 import net.thechance.mena.wallet.presentation.screen.export.component.DownloadingToast
 import net.thechance.mena.wallet.presentation.screen.export.component.ExportTransactionContentBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
+import net.thechance.mena.wallet.presentation.utils.orToday
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -82,10 +83,10 @@ private fun ExportTransactionScreenContent(
                     isVisible = isVisible,
                     defaultSelectedDate = when (state.dateState.datePickerMode) {
                         ExportTransactionsState.DatePickerMode.START_DATE ->
-                            state.dateState.defaultStartDate
+                            state.dateState.defaultStartDate.orToday()
 
                         ExportTransactionsState.DatePickerMode.END_DATE ->
-                            state.dateState.defaultEndDate
+                            state.dateState.defaultEndDate.orToday()
                     },
                     title = when (state.dateState.datePickerMode) {
                         ExportTransactionsState.DatePickerMode.START_DATE ->
