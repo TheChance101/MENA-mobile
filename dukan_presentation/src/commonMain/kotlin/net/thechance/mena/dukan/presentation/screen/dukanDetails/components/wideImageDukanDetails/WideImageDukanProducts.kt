@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
 import coil3.compose.AsyncImage
@@ -78,8 +77,7 @@ private fun ProductCard(
                 text = title,
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadePrimary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 modifier = Modifier.padding(top = Theme.spacing._12)
             )
 
