@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
@@ -9,10 +10,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import net.thechance.mena.dukan.domain.repository.ProductRepository
-import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_COLOR
-import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.DUKAN_STYLE
-import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_ID
-import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_NAME
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class ShelfDetailsViewModel(
@@ -23,10 +21,7 @@ class ShelfDetailsViewModel(
     ShelfDetailsUiState(),
     defaultDispatcher = defaultDispatcher
 ), ShelfDetailsInteractionListener {
-    val shelfId: String = requireNotNull(savedStateHandle[SHELF_ID])
-    val shelfName: String = requireNotNull(savedStateHandle[SHELF_NAME])
-    val dukanStyle: String = requireNotNull(savedStateHandle[DUKAN_STYLE])
-    val dukancolor: Long = requireNotNull(savedStateHandle[DUKAN_COLOR])
+    private val args = savedStateHandle.toRoute<DukanRoute.ShelfDetails>()
 
     private val productsState: MutableStateFlow<PagingData<ShelfDetailsUiState.ProductUiState>> =
         MutableStateFlow(PagingData.empty())
@@ -34,9 +29,9 @@ class ShelfDetailsViewModel(
     init {
         updateState {
             copy(
-                shelfName = this@ShelfDetailsViewModel.shelfName,
-                dukanStyle = ShelfDetailsUiState.Style.valueOf(this@ShelfDetailsViewModel.dukanStyle),
-                dukancolor = this@ShelfDetailsViewModel.dukancolor
+                shelfName = args.shelfName,
+                dukanStyle = ShelfDetailsUiState.Style.valueOf(args.dukanStyle),
+                dukancolor = args.dukancolor
             )
         }
         loadProductsFromRepository()
@@ -54,7 +49,7 @@ class ShelfDetailsViewModel(
             mapper = { it.toUiState() }
         ) { pageNumber, pageSize ->
             productRepository.getProductsByShelfId(
-                shelfId = shelfId,
+                shelfId = args.shelfId,
                 page = pageNumber,
                 size = pageSize
             ).items
@@ -91,14 +86,39 @@ class ShelfDetailsViewModel(
         }
     }
 
-    override fun onPlusClicked(productId: String) {
+    private fun increaseProductQuantity(productId: String) {
+        updateProductInPagingData(productId) { product ->
+            product.copy(inCartQuantity = product.inCartQuantity + 1)
+        }
+    }
 
+    private fun decreaseProductQuantity(productId: String) {
+        updateProductInPagingData(productId) { product ->
+            if (product.inCartQuantity == 1) {
+                product.copy(showProductQuantity = false)
+            } else product.copy(inCartQuantity = product.inCartQuantity - 1)
+        }
+    }
+
+    override fun onPlusClicked(productId: String) {
+        increaseProductQuantity(productId)
+        tryToExecuteWithDebounce(
+            block = {
+                // update product
+            },
+        )
     }
 
     override fun onMinusClicked(productId: String) {
+        decreaseProductQuantity(productId)
+        tryToExecuteWithDebounce(
+            block = {
+                // update product
+            },
+        )
     }
 
     override fun onCartClicked() {
-//        emitEffect(ShelfDetailsEffects.NavigateToCart(dukanId))
+        emitEffect(ShelfDetailsEffects.NavigateToCart(args.dukanId))
     }
 }
