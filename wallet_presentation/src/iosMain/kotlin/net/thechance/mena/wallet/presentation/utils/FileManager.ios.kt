@@ -40,7 +40,6 @@ actual class FileManagerImpl : FileManager {
 
     actual override suspend fun readFile(location: StorageLocation): ByteArray = io {
         val path = getFilePath(location)
-
         val nsData = NSData.dataWithContentsOfFile(path)
             ?: throw FileNotFoundException("File not found: $path")
 
@@ -81,7 +80,15 @@ actual class FileManagerImpl : FileManager {
         pdfData: ByteArray,
         fileName: String
     ): String {
-        val uniqueFileName = "${fileName}_${Clock.System.now().epochSeconds}.pdf"
+        val baseName = fileName.substringBeforeLast(".")
+        val extension = fileName.substringAfterLast(".", missingDelimiterValue = "")
+        val uniqueFileName = if (extension.isNotEmpty()) {
+            "${baseName}.$extension"
+        } else {
+            "${baseName}"
+        }
+
+
         val fileManager = NSFileManager.defaultManager
         val documentsPath = getDocumentsDirectory()
         val appFolderPath = "$documentsPath/$APP_DOWNLOADS_FOLDER"
