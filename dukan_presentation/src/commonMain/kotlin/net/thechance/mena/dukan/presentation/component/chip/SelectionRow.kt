@@ -22,12 +22,11 @@ fun SelectionRow(
     isItemSelected: (CreateDukanUiState.DukanCategoryUiState) -> Boolean,
     onItemClicked: (CreateDukanUiState.DukanCategoryUiState) -> Boolean,
     onItemEnabled: (CreateDukanUiState.DukanCategoryUiState) -> Boolean,
-    modifier: Modifier = Modifier
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        modifier = modifier.requiredWidth(getScreenWidth())
+        modifier = Modifier.requiredWidth(getScreenWidth())
     ) {
         items(availableItems) { item ->
             Chip(
