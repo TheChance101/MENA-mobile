@@ -10,5 +10,5 @@ data class LoginScreenState(
     val isLoginBtnLoading: Boolean = false,
 ){
     val isLoginBtnEnabled : Boolean
-        get() = password.length > 8 && username.length > 8
+        get() = password.isNotEmpty() && username.isNotEmpty()
 }

@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun UsernameInputField(
+internal fun UsernameInputField(
     username: String,
     onChangeValue: (String) -> Unit,
     modifier: Modifier = Modifier,

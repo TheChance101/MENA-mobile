@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun PasswordInputField(
+internal fun PasswordInputField(
     password: String,
     isPasswordVisible: Boolean,
     onVisiblePasswordBtnClicked: () -> Unit,

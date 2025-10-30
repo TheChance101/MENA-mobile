@@ -7,7 +7,7 @@ import org.koin.android.annotation.KoinViewModel
 class LoginViewModel : BaseViewModel<LoginScreenState, LoginEffect>(LoginScreenState()),
     LoginInteractionListener {
     override fun onUsernameChanged(username: String) {
-        updateState { it.copy(username = username) }
+        updateState { it.copy(username = username.filter { it.isLetterOrDigit() || it == '_' }) }
     }
 
     override fun onPasswordChanged(password: String) {
