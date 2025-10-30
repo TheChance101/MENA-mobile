@@ -168,7 +168,7 @@ private fun ReelFooterSection(
         ExpandableText(
             text = reel.description,
             isExpanded = reel.isDescriptionExpanded,
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(Theme.spacing._12),
             onExpandedChange = { onExpandDescription(reel.id) }
         )
     }

@@ -40,7 +40,12 @@ internal fun ExpandableText(
 ) {
     var isTextTruncated by remember { mutableStateOf(false) }
     val shortTextAnimation =
-        fadeIn(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing)) togetherWith
+        fadeIn(
+            animationSpec = tween(
+                animationDuration,
+                easing = LinearOutSlowInEasing
+            )
+        ) togetherWith
                 fadeOut(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing))
     Column(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
@@ -61,19 +66,17 @@ internal fun ExpandableText(
             )
         }
 
-        if (isTextTruncated) {
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn(animationSpec = tween(animationDuration)),
-                exit = fadeOut(animationSpec = tween(animationDuration))
-            ) {
-                Text(
-                    text = if (isExpanded) lessText else moreText,
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadeTertiary,
-                    modifier = Modifier.padding(vertical = Theme.spacing._2)
-                )
-            }
+        AnimatedVisibility(
+            visible = isTextTruncated,
+            enter = fadeIn(animationSpec = tween(animationDuration)),
+            exit = fadeOut(animationSpec = tween(animationDuration))
+        ) {
+            Text(
+                text = if (isExpanded) lessText else moreText,
+                style = Theme.typography.body.small,
+                color = Theme.colorScheme.shadeTertiary,
+                modifier = Modifier.padding(vertical = Theme.spacing._2)
+            )
         }
     }
 }
