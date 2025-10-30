@@ -10,7 +10,7 @@ import org.maplibre.compose.map.MaplibreMap
 import org.maplibre.compose.style.BaseStyle
 
 @Composable
-fun SimpleMapScreen(
+fun SimpleMap(
     initialCameraPosition: CameraPosition
 ) {
     val cameraState = rememberCameraState(firstPosition = initialCameraPosition)
