@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.register.components
+package net.thechance.mena.identity.presentation.screen.uploadProfileImage.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.click_to_upload
@@ -57,39 +56,43 @@ fun UploadImageContainer(
                 .clip(RoundedCornerShape(radius))
                 .background(Theme.colorScheme.background.surfaceLow)
                 .dashedBorder(color = borderColor, shape = RoundedCornerShape(radius))
-                .clickable { onClick() },
+                .clickable { if (image == null) onClick() },
             contentAlignment = Alignment.Center
         ) {
 
             if (image == null) {
                 UploadPlaceholder()
             } else {
-                UploadedImage(image = image, radius = radius, onClick = onClick)
+                UploadedImage(image = image)
             }
         }
-        if (image != null)
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 20.dp)
-                    .clip(shape = RoundedCornerShape(Theme.radius.full))
-                    .background(Theme.colorScheme.primary.primary)
-                    .border(
-                        width = 1.dp,
-                        color = Theme.colorScheme.background.surface,
-                        shape = RoundedCornerShape(radius)
-                    )
-                    .clickable { onClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.pencil_edit),
-                    contentDescription = "Bottom Action",
-                    tint = Theme.colorScheme.primary.onPrimary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+        if (image != null) {
+            EditIcon(modifier = Modifier.align(Alignment.BottomCenter).clickable { onClick() })
+        }
+    }
+}
+
+@Composable
+private fun EditIcon(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(40.dp)
+            .offset(y = 20.dp)
+            .clip(shape = RoundedCornerShape(Theme.radius.full))
+            .background(Theme.colorScheme.primary.primary)
+            .border(
+                width = 1.dp,
+                color = Theme.colorScheme.background.surface,
+                shape = RoundedCornerShape(Theme.radius.xl)
+            )
+    )
+    {
+        Icon(
+            painter = painterResource(Res.drawable.pencil_edit),
+            contentDescription = "Bottom Action",
+            tint = Theme.colorScheme.primary.onPrimary,
+            modifier = Modifier.size(20.dp).align(Alignment.Center)
+        )
     }
 }
 
@@ -110,9 +113,8 @@ private fun UploadPlaceholder() {
 
 @Composable
 private fun BoxScope.UploadedImage(
+    onClick: () -> Unit = {},
     image: ImageBitmap,
-    radius: Dp,
-    onClick: () -> Unit
 ) {
     Image(
         bitmap = image,
@@ -121,6 +123,7 @@ private fun BoxScope.UploadedImage(
         contentScale = ContentScale.Crop
     )
 }
+
 
 @Preview
 @Composable

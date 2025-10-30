@@ -98,6 +98,16 @@
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
     <string name="error_permission_not_granted">لم يتم منح الإذن</string>
 
+    <string name="enable_location_title">تفعيل الموقع</string>
+    <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
+    <string name="enable_location_permission_button">تفعيل إذن الموقع</string>
+    <string name="location_icon_desc">أيقونة خدمة الموقع</string>
+
+    <string name="no_saved_locations_title">لا توجد مواقع محفوظة بعد!</string>
+    <string name="no_saved_locations_message">انقر على الزر أدناه للبدء بإضافة ومتابعة حالة مواقعك المفضلة.</string>
+    <string name="add_location_button">إضافة موقع</string>
+    <string name="location_saved_empty_desc">أيقونة عدم وجود مواقع محفوظة</string>
+
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>
     
