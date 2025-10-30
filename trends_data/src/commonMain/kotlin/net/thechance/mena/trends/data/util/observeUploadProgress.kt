@@ -5,16 +5,15 @@ import io.ktor.client.request.HttpRequestBuilder
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 
 fun HttpRequestBuilder.observeUploading(
+    totalSize: Long,
     onProgress: suspend (UploadReelProgress) -> Unit
 ) {
-    onUpload { bytesSentTotal, contentLength ->
-        if (contentLength != null && contentLength > 0) {
-            onProgress(
-                UploadReelProgress(
-                    numberOfUploadedBytes = bytesSentTotal,
-                    totalBytes = contentLength
-                )
+    onUpload { bytesSentTotal, _ ->
+        onProgress(
+            UploadReelProgress(
+                numberOfUploadedBytes = bytesSentTotal,
+                totalBytes = totalSize
             )
-        }
+        )
     }
 }

@@ -11,7 +11,7 @@ data class CreateDukanUiState(
     val name: String = "",
     val currentStep: CreateDukanStep = CreateDukanStep.BASIC_INFORMATION,
     val isButtonEnabled: Boolean = false,
-    val isButtonLoading: Boolean = false,
+    val isNextCreateButtonLoading: Boolean = false,
 
     val currentLocation: CoordinatesUiState = CoordinatesUiState(),
     val pointerLocation: DpOffset? = null,
