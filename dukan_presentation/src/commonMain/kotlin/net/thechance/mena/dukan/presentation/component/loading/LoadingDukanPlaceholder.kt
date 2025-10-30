@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection
+package net.thechance.mena.dukan.presentation.component.loading
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -16,7 +16,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun LoadingEditorPickDukanItem(
+fun LoadingDukanPlaceholder(
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -38,8 +38,8 @@ fun LoadingEditorPickDukanItem(
 
 @Preview
 @Composable
-private fun LoadingEditorPickDukanItemPreview() {
+private fun LoadingDukanPlaceholderPreview() {
     MenaTheme {
-        LoadingEditorPickDukanItem()
+        LoadingDukanPlaceholder()
     }
 }

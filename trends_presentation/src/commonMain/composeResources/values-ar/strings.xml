@@ -99,4 +99,7 @@
     <string name="no_connection_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
     <string name="no_connection_description">تحقق من اتصالك وحاول مرة أخرى</string>
     <string name="re_try">إعادة المحاولة</string>
+
+    <string name="show_more">اعرض المزيد</string>
+    <string name="show_less">عرض أقل</string>
 </resources>
