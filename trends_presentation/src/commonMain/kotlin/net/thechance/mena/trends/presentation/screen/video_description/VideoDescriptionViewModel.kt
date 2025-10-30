@@ -19,7 +19,7 @@ internal class VideoDescriptionViewModel(
     override fun onClickNext() {
         sendEffect(
             VideoDescriptionEffect.NavigateToSelectCategories(
-                state.value.description.trim(),
+                state.value.description,
                 videoDescriptionArgs.trendId
             )
         )
@@ -28,7 +28,7 @@ internal class VideoDescriptionViewModel(
     override fun onDescriptionChanged(newValue: String) {
         updateState {
             copy(
-                description = newValue,
+                description = newValue.trim(),
                 currentNumberOfCharacters = newValue.length,
                 isButtonEnabled = newValue.length <= maxNumberOfCharacters
             )
