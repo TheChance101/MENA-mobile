@@ -144,9 +144,6 @@ fun TextMessageLayout(
                 messageStatus = message.status,
                 messageIsMine = message.isMine,
                 onFailClick = onFailClick,
-                modifier = Modifier
-                    .align(messageInfoAlignment)
-
             )
         }
     }

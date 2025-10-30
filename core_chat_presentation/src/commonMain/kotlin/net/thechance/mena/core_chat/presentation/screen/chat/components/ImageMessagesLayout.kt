@@ -152,7 +152,6 @@ fun ImageMessagesLayout(
             modifier = Modifier
                 .align(messageInfoAlignment)
                 .padding(start = messagePaddingStart, end = messagePaddingEnd)
-
         ) {
             MessageInfo(
                 messageTime = messages.last().sendTime,
