@@ -6,27 +6,27 @@ internal class MosqueMapViewModel : BaseViewModel<MosqueMapUiState, MosqueMapEff
     MosqueMapUiState()
 ), MosqueMapInteractionListener {
 
-    override fun onClickBack() {
+    override fun onBackClick() {
 //        TODO("Not yet implemented")
     }
 
-    override fun onClickAddMosque() {
+    override fun onAddMosqueClick() {
 //        TODO("Not yet implemented")
     }
 
-    override fun onClickCurrentUserLocation() {
+    override fun onCurrentUserLocationClick() {
 //        TODO("Not yet implemented")
     }
 
-    override fun onClickViewMosqueDetails(mosque: MosqueUiState) {
+    override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
 //        TODO("Not yet implemented")
     }
 
-    override fun onClickViewMosqueOnMap(latitude: Double, longitude: Double) {
+    override fun onViewMosqueOnMapClick(latitude: Double, longitude: Double) {
 //        TODO("Not yet implemented")
     }
 
-    override fun onClickSearchByCoordinates(latitude: Double, longitude: Double) {
+    override fun onSearchByCoordinatesClick(latitude: Double, longitude: Double) {
 //        TODO("Not yet implemented")
     }
 
