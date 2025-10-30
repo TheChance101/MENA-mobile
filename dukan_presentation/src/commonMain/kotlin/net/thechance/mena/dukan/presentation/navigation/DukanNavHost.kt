@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import net.thechance.mena.dukan.presentation.screen.categoryDukans.CategoryDukansScreen
 import net.thechance.mena.dukan.presentation.screen.createDukan.CreateDukanScreen
 import net.thechance.mena.dukan.presentation.screen.createProduct.CreateProductScreen
+import net.thechance.mena.dukan.presentation.screen.createProduct.EditProductScreen
 import net.thechance.mena.dukan.presentation.screen.createShelf.CreateShelfScreen
 import net.thechance.mena.dukan.presentation.screen.dukanCategories.DukanCategoriesScreen
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.DukanDetailsScreen
@@ -60,6 +61,9 @@ fun DukanNavHost() {
             }
             composable<DukanRoute.CreateProductScreenRoute> {
                 CreateProductScreen()
+            }
+            composable<DukanRoute.EditProductScreenRoute> {
+                EditProductScreen()
             }
             composable<DukanRoute.DukanDetails> {
                 DukanDetailsScreen()

@@ -28,6 +28,9 @@ sealed interface DukanRoute {
     object CreateProductScreenRoute : DukanRoute
 
     @Serializable
+    data class EditProductScreenRoute(val productId: String) : DukanRoute
+
+    @Serializable
     data class DukanDetails(val dukanId: String) : DukanRoute
 
     @Serializable
