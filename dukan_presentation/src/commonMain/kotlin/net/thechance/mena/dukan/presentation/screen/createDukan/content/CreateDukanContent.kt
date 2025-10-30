@@ -88,7 +88,7 @@ private fun CreateDukanScaffold(
                         stringResource(Res.string.next),
                     onClick = listener::onNextOrCreateClicked,
                     isEnabled = state.isButtonEnabled,
-                    isLoading = state.isButtonLoading,
+                    isLoading = state.isNextCreateButtonLoading,
                     contentPadding = PaddingValues(vertical = Theme.spacing._12)
                 )
         }
@@ -182,7 +182,7 @@ private fun PreviewCreateDukanContent() {
         name = "My Dukan",
         currentStep = CreateDukanStep.BASIC_INFORMATION,
         isButtonEnabled = true,
-        isButtonLoading = false,
+        isNextCreateButtonLoading = false,
         isImageBeingCropped = false,
         snackBarState = null
     )

@@ -54,8 +54,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun FeedReelCard(
     reel: ReelUiState,
-    onLikeClick: () -> Unit,
-    onReelClick: () -> Unit
+    onClickLike: () -> Unit,
+    onClickReel: () -> Unit,
+    onExpandDescription: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -67,12 +68,13 @@ internal fun FeedReelCard(
         ReelHeaderSection(
             reel = reel,
             timeAgoText = reel.timeAgo?.asString() ?: stringResource(Res.string.just_now),
-            onReelClick = onReelClick
+            onClickReel = onClickReel
         )
 
         ReelFooterSection(
             reel = reel,
-            onLikeClick = onLikeClick
+            onClickLike = onClickLike,
+            onExpandDescription = onExpandDescription
         )
     }
 }
@@ -81,7 +83,7 @@ internal fun FeedReelCard(
 private fun ReelHeaderSection(
     reel: ReelUiState,
     timeAgoText: String,
-    onReelClick: () -> Unit
+    onClickReel: () -> Unit
 ) {
     Column {
         Row(
@@ -130,7 +132,7 @@ private fun ReelHeaderSection(
                     .fillMaxWidth()
                     .height(500.dp)
                     .background(Theme.colorScheme.background.surfaceHigh)
-                    .noRippleClickable { onReelClick() },
+                    .noRippleClickable { onClickReel() },
                 alignment = Alignment.Center
             )
             Icon(
@@ -151,7 +153,8 @@ private fun ReelHeaderSection(
 @Composable
 private fun ReelFooterSection(
     reel: ReelUiState,
-    onLikeClick: () -> Unit
+    onClickLike: () -> Unit,
+    onExpandDescription: (String) -> Unit
 ) {
     val scale = remember { Animatable(1f) }
     val scope = rememberCoroutineScope()
@@ -161,17 +164,12 @@ private fun ReelFooterSection(
         animationSpec = tween(durationMillis = 500)
     )
 
-   AnimatedVisibility(
-        visible = reel.description.isNotBlank(),
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Text(
+    if (reel.description.isNotBlank()) {
+        ExpandableText(
             text = reel.description,
-            style = Theme.typography.body.small,
-            color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier
-                .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12)
+            isExpanded = reel.isDescriptionExpanded,
+            modifier = Modifier.padding(Theme.spacing._12),
+            onExpandedChange = { onExpandDescription(reel.id) }
         )
     }
 
@@ -202,7 +200,7 @@ private fun ReelFooterSection(
                     .size(24.dp)
                     .scale(scale.value)
                     .noRippleClickable {
-                        onLikeClick()
+                        onClickLike()
                         scope.launch {
                             scale.animateTo(1.4f, tween(200))
                             scale.animateTo(1f, tween(200))

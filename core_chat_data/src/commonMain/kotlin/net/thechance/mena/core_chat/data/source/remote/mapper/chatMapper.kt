@@ -17,7 +17,6 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
-import kotlin.collections.orEmpty
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -27,7 +26,7 @@ import kotlin.uuid.Uuid
 fun MessageDto.toDomain(): Message? {
     val content = when {
         !text.isNullOrBlank() -> MessageContent.Text(text)
-        !images.isNullOrEmpty() -> MessageContent.Images(ImageData.ImageUrl(images))
+        !imageUrl.isNullOrEmpty() -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
         else -> return null
     }
 
@@ -55,15 +54,15 @@ fun ChatDto.toDomain(): Chat? {
 fun Message.toLocalDto(): MessageLocalDto {
     val content = this.content
     val text = if (content is MessageContent.Text) content.text else null
-    val source = if (content is MessageContent.Images) content.source else null
-    val images = if (source is ImageData.ImageByteArray) source.byteArrays else null
+    val data = if (content is MessageContent.Image) content.data else null
+    val images = if (data is ImageData.ImageByteArray) data.byteArray else null
 
 
     return MessageLocalDto(
         id = this.id.toString(),
         senderId = this.senderId.toString(),
         text = text,
-        images = images,
+        image = images,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         status = status.toLocalDto()
@@ -74,8 +73,8 @@ fun Message.toLocalDto(): MessageLocalDto {
 fun MessageLocalDto.toDomain(): Message {
     val content = if (text != null) {
         MessageContent.Text(text)
-    } else if (images != null) {
-        MessageContent.Images(ImageData.ImageByteArray(images))
+    } else if (image != null) {
+        MessageContent.Image(ImageData.ImageByteArray(image))
     } else {
         error("Invalid message content")
     }
