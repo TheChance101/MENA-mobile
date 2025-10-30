@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginHeader
 import net.thechance.mena.admin_panel.presentation.screen.login.component.PasswordInputField
 import net.thechance.mena.admin_panel.presentation.screen.login.component.UsernameInputField
@@ -28,10 +29,12 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
     Scaffold {
+        val state by viewModel.state.collectAsStateWithLifecycle()
         var username by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var isPasswordVisible by remember { mutableStateOf(false) }
@@ -51,22 +54,22 @@ fun LoginScreen() {
                 LoginHeader(modifier = Modifier.padding(top = 64.dp))
                 Column(modifier = Modifier.padding(top = 40.dp)) {
                     UsernameInputField(
-                        username = username,
-                        onChangeValue = { username = it }
+                        username = state.username,
+                        onChangeValue = viewModel::onUsernameChanged
                     )
                     PasswordInputField(
                         modifier = Modifier.padding(top = 24.dp, bottom = 40.dp),
-                        password = password,
-                        isPasswordVisible = isPasswordVisible,
-                        onVisiblePasswordBtnClicked = { isPasswordVisible = !isPasswordVisible },
-                        onChangeValue = { password = it }
+                        password = state.password,
+                        isPasswordVisible = state.isPasswordVisible,
+                        onVisiblePasswordBtnClicked = viewModel::onVisiblePasswordBtnClicked,
+                        onChangeValue = viewModel::onPasswordChanged
                     )
                     PrimaryButton(
                         modifier = Modifier.align(Alignment.End),
                         text = stringResource(Res.string.login),
-                        onClick = { },
-                        isLoading = false,
-                        isEnabled = false,
+                        onClick = viewModel::onLoginBtnClicked,
+                        isLoading = state.isLoginBtnLoading,
+                        isEnabled = state.isLoginBtnEnabled,
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
                     )
                 }
