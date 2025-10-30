@@ -47,10 +47,10 @@ internal fun PaymentUnknownErrorContent(
             )
         }
         PaymentActionButtons(
+            modifier = Modifier.align(Alignment.BottomCenter),
             primaryButtonText = stringResource(Res.string.try_again),
             onPrimaryButtonClick = interactionListener::onTryAgainClicked,
             onCancelClicked = interactionListener::onCloseClicked,
-            modifier = Modifier.align(Alignment.BottomCenter),
             isLoading = state.isLoading,
             isCloseEnabled = state.isCloseButtonEnabled,
             isTryAgainEnabled = state.isTryAgainButtonEnabled
