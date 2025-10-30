@@ -26,6 +26,7 @@ import mena.core_chat_presentation.generated.resources.chats
 import mena.core_chat_presentation.generated.resources.ic_coin
 import mena.core_chat_presentation.generated.resources.ic_plus
 import mena.core_chat_presentation.generated.resources.mena
+import net.thechance.mena.core_chat.presentation.components.LoadingView
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.ContactsRoute
@@ -40,7 +41,6 @@ import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -144,16 +144,6 @@ private fun HomeScreenAppBar(
             }
         }
     )
-}
-
-@Composable
-private fun LoadingView(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        DotsProgressIndicator()
-    }
 }
 
 @Composable
