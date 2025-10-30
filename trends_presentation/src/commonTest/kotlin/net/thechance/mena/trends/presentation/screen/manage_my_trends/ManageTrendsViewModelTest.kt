@@ -14,17 +14,22 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.entity.User
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.domain.repository.UserRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,7 +43,7 @@ class ManageTrendsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         viewModel = ManageTrendsViewModel(repository, userRepository, testDispatcher)
-        everySuspend { userRepository.getCurrentUserInfo() } returns user
+        everySuspend { userRepository.getUser() } returns flowOf(user)
     }
 
 
@@ -141,11 +146,15 @@ class ManageTrendsViewModelTest {
             ReelUiState(id = "2", thumbnailUrl = "thumb2.jpg")
         )
 
+        @OptIn(ExperimentalUuidApi::class)
         val user = User(
-            username = "nour",
+            id = Uuid.random(),
             firstName = "nour",
             lastName = "nour",
-            profileImageUrl = "img.jpg"
+            profileImageUrl = "img.jpg",
+            username = "nour",
+            birthDate = LocalDate(2000, 1, 1),
+            gender = Gender.FEMALE
         )
         val userInfoUiState = UserInfoUiState(
             userName = "nour",
