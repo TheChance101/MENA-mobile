@@ -26,6 +26,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import org.jetbrains.compose.resources.stringResource
 
+const val animationDuration = 500
+
 @Composable
 internal fun ExpandableText(
     text: String,
@@ -36,13 +38,12 @@ internal fun ExpandableText(
     moreText: String = stringResource(Res.string.show_more),
     lessText: String = stringResource(Res.string.show_less),
 ) {
-    val animationDuration by remember {mutableStateOf(500)}
     var isTextTruncated by remember { mutableStateOf(false) }
     val shortTextAnimation =
         fadeIn(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing)) togetherWith
                 fadeOut(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing))
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         modifier = modifier.noRippleClickable { onExpandedChange() }
     ) {
 
@@ -70,7 +71,7 @@ internal fun ExpandableText(
                     text = if (isExpanded) lessText else moreText,
                     style = Theme.typography.body.small,
                     color = Theme.colorScheme.shadeTertiary,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    modifier = Modifier.padding(vertical = Theme.spacing._2)
                 )
             }
         }
