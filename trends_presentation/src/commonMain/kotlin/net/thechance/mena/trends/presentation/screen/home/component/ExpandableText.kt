@@ -52,7 +52,7 @@ internal fun ExpandableText(
             transitionSpec = { shortTextAnimation }
         ) { expanded ->
             Text(
-                text = text.trim(),
+                text = text,
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = if (expanded) Int.MAX_VALUE else maxLines,
