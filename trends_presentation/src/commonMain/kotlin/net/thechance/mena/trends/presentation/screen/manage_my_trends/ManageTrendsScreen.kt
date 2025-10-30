@@ -6,19 +6,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
@@ -40,6 +35,7 @@ import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
+import mena.trends_presentation.generated.resources.no_favorites_yet
 import mena.trends_presentation.generated.resources.play_now
 import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
@@ -122,31 +118,88 @@ private fun ManageTrendsScreenBody(
     listener: ManageTrendsInteractionListener,
     state: ManageTrendsScreenState
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        UserAvatar(
-            profileImageUrl = state.profile.profileImageUrl,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        item {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                UserAvatar(
+                    profileImageUrl = state.profile.profileImageUrl,
+                )
 
-        Text(
-            text = state.profile.userName,
-            style = Theme.typography.label.medium,
-            modifier = Modifier
-                .padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
-                .align(Alignment.CenterHorizontally)
-        )
+                Text(
+                    text = state.profile.userName,
+                    style = Theme.typography.label.medium,
+                    modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._32)
+                )
+            }
+        }
 
-        SegmentSection(
-            reels = state.reels.collectAsLazyPagingItems(),
-            onTrendClick = listener::onClickReel,
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            trendsTitle = stringResource(Res.string.my_trends),
-            favoriteTitle = stringResource(Res.string.favorite)
-        )
+        item {
+            SegmentSectionWithGrid(
+                reels = state.reels.collectAsLazyPagingItems(),
+                onTrendClick = listener::onClickReel,
+                modifier = Modifier.fillMaxWidth(),
+                trendsTitle = stringResource(Res.string.my_trends),
+                favoriteTitle = stringResource(Res.string.favorite)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SegmentSectionWithGrid(
+    reels: LazyPagingItems<ReelUiState>,
+    trendsTitle: String,
+    favoriteTitle: String,
+    onTrendClick: (id: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(horizontal = Theme.spacing._16)
+    ) {
+        Segment(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            item(title = trendsTitle) {
+                val itemHeight = 164.dp
+                val itemWidth = 106.dp
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = Theme.spacing._4,
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+                ) {
+                    repeat(reels.itemCount) { index ->
+                        reels[index]?.let { reel ->
+                            TrendItem(
+                                item = reel,
+                                onTrendClick = onTrendClick,
+                                modifier = Modifier.size(width = itemWidth, height = itemHeight)
+                            )
+                        }
+                    }
+                }
+            }
+
+            item(favoriteTitle) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Theme.spacing._32),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(Res.string.no_favorites_yet),
+                        style = Theme.typography.body.small
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -176,58 +229,6 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SegmentSection(
-    reels: LazyPagingItems<ReelUiState>,
-    trendsTitle: String,
-    favoriteTitle: String,
-    onTrendClick: (id: String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = Theme.spacing._16)
-    ) {
-        Segment(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            item(title = trendsTitle) {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 106.dp),
-                    state = rememberLazyGridState(),
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = Theme.spacing._4,
-                        Alignment.CenterHorizontally
-                    ),
-                    contentPadding = PaddingValues(bottom = Theme.spacing._16)
-                ) {
-                    items(key = reels.itemKey(), count = reels.itemCount) { index ->
-                        reels[index]?.let { reel ->
-                            TrendItem(
-                                item = reel,
-                                onTrendClick = onTrendClick
-                            )
-                        }
-                    }
-                }
-            }
-
-            item(favoriteTitle) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "No favorites yet", style = Theme.typography.body.small)
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
 private fun TrendItem(
     item: ReelUiState,
     onTrendClick: (id: String) -> Unit,
@@ -238,9 +239,10 @@ private fun TrendItem(
             .aspectRatio(106f / 164f)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onTrendClick(item.id) }
-            .background(color = Theme.colorScheme.background.surfaceLow)
+            .background(color = Theme.colorScheme.background.surfaceLow),
+        contentAlignment = Alignment.Center
     ) {
-        AnimatedVisibility (visible = item.thumbnailUrl.isNotEmpty()) {
+        AnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
             AsyncImage(
                 model = item.thumbnailUrl,
                 contentDescription = stringResource(resource = Res.string.trend_image_desc),
@@ -249,7 +251,7 @@ private fun TrendItem(
             )
         }
 
-        AnimatedVisibility(visible = item.thumbnailUrl.isEmpty()){
+        AnimatedVisibility(visible = item.thumbnailUrl.isEmpty()) {
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),
                 contentDescription = stringResource(Res.string.play_now),
@@ -259,7 +261,6 @@ private fun TrendItem(
                     .clip(RoundedCornerShape(24.dp))
                     .background(color = Theme.colorScheme.shadeTertiary)
                     .padding(7.dp)
-                    .align(Alignment.Center)
             )
         }
     }

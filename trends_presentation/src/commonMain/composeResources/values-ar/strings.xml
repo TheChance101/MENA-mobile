@@ -99,4 +99,6 @@
     <string name="no_connection_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
     <string name="no_connection_description">تحقق من اتصالك وحاول مرة أخرى</string>
     <string name="re_try">إعادة المحاولة</string>
+
+    <string name="no_favorites_yet">لا يوجد مفضلات بعد</string>
 </resources>
