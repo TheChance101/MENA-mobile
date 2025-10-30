@@ -60,6 +60,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.utils.AppMonth
 import net.thechance.mena.wallet.presentation.utils.getNumberOfDaysInMonth
+import net.thechance.mena.wallet.presentation.utils.today
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -74,10 +75,8 @@ fun ScaffoldScope.DatePickerBottomSheet(
     isVisible: Boolean,
     title: String = stringResource(Res.string.pick_start_date),
     minYear: Int = 2000,
-    maxYear: Int = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()).year,
-    defaultSelectedDate: LocalDate = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    maxYear: Int = LocalDate.today().year,
+    defaultSelectedDate: LocalDate = LocalDate.today().date,
     onPickClick: (day: Int, month: Int, year: Int) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -106,13 +105,13 @@ fun ScaffoldScope.DatePickerBottomSheet(
 private fun DatePickerBottomSheetContent(
     title: String = stringResource(Res.string.pick_start_date),
     minYear: Int = 2000,
-    maxYear: Int = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year,
+    maxYear: Int = LocalDate.today().year,
     onPickClick: (day: Int, month: Int, year: Int) -> Unit,
     selectedDate: LocalDate,
     onDismiss: () -> Unit,
 ) {
     val today =
-        remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
+        remember { LocalDate.today().date }
 
     val yearPagerState = rememberPagerState(
         initialPage = (selectedDate.year) - minYear,

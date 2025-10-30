@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalTime::class)
+
 package net.thechance.mena.wallet.presentation.utils
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.toLocalDateTime
@@ -40,7 +43,9 @@ enum class AppMonth(val number: Int, val res: StringResource) {
     December(12, Res.string.month_december)
 }
 
-@OptIn(ExperimentalTime::class)
+fun LocalDate.Companion.today(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime {
+    return Clock.System.now().toLocalDateTime(timeZone)
+}
+
 fun LocalDate?.orToday(): LocalDate =
-    this ?: Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()).date
+    this ?: LocalDate.today().date
