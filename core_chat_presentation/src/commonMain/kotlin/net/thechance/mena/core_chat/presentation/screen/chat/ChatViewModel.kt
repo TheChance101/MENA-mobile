@@ -30,6 +30,7 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
@@ -141,6 +142,7 @@ class ChatViewModel(
         subscribeToNewMessages(chat.id)
         subscribeToPendingMessages(chat.id)
         observeReadMessages()
+        observeDeleteChat()
     }
 
     private fun onGetChatError() {
@@ -328,6 +330,18 @@ class ChatViewModel(
 
     }
 
+    private fun observeDeleteChat() {
+        tryToCollect(
+            collect = { messageRepository.observeDeleteChat() },
+            onCollect = ::onCollectDeleteChatEvent
+        )
+    }
+
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
+        if (deleteChatEvent == null) return
+        emitEffect(ChatScreenEffect.NavigateBack)      // the chat is deleted, navigate back
+    }
+
     private fun observeReadMessages() {
         tryToCollect(
             collect = { messageRepository.observeReadMessages() },
@@ -429,7 +443,6 @@ class ChatViewModel(
             messageStringResource = Res.string.chat_deleted_successfully,
             isError = false
         )
-        emitEffect(ChatScreenEffect.NavigateBack)
     }
 
     private fun onDeleteChatFailure() {
