@@ -116,4 +116,6 @@
     <string name="navigate_next">Navigate to next screen</string>
     <string name="surah_al_fatiha">Al-Fatiha</string>
     <string name="mosque_image_description">Mosque icon</string>
+    <string name="mosque_details">Mosque details</string>
+    <string name="view_on_map">View on map</string>
 </resources>
