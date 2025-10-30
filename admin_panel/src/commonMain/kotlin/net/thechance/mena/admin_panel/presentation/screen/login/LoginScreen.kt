@@ -65,6 +65,8 @@ private fun LoginScreenContent(
                 LoginCredentials(
                     username = state.username,
                     password = state.password,
+                    usernameErrorMsg = state.usernameErrorMsg,
+                    passwordErrorMsg = state.passwordErrorMsg,
                     isPasswordVisible = state.isPasswordVisible,
                     isLoginBtnLoading = state.isLoginBtnLoading,
                     isLoginBtnEnabled = state.isLoginBtnEnabled,

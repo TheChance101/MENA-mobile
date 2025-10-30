@@ -8,6 +8,8 @@ data class LoginScreenState(
     val password: String = "",
     val isPasswordVisible: Boolean = false,
     val isLoginBtnLoading: Boolean = false,
+    val usernameErrorMsg: String? = null,
+    val passwordErrorMsg: String? = null,
 ){
     val isLoginBtnEnabled : Boolean
         get() = password.isNotEmpty() && username.isNotEmpty()

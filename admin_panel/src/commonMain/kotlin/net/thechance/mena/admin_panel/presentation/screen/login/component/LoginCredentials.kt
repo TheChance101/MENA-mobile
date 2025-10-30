@@ -21,6 +21,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun LoginCredentials(
     username: String,
     password: String,
+    usernameErrorMsg: String?,
+    passwordErrorMsg: String?,
     isPasswordVisible: Boolean,
     isLoginBtnLoading: Boolean,
     isLoginBtnEnabled: Boolean,
@@ -33,6 +35,7 @@ internal fun LoginCredentials(
     Column(modifier = modifier.padding(top = 40.dp)) {
         UsernameInputField(
             username = username,
+            usernameErrorMsg = usernameErrorMsg,
             onChangeValue = onUsernameChanged,
             visualTransformation = if (username.isNotEmpty()) AtPrefixTransformation
             else VisualTransformation.None
@@ -40,6 +43,7 @@ internal fun LoginCredentials(
         PasswordInputField(
             modifier = Modifier.padding(top = 24.dp, bottom = 40.dp),
             password = password,
+            passwordErrorMsg = passwordErrorMsg,
             isPasswordVisible = isPasswordVisible,
             onVisiblePasswordBtnClicked = onVisiblePasswordBtnClicked,
             onChangeValue = onPasswordChanged
