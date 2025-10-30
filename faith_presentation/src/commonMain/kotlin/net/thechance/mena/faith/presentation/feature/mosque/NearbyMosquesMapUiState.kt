@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.mosque
 
-internal data class MosqueMapUiState(
+internal data class NearbyMosquesMapUiState(
     val mosques: List<MosqueUiState> = emptyList(),
     val mosquesSearchResults: List<MosqueUiState> = emptyList(),
     val currentUserLocation: UserLocationUiState? = null,
@@ -18,11 +18,7 @@ internal data class MosqueUiState(
     val distance: Double,
     val latitude: Double,
     val longitude: Double,
-) {
-    fun calculateDistance(currentUserLocation: UserLocationUiState) {
-//        TODO("Not yet implemented")
-    }
-}
+)
 
 internal data class UserLocationUiState(
     val latitude: Double,

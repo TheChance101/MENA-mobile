@@ -2,8 +2,9 @@ package net.thechance.mena.faith.presentation.feature.mosque
 
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
-internal class NearbyMosquesMapViewModel : BaseViewModel<MosqueMapUiState, NearbyMosquesMapEffect>(
-    MosqueMapUiState()
+internal class NearbyMosquesMapViewModel :
+    BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesMapEffect>(
+        NearbyMosquesMapUiState()
 ), NearbyMosquesMapInteractionListener {
 
     override fun onBackClick() {
