@@ -135,7 +135,9 @@ fun TextMessageLayout(
         }
         AnimatedVisibility(
             visible = showMessageInfo,
-            modifier = Modifier.align(messageInfoAlignment)
+            modifier = Modifier
+                .align(messageInfoAlignment)
+                .padding(start = messagePaddingStart, end = messagePaddingEnd)
         ) {
             MessageInfo(
                 messageTime = message.sendTime,
@@ -144,7 +146,7 @@ fun TextMessageLayout(
                 onFailClick = onFailClick,
                 modifier = Modifier
                     .align(messageInfoAlignment)
-                    .padding(start = messagePaddingStart, end = messagePaddingEnd)
+
             )
         }
     }

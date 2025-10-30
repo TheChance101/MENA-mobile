@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -129,12 +128,13 @@ fun ImageMessagesLayout(
                     when (imageData.content) {
                         is MessageContent.Image -> {
                             val images = imageData.content.data
-                                when (images) {
-                                    is ImageData.ImageUrl -> images.url
-                                    is ImageData.ImageByteArray -> images.byteArray
-                                }
+                            when (images) {
+                                is ImageData.ImageUrl -> images.url
+                                is ImageData.ImageByteArray -> images.byteArray
+                            }
 
                         }
+
                         is MessageContent.Text -> return@Column
                     }
                 }
@@ -149,16 +149,16 @@ fun ImageMessagesLayout(
         }
         AnimatedVisibility(
             visible = showMessageInfo,
-            modifier = Modifier.align(messageInfoAlignment)
+            modifier = Modifier
+                .align(messageInfoAlignment)
+                .padding(start = messagePaddingStart, end = messagePaddingEnd)
+
         ) {
             MessageInfo(
                 messageTime = messages.last().sendTime,
                 messageStatus = messages.last().status,
                 messageIsMine = messages.last().isMine,
                 onFailClick = { onFailClick(messages.last()) },
-                modifier = Modifier
-                    .align(messageInfoAlignment)
-                    .padding(start = messagePaddingStart, end = messagePaddingEnd)
             )
         }
     }
@@ -168,21 +168,36 @@ fun ImageMessagesLayout(
 @Preview()
 private fun PreviewBaseMessageLayout() {
     MenaTheme {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Column {
             ImageMessagesLayout(
-                messages = listOf(MessageUiState(
-                    Uuid.random(),
-                    Uuid.random(),
-                    sendTime = LocalDateTime.now(),
-                    status = MessageStatus.READ,
-                    isMine = false,
-                    content = MessageContent.Text("Good Morning!")
-                )),
+                messages = listOf(
+                    MessageUiState(
+                        Uuid.random(),
+                        Uuid.random(),
+                        sendTime = LocalDateTime.now(),
+                        status = MessageStatus.READ,
+                        isMine = false,
+                        content = MessageContent.Image(ImageData.ImageUrl("https://images"))
+                    )
+                ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true,
-                onMessageImageClick = { message,index -> }
+                onMessageImageClick = { message, index -> }
+            )
+            ImageMessagesLayout(
+                messages = listOf(
+                    MessageUiState(
+                        Uuid.random(),
+                        Uuid.random(),
+                        sendTime = LocalDateTime.now(),
+                        status = MessageStatus.FAILED,
+                        isMine = true,
+                        content = MessageContent.Image(ImageData.ImageUrl("https://images"))
+                    )
+                ),
+                showMessageInfo = true,
+                isMarkedLastInSeries = true,
+                onMessageImageClick = { message, index -> }
             )
         }
     }
