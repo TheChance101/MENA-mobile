@@ -67,7 +67,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.balanceAmount).isEqualTo(expectedBalance)
+            assertThat(state.balanceAmount).isEqualTo(expectedBalance.toInt())
         }
     }
 
@@ -117,7 +117,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.balanceAmount).isEqualTo(0.0)
+            assertThat(state.balanceAmount).isEqualTo(0)
         }
     }
 
