@@ -75,7 +75,7 @@ private fun TableHeaderRowContent(
             text = stringResource(Res.string.user_name),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(2f),
-            isSelected = state.sortUserName.ascending || state.sortUserName.descending,
+            isSelected = state.sortUserName.ascending,
             onClick = { listener.onSortUsersNameClicked() }
         )
 
@@ -90,7 +90,7 @@ private fun TableHeaderRowContent(
             text = stringResource(Res.string.last_login_date),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(1.5f),
-            isSelected = state.sortLastLoginDate.ascending || state.sortLastLoginDate.descending,
+            isSelected = state.sortLastLoginDate.ascending,
             onClick = { listener.onSortLastLoginDateClicked() }
         )
 
@@ -98,7 +98,7 @@ private fun TableHeaderRowContent(
             text = stringResource(Res.string.last_visit_date),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(1.5f),
-            isSelected = state.sortLastVisitDate.ascending || state.sortLastVisitDate.descending,
+            isSelected = state.sortLastVisitDate.ascending,
             onClick = { listener.onSortLastVisitDateClicked() }
         )
 
