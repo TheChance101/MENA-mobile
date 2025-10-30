@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.show_less
 import mena.trends_presentation.generated.resources.show_more
@@ -40,13 +39,9 @@ internal fun ExpandableText(
 ) {
     var isTextTruncated by remember { mutableStateOf(false) }
     val shortTextAnimation =
-        fadeIn(
-            animationSpec = tween(
-                animationDuration,
-                easing = LinearOutSlowInEasing
-            )
-        ) togetherWith
+        fadeIn(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing)) togetherWith
                 fadeOut(animationSpec = tween(animationDuration, easing = LinearOutSlowInEasing))
+
     Column(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         modifier = modifier.noRippleClickable { onExpandedChange() }
