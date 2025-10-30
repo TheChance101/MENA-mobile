@@ -120,14 +120,10 @@ internal class HomeViewModel(
     }
 
     override fun onClickExpandDescription(reelId: String) {
-        val currentData = state.value.reelsStateFlow.value
-        val updatedData = currentData.map { reel ->
-            if (reel.id == reelId) {
-                reel.copy(isDescriptionExpanded = !reel.isDescriptionExpanded)
-            } else {
-                reel
+        state.value.reelsStateFlow.value =
+            state.value.reelsStateFlow.value.map { reel ->
+                reel.takeIf { it.id != reelId }
+                    ?: reel.copy(isDescriptionExpanded = !reel.isDescriptionExpanded)
             }
-        }
-        state.value.reelsStateFlow.value = updatedData
     }
 }
