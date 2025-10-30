@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.paging.map
@@ -14,7 +15,7 @@ import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
@@ -31,10 +32,16 @@ class DukanDetailsViewModel(
     defaultDispatcher = defaultDispatcher
 ), DukanDetailsInteractionListener {
 
-    private val productsState : MutableStateFlow<PagingData<ProductUiState>> = MutableStateFlow(PagingData.empty())
+    private val productsState: MutableStateFlow<PagingData<ProductUiState>> =
+        MutableStateFlow(PagingData.empty())
+
+    private val shelvesState: MutableStateFlow<PagingData<ShelfUiState>> =
+        MutableStateFlow(PagingData.empty())
+
+    val shelfProductsState: MutableStateFlow<List<ProductUiState>> = MutableStateFlow(emptyList())
 
 
-    val dukanId: String = requireNotNull(savedStateHandle[DUKAN_ID])
+    private val args = savedStateHandle.toRoute<DukanRoute.DukanDetails>()
 
     init {
         loadDukanDetails()
@@ -43,7 +50,7 @@ class DukanDetailsViewModel(
     private fun loadDukanDetails() {
         tryToExecute(
             onStart = ::onLoadDukanDetailsStart,
-            block = { dukanManagementRepository.getDukanDetailsByDukanId(dukanId) },
+            block = { dukanManagementRepository.getDukanDetailsByDukanId(args.dukanId) },
             onSuccess = ::onLoadDukanDetailsSuccess,
             onError = ::onLoadDukanDetailsError
         )
@@ -76,9 +83,6 @@ class DukanDetailsViewModel(
         }
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == Style.WIDE_IMAGE
-
     private fun loadShelvesPaging() {
         tryToCollect(
             block = ::getShelvesPagingFlow,
@@ -89,7 +93,7 @@ class DukanDetailsViewModel(
     private fun getShelvesPagingFlow(): Flow<PagingData<ShelfUiState>> {
         return createPagingSourceFlow(mapper = { it.toUiState() }) { pageNumber, pageSize ->
             shelfRepository.getShelvesByDukanId(
-                dukanId = dukanId,
+                dukanId = args.dukanId,
                 pageNumber = pageNumber,
                 pageSize = pageSize
             ).items
@@ -133,9 +137,10 @@ class DukanDetailsViewModel(
     }
 
     private fun onProductsLimitedLoaded(updatedShelves: PagingData<ShelfUiState>) {
+        shelvesState.value = updatedShelves
         updateState {
             copy(
-                shelves = flowOf(updatedShelves),
+                shelves = shelvesState,
                 dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
             )
         }
@@ -164,8 +169,8 @@ class DukanDetailsViewModel(
     }
 
     private fun onProductsLoaded(products: PagingData<ProductUiState>) {
+        productsState.value = products
         updateState {
-            productsState.value = products
             copy(
                 productsShelf = productsState,
                 dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
@@ -191,7 +196,8 @@ class DukanDetailsViewModel(
                 id = id,
                 name = name,
                 style = state.value.dukanInfo.style.name,
-                color = state.value.dukanInfo.color
+                color = state.value.dukanInfo.color,
+                dukanId = args.dukanId
             )
         )
     }
@@ -200,11 +206,28 @@ class DukanDetailsViewModel(
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
     }
 
+    private fun updateProductListInShelfPagingData(
+        productId: String,
+        updateProduct: (ProductUiState) -> ProductUiState
+    ) {
+        val currentData = shelvesState.value
+        val updatedData = currentData.map { shelf ->
+            shelf.copy(
+                products = shelf.products.map { product ->
+                    if (product.id == productId) updateProduct(product) else product
+                }
+            )
+        }
+
+        shelvesState.value = updatedData
+        updateState { copy(shelves = shelvesState) }
+    }
+
     private fun updateProductInPagingData(
         productId: String,
         updateProduct: (ProductUiState) -> ProductUiState
     ) {
-        val currentData =productsState.value
+        val currentData = productsState.value
         val updatedData = currentData.map { product ->
             if (product.id == productId) updateProduct(product) else product
         }
@@ -215,49 +238,71 @@ class DukanDetailsViewModel(
 
 
     override fun onAddToCartClicked(productId: String) {
-        updateProductInPagingData(productId) { product ->
-            product.copy(showProductQuantity = true)
+        if (isWideImageStyle()) {
+            updateProductInPagingData(productId) { product ->
+                product.copy(showProductQuantity = true)
+            }
+        } else {
+            updateProductListInShelfPagingData(productId) { product ->
+                product.copy(showProductQuantity = true)
+            }
         }
+
     }
 
     private fun increaseProductQuantity(productId: String) {
-        updateProductInPagingData(productId) { product ->
+        updateProductQuantity(productId) { product ->
             product.copy(inCartQuantity = product.inCartQuantity + 1)
         }
+
     }
 
     private fun decreaseProductQuantity(productId: String) {
-        updateProductInPagingData(productId) { product ->
+        updateProductQuantity(productId) { product ->
             if (product.inCartQuantity == 1) {
-                product.copy(showProductQuantity = true)
+                product.copy(showProductQuantity = false)
             } else product.copy(inCartQuantity = product.inCartQuantity - 1)
         }
     }
 
+    private fun updateProductQuantity(
+        productId: String,
+        update: (ProductUiState) -> ProductUiState
+    ) {
+        if (isWideImageStyle()) {
+            updateProductInPagingData(productId, update)
+        } else {
+            updateProductListInShelfPagingData(productId, update)
+        }
+    }
+
     override fun onPlusClicked(productId: String) {
-        tryToExecute(
-            onSuccess = { increaseProductQuantity(productId) },
+        increaseProductQuantity(productId)
+        tryToExecuteWithDebounce(
             block = {
                 // update product
-            }
+            },
         )
     }
 
     override fun onMinusClicked(productId: String) {
-        tryToExecute(
-            onSuccess = { decreaseProductQuantity(productId) },
+        decreaseProductQuantity(productId)
+        tryToExecuteWithDebounce(
             block = {
                 // update product
-            }
+            },
         )
     }
 
     override fun onCartClicked() {
-        emitEffect(DukanDetailsEffects.NavigateToCartScreen(dukanId))
+        emitEffect(DukanDetailsEffects.NavigateToCartScreen(args.dukanId))
     }
 
     override fun onRetryClicked() {
         loadDukanDetails()
     }
+
+    private fun isWideImageStyle() =
+        state.value.dukanInfo.style == Style.WIDE_IMAGE
 
 }

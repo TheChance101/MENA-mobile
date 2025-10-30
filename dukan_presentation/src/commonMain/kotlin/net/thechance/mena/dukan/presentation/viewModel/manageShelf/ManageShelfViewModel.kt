@@ -54,7 +54,7 @@ class ManageShelfViewModel(
     override fun onSaveClicked() {
         val trimmedTitle = validateShelfTitle() ?: return
         tryToExecute(
-            block = { updateShelfName(shelfId, trimmedTitle) },
+            block = { updateShelfName(args.shelfId, trimmedTitle) },
             onSuccess = { onEditShelfSuccess() },
             onError = ::onEditShelfError
         )
