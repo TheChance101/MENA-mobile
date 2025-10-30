@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 
 data class User(
     val id: Uuid,
-    val userName: String,
+    val fullName: String,
     val phoneNumber: String,
     val lastLoginDate: LocalDate,
     val lastVisitDate: LocalDate,

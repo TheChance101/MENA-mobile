@@ -16,9 +16,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.height(48.dp),

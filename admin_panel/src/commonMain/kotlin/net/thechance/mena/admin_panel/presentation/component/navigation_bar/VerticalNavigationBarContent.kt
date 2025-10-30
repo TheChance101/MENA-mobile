@@ -22,8 +22,7 @@ fun VerticalNavigationBarContent(
                 selectedIcon = item.selectedIcon,
                 unselectedIcon = item.notSelectedIcon,
                 title = item.title,
-                onClick = { onItemClick(item) },
-                modifier = Modifier.weight(1f)
+                onClick = { onItemClick(item) }
             )
         }
     }

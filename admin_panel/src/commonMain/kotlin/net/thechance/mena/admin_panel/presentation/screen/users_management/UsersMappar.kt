@@ -7,7 +7,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun User.toUIState(): UsersManagementScreenState.UserItem {
     return UsersManagementScreenState.UserItem(
         id = id,
-        userName = userName,
+        userName = fullName,
         phoneNumber = phoneNumber,
         lastLoginDate = lastLoginDate,
         lastVisitDate = lastVisitDate,

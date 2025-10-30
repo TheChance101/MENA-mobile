@@ -26,7 +26,6 @@ fun PanelScaffold(
     topBar: (@Composable () -> Unit)? = null,
     snackBar: (@Composable () -> Unit)? = null,
     overlays: (ScaffoldScope.() -> Unit)? = null,
-    bottomContent: (@Composable () -> Unit)? = null,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     errorState: ErrorState? = null,
     isLoading: Boolean = false,
@@ -72,12 +71,6 @@ fun PanelScaffold(
                     .align(Alignment.BottomEnd)
                     .padding(end = Theme.spacing._32, top = Theme.spacing._32)
             ) { snackBarContent() }
-        }
-
-        bottomContent?.let {
-            Box(
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) { it() }
         }
     }
 }
