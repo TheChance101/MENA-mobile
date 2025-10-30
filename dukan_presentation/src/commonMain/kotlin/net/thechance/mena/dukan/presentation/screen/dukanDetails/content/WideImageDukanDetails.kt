@@ -37,11 +37,11 @@ fun WideImageDukanDetails(
         topBar = {
             WideImageDukanAppBar(
                 onBackClicked = listener::onBackClicked,
-                onCartClicked = {}
+                onCartClicked = listener::onCartClicked
             )
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()

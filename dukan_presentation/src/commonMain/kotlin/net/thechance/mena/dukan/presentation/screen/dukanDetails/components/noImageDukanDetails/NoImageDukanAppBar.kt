@@ -73,7 +73,7 @@ fun NoImageDukanAppBar(
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_shopping_basket),
                 contentDescription = stringResource(Res.string.shopping_basket_icon),
-                onClick = {}
+                onClick = listener::onCartClicked
             )
         }
     }

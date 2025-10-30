@@ -47,7 +47,7 @@ fun SmallImageDukanDetails(
             SmallImageAppBar(listener)
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
@@ -107,7 +107,7 @@ private fun SmallImageAppBar(
         },
         onLeadingClick = listener::onBackClicked,
         trailingContent = {
-            AppBarOptionContainer {
+            AppBarOptionContainer(onClick = listener::onCartClicked) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
                     contentDescription = stringResource(Res.string.shopping_basket_icon)

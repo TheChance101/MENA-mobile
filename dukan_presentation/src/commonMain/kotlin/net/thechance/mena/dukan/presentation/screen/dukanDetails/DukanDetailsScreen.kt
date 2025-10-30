@@ -7,7 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukanCart
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetails
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetails
@@ -30,12 +31,15 @@ fun DukanDetailsScreen(
         when (effect) {
             DukanDetailsEffects.NavigateBack -> navController.popBackStack()
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
-                DukanRoute.ShelfDetails(effect.id, effect.name, effect.style, effect.color)
+                ShelfDetails(effect.id, effect.name, effect.style, effect.color)
             )
 
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {
 
             }
+
+            is DukanDetailsEffects.NavigateToCart ->
+                navController.navigate(DukanCart(effect.dukanId))
         }
     }
 

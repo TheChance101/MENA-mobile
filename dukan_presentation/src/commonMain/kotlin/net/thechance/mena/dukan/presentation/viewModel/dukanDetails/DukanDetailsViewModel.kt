@@ -213,6 +213,10 @@ class DukanDetailsViewModel(
         loadDukanDetails()
     }
 
+    override fun onCartClicked() {
+        emitEffect(DukanDetailsEffects.NavigateToCart(dukanId))
+    }
+
     private fun updateShelvesWithAddedProduct(
         shelves: PagingData<ShelfUiState>,
         productId: String
