@@ -198,7 +198,7 @@ class ExportTransactionsViewModelTest {
     @Test
     fun `should set defaultStartDate when current startDate exists`() = runTest {
         initViewModel()
-        
+
         viewModel.state.test {
             skipItems(1)
             val existingStartDate = LocalDate(2024, 10, 15)
