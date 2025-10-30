@@ -11,11 +11,10 @@
     <string name="no_internet_content">Check your connection and try again</string>
 
     <!-- Navigation -->
-    <string name="dukan_management">Dukan Management</string>
+    <string name="dukans_management">Dukans Management</string>
     <string name="dukan_requests">Dukan Requests</string>
     <string name="deposit">Deposit</string>
-    <string name="user_management">User Management</string>
-    <string name="log_out">Log Out</string>
+    <string name="log_out">Logout</string>
 
     <!-- Users Management -->
     <string name="users_management">Users management</string>

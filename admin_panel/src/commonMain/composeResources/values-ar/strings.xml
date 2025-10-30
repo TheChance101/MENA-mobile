@@ -10,10 +10,9 @@
     <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
 
     <!-- Navigation -->
-    <string name="dukan_management">إدارة الدكان</string>
+    <string name="dukans_management">إدارة الدكان</string>
     <string name="dukan_requests">طلبات الدكان</string>
     <string name="deposit">الإيداع</string>
-    <string name="user_management">إدارة المستخدمين</string>
     <string name="log_out">تسجيل الخروج</string>
 
     <!-- Users Management -->

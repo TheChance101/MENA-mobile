@@ -50,18 +50,18 @@ fun BlockUserDialog(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            IconCircle()
+            DialogIcon()
             DialogContent()
             DialogActions(
                 onCancel = onDismiss,
-                onConfirm = onConfirmBlock
+                onConfirmBlock = onConfirmBlock
             )
         }
     }
 }
 
 @Composable
-private fun IconCircle() {
+private fun DialogIcon() {
     Box(
         modifier = Modifier
             .size(88.dp)
@@ -93,7 +93,8 @@ private fun DialogContent() {
 
         Text(
             text = stringResource(Res.string.block_user_confirmation_message),
-            style = Theme.typography.body.medium,
+            style = Theme.typography.body.small,
+            color = Theme.colorScheme.shadeSecondary
         )
     }
 }
@@ -101,7 +102,7 @@ private fun DialogContent() {
 @Composable
 private fun DialogActions(
     onCancel: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirmBlock: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -110,14 +111,14 @@ private fun DialogActions(
         PrimaryButton(
             text = stringResource(Res.string.cancel),
             onClick = onCancel,
-            modifier = Modifier.height(48.dp)
+            modifier = Modifier.height(48.dp).weight(1f)
         )
 
         OutlinedButton(
             text = stringResource(Res.string.block),
-            onClick = onConfirm,
+            onClick = onConfirmBlock,
             trailingIcon = painterResource(Res.drawable.ic_block),
-            modifier = Modifier.height(48.dp)
+            modifier = Modifier.height(48.dp).weight(1f)
         )
     }
 }

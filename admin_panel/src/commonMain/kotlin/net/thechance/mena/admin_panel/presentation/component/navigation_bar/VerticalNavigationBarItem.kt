@@ -1,5 +1,7 @@
 package net.thechance.mena.admin_panel.presentation.component.navigation_bar
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,15 +32,22 @@ fun VerticalNavigationBarItem(
 ) {
     val painter = if (isSelected) selectedIcon else unselectedIcon
     val interactionSource = remember { MutableInteractionSource() }
-    val textColor = if (isSelected) Theme.colorScheme.brand.brand
-    else Theme.colorScheme.shadeSecondary
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            Theme.colorScheme.shadeSecondary
+
+        } else {
+            Theme.colorScheme.brand.brand
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "textColor"
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = modifier
             .width(112.dp)
-            .padding(vertical = 16.dp)
             .then(
                 if (isSelected) Modifier
                 else Modifier.clickable(
@@ -49,15 +59,15 @@ fun VerticalNavigationBarItem(
     ) {
         Icon(
             painter = painter,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(32.dp),
             contentDescription = title,
         )
         Text(
             text = title,
-            style = Theme.typography.label.medium,
+            style = Theme.typography.label.small,
             color = textColor,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
         )
     }
 }

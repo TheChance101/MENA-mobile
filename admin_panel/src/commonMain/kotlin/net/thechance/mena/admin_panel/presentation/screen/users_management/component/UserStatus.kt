@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.domain.entity.UserStates
+import net.thechance.mena.admin_panel.domain.entity.User.UserState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.activate
 import net.thechance.mena.admin_panel.resources.active
@@ -30,11 +30,11 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StatusManager(
-    userStates: UserStates,
+    userState: UserState,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isActive = userStates == UserStates.ACTIVE
+    val isActive = userState == UserState.ACTIVE
 
     OutlinedButton(
         modifier = modifier.wrapContentWidth(),
@@ -48,18 +48,18 @@ fun StatusManager(
 
 @Composable
 fun UserStatus(
-    status: UserStates,
+    status: UserState,
     modifier: Modifier = Modifier
 ) {
     val (backgroundColor, dotColor, textColor, statusText) = when (status) {
-        UserStates.ACTIVE -> StatusColors(
+        UserState.ACTIVE -> StatusColors(
             backgroundColor = Theme.colorScheme.background.bgSuccess,
             dotColor = Theme.colorScheme.success,
             textColor = Theme.colorScheme.success,
             text = stringResource(Res.string.active)
         )
 
-        UserStates.BLOCKED -> StatusColors(
+        UserState.BLOCKED -> StatusColors(
             backgroundColor = Theme.colorScheme.background.bgError,
             dotColor = Theme.colorScheme.error,
             textColor = Theme.colorScheme.error,

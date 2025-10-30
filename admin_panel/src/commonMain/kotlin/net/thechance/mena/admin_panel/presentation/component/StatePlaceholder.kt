@@ -22,24 +22,20 @@ fun StatePlaceholder(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Image(
-            modifier = Modifier
-                .size(128.dp)
-                .padding(bottom = 12.dp),
+            modifier = Modifier.size(128.dp).padding(bottom = 24.dp),
             painter = image,
             contentDescription = title
         )
         Text(
-            modifier = Modifier
-                .padding(bottom = 8.dp),
+            modifier = Modifier.padding(bottom = 4.dp),
             text = title,
             color = Theme.colorScheme.shadePrimary,
-            style = Theme.typography.title.small,
+            style = Theme.typography.title.medium,
         )
         Text(
             text = description,

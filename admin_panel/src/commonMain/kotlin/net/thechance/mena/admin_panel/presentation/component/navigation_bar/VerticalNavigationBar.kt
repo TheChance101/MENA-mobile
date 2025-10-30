@@ -15,12 +15,11 @@ fun VerticalNavigationBar(
     initialSelectedIndex: Int = 0,
     content: @Composable VerticalNavigationScope.() -> Unit = {},
 ) {
-    val scope = remember { VerticalNavigationScopeImpl() }.apply {
-        items.clear()
-        content()
-    }
+    val scope = remember { VerticalNavigationScopeImpl() }
+    scope.clear()
+    scope.content()
 
-    var selectedItemIndex by remember {
+    var selectedItemIndex by remember(initialSelectedIndex) {
         mutableIntStateOf(initialSelectedIndex)
     }
 

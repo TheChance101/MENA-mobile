@@ -27,7 +27,7 @@ import net.thechance.mena.admin_panel.presentation.screen.users_management.Users
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.app_name
 import net.thechance.mena.admin_panel.resources.deposit
-import net.thechance.mena.admin_panel.resources.dukan_management
+import net.thechance.mena.admin_panel.resources.dukans_management
 import net.thechance.mena.admin_panel.resources.dukan_requests
 import net.thechance.mena.admin_panel.resources.ic_deposit
 import net.thechance.mena.admin_panel.resources.ic_deposit_selected
@@ -49,7 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AdminPanelEntryPoint() {
-    var activeFeature: AdminFeature by remember { mutableStateOf(AdminFeature.USER_MANAGEMENT) }
+    var activeFeature: AdminFeature by remember { mutableStateOf(AdminFeature.USERS_MANAGEMENT) }
 
     Row(
         Modifier
@@ -74,7 +74,7 @@ fun AdminPanelEntryPoint() {
                 verticalNavigationItem(
                     selectedIcon = painterResource(Res.drawable.ic_dukan_selected),
                     notSelectedIcon = painterResource(Res.drawable.ic_dukan),
-                    title = stringResource(Res.string.dukan_management),
+                    title = stringResource(Res.string.dukans_management),
                     entry = { activeFeature = AdminFeature.DUKAN_MANAGEMENT }
                 )
 
@@ -96,7 +96,7 @@ fun AdminPanelEntryPoint() {
                     selectedIcon = painterResource(Res.drawable.ic_user_selected),
                     notSelectedIcon = painterResource(Res.drawable.ic_users_mange),
                     title = stringResource(Res.string.users_management),
-                    entry = { activeFeature = AdminFeature.USER_MANAGEMENT }
+                    entry = { activeFeature = AdminFeature.USERS_MANAGEMENT }
                 )
                 verticalNavigationItem(
                     selectedIcon = painterResource(Res.drawable.ic_log_out),
@@ -121,8 +121,8 @@ private fun RowScope.FeatureContent(activeFeature: AdminFeature) {
     ) {
         androidx.compose.animation.Crossfade(targetState = activeFeature) { feature ->
             when (feature) {
-                AdminFeature.USER_MANAGEMENT -> UsersManagementScreen()
-                AdminFeature.DUKAN_MANAGEMENT -> PlaceholderScreen(stringResource(Res.string.dukan_management))
+                AdminFeature.USERS_MANAGEMENT -> UsersManagementScreen()
+                AdminFeature.DUKAN_MANAGEMENT -> PlaceholderScreen(stringResource(Res.string.dukans_management))
                 AdminFeature.DUKAN_REQUESTS -> PlaceholderScreen(stringResource(Res.string.dukan_requests))
                 AdminFeature.DEPOSIT -> PlaceholderScreen(stringResource(Res.string.deposit))
                 AdminFeature.LOG_OUT -> PlaceholderScreen(stringResource(Res.string.log_out))
@@ -142,7 +142,7 @@ private fun PlaceholderScreen(title: String) {
 }
 
 private enum class AdminFeature {
-    USER_MANAGEMENT,
+    USERS_MANAGEMENT,
     DUKAN_MANAGEMENT,
     DUKAN_REQUESTS,
     DEPOSIT,

@@ -2,9 +2,9 @@ package net.thechance.mena.admin_panel.presentation.screen.users_management
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import net.thechance.mena.admin_panel.domain.entity.User
-import net.thechance.mena.admin_panel.domain.entity.UserStates
-import net.thechance.mena.admin_panel.domain.entity.toUIState
+import net.thechance.mena.admin_panel.domain.entity.User.UserState
 import net.thechance.mena.admin_panel.domain.repository.UserRepo
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import org.koin.android.annotation.KoinViewModel
@@ -25,11 +25,15 @@ class UsersManagementViewModel(
     }
 
 
+    /**
+     * note: in callee we are using first() because we have a mock repo that uses StateFlow to emit data,
+     * in real implementation we will use suspend function to get data automatically
+     */
     private fun getUsers() {
         tryToExecute(
-            callee = { userRepo.getAllUsers() },
+            callee = { userRepo.getAllUsers().first() },
             dispatcher = dispatcher,
-            onSuccess = { result -> onGetUsersSuccess(result) },
+            onSuccess = ::onGetUsersSuccess,
             onError = { onGetUsersError() }
         )
     }
@@ -59,7 +63,6 @@ class UsersManagementViewModel(
         sendEffect(UsersManagementEffect.NavigateBack)
     }
 
-
     override fun onBlockUserClicked(userId: Uuid) {
         updateState {
             it.copy(
@@ -69,9 +72,7 @@ class UsersManagementViewModel(
         }
     }
 
-    override fun onActivateUserClicked(userId: Uuid) {
-        TODO("Not yet implemented")
-    }
+    override fun onActivateUserClicked(userId: Uuid) {}
 
     override fun onRetryClicked() {
         getUsers()
@@ -81,27 +82,19 @@ class UsersManagementViewModel(
         val user = state.value.filteredUsers.find { it.id == userId }
 
         when (user?.userStates) {
-            UserStates.ACTIVE -> onShowBlockDialog(userId)
-            UserStates.BLOCKED -> onActivateUserClicked(userId)
+            UserState.ACTIVE -> onShowBlockDialog(userId)
+            UserState.BLOCKED -> onActivateUserClicked(userId)
             else -> {}
         }
     }
 
-    override fun onSortUsersNameClicked() {
-        TODO("Not yet implemented")
-    }
+    override fun onSortUsersNameClicked() {}
 
-    override fun onSortLastLoginDateClicked() {
-        TODO("Not yet implemented")
-    }
+    override fun onSortLastLoginDateClicked() {}
 
-    override fun onSortLastVisitDateClicked() {
-        TODO("Not yet implemented")
-    }
+    override fun onSortLastVisitDateClicked() {}
 
-    override fun onSearchQueryChanged(query: String) {
-        TODO("Not yet implemented")
-    }
+    override fun onSearchQueryChanged(query: String) {}
 
     override fun onShowBlockDialog(userId: Uuid) {
         updateState {
@@ -119,10 +112,7 @@ class UsersManagementViewModel(
                 selectedUserId = null
             )
         }
-        sendEffect(UsersManagementEffect.NavigateBack)
     }
 
-    override fun onConfirmBlock() {
-        TODO("Not yet implemented")
-    }
+    override fun onConfirmBlock() {}
 }

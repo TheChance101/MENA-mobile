@@ -2,7 +2,7 @@
 
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
-import net.thechance.mena.admin_panel.domain.entity.UserStates
+import net.thechance.mena.admin_panel.domain.entity.User.UserState
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import java.time.LocalDate
 import kotlin.uuid.ExperimentalUuidApi
@@ -13,9 +13,9 @@ data class UsersManagementScreenState(
     val users: List<UserItem> = emptyList(),
     val query: String = "",
     val filteredUsers: List<UserItem> = emptyList(),
-    val sortUserName: SortUserName = SortUserName(),
-    val sortLastLoginDate: SortLastLoginDate = SortLastLoginDate(),
-    val sortLastVisitDate: SortLastVisitDate = SortLastVisitDate(),
+    val userNameASC: Boolean? = null,
+    val lastLoginDateASC: Boolean? = null,
+    val lastVisitDateASC: Boolean? = null,
     val isUserActive: Boolean = true,
     val isLoading: Boolean = false,
     val errorState: ErrorState? = null,
@@ -28,21 +28,6 @@ data class UsersManagementScreenState(
         val phoneNumber: String,
         val lastLoginDate: LocalDate,
         val lastVisitDate: LocalDate,
-        val userStates: UserStates
+        val userStates: UserState
     )
 }
-
-data class SortUserName(
-    val ascending: Boolean = true,
-    val descending: Boolean = false
-)
-
-data class SortLastLoginDate(
-    val ascending: Boolean = true,
-    val descending: Boolean = false
-)
-
-data class SortLastVisitDate(
-    val ascending: Boolean = true,
-    val descending: Boolean = false
-)

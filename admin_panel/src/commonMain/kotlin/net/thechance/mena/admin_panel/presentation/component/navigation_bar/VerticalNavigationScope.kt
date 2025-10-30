@@ -8,9 +8,7 @@ interface VerticalNavigationScope {
         selectedIcon: Painter,
         title: String,
         entry: () -> Unit,
-    ) {
-        error(" i think here is an error")
-    }
+    )
 }
 
 data class VerticalNavigationItem(
@@ -21,7 +19,12 @@ data class VerticalNavigationItem(
 )
 
 internal class VerticalNavigationScopeImpl : VerticalNavigationScope {
-    val items = mutableListOf<VerticalNavigationItem>()
+    private val _items = mutableListOf<VerticalNavigationItem>()
+    val items: List<VerticalNavigationItem> get() = _items
+
+    internal fun clear() {
+        _items.clear()
+    }
 
     override fun verticalNavigationItem(
         notSelectedIcon: Painter,
@@ -29,6 +32,6 @@ internal class VerticalNavigationScopeImpl : VerticalNavigationScope {
         title: String,
         entry: () -> Unit,
     ) {
-        items.add(VerticalNavigationItem(notSelectedIcon, selectedIcon, title, entry))
+        _items.add(VerticalNavigationItem(notSelectedIcon, selectedIcon, title, entry))
     }
 }

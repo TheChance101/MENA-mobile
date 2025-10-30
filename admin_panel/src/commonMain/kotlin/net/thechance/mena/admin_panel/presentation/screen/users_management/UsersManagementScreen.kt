@@ -1,6 +1,7 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.admin_panel.presentation.component.AppBarWithBackground
 import net.thechance.mena.admin_panel.presentation.component.ErrorView
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.ThreeDotsLoadingIndicator
@@ -22,6 +22,8 @@ import net.thechance.mena.admin_panel.presentation.screen.users_management.compo
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.users_management
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -45,9 +47,10 @@ private fun UsersManagementScreenContent(
 ) {
     PanelScaffold(
         topBar = {
-            AppBarWithBackground(
+            AppBar(
                 title = stringResource(Res.string.users_management),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
             )
         },
         errorState = state.errorState,

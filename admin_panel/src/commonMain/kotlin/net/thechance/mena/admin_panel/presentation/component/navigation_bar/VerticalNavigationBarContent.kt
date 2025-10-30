@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.presentation.component.navigation_bar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,7 +15,7 @@ fun VerticalNavigationBarContent(
     onItemClick: (VerticalNavigationItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.width(112.dp).fillMaxHeight()) {
+    Column(modifier.width(112.dp).padding(bottom = 34.dp)) {
         items.forEachIndexed { index, item ->
             VerticalNavigationBarItem(
                 isSelected = index == selectedItemIndex,

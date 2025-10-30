@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.presentation.component.TextWithIcon
+import net.thechance.mena.admin_panel.presentation.component.ClickableTextRow
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.admin_panel.resources.Res
@@ -70,7 +70,7 @@ private fun TableHeaderRowContent(
             modifier = Modifier.weight(0.3f)
         )
 
-        TextWithIcon(
+        ClickableTextRow(
             text = stringResource(Res.string.user_name),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(2f),
@@ -85,7 +85,7 @@ private fun TableHeaderRowContent(
             modifier = Modifier.weight(1.5f)
         )
 
-        TextWithIcon(
+        ClickableTextRow(
             text = stringResource(Res.string.last_login_date),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(1.5f),
@@ -93,7 +93,7 @@ private fun TableHeaderRowContent(
             onClick = { listener.onSortLastLoginDateClicked() }
         )
 
-        TextWithIcon(
+        ClickableTextRow(
             text = stringResource(Res.string.last_visit_date),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(1.5f),

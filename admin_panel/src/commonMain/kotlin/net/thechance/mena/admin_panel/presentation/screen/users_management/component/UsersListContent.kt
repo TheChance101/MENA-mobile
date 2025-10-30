@@ -100,7 +100,7 @@ private fun UserItemRow(
         )
 
         StatusManager(
-            userStates = user.userStates,
+            userState = user.userStates,
             onClick = onStatusClick,
             modifier = Modifier.weight(0.8f)
         )
