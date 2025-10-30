@@ -1,6 +1,9 @@
 package net.thechance.mena.wallet.presentation.utils
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.month_april
 import mena.wallet_presentation.generated.resources.month_august
@@ -15,6 +18,8 @@ import mena.wallet_presentation.generated.resources.month_november
 import mena.wallet_presentation.generated.resources.month_october
 import mena.wallet_presentation.generated.resources.month_september
 import org.jetbrains.compose.resources.StringResource
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 fun getNumberOfDaysInMonth(year: Int, month: Int): Int {
     return YearMonth(year, month).numberOfDays
@@ -34,3 +39,8 @@ enum class AppMonth(val number: Int, val res: StringResource) {
     November(11, Res.string.month_november),
     December(12, Res.string.month_december)
 }
+
+@OptIn(ExperimentalTime::class)
+fun LocalDate?.orToday(): LocalDate =
+    this ?: Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()).date

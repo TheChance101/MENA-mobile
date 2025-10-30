@@ -76,7 +76,8 @@ fun ScaffoldScope.DatePickerBottomSheet(
     minYear: Int = 2000,
     maxYear: Int = Clock.System.now()
         .toLocalDateTime(TimeZone.currentSystemDefault()).year,
-    defaultSelectedDate: LocalDate? = null,
+    defaultSelectedDate: LocalDate = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault()).date,
     onPickClick: (day: Int, month: Int, year: Int) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -107,26 +108,31 @@ private fun DatePickerBottomSheetContent(
     minYear: Int = 2000,
     maxYear: Int = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year,
     onPickClick: (day: Int, month: Int, year: Int) -> Unit,
-    selectedDate: LocalDate?,
+    selectedDate: LocalDate,
     onDismiss: () -> Unit,
 ) {
-    if (selectedDate == null)
-        return
-
-    val monthPagerState = rememberPagerState(
-        initialPage = (selectedDate.month.number) - 1,
-        pageCount = { 12 }
-    )
+    val today =
+        remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
 
     val yearPagerState = rememberPagerState(
         initialPage = (selectedDate.year) - minYear,
         pageCount = { maxYear - minYear + 1 }
     )
 
+    val monthPagerState = rememberPagerState(
+        initialPage = (selectedDate.month.number) - 1,
+        pageCount = { if (minYear + yearPagerState.currentPage == today.year) today.month.number else 12 }
+    )
+
     val currentMonth = monthPagerState.currentPage + 1
     val currentYear = minYear + yearPagerState.currentPage
     val daysInMonth = remember(currentMonth, currentYear) {
-        getNumberOfDaysInMonth(currentYear, currentMonth)
+        val totalDays = getNumberOfDaysInMonth(currentYear, currentMonth)
+        if (currentYear == today.year && currentMonth == today.month.number) {
+            today.day
+        } else {
+            totalDays
+        }
     }
 
     val dayPagerState = rememberPagerState(
@@ -299,7 +305,7 @@ private fun ChoiceIndicator(
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(RoundedCornerShape(Theme.radius.sm))
             .height(28.dp)
             .background(Theme.colorScheme.background.surfaceHigh)
     )
