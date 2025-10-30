@@ -5,5 +5,5 @@ import net.thechance.mena.identity.domain.entity.User
 interface RegistrationRepository {
     fun createUser(user: User, password: String)
     fun uploadImage(imageByteArray: ByteArray)
-    fun usernameExists(username: String): Boolean
+    fun isUsernameTaken(username: String): Boolean
 }
