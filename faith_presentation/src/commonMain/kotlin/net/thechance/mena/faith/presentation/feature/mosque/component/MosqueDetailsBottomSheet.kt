@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.mosque.composable
+package net.thechance.mena.faith.presentation.feature.mosque.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -23,7 +23,6 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_arrow_right
 import mena.faith_presentation.generated.resources.mosque_details
 import mena.faith_presentation.generated.resources.view_on_map
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -31,6 +30,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ScaffoldScope.MosqueDetailsBottomSheet(
