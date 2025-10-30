@@ -10,13 +10,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
@@ -46,6 +48,7 @@ import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.segment.Segment
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -199,9 +202,7 @@ private fun SegmentSection(
                     columns = GridCells.Adaptive(minSize = 106.dp),
                     userScrollEnabled = false,
                     state = rememberLazyGridState(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height((reels.itemCount / 3 * 164).dp),
+                    modifier = Modifier.heightIn(min = 0.dp),
                     verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                     horizontalArrangement = Arrangement.spacedBy(
                         Theme.spacing._4,
@@ -211,10 +212,18 @@ private fun SegmentSection(
                 ) {
                     items(key = reels.itemKey(), count = reels.itemCount) { index ->
                         reels[index]?.let { reel ->
-                            TrendItem(
-                                item = reel,
-                                onTrendClick = onTrendClick
-                            )
+                            TrendItem(item = reel, onTrendClick = onTrendClick)
+                        }
+                    }
+
+                    if (reels.loadState.append is LoadState.Loading) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                DotsProgressIndicator()
+                            }
                         }
                     }
                 }
