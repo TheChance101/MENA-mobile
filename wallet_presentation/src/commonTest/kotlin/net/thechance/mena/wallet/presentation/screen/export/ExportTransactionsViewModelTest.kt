@@ -191,7 +191,6 @@ class ExportTransactionsViewModelTest {
             skipItems(1)
             viewModel.onStartDateClicked()
             advanceUntilIdle()
-            skipItems(1)
 
             val selectedDate = LocalDate(2025, 9, 15)
             viewModel.onPickDateClicked(selectedDate)
