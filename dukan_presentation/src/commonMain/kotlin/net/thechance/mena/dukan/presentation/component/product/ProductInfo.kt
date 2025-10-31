@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
@@ -18,7 +17,8 @@ fun ProductInfo(
         Text(
             text = name,
             style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
         )
 
         description?.let {
@@ -29,7 +29,6 @@ fun ProductInfo(
                 color = Theme.colorScheme.shadeTertiary,
                 maxLines = 2,
                 minLines = 2,
-                overflow = TextOverflow.Ellipsis
             )
         }
     }

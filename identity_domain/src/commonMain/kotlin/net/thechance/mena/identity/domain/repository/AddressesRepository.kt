@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 interface AddressesRepository {
     suspend fun createAddress(addressInput: AddressInput)
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput)
+    suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput,isActive: Boolean = false)
     @OptIn(ExperimentalUuidApi::class)
     suspend fun deleteAddress(addressId: Uuid)
     suspend fun getUserAddresses(): List<Address>
