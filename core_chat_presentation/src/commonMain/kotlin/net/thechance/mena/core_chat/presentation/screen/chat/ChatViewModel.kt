@@ -386,6 +386,42 @@ class ChatViewModel(
         }
     }
 
+    override fun onMessageLongClicked(message: MessageUiState) {
+        updateState {
+            it.copy(
+                isReactionDialogVisible = true,
+                messageToReactTo = message
+            )
+        }
+    }
+
+    override fun onReactionDialogDismissed() {
+        updateState {
+            it.copy(
+                isReactionDialogVisible = false,
+                messageToReactTo = null
+            )
+        }
+    }
+
+
+    override fun onReactionSelected(messageId: Uuid, reaction: String) {
+        tryToExecute(
+            execute = {messageRepository.sendReaction(messageId,reaction)},
+            onSuccess = { updateReactionInMessages(messageId, reaction) }
+        )
+    }
+    private suspend fun updateReactionInMessages(messageId: Uuid, reaction: String) {
+            safeUpdateMessages { messages ->
+                messages.map { message ->
+                    if (message.id == messageId)
+                        message.copy(reaction = reaction)
+                    else message
+                }
+            }
+
+    }
+
     override fun onDownloadImageClicked(url: String) {
         tryToExecute(
             execute = { imageDownloaderService.downloadImageToGallery(url) },
