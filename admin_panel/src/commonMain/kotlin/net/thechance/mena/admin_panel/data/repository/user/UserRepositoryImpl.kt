@@ -5,7 +5,7 @@ import net.thechance.mena.admin_panel.data.mapper.user.buildSortQuery
 import net.thechance.mena.admin_panel.data.mapper.user.toEntity
 import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
-import net.thechance.mena.admin_panel.data.remote.service.AdminPanelApiService
+import net.thechance.mena.admin_panel.data.remote.service.UserApiService
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
@@ -19,12 +19,12 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @Single
 class UserRepositoryImpl(
-    private val adminPanelApiService: AdminPanelApiService,
+    private val userApiService: UserApiService,
 ) : UserRepository {
     override suspend fun getUsers(userQuery: UserQueryParams?): List<User> {
         val sortParam = buildSortQuery(userQuery?.sortType, userQuery?.sortDirection)
         return executeApiSafely<PagedResponse<UserResponse>> {
-            adminPanelApiService
+            userApiService
                 .getUsers(
                     query = userQuery?.searchInput,
                     sort = sortParam,
@@ -37,7 +37,7 @@ class UserRepositoryImpl(
 
     override suspend fun updateUserStatus(userID: Uuid, status: Status) {
         executeApiSafely<Unit> {
-            adminPanelApiService.updateUserStatus(userID.toString(), status.toString())
+            userApiService.updateUserStatus(userID.toString(), status.toString())
         }
     }
 }
