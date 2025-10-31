@@ -249,7 +249,7 @@ private fun ReelContent(
     onLikeClick: () -> Unit,
 ) {
     VideoPlayer(
-        modifier = Modifier.background(Color.Black),
+        modifier = Modifier.background(Theme.colorScheme.primary.primary),
         url = reel.videoUrl,
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount
