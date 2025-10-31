@@ -1,5 +1,7 @@
 package net.thechance.mena.admin_panel.data.repository.user
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.thechance.mena.admin_panel.data.mapper.toEntityList
 import net.thechance.mena.admin_panel.data.mapper.user.buildSortQuery
 import net.thechance.mena.admin_panel.data.mapper.user.toEntity
@@ -21,18 +23,17 @@ import kotlin.uuid.Uuid
 class UserRepositoryImpl(
     private val userApiService: UserApiService,
 ) : UserRepository {
-    override suspend fun getUsers(userQuery: UserQueryParams?): List<User> {
-        val sortParam = buildSortQuery(userQuery?.sortType, userQuery?.sortDirection)
-        return executeApiSafely<PagedResponse<UserResponse>> {
-            userApiService
-                .getUsers(
-                    query = userQuery?.searchInput,
-                    sort = sortParam,
-                    page = userQuery?.page,
-                    size = userQuery?.size
-
-                )
-        }.toEntityList(UserResponse::toEntity)
+    override suspend fun getUsers(userQueryParams: UserQueryParams?): Flow<List<User>> = flow {
+        val sortParam = buildSortQuery(userQueryParams?.sortType, userQueryParams?.sortDirection)
+        val response = executeApiSafely<PagedResponse<UserResponse>> {
+            userApiService.getUsers(
+                query = userQueryParams?.searchInput,
+                sort = sortParam,
+                page = userQueryParams?.page,
+                size = userQueryParams?.size
+            )
+        }
+        emit(response.toEntityList(UserResponse::toEntity))
     }
 
     override suspend fun updateUserStatus(userID: Uuid, status: Status) {
