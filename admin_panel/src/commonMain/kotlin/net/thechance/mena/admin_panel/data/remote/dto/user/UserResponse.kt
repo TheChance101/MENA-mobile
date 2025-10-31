@@ -9,15 +9,15 @@ data class UserResponse @OptIn(ExperimentalUuidApi::class) constructor(
     @SerialName("id")
     val id: String,
     @SerialName("firstName")
-    val firstName: String,
+    val firstName: String?,
     @SerialName("phoneNumber")
-    val phoneNumber: String,
+    val phoneNumber: String?,
     @SerialName("lastName")
-    val lastName: String,
+    val lastName: String?,
     @SerialName("lastLoginAt")
-    val lastLoginAt: String,
+    val lastLoginAt: String?,
     @SerialName("lastVisitAt")
-    val lastVisitAt: String,
+    val lastVisitAt: String?,
     @SerialName("status")
-    val status: String
+    val status: String?
 )
