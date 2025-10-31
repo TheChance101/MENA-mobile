@@ -2,10 +2,9 @@ package net.thechance.mena.admin_panel.data.remote.dto.user
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.uuid.ExperimentalUuidApi
 
 @Serializable
-data class UserResponse @OptIn(ExperimentalUuidApi::class) constructor(
+data class UserResponse(
     @SerialName("id")
     val id: String,
     @SerialName("firstName")

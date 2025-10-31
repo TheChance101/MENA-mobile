@@ -1,6 +1,6 @@
 package net.thechance.mena.admin_panel.domain.model
 
-data class UserQuery(
+data class UserQueryParams(
     val searchInput: String?,
     val sortType: String?,
     val sortDirection: SortDirection?,
