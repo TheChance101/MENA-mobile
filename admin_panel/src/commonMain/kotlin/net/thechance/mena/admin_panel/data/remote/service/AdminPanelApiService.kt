@@ -5,6 +5,7 @@ import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Query
+import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.LoginRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.RefreshTokenRequestDto
@@ -24,7 +25,8 @@ interface AdminPanelApiService {
     suspend fun getUsers(
         @Query("query") query: String? = null,
         @Query("sort") sort: String? = null
-    ): UserResponse
+    ): PagedResponse<UserResponse>
+
     @POST(BLOCK_USER_ENDPOINT)
     suspend fun blockUser(@Body userID: Long)
 
