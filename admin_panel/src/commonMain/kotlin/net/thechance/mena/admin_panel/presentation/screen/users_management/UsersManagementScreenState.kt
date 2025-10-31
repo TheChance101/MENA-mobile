@@ -23,7 +23,7 @@ data class UsersManagementScreenState(
 ) {
     data class UserItem(
         val id: Uuid,
-        val userName: String,
+        val fullName: String,
         val phoneNumber: String,
         val lastLoginDate: LocalDate,
         val lastVisitDate: LocalDate,

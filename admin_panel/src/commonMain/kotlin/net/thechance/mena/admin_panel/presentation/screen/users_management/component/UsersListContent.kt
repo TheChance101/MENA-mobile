@@ -90,7 +90,7 @@ private fun UserItemRow(
             modifier = Modifier.weight(0.3f)
         )
         Text(
-            text = user.userName,
+            text = user.fullName,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(2f)
