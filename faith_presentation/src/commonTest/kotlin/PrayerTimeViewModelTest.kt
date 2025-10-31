@@ -47,16 +47,8 @@ class PrayerTimeViewModelTest {
         )
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onBackClick should emit NavigateBack effect`() = runTest {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(
-                any(),
-                any<Location>()
-            )
-        } returns emptyList()
-
         viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
 
         testDispatcher.scheduler.advanceTimeBy(100)
@@ -70,6 +62,20 @@ class PrayerTimeViewModelTest {
         }
     }
 
+    @Test
+    fun `onChangeLocationClick should emit NavigateToChangeLocation effect`() = runTest {
+        viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
+
+        testDispatcher.scheduler.advanceTimeBy(100)
+
+        viewModel.uiEffect.test {
+            viewModel.onChangeLocation()
+
+            assertEquals(PrayerTimeEffect.NavigateToChangeLocation, awaitItem())
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
     @OptIn(ExperimentalTime::class)
     @Test
     fun `onNextDateClick should emit NavigateNextDate effect`() = runTest {
@@ -125,7 +131,7 @@ class PrayerTimeViewModelTest {
 
         viewModel.uiEffect.test {
             viewModel.onDateDropdownClick()
-            assertEquals(PrayerTimeEffect.NavigateCalenderBottomSheet, awaitItem())
+            assertEquals(PrayerTimeEffect.NavigateCalenderDialog, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -36,9 +36,10 @@ fun PrayerTimeScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             PrayerTimeEffect.NavigateBack -> navController.navigateUp()
-            PrayerTimeEffect.NavigateCalenderBottomSheet -> {}
+            PrayerTimeEffect.NavigateCalenderDialog -> {}
             PrayerTimeEffect.NavigateNextDate -> {}
             PrayerTimeEffect.NavigatePrevDate -> {}
+            PrayerTimeEffect.NavigateToChangeLocation -> {}
         }
     }
     Content(
@@ -64,7 +65,7 @@ private fun Content(uiState: PrayerTimeUiState, listener: PrayerTimeInteractionL
                     )
                 },
                 onLeadingClick = listener::onBackClick,
-                trailingContent = { PrayerTimeTopBar() }
+                trailingContent = { PrayerTimeTopBar(listener::onChangeLocation) }
             )
         },
     ) {
