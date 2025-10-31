@@ -36,6 +36,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.SkeletonOverlayShape
 import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -104,6 +105,7 @@ private fun ProductCard(
 
 fun LazyGridScope.wideImageProductsGrid(
     productsShelf: LazyPagingItems<DukanDetailsUiState.ProductUiState>,
+    listener: DukanDetailsInteractionListener
 ) {
     items(
         count = productsShelf.itemCount,
@@ -113,7 +115,7 @@ fun LazyGridScope.wideImageProductsGrid(
                 imageUrl = product.imageUrl,
                 title = product.name,
                 price = "${product.price}",
-                onClick = {}
+                onClick = { listener.onProductClicked(product.id) },
             )
         }
     }

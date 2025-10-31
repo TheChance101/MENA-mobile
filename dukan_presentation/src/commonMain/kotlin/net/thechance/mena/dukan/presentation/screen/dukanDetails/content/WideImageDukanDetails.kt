@@ -62,7 +62,10 @@ fun WideImageDukanDetails(
             if (productShelf.loadState.refresh == LoadState.Loading) {
                 wideImageProductCardSkeletonGrid(productCount = 6)
             } else {
-                wideImageProductsGrid(productShelf)
+                wideImageProductsGrid(
+                    productsShelf = productShelf,
+                    listener = listener
+                )
             }
         }
     }
