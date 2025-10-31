@@ -45,8 +45,8 @@ interface AdminPanelApiService {
 
         const val USER_BASE = "identity/admin/users"
 
-        const val BLOCK_USER_ENDPOINT = "${USER_BASE}/USER_ID/block"
+        const val BLOCK_USER_ENDPOINT = "${USER_BASE}/{userId}/block"
 
-        const val ACTIVE_USER_ENDPOINT = "${USER_BASE}/USER_ID/activate"
+        const val ACTIVE_USER_ENDPOINT = "${USER_BASE}/{userId}/activate"
     }
 }
