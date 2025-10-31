@@ -90,7 +90,7 @@ fun ScaffoldScope.ShareQrCode(
                 text = fullName,
                 color = Theme.colorScheme.shadePrimary,
                 style = Theme.typography.label.medium,
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(bottom = 20.dp)
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
