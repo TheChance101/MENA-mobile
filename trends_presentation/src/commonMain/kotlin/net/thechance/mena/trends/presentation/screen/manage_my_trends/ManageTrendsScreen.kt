@@ -34,11 +34,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.PagingData
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.flow.flowOf
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
@@ -55,7 +53,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -65,7 +62,6 @@ import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -319,36 +315,3 @@ private fun SegmentButton(
             .padding(horizontal = 16.dp, vertical = 9.dp)
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun ManageMyTrendsPreview() {
-    MenaTheme {
-        ManageTrendsScreenBody(
-            state = ManageTrendsScreenState(
-                profile = UserInfoUiState(
-                    userName = "Shahd Hatem",
-                    profileImageUrl = "https://picsum.photos/200"
-                ),
-                reels = fakePagingFlow,
-                selectedTab = SelectedTab.MyTrends
-            ),
-            listener = object : ManageTrendsInteractionListener {
-                override fun onClickReel(reelId: String) {}
-                override fun onClickBack() {}
-                override fun onClickRetry() {}
-                override fun onTabSelect(tab: SelectedTab) {}
-            }
-        )
-    }
-}
-
-private fun fakeReels() = listOf(
-    ReelUiState(id = "1", thumbnailUrl = ""),
-    ReelUiState(id = "2", thumbnailUrl = "https://picsum.photos/200/301"),
-    ReelUiState(id = "3", thumbnailUrl = "https://picsum.photos/200/302"),
-    ReelUiState(id = "4", thumbnailUrl = "https://picsum.photos/200/303"),
-    ReelUiState(id = "5", thumbnailUrl = "https://picsum.photos/200/304")
-)
-
-private val fakePagingFlow = flowOf(PagingData.from(fakeReels()))
