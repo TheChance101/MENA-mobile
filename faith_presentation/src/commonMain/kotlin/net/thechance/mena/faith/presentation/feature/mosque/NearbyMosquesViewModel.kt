@@ -31,11 +31,22 @@ internal class NearbyMosquesViewModel :
 //        TODO("Not yet implemented")
     }
 
-    override fun mapPositionChanged() {
-//        TODO("Not yet implemented")
+    override fun mapPositionChanged(latitude: Double, longitude: Double) {
+        updateCenterOfMap(latitude = latitude, longitude = longitude)
     }
 
     override fun onQueryChange(query: String) {
 //        TODO("Not yet implemented")
+    }
+
+    private fun updateCenterOfMap(latitude: Double, longitude: Double) {
+        updateState {
+            it.copy(
+                centerOfMap = Coordinate(
+                    latitude = latitude,
+                    longitude = longitude
+                )
+            )
+        }
     }
 }

@@ -7,6 +7,6 @@ internal interface NearbyMosquesInteractionListener {
     fun onViewMosqueDetailsClick(mosque: MosqueUiState)
     fun onViewMosqueOnMapClick(latitude: Double, longitude: Double)
     fun onSearchByCoordinatesClick(latitude: Double, longitude: Double)
-    fun mapPositionChanged()
+    fun mapPositionChanged(latitude: Double, longitude: Double)
     fun onQueryChange(query: String)
 }
