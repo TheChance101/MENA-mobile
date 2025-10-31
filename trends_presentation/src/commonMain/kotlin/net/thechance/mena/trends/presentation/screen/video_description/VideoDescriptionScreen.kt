@@ -87,7 +87,10 @@ private fun VideoDescriptionContent(
         topBar = { DescriptionAppBar(onBackClick = listener::onClickBack) }
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
         ) {
             Text(
                 text = stringResource(Res.string.add_video_description_title),

@@ -8,6 +8,6 @@ class MessageSenderFactory(
 ) {
     fun create(content: MessageContent) = when (content) {
         is MessageContent.Text -> textMessageSender
-        is MessageContent.Images -> imageMessageSender
+        is MessageContent.Image -> imageMessageSender
     }
 }

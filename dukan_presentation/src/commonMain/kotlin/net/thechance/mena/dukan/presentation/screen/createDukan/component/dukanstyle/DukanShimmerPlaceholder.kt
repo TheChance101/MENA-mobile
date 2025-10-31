@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.createDukan.component.dukan
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,6 @@ fun ShimmerTextPlaceholders(
     ShimmerItemRectangle(
         modifier = Modifier.fillMaxWidth(0.9f)
             .padding(
-                start = Theme.spacing._4,
                 top = shimmerTopPadding,
             ),
         backgroundColor = Theme.colorScheme.background.surface,
@@ -40,7 +40,6 @@ fun ShimmerTextPlaceholders(
     ShimmerItemRectangle(
         modifier = Modifier.fillMaxWidth(0.7f)
             .padding(
-                start = Theme.spacing._4,
                 top = Theme.spacing._2,
                 bottom = shimmerBottomPadding
             ),
@@ -57,12 +56,13 @@ fun ShimmerRow(selectedColor: Color) {
     )
 
     Row(
-        modifier = Modifier.padding(bottom = shimmerRowPadding)
+        modifier = Modifier.padding(bottom = shimmerRowPadding),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
     ) {
         repeat(3) { index ->
             ShimmerItemRectangle(
                 modifier = Modifier.weight(1f)
-                    .padding(start = Theme.spacing._4, top = Theme.spacing._4),
+                    .padding( top = Theme.spacing._4),
                 height = 10.dp,
                 topEndRadius = if (index == 2) 0.dp else Theme.radius.xxs,
                 bottomEndRadius = if (index == 2) 0.dp else Theme.radius.xxs,

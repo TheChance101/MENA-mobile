@@ -17,14 +17,16 @@ data class ChatScreenState(
     val chatRequesterId: Uuid? = null,
     val inputMessage: String = "",
     val chatListItems: List<ChatListItem> = emptyList(),
-    val selectedMessage: MessageUiState? = null,
-    val isImagePagerVisible: Boolean = false,
     val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
     val isAttachmentsOverlayVisible: Boolean = false,
     val isCameraOpen: Boolean = false,
     val failedMessageToReSend: MessageUiState? = null,
-    val userData: UserData = UserData()
+    val userData: UserData = UserData(),
+
+    val selectedMessage: MessageUiState? = null,
+    val isImagePagerVisible: Boolean = false,
+    val selectedImageMessages: List<MessageUiState> = emptyList()
 )
 
 data class UserData(
@@ -35,7 +37,8 @@ data class UserData(
 
 sealed interface ChatListItem {
     data class DateSeparator(val label: UiText) : ChatListItem
-    data class Message(val data: MessageUiState) : ChatListItem
+    data class TextMessage(val data: MessageUiState) : ChatListItem
+    data class ImageMessages(val data: List<MessageUiState>) : ChatListItem
 }
 
 data class MessageUiState(

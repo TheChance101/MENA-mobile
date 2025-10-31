@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import coil3.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error
@@ -40,6 +41,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.Invite
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
+import net.thechance.mena.identity.presentation.screen.profile.components.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.bottomSheet.ShareSheet
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
@@ -62,33 +64,46 @@ class ProfileScreen : BaseScreen<
     ) {
 
         AnimatedVisibility(state.showShareBottomSheet) {
-            ShareSheet(
-                title = "MENA app-download app",
+                    ShareSheet(
+                        title = "MENA app-download app",
                 url = "https://MENA_app.com",
                 onDismiss = listener::onDismissBottomSheet
             )
         }
 
         Scaffold(overlays = {
-            dialog(state.showLanguageDialog) {
-                Dialog(
-                    isVisible = it,
-                    title = "HI",
-                    message = "Not Yet Implemented",
-                    onDismiss = listener::onDismissLanguageDialog,
-                    actionButtons = {}
-                )
-            }
-            dialog(state.showThemeDialog) {
-                Dialog(
-                    isVisible = it,
-                    title = "HI",
-                    message = "Not Yet Implemented",
-                    onDismiss = listener::onDismissThemeDialog,
-                    actionButtons = {}
-                )
-            }
-        }) {
+                    dialog(state.showLanguageDialog) {
+                        Dialog(
+                            isVisible = it,
+                            title = "HI",
+                            message = "Not Yet Implemented",
+                            onDismiss = listener::onDismissLanguageDialog,
+                            actionButtons = {}
+                        )
+                    }
+                    dialog(state.showThemeDialog) {
+                        Dialog(
+                            isVisible = it,
+                            title = "HI",
+                            message = "Not Yet Implemented",
+                            onDismiss = listener::onDismissThemeDialog,
+                            actionButtons = {}
+                        )
+                    }
+                    dialog(state.showShareProfileDialog) {
+                        ShareQrCode(
+                            showDialog = it,
+                            qrCodePainter = rememberAsyncImagePainter(
+                                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
+                            ),
+                            onDismiss = listener::onDismissShareProfileDialog,
+                            fullName = state.fullName,
+                            onShareProfile = {},
+                            onClipboardContent = { },
+                            onDownload = {},
+                        )
+                    }
+                }) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

@@ -7,4 +7,5 @@ interface HomeInteractionListener {
     fun onClickManageMyTrends()
     fun onClickReel(reelId: String)
     fun onClickRetry()
+    fun onClickExpandDescription(reelId: String)
 }
