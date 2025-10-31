@@ -8,7 +8,7 @@ data class UserQuery(
     val size: Int = 20
 
 )
-enum class SortDirection {
-    ASC,
-    DESC
+enum class SortDirection(val value: String) {
+    ASC("asc"),
+    DESC("desc")
 }
