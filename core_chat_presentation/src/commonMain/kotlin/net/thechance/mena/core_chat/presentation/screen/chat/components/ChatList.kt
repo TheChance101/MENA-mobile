@@ -25,7 +25,8 @@ fun ChatList(
     chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
-    onFailedMessageClick: (MessageUiState) -> Unit
+    onFailedMessageClick: (MessageUiState) -> Unit,
+    onMessageLongClick: (MessageUiState) -> Unit,
 ) {
     if (items.isNotEmpty()) {
         LaunchedEffect(items[0]) {
@@ -61,6 +62,7 @@ fun ChatList(
                 onMessageClick = onMessageClick,
                 onMessageImageClick = onMessageImageClick,
                 onFailedMessageClick = onFailedMessageClick,
+                onMessageLongClick = onMessageLongClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
         }
