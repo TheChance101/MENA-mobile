@@ -51,7 +51,7 @@ fun UploadImageContainer(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f / 1f)
+                .aspectRatio(1f)
                 .align(Alignment.TopCenter)
                 .clip(RoundedCornerShape(radius))
                 .background(Theme.colorScheme.background.surfaceLow)
