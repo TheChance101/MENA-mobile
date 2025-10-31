@@ -26,7 +26,9 @@ data class ChatScreenState(
 
     val selectedMessage: MessageUiState? = null,
     val isImagePagerVisible: Boolean = false,
-    val selectedImageMessages: List<MessageUiState> = emptyList()
+    val selectedImageMessages: List<MessageUiState> = emptyList(),
+    val isReactionDialogVisible: Boolean = false,
+    val messageToReactTo: MessageUiState? = null,
 )
 
 data class UserData(
@@ -50,5 +52,6 @@ data class MessageUiState(
     val isMine: Boolean = true,
     val isLastInSeries: Boolean = false,
     val isVisibleMessageInfo: Boolean = false,
-    val content: MessageContent
+    val content: MessageContent,
+    val reaction :String? =null
 )
