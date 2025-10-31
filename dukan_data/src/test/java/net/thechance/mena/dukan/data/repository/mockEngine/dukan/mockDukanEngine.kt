@@ -32,9 +32,9 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.model.AddressInput
+import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
-import net.thechance.mena.identity.domain.model.Coordinates
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -292,7 +292,12 @@ fun createDukanDiscoveryRepository(
 @OptIn(ExperimentalUuidApi::class)
 private class FakeAddressesRepository : AddressesRepository {
     override suspend fun createAddress(addressInput: AddressInput) {}
-    override suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput) {}
+    override suspend fun updateAddress(
+        addressId: Uuid,
+        addressInput: AddressInput,
+        isActive: Boolean
+    ) {}
+
     override suspend fun getUserAddresses(): List<Address> {
         return listOf(
             Address(
