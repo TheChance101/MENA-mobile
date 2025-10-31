@@ -1,15 +1,23 @@
 package net.thechance.mena.admin_panel.data.remote.dto.user
 
-import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.admin_panel.domain.entity.user.Status
-import java.util.UUID
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlin.uuid.ExperimentalUuidApi
 
-data class UserResponse(
-    val id: UUID,
+@Serializable
+data class UserResponse @OptIn(ExperimentalUuidApi::class) constructor(
+    @SerialName("id")
+    val id: String,
+    @SerialName("firstName")
     val firstName: String,
-    val phoneNumber:String,
+    @SerialName("phoneNumber")
+    val phoneNumber: String,
+    @SerialName("lastName")
     val lastName: String,
-    val lastLoginAt: LocalDateTime,
-    val lastVisitAt: LocalDateTime,
-    val status: Status
+    @SerialName("lastLoginAt")
+    val lastLoginAt: String,
+    @SerialName("lastVisitAt")
+    val lastVisitAt: String,
+    @SerialName("status")
+    val status: String
 )
