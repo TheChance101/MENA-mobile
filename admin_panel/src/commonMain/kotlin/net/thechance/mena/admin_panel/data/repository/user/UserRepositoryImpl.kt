@@ -21,7 +21,7 @@ import kotlin.uuid.Uuid
 @Single
 class UserRepositoryImpl(
     private val userApiService: UserApiService,
-) : UserRepository {
+): UserRepository {
     override suspend fun getUsers(userQueryParams: UserQueryParams?): Flow<List<User>> = flow {
         val sortParam = buildSortQuery(userQueryParams?.sortType, userQueryParams?.sortDirection)
         val response = executeApiSafely<PagedResponse<UserResponse>> {
