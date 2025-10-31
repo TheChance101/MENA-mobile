@@ -82,4 +82,9 @@ internal class ManageTrendsViewModel(
         getReels()
         getCurrentUserInfo()
     }
+
+    override fun onTabSelect(tab: SelectedTab) {
+        updateState { copy(selectedTab = tab) }
+    }
+
 }
