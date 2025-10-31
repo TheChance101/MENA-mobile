@@ -48,17 +48,15 @@ class ManageTrendsViewModelTest {
 
 
     @Test
-    fun `getCurrentUserProfile should update state with profile when userRepository returns data`() =
-        runTest(testDispatcher) {
-            viewModel.getCurrentUserInfo()
+    fun `getCurrentUserProfile updates state with profile`() = runTest {
+        viewModel.state.test {
+            awaitItem()
+            val updatedState = awaitItem()
 
-            viewModel.state.test {
-                skipItems(1)
-                val successState = awaitItem()
-                assertThat(successState.profile).isEqualTo(userInfoUiState)
-                cancelAndIgnoreRemainingEvents()
-            }
+            assertThat(updatedState.profile).isEqualTo(userInfoUiState)
+            cancelAndIgnoreRemainingEvents()
         }
+    }
 
     @Test
     fun `view model should update state by reels when getAllReels returns data`() =

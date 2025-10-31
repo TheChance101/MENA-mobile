@@ -7,17 +7,18 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.onEach
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
+
 
 @KoinViewModel
 internal class ManageTrendsViewModel(
@@ -60,12 +61,12 @@ internal class ManageTrendsViewModel(
     }
 
     private fun onGetUserSuccess(flow: Flow<User?>) {
-        viewModelScope.launch {
-            flow.map { it?.toUiState() }
-                .collectLatest { userUi ->
-                    userUi?.let { updateState { copy(profile = it) } }
+        flow.map { it?.toUiState() }
+            .onEach { userUi ->
+                userUi?.let {
+                    updateState { copy(profile = it) }
                 }
-        }
+            }.launchIn(viewModelScope)
     }
 
     private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
