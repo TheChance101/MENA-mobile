@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.Response
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
+import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
@@ -30,10 +31,11 @@ interface AdminPanelApiService {
     ): Response<PagedResponse<UserResponse>>
 
     @POST(BLOCK_USER_ENDPOINT)
-    suspend fun blockUser(@Body userID: Long)
+    suspend fun blockUser(@Path("userId") userId: String): Response<Unit>
 
     @POST(ACTIVE_USER_ENDPOINT)
-    suspend fun activeUser(@Body userID: Long)
+    suspend fun activateUser(@Path("userId") userId: String): Response<Unit>
+
 
 
     private companion object {

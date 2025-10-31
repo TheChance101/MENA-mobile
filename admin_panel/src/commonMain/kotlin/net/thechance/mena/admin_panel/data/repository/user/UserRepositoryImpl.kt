@@ -11,7 +11,10 @@ import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.model.UserQuery
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
 import org.koin.core.annotation.Single
+import kotlin.uuid.ExperimentalUuidApi
 
+import kotlin.uuid.Uuid
+@OptIn(ExperimentalUuidApi::class)
 @Single
 class UserRepositoryImpl(
     private val adminPanelApiService: AdminPanelApiService,
@@ -29,5 +32,19 @@ class UserRepositoryImpl(
                 )
         }.toEntityList(UserResponse::toDomain)
     }
+
+    override suspend fun blockUser(userID: Uuid) {
+        executeApiSafely<Unit> {
+            adminPanelApiService.blockUser(userID.toString())
+        }
+    }
+
+    override suspend fun activeUser(userID: Uuid) {
+        executeApiSafely<Unit> {
+            adminPanelApiService.activateUser(userID.toString())
+        }
+    }
+
+
 
 }
