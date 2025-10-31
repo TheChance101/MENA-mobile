@@ -101,13 +101,17 @@ private fun renderPdfPageToPng(page: CGPDFPageRef?): ByteArray? {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun ByteArray.asCFData(): CFDataRef? = usePinned { pinned ->
-    CFDataCreateWithBytesNoCopy(
-        kCFAllocatorDefault,
-        pinned.addressOf(0).reinterpret(),
-        size.toLong(),
-        kCFAllocatorNull
-    )
+private fun ByteArray.asCFData(): CFDataRef? {
+    if (isEmpty()) return null
+
+    return usePinned { pinned ->
+        CFDataCreateWithBytesNoCopy(
+            kCFAllocatorDefault,
+            pinned.addressOf(0).reinterpret(),
+            size.toLong(),
+            kCFAllocatorNull
+        )
+    }
 }
 
 @OptIn(ExperimentalForeignApi::class)

@@ -34,7 +34,7 @@ fun ExportTypeCard(
     isSelected: Boolean = false,
 ) {
     val targetColor by animateColorAsState(
-        targetValue = if (isSelected) Theme.colorScheme.brand.brandVariant else Theme.colorScheme.background.surface,
+        targetValue = if (isSelected) Theme.colorScheme.brand.brandVariant else Theme.colorScheme.background.surfaceLow,
     )
 
     val backgroundColor by animateColorAsState(

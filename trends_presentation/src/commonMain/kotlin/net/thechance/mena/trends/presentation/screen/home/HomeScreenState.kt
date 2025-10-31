@@ -27,5 +27,6 @@ data class ReelUiState(
     val description: String = "",
     val likesCount: Int = 0,
     val viewsCount: Int = 0,
-    val isLiked: Boolean = false
+    val isLiked: Boolean = false,
+    val isDescriptionExpanded: Boolean = false
 )
