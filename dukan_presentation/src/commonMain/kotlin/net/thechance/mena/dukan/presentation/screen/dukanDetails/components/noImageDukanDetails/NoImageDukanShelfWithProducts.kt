@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
-import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.product.ProductActionNoImageDukan
+import net.thechance.mena.dukan.presentation.component.product.ProductCard
+import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
@@ -59,7 +59,8 @@ fun NoImageDukanShelfWithProducts(
                         )
                     }
                 },
-                modifier = Modifier.padding(top = topPadding)
+                onClick = { listener.onProductClicked(product.id) },
+                modifier = Modifier.padding(top = topPadding),
             )
         }
     }
