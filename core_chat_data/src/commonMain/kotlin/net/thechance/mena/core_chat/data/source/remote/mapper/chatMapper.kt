@@ -36,6 +36,7 @@ fun MessageDto.toDomain(): Message? {
         chatId = getUuidOrNull(chatId) ?: return null,
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
+        reaction= reaction,
         content = content,
         isMine = isMine
     )

@@ -13,6 +13,7 @@ data class Message(
     val status: MessageStatus,
     val content: MessageContent,
     val isMine: Boolean,
+    val reaction: String? = null
 )
 
 sealed interface MessageContent {
