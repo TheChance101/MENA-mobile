@@ -1,26 +1,23 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
-import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error_unknown
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.repository.UserRepository
-import kotlin.test.AfterTest
+import net.thechance.mena.identity.helper.BaseCoroutineTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -29,7 +26,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ProfileViewModelTest {
+class ProfileViewModelTest : BaseCoroutineTest() {
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -37,8 +34,8 @@ class ProfileViewModelTest {
     private lateinit var viewModel: ProfileScreenViewModel
 
     @BeforeTest
-    fun setUp() {
-        Dispatchers.setMain(testDispatcher)
+    override fun setUp() {
+        super.setUp()
         coEvery { userRepository.getUser() } returns flowOf(fakeUser)
         viewModel = ProfileScreenViewModel(
             userRepository,
@@ -47,10 +44,6 @@ class ProfileViewModelTest {
         )
     }
 
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     @Test
     fun `getUserInfo() updates state on success`() = runTest {
@@ -72,7 +65,7 @@ class ProfileViewModelTest {
         viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals (null,  viewModel.state.value.errorMessage)
+        assertEquals(null, viewModel.state.value.errorMessage)
     }
 
 
@@ -89,15 +82,25 @@ class ProfileViewModelTest {
     }
 
     @Test
-    fun `should emit NavigateEditProfileScreen effect when onShareClicked`() = runTest {
-        viewModel.effect.test {
-            viewModel.onShareClicked()
-            val emittedEffect = awaitItem()
-            assertTrue { emittedEffect is ProfileScreenUIEffect.NavigateToEditProfileScreen }
-            cancelAndConsumeRemainingEvents()
+    fun `showShareProfileDialog should updated to true, when onShareClicked called`() = runTest {
+        viewModel.onShareClicked()
+        testDispatcher.scheduler.advanceUntilIdle()
 
+        viewModel.state.test {
+            assertThat(awaitItem().showShareProfileDialog).isTrue()
         }
     }
+
+    @Test
+    fun `showShareProfileDialog should updated to false, when onDismissShareProfileDialog called`() =
+        runTest {
+            viewModel.onDismissShareProfileDialog()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.state.test {
+                assertThat(awaitItem().showShareProfileDialog).isFalse()
+            }
+        }
 
     @Test
     fun `should update state to show share bottom sheet when onInviteFriendsClicked`() = runTest {

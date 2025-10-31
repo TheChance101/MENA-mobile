@@ -54,7 +54,7 @@ class ProfileScreenViewModel(
         sendNewEffect(createNavigateToEditProfileEffect())
 
     override fun onShareClicked() =
-        sendNewEffect(createNavigateToEditProfileEffect())
+        updateState { copy(showShareProfileDialog = true) }
 
     override fun onInviteFriendsClicked() =
         updateState { copy(showShareBottomSheet = true) }
@@ -85,6 +85,10 @@ class ProfileScreenViewModel(
 
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }
+
+    override fun onDismissShareProfileDialog() {
+        updateState { copy(showShareProfileDialog = false) }
+    }
 
     override fun onDismissThemeDialog() =
         updateState { copy(showThemeDialog = false) }

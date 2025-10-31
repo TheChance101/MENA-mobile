@@ -7,7 +7,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,16 +19,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import coil3.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.dismiss
 import mena.identity_presentation.generated.resources.error
 import mena.identity_presentation.generated.resources.ic_close_circle
 import mena.identity_presentation.generated.resources.profile_title
 import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
-import net.thechance.mena.designsystem.presentation.component.button.NegativeButton
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
@@ -44,15 +41,17 @@ import net.thechance.mena.identity.presentation.screen.profile.components.Invite
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
+import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
+import net.thechance.mena.identity.presentation.screen.profile.components.ShareQrCode
+import net.thechance.mena.identity.presentation.screen.profile.components.bottomSheet.ShareSheet
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
-        ProfileScreenViewModel,
-        ProfileScreenUIState,
-        ProfileScreenUIEffect,
-        ProfileScreenInteractionListener>() {
+    ProfileScreenViewModel,
+    ProfileScreenUIState,
+    ProfileScreenUIEffect,
+    ProfileScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -63,48 +62,48 @@ class ProfileScreen : BaseScreen<
         state: ProfileScreenUIState,
         listener: ProfileScreenInteractionListener,
     ) {
-        Scaffold(overlays =
-            {
-            bottomSheet(
-                isVisible = state.showShareBottomSheet
-            ) {
-                BottomSheet(
-                    isVisible = it,
-                    onDismissRequest = listener::onDismissBottomSheet,
-                ) {
-                    Column(
-                        Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Invite friends Not Yet Implemented",
-                            style = Theme.typography.label.small
-                        )
-                        NegativeButton(
-                            text = stringResource(Res.string.dismiss),
-                            onClick = listener::onDismissBottomSheet,
+
+        AnimatedVisibility(state.showShareBottomSheet) {
+                    ShareSheet(
+                        title = "MENA app-download app",
+                url = "https://MENA_app.com",
+                onDismiss = listener::onDismissBottomSheet
+            )
+        }
+
+        Scaffold(overlays = {
+                    dialog(state.showLanguageDialog) {
+                        Dialog(
+                            isVisible = it,
+                            title = "HI",
+                            message = "Not Yet Implemented",
+                            onDismiss = listener::onDismissLanguageDialog,
+                            actionButtons = {}
                         )
                     }
-                }
-            }
-            dialog(state.showLanguageDialog) {
-                Dialog(
-                    isVisible = it,
-                    title = "HI",
-                    message = "Not Yet Implemented",
-                    onDismiss = listener::onDismissLanguageDialog,
-                    actionButtons = {}
-                )
-            }
-            dialog(state.showThemeDialog) {
-                Dialog(
-                    isVisible = it,
-                    title = "HI",
-                    message = "Not Yet Implemented",
-                    onDismiss = listener::onDismissThemeDialog,
-                    actionButtons = {}
-                )
-            }
-        }) {
+                    dialog(state.showThemeDialog) {
+                        Dialog(
+                            isVisible = it,
+                            title = "HI",
+                            message = "Not Yet Implemented",
+                            onDismiss = listener::onDismissThemeDialog,
+                            actionButtons = {}
+                        )
+                    }
+                    dialog(state.showShareProfileDialog) {
+                        ShareQrCode(
+                            showDialog = it,
+                            qrCodePainter = rememberAsyncImagePainter(
+                                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
+                            ),
+                            onDismiss = listener::onDismissShareProfileDialog,
+                            fullName = state.fullName,
+                            onShareProfile = {},
+                            onClipboardContent = { },
+                            onDownload = {},
+                        )
+                    }
+                }) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -183,7 +182,7 @@ class ProfileScreen : BaseScreen<
                 ) {
                     SnackBar(
                         title = stringResource(Res.string.error),
-                        message =  stringResource(state.errorMessage!!),
+                        message = stringResource(state.errorMessage!!),
                         leadingIcon = painterResource(Res.drawable.ic_close_circle),
                         modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
                             .padding(horizontal = Theme.spacing._16)
@@ -211,15 +210,15 @@ class ProfileScreen : BaseScreen<
             }
 
             ProfileScreenUIEffect.NavigateContactUsScreen -> {
-                navigator.push(RegisterScreen())
+                navigator.push(NotImplementedScreen())
             }
 
             ProfileScreenUIEffect.NavigateToChangePasswordScreen -> {
-                navigator.push(RegisterScreen())
+                navigator.push(NotImplementedScreen())
             }
 
             ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen -> {
-                navigator.push(RegisterScreen())
+                navigator.push(NotImplementedScreen())
             }
         }
     }

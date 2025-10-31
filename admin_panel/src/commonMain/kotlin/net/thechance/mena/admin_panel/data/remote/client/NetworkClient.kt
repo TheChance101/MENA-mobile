@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.data.remote.client
 
+import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
@@ -17,14 +18,21 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import net.thechance.mena.admin_panel.data.utils.accessToken
+import net.thechance.mena.admin_panel.data.utils.refreshToken
+import net.thechance.mena.admin_panel.domain.repository.AdminAuthenticationRepository
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 
 class NetworkClient(
     @Provided
     @Named("baseUrl")
-    private val baseUrl: String
-){
+    private val baseUrl: String,
+    @Provided
+    private val settings: Settings,
+    @Provided
+    private val adminAuthentication: AdminAuthenticationRepository
+) {
 
     fun provideHttpClient(): HttpClient = buildClient()
 
@@ -54,14 +62,15 @@ class NetworkClient(
                 bearer {
                     loadTokens {
                         BearerTokens(
-                            accessToken = "", /*TODO() add access token*/
-                            refreshToken = "" /*TODO() add refresh token*/
+                            accessToken = settings.accessToken,
+                            refreshToken = settings.refreshToken
                         )
                     }
                     refreshTokens {
                         BearerTokens(
-                            accessToken = "", /*TODO() add access token*/
-                            refreshToken = "" /*TODO() add refresh token*/
+                            refreshToken = adminAuthentication.refreshAccessToken(),
+                            accessToken = settings.accessToken
+
                         )
                     }
                 }

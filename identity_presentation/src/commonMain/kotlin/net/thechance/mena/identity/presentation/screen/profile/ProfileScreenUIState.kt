@@ -8,6 +8,7 @@ data class ProfileScreenUIState(
     val profileImageUrl:String = "",
     val showShareBottomSheet:Boolean = false,
     val showLanguageDialog:Boolean = false,
+    val showShareProfileDialog:Boolean = false,
     val showThemeDialog:Boolean = false,
     val versionNumber:String? = null,
     val isLoading: Boolean = false,
