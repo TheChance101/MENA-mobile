@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.screen.editProfile.component.AsyncProfileImage
+import net.thechance.mena.identity.presentation.screen.editProfile.components.AsyncProfileImage
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
