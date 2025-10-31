@@ -8,7 +8,7 @@ fun buildSortQuery(property: String?, direction: SortDirection?): String? {
     val directionStr = when (direction) {
         SortDirection.ASC -> "asc"
         SortDirection.DESC -> "desc"
-        null -> "ASC"
+        null -> "asc"
     }
 
     return "$property,$directionStr"
