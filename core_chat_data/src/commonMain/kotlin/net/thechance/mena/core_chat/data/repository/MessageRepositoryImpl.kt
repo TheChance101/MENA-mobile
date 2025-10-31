@@ -133,7 +133,6 @@ class MessageRepositoryImpl(
     }
 
     override suspend fun sendReaction(messageId: Uuid, reaction: String) {
-        TODO("Not yet implemented")
     }
 
     private companion object {
