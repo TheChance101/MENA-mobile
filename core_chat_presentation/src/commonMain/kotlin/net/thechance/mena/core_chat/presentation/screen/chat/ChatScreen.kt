@@ -39,6 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.core_chat.presentation.screen.chat.components.messageReactionDialog
 
 @Composable
 fun ChatScreen() {
@@ -109,6 +110,19 @@ fun ChatScreenContent(
                     onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
                     onResendFailedMessageClick = interactions::onResendMessageClicked,
                 )
+
+                messageReactionDialog(
+                    isVisible = state.isReactionDialogVisible,
+                    message = state.messageToReactTo,
+                    onDismiss = interactions::onReactionDialogDismissed,
+                    onReactionSelected = { reaction ->
+                        val messageId = state.messageToReactTo?.id
+                        if (messageId != null) {
+                            interactions.onReactionSelected(messageId, reaction)
+                        }
+                        interactions.onReactionDialogDismissed()
+                    }
+                )
             }
         ) {
             ChatList(
@@ -118,6 +132,7 @@ fun ChatScreenContent(
                 onMessageClick = interactions::onMessageClicked,
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
+                onMessageLongClick = interactions::onMessageLongClicked,
             )
         }
 
