@@ -17,6 +17,7 @@ import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -24,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
@@ -401,6 +403,64 @@ class HomeViewModelTest {
                 assertThat(chatStatus is ChatUiState.Status.Received).isTrue()
             }
         }
+
+    @Test
+    fun `observeDeleteChat should remove chat from state when DeleteChatEvent is collected`() = runTest {
+        val chatToKeep = createChatSummary(name = "Keep Chat")
+        val chatToDelete = createChatSummary(name = "Delete Chat")
+
+        everySuspend { balanceRepository.getBalance() } returns 0.0
+        everySuspend { chatRepository.getChatsSummary(any(), any()) } returns PagedData(
+            data = listOf(chatToKeep, chatToDelete),
+            totalItems = 2,
+            isLastPage = true
+        )
+
+        val deleteChatFlow = MutableSharedFlow<DeleteChatEvent>()
+        everySuspend { messageRepository.observeDeleteChat() } returns deleteChatFlow
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            var state = awaitItem()
+            assertThat(state.chats.size).isEqualTo(2)
+
+            deleteChatFlow.emit(DeleteChatEvent(chatToDelete.id))
+            advanceUntilIdle()
+
+            state = awaitItem()
+            assertThat(state.chats.size).isEqualTo(1)
+            assertThat(state.chats.first().id).isEqualTo(chatToKeep.id)
+        }
+    }
+
+    @Test
+    fun `onCollectDeleteChatEvent should not modify state when event is null`() = runTest {
+        val chat1 = createChatSummary(name = "Chat 1")
+
+        everySuspend { balanceRepository.getBalance() } returns 0.0
+        everySuspend { chatRepository.getChatsSummary(any(), any()) } returns PagedData(
+            data = listOf(chat1),
+            totalItems = 1,
+            isLastPage = true
+        )
+
+        val deleteChatFlow = MutableSharedFlow<DeleteChatEvent>()
+        everySuspend { messageRepository.observeDeleteChat() } returns deleteChatFlow
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.chats.size).isEqualTo(1)
+
+            advanceUntilIdle()
+
+            expectNoEvents()
+        }
+    }
 
     private fun createViewModel(): HomeViewModel {
         return HomeViewModel(
