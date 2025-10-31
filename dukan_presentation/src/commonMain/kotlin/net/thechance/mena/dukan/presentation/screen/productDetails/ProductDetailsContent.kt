@@ -41,8 +41,6 @@ fun ProductDetailsContent(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = Theme.spacing._16),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
         ) {
             ProductDetailsImagesSection(
                 allImages = state.product.images,
